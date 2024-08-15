@@ -35,7 +35,7 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 {
 	// printf("%f , %f \n", xpos, ypos);
 }
-
+ 
 
 // SIMULATION
 
@@ -194,12 +194,12 @@ int main()
 	// 	-0.1f, -0.1f, -0.9f, // far left
 	// };
 	float verticies[] = {
-		-1.0f, 0.1f, 1.0f, // far left
+		-1.0f, 0.0f, 1.0f, // far left 
 		-1.0f, 0.0f, -1.0f,	 // near left
 		1.0f, 0.0f, -1.0f,	 // near right
-		1.0f, 0.1f, 1.0f,	 // far right
-		1.0f, 0.0f, -.01f,	 // near right
-		-1.0f, 0.1f, 1.0f, // far left
+		1.0f, 0.0f, 1.0f,	 // far right
+		1.0f, 0.0f, -1.0f,	 // near right
+		-1.0f, 0.0f, 1.0f, // far left
 	};
 	float verticies_transform[16] = {
 		 1.0f, 0.0f, 0.0f, 0.0f,  // top
@@ -215,13 +215,13 @@ int main()
 	// TRIANGLE
 	//
 	float triangle[] = {
-		0.0f,	 0.05f, 0.95f, // top
-		-0.05f,	-0.05f, 0.95f, // left
-		0.05f, 	-0.05f, 0.95f, // right
+		0.0f,	 0.05f, 0.0f, // top
+		-0.05f,	-0.05f, 0.0f, // left 
+		0.05f, 	-0.05f, 0.0f, // right
 	};
-	float triangleColor[] = {
-		0.5, 0.0, 0.0, 1.0,
-	};
+	// float triangleColor[] = {
+	// 	0.5, 0.0, 0.0, 1.0,
+	// };
 	// float triangle_transform_4x4[4][4] = {
 	// 	{ 1.0f, 0.0f, 0.0f, 0.0f, }, // top
 	// 	{ 0.0f, 1.0f, 0.0f, 0.0f, },// left
@@ -235,9 +235,9 @@ int main()
 		 0.0f, 0.0f, 1.0f, 0.0f,  // right
 		 0.0f, 0.0f, 0.0f, 1.0f,  // right
 	};
-	float triangleScale = 3.0f;
+	float triangleScale = 10.0f;
 	scale16Transform(triangle_transform, triangleScale, triangleScale, 1.0f);
-	translate16Transform(triangle_transform, 0.0f, 0.0f, 2.0f); // move triangle into simple projection area
+	translate16Transform(triangle_transform, 0.0f, 0.0f,  5.0f); // move triangle into simple projection area
 	
 	// float zf = ZF;
 	// float zn = ZN;
@@ -248,10 +248,10 @@ int main()
 	// 	 0.0f, 0.0f, 0.0f, 1.0f,  // right
 	// };
 	float perspective_transform_simple[16] = {
-		 1.0f, 0.0f, 0.0f, 0.0f,  // top
-		 0.0f, 1.0f, 0.0f, 0.0f, // left
-		 0.0f, 0.0f, 1.0f, 0.0f,  // right
-		 0.0f, 0.0f, 0.0f, 1.0f,  // right
+		 0.0f, 0.0f, 0.0f, 0.0f,  // top
+		 0.0f, 0.0f, 0.0f, 0.0f, // left
+		 0.0f, 0.0f, 0.0f, 0.0f,  // right
+		 0.0f, 0.0f, 0.0f, 0.0f,  // right
 	};
 
 	unsigned int ground_vao, ground_vbo;
@@ -265,6 +265,8 @@ int main()
 	unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
 	unsigned int perspectiveLoc = glGetUniformLocation(shaderProgram, "perspective");
 	unsigned int colorLoc = glGetUniformLocation(shaderProgram, "vertexColor");
+
+	
 
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 
@@ -361,21 +363,21 @@ int main()
 
 		// moveVerticies(vertices, sizeof(float) * 12);
 		// moveVerticies(ground_v, sizeof(float) * 12);
-
+ 
 		glBindVertexArray(ground_vao);
-		translate16Transform(verticies_transform, 0.0f, 0.0f, 0.01f);
+		translate16Transform(verticies_transform, 0.0f, -0.01f, 0.1f);
 		setSimplePerspective(verticies_transform, perspective_transform_simple);
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transposeToShader16(verticies_transform, transform_shader));
-		glUniformMatrix4fv(perspectiveLoc, 1, GL_FALSE, perspective_transform_simple);
+		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, perspective_transform_simple);
 		glUniform4f(colorLoc, 0.0f, 0.5f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(triangle_vao);
-		translate16Transform(triangle_transform, -0.01f, 0.0f, 0.0f);
+		translate16Transform(triangle_transform, 0.01f, 0.0f, 0.0f);
 		setSimplePerspective(triangle_transform, perspective_transform_simple);
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transposeToShader16(triangle_transform, transform_shader));
-		glUniformMatrix4fv(perspectiveLoc, 1, GL_FALSE, perspective_transform_simple);
+		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, perspective_transform_simple);
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -455,9 +457,24 @@ void translate16Transform(float * transform16, float dx, float dy, float dz){
 }
 
 void setSimplePerspective(float * transformMatrix, float * perspectiveMatrix){
-	perspectiveMatrix[0] = ZN / transformMatrix[11];
-	perspectiveMatrix[5] = ZN / transformMatrix[11];
-	perspectiveMatrix[10] = (ZN - transformMatrix[11]) / (ZF - ZN);
+	// Original : sets all z-values to model center...
+	// perspectiveMatrix[0] = ZN / transformMatrix[11];
+	// perspectiveMatrix[5] = ZN / transformMatrix[11];
+	// perspectiveMatrix[10] = (ZN - transformMatrix[11]) / (ZF - ZN);
+
+	// Original : defined per drawing "minimal-projection.png", now with perspective dividing in mind
+	perspectiveMatrix[0] = ZN;
+	perspectiveMatrix[5] = ZN;
+	perspectiveMatrix[10] = -1.0f / (ZF - ZN);
+	perspectiveMatrix[11] = ZN / (ZF - ZN); 
+	perspectiveMatrix[14] = 1.0f; 
+
+	//http://www.songho.ca/opengl/gl_projectionmatrix.html
+	// perspectiveMatrix[0] = ZN;
+	// perspectiveMatrix[5] = ZN;
+	// perspectiveMatrix[10] = -(ZF + ZN) / (ZF - ZN); // NOT NEEDED??
+	// perspectiveMatrix[11] = 2*ZF*ZN / (ZF - ZN);
+	// perspectiveMatrix[14] = 1.0f; 
 }
 
 // 
