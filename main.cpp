@@ -6,6 +6,9 @@
 
 #include <time.h>
 #include <unistd.h>
+#include <string.h>
+
+#include "vertex.hpp"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -20,7 +23,7 @@ float *  transposeToShader16(float * transform16, float * transformShader16);
 struct Input {
 	char s = 0;
 	int pointerX = 0;
-	int pointerY = 0;
+	int pointerY = 0; 
 } input ;
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -87,8 +90,16 @@ const char *fragmentShaderSource = R"glsl(
     }
 )glsl";
 
-int main()
+int main() 
 {
+	printf("Length of Vshader: %lu \n", strlen(vertexShaderSource));
+	printf("Length of Fshader: %lu \n", strlen(fragmentShaderSource));
+
+	vertexFunc();
+
+	// segfault test
+	// int *nlptr = NULL;
+	// int a = *nlptr;
 
 	// glfw: initialize and configure
 	// -----------------------------

@@ -1,4 +1,5 @@
 exe := glthrowsim
+.PRECIOUS: glthrowsim
 
 CXX := g++
 CXXFLAGS := -g -Wall -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
@@ -9,7 +10,7 @@ SRCS := main.cpp glad.c
 # OBJS := main.o
 
 
-$(exe): main.cpp
+$(exe): $(SRCS)
 	$(CXX) $(LIB) $(INC) $(SRCS) -o $(exe) $(CXXFLAGS)
 	./$(exe)
 
