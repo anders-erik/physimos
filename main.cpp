@@ -10,45 +10,51 @@
 
 #include "vertex.hpp"
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void processInput(GLFWwindow *window);
-
-void moveVerticies(float *verticies, int vertexCount);
-void scale16Transform(float * transform16, float dx, float dy, float dz);
-void setSimplePerspective(float * transformMatrix, float * perspectiveMatrix);
-void translate16Transform(float * transform16, float dx, float dy, float dz);
-float *  transposeToShader16(float * transform16, float * transformShader16);
-
-// INPUT
-struct Input {
-	char s = 0;
-	int pointerX = 0;
-	int pointerY = 0; 
-} input ;
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-        printf("Click! -- %f , %f \n", xpos, ypos); 
-	}
-}
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	// printf("%f , %f \n", xpos, ypos);
-}
- 
-
-// SIMULATION
-
-
-
-
-
 // settings
 #define ZF 100.0f // far plane
 #define ZN 1.0f // near plane
+// Simulation constants
+#define T0 0.0
+#define TF 10.0
+#define DT 0.1
+#define DT_COUNT (1 + (TF - T0) / DT )
+#define DT_INDEX_MAX (TF - T0) / DT
+
+
+
+
+
+const float perspectiveMatrix16[16] = {
+	ZN, 0, 0, 0,
+	0, ZN, 0, 0,
+	0, 0, -1.0f / (ZF - ZN), ZN / (ZF - ZN),
+	0, 0, 1.0f, 0,
+};
+
+enum SimState {
+	idle = 0,
+	startClickDetected = 1,
+	running = 2
+};
+
+
+
+struct Simulation {
+	SimState simState = idle;
+	double t0 = T0;
+	double tf = TF;
+	double dt = DT;
+	int dtCount = (int) DT_COUNT;
+	int dtIndex = 0;
+	int dtIndexMax = DT_INDEX_MAX;
+	SimObject simObject;
+} simulation;
+
+// 	perspectiveMatrix[0] = ZN;
+// 	perspectiveMatrix[5] = ZN;
+// 	perspectiveMatrix[10] = -1.0f / (ZF - ZN);
+// 	perspectiveMatrix[11] = ZN / (ZF - ZN); 
+// 	perspectiveMatrix[14] = 1.0f; 
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -64,6 +70,50 @@ time_t epoch_fps, current_second_fps, current_time_fps, last_frame_fps;
 int secondCount;
 struct timespec wait = {0, 20000000L}; // nanoseconds of added wait between each frame
 struct timespec waitForFrame = {0, 0L}; // nanoseconds of added wait between each frame
+
+
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void processInput(GLFWwindow *window);
+
+// void moveVerticies(float *verticies, int vertexCount);
+// void scale16Transform(float * transform16, float dx, float dy, float dz);
+// void setSimplePerspective(float * transformMatrix, float * perspectiveMatrix);
+// void translate16Transform(float * transform16, float dx, float dy, float dz);
+// float *  transposeToShader16(float * transform16, float * transformShader16);
+
+// INPUT
+struct Input {
+	char s = 0;
+	int pointerX = 0;
+	int pointerY = 0; 
+} input ;
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+        printf("Click! -- %f , %f \n", xpos, ypos);
+		if(simulation.simState == idle && ypos < 100.0 && xpos > 700.0){
+			printf("Start Simulation button clicked! \n");
+			simulation.simState = startClickDetected;
+		}
+	}
+}
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	// printf("%f , %f \n", xpos, ypos);
+}
+ 
+
+// SIMULATION
+
+
+
+
+
+
 
 const char *vertexShaderSource = R"glsl(
     #version 330 core
@@ -95,12 +145,12 @@ int main()
 	printf("Length of Vshader: %lu \n", strlen(vertexShaderSource));
 	printf("Length of Fshader: %lu \n", strlen(fragmentShaderSource));
 
-	vertexFunc();
+	// vertexFunc();
 
 	// segfault test
 	// int *nlptr = NULL;
 	// int a = *nlptr;
-
+	
 	// glfw: initialize and configure
 	// -----------------------------
 	glfwInit();
@@ -193,18 +243,7 @@ int main()
 	//
 	// GROUND
 	//
-	// Array for passing to shader
-	float transform_shader[16];
-
-	// float verticies[] = {
-	// 	-0.1f, -0.1f, -0.9f, // far left
-	// 	-0.9f, -0.9f, 0.9f,	 // near left
-	// 	0.9f, -0.9f, 0.9f,	 // near right
-	// 	0.1f, -0.1f, -0.9f,	 // far right
-	// 	0.9f, -0.9f, 0.9f,	 // near right
-	// 	-0.1f, -0.1f, -0.9f, // far left
-	// };
-	float verticies[] = {
+	float ground_vertices[] = {
 		-1.0f, 0.0f, 1.0f, // far left 
 		-1.0f, 0.0f, -1.0f,	 // near left
 		1.0f, 0.0f, -1.0f,	 // near right
@@ -212,58 +251,53 @@ int main()
 		1.0f, 0.0f, -1.0f,	 // near right
 		-1.0f, 0.0f, 1.0f, // far left
 	};
-	float verticies_transform[16] = {
-		 1.0f, 0.0f, 0.0f, 0.0f,  // top
-		 0.0f, 1.0f, 0.0f, 0.0f, // left
-		 0.0f, 0.0f, 1.0f, 0.0f,  // right
-		 0.0f, 0.0f, 0.0f, 1.0f,  // right
-	};
-	float groundScale = 10.0f;
-	scale16Transform(verticies_transform, groundScale, 1.0f, groundScale);
-	translate16Transform(verticies_transform, 0.0f, -2.0f, 5.0f);
+	
+	struct SimObject ground1;
+	ground1.vertices = ground_vertices;
+	ground1.vertexCount = 6;
+	
+	float groundScale = 100.0f;
+	struct Point3 ground1InitialPos = {0.0f, -20.0f, 50.0f};
+	struct Point3 ground1InitialScale = {groundScale, 1.0f, groundScale};
+
+	SetScaleSimObject(&ground1, ground1InitialScale);
+	MoveSimObject(&ground1, ground1InitialPos); // move triangle into simple projection area
+
+
+
 
 	//
-	// TRIANGLE
+	// TRIANGLE / OBJECT TO BE THROWN
 	//
 	float triangle[] = {
 		0.0f,	 0.05f, 0.0f, // top
 		-0.05f,	-0.05f, 0.0f, // left 
 		0.05f, 	-0.05f, 0.0f, // right
 	};
-	// float triangleColor[] = {
-	// 	0.5, 0.0, 0.0, 1.0,
-	// };
-	// float triangle_transform_4x4[4][4] = {
-	// 	{ 1.0f, 0.0f, 0.0f, 0.0f, }, // top
-	// 	{ 0.0f, 1.0f, 0.0f, 0.0f, },// left
-	// 	{ 0.0f, 0.0f, 1.0f, 0.0f, }, // right
-	// 	{ 0.0f, 0.0f, 1.0f, 0.0f, }, // right
-	// };
 
-	float triangle_transform[16] = {
-		 1.0f, 0.0f, 0.0f, 0.0f,  // top
-		 0.0f, 1.0f, 0.0f, 0.0f, // left
-		 0.0f, 0.0f, 1.0f, 0.0f,  // right
-		 0.0f, 0.0f, 0.0f, 1.0f,  // right
-	};
-	float triangleScale = 10.0f;
-	scale16Transform(triangle_transform, triangleScale, triangleScale, 1.0f);
-	translate16Transform(triangle_transform, 0.0f, 0.0f,  5.0f); // move triangle into simple projection area
-	
-	// float zf = ZF;
-	// float zn = ZN;
-	// float perspective_transform_simple[16] = {
-	// 	 ZN  , 0.0f, 0.0f, 0.0f,  // top
-	// 	 0.0f, ZN  , 0.0f, 0.0f, // left
-	// 	 0.0f, 0.0f, ZN/(ZF-ZN), 0.0f,  // right
-	// 	 0.0f, 0.0f, 0.0f, 1.0f,  // right
-	// };
-	float perspective_transform_simple[16] = {
-		 0.0f, 0.0f, 0.0f, 0.0f,  // top
-		 0.0f, 0.0f, 0.0f, 0.0f, // left
-		 0.0f, 0.0f, 0.0f, 0.0f,  // right
-		 0.0f, 0.0f, 0.0f, 0.0f,  // right
-	};
+
+	struct SimObject tri1;
+	tri1.vertices = triangle;
+	tri1.vertexCount = 3;
+	// tri1.translation = tri1.position_0;
+
+	simulation.simObject = tri1;
+
+	// printf("%f \n", *((tri1.vertices) + 1 ));
+	float triangleScale = 20.0f;
+	// struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
+	struct Point3 tri1InitialScale = {triangleScale, triangleScale, 1.0f};
+	struct Point3 tri1InitialPos = {X_0, Y_0, Z_0};
+
+	// SetRotationSimObject(&tri1, tri1InitialRotation);
+	SetScaleSimObject(&tri1, tri1InitialScale);
+	MoveSimObject(&tri1, tri1InitialPos); // move triangle into simple projection area
+
+
+
+
+
+	// VAO & VBOs
 
 	unsigned int ground_vao, ground_vbo;
 	glGenVertexArrays(1, &ground_vao);
@@ -277,18 +311,11 @@ int main()
 	unsigned int perspectiveLoc = glGetUniformLocation(shaderProgram, "perspective");
 	unsigned int colorLoc = glGetUniformLocation(shaderProgram, "vertexColor");
 
-	
-
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-
-	// glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
 	// GROUND
 	glBindVertexArray(ground_vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(ground_vertices), ground_vertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
@@ -305,28 +332,11 @@ int main()
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)(18 * sizeof(float)));
-	// glEnableVertexAttribArray(1);
-	// glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-
-	// remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
 
-	// uncomment this call to draw in wireframe polygons.
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-
-	// render loop
-	// -----------
+	// INITIAL CLOCK INFO
 	clock_t lastFrameTime = 0;
 	printf("CLOCKS_PER_SEC = %li \n", CLOCKS_PER_SEC);
 
@@ -336,12 +346,48 @@ int main()
 	printf("glfwTime2 = %f \n", glfwTime);
 	
 	time(&epoch_fps);
-	// time(&current_second_fps);
-	while (!glfwWindowShouldClose(window))
+
+
+	// render loop
+	// -----------
+	
+	while (!glfwWindowShouldClose(window)) 
 	{
 		// timespec_get( &waitForFrame , TIME_UTC);
 		// printf("%d\n ", waitForFrame.tv_nsec);
+
+
+
+		//
+		// SIMULATION
+		//
+
+		// Start Simulation
+		if(simulation.simState == startClickDetected){
+			simulation.simState = running;
+			printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", simulation.dtIndexMax);
+		}
+		// stop and reset if stopping condition is met
+		if (simulation.dtIndex >= simulation.dtIndexMax){
+			simulation.simState = idle;
+			simulation.dtIndex = 0;
+			SetPositionSimObject(&tri1, tri1.position_0);
+			printf("Simulation done. \n");
+		} 
 		
+
+		// Keep simulation running and check running condition
+		if(simulation.simState == running && simulation.dtIndex < simulation.dtIndexMax){
+			simulation.dtIndex++;
+			printf("%d  ", simulation.dtIndex);
+
+			setPositionAtT(&tri1, simulation.dtIndex*simulation.dt);
+			
+		}
+		
+
+
+
 
 		// input
 		// -----
@@ -349,15 +395,17 @@ int main()
 
 		// render
 		// ------
+		// glEnable(GL_DEPTH_TEST);  
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		
 
-		// draw our first triangle
+		// set program and perspective-matrix
 		glUseProgram(shaderProgram);
+		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, perspectiveMatrix16);
 
 		//
-		//
-		// ADDED BY ME
+		// FPS INFO
 		//
 
 		// time(&last_frame_fps);
@@ -372,32 +420,45 @@ int main()
 			secondCount = 0;
 		}
 
-		// moveVerticies(vertices, sizeof(float) * 12);
-		// moveVerticies(ground_v, sizeof(float) * 12);
  
+		// GROUND
 		glBindVertexArray(ground_vao);
-		translate16Transform(verticies_transform, 0.0f, -0.01f, 0.1f);
-		setSimplePerspective(verticies_transform, perspective_transform_simple);
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transposeToShader16(verticies_transform, transform_shader));
-		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, perspective_transform_simple);
+
+		// struct Point3 moveGround1 = {0.0f, -0.01f, 0.1f};
+		// MoveSimObject(&ground1, moveGround1);
+
+		SetSimObjectTranform(&ground1);
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ground1.transformMatrixRowMajor);
+		
 		glUniform4f(colorLoc, 0.0f, 0.5f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
 
+
+		 
+		// TRIANGLE
 		glBindVertexArray(triangle_vao);
-		translate16Transform(triangle_transform, 0.01f, 0.0f, 0.0f);
-		setSimplePerspective(triangle_transform, perspective_transform_simple);
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transposeToShader16(triangle_transform, transform_shader));
-		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, perspective_transform_simple);
+
+		// Dynamic movement 
+		// struct Point3 rotTri1 = {0.0f, 0.0f, 0.01f};
+		// RotationSimObject(&tri1, rotTri1);
+		// struct Point3 moveTri1 = {0.01f, 0.0f, 0.0f};
+		// MoveSimObject(&tri1, moveTri1);
+		
+		SetSimObjectTranform(&tri1);
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
+
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		glBindVertexArray(0); // no need to unbind it every time
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		// Keep track of time since last frame and wait to match the target frame rate
@@ -447,55 +508,3 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void moveVerticies(float *verticies, int vertexCount)
-{
-	for (int i = 0; i < vertexCount; i++)
-	{
-		verticies[i] = verticies[i] + 0.01;
-	}
-}
-
-void scale16Transform(float * transform16, float dx, float dy, float dz){
-	transform16[0]	*= dx;
-	transform16[5]	*= dy;
-	transform16[10]	*= dz;
-}
-
-void translate16Transform(float * transform16, float dx, float dy, float dz){
-	transform16[3] += dx;
-	transform16[7] += dy;
-	transform16[11] += dz;
-}
-
-void setSimplePerspective(float * transformMatrix, float * perspectiveMatrix){
-	// Original : sets all z-values to model center...
-	// perspectiveMatrix[0] = ZN / transformMatrix[11];
-	// perspectiveMatrix[5] = ZN / transformMatrix[11];
-	// perspectiveMatrix[10] = (ZN - transformMatrix[11]) / (ZF - ZN);
-
-	// Original : defined per drawing "minimal-projection.png", now with perspective dividing in mind
-	perspectiveMatrix[0] = ZN;
-	perspectiveMatrix[5] = ZN;
-	perspectiveMatrix[10] = -1.0f / (ZF - ZN);
-	perspectiveMatrix[11] = ZN / (ZF - ZN); 
-	perspectiveMatrix[14] = 1.0f; 
-
-	//http://www.songho.ca/opengl/gl_projectionmatrix.html
-	// perspectiveMatrix[0] = ZN;
-	// perspectiveMatrix[5] = ZN;
-	// perspectiveMatrix[10] = -(ZF + ZN) / (ZF - ZN); // NOT NEEDED??
-	// perspectiveMatrix[11] = 2*ZF*ZN / (ZF - ZN);
-	// perspectiveMatrix[14] = 1.0f; 
-}
-
-// 
-float *  transposeToShader16(float * transform16, float * transformShader16){
-
-	for(int c = 0; c < 4; c++){ // shader format column
-		for(int r = 0; r < 4; r++){ // 
-			transformShader16[c*4 + r] = transform16[r*4 + c];
-		}
-	}
-	return transformShader16;
-
-}
