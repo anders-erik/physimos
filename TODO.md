@@ -2,6 +2,13 @@
 
 ## 2024-08-16
 
+NEXT SESSION:
+- UI shader
+- dynamic simulation, not analytic form visualization
+- depth test
+- projection and view matrix
+
+
 TODAY:
 - o Refactor Simulation object manipulation
 - o Rotate object about z-axis
