@@ -1,11 +1,11 @@
 
 #define X_0 0.0f
 #define Y_0 -20.0f
-#define Z_0 50.0f
+#define Z_0 -50.0f
 
 #define U_0 5.0f
 #define V_0 30.0f
-#define W_0 0.0f
+#define W_0 -5.0f
 
 struct Point3 {
 	float x;

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-#include <time.h>
+#include <time.h> 
 #include <unistd.h>
 #include <string.h>
 
@@ -24,11 +24,18 @@
 
 
 
-const float perspectiveMatrix16[16] = {
+const float perspectiveMatrix16_[16] = {
 	ZN, 0, 0, 0,
 	0, ZN, 0, 0,
 	0, 0, -1.0f / (ZF - ZN), ZN / (ZF - ZN),
 	0, 0, 1.0f, 0,
+};
+// http://www.songho.ca/opengl/gl_projectionmatrix.html
+const float perspectiveMatrix16[16] = {
+	ZN, 0, 0, 0,
+	0, ZN, 0, 0,
+	0, 0, - (ZF + ZN) / (ZF - ZN), - 2 * ZN * ZF / (ZF - ZN),
+	0, 0, - 1.0f, 0,
 };
 
 enum SimState {
@@ -122,9 +129,14 @@ const char *vertexShaderSource = R"glsl(
 	uniform mat4 transform;
 	uniform mat4 perspective;
 
+	out vec4 grayscaleColor;
+
     void main()
     {
-        gl_Position = perspective * transform * vec4(position, 1.0);
+		vec4 clipCoordinates = perspective * transform * vec4(position, 1.0);
+		grayscaleColor = vec4( clipCoordinates.z / 100.0, clipCoordinates.z / 100.0,  clipCoordinates.z / 100.0, 1.0);
+
+        gl_Position = clipCoordinates;
     }
 )glsl";
 
@@ -134,9 +146,12 @@ const char *fragmentShaderSource = R"glsl(
     out vec4 FragColor;
 	uniform vec4 vertexColor; 
 
+	in vec4 grayscaleColor;
+
     void main()
     {
-        FragColor = vertexColor;
+		
+        FragColor = grayscaleColor;
     }
 )glsl";
 
@@ -174,6 +189,7 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	
 	//
 	// INPUT
 	//
@@ -181,13 +197,19 @@ int main()
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 
-	// glad: load all OpenGL function pointers
+	// glad: load all OpenGL function pointers  
 	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+ 
+
+	   
+
+	// glEnable(GL_DEPTH_TEST);
+	// glDepthFunc(GL_NEVER);
 
 	// build and compile our shader program
 	// ------------------------------------
@@ -233,6 +255,10 @@ int main()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+
+	// glEnable(GL_DEPTH_TEST);  
+
+
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	//
@@ -256,8 +282,8 @@ int main()
 	ground1.vertices = ground_vertices;
 	ground1.vertexCount = 6;
 	
-	float groundScale = 100.0f;
-	struct Point3 ground1InitialPos = {0.0f, -20.0f, 50.0f};
+	float groundScale = 10.0f;
+	struct Point3 ground1InitialPos = {10.0f, -20.0f, -35.0f};
 	struct Point3 ground1InitialScale = {groundScale, 1.0f, groundScale};
 
 	SetScaleSimObject(&ground1, ground1InitialScale);
@@ -274,7 +300,7 @@ int main()
 		-0.05f,	-0.05f, 0.0f, // left 
 		0.05f, 	-0.05f, 0.0f, // right
 	};
-
+ 
 
 	struct SimObject tri1;
 	tri1.vertices = triangle;
@@ -350,7 +376,9 @@ int main()
 
 	// render loop
 	// -----------
-	
+	// glDepthMask(GL_TRUE);
+	// glEnable(GL_DEPTH_TEST);
+	// glDepthFunc(GL_ALWAYS); // always passes test - i.e. no depth test done 
 	while (!glfwWindowShouldClose(window)) 
 	{
 		// timespec_get( &waitForFrame , TIME_UTC);
@@ -366,6 +394,14 @@ int main()
 		if(simulation.simState == startClickDetected){
 			simulation.simState = running;
 			printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", simulation.dtIndexMax);
+
+			// glEnable(GL_DEPTH_TEST);
+			// glDepthFunc(GL_LEQUAL); 
+
+			// glDepthMask(GL_TRUE);
+			// glEnable(GL_DEPTH_CLAMP);
+			// glDepthRange(0.1, 2.0);
+			// glClearDepth(1.0);
 		}
 		// stop and reset if stopping condition is met
 		if (simulation.dtIndex >= simulation.dtIndexMax){
@@ -373,6 +409,9 @@ int main()
 			simulation.dtIndex = 0;
 			SetPositionSimObject(&tri1, tri1.position_0);
 			printf("Simulation done. \n");
+
+			// glClear(GL_DEPTH_BUFFER_BIT);
+			// glDisable(GL_DEPTH_TEST);
 		} 
 		
 
@@ -382,7 +421,7 @@ int main()
 			printf("%d  ", simulation.dtIndex);
 
 			setPositionAtT(&tri1, simulation.dtIndex*simulation.dt);
-			
+			// glClear(GL_DEPTH_BUFFER_BIT);
 		}
 		
 
@@ -392,12 +431,17 @@ int main()
 		// input
 		// -----
 		processInput(window);
-
+ 
 		// render
 		// ------
 		// glEnable(GL_DEPTH_TEST);  
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		
+		
+
+		// glDepthMask(GL_TRUE);
 		
 
 		// set program and perspective-matrix
@@ -434,7 +478,7 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 
-
+		// glClear(GL_DEPTH_BUFFER_BIT);
 		 
 		// TRIANGLE
 		glBindVertexArray(triangle_vao);
@@ -445,18 +489,21 @@ int main()
 		// struct Point3 moveTri1 = {0.01f, 0.0f, 0.0f};
 		// MoveSimObject(&tri1, moveTri1);
 		
+		RotationSimObject(&tri1, {0.0f, 0.0f, -0.01f});
 		SetSimObjectTranform(&tri1);
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
 
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
+		// glClear(GL_DEPTH_BUFFER_BIT);
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
 		
 		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
