@@ -172,6 +172,9 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_DEPTH_BITS, 24);
+	
+	// glfwWindowHint(GLFW_DEPTH_BITS, GL_TRUE);
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -189,7 +192,7 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	
+
 	//
 	// INPUT
 	//
@@ -205,7 +208,10 @@ int main()
 		return -1;
 	}
  
+	std::cout << "ERROR ? :" << std::endl;
+	std::cout << glGetError() << std::endl;
 
+	
 	   
 
 	// glEnable(GL_DEPTH_TEST);
@@ -395,13 +401,17 @@ int main()
 			simulation.simState = running;
 			printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", simulation.dtIndexMax);
 
-			// glEnable(GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST);
+			// glClearDepth(1.0);
 			// glDepthFunc(GL_LEQUAL); 
-
+ 
 			// glDepthMask(GL_TRUE);
 			// glEnable(GL_DEPTH_CLAMP);
-			// glDepthRange(0.1, 2.0);
+			// glDepthRange(0.1, 1.0); 
 			// glClearDepth(1.0);
+
+			std::cout << "ERROR ? :" << std::endl;
+			std::cout << glGetError() << std::endl;
 		}
 		// stop and reset if stopping condition is met
 		if (simulation.dtIndex >= simulation.dtIndexMax){
@@ -421,10 +431,10 @@ int main()
 			printf("%d  ", simulation.dtIndex);
 
 			setPositionAtT(&tri1, simulation.dtIndex*simulation.dt);
-			// glClear(GL_DEPTH_BUFFER_BIT);
+			// glClear(GL_DEPTH_BUFFER_BIT); 
 		}
 		
-
+ 
 
 
 
@@ -505,8 +515,7 @@ int main()
 		glfwPollEvents();
 
 		
-		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
 		// Keep track of time since last frame and wait to match the target frame rate
 		clock_t currentTime = clock();
@@ -531,6 +540,7 @@ int main()
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
+	// glfwDestroyWindow(window)
 	glfwTerminate();
 	return 0;
 }
