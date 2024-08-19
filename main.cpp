@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+ 
 #include <iostream>
 #include <chrono>
 
@@ -12,12 +12,12 @@
 
 // settings
 #define ZF 100.0f // far plane
-#define ZN 1.0f // near plane
+#define ZN 1.0f // near plane 
 // Simulation constants
-#define T0 0.0
+#define T0 0.0 
 #define TF 10.0
-#define DT 0.1
-#define DT_COUNT (1 + (TF - T0) / DT )
+#define DT 0.1  
+#define DT_COUNT (1 + (TF - T0) / DT ) 
 #define DT_INDEX_MAX (TF - T0) / DT
 
 
@@ -25,8 +25,8 @@
 
 
 const float perspectiveMatrix16_[16] = {
-	ZN, 0, 0, 0,
-	0, ZN, 0, 0,
+	ZN, 0, 0, 0, 
+	0, ZN, 0, 0, 
 	0, 0, -1.0f / (ZF - ZN), ZN / (ZF - ZN),
 	0, 0, 1.0f, 0,
 };
@@ -163,26 +163,27 @@ int main()
 	// vertexFunc();
 
 	// segfault test
-	// int *nlptr = NULL;
+	// int *nlptr = NULL; 
 	// int a = *nlptr;
 	
 	// glfw: initialize and configure
 	// -----------------------------
 	glfwInit();
+	// glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_DEPTH_BITS, 24);
 	
 	// glfwWindowHint(GLFW_DEPTH_BITS, GL_TRUE);
-
+  
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
+ 
 	// glfw window creation
 	// --------------------
-	GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+	GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GLThrowSim", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -191,8 +192,8 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-
+ 
+ 
 	//
 	// INPUT
 	//

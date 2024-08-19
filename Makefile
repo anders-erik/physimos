@@ -1,8 +1,8 @@
 exe := glthrowsim
-.PRECIOUS: glthrowsim
+#.PRECIOUS: glthrowsim
 
 CXX := g++
-CXXFLAGS := -g -Wall -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+CXXFLAGS := -g -Wall -lglfw3  #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 
 INC   := -I./include
 LIB := -L./lib
@@ -12,12 +12,13 @@ SRCS := main.cpp glad.c
 
 $(exe): $(SRCS)
 	$(CXX) $(LIB) $(INC) $(SRCS) -o $(exe) $(CXXFLAGS)
+#	./$(exe)
+
+
+
+.PHONY: run
+run: $(exe)
 	./$(exe)
-
-
-# .PHONY: run
-# run: $(exe)
-# 	./$(exe)
 
 
 # OLD VERSION
