@@ -41,25 +41,6 @@ const float perspectiveMatrix16[16] = {
 
 
 
-
-
-// struct Simulation {
-// 	SimState simState = idle;
-// 	double t0 = T0;
-// 	double tf = TF;
-// 	double dt = DT;
-// 	int dtCount = (int) DT_COUNT;
-// 	int dtIndex = 0;
-// 	int dtIndexMax = DT_INDEX_MAX;
-// 	SimObject simObject;
-// } simulation;
-
-// 	perspectiveMatrix[0] = ZN;
-// 	perspectiveMatrix[5] = ZN;
-// 	perspectiveMatrix[10] = -1.0f / (ZF - ZN);
-// 	perspectiveMatrix[11] = ZN / (ZF - ZN); 
-// 	perspectiveMatrix[14] = 1.0f; 
-
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
@@ -80,11 +61,8 @@ struct timespec waitForFrame = {0, 0L}; // nanoseconds of added wait between eac
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
-// void moveVerticies(float *verticies, int vertexCount);
-// void scale16Transform(float * transform16, float dx, float dy, float dz);
-// void setSimplePerspective(float * transformMatrix, float * perspectiveMatrix);
-// void translate16Transform(float * transform16, float dx, float dy, float dz);
-// float *  transposeToShader16(float * transform16, float * transformShader16);
+
+
 
 // INPUT
 struct Input {
@@ -215,7 +193,7 @@ int main()
 	ground1.vertices = ground_vertices;
 	ground1.vertexCount = 6;
 	
-	float groundScale = 30.0f;
+	float groundScale = 100.0f;
 	struct Point3 ground1InitialPos = {10.0f, -20.0f, -60.0f};
 	struct Point3 ground1InitialScale = {groundScale, 1.0f, groundScale};
 
@@ -231,7 +209,7 @@ int main()
 		0.0f,	 0.05f, 0.0f, // top
 		-0.05f,	-0.05f, 0.0f, // left 
 		0.05f, 	-0.05f, 0.0f, // right
-	};
+	}; 
  
 
 	struct SimObject tri1;
@@ -239,13 +217,17 @@ int main()
 	tri1.vertexCount = 3;
 	// tri1.translation = tri1.position_0;
 
-	simulation.simObject = tri1;
+	simulation.simObject = &tri1;
 
 	// printf("%f \n", *((tri1.vertices) + 1 ));
 	float triangleScale = 20.0f;
+
 	// struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
 	struct Point3 tri1InitialScale = {triangleScale, triangleScale, 1.0f};
-	struct Point3 tri1InitialPos = {X_0, Y_0, Z_0};
+	struct Point3 tri1InitialPos = {0.0f, 0.0f, -90.0f};
+	struct Point3 tri1InitialVel = {0.2f, 40.0f, 2.0f};
+	tri1.position_0 = tri1InitialPos;
+	tri1.velocity_0 = tri1InitialVel;
 
 	// SetRotationSimObject(&tri1, tri1InitialRotation);
 	SetScaleSimObject(&tri1, tri1InitialScale);
@@ -330,6 +312,11 @@ int main()
 			simulation.simState = running;
 			printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", simulation.dtIndexMax);
 
+			simulation.simObject = &tri1;
+
+			simulation.simObject->translationPrevStep = simulation.simObject->position_0;
+			simulation.simObject->velocityPrevStep = simulation.simObject->velocity_0;
+
 			glEnable(GL_DEPTH_TEST);
 			// glClearDepth(1.0);
 			// glDepthFunc(GL_LEQUAL); 
@@ -339,27 +326,35 @@ int main()
 			// glDepthRange(0.1, 1.0); 
 			// glClearDepth(1.0);
 
-			std::cout << "ERROR ? :" << std::endl;
-			std::cout << glGetError() << std::endl;
 		}
 		// stop and reset if stopping condition is met
 		if (simulation.dtIndex >= simulation.dtIndexMax){
 			simulation.simState = SimState::idle;
-			simulation.dtIndex = 0;
+			simulation.dtIndex = 0; 
 			SetPositionSimObject(&tri1, tri1.position_0);
 			printf("Simulation done. \n");
 
 			// glClear(GL_DEPTH_BUFFER_BIT);
-			// glDisable(GL_DEPTH_TEST);
+			// glDisable(GL_DEPTH_TEST); 
 		} 
 		
 
 		// Keep simulation running and check running condition
 		if(simulation.simState == SimState::running && simulation.dtIndex < simulation.dtIndexMax){
+			
 			simulation.dtIndex++;
-			printf("%d ", simulation.dtIndex);
+			
+			updatePosAndVel(simulation.simObject, (float)simulation.dt);
+			
 
-			simulation.setPositionAtT(&tri1, simulation.dtIndex*simulation.dt); 
+			// printf("%f \n", simulation.simObject->translation.y);
+
+
+			// printf("%d ", simulation.dtIndex);
+
+			// Run next time step
+
+			// simulation.setPositionAtT(&tri1, simulation.dtIndex*simulation.dt); 
 		}
 		
  
@@ -427,9 +422,11 @@ int main()
 		// struct Point3 moveTri1 = {0.01f, 0.0f, 0.0f};
 		// MoveSimObject(&tri1, moveTri1);
 		
-		RotationSimObject(&tri1, {0.0f, 0.0f, -0.01f});
-		SetSimObjectTranform(&tri1);
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
+		// RotationSimObject(&tri1, {0.0f, 0.0f, -0.01f});
+		// SetSimObjectTranform(&tri1);
+		SetSimObjectTranform(simulation.simObject);
+		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, simulation.simObject->transformMatrixRowMajor);
 
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 3);

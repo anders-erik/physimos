@@ -2,14 +2,20 @@
 
 ## 2024-08-20
 
-### Before Next Stream:
+### Things to do Before/During Next Stream:
 - setup intuitive global/inertial coordinates system/ref. frame (right handed, z=up)
+- implement minimal euler angles on objects to enable rotations
+- camera + some pan/rotate
 - simple vertex loader from file
+- UI
+	- specify size and location of element in pixel-units
+	- render text
 - collision detection
+
 
 ### TODAY
 - o shader-program class/objects - one button UI
-- dynamic simulation, not analytic form visualization
+- o dynamic simulation, not precalculated closed form
 
 
 ### Since last episode
