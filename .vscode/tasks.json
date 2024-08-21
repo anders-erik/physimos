@@ -33,6 +33,20 @@
                 "reveal": "always",
                 "panel": "shared"
             }
+        },
+        {
+            "type": "shell",
+            "label": "gdb",
+            "command": "gdb ${workspaceFolder}/glthrowsim ",
+            "options": {},
+            "group": "build",
+            "detail": "debugger: /usr/bin/gdb",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+                "focus": true
+            }
         }
     ]
 }

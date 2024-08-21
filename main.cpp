@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "vertex.hpp"
+#include "shader.hpp"
 
 // settings
 #define ZF 100.0f // far plane
@@ -21,8 +22,10 @@
 #define DT_INDEX_MAX (TF - T0) / DT
 
 
-
-
+/* 
+	File Functions
+*/
+void renderUI();
 
 const float perspectiveMatrix16_[16] = {
 	ZN, 0, 0, 0, 
@@ -157,8 +160,8 @@ const char *fragmentShaderSource = R"glsl(
 
 int main() 
 {
-	printf("Length of Vshader: %lu \n", strlen(vertexShaderSource));
-	printf("Length of Fshader: %lu \n", strlen(fragmentShaderSource));
+	// printf("Length of Vshader: %lu \n", strlen(vertexShaderSource));
+	// printf("Length of Fshader: %lu \n", strlen(fragmentShaderSource));
 
 	// vertexFunc();
 
@@ -209,69 +212,24 @@ int main()
 		return -1;
 	}
  
-	std::cout << "ERROR ? :" << std::endl;
-	std::cout << glGetError() << std::endl;
+	// std::cout << "ERROR ? :" << std::endl;
+	// std::cout << glGetError() << std::endl;
 
 	
-	   
-
-	// glEnable(GL_DEPTH_TEST);
-	// glDepthFunc(GL_NEVER);
-
-	// build and compile our shader program
-	// ------------------------------------
-	// vertex shader
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	// check for shader compile errors
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-				  << infoLog << std::endl;
-	}
-	// fragment shader
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	// check for shader compile errors
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-				  << infoLog << std::endl;
-	}
-	// link shaders
-	unsigned int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	// check for linking errors
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
-				  << infoLog << std::endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	// build and compile our shader zprogram
+    // ------------------------------------
+    Shader worldShader("vShader.vs", "fShader.fs");
+	
+	Shader uiShader("ui.vs", "ui.fs");
 
 
-	// glEnable(GL_DEPTH_TEST);  
 
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	//
 	//		VERTEX DATA
-	//
-	
+	//	
 	
 	//
 	// GROUND
@@ -289,8 +247,8 @@ int main()
 	ground1.vertices = ground_vertices;
 	ground1.vertexCount = 6;
 	
-	float groundScale = 10.0f;
-	struct Point3 ground1InitialPos = {10.0f, -20.0f, -35.0f};
+	float groundScale = 30.0f;
+	struct Point3 ground1InitialPos = {10.0f, -20.0f, -60.0f};
 	struct Point3 ground1InitialScale = {groundScale, 1.0f, groundScale};
 
 	SetScaleSimObject(&ground1, ground1InitialScale);
@@ -340,9 +298,9 @@ int main()
 	glGenVertexArrays(1, &triangle_vao);
 	glGenBuffers(1, &triangle_vbo);
 
-	unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-	unsigned int perspectiveLoc = glGetUniformLocation(shaderProgram, "perspective");
-	unsigned int colorLoc = glGetUniformLocation(shaderProgram, "vertexColor");
+	unsigned int transformLoc = glGetUniformLocation(worldShader.ID, "transform");
+	unsigned int perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
+	unsigned int colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
 
 	// GROUND
 	glBindVertexArray(ground_vao);
@@ -456,7 +414,7 @@ int main()
 		
 
 		// set program and perspective-matrix
-		glUseProgram(shaderProgram);
+		glUseProgram(worldShader.ID);
 		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, perspectiveMatrix16);
 
 		//
@@ -509,6 +467,11 @@ int main()
 
 		// glClear(GL_DEPTH_BUFFER_BIT);
 
+		/* 
+			Render UI
+		*/
+		glUseProgram(uiShader.ID);
+		renderUI();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
@@ -537,7 +500,7 @@ int main()
 	glDeleteVertexArrays(1, &ground_vao);
 	glDeleteBuffers(1, &ground_vbo);
 
-	glDeleteProgram(shaderProgram);
+	glDeleteProgram(worldShader.ID);
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
@@ -566,3 +529,47 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+
+
+// renderCube() renders a 1x1 3D cube in NDC.
+// -------------------------------------------------
+unsigned int uiVAO = 0;
+unsigned int uiVBO = 0;
+void renderUI()
+{
+    // initialize (if necessary)
+    if (uiVAO == 0)
+    {
+        float vertices[] = {
+            // back face
+            0.7f, 0.7f, -0.9f,  0.0f,  0.0f, 0.2f, // bottom-left
+            1.0f,  1.0f, -0.9f,  0.0f,  0.0f, 0.2f, // top-right
+            1.0f, 0.7f, -0.9f,  0.0f,  0.0f, 0.2f, // bottom-right         
+            1.0f,  1.0f, -0.9f,  0.0f,  0.0f, 0.2f, // top-right
+            0.7f, 0.7f, -0.9f,  0.0f,  0.0f, 0.2f, // bottom-left
+            0.7f,  1.0f, -0.9f,  0.0f,  0.0f, 0.2f,  // top-left
+
+			// Play triangle
+			0.8f, 0.9f, -1.0f,  0.0f,  1.0f, 0.0f, // top-left
+            0.8f,  0.8f, -1.0f,  0.0f,  1.0f, 0.0f, // botton-left
+            0.9f, 0.85f, -1.0f,  0.0f,  1.0f, 0.0f, // middle-right
+        };
+        glGenVertexArrays(1, &uiVAO);
+        glGenBuffers(1, &uiVBO);
+        // fill buffer
+        glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        // link vertex attributes
+        glBindVertexArray(uiVAO);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+    // render Cube
+    glBindVertexArray(uiVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 9);
+    glBindVertexArray(0);
+}

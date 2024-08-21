@@ -1,5 +1,26 @@
 
 
+## 2024-08-20
+
+### Before Next Stream:
+- setup intuitive global/inertial coordinates system/ref. frame (right handed, z=up)
+- simple vertex loader from file
+- collision detection
+
+### TODAY
+- shader-program class/objects - one button UI
+- dynamic simulation, not analytic form visualization
+
+
+### Since last episode
+- Moved from WSL to Ubuntu
+	- That made the depth test work
+	- window decoratations
+- grayscale coloring based on clip-space z-value
+
+
+<br> <br>
+
 ## 2024-08-16
 
 NEXT SESSION:
