@@ -1,34 +1,6 @@
 
-#define X_0 0.0f
-#define Y_0 -20.0f
-#define Z_0 -50.0f
-
-#define U_0 5.0f
-#define V_0 30.0f
-#define W_0 -5.0f
-
-struct Point3 {
-	float x;
-	float y;
-	float z;
-};
 
 
-
-struct SimObject {
-	float * vertices;
-	int vertexCount;
-	Point3 rotation = {0.0f, 0.0f, 0.0f};
-	Point3 scale = {1.0f, 1.0f, 1.0f};
-	Point3 translation = {0.0f, 0.0f, 0.0f};
-	float transformMatrixRowMajor[16] = {0};
-	
-	Point3 position_0 = {X_0, Y_0, Z_0};
-	Point3 velocity_0 = {U_0, V_0, W_0};
-};
-
-// Simulation methods
-void setPositionAtT(SimObject * simObject, double t);
 
 // Simulation Object methods
 void RotationSimObject(struct SimObject * simObject, Point3 rotationVector);
@@ -44,13 +16,7 @@ void SetSimObjectTranform(struct SimObject * simObject);
 #include <cmath>
 
 
-// Simulation
 
-void setPositionAtT(SimObject * simObj, double t){
-	simObj->translation.x = simObj->position_0.x + simObj->velocity_0.x * t;
-	simObj->translation.y = simObj->position_0.y + simObj->velocity_0.y * t + 0.5 * (-9.8) * t * t;
-	simObj->translation.z = simObj->position_0.z + simObj->velocity_0.z * t;
-}
 
 
 // Simulation Object

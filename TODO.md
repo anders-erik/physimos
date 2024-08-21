@@ -8,7 +8,7 @@
 - collision detection
 
 ### TODAY
-- shader-program class/objects - one button UI
+- o shader-program class/objects - one button UI
 - dynamic simulation, not analytic form visualization
 
 

@@ -8,19 +8,16 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "Simulation.hpp"
 #include "vertex.hpp"
 #include "shader.hpp"
 
 // settings
 #define ZF 100.0f // far plane
 #define ZN 1.0f // near plane 
-// Simulation constants
-#define T0 0.0 
-#define TF 10.0
-#define DT 0.1  
-#define DT_COUNT (1 + (TF - T0) / DT ) 
-#define DT_INDEX_MAX (TF - T0) / DT
 
+
+Simulation simulation;
 
 /* 
 	File Functions
@@ -41,24 +38,21 @@ const float perspectiveMatrix16[16] = {
 	0, 0, - 1.0f, 0,
 };
 
-enum SimState {
-	idle = 0,
-	startClickDetected = 1,
-	running = 2
-};
 
 
 
-struct Simulation {
-	SimState simState = idle;
-	double t0 = T0;
-	double tf = TF;
-	double dt = DT;
-	int dtCount = (int) DT_COUNT;
-	int dtIndex = 0;
-	int dtIndexMax = DT_INDEX_MAX;
-	SimObject simObject;
-} simulation;
+
+
+// struct Simulation {
+// 	SimState simState = idle;
+// 	double t0 = T0;
+// 	double tf = TF;
+// 	double dt = DT;
+// 	int dtCount = (int) DT_COUNT;
+// 	int dtIndex = 0;
+// 	int dtIndexMax = DT_INDEX_MAX;
+// 	SimObject simObject;
+// } simulation;
 
 // 	perspectiveMatrix[0] = ZN;
 // 	perspectiveMatrix[5] = ZN;
@@ -105,9 +99,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
         printf("Click! -- %f , %f \n", xpos, ypos);
-		if(simulation.simState == idle && ypos < 100.0 && xpos > 700.0){
+		// printf("simstate: %d \n", SimState::idle);
+		if(simulation.simState == SimState::idle && ypos < 100.0 && xpos > 700.0){
 			printf("Start Simulation button clicked! \n");
-			simulation.simState = startClickDetected;
+			simulation.simState = SimState::startClickDetected;
 		}
 	}
 }
@@ -117,46 +112,11 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 }
  
 
-// SIMULATION
 
 
 
 
 
-
-
-const char *vertexShaderSource = R"glsl(
-    #version 330 core
-    layout(location = 0) in vec3 position;
-
-	uniform mat4 transform;
-	uniform mat4 perspective;
-
-	out vec4 grayscaleColor;
-
-    void main()
-    {
-		vec4 clipCoordinates = perspective * transform * vec4(position, 1.0);
-		grayscaleColor = vec4( clipCoordinates.z / 100.0, clipCoordinates.z / 100.0,  clipCoordinates.z / 100.0, 1.0);
-
-        gl_Position = clipCoordinates;
-    }
-)glsl";
-
-const char *fragmentShaderSource = R"glsl(
-    #version 330 core 
-
-    out vec4 FragColor;
-	uniform vec4 vertexColor; 
-
-	in vec4 grayscaleColor;
-
-    void main()
-    {
-		
-        FragColor = grayscaleColor;
-    }
-)glsl";
 
 int main() 
 {
@@ -224,6 +184,14 @@ int main()
 
 
 
+	/* 
+		SIMULATION SETUP
+	*/
+	// Creates a new instance of simulation, leading to some defined pointers to break
+	// Simulation simulation = Simulation();
+
+
+
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -253,7 +221,6 @@ int main()
 
 	SetScaleSimObject(&ground1, ground1InitialScale);
 	MoveSimObject(&ground1, ground1InitialPos); // move triangle into simple projection area
-
 
 
 
@@ -339,6 +306,8 @@ int main()
 	time(&epoch_fps);
 
 
+
+
 	// render loop
 	// -----------
 	// glDepthMask(GL_TRUE);
@@ -356,7 +325,8 @@ int main()
 		//
 
 		// Start Simulation
-		if(simulation.simState == startClickDetected){
+		// printf("simstate: %d \n", simulation.simState);
+		if(simulation.simState == SimState::startClickDetected){
 			simulation.simState = running;
 			printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", simulation.dtIndexMax);
 
@@ -374,7 +344,7 @@ int main()
 		}
 		// stop and reset if stopping condition is met
 		if (simulation.dtIndex >= simulation.dtIndexMax){
-			simulation.simState = idle;
+			simulation.simState = SimState::idle;
 			simulation.dtIndex = 0;
 			SetPositionSimObject(&tri1, tri1.position_0);
 			printf("Simulation done. \n");
@@ -385,12 +355,11 @@ int main()
 		
 
 		// Keep simulation running and check running condition
-		if(simulation.simState == running && simulation.dtIndex < simulation.dtIndexMax){
+		if(simulation.simState == SimState::running && simulation.dtIndex < simulation.dtIndexMax){
 			simulation.dtIndex++;
-			printf("%d  ", simulation.dtIndex);
+			printf("%d ", simulation.dtIndex);
 
-			setPositionAtT(&tri1, simulation.dtIndex*simulation.dt);
-			// glClear(GL_DEPTH_BUFFER_BIT); 
+			simulation.setPositionAtT(&tri1, simulation.dtIndex*simulation.dt); 
 		}
 		
  
