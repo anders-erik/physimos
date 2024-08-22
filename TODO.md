@@ -1,6 +1,13 @@
 
 
-## 2024-08-20
+## 2024-08-23
+
+
+## Since last time
+- Added python notebooks for transformation visualizations
+
+
+## 2024-08-21
 
 ### Things to do Before/During Next Stream:
 - setup intuitive global/inertial coordinates system/ref. frame (right handed, z=up)
