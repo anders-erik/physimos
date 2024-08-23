@@ -204,13 +204,13 @@ int main()
 	// };
 	float ground_vertices[] = {
 		// bottom left triangle
-		1.0f, 1.0f, 0.0f, // top left
-		-1.0f, 1.0f, 0.0f,	 // bottom left
-		-1.0f, -1.0f, 0.0f,	 // botton right
+		1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	 // top left
+		-1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 0.0f,	 // bottom left
+		-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,	 // botton right
 		// top right triangle
-		1.0f, -1.0f, 0.0f,	 // top right
-		1.0f, 1.0f, 0.0f, // top left
-		-1.0f, -1.0f, 0.0f,	 // bottom right
+		1.0f, -1.0f, 0.0f, 	1.0f, 0.0f, 0.0f,	 // top right
+		1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	 // top left
+		-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,	 // bottom right
 	};
 
 	// y - z plane
@@ -249,9 +249,9 @@ int main()
 
 	// y-z 
 	float triangle[] = {
-		0.0f,	 0.0f, 0.05f, // top
-		0.0f,	0.05f, -0.05f, // left 
-		0.0f, 	-0.05f, -0.05f, // right
+		0.0f, 0.0f, 0.05f, 		0.0f, 1.0f, 0.0f, // top
+		0.0f, 0.05f, -0.05f, 	0.0f, 1.0f, 0.0f, // left 
+		0.0f, -0.05f, -0.05f, 	0.0f, 1.0f, 0.0f, // right
 	}; 
  
 
@@ -279,6 +279,86 @@ int main()
 
 
 
+	//
+	// CUBE
+	//
+	// y-z 
+	float cube1_vertices[] = {
+		// look + x for correct face reckoing
+		// Front face
+		-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
+		-1.0f, 1.0f, -1.0f, 	0.0f, 0.0f, 1.0f, // botton left
+		-1.0f, -1.0f, -1.0f,	0.0f, 0.0f, 1.0f, // bottom right
+
+		-1.0f, -1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top right
+		-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
+		-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, // bottom right
+		// Back Face
+		1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
+		1.0f, 1.0f, -1.0f, 	1.0f, 0.0f, 1.0f, // botton left
+		1.0f, -1.0f, -1.0f,	1.0f, 0.0f, 1.0f, // bottom right
+
+		1.0f, -1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top right
+		1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
+		1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 1.0f, // bottom right
+
+		// Right Face - 							look +y
+		-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
+		-1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // botton left
+		 1.0f, -1.0f, -1.0f,	0.0f, 1.0f, 1.0f, // bottom right
+
+		 1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top right
+		-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
+		 1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // bottom right
+		 // Left Face - 							look +y
+		-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
+		-1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // botton left
+		 1.0f, 1.0f, -1.0f,		1.0f, 1.0f, 0.0f, // bottom right
+
+		 1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top right
+		-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
+		 1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // bottom right
+
+		 // Bottom Face - 							look +z, +x i right, -y top
+		-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
+		-1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // botton left
+		 1.0f,  1.0f, -1.0f,	0.0f, 0.5f, 1.0f, // bottom right
+
+		 1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top right
+		-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
+		 1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // bottom right
+
+		 // Bottom Face - 							look +z, +x i right, -y top
+		-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
+		-1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // botton left
+		 1.0f,  1.0f,  1.0f,	1.0f, 0.5f, 0.0f, // bottom right
+
+		 1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top right
+		-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
+		 1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // bottom right
+	}; 
+ 
+
+	struct SimObject cube1;
+	cube1.vertices = triangle;
+	cube1.vertexCount = 36;
+
+	float cube1Scale = 1.0f;
+
+	// struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
+	struct Point3 cube1InitialScale = {1.0f, cube1Scale, cube1Scale};
+	struct Point3 cube1InitialPos = {15.0f, 0.0f, -10.0f};
+	// struct Point3 cube1InitialVel = {-1.0f, 0.1f, 25.0f};
+	tri1.position_0 = tri1InitialPos;
+	tri1.velocity_0 = tri1InitialVel;
+
+	// SetRotationSimObject(&tri1, tri1InitialRotation);
+	SetScaleSimObject(&cube1, cube1InitialScale);
+	MoveSimObject(&cube1, cube1InitialPos); // move triangle into simple projection area
+
+
+
+
 
 	// VAO & VBOs
 
@@ -286,9 +366,6 @@ int main()
 	glGenVertexArrays(1, &ground_vao);
 	glGenBuffers(1, &ground_vbo);
 
-	unsigned int triangle_vao, triangle_vbo;
-	glGenVertexArrays(1, &triangle_vao);
-	glGenBuffers(1, &triangle_vbo);
 
 	unsigned int transformLoc = glGetUniformLocation(worldShader.ID, "transform");
 	unsigned int viewLoc = glGetUniformLocation(worldShader.ID, "view");
@@ -301,19 +378,50 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(ground_vertices), ground_vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// TRIANGLE
+
+	unsigned int triangle_vao, triangle_vbo;
+	glGenVertexArrays(1, &triangle_vao);
+	glGenBuffers(1, &triangle_vbo);
 
 	glBindVertexArray(triangle_vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, triangle_vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+	// CUBE 1
+	unsigned int cube1_vao, cube1_vbo;
+	glGenVertexArrays(1, &cube1_vao);
+	glGenBuffers(1, &cube1_vbo);
+	
+	glBindVertexArray(cube1_vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, cube1_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube1_vertices), cube1_vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
@@ -392,7 +500,7 @@ int main()
 			updatePosAndVel(simulation.simObject, (float)simulation.dt);
 			
 
-			printf("%f \n", simulation.simObject->translation.z);
+			// printf("%f \n", simulation.simObject->translation.z);
 
 
 			// printf("%d ", simulation.dtIndex);
@@ -468,7 +576,7 @@ int main()
 		// struct Point3 moveTri1 = {0.01f, 0.0f, 0.0f};
 		// MoveSimObject(&tri1, moveTri1);
 		
-		// RotationSimObject(&tri1, {0.0f, 0.0f, -0.01f});
+		// RotationSimObject(simulation.simObject, {0.0f, 0.0f, -0.01f});
 		// SetSimObjectTranform(&tri1);
 		SetSimObjectTranform(simulation.simObject);
 		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
@@ -478,7 +586,18 @@ int main()
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		// glClear(GL_DEPTH_BUFFER_BIT);
+		
+		// CUBE 1
+		glBindVertexArray(cube1_vao);
+
+		RotationSimObject(&cube1, {0.0f, 0.0f, -0.03f});
+		SetSimObjectTranform(&cube1);
+
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, cube1.transformMatrixRowMajor);
+		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
+
+		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		/* 
 			Render UI

@@ -3,10 +3,10 @@
 out vec4 FragColor;
 uniform vec4 vertexColor; 
 
-in vec4 grayscaleColor;
+in vec4 colorOut;
 
 void main()
 {
     
-    FragColor = grayscaleColor;
+    FragColor = colorOut;
 }

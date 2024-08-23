@@ -3,10 +3,10 @@
 ## 2024-08-23
 
 ### TODAY
-- coordinate system - z is up
-- add 3d cube
+- o : coordinate system - z is up - camera facing +x
+- o : add 3d cube
 - implement euler angles 
-- specify size and location of ui element in puxel units
+- specify size and location of ui element in pixel units
 
 
 ### Since last time
