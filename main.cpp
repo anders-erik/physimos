@@ -204,13 +204,13 @@ int main()
 	// };
 	float ground_vertices[] = {
 		// bottom left triangle
-		1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	 // top left
-		-1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 0.0f,	 // bottom left
-		-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,	 // botton right
+		1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
+		-1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // bottom left
+		-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // botton right
 		// top right triangle
-		1.0f, -1.0f, 0.0f, 	1.0f, 0.0f, 0.0f,	 // top right
-		1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	 // top left
-		-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,	 // bottom right
+		1.0f, -1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // top right
+		1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
+		-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // bottom right
 	};
 
 	// y - z plane
@@ -267,8 +267,8 @@ int main()
 
 	// struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
 	struct Point3 tri1InitialScale = {1.0f, triangleScale, triangleScale};
-	struct Point3 tri1InitialPos = {45.0f, 10.0f, -0.0f};
-	struct Point3 tri1InitialVel = {-1.0f, 0.1f, 25.0f};
+	struct Point3 tri1InitialPos = {45.0f, 30.0f, -0.0f};
+	struct Point3 tri1InitialVel = {-1.0f, -0.5f, 25.0f};
 	tri1.position_0 = tri1InitialPos;
 	tri1.velocity_0 = tri1InitialVel;
 
@@ -345,14 +345,15 @@ int main()
 
 	float cube1Scale = 1.0f;
 
-	// struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
+	// struct Point3 tri1InitialRotation = {3.14f / 4 , 0.0f, 0.0f};
 	struct Point3 cube1InitialScale = {1.0f, cube1Scale, cube1Scale};
-	struct Point3 cube1InitialPos = {15.0f, 0.0f, -10.0f};
+	struct Point3 cube1InitialPos = {5.0f, 0.0f, 0.0f};
 	// struct Point3 cube1InitialVel = {-1.0f, 0.1f, 25.0f};
+	struct Point3 cube1InitialRotation = {0.0f, 0.0f, 0.75f};
 	tri1.position_0 = tri1InitialPos;
 	tri1.velocity_0 = tri1InitialVel;
 
-	// SetRotationSimObject(&tri1, tri1InitialRotation);
+	SetRotationSimObject(&cube1, cube1InitialRotation);
 	SetScaleSimObject(&cube1, cube1InitialScale);
 	MoveSimObject(&cube1, cube1InitialPos); // move triangle into simple projection area
 
@@ -590,7 +591,7 @@ int main()
 		// CUBE 1
 		glBindVertexArray(cube1_vao);
 
-		RotationSimObject(&cube1, {0.0f, 0.0f, -0.03f});
+		RotationSimObject(&cube1, {0.03f, 0.01f, 0.0f});
 		SetSimObjectTranform(&cube1);
 
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, cube1.transformMatrixRowMajor);

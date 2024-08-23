@@ -2,10 +2,20 @@
 
 ## 2024-08-23
 
+### Comming up
+- test and upgrade euler angle rotation
+- camera + some pan/rotate
+- simple vertex loader from file
+- UI
+	- specify size and location of element in pixel-units
+	- render text
+- collision detection
+
+
 ### TODAY
 - o : coordinate system - z is up - camera facing +x
 - o : add 3d cube
-- implement euler angles 
+- o : implement euler angles 
 - specify size and location of ui element in pixel units
 
 
