@@ -39,6 +39,19 @@ const float perspectiveMatrix16[16] = {
 };
 
 
+const float viewMatrix16[16] = {
+	0, -1, 0, 0,
+	0, 0, 1, 0,
+	-1, 0, 0, 0,
+	0, 0, 0, 1,
+};
+
+// Matrix mToggle_YZ = new Matrix(
+// {1, 0, 0, 0}
+// {0, 0, 1, 0}
+// {0, 1, 0, 0}
+// {0, 0, 0, 1})
+
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -156,7 +169,7 @@ int main()
 	
 	// build and compile our shader zprogram
     // ------------------------------------
-    Shader worldShader("vShader.vs", "fShader.fs");
+    Shader worldShader("shader.vs", "shader.fs");
 	
 	Shader uiShader("ui.vs", "ui.fs");
 
@@ -180,22 +193,43 @@ int main()
 	//
 	// GROUND
 	//
+	// x-y - vieved from above - x right, y up
+	// float ground_vertices[] = {
+	// 	-1.0f, 1.0f, 0.0f, // top left
+	// 	-1.0f, -1.0f, 0.0f,	 // bottom left
+	// 	1.0f, -1.0f, 0.0f,	 // botton right
+	// 	1.0f, 1.0f, 0.0f,	 // top right
+	// 	1.0f, -1.0f, 0.0f,	 // bottom right
+	// 	-1.0f, 1.0f, 0.0f, // top left
+	// };
 	float ground_vertices[] = {
-		-1.0f, 0.0f, 1.0f, // far left 
-		-1.0f, 0.0f, -1.0f,	 // near left
-		1.0f, 0.0f, -1.0f,	 // near right
-		1.0f, 0.0f, 1.0f,	 // far right
-		1.0f, 0.0f, -1.0f,	 // near right
-		-1.0f, 0.0f, 1.0f, // far left
+		// bottom left triangle
+		1.0f, 1.0f, 0.0f, // top left
+		-1.0f, 1.0f, 0.0f,	 // bottom left
+		-1.0f, -1.0f, 0.0f,	 // botton right
+		// top right triangle
+		1.0f, -1.0f, 0.0f,	 // top right
+		1.0f, 1.0f, 0.0f, // top left
+		-1.0f, -1.0f, 0.0f,	 // bottom right
 	};
-	
+
+	// y - z plane
+	// float ground_vertices[] = {
+	// 	-1.0f, 0.0f, 1.0f, // top left
+	// 	-1.0f, 0.0f, -1.0f,	 // bottom left
+	// 	1.0f, 0.0f, -1.0f,	 // botton right
+	// 	1.0f, 0.0f, 1.0f,	 // top right
+	// 	1.0f, 0.0f, -1.0f,	 // bottom right
+	// 	-1.0f, 0.0f, 1.0f, // top left
+	// };
+
 	struct SimObject ground1;
 	ground1.vertices = ground_vertices;
 	ground1.vertexCount = 6;
 	
-	float groundScale = 100.0f;
-	struct Point3 ground1InitialPos = {10.0f, -20.0f, -60.0f};
-	struct Point3 ground1InitialScale = {groundScale, 1.0f, groundScale};
+	float groundScale = 50.0f;
+	struct Point3 ground1InitialPos = {50.0f, 0.0f, -20.0f};
+	struct Point3 ground1InitialScale = {groundScale, groundScale, 1.0f};
 
 	SetScaleSimObject(&ground1, ground1InitialScale);
 	MoveSimObject(&ground1, ground1InitialPos); // move triangle into simple projection area
@@ -205,10 +239,19 @@ int main()
 	//
 	// TRIANGLE / OBJECT TO BE THROWN
 	//
+
+	//	x-y
+	// float triangle[] = {
+	// 	0.0f,	 0.05f, 0.0f, // top
+	// 	-0.05f,	-0.05f, 0.0f, // left 
+	// 	0.05f, 	-0.05f, 0.0f, // right
+	// }; 
+
+	// y-z 
 	float triangle[] = {
-		0.0f,	 0.05f, 0.0f, // top
-		-0.05f,	-0.05f, 0.0f, // left 
-		0.05f, 	-0.05f, 0.0f, // right
+		0.0f,	 0.0f, 0.05f, // top
+		0.0f,	0.05f, -0.05f, // left 
+		0.0f, 	-0.05f, -0.05f, // right
 	}; 
  
 
@@ -223,9 +266,9 @@ int main()
 	float triangleScale = 20.0f;
 
 	// struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
-	struct Point3 tri1InitialScale = {triangleScale, triangleScale, 1.0f};
-	struct Point3 tri1InitialPos = {0.0f, 0.0f, -90.0f};
-	struct Point3 tri1InitialVel = {0.2f, 40.0f, 2.0f};
+	struct Point3 tri1InitialScale = {1.0f, triangleScale, triangleScale};
+	struct Point3 tri1InitialPos = {45.0f, 10.0f, -0.0f};
+	struct Point3 tri1InitialVel = {-1.0f, 0.1f, 25.0f};
 	tri1.position_0 = tri1InitialPos;
 	tri1.velocity_0 = tri1InitialVel;
 
@@ -248,6 +291,7 @@ int main()
 	glGenBuffers(1, &triangle_vbo);
 
 	unsigned int transformLoc = glGetUniformLocation(worldShader.ID, "transform");
+	unsigned int viewLoc = glGetUniformLocation(worldShader.ID, "view");
 	unsigned int perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
 	unsigned int colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
 
@@ -287,7 +331,7 @@ int main()
 	
 	time(&epoch_fps);
 
-
+ 
 
 
 	// render loop
@@ -300,7 +344,8 @@ int main()
 		// timespec_get( &waitForFrame , TIME_UTC);
 		// printf("%d\n ", waitForFrame.tv_nsec);
 
-
+		// glDepthRange(1.0, 0.0); 
+		glEnable(GL_DEPTH_TEST);
 
 		//
 		// SIMULATION
@@ -317,13 +362,13 @@ int main()
 			simulation.simObject->translationPrevStep = simulation.simObject->position_0;
 			simulation.simObject->velocityPrevStep = simulation.simObject->velocity_0;
 
-			glEnable(GL_DEPTH_TEST);
+			
 			// glClearDepth(1.0);
 			// glDepthFunc(GL_LEQUAL); 
  
 			// glDepthMask(GL_TRUE);
 			// glEnable(GL_DEPTH_CLAMP);
-			// glDepthRange(0.1, 1.0); 
+			
 			// glClearDepth(1.0);
 
 		}
@@ -347,7 +392,7 @@ int main()
 			updatePosAndVel(simulation.simObject, (float)simulation.dt);
 			
 
-			// printf("%f \n", simulation.simObject->translation.y);
+			printf("%f \n", simulation.simObject->translation.z);
 
 
 			// printf("%d ", simulation.dtIndex);
@@ -406,6 +451,7 @@ int main()
 
 		SetSimObjectTranform(&ground1);
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ground1.transformMatrixRowMajor);
+		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
 		
 		glUniform4f(colorLoc, 0.0f, 0.5f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -427,6 +473,7 @@ int main()
 		SetSimObjectTranform(simulation.simObject);
 		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, simulation.simObject->transformMatrixRowMajor);
+		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
 
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 3);

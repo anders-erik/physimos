@@ -1,4 +1,4 @@
-exe := glthrowsim
+exe := build/glthrowsim
 #.PRECIOUS: glthrowsim
 
 CXX := g++

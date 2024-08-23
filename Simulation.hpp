@@ -42,8 +42,10 @@ struct SimObject {
 
 // One timestep forward of 'dt' for SimObject
 void updatePosAndVel(SimObject * so, float dt){
-    // simple gravity
-    so->velocity.y = so->velocityPrevStep.y + (-9.8)*dt;
+
+
+    // GRAVITY
+    so->velocity.z = so->velocityPrevStep.z + (-9.8)*dt;
 
     so->translation.x = so->translationPrevStep.x + so->velocityPrevStep.x*dt;
     so->translation.y = so->translationPrevStep.y + so->velocityPrevStep.y*dt;
@@ -51,14 +53,14 @@ void updatePosAndVel(SimObject * so, float dt){
 
     // BOUNCE
     // printf("%d\n", so->translation.y);
-    if(so->translation.y < -20.0f){
-        so->velocity.y = -so->velocity.y * 0.8;
-        so->translation.y = -19.9f; // make sure the bounce condition is not met next 
+    if(so->translation.z < -20.0f){
+        so->velocity.z = -so->velocity.z * 0.8;
+        so->translation.z = -19.9f; // make sure the bounce condition is not met next 
         // printf("BOUNCE! \n");
     }
 
     // update prev step values
-    so->velocityPrevStep.y = so->velocity.y;
+    so->velocityPrevStep.z = so->velocity.z;
     so->translationPrevStep.x = so->translation.x;
     so->translationPrevStep.y = so->translation.y;
     so->translationPrevStep.z = so->translation.z;

@@ -21,7 +21,7 @@
         {
             "type": "shell",
             "label": "C++ : Run",
-            "command": "${workspaceFolder}/glthrowsim",
+            "command": "${workspaceFolder}/build/glthrowsim",
             "options": {},
             "problemMatcher": [
                 "$gcc"
@@ -37,7 +37,7 @@
         {
             "type": "shell",
             "label": "gdb",
-            "command": "gdb ${workspaceFolder}/glthrowsim ",
+            "command": "gdb ${workspaceFolder}/build/glthrowsim ",
             "options": {},
             "group": "build",
             "detail": "debugger: /usr/bin/gdb",

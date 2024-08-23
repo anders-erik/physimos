@@ -2,10 +2,19 @@
 
 ## 2024-08-23
 
+### TODAY
+- coordinate system - z is up
+- add 3d cube
+- implement euler angles 
+- specify size and location of ui element in puxel units
 
-## Since last time
+
+### Since last time
 - Added python notebooks for transformation visualizations
 
+
+
+<br> <br>
 
 ## 2024-08-21
 
