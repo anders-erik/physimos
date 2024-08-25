@@ -1,4 +1,6 @@
 {
+	// https://stackoverflow.com/questions/48945319/a-keybindings-json-per-workspace-in-visual-studio-code
+    "workspaceKeybindings.glthrowsim_BuildRun.enabled": true, 
 	"files.associations": {
 		"array": "cpp",
 		"atomic": "cpp",
@@ -50,3 +52,4 @@
 		"ratio": "cpp"
 	}
 }
+

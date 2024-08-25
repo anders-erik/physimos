@@ -1,6 +1,31 @@
 
 
-## 2024-08-23
+## 2024-08-25
+
+### today:
+- jupyter notebook
+	- script for local to global
+	- *multiple points* to detect tranform distortion
+- move camera in any direction
+- loaders
+	- minimal object loader
+		- + my own color property?
+	- bmp image loader
+- UI
+	- map location and size of element to window
+		- necessary for mouse input !
+	- render first letter
+	- my own file format
+- Physics
+	- intersection detection
+		- start by minimal detection
+		- categorize verices/object
+			- non-moving object
+			- potentially moving
+			- always moving
+
+
+## 2024-08-23 - stream
 
 ### Comming up
 - test and upgrade euler angle rotation
@@ -26,7 +51,7 @@
 
 <br> <br>
 
-## 2024-08-21
+## 2024-08-21 - stream
 
 ### Things to do Before/During Next Stream:
 - setup intuitive global/inertial coordinates system/ref. frame (right handed, z=up)
@@ -53,7 +78,7 @@
 
 <br> <br>
 
-## 2024-08-16
+## 2024-08-16 - stream
 
 NEXT SESSION:
 - UI shader
