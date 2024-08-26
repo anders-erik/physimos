@@ -51,6 +51,8 @@ void SetPositionSimObject(struct SimObject * simObject, Point3 moveVector){
 	simObject->translation.z = moveVector.z;
 }
 
+
+// all Euler angles described into aij-matrix
 void SetSimObjectTranform(struct SimObject * simObject){
 
 	float Sx = simObject->scale.x;

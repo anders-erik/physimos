@@ -7,10 +7,11 @@ CXXFLAGS := -g -Wall -lglfw3  #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 INC   := -I./include
 LIB := -L./lib
 SRCS := main.cpp glad.c
+INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp
 # OBJS := main.o
 
 
-$(exe): $(SRCS)
+$(exe): $(SRCS) $(INC_HPP)
 	$(CXX) $(LIB) $(INC) $(SRCS) -o $(exe) $(CXXFLAGS)
 #	./$(exe)
 

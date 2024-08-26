@@ -5,8 +5,8 @@
 ### today:
 - jupyter notebook
 	- script for local to global
-	- *multiple points* to detect tranform distortion
-- move camera in any direction
+	- o *multiple points* to detect tranform distortion
+- o move camera in any direction
 - loaders
 	- minimal object loader
 		- + my own color property?

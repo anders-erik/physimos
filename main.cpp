@@ -8,38 +8,28 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "Types.hpp"
 #include "Simulation.hpp"
 #include "vertex.hpp"
 #include "shader.hpp"
+#include "Camera.hpp"
 
-// settings
-#define ZF 100.0f // far plane
-#define ZN 1.0f // near plane 
+
 
 
 Simulation simulation;
+Camera camera;
+
 
 /* 
 	File Functions
 */
 void renderUI();
 
-const float perspectiveMatrix16_[16] = {
-	ZN, 0, 0, 0, 
-	0, ZN, 0, 0, 
-	0, 0, -1.0f / (ZF - ZN), ZN / (ZF - ZN),
-	0, 0, 1.0f, 0,
-};
-// http://www.songho.ca/opengl/gl_projectionmatrix.html
-const float perspectiveMatrix16[16] = {
-	ZN, 0, 0, 0,
-	0, ZN, 0, 0,
-	0, 0, - (ZF + ZN) / (ZF - ZN), - 2 * ZN * ZF / (ZF - ZN),
-	0, 0, - 1.0f, 0,
-};
 
 
-const float viewMatrix16[16] = {
+
+const float sanityMatrix16[16] = {
 	0, -1, 0, 0,
 	0, 0, 1, 0,
 	-1, 0, 0, 0,
@@ -79,15 +69,25 @@ void processInput(GLFWwindow *window);
 
 // INPUT
 struct Input {
-	char s = 0;
+	// char s = 0;
 	int pointerX = 0;
-	int pointerY = 0; 
+	int pointerY = 0;
+	int mousePressActive = 0;
+	int pointerXLastClick = 0;
+	int pointerYLastClick = 0;
+	// keys
+	int w = 0;
+	int a = 0;
+	int s = 0;
+	int d = 0;
 } input ;
+
+
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
+	double xpos, ypos;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
         printf("Click! -- %f , %f \n", xpos, ypos);
 		// printf("simstate: %d \n", SimState::idle);
@@ -95,11 +95,46 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			printf("Start Simulation button clicked! \n");
 			simulation.simState = SimState::startClickDetected;
 		}
+		input.mousePressActive = 1;
+		input.pointerXLastClick = xpos;
+		input.pointerYLastClick = ypos;
 	}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
+		printf("RELEASED LEFT MOUSE BUTON\n");
+		input.mousePressActive = 0;
+	}
+	
 }
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// printf("%f , %f \n", xpos, ypos);
+	input.pointerX = xpos;
+	input.pointerY = ypos;
+	
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    // printf("%d\n", key);
+	// input.s = key;
+
+	if (key == GLFW_KEY_W && action == GLFW_PRESS)
+		input.w = 1;
+	if (key == GLFW_KEY_A && action == GLFW_PRESS)
+		input.a = 1;
+	if (key == GLFW_KEY_S && action == GLFW_PRESS)
+		input.s = 1;
+	if (key == GLFW_KEY_D && action == GLFW_PRESS)
+		input.d = 1;
+
+	if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+		input.w = 0;
+	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+		input.a = 0;
+	if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+		input.s = 0;
+	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+		input.d = 0;
 }
  
 
@@ -153,6 +188,7 @@ int main()
 	//
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
+	glfwSetKeyCallback(window, key_callback);
 
 
 	// glad: load all OpenGL function pointers  
@@ -182,6 +218,10 @@ int main()
 	// Simulation simulation = Simulation();
 
 
+	// CAMERA SETUP
+	//
+	//
+	
 
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
@@ -370,6 +410,7 @@ int main()
 
 	unsigned int transformLoc = glGetUniformLocation(worldShader.ID, "transform");
 	unsigned int viewLoc = glGetUniformLocation(worldShader.ID, "view");
+	unsigned int sanityLoc = glGetUniformLocation(worldShader.ID, "sanityTransform");
 	unsigned int perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
 	unsigned int colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
 
@@ -551,6 +592,29 @@ int main()
 			secondCount = 0;
 		}
 
+
+		// SANITY MATRIX
+		glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
+
+
+		// CAMERA
+		if(input.w)
+			camera.translate(0.2f, 0.0f, 0.0f);
+		if(input.s)
+			camera.translate(-0.2f, 0.0f, 0.0f);
+		if(input.a)
+			camera.translate(0.0f, 0.2f, 0.0f);
+		if(input.d)
+			camera.translate(0.0f, -0.2f, 0.0f);
+
+		camera.rotateEulerRad(0.0f, 0.0f, 0.0f);
+		camera.setViewMatrix();
+		// printf("Camera Position: %f", camera.cameraPosition.x);
+		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, camera.viewMatrix);
+		// glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
+
+
+
  
 		// GROUND
 		glBindVertexArray(ground_vao);
@@ -560,7 +624,6 @@ int main()
 
 		SetSimObjectTranform(&ground1);
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ground1.transformMatrixRowMajor);
-		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
 		
 		glUniform4f(colorLoc, 0.0f, 0.5f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -582,7 +645,7 @@ int main()
 		SetSimObjectTranform(simulation.simObject);
 		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, simulation.simObject->transformMatrixRowMajor);
-		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
+		// glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
 
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -595,7 +658,7 @@ int main()
 		SetSimObjectTranform(&cube1);
 
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, cube1.transformMatrixRowMajor);
-		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
+		// glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
 
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -648,9 +711,9 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		printf("S pressed! \n");
-
+	// if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	// 	printf("S pressed! \n");
+	
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

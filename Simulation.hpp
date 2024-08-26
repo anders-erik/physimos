@@ -1,5 +1,7 @@
-// Holds the simulation object(s) and keeps the state of the simulation
 
+#include "Types.hpp"
+
+// Holds the simulation object(s) and keeps the state of the simulation
 
 // Simulation constants
 #define T0 0.0 
@@ -16,11 +18,7 @@ enum SimState {
     };
 
 
-struct Point3 {
-	float x;
-	float y;
-	float z;
-};
+
 
 // Turn into model
 struct SimObject {
