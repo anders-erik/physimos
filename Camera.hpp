@@ -10,7 +10,7 @@
 #define ZN 1.0f // near plane 
 
 float initialCameraRotRad[3] = { 0.0f, 0.0f, 0.0f };
-float initialCameraPosition[3] = { 0, 0, 0.0 };
+float initialCameraPosition[3] = { -10.0, 0, 0.0 };
 
 // const float viewMatrix16[16] = {
 // 	1, 0, 0, 10,

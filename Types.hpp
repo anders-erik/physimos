@@ -2,10 +2,21 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-struct Point3 {
-	float x;
+struct Vec3 {
+    float x;
 	float y;
 	float z;
+};
+
+struct Vec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+
+struct Point3 : Vec3 {
 };
 
 struct EulerAnglesRad {

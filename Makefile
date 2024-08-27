@@ -7,7 +7,7 @@ CXXFLAGS := -g -Wall -lglfw3  #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 INC   := -I./include
 LIB := -L./lib
 SRCS := main.cpp glad.c
-INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp
+INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp
 # OBJS := main.o
 
 
