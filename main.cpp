@@ -75,7 +75,11 @@ struct Input {
 	int mousePressActive = 0;
 	int pointerXLastClick = 0;
 	int pointerYLastClick = 0;
+	int pointerXLastFrame = 0;
+	int pointerYLastFrame = 0;
 	// keys
+	int middleMouse = 0;
+	int ctrl = 0;
 	int w = 0;
 	int a = 0;
 	int s = 0;
@@ -84,6 +88,7 @@ struct Input {
 	int al = 0;
 	int ad = 0;
 	int ar = 0;
+	
 } input ;
 
 
@@ -102,11 +107,20 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		input.mousePressActive = 1;
 		input.pointerXLastClick = xpos;
 		input.pointerYLastClick = ypos;
+		
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
 		printf("RELEASED LEFT MOUSE BUTON\n");
 		input.mousePressActive = 0;
 	}
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS){
+		glfwGetCursorPos(window, &xpos, &ypos);
+		input.middleMouse = 1;
+		input.pointerXLastFrame = xpos;
+		input.pointerYLastFrame = ypos;
+	}
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
+		input.middleMouse = 0;
 	
 }
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -121,6 +135,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
     // printf("%d\n", key);
 	// input.s = key;
+	
+	
+
+	if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL ) && action == GLFW_PRESS)
+		input.ctrl = 1;
+	if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL)  && action == GLFW_RELEASE)
+		input.ctrl = 0;
+	
 
 	if (key == GLFW_KEY_W && action == GLFW_PRESS)
 		input.w = 1;
@@ -616,8 +638,11 @@ int main()
 		}
 
 
+
 		// SANITY MATRIX
 		glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
+
+		
 
 
 		// CAMERA
@@ -641,6 +666,24 @@ int main()
 			camera.rotateEulerRad(0.0f, 0.0f, 0.05f);
 		if(input.ar)
 			camera.rotateEulerRad(0.0f, 0.0f, -0.05f);
+
+
+			// printf("mouse + ctrl\n");
+		// if(input.mousePressActive && input.ctrl){
+		if(input.middleMouse){
+			float dx = input.pointerX - input.pointerXLastFrame;
+			float dy = input.pointerY - input.pointerYLastFrame;
+
+			input.pointerXLastFrame = input.pointerX;
+			input.pointerYLastFrame = input.pointerY;
+
+			// printf("%f\n", dx);
+			// printf("%f\n", dy);
+
+			camera.rotateEulerRad(0.0f, 0.0f, -dx * 0.005f);
+			camera.rotateEulerRad(0.0f, -dy * 0.005f, 0.0f);
+
+		}
 
 		camera.rotateEulerRad(0.0f, 0.0f, 0.0f);
 		camera.setViewMatrix();
