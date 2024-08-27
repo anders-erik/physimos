@@ -1,15 +1,16 @@
 
 
-## 2024-08-25
+## 2024-08-25/26/27
 
 ### today:
 - jupyter notebook
 	- script for local to global
-	- o *multiple points* to detect tranform distortion
-- o move camera in any direction
+	- |o| *multiple points* to detect tranform distortion
+- |o| move camera in any direction
+	- rotate
 - loaders
 	- minimal object loader
-		- + my own color property?
+		- my own color property?
 	- bmp image loader
 - UI
 	- map location and size of element to window
@@ -22,7 +23,7 @@
 		- categorize verices/object
 			- non-moving object
 			- potentially moving
-			- always moving
+			- always moving 
 
 
 ## 2024-08-23 - stream

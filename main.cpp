@@ -80,6 +80,10 @@ struct Input {
 	int a = 0;
 	int s = 0;
 	int d = 0;
+	int au = 0;
+	int al = 0;
+	int ad = 0;
+	int ar = 0;
 } input ;
 
 
@@ -135,6 +139,25 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		input.s = 0;
 	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 		input.d = 0;
+
+	// ARROW KEYS
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+		input.au = 1;
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+		input.al = 1;
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+		input.ad = 1;
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+		input.ar = 1;
+
+	if (key == GLFW_KEY_UP && action == GLFW_RELEASE)
+		input.au = 0;
+	if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE)
+		input.al = 0;
+	if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE)
+		input.ad = 0;
+	if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
+		input.ar = 0;
 }
  
 
@@ -598,14 +621,26 @@ int main()
 
 
 		// CAMERA
+		float forwardX = cos(camera.eulerAnglesRad.c);
+		float forwardY = sin(camera.eulerAnglesRad.c);
+
 		if(input.w)
-			camera.translate(0.2f, 0.0f, 0.0f);
+			camera.translate(forwardX*0.2f, forwardY*0.2f, 0.0f);
 		if(input.s)
-			camera.translate(-0.2f, 0.0f, 0.0f);
+			camera.translate(-forwardX*0.2f, -forwardY*0.2f, 0.0f);
 		if(input.a)
-			camera.translate(0.0f, 0.2f, 0.0f);
+			camera.translate(-forwardY*0.2f, forwardX*0.2f, 0.0f);
 		if(input.d)
-			camera.translate(0.0f, -0.2f, 0.0f);
+			camera.translate(forwardY*0.2f, -forwardX*0.2f, 0.0f);
+
+		if(input.au)
+			camera.rotateEulerRad(0.0f, 0.05f, 0.0f);
+		if(input.ad)
+			camera.rotateEulerRad(0.0f, -0.05f, 0.0f);
+		if(input.al)
+			camera.rotateEulerRad(0.0f, 0.0f, 0.05f);
+		if(input.ar)
+			camera.rotateEulerRad(0.0f, 0.0f, -0.05f);
 
 		camera.rotateEulerRad(0.0f, 0.0f, 0.0f);
 		camera.setViewMatrix();
