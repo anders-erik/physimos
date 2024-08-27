@@ -1,13 +1,27 @@
 
+# TODO
+
+<br><br>
+
 
 ## 2024-08-25/26/27
 
-### today:
+### 27
+ 
+- middle mouse button to rotate camera
+- improved wasd movement
+- added vsFormat to .settings file to retain array initilizing formatting
+- camera class : moved definition out of class block
+
+
+
+
+### TODOS:
 - jupyter notebook
 	- script for local to global
 	- |o| *multiple points* to detect tranform distortion
 - |o| move camera in any direction
-	- rotate
+	- |o| rotate
 - loaders
 	- minimal object loader
 		- my own color property?
@@ -26,6 +40,7 @@
 			- always moving 
 
 
+<br> <br>
 ## 2024-08-23 - stream
 
 ### Comming up

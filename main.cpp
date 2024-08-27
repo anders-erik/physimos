@@ -84,6 +84,7 @@ struct Input {
 	int a = 0;
 	int s = 0;
 	int d = 0;
+	char mostRecentADpress = 's';
 	int au = 0;
 	int al = 0;
 	int ad = 0;
@@ -110,7 +111,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
-		printf("RELEASED LEFT MOUSE BUTON\n");
+		// printf("RELEASED LEFT MOUSE BUTON\n");
 		input.mousePressActive = 0;
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS){
@@ -146,19 +147,27 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_W && action == GLFW_PRESS)
 		input.w = 1;
-	if (key == GLFW_KEY_A && action == GLFW_PRESS)
-		input.a = 1;
 	if (key == GLFW_KEY_S && action == GLFW_PRESS)
 		input.s = 1;
-	if (key == GLFW_KEY_D && action == GLFW_PRESS)
+	if (key == GLFW_KEY_A && action == GLFW_PRESS){
+		input.a = 1;
+		input.mostRecentADpress = 'a';
+		// printf("A \n");
+		// if(input.mostRecentADpress == 97)
+		// 	printf("'a' is most recent\n");
+	}
+	if (key == GLFW_KEY_D && action == GLFW_PRESS){
 		input.d = 1;
+		input.mostRecentADpress = 'd';
+		
+	}
 
 	if (key == GLFW_KEY_W && action == GLFW_RELEASE)
 		input.w = 0;
-	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		input.a = 0;
 	if (key == GLFW_KEY_S && action == GLFW_RELEASE)
 		input.s = 0;
+	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+		input.a = 0;
 	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 		input.d = 0;
 
@@ -226,7 +235,7 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
- 
+	
  
 	//
 	// INPUT
@@ -653,10 +662,20 @@ int main()
 			camera.translate(forwardX*0.2f, forwardY*0.2f, 0.0f);
 		if(input.s)
 			camera.translate(-forwardX*0.2f, -forwardY*0.2f, 0.0f);
+
 		if(input.a)
 			camera.translate(-forwardY*0.2f, forwardX*0.2f, 0.0f);
+		if((input.a && input.d) && (input.mostRecentADpress == 97)){
+			camera.translate(-forwardY*0.2f, forwardX*0.2f, 0.0f);
+			// printf("%d\n", input.mostRecentADpress);
+		}
 		if(input.d)
 			camera.translate(forwardY*0.2f, -forwardX*0.2f, 0.0f);
+		if((input.a && input.d) && (input.mostRecentADpress == 100)){
+			camera.translate(forwardY*0.2f, -forwardX*0.2f, 0.0f);
+			// printf("%d\n", input.mostRecentADpress);
+		}
+
 
 		if(input.au)
 			camera.rotateEulerRad(0.0f, 0.05f, 0.0f);
