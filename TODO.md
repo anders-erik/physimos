@@ -4,6 +4,18 @@
 <br><br>
 
 
+## 2024-08-28
+
+### Next time:
+- render ui elements with different corodinates on the same render call
+
+### Done
+- o ui class
+- o drew square
+- draw 2 squares
+
+<br><br>
+
 ## 2024-08-25/26/27
 
 ### 27

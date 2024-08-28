@@ -15,12 +15,14 @@
 #include "vertex.hpp"
 #include "shader.hpp"
 #include "Camera.hpp"
+#include "ui.hpp"
 
 
 
 
 Simulation simulation;
 Camera camera;
+UI ui;
 // InputStruct input;
 
 
@@ -137,7 +139,11 @@ int main()
 	// ------------------------------------
 	Shader worldShader("src/shaders/shader.vs", "src/shaders/shader.fs");
 
-	Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
+	// Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
+	ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
+	ui.defineSquare1(300, 50, 200, 200);
+	ui.defineSquare2(50, 300, 300, 200);
+	
 
 
 	/*
@@ -313,7 +319,8 @@ int main()
 
 
 	// WORLD CUBE 1
-	WorldObject worldCube1("cube.pso");
+	// WorldObject worldCube1("cube.pso");
+	WorldObject worldCube1("src/models/cube.pso");
 	// WorldObject worldCube1;
 	// for (long unsigned int i = 0; i < (sizeof(triangle) / sizeof(triangle[0])); i++){
 	// 	worldCube1.vertices.push_back(triangle[i]);
@@ -727,8 +734,11 @@ int main()
 		/*
 			Render UI
 		*/
-		glUseProgram(uiShader.ID);
-		renderUI();
+		// glUseProgram(uiShader.ID);
+		glUseProgram(ui.shader.ID);
+		// renderUI();
+		
+		ui.renderUI();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
@@ -778,46 +788,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 
-
-// renderCube() renders a 1x1 3D cube in NDC.
-// -------------------------------------------------
-unsigned int uiVAO = 0;
-unsigned int uiVBO = 0;
-void renderUI()
-{
-	// initialize (if necessary)
-	if (uiVAO == 0)
-	{
-		float vertices[] = {
-			// back face
-			0.7f, 0.7f, -0.9f,  0.0f,  0.0f, 0.2f, // bottom-left
-			1.0f,  1.0f, -0.9f,  0.0f,  0.0f, 0.2f, // top-right
-			1.0f, 0.7f, -0.9f,  0.0f,  0.0f, 0.2f, // bottom-right         
-			1.0f,  1.0f, -0.9f,  0.0f,  0.0f, 0.2f, // top-right
-			0.7f, 0.7f, -0.9f,  0.0f,  0.0f, 0.2f, // bottom-left
-			0.7f,  1.0f, -0.9f,  0.0f,  0.0f, 0.2f,  // top-left
-
-			// Play triangle
-			0.8f, 0.9f, -1.0f,  0.0f,  1.0f, 0.0f, // top-left
-			0.8f,  0.8f, -1.0f,  0.0f,  1.0f, 0.0f, // botton-left
-			0.9f, 0.85f, -1.0f,  0.0f,  1.0f, 0.0f, // middle-right
-		};
-		glGenVertexArrays(1, &uiVAO);
-		glGenBuffers(1, &uiVBO);
-		// fill buffer
-		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		// link vertex attributes
-		glBindVertexArray(uiVAO);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-	}
-	// render Cube
-	glBindVertexArray(uiVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 9);
-	glBindVertexArray(0);
-}
