@@ -119,7 +119,7 @@ int main()
 	glfwSetKeyCallback(window, key_callback);
 
 
-
+	
 
 	// glad: load all OpenGL function pointers  
 	// ---------------------------------------
@@ -135,9 +135,9 @@ int main()
 
 	// build and compile our shader zprogram
 	// ------------------------------------
-	Shader worldShader("shader.vs", "shader.fs");
+	Shader worldShader("src/shaders/shader.vs", "src/shaders/shader.fs");
 
-	Shader uiShader("ui.vs", "ui.fs");
+	Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
 
 
 	/*

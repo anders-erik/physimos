@@ -1,5 +1,6 @@
 exe := build/glthrowsim
 #.PRECIOUS: glthrowsim
+src := src/
 
 CXX := g++
 CXXFLAGS := -g -Wall -lglfw3  #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
@@ -7,7 +8,10 @@ CXXFLAGS := -g -Wall -lglfw3  #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 INC   := -I./include
 LIB := -L./lib
 SRCS := main.cpp glad.c
+SRCS := $(patsubst %, $(src)%, $(SRCS))
+
 INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp
+INC_HPP := $(patsubst %, $(src)%, $(INC_HPP))
 # OBJS := main.o
 
 

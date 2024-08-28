@@ -14,7 +14,7 @@ class Shader
 public:
     // glCreateProgram creates an empty program object and
     //  returns a non-zero value by which it can be referenced.
-    unsigned int ID; 
+    unsigned int ID;
 
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
