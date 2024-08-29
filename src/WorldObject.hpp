@@ -5,15 +5,23 @@
 #include <iostream>
 #include <cmath>
 
+#include <glad/glad.h>
 
 #include "Types.hpp"
+#include "shader.hpp"
 
 class WorldObject {
 
 public:
     WorldObject(const char* path);
     WorldObject();
-    
+
+    Shader * shader;
+    void setShaderProgram(Shader* shader);
+    unsigned int vao;
+    unsigned int vbo;
+    void setVaoVbo330();
+    void setVaoVbo332();
 
     std::vector<float> vertices;
 	int vertexCount;
@@ -51,6 +59,50 @@ public:
     void printTransformMatrix();
     
 };
+
+void WorldObject::setShaderProgram(Shader * shader){
+    this->shader = shader;
+}
+
+void WorldObject::setVaoVbo330(){
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+
+    glBindVertexArray(vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    // printf("triangel : %lu\n", sizeof(triangle));
+    // printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
+    // printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+void WorldObject::setVaoVbo332() {
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+
+    glBindVertexArray(vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    // printf("triangel : %lu\n", sizeof(triangle));
+    // printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
+    // printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+}
 
 void WorldObject::printPosition() {
     std::cout << this->position.x << " " << this->position.y << " " << this->position.z << std::endl;

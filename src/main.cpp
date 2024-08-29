@@ -321,23 +321,23 @@ int main()
 	// WORLD CUBE 1
 	// WorldObject worldCube1("cube.pso");
 	WorldObject worldCube1("src/models/cube.pso");
-	// WorldObject worldCube1;
-	// for (long unsigned int i = 0; i < (sizeof(triangle) / sizeof(triangle[0])); i++){
-	// 	worldCube1.vertices.push_back(triangle[i]);
-	// 	std::cout << i << "  ";
-	// }
-	// std::cout << std::endl << "Vector size: " << std::endl << worldCube1.vertices.size() << "  ";
-	
 
 	worldCube1.scale = {2.0, 2.0, 2.0};
 	worldCube1.position = {20.0f, 0.0f, 0.0f};
 	// worldCube1.printVertices();
 
-	// std::cout << worldCube1.modelPath << std::endl;
-	// worldCube1.loadVerticexFromFile("pathPATH");
+	worldCube1.setVaoVbo330();
+	worldCube1.setShaderProgram(&worldShader);
 
 
+	// WORLD TRIANGLE 1 : First textures
+	WorldObject worldTriangle1("src/models/triangle.pso");
 
+	worldTriangle1.scale = { 10.0, 10.0, 10.0 };
+	worldTriangle1.position = { 10.0f, 0.0f, 3.0f };
+
+	worldTriangle1.setVaoVbo332();
+	worldTriangle1.setShaderProgram(&worldShader);
 
 
 
@@ -424,28 +424,6 @@ int main()
 
 	glBindBuffer(GL_ARRAY_BUFFER, cube1_vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube1_vertices), cube1_vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-	// WORLD CUBE 1
-	unsigned int worldCube1_vao, worldCube1_vbo;
-	glGenVertexArrays(1, &worldCube1_vao);
-	glGenBuffers(1, &worldCube1_vbo);
-
-	glBindVertexArray(worldCube1_vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, worldCube1_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(worldCube1.vertices[0])* worldCube1.vertices.size(), worldCube1.vertices.data(), GL_STATIC_DRAW);
-	// printf("triangel : %lu\n", sizeof(triangle));
-	// printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
-	// printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -707,10 +685,13 @@ int main()
 		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		glBindVertexArray(0); // Make sure that the cibe1-data does not linger and renders the next cube
+
 
 
 		// WORLD CUBE 1
-		glBindVertexArray(worldCube1_vao);
+		worldCube1.shader->use();
+		glBindVertexArray(worldCube1.vao);
 
 		// worldCube1.Rotate({ 0.03f, 0.01f, 0.0f });
 		// worldCube1.Translate({ 0.03f, 0.01f, -0.01f });
@@ -729,6 +710,16 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// worldCube1.printPosition();
 		// worldCube1.printTransformMatrix();
+
+
+
+		// WORLD TRIANGLE 1
+		worldTriangle1.shader->use();
+		glBindVertexArray(worldTriangle1.vao);
+		worldTriangle1.SetTransformMatrixRowMajor();
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldTriangle1.transformMatrixRowMajor);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 
 
 		/*
