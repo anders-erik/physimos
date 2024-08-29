@@ -10,6 +10,7 @@ LIB := -L./lib
 SRCS := main.cpp glad.c
 SRCS := $(patsubst %, $(src)%, $(SRCS))
 
+
 INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp ui.hpp
 INC_HPP := $(patsubst %, $(src)%, $(INC_HPP))
 # OBJS := main.o
@@ -21,7 +22,11 @@ $(exe): $(SRCS) $(INC_HPP)
 
 
 
-.PHONY: run
+.PHONY: run build
+
+build : $(SRCS) $(INC_HPP)
+	$(CXX) $(LIB) $(INC) $(SRCS) -o $(exe) $(CXXFLAGS)
+
 run: $(exe)
 	./$(exe)
 

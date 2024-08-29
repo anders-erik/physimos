@@ -1,0 +1,39 @@
+// BASE LAUNCH.JSON SOURCE:
+// https://developer.blender.org/docs/handbook/development_environments/vscode/#__tabbed_1_1
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch gltrhowsim",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/glthrowsim",
+            // You could place a .blend file path here to open it by default, or any other Blender args.
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            // This could be set to true if you prefer an external console for debugging.
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "-enable-frame-filters",
+                    "description": "Enable GDB frame filters",
+                    "ignoreFailures": true
+                }
+            ],
+            "showDisplayString": true,
+            // Optional, you can use if you want it to build before launching.
+            "preLaunchTask": "build"
+        }
+    ]
+}
