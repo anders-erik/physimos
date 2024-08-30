@@ -367,7 +367,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 	BMP_loader bmp_loader;
-	bmp_loader.loadBMPFile("media/A_100x100.bmp");
+	bmp_loader.loadBMPFile("media/net_100x100.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 100, 100, 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_loader.imageDataBuffer.data());
 
 

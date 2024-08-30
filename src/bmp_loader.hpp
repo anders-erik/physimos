@@ -67,8 +67,11 @@ public:
         // Move into imageDataBuffer
         int byteCount = 0;
         // forced to manually set image size
-        for (std::size_t i = firstPixelLocation; i < 30000 + firstPixelLocation; i++) {
+        for (std::size_t i = firstPixelLocation; i < 30000 + firstPixelLocation; i+=3) {
             byteCount++;
+            // BMP all pixel-'words' are stored in little endian format, so we reverse order here
+            imageDataBuffer.push_back(rawBmpFileData[i+2]);
+            imageDataBuffer.push_back(rawBmpFileData[i+1]);
             imageDataBuffer.push_back(rawBmpFileData[i]);
         }
         std::cout << "byteCount: " << byteCount << std::endl;
