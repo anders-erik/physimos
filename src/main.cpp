@@ -16,6 +16,7 @@
 #include "shader.hpp"
 #include "Camera.hpp"
 #include "ui.hpp"
+#include "bmp_loader.hpp"
 
 
 
@@ -364,12 +365,19 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load and generate the texture
+	
+	BMP_loader bmp_loader;
+	bmp_loader.loadBMPFile("media/A_100x100.bmp");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 100, 100, 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_loader.imageDataBuffer.data());
+
+
+
+	// Generate a black and white test 'image'
 	int width = 100;
 	int height = 100;
-	
 	// Generate black and white texture
-	unsigned char data[30000]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
+	unsigned char data[3 * height * width]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
+
 	for (long unsigned int rgb_i = 0; rgb_i < sizeof(data); rgb_i += 3) {
 		// std::cout << rgb_i << " ";
 		int r = rand();
@@ -385,7 +393,8 @@ int main()
 			data[rgb_i + 2] = 255;
 		}
 	}
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 
