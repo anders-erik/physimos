@@ -74,6 +74,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main()
 {
+	std::cout << "---------------" << std::endl;
+	srand(0);
+
+
 	// printf("Length of Vshader: %lu \n", strlen(vertexShaderSource));
 	// printf("Length of Fshader: %lu \n", strlen(fragmentShaderSource));
 
@@ -142,8 +146,15 @@ int main()
 
 	// Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
 	ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
-	ui.defineSquare1(300, 50, 200, 200);
-	ui.defineSquare2(50, 300, 300, 200);
+	
+
+	ui.createUiRectange(100, 100, 700, 500, white);
+	ui.createUiRectange(100, 100, 700, 400, black);
+	ui.createUiRectange(100, 100, 700, 300, red);
+	ui.createUiRectange(100, 100, 700, 200, green);
+	ui.createUiRectange(100, 100, 700, 100, blue);
+
+	ui.loadUiFile("src/main.psoui");
 	
 
 
@@ -771,8 +782,21 @@ int main()
 		*/
 		// glUseProgram(uiShader.ID);
 		glUseProgram(ui.shader.ID);
-		// renderUI();
+		// ui.renderUI();
 		
+		// ui.renderUI();
+		
+		// std::cout << "rand() == " << rand() << std::endl;
+		// int w_ = int(80 * float(rand()) / 2147483647.0f);
+		// int h_ = int(60 * float(rand()) / 2147483647.0f);
+		// int x_ = int(800 * float(rand()) / 2147483647.0f);
+		// int y_ = int(600 * float(rand()) / 2147483647.0f);
+		// ui.createUiRectange(h_, w_, x_, y_);
+		// Vec3 color1 = { 1.0f, 1.0f, 1.0f };
+		
+		// ui.createUiRectange(h_, w_, x_, y_);
+		// ui.createUiRectange(h_, w_, x_, y_);
+
 		ui.renderUI();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

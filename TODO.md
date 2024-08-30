@@ -5,8 +5,10 @@
 ## 2024-08-30
 
 ### TODO
-- o texture rendering
-- have ui renderer able to render arbitray amount of rectengles
+1. |o| texture rendering
+2. |o| have ui renderer able to render several rectangles
+	- 2 options: vao for each element OR <ins>__update the vao each render call__</ins>.
+3. |o| define a simple file format for ui elements
 
 
 <br><br>

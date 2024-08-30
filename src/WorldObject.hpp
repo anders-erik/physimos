@@ -233,7 +233,7 @@ WorldObject::WorldObject(){
 
 WorldObject::WorldObject(const char* path) {
 
-    std::cout << std::endl << "Loading model: " << path << ". ";
+    std::cout << "Loading model: " << path << ". ";
     this->modelPath = path;
 
     std::ifstream modelFile;
@@ -266,7 +266,7 @@ WorldObject::WorldObject(const char* path) {
             this->vertices.push_back(number);
         }
 
-        std::cout << "OK.  [" << this->vertices.size() << " values]" << std::endl << std::endl;
+        std::cout << "OK.  [" << this->vertices.size() << " values]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
 
     }
     catch (std::ifstream::failure& e)

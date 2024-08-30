@@ -1,0 +1,2 @@
+name:playSquare;type:rectangle;w:100;h:100;x:0;y:0;c:green
+name:stopSquare;type:rectangle;w:100;h:100;x:100;y:0;c:red
