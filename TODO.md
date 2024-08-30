@@ -1,8 +1,22 @@
 
 # TODO
 
+
+## 2024-08-30
+
+### TODO
+- o texture rendering
+- have ui renderer able to render arbitray amount of rectengles
+
+
 <br><br>
 
+## 2024-08-29
+
+- file restructuring?
+- moved vao+vbo to world object class
+
+<br><br>
 
 ## 2024-08-28
 

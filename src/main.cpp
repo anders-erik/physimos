@@ -137,7 +137,8 @@ int main()
 
 	// build and compile our shader zprogram
 	// ------------------------------------
-	Shader worldShader("src/shaders/shader.vs", "src/shaders/shader.fs");
+	Shader worldShader("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
+	// Shader worldTextureShader("src/shaders/textureShader.vs", "src/shaders/textureShader.fs");
 
 	// Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
 	ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
@@ -330,14 +331,53 @@ int main()
 	worldCube1.setShaderProgram(&worldShader);
 
 
+
+
+
+
 	// WORLD TRIANGLE 1 : First textures
 	WorldObject worldTriangle1("src/models/triangle.pso");
 
+
 	worldTriangle1.scale = { 10.0, 10.0, 10.0 };
-	worldTriangle1.position = { 10.0f, 0.0f, 3.0f };
+	worldTriangle1.position = { -5.0f, 0.0f, 0.0f };
 
 	worldTriangle1.setVaoVbo332();
 	worldTriangle1.setShaderProgram(&worldShader);
+
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load and generate the texture
+	int width = 100;
+	int height = 100;
+	
+	// Generate black and white texture
+	unsigned char data[30000]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
+	for (long unsigned int rgb_i = 0; rgb_i < sizeof(data); rgb_i += 3) {
+		// std::cout << rgb_i << " ";
+		int r = rand();
+
+		if (r < 1073741823) {
+			data[rgb_i] = 0;
+			data[rgb_i + 1] = 0;
+			data[rgb_i + 2] = 0;
+		}
+		else {
+			data[rgb_i] = 255;
+			data[rgb_i + 1] = 255;
+			data[rgb_i + 2] = 255;
+		}
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+
 
 
 
@@ -380,6 +420,8 @@ int main()
 	unsigned int sanityLoc = glGetUniformLocation(worldShader.ID, "sanityTransform");
 	unsigned int perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
 	unsigned int colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
+	unsigned int hasTextureLoc = glGetUniformLocation(worldShader.ID, "hasTexture");
+	
 
 	// GROUND
 	glBindVertexArray(ground_vao);
@@ -706,7 +748,7 @@ int main()
 
 		// // glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
 
-		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
+		// glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// worldCube1.printPosition();
 		// worldCube1.printTransformMatrix();
@@ -715,11 +757,13 @@ int main()
 
 		// WORLD TRIANGLE 1
 		worldTriangle1.shader->use();
+		glUniform1i(hasTextureLoc, 1); // set texture bool
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(worldTriangle1.vao);
 		worldTriangle1.SetTransformMatrixRowMajor();
 		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldTriangle1.transformMatrixRowMajor);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-
+		glUniform1i(hasTextureLoc, 0); // unset texture bool
 
 
 		/*
