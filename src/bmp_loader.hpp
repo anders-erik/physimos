@@ -11,94 +11,110 @@ public:
 
     // loaded file
     std::vector<unsigned char> rawBmpFileData;
+    
+    std::string imagePath;
     unsigned int firstPixelLocation;
-    // unsigned char rawFileBuffer[100000];
+    unsigned int width;
+    unsigned int height;
+    unsigned int imageSize;
+    unsigned int bitsPerPixel;
+
     // 24 bit rgb value buffer
     std::vector<unsigned char> imageDataBuffer;
 
-    void loadBMPFile(const char* path) {
+    void loadBMPFile(std::string path) {
         std::cout << "BMP file: " << path << ". ";
+        imagePath = path;
 
         // https://cplusplus.com/forum/general/276214/
         
-        using byte = std::uint8_t;
 
         const std::size_t nbytes = 40000;
         std::vector<char> buff(nbytes); // allocate a buffer of nbytes characters
 
-        // try to open the file for input, in binary mode
-        if (std::ifstream file{ path, std::ios::binary })
-        {
-            
-            
-            if (file.read(buff.data(), buff.size())) // try to read in nbytes
-            {
-                const auto nread = file.gcount(); // number of bytes that were actually read
 
-                // from the characters that were read, initialise a vector of nbytes bytes
-                std::vector<byte> bytes(buff.begin(), buff.begin() + nread);
+        std::ifstream file(path, std::ios::binary);
 
-                // print out the values of the bytes (two hex digits per byte)
-                // std::cout << "the first " << nbytes << " bytes in the file '"
-                //     << path << "' are hex:\n";
-                // for (byte b : bytes) std::cout << std::hex << int(b) << ' ';
-                // std::cout << '\n';
-            }
+        // Check if the file was opened successfully
+        if (!file.is_open()) {
+            std::cerr << "Error: Could not open file " << path << std::endl;
+            return;
         }
 
-        for(char byte : buff){
+        // Determine the size of the file
+        file.seekg(0, std::ios::end);
+        std::streamsize fileSize = file.tellg();
+        file.seekg(0, std::ios::beg);
+
+        imageSize = (unsigned int)fileSize;
+
+        std::cout << "Filesize: " << fileSize << std::endl;
+
+        // Create a vector to hold the file data
+        std::vector<unsigned char> fileData(fileSize);
+
+        if (!file.read(reinterpret_cast<char*>(fileData.data()), fileSize)) {
+            std::cerr << "Error: Could not read file data" << std::endl;
+            return;
+        }
+
+
+        for (char byte : fileData) {
             rawBmpFileData.push_back(byte);
         }
 
+        
         firstPixelLocation = rawBmpFileData[10];
+        firstPixelLocation += rawBmpFileData[11] << 8;
+        firstPixelLocation += rawBmpFileData[12] << 8;
+        firstPixelLocation += rawBmpFileData[13] << 8;
+        
+        width = rawBmpFileData[18];
+        width += rawBmpFileData[19] << 8;
+        width += rawBmpFileData[20] << 8;
+        width += rawBmpFileData[21] << 8;
 
-        std::cout << "File done. " << std::endl;
+        height = rawBmpFileData[22];
+        height += rawBmpFileData[23] << 8;
+        height += rawBmpFileData[24] << 8;
+        height += rawBmpFileData[25] << 8;
+
+        bitsPerPixel = rawBmpFileData[28];
+        bitsPerPixel += rawBmpFileData[29] << 8;
+
 
         // std::cout << "first pixel @ " << int(buff[10]) << std::endl;
 
-        // assume pixel first pixel is not found after byte # 256!
-        if (firstPixelLocation == 138) {
-            std::cout << "first pixel @ " << firstPixelLocation << std::endl;
-        }
-        else {
-            std::cout << "first pixel location is WRONG!! " << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-        }
+        
 
         // Move into imageDataBuffer
         int byteCount = 0;
         // forced to manually set image size
-        for (std::size_t i = firstPixelLocation; i < 30000 + firstPixelLocation; i+=3) {
+        for (std::size_t i = firstPixelLocation; i < imageSize + firstPixelLocation; i+=3) {
             byteCount++;
             // BMP all pixel-'words' are stored in little endian format, so we reverse order here
             imageDataBuffer.push_back(rawBmpFileData[i+2]);
             imageDataBuffer.push_back(rawBmpFileData[i+1]);
             imageDataBuffer.push_back(rawBmpFileData[i]);
         }
-        std::cout << "byteCount: " << byteCount << std::endl;
+        // std::cout << "byteCount: " << byteCount << std::endl;
 
-        // std::cout << "reading file: " << path << ". ";
-        // // this->modelPath = path;
-
-        // std::ifstream imageFile;
-        // std::stringstream modelStream;
-        // std::string modelString;
-
-        // imageFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        // try
-        // {
-
-        //     imageFile.open(path, std::ios_base::openmode::_S_bin);
-
-        //     if (imageFile.read(&rawFileBuffer, sizeof(unsigned char)));
-
-
-        // }
-        // catch (std::ifstream::failure& e)
-        // {
-        //     std::cout << "ERROR::READING_BMP_FILE" << e.what() << std::endl;
-        // }
+        file.close();
 
     }
+
+
+
+    void prettyPrint(){
+        std::cout << "--------BMP PRINT-------" << std::endl;
+        std::cout << "imagePath     : " << imagePath << std::endl;
+        std::cout << "size (B)      : " << imageSize << std::endl;
+        std::cout << "First pixel @ : " << firstPixelLocation << std::endl;
+        std::cout << "width         : " << width << std::endl;
+        std::cout << "height        : " << height << std::endl;
+        std::cout << "------------------------" << std::endl;
+    }
+
 };
 
 

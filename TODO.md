@@ -1,10 +1,22 @@
 
 # TODO
 
+## 2024-08-31 - 2024-08-03
+
+### TODO
+- |o| generalize bmp loader (2024-08-31)
+- render text
+- show fps
+- detect ui element click
+- ground as world-object
+- detect objects intersecting with ground
+- render using indices and drawElements
+
 
 ## 2024-08-30
 
-### TODO
+
+### DONE
 1. |o| texture rendering
 2. |o| have ui renderer able to render several rectangles
 	- 2 options: vao for each element OR <ins>__update the vao each render call__</ins>.
