@@ -26,7 +26,9 @@ public:
         std::cout << "BMP file: " << path << ". ";
         imagePath = path;
 
-        // https://cplusplus.com/forum/general/276214/
+
+        rawBmpFileData.clear();
+        imageDataBuffer.clear();
         
 
         const std::size_t nbytes = 40000;

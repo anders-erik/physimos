@@ -2,3 +2,5 @@
 *.a binary
 *.png binary
 *.bmp binary
+*.kra binary
+*.webp binary

@@ -24,6 +24,8 @@
 Simulation simulation;
 Camera camera;
 UI ui;
+
+BMP_loader bmp_loader;
 // InputStruct input;
 
 
@@ -159,9 +161,21 @@ int main()
 	// Shader worldTextureShader("src/shaders/textureShader.vs", "src/shaders/textureShader.fs");
 
 	// Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
+	// bmp_loader.loadBMPFile("media/net_100x100.bmp");
+	bmp_loader.loadBMPFile("media/characters-1.bmp");
+	ui.setCharacterTextureData(bmp_loader.imageDataBuffer, bmp_loader.width, bmp_loader.height);
+	ui.init();
 	ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
+	// Load character texture and copy (!?) values to ui object 
+
+
+
+	// ui.charImageBuffer = bmp_loader.imageDataBuffer;
+	// ui.charImgWidth = bmp_loader.width;
+	// ui.charImgHeight = bmp_loader.height;
 	
 	ui.setWindowSize(800, 600);
+	
 	// std::cout << "ASDlkfsd flasd hfkljas hdfklashdfklhdfklajaklshdfklashdkfhaskdfhas\n";
 	// ui.createUiRectange(100, 100, 700, 500, white);
 	// ui.createUiRectange(100, 100, 700, 400, black);
@@ -384,10 +398,10 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	BMP_loader bmp_loader;
 	// bmp_loader.loadBMPFile("media/net_100x100.bmp");
 	bmp_loader.loadBMPFile("media/mountain.bmp");
 	// bmp_loader.prettyPrint();
+	// std::cout << "UI image buffer size: " << ui.charImageBuffer.size() << std::endl;
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp_loader.width, bmp_loader.height, 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_loader.imageDataBuffer.data());
 
@@ -416,6 +430,11 @@ int main()
 	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	
 	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
 
 
 
@@ -461,6 +480,7 @@ int main()
 	unsigned int perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
 	unsigned int colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
 	unsigned int hasTextureLoc = glGetUniformLocation(worldShader.ID, "hasTexture");
+	// unsigned int textureLoc = glGetUniformLocation(worldShader.ID, "ourTexture");
 	
 
 	// GROUND
@@ -798,6 +818,7 @@ int main()
 		// WORLD TRIANGLE 1
 		worldTriangle1.shader->use();
 		glUniform1i(hasTextureLoc, 1); // set texture bool
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(worldTriangle1.vao);
 		worldTriangle1.SetTransformMatrixRowMajor();
@@ -810,7 +831,7 @@ int main()
 			Render UI
 		*/
 		// glUseProgram(uiShader.ID);
-		glUseProgram(ui.shader.ID);
+		// glUseProgram(ui.shader.ID);
 		// ui.renderUI();
 		
 		// ui.renderUI();
@@ -827,6 +848,8 @@ int main()
 		// ui.createUiRectange(h_, w_, x_, y_);
 
 		ui.renderUI();
+
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
