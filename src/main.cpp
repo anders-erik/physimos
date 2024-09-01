@@ -43,8 +43,8 @@ const float sanityMatrix16[16] = {
 };
 
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_INIT_WIDTH = 800;
+const unsigned int SCR_INIT_HEIGHT = 600;
 
 
 // timing
@@ -66,6 +66,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 
 
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	// make sure the viewport matches the new window dimensions; note that width and
+	// height will be significantly larger than specified on retina displays.
+	glViewport(0, 0, width, height);
+
+	camera.setPerspectiveMatrix(width, height);
+
+	ui.setWindowSize(width, height);
+	ui.reloadUi();
+}
 
 
 
@@ -105,7 +118,7 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GLThrowSim", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_INIT_WIDTH, SCR_INIT_HEIGHT, "GLThrowSim", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -148,14 +161,17 @@ int main()
 	// Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
 	ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
 	
+	ui.setWindowSize(800, 600);
+	// std::cout << "ASDlkfsd flasd hfkljas hdfklashdfklhdfklajaklshdfklashdkfhaskdfhas\n";
+	// ui.createUiRectange(100, 100, 700, 500, white);
+	// ui.createUiRectange(100, 100, 700, 400, black);
+	// ui.createUiRectange(100, 100, 700, 300, red);
+	// ui.createUiRectange(100, 100, 700, 200, green);
+	// ui.createUiRectange(100, 100, 700, 100, blue);
 
-	ui.createUiRectange(100, 100, 700, 500, white);
-	ui.createUiRectange(100, 100, 700, 400, black);
-	ui.createUiRectange(100, 100, 700, 300, red);
-	ui.createUiRectange(100, 100, 700, 200, green);
-	ui.createUiRectange(100, 100, 700, 100, blue);
+	ui.reloadUi();
 
-	ui.loadUiFile("src/main.psoui");
+	// ui.loadUiFile("src/main.psoui");
 	
 
 
@@ -170,6 +186,7 @@ int main()
 	//
 	//
 
+	camera.setPerspectiveMatrix(SCR_INIT_WIDTH, SCR_INIT_HEIGHT);
 
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
@@ -335,7 +352,8 @@ int main()
 	// WorldObject worldCube1("cube.pso");
 	WorldObject worldCube1("src/models/cube.pso");
 
-	worldCube1.scale = {2.0, 2.0, 2.0};
+	// worldCube1.scale = {2.0, 2.0, 2.0};
+	worldCube1.scale = { 0.5, 0.5, 0.5 };
 	worldCube1.position = {20.0f, 0.0f, 0.0f};
 	// worldCube1.printVertices();
 
@@ -616,7 +634,7 @@ int main()
 
 		// set program and perspective-matrix
 		glUseProgram(worldShader.ID);
-		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, perspectiveMatrix16);
+		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, camera.perspectiveMatrix16);
 
 		//
 		// FPS INFO
@@ -848,13 +866,5 @@ int main()
 
 
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	// make sure the viewport matches the new window dimensions; note that width and
-	// height will be significantly larger than specified on retina displays.
-	glViewport(0, 0, width, height);
-}
 
 

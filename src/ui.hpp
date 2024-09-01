@@ -1,4 +1,7 @@
 
+#ifndef UI_HPP
+#define UI_HPP
+
 #include <iostream>
 #include <vector>
 
@@ -19,6 +22,9 @@ class UI {
         unsigned int squareVAO = 0;
         unsigned int squareVBO = 0;
 
+        int windowWidth = 0;
+        int windowHeight = 0;
+
 
         std::vector<UiElement> uiElements;
         std::vector<float> uiVertices;
@@ -37,6 +43,10 @@ class UI {
 
         UI() {};
 
+        void reloadUi();
+
+        void setWindowSize(int width, int height);
+
         void newShaderPlease(const char* vertexPath, const char* fragmentPath);
 
         void loadUiFile(const char* uiFilePath);
@@ -48,6 +58,32 @@ class UI {
         Shader shader;
 
 };
+
+void UI::reloadUi(){
+
+    uiElements.clear();
+
+    uiTransform16[0] = 2.0f / windowWidth;
+    uiTransform16[5] = 2.0f / windowHeight;
+
+    createUiRectange(100, 100, 700, 500, white);
+    createUiRectange(100, 100, 700, 400, black);
+    createUiRectange(100, 100, 700, 300, red);
+    createUiRectange(100, 100, 700, 200, green);
+    createUiRectange(100, 100, 700, 100, blue);
+
+    loadUiFile("src/main.psoui");
+
+}
+
+void UI::setWindowSize(int width, int height) {
+    windowWidth = width;
+    windowHeight = height;
+}
+
+// void UI::updateUiOnNewWindowSize(int width, int height){
+    
+// }
 
 
 void UI::loadUiFile(const char* uiFilePath){
@@ -116,10 +152,16 @@ void UI::loadUiFile(const char* uiFilePath){
                     uiElem_.type = value;
                 }
                 else if (key == "x") {
-                    uiElem_.x = std::stoi(value);
+                    if (value[0] == 'L')
+                        uiElem_.x = std::stoi(value.substr(1, value.size()));
+                    else if (value[0] == 'R')
+                        uiElem_.x = windowWidth - std::stoi(value.substr(1, value.size()));
                 }
                 else if (key == "y") {
-                    uiElem_.y = std::stoi(value);
+                    if (value[0] == 'B')
+                        uiElem_.y = std::stoi(value.substr(1, value.size()));
+                    else if (value[0] == 'T')
+                        uiElem_.y = windowHeight - std::stoi(value.substr(1, value.size()));
                 }
                 else if (key == "w") {
                     uiElem_.width = std::stoi(value);
@@ -278,3 +320,4 @@ float playVertices[] = {
 
 
 
+#endif

@@ -27,8 +27,8 @@ const float perspectiveMatrix16_[16] = {
 };
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 const float perspectiveMatrix16[16] = {
-    ZN, 0, 0, 0,
-    0, ZN, 0, 0,
+    ZN / 1.0f, 0, 0, 0,
+    0, ZN / 1.0f, 0, 0,
     0, 0, -(ZF + ZN) / (ZF - ZN), -2 * ZN * ZF / (ZF - ZN),
     0, 0, -1.0f, 0,
 };
@@ -40,6 +40,12 @@ public:
     struct EulerAnglesRad eulerAnglesRad;
     struct Point3 cameraPosition;
     float viewMatrix[16];
+    float perspectiveMatrix16[16] = {    
+        ZN / 1.0f, 0, 0, 0,
+        0, ZN / 1.0f, 0, 0,
+        0, 0, -(ZF + ZN) / (ZF - ZN), -2 * ZN * ZF / (ZF - ZN),
+        0, 0, -1.0f, 0,
+    };
     Camera();
 
     void setEulerAnglesRad(float a, float b, float c);
@@ -48,6 +54,7 @@ public:
     void translate(float x, float y, float z);
 
     void setViewMatrix();
+    void setPerspectiveMatrix(int windowWidth, int windowHeight);
     void multiplyViewMatrix(float* mat);
 };
 
@@ -56,6 +63,16 @@ public:
 //  DEFINITIONS
 //
 //
+
+// Match the near clipping plane to window dimensions
+void Camera::setPerspectiveMatrix(int windowWidth, int windowHeight){
+    float windowHeight_f = (float) windowHeight;
+    float windowWidth_f = (float)windowWidth;
+    
+    perspectiveMatrix16[0] = ZN / 1.0f;
+    // if height is smaller than width, ZN is divided by <1.0, as intened!
+    perspectiveMatrix16[5] = ZN / (windowHeight_f / windowWidth_f);
+}
 
 
 

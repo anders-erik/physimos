@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+#include "ui.hpp"
+
 
 void processInput(GLFWwindow *window);
 
@@ -33,6 +35,7 @@ struct InputStruct {
 
 	
 } input;
+
 
 
 
