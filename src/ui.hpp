@@ -33,12 +33,17 @@ class UI {
         std::vector<float> isCharBuffer;
 
         void setCharacterTextureData(std::vector<unsigned char> data, unsigned int imgWidth, unsigned int imgHeight);
-        void createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color);
-        void addStringUi(int fontHeight, int x, int y, std::string str);
+        void createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiElement &_uiStringElem);
+        void updateStringUi(int fontHeight, int x, int y, std::string str, UiElement &_uiStringElem);
         std::vector<unsigned char> charImageBuffer;
         unsigned int charImgWidth = 0;
         unsigned int charImgHeight = 0;
 
+        // String elements
+        std::vector<UiElement> fpsStringElements;
+        void updateFpsElement(int fps);
+
+        
 
 
         std::vector<UiElement> uiElements;
@@ -53,7 +58,7 @@ class UI {
 
         unsigned int uiTransformLoc;
 
-        void createUiRectange(int height, int width, int x, int y, Vec3 color);
+        void createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName);
         
 
 
@@ -144,25 +149,70 @@ void UI::newShaderPlease(const char* vertexPath, const char* fragmentPath) {
     shader.buildShaderProgram(vertexPath, fragmentPath);
 }
 
+int firstRun = 1;
+void UI::updateFpsElement(int fps){
+
+    fpsStringElements.clear();
+
+    std::string fps_str = "FPS: ";
+    fps_str.append(std::to_string(fps));
+
+    // To prevent deletion of other elements on the first update
+    // if(firstRun == 1){
+    //     firstRun = 0;
+    // }
+    // else{
+    //     uiElements.pop_back();
+    //     uiElements.pop_back();
+    //     uiElements.pop_back();
+    // }
+
+    // uiElements.pop_back();
+    // uiElements.pop_back();
+    // uiElements.pop_back();
+    for(UiElement &_uiElem : uiElements){
+        if (_uiElem.name == "fps")
+            updateStringUi(15, 0, 570, fps_str, _uiElem);
+    }
+    // updateStringUi(15, 0, 570, fps_str, fpsStringElement);
+    // updateStringUi(15, 200, 30, "A!!!123000", firstStringElement);
+    // updateStringUi(15, 200, 0, "Second string! []{}()", secondStringElement);
+
+}
 
 void UI::reloadUi(){
 
     uiElements.clear();
+    fpsStringElements.clear();
 
     uiTransform16[0] = 2.0f / windowWidth;
     uiTransform16[5] = 2.0f / windowHeight;
 
-    createUiRectange(100, 100, 700, 500, white);
-    createUiRectange(100, 100, 700, 400, black);
-    createUiRectange(100, 100, 700, 300, red);
-    createUiRectange(100, 100, 700, 200, green);
-    createUiRectange(100, 100, 700, 100, blue);
+    createUiRectange(100, 100, 700, 500, white, "w1");
+    createUiRectange(100, 100, 700, 400, black, "b1");
+    createUiRectange(100, 100, 700, 300, red, "r1");
+    createUiRectange(100, 100, 700, 200, green, "g1");
+    createUiRectange(100, 100, 700, 100, blue, "b2");
 
     // createUiChar(300, 0, 120, 'A', white);
-    addStringUi(20, 200, 30, "A!!!123000");
-    addStringUi(20, 200, 0, "Second string! []{}()");
+
+    UiElement newStringELement_1("AnotherStringElem");
+    updateStringUi(15, 200, 570, "ANOTHER STRING!", newStringELement_1);
+    uiElements.push_back(newStringELement_1);
+
+    UiElement firstStringElement("firstStrElem");
+    updateStringUi(15, 200, 30, "A!!!123000", firstStringElement);
+    uiElements.push_back(firstStringElement);
+    UiElement secondStringElement("secondStrElem");
+    updateStringUi(15, 200, 0, "Second string! []{}()", secondStringElement);
+    uiElements.push_back(secondStringElement);
+    
+    UiElement fpsStringElement;
+    fpsStringElement.name = "fps";
+    uiElements.push_back(fpsStringElement);
 
     loadUiFile("src/main.psoui");
+
 }
 
 
@@ -175,30 +225,90 @@ void UI::renderUI()
 
     // Update the VAO with active elements
     uiVertexFloatBuffer.erase(uiVertexFloatBuffer.begin(), uiVertexFloatBuffer.end());
+    
 
     int elemCount = 0;
     for (UiElement uiElem_ : uiElements) {
-        if (uiElem_.activated) {
-            elemCount++;
 
-            // ONE FOR EACH VERTEX
-            for (size_t i = 0; i < 6; i++)
-            {
-                if (uiElem_.isChar > 1.0)
-                    isCharBuffer.push_back(1.0);
-                else
-                    isCharBuffer.push_back(0.0);
-            }
-            
-            
-            // THESE ARE NOT VERTICES!!!!!!!!!!
-            for (float fl_ : uiElem_.vertexFloatBuffer) {
+        // run the same loop for each of the string elements, which each contain character elements!
+        if(uiElem_.isStringElement){
+            // std::cout << "A " << std::endl;
+
+            for (UiElement stringElem_ : uiElem_.stringElements){
                 
+                if (stringElem_.activated) {
+                    elemCount++;
 
-                uiVertexFloatBuffer.push_back(fl_);
+                    // ONE FOR EACH VERTEX
+                    for (size_t i = 0; i < 6; i++)
+                    {
+                        if (stringElem_.isChar > 1.0)
+                            isCharBuffer.push_back(1.0);
+                        else
+                            isCharBuffer.push_back(0.0);
+                    }
+
+
+                    // THESE ARE NOT VERTICES!!!!!!!!!!
+                    for (float fl_ : stringElem_.vertexFloatBuffer) {
+
+
+                        uiVertexFloatBuffer.push_back(fl_);
+                    }
+                }
             }
         }
+        else{
+
+            if (uiElem_.activated) {
+                elemCount++;
+
+                // ONE FOR EACH VERTEX
+                for (size_t i = 0; i < 6; i++)
+                {
+                    if (uiElem_.isChar > 1.0)
+                        isCharBuffer.push_back(1.0);
+                    else
+                        isCharBuffer.push_back(0.0);
+                }
+                
+                
+                // THESE ARE NOT VERTICES!!!!!!!!!!
+                for (float fl_ : uiElem_.vertexFloatBuffer) {
+                    
+
+                    uiVertexFloatBuffer.push_back(fl_);
+                }
+            }
+        }
+        
+        
     }
+
+    
+    // Strings!
+    // for (UiElement uiElem_ : fpsStringElements) {
+    //     if (uiElem_.activated) {
+    //         elemCount++;
+
+    //         // ONE FOR EACH VERTEX
+    //         for (size_t i = 0; i < 6; i++)
+    //         {
+    //             if (uiElem_.isChar > 1.0)
+    //                 isCharBuffer.push_back(1.0);
+    //             else
+    //                 isCharBuffer.push_back(0.0);
+    //         }
+
+
+    //         // THESE ARE NOT VERTICES!!!!!!!!!!
+    //         for (float fl_ : uiElem_.vertexFloatBuffer) {
+
+
+    //             uiVertexFloatBuffer.push_back(fl_);
+    //         }
+    //     }
+    // }
     // std::cout << "uiElements.size(): " << uiElements.size() << std::endl;
     // std::cout << "uiElements: " << uiElements << std::endl;
     
@@ -211,7 +321,7 @@ void UI::renderUI()
 
     glBindVertexArray(uiVAO);
     glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * uiElements.size() * 48, uiVertexFloatBuffer.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * elemCount * 48, uiVertexFloatBuffer.data(), GL_STATIC_DRAW);
 
     
     glBindBuffer(GL_ARRAY_BUFFER, uiIsCharVBO);
@@ -226,7 +336,7 @@ void UI::renderUI()
     // std::cout << "sizeof(float) * uiElements.size() * 36 == " << sizeof(float) * uiElements.size() * 36 << std::endl;
     // std::cout << "uiVertexFloatBuffer.data() == " << uiVertexFloatBuffer.data() << std::endl;
 
-    glDrawArrays(GL_TRIANGLES, 0, uiElements.size() * 6);
+    glDrawArrays(GL_TRIANGLES, 0, elemCount * 6);
     
 
     // std::cout << "elemCount == " << elemCount << std::endl;
@@ -350,7 +460,7 @@ void UI::loadUiFile(const char* uiFilePath){
             }
 
             if(uiElem_.type == "rectangle"){
-                createUiRectange(uiElem_.height, uiElem_.width, uiElem_.x, uiElem_.y, uiElem_.color);
+                createUiRectange(uiElem_.height, uiElem_.width, uiElem_.x, uiElem_.y, uiElem_.color, uiElem_.name);
             }
 
             // uiElements.push_back(uiElem_);
@@ -377,7 +487,7 @@ void UI::loadUiFile(const char* uiFilePath){
 
 }
 
-void UI::createUiRectange(int height, int width, int x, int y, Vec3 color) {
+void UI::createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName) {
     UiElement uiElem_;
     for(int i = 0; i<uiElem_.vertexCount*8; i += 8){
         uiElem_.vertexFloatBuffer[i] = uiElem_.squareVertices[i] * width + x;
@@ -392,23 +502,30 @@ void UI::createUiRectange(int height, int width, int x, int y, Vec3 color) {
     }
 
     uiElem_.activated = 1;
+    uiElem_.name = elemName;
 
     // uiElem_.vertices
     uiElements.push_back(uiElem_);
 }
 
 
-void UI::addStringUi(int fontHeight, int x, int y, std::string str) {
+void UI::updateStringUi(int fontHeight, int x, int y, std::string str, UiElement &_uiStringElem) {
+    // UiElement _uiStringElem;
+    _uiStringElem.activated = 1;
+    _uiStringElem.isStringElement = true;
+    _uiStringElem.stringElements.clear();
+
     int charCount = 0;
     int fontWidth = fontHeight/1.20;
     for(char ch : str){
-        createUiChar(fontHeight, x+charCount*fontWidth, y, ch, white);
+        createUiChar(fontHeight, x + charCount * fontWidth, y, ch, white, _uiStringElem);
         charCount++;
     }
+    // uiElements.push_back(_uiStringElem);
 }
 
 
-void UI::createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color) {
+void UI::createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiElement &_uiStringElem) {
     UiElement uiElem_;
     for (int i = 0; i < uiElem_.vertexCount * 8; i += 8) {
         uiElem_.vertexFloatBuffer[i] = uiElem_.charVertices[i] * fontHeight + x;
@@ -430,7 +547,10 @@ void UI::createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color) {
     uiElem_.isChar = 10.0;
 
     // uiElem_.vertexFloatBuffer
-    uiElements.push_back(uiElem_);
+    // uiElements.push_back(uiElem_);
+
+    // fpsStringElements.push_back(uiElem_);
+    _uiStringElem.stringElements.push_back(uiElem_);
 }
 
 

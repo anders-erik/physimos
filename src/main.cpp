@@ -165,6 +165,7 @@ int main()
 	bmp_loader.loadBMPFile("media/characters-1.bmp");
 	ui.setCharacterTextureData(bmp_loader.imageDataBuffer, bmp_loader.width, bmp_loader.height);
 	ui.init();
+	// ui.reloadUi();
 	ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
 	// Load character texture and copy (!?) values to ui object 
 
@@ -551,7 +552,7 @@ int main()
 
 	time(&epoch_fps);
 
-
+	int current_fps = 0;
 
 
 	// render loop
@@ -668,6 +669,7 @@ int main()
 		{
 			current_second_fps = current_time_fps;
 			printf("FPS: %d \n", secondCount);
+			current_fps = secondCount;
 			// printf("%d \n", (int)(current_time - epoch_time));
 			secondCount = 0;
 		}
@@ -847,6 +849,7 @@ int main()
 		// ui.createUiRectange(h_, w_, x_, y_);
 		// ui.createUiRectange(h_, w_, x_, y_);
 
+		ui.updateFpsElement(current_fps);
 		ui.renderUI();
 
 

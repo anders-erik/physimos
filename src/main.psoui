@@ -1,3 +1,2 @@
 name:playSquare;type:rectangle;w:100;h:100;x:R100;y:B0;c:green
 name:stopSquare;type:rectangle;w:100;h:100;x:L0;y:B0;c:red
-name:fpsLabel;type:rectangle;w:50;h:20;x:L0;y:T20;c:black

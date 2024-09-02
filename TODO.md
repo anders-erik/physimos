@@ -5,8 +5,8 @@
 
 ### TODO
 - |o| generalize bmp loader (2024-08-31)
-- |o| render text ()
-- show fps
+- |o| render text (2024-09-01)
+- |o| show fps
 - detect ui element click
 - ground as world-object
 - detect objects intersecting with ground

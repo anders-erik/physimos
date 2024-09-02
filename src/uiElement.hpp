@@ -12,6 +12,7 @@ enum elementType {
 class UiElement {
     public:
         UiElement() {};
+        UiElement(std::string _name) {name = _name;};
     
         int vertexCount = 6;
         // float vertexFloatBuffer[6*6];
@@ -20,7 +21,11 @@ class UiElement {
         int activated = 0;
         std::string name;
         std::string type;
+
+        // 
         float isChar = 0.0;
+        bool isStringElement = false;
+        std::vector<UiElement> stringElements;
         char charValue = 0;
         int height;
         int width;
