@@ -10,6 +10,7 @@
 
 #include "Types.hpp"
 #include "Input.hpp"
+#include "InputState.hpp"
 #include "WorldObject.hpp"
 #include "Simulation.hpp"
 #include "vertex.hpp"
@@ -25,8 +26,9 @@ Simulation simulation;
 Camera camera;
 UI ui;
 
+
 BMP_loader bmp_loader;
-// InputStruct input;
+// InputStruct inputState_main;
 
 
 /*
@@ -34,7 +36,8 @@ BMP_loader bmp_loader;
 */
 void renderUI();
 
-
+Input &input_main = getInput();
+InputState& inputState_main = input_main._inputState;
 
 
 const float sanityMatrix16[16] = {
@@ -573,13 +576,13 @@ int main()
 		//
 
 		// Make ignore start sim click if not idle
-		if (simulation.simState == SimState::idle && input.startSimClick == 1) {
+		if (simulation.simState == SimState::idle && inputState_main.startSimClick == 1) {
 			simulation.simState = SimState::startClickDetected;
-			input.startSimClick = 0;
+			inputState_main.startSimClick = 0;
 		}
 		else {
 			// printf("Simulation already running! \n");
-			input.startSimClick = 0;
+			inputState_main.startSimClick = 0;
 		}
 
 		// Start Simulation
@@ -637,7 +640,7 @@ int main()
 
 
 
-		// input
+		// inputState_main
 		// -----
 		processInput(window);
 
@@ -686,43 +689,43 @@ int main()
 		float forwardX = cos(camera.eulerAnglesRad.c);
 		float forwardY = sin(camera.eulerAnglesRad.c);
 
-		if (input.w)
+		if (inputState_main.w)
 			camera.translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
-		if (input.s)
+		if (inputState_main.s)
 			camera.translate(-forwardX * 0.2f, -forwardY * 0.2f, 0.0f);
 
-		if (input.a)
+		if (inputState_main.a)
 			camera.translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-		if ((input.a && input.d) && (input.mostRecentADpress == 97)) {
+		if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 97)) {
 			camera.translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-			// printf("%d\n", input.mostRecentADpress);
+			// printf("%d\n", inputState_main.mostRecentADpress);
 		}
-		if (input.d)
+		if (inputState_main.d)
 			camera.translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-		if ((input.a && input.d) && (input.mostRecentADpress == 100)) {
+		if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 100)) {
 			camera.translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-			// printf("%d\n", input.mostRecentADpress);
+			// printf("%d\n", inputState_main.mostRecentADpress);
 		}
 
 
-		if (input.au)
+		if (inputState_main.au)
 			camera.rotateEulerRad(0.0f, 0.05f, 0.0f);
-		if (input.ad)
+		if (inputState_main.ad)
 			camera.rotateEulerRad(0.0f, -0.05f, 0.0f);
-		if (input.al)
+		if (inputState_main.al)
 			camera.rotateEulerRad(0.0f, 0.0f, 0.05f);
-		if (input.ar)
+		if (inputState_main.ar)
 			camera.rotateEulerRad(0.0f, 0.0f, -0.05f);
 
 
 		// printf("mouse + ctrl\n");
-	// if(input.mousePressActive && input.ctrl){
-		if (input.middleMouse) {
-			float dx = input.pointerX - input.pointerXLastFrame;
-			float dy = input.pointerY - input.pointerYLastFrame;
+	// if(inputState_main.mousePressActive && inputState_main.ctrl){
+		if (inputState_main.middleMouse) {
+			float dx = inputState_main.pointerX - inputState_main.pointerXLastFrame;
+			float dy = inputState_main.pointerY - inputState_main.pointerYLastFrame;
 
-			input.pointerXLastFrame = input.pointerX;
-			input.pointerYLastFrame = input.pointerY;
+			inputState_main.pointerXLastFrame = inputState_main.pointerX;
+			inputState_main.pointerYLastFrame = inputState_main.pointerY;
 
 			// printf("%f\n", dx);
 			// printf("%f\n", dy);
