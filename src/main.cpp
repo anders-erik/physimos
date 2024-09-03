@@ -15,10 +15,10 @@
 #include "Simulation.hpp"
 #include "vertex.hpp"
 #include "shader.hpp"
-#include "Camera.hpp"
-#include "ui.hpp"
 #include "bmp_loader.hpp"
+#include "Camera.hpp"
 
+#include "ui.hpp"
 
 
 
@@ -36,8 +36,10 @@ BMP_loader bmp_loader;
 */
 void renderUI();
 
-Input &input_main = getInput();
+Input& input_main = getInput();
 InputState& inputState_main = input_main._inputState;
+
+
 
 
 const float sanityMatrix16[16] = {

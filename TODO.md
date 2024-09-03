@@ -7,6 +7,7 @@
 - |o| generalize bmp loader (2024-08-31)
 - |o| render text (2024-09-01)
 - |o| show fps
+- manage abstraction/compartmentalization by creating more translation units (cpp-files)
 - detect ui element click
 - ground as world-object
 - detect objects intersecting with ground

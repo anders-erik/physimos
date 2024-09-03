@@ -5,15 +5,17 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
-#include "ui.hpp"
 #include "InputState.hpp"
 
+#include "ui.hpp"
+#include "Camera.hpp"
  
 class Input {
 	public:
 		Input() {};
 
 		InputState _inputState;
+		
 };
 Input& getInput();
 

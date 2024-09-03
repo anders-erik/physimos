@@ -8,7 +8,7 @@ CXXFLAGS := -g -Wall -lglfw3  #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 
 INC   := -I./include
 LIB := -L./lib
-SRCS := main.cpp Input.cpp ui.cpp shader.cpp glad.c
+SRCS := glad.c main.cpp Input.cpp ui.cpp shader.cpp vertex.cpp Simulation.cpp Camera.cpp
 # OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 # OBJS := $(patsubst %, $(BUILD_DIR)%, $(SRCS))
 OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.cpp.o,$(filter %.cpp,$(SRCS))) \
