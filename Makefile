@@ -8,7 +8,7 @@ CXXFLAGS := -g -Wall -lglfw3  #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 
 INC   := -I./include
 LIB := -L./lib
-SRCS := glad.c main.cpp Input.cpp ui.cpp shader.cpp vertex.cpp Simulation.cpp Camera.cpp
+SRCS := glad.c main.cpp Input.cpp ui.cpp shader.cpp vertex.cpp Simulation.cpp Camera.cpp Windowing.cpp WorldObject.cpp WorldRenderer.cpp Model.cpp
 # OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 # OBJS := $(patsubst %, $(BUILD_DIR)%, $(SRCS))
 OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.cpp.o,$(filter %.cpp,$(SRCS))) \
@@ -16,7 +16,7 @@ OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.cpp.o,$(filter %.cpp,$(SRCS))) \
 # SRCS := $(patsubst %, $(SRC_DIR)%, $(SRCS))
 
 
-INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp InputState.hpp WorldObject.hpp ui.hpp uiElement.hpp vertex.hpp model.hpp bmp_loader.hpp
+INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp ui.hpp uiElement.hpp vertex.hpp Model.hpp bmp_loader.hpp Windowing.hpp WorldRenderer.hpp
 INC_HPP := $(patsubst %, $(SRC_DIR)/%, $(INC_HPP))
 # OBJS := main.o
 

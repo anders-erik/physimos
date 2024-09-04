@@ -1,13 +1,25 @@
 
 # TODO
 
+## 2024-09-04
+
+### TODO
+- refactor
+	- |o| windowing functionality
+	- Input update (raw input handling, camera, ui, simulation)
+	- WorldRenderer
+- Detect ui click
+- Add multiple cubes to the world with a simple one statement creation
+
+
+
 ## 2024-08-31 - 2024-08-03
 
 ### TODO
 - |o| generalize bmp loader (2024-08-31)
 - |o| render text (2024-09-01)
 - |o| show fps
-- manage abstraction/compartmentalization by creating more translation units (cpp-files)
+- refactor 
 - detect ui element click
 - ground as world-object
 - detect objects intersecting with ground

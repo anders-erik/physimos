@@ -106,11 +106,11 @@ void UI::reloadUi(){
     uiTransform16[0] = 2.0f / windowWidth;
     uiTransform16[5] = 2.0f / windowHeight;
 
-    createUiRectange(100, 100, 700, 500, white, "w1");
-    createUiRectange(100, 100, 700, 400, black, "b1");
-    createUiRectange(100, 100, 700, 300, red, "r1");
-    createUiRectange(100, 100, 700, 200, green, "g1");
-    createUiRectange(100, 100, 700, 100, blue, "b2");
+    createUiRectange(100, 100, 700, 500, pso_white, "w1");
+    createUiRectange(100, 100, 700, 400, pso_black, "b1");
+    createUiRectange(100, 100, 700, 300, pso_red, "r1");
+    createUiRectange(100, 100, 700, 200, pso_green, "g1");
+    createUiRectange(100, 100, 700, 100, pso_blue, "b2");
 
     // createUiChar(300, 0, 120, 'A', white);
 
@@ -358,19 +358,19 @@ void UI::loadUiFile(const char* uiFilePath){
                 else if (key == "c") {
                     
                     if(value == "black"){
-                        uiElem_.color = black;
+                        uiElem_.color = pso_black;
                     }
                     else if (value == "white") {
-                        uiElem_.color = white;
+                        uiElem_.color = pso_white;
                     }
                     else if (value == "red") {
-                        uiElem_.color = red;
+                        uiElem_.color = pso_red;
                     }
                     else if (value == "green") {
-                        uiElem_.color = green;
+                        uiElem_.color = pso_green;
                     }
                     else if (value == "blue") {
-                        uiElem_.color = blue;
+                        uiElem_.color = pso_blue;
                     }
                 }
 
@@ -436,7 +436,7 @@ void UI::updateStringUi(int fontHeight, int x, int y, std::string str, UiElement
     int charCount = 0;
     int fontWidth = fontHeight/1.20;
     for(char ch : str){
-        createUiChar(fontHeight, x + charCount * fontWidth, y, ch, white, _uiStringElem);
+        createUiChar(fontHeight, x + charCount * fontWidth, y, ch, pso_white, _uiStringElem);
         charCount++;
     }
     // uiElements.push_back(_uiStringElem);

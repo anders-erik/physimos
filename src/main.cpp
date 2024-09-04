@@ -10,20 +10,27 @@
 
 #include "Types.hpp"
 #include "Input.hpp"
-#include "InputState.hpp"
+// #include "InputState.hpp"
 #include "WorldObject.hpp"
 #include "Simulation.hpp"
 #include "vertex.hpp"
 #include "shader.hpp"
 #include "bmp_loader.hpp"
 #include "Camera.hpp"
+#include "Windowing.hpp"
+#include "WorldRenderer.hpp"
+
+#include "Model.hpp"
+
 
 #include "ui.hpp"
+
+#include "PSO_util.hpp"
 
 
 
 Simulation simulation;
-Camera camera;
+// Camera camera;
 UI ui;
 
 
@@ -36,10 +43,10 @@ BMP_loader bmp_loader;
 */
 void renderUI();
 
-Input& input_main = getInput();
-InputState& inputState_main = input_main._inputState;
+// Input& input_main = getInput();
+// InputState& inputState_main = input_main._inputState;
 
-
+// std::vector<WorldObject> worldObjects;
 
 
 const float sanityMatrix16[16] = {
@@ -50,8 +57,6 @@ const float sanityMatrix16[16] = {
 };
 
 
-const unsigned int SCR_INIT_WIDTH = 800;
-const unsigned int SCR_INIT_HEIGHT = 600;
 
 
 // timing
@@ -67,25 +72,25 @@ struct timespec waitForFrame = { 0, 0L }; // nanoseconds of added wait between e
 
 
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+// void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 
 
 
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	// make sure the viewport matches the new window dimensions; note that width and
-	// height will be significantly larger than specified on retina displays.
-	glViewport(0, 0, width, height);
+// // glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// // ---------------------------------------------------------------------------------------------
+// void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+// {
+// 	// make sure the viewport matches the new window dimensions; note that width and
+// 	// height will be significantly larger than specified on retina displays.
+// 	glViewport(0, 0, width, height);
 
-	camera.setPerspectiveMatrix(width, height);
+// 	camera.setPerspectiveMatrix(width, height);
 
-	ui.setWindowSize(width, height);
-	ui.reloadUi();
-}
+// 	ui.setWindowSize(width, height);
+// 	ui.reloadUi();
+// }
 
 
 
@@ -98,6 +103,22 @@ int main()
 	std::cout << "---------------" << std::endl;
 	srand(0);
 
+	// Point 'inputState_main' to global InputState object
+	InputState* inputState_main_point = getCurrentInputStatePointer();
+	InputState& inputState_main = *inputState_main_point;
+
+	// Camera__* camera_main_point = getCurrentCamera_pointer();
+	// Camera__& camera_main = *camera_main_point;
+	initCamera();
+
+
+	// setX(1);
+	// printX();
+	// setX(2);
+	// printX();
+	// modelFunction();
+	// printX();
+
 
 	// printf("Length of Vshader: %lu \n", strlen(vertexShaderSource));
 	// printf("Length of Fshader: %lu \n", strlen(fragmentShaderSource));
@@ -108,53 +129,71 @@ int main()
 	// int *nlptr = NULL; 
 	// int a = *nlptr;
 
-	// glfw: initialize and configure
-	// -----------------------------
-	glfwInit();
-	// glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_DEPTH_BITS, 24);
+	// // glfw: initialize and configure
+	// // -----------------------------
+	// glfwInit();
+	// // glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
 	// glfwWindowHint(GLFW_DEPTH_BITS, GL_TRUE);
 
-#ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
+	// INPUT
+	// input_main.setUiAndCamera(&ui, &camera); 
+	setUiAndCamera(&ui);
+
+
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_INIT_WIDTH, SCR_INIT_HEIGHT, "GLThrowSim", NULL, NULL);
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
+	initGlThrowSimWindow();
+	glThrowSimReturnWindowPointer();
+	if (glThrowSimWindowOK() == 0) {
 		return -1;
 	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+
+
+	// Windowing windowing(SCR_INIT_WIDTH, SCR_INIT_HEIGHT);
+	// if(windowing.loadedProperly == 0){
+	// 	return -1;
+	// }
+	// setWindowingObjectPointer(&windowing);
+	// // windowing.setUiAndCamera(&ui, &camera);
+	// GLFWwindow* window = windowing.window; // keep 
+
+	// GLFWwindow* window = glfwCreateWindow(SCR_INIT_WIDTH, SCR_INIT_HEIGHT, "GLThrowSim", NULL, NULL);
+	// if (window == NULL)
+	// {
+	// 	std::cout << "Failed to create GLFW window" << std::endl;
+	// 	glfwTerminate();
+	// 	return -1;
+	// }
+	// glfwMakeContextCurrent(window);
+	// glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
 
 	//
 	// INPUT
 	//
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	// glfwSetMouseButtonCallback(window, mouse_button_callback_2); // this deactivates the first one!
-	glfwSetCursorPosCallback(window, cursor_position_callback);
-	glfwSetKeyCallback(window, key_callback);
+	// glfwSetMouseButtonCallback(window, mouse_button_callback);
+	// // glfwSetMouseButtonCallback(window, mouse_button_callback_2); // this deactivates the first one!
+	// glfwSetCursorPosCallback(window, cursor_position_callback);
+	// glfwSetKeyCallback(window, key_callback);
 
 
 	
 
-	// glad: load all OpenGL function pointers  
-	// ---------------------------------------
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
+	// // glad: load all OpenGL function pointers  
+	// // ---------------------------------------
+	// if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	// {
+	// 	std::cout << "Failed to initialize GLAD" << std::endl;
+	// 	return -1;
+	// }
 
 	// std::cout << "ERROR ? :" << std::endl;
 	// std::cout << glGetError() << std::endl;
@@ -206,7 +245,8 @@ int main()
 	//
 	//
 
-	camera.setPerspectiveMatrix(SCR_INIT_WIDTH, SCR_INIT_HEIGHT);
+	// camera.setPerspectiveMatrix(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
+	cam_setPerspectiveMatrix(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
@@ -565,8 +605,12 @@ int main()
 	// glDepthMask(GL_TRUE);
 	// glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_ALWAYS); // always passes test - i.e. no depth test done 
-	while (!glfwWindowShouldClose(window))
+
+	// while (!glfwWindowShouldClose(window))
+	while (shouldWindowKeepGoing())
 	{
+		// printf("%d\n", inputState_main.a);
+
 		// timespec_get( &waitForFrame , TIME_UTC);
 		// printf("%d\n ", waitForFrame.tv_nsec);
 
@@ -644,7 +688,7 @@ int main()
 
 		// inputState_main
 		// -----
-		processInput(window);
+		processInput();
 
 		// render
 		// ------
@@ -660,7 +704,9 @@ int main()
 
 		// set program and perspective-matrix
 		glUseProgram(worldShader.ID);
-		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, camera.perspectiveMatrix16);
+		// glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, camera.perspectiveMatrix16);
+		// glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, camera_main.perspectiveMatrix16);
+		glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
 
 		//
 		// FPS INFO
@@ -688,59 +734,115 @@ int main()
 
 
 		// CAMERA
-		float forwardX = cos(camera.eulerAnglesRad.c);
-		float forwardY = sin(camera.eulerAnglesRad.c);
+	// 	float forwardX = cos(camera.eulerAnglesRad.c);
+	// 	float forwardY = sin(camera.eulerAnglesRad.c);
 
-		if (inputState_main.w)
-			camera.translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
-		if (inputState_main.s)
-			camera.translate(-forwardX * 0.2f, -forwardY * 0.2f, 0.0f);
+	// 	if (inputState_main.w)
+	// 		camera.translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
+	// 	if (inputState_main.s)
+	// 		camera.translate(-forwardX * 0.2f, -forwardY * 0.2f, 0.0f);
 
-		if (inputState_main.a)
-			camera.translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-		if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 97)) {
-			camera.translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-			// printf("%d\n", inputState_main.mostRecentADpress);
-		}
-		if (inputState_main.d)
-			camera.translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-		if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 100)) {
-			camera.translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-			// printf("%d\n", inputState_main.mostRecentADpress);
-		}
-
-
-		if (inputState_main.au)
-			camera.rotateEulerRad(0.0f, 0.05f, 0.0f);
-		if (inputState_main.ad)
-			camera.rotateEulerRad(0.0f, -0.05f, 0.0f);
-		if (inputState_main.al)
-			camera.rotateEulerRad(0.0f, 0.0f, 0.05f);
-		if (inputState_main.ar)
-			camera.rotateEulerRad(0.0f, 0.0f, -0.05f);
+	// 	if (inputState_main.a)
+	// 		camera.translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
+	// 	if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 97)) {
+	// 		camera.translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
+	// 		// printf("%d\n", inputState_main.mostRecentADpress);
+	// 	}
+	// 	if (inputState_main.d)
+	// 		camera.translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
+	// 	if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 100)) {
+	// 		camera.translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
+	// 		// printf("%d\n", inputState_main.mostRecentADpress);
+	// 	}
 
 
-		// printf("mouse + ctrl\n");
-	// if(inputState_main.mousePressActive && inputState_main.ctrl){
-		if (inputState_main.middleMouse) {
-			float dx = inputState_main.pointerX - inputState_main.pointerXLastFrame;
-			float dy = inputState_main.pointerY - inputState_main.pointerYLastFrame;
+	// 	if (inputState_main.au)
+	// 		camera.rotateEulerRad(0.0f, 0.05f, 0.0f);
+	// 	if (inputState_main.ad)
+	// 		camera.rotateEulerRad(0.0f, -0.05f, 0.0f);
+	// 	if (inputState_main.al)
+	// 		camera.rotateEulerRad(0.0f, 0.0f, 0.05f);
+	// 	if (inputState_main.ar)
+	// 		camera.rotateEulerRad(0.0f, 0.0f, -0.05f);
 
-			inputState_main.pointerXLastFrame = inputState_main.pointerX;
-			inputState_main.pointerYLastFrame = inputState_main.pointerY;
 
-			// printf("%f\n", dx);
-			// printf("%f\n", dy);
+	// 	// printf("mouse + ctrl\n");
+	// // if(inputState_main.mousePressActive && inputState_main.ctrl){
+	// 	if (inputState_main.middleMouse) {
+	// 		float dx = inputState_main.pointerX - inputState_main.pointerXLastFrame;
+	// 		float dy = inputState_main.pointerY - inputState_main.pointerYLastFrame;
 
-			camera.rotateEulerRad(0.0f, 0.0f, -dx * 0.005f);
-			camera.rotateEulerRad(0.0f, -dy * 0.005f, 0.0f);
+	// 		inputState_main.pointerXLastFrame = inputState_main.pointerX;
+	// 		inputState_main.pointerYLastFrame = inputState_main.pointerY;
 
-		}
+	// 		// printf("%f\n", dx);
+	// 		// printf("%f\n", dy);
 
-		camera.rotateEulerRad(0.0f, 0.0f, 0.0f);
-		camera.setViewMatrix();
+	// 		camera.rotateEulerRad(0.0f, 0.0f, -dx * 0.005f);
+	// 		camera.rotateEulerRad(0.0f, -dy * 0.005f, 0.0f);
+
+	// 	}
+
+	// 	camera.rotateEulerRad(0.0f, 0.0f, 0.0f);
+	// 	camera.setViewMatrix();
+
+		cam_UpdateCam();
+
+	// 	float forwardX = cos(camera_main.eulerAnglesRad.c);
+	// 	float forwardY = sin(camera_main.eulerAnglesRad.c);
+
+	// 	if (inputState_main.w)
+	// 		cam_translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
+	// 	if (inputState_main.s)
+	// 		cam_translate(-forwardX * 0.2f, -forwardY * 0.2f, 0.0f);
+
+	// 	if (inputState_main.a)
+	// 		cam_translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
+	// 	if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 97)) {
+	// 		cam_translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
+	// 		// printf("%d\n", inputState_main.mostRecentADpress);
+	// 	}
+	// 	if (inputState_main.d)
+	// 		cam_translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
+	// 	if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 100)) {
+	// 		cam_translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
+	// 		// printf("%d\n", inputState_main.mostRecentADpress);
+	// 	}
+
+
+	// 	if (inputState_main.au)
+	// 		cam_rotateEulerRad(0.0f, 0.05f, 0.0f);
+	// 	if (inputState_main.ad)
+	// 		cam_rotateEulerRad(0.0f, -0.05f, 0.0f);
+	// 	if (inputState_main.al)
+	// 		cam_rotateEulerRad(0.0f, 0.0f, 0.05f);
+	// 	if (inputState_main.ar)
+	// 		cam_rotateEulerRad(0.0f, 0.0f, -0.05f);
+
+
+	// 	// printf("mouse + ctrl\n");
+	// // if(inputState_main.mousePressActive && inputState_main.ctrl){
+	// 	if (inputState_main.middleMouse) {
+	// 		float dx = inputState_main.pointerX - inputState_main.pointerXLastFrame;
+	// 		float dy = inputState_main.pointerY - inputState_main.pointerYLastFrame;
+
+	// 		inputState_main.pointerXLastFrame = inputState_main.pointerX;
+	// 		inputState_main.pointerYLastFrame = inputState_main.pointerY;
+
+	// 		// printf("%f\n", dx);
+	// 		// printf("%f\n", dy);
+
+	// 		cam_rotateEulerRad(0.0f, 0.0f, -dx * 0.005f);
+	// 		cam_rotateEulerRad(0.0f, -dy * 0.005f, 0.0f);
+
+	// 	}
+
+	// 	cam_rotateEulerRad(0.0f, 0.0f, 0.0f);
+	// 	cam_setViewMatrix();
 		// printf("Camera Position: %f", camera.cameraPosition.x);
-		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, camera.viewMatrix);
+		// glUniformMatrix4fv(viewLoc, 1, GL_TRUE, camera.viewMatrix);
+		// glUniformMatrix4fv(viewLoc, 1, GL_TRUE, camera_main.viewMatrix);
+		glUniformMatrix4fv(viewLoc, 1, GL_TRUE, cam_getViewMatrix());
 		// glUniformMatrix4fv(viewLoc, 1, GL_TRUE, viewMatrix16);
 
 
@@ -861,8 +963,9 @@ int main()
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		// glfwSwapBuffers(window);
+		// glfwPollEvents();
+		endOfFrameGlfwCalls();
 
 
 		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
@@ -890,8 +993,10 @@ int main()
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
-	// glfwDestroyWindow(window)
-	glfwTerminate();
+	// glfwDestroyWindow(window);
+	// glfwTerminate();
+	terminatGlThrowSimWindow();
+
 	return 0;
 }
 
