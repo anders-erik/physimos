@@ -72,12 +72,17 @@ void WorldObject::Translate(Vec3 moveVector) {
     this->position.y += moveVector.y;
     this->position.z += moveVector.z;
 }
-
+void WorldObject::SetPosition(Vec3 positionVector) {
+    this->position.x = positionVector.x;
+    this->position.y = positionVector.y;
+    this->position.z = positionVector.z;
+}
 void WorldObject::SetScale(Vec3 scaleVector) {
     this->scale.x = scaleVector.x;
     this->scale.y = scaleVector.y;
     this->scale.z = scaleVector.z;
 }
+
 
 void WorldObject::SetTransformMatrixRowMajor(){
     // this->transformMatrixRowMajor
@@ -225,6 +230,60 @@ WorldObject::WorldObject(const char* path) {
 
 
     
+
+}
+
+void WorldObject::LoadWorldObject(const char* path) {
+
+    std::cout << "Loading model: " << path << ". ";
+    this->modelPath = path;
+
+    std::ifstream modelFile;
+    std::stringstream modelStream;
+    std::string modelString;
+
+    modelFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+
+        modelFile.open(path);
+
+
+        modelStream << modelFile.rdbuf();
+
+        modelString = modelStream.str();
+
+        modelFile.close();
+
+        std::string item;
+        float number;
+
+        // Stepping through each comma-separated value
+        while (std::getline(modelStream, item, ',')) {
+            // Remove any leading or trailing whitespace from the item
+            std::stringstream itemStream(item);
+            itemStream >> number;
+
+            // Add the parsed float to the vector
+            this->vertices.push_back(number);
+        }
+
+        std::cout << "OK.  [" << this->vertices.size() << " values]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
+
+    }
+    catch (std::ifstream::failure& e)
+    {
+        std::cout << " EROOR. [" << this->vertices.size() << " values]" << std::endl;
+        std::cout << "ERROR::READING_PSO_FILE" << e.what() << std::endl;
+    }
+
+
+
+    // std::cout << modelString;
+
+
+
+
 
 }
 

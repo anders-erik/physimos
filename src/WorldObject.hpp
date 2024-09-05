@@ -19,6 +19,8 @@ public:
     WorldObject(const char* path);
     WorldObject();
 
+    void LoadWorldObject(const char* path);
+
     Shader * shader;
     void setShaderProgram(Shader* shader);
     unsigned int vao;
@@ -51,6 +53,7 @@ public:
     // MATH
     void Rotate(Vec3 rotationVector);
     void Translate(Vec3 moveVector);
+    void SetPosition(Vec3 positionVector);
     void SetScale(Vec3 scaleVector);
     void SetTransformMatrixRowMajor();
     

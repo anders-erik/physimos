@@ -6,8 +6,8 @@
 ### TODO
 - refactor
 	- |o| windowing functionality
-	- Input update (raw input handling, camera, ui, simulation)
-	- WorldRenderer
+	- |o| Input update (raw input handling, camera, ui, simulation)
+	- |o| WorldRenderer
 - Detect ui click
 - Add multiple cubes to the world with a simple one statement creation
 

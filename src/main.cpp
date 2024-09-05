@@ -13,12 +13,26 @@
 // #include "InputState.hpp"
 #include "WorldObject.hpp"
 #include "Simulation.hpp"
+// extern SimState simState;
+// extern WorldObject* simWorldObject;
+// extern int dtCount;
+// extern int dtIndex;
+// extern int dtIndexMax;
+// extern int dt;
 #include "vertex.hpp"
 #include "shader.hpp"
+extern Shader worldShader;
 #include "bmp_loader.hpp"
 #include "Camera.hpp"
 #include "Windowing.hpp"
 #include "WorldRenderer.hpp"
+extern WorldObject worldTriangle2_bounce;
+extern unsigned int hasTextureLoc;
+extern unsigned int transformLoc;
+extern unsigned int viewLoc;
+extern unsigned int sanityLoc;
+extern unsigned int perspectiveLoc;
+extern unsigned int colorLoc;
 
 #include "Timing.hpp"
 extern int current_fps;
@@ -32,12 +46,12 @@ extern int current_fps;
 
 
 
-Simulation simulation;
+// Simulation simulation;
 // Camera camera;
 // UI ui;
 
 
-BMP_loader bmp_loader;
+// BMP_loader bmp_loader;
 // InputStruct inputState_main;
 
 
@@ -162,6 +176,10 @@ int main()
 	}
 
 
+	
+	wr_init();
+
+
 
 	// Windowing windowing(SCR_INIT_WIDTH, SCR_INIT_HEIGHT);
 	// if(windowing.loadedProperly == 0){
@@ -208,7 +226,7 @@ int main()
 
 	// build and compile our shader zprogram
 	// ------------------------------------
-	Shader worldShader("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
+	// worldShader.buildShaderProgram("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
 	// Shader worldTextureShader("src/shaders/textureShader.vs", "src/shaders/textureShader.fs");
 
 	// Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
@@ -279,16 +297,16 @@ int main()
 	// 	1.0f, -1.0f, 0.0f,	 // bottom right
 	// 	-1.0f, 1.0f, 0.0f, // top left
 	// };
-	float ground_vertices[] = {
-		// bottom left triangle
-		1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
-		-1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // bottom left
-		-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // botton right
-		// top right triangle
-		1.0f, -1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // top right
-		1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
-		-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // bottom right
-	};
+	// float ground_vertices[] = {
+	// 	// bottom left triangle
+	// 	1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
+	// 	-1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // bottom left
+	// 	-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // botton right
+	// 	// top right triangle
+	// 	1.0f, -1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // top right
+	// 	1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
+	// 	-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // bottom right
+	// };
 
 	// y - z plane
 	// float ground_vertices[] = {
@@ -300,16 +318,16 @@ int main()
 	// 	-1.0f, 0.0f, 1.0f, // top left
 	// };
 
-	struct SimObject ground1;
-	ground1.vertices = ground_vertices;
-	ground1.vertexCount = 6;
+	// struct SimObject ground1;
+	// ground1.vertices = ground_vertices;
+	// ground1.vertexCount = 6;
 
-	float groundScale = 50.0f;
-	struct Point3 ground1InitialPos = { 50.0f, 0.0f, -20.0f };
-	struct Point3 ground1InitialScale = { groundScale, groundScale, 1.0f };
+	// float groundScale = 50.0f;
+	// struct Point3 ground1InitialPos = { 50.0f, 0.0f, -20.0f };
+	// struct Point3 ground1InitialScale = { groundScale, groundScale, 1.0f };
 
-	SetScaleSimObject(&ground1, ground1InitialScale);
-	MoveSimObject(&ground1, ground1InitialPos); // move triangle into simple projection area
+	// SetScaleSimObject(&ground1, ground1InitialScale);
+	// MoveSimObject(&ground1, ground1InitialPos); // move triangle into simple projection area
 
 
 
@@ -325,33 +343,33 @@ int main()
 	// }; 
 
 	// y-z 
-	float triangle[] = {
-		0.0f, 0.0f, 0.05f, 		0.0f, 1.0f, 0.0f, // top
-		0.0f, 0.05f, -0.05f, 	0.0f, 1.0f, 0.0f, // left 
-		0.0f, -0.05f, -0.05f, 	0.0f, 1.0f, 0.0f, // right
-	};
+	// float triangle[] = {
+	// 	0.0f, 0.0f, 0.05f, 		0.0f, 1.0f, 0.0f, // top
+	// 	0.0f, 0.05f, -0.05f, 	0.0f, 1.0f, 0.0f, // left 
+	// 	0.0f, -0.05f, -0.05f, 	0.0f, 1.0f, 0.0f, // right
+	// };
 
 
-	struct SimObject tri1;
-	tri1.vertices = triangle;
-	tri1.vertexCount = 3;
-	// tri1.translation = tri1.position_0;
+	// struct SimObject tri1;
+	// tri1.vertices = triangle;
+	// tri1.vertexCount = 3;
+	// // tri1.translation = tri1.position_0;
 
-	simulation.simObject = &tri1;
+	// simulation.simObject = &tri1;
 
-	// printf("%f \n", *((tri1.vertices) + 1 ));
-	float triangleScale = 20.0f;
+	// // printf("%f \n", *((tri1.vertices) + 1 ));
+	// float triangleScale = 20.0f;
 
-	// struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
-	struct Point3 tri1InitialScale = { 1.0f, triangleScale, triangleScale };
-	struct Point3 tri1InitialPos = { 45.0f, 30.0f, -0.0f };
-	struct Point3 tri1InitialVel = { -1.0f, -0.5f, 25.0f };
-	tri1.position_0 = tri1InitialPos;
-	tri1.velocity_0 = tri1InitialVel;
+	// // struct Point3 tri1InitialRotation = {0.0f, 0.0f, 3.14f / 4 };
+	// struct Point3 tri1InitialScale = { 1.0f, triangleScale, triangleScale };
+	// struct Point3 tri1InitialPos = { 45.0f, 30.0f, -0.0f };
+	// struct Point3 tri1InitialVel = { -1.0f, -0.5f, 25.0f };
+	// tri1.position_0 = tri1InitialPos;
+	// tri1.velocity_0 = tri1InitialVel;
 
-	// SetRotationSimObject(&tri1, tri1InitialRotation);
-	SetScaleSimObject(&tri1, tri1InitialScale);
-	MoveSimObject(&tri1, tri1InitialPos); // move triangle into simple projection area
+	// // SetRotationSimObject(&tri1, tri1InitialRotation);
+	// SetScaleSimObject(&tri1, tri1InitialScale);
+	// MoveSimObject(&tri1, tri1InitialPos); // move triangle into simple projection area
 
 
 
@@ -360,77 +378,78 @@ int main()
 	// CUBE
 	//
 	// y-z 
-	float cube1_vertices[] = {
-		// look + x for correct face reckoing
-		// Front face
-		-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
-		-1.0f, 1.0f, -1.0f, 	0.0f, 0.0f, 1.0f, // botton left
-		-1.0f, -1.0f, -1.0f,	0.0f, 0.0f, 1.0f, // bottom right
+	// float cube1_vertices[] = {
+	// 	// look + x for correct face reckoing
+	// 	// Front face
+	// 	-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
+	// 	-1.0f, 1.0f, -1.0f, 	0.0f, 0.0f, 1.0f, // botton left
+	// 	-1.0f, -1.0f, -1.0f,	0.0f, 0.0f, 1.0f, // bottom right
 
-		-1.0f, -1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top right
-		-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
-		-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, // bottom right
-		// Back Face
-		1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
-		1.0f, 1.0f, -1.0f, 	1.0f, 0.0f, 1.0f, // botton left
-		1.0f, -1.0f, -1.0f,	1.0f, 0.0f, 1.0f, // bottom right
+	// 	-1.0f, -1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top right
+	// 	-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
+	// 	-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, // bottom right
+	// 	// Back Face
+	// 	1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
+	// 	1.0f, 1.0f, -1.0f, 	1.0f, 0.0f, 1.0f, // botton left
+	// 	1.0f, -1.0f, -1.0f,	1.0f, 0.0f, 1.0f, // bottom right
 
-		1.0f, -1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top right
-		1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
-		1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 1.0f, // bottom right
+	// 	1.0f, -1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top right
+	// 	1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
+	// 	1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 1.0f, // bottom right
 
-		// Right Face - 							look +y
-		-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
-		-1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // botton left
-		 1.0f, -1.0f, -1.0f,	0.0f, 1.0f, 1.0f, // bottom right
+	// 	// Right Face - 							look +y
+	// 	-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
+	// 	-1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // botton left
+	// 	 1.0f, -1.0f, -1.0f,	0.0f, 1.0f, 1.0f, // bottom right
 
-		 1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top right
-		-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
-		 1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // bottom right
-		 // Left Face - 							look +y
-		-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
-		-1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // botton left
-		 1.0f, 1.0f, -1.0f,		1.0f, 1.0f, 0.0f, // bottom right
+	// 	 1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top right
+	// 	-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
+	// 	 1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // bottom right
+	// 	 // Left Face - 							look +y
+	// 	-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
+	// 	-1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // botton left
+	// 	 1.0f, 1.0f, -1.0f,		1.0f, 1.0f, 0.0f, // bottom right
 
-		 1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top right
-		-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
-		 1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // bottom right
+	// 	 1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top right
+	// 	-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
+	// 	 1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // bottom right
 
-		 // Bottom Face - 							look +z, +x i right, -y top
-		-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
-		-1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // botton left
-		 1.0f,  1.0f, -1.0f,	0.0f, 0.5f, 1.0f, // bottom right
+	// 	 // Bottom Face - 							look +z, +x i right, -y top
+	// 	-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
+	// 	-1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // botton left
+	// 	 1.0f,  1.0f, -1.0f,	0.0f, 0.5f, 1.0f, // bottom right
 
-		 1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top right
-		-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
-		 1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // bottom right
+	// 	 1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top right
+	// 	-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
+	// 	 1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // bottom right
 
-		 // Bottom Face - 							look +z, +x i right, -y top
-		-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
-		-1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // botton left
-		 1.0f,  1.0f,  1.0f,	1.0f, 0.5f, 0.0f, // bottom right
+	// 	 // Bottom Face - 							look +z, +x i right, -y top
+	// 	-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
+	// 	-1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // botton left
+	// 	 1.0f,  1.0f,  1.0f,	1.0f, 0.5f, 0.0f, // bottom right
 
-		 1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top right
-		-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
-		 1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // bottom right
-	};
-
-
+	// 	 1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top right
+	// 	-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
+	// 	 1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // bottom right
+	// };
 
 
+
+
+	
 
 
 	// WORLD CUBE 1
 	// WorldObject worldCube1("cube.pso");
-	WorldObject worldCube1("src/models/cube.pso");
+	// WorldObject worldCube1("src/models/cube.pso");
 
-	// worldCube1.scale = {2.0, 2.0, 2.0};
-	worldCube1.scale = { 0.5, 0.5, 0.5 };
-	worldCube1.position = {20.0f, 0.0f, 0.0f};
-	// worldCube1.printVertices();
+	// // worldCube1.scale = {2.0, 2.0, 2.0};
+	// worldCube1.scale = { 0.5, 0.5, 0.5 };
+	// worldCube1.position = {20.0f, 0.0f, 0.0f};
+	// // worldCube1.printVertices();
 
-	worldCube1.setVaoVbo330();
-	worldCube1.setShaderProgram(&worldShader);
+	// worldCube1.setVaoVbo330();
+	// worldCube1.setShaderProgram(&worldShader);
 
 
 
@@ -438,58 +457,58 @@ int main()
 
 
 	// WORLD TRIANGLE 1 : First textures
-	WorldObject worldTriangle1("src/models/triangle.pso");
+	// WorldObject worldTriangle1("src/models/triangle.pso");
 
 
-	worldTriangle1.scale = { 10.0, 10.0, 10.0 };
-	worldTriangle1.position = { -5.0f, 0.0f, 0.0f };
+	// worldTriangle1.scale = { 10.0, 10.0, 10.0 };
+	// worldTriangle1.position = { -5.0f, 0.0f, 0.0f };
 
-	worldTriangle1.setVaoVbo332();
-	worldTriangle1.setShaderProgram(&worldShader);
+	// worldTriangle1.setVaoVbo332();
+	// worldTriangle1.setShaderProgram(&worldShader);
 
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// unsigned int texture;
+	// glGenTextures(1, &texture);
+	// glBindTexture(GL_TEXTURE_2D, texture);
+	// // set the texture wrapping/filtering options (on the currently bound texture object)
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	// bmp_loader.loadBMPFile("media/net_100x100.bmp");
-	bmp_loader.loadBMPFile("media/mountain.bmp");
-	// bmp_loader.prettyPrint();
-	// std::cout << "UI image buffer size: " << ui.charImageBuffer.size() << std::endl;
+	// // bmp_loader.loadBMPFile("media/net_100x100.bmp");
+	// bmp_loader.loadBMPFile("media/mountain.bmp");
+	// // bmp_loader.prettyPrint();
+	// // std::cout << "UI image buffer size: " << ui.charImageBuffer.size() << std::endl;
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp_loader.width, bmp_loader.height, 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_loader.imageDataBuffer.data());
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp_loader.width, bmp_loader.height, 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_loader.imageDataBuffer.data());
 
 
-	// Generate a black and white test 'image'
-	int width = 100;
-	int height = 100;
-	// Generate black and white texture
-	unsigned char data[3 * height * width]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
+	// // Generate a black and white test 'image'
+	// int width = 100;
+	// int height = 100;
+	// // Generate black and white texture
+	// unsigned char data[3 * height * width]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
 
-	for (long unsigned int rgb_i = 0; rgb_i < sizeof(data); rgb_i += 3) {
-		// std::cout << rgb_i << " ";
-		int r = rand();
+	// for (long unsigned int rgb_i = 0; rgb_i < sizeof(data); rgb_i += 3) {
+	// 	// std::cout << rgb_i << " ";
+	// 	int r = rand();
 
-		if (r < 1073741823) {
-			data[rgb_i] = 0;
-			data[rgb_i + 1] = 0;
-			data[rgb_i + 2] = 0;
-		}
-		else {
-			data[rgb_i] = 255;
-			data[rgb_i + 1] = 255;
-			data[rgb_i + 2] = 255;
-		}
-	}
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	// 	if (r < 1073741823) {
+	// 		data[rgb_i] = 0;
+	// 		data[rgb_i + 1] = 0;
+	// 		data[rgb_i + 2] = 0;
+	// 	}
+	// 	else {
+	// 		data[rgb_i] = 255;
+	// 		data[rgb_i + 1] = 255;
+	// 		data[rgb_i + 2] = 255;
+	// 	}
+	// }
+	// // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	
-	glGenerateMipmap(GL_TEXTURE_2D);
+	// glGenerateMipmap(GL_TEXTURE_2D);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	// glBindTexture(GL_TEXTURE_2D, 0);
 
 
 
@@ -503,23 +522,23 @@ int main()
 	// SIMULATION
 
 
-	struct SimObject cube1;
-	cube1.vertices = triangle;
-	cube1.vertexCount = 36;
+	// struct SimObject cube1;
+	// cube1.vertices = triangle;
+	// cube1.vertexCount = 36;
 
-	float cube1Scale = 1.0f;
+	// float cube1Scale = 1.0f;
 
-	// struct Point3 tri1InitialRotation = {3.14f / 4 , 0.0f, 0.0f};
-	struct Point3 cube1InitialScale = { 1.0f, cube1Scale, cube1Scale };
-	struct Point3 cube1InitialPos = { 5.0f, 0.0f, 0.0f };
-	// struct Point3 cube1InitialVel = {-1.0f, 0.1f, 25.0f};
-	struct Point3 cube1InitialRotation = { 0.0f, 0.0f, 0.75f };
-	tri1.position_0 = tri1InitialPos;
-	tri1.velocity_0 = tri1InitialVel;
+	// // struct Point3 tri1InitialRotation = {3.14f / 4 , 0.0f, 0.0f};
+	// struct Point3 cube1InitialScale = { 1.0f, cube1Scale, cube1Scale };
+	// struct Point3 cube1InitialPos = { 5.0f, 0.0f, 0.0f };
+	// // struct Point3 cube1InitialVel = {-1.0f, 0.1f, 25.0f};
+	// struct Point3 cube1InitialRotation = { 0.0f, 0.0f, 0.75f };
+	// tri1.position_0 = tri1InitialPos;
+	// tri1.velocity_0 = tri1InitialVel;
 
-	SetRotationSimObject(&cube1, cube1InitialRotation);
-	SetScaleSimObject(&cube1, cube1InitialScale);
-	MoveSimObject(&cube1, cube1InitialPos); // move triangle into simple projection area
+	// SetRotationSimObject(&cube1, cube1InitialRotation);
+	// SetScaleSimObject(&cube1, cube1InitialScale);
+	// MoveSimObject(&cube1, cube1InitialPos); // move triangle into simple projection area
 
 
 
@@ -527,75 +546,75 @@ int main()
 
 	// VAO & VBOs
 
-	unsigned int ground_vao, ground_vbo;
-	glGenVertexArrays(1, &ground_vao);
-	glGenBuffers(1, &ground_vbo);
+	// unsigned int ground_vao, ground_vbo;
+	// glGenVertexArrays(1, &ground_vao);
+	// glGenBuffers(1, &ground_vbo);
 
 
-	unsigned int transformLoc = glGetUniformLocation(worldShader.ID, "transform");
-	unsigned int viewLoc = glGetUniformLocation(worldShader.ID, "view");
-	unsigned int sanityLoc = glGetUniformLocation(worldShader.ID, "sanityTransform");
-	unsigned int perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
-	unsigned int colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
-	unsigned int hasTextureLoc = glGetUniformLocation(worldShader.ID, "hasTexture");
+	// unsigned int transformLoc = glGetUniformLocation(worldShader.ID, "transform");
+	// unsigned int viewLoc = glGetUniformLocation(worldShader.ID, "view");
+	// unsigned int sanityLoc = glGetUniformLocation(worldShader.ID, "sanityTransform");
+	// unsigned int perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
+	// unsigned int colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
+	// hasTextureLoc = glGetUniformLocation(worldShader.ID, "hasTexture");
 	// unsigned int textureLoc = glGetUniformLocation(worldShader.ID, "ourTexture");
 	
 
 	// GROUND
-	glBindVertexArray(ground_vao);
+	// glBindVertexArray(ground_vao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(ground_vertices), ground_vertices, GL_STATIC_DRAW);
+	// glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(ground_vertices), ground_vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	// glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// TRIANGLE
 
-	unsigned int triangle_vao, triangle_vbo;
-	glGenVertexArrays(1, &triangle_vao);
-	glGenBuffers(1, &triangle_vbo);
+	// unsigned int triangle_vao, triangle_vbo;
+	// glGenVertexArrays(1, &triangle_vao);
+	// glGenBuffers(1, &triangle_vbo);
 
-	glBindVertexArray(triangle_vao);
+	// glBindVertexArray(triangle_vao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, triangle_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+	// glBindBuffer(GL_ARRAY_BUFFER, triangle_vbo);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	// glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
 	// CUBE 1
-	unsigned int cube1_vao, cube1_vbo;
-	glGenVertexArrays(1, &cube1_vao);
-	glGenBuffers(1, &cube1_vbo);
+	// unsigned int cube1_vao, cube1_vbo;
+	// glGenVertexArrays(1, &cube1_vao);
+	// glGenBuffers(1, &cube1_vbo);
 
-	glBindVertexArray(cube1_vao);
+	// glBindVertexArray(cube1_vao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, cube1_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube1_vertices), cube1_vertices, GL_STATIC_DRAW);
+	// glBindBuffer(GL_ARRAY_BUFFER, cube1_vbo);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(cube1_vertices), cube1_vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	// glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
 
-	glBindVertexArray(0);
+	// glBindVertexArray(0);
 
 
 	// INITIAL CLOCK INFO
@@ -629,70 +648,121 @@ int main()
 		// glDepthRange(1.0, 0.0); 
 		glEnable(GL_DEPTH_TEST);
 
+
+
+
 		//
 		// SIMULATION
 		//
 
+		updateSimulation();
+		// if (simState == SimState::idle && inputState.startSimClick == 1) {
+		// 	simState = SimState::startClickDetected;
+		// 	inputState.startSimClick = 0;
+		// }
+		// else {
+		// 	// printf("Simulation already running! \n");
+		// 	inputState.startSimClick = 0;
+		// }
+
+		// // Start Simulation
+		// if (simState == SimState::startClickDetected) {
+		// 	simState = running;
+		// 	printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", dtIndexMax);
+
+		// 	// simulation.simObject = &tri1;
+		// 	// simulation.simObject->translationPrevStep = simulation.simObject->position_0;
+		// 	// simulation.simObject->velocityPrevStep = simulation.simObject->velocity_0;
+
+
+		// 	simWorldObject = &worldTriangle2_bounce;
+		// 	simWorldObject->translationPrevStep = simWorldObject->position_0;
+		// 	simWorldObject->velocityPrevStep = simWorldObject->velocity_0;
+
+		// }
+		// // stop and reset if stopping condition is met
+		// if (dtIndex >= dtIndexMax) {
+		// 	simState = SimState::idle;
+		// 	dtIndex = 0;
+		// 	// SetPositionSimObject(&tri1, tri1.position_0);
+
+		// 	simWorldObject->SetPosition(simWorldObject->position_0);
+		// 	printf("Simulation done. \n");
+
+		// }
+
+
+		// // Keep simulation running and check running condition
+		// if (simState == SimState::running && dtIndex < dtIndexMax) {
+
+		// 	dtIndex++;
+
+		// 	// updatePosAndVel(simulation.simObject, (float)simulation.dt);
+		// 	sim_updatePosAndVel(simWorldObject);
+			
+
+		// }
+
 		// Make ignore start sim click if not idle
-		if (simulation.simState == SimState::idle && inputState.startSimClick == 1) {
-			simulation.simState = SimState::startClickDetected;
-			inputState.startSimClick = 0;
-		}
-		else {
-			// printf("Simulation already running! \n");
-			inputState.startSimClick = 0;
-		}
+		// if (simulation.simState == SimState::idle && inputState.startSimClick == 1) {
+		// 	simulation.simState = SimState::startClickDetected;
+		// 	inputState.startSimClick = 0;
+		// }
+		// else {
+		// 	// printf("Simulation already running! \n");
+		// 	inputState.startSimClick = 0;
+		// }
 
-		// Start Simulation
-		// printf("simstate: %d \n", simulation.simState);
-		if (simulation.simState == SimState::startClickDetected) {
-			simulation.simState = running;
-			printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", simulation.dtIndexMax);
+		// // Start Simulation
+		// // printf("simstate: %d \n", simulation.simState);
+		// if (simulation.simState == SimState::startClickDetected) {
+		// 	simulation.simState = running;
+		// 	printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", simulation.dtIndexMax);
 
-			simulation.simObject = &tri1;
+		// 	simulation.simObject = &tri1;
 
-			simulation.simObject->translationPrevStep = simulation.simObject->position_0;
-			simulation.simObject->velocityPrevStep = simulation.simObject->velocity_0;
-
-
-			// glClearDepth(1.0);
-			// glDepthFunc(GL_LEQUAL); 
-
-			// glDepthMask(GL_TRUE);
-			// glEnable(GL_DEPTH_CLAMP);
-
-			// glClearDepth(1.0);
-
-		}
-		// stop and reset if stopping condition is met
-		if (simulation.dtIndex >= simulation.dtIndexMax) {
-			simulation.simState = SimState::idle;
-			simulation.dtIndex = 0;
-			SetPositionSimObject(&tri1, tri1.position_0);
-			printf("Simulation done. \n");
-
-			// glClear(GL_DEPTH_BUFFER_BIT);
-			// glDisable(GL_DEPTH_TEST); 
-		}
+		// 	simulation.simObject->translationPrevStep = simulation.simObject->position_0;
+		// 	simulation.simObject->velocityPrevStep = simulation.simObject->velocity_0;
 
 
-		// Keep simulation running and check running condition
-		if (simulation.simState == SimState::running && simulation.dtIndex < simulation.dtIndexMax) {
+		// 	// glClearDepth(1.0);
+		// 	// glDepthFunc(GL_LEQUAL); 
 
-			simulation.dtIndex++;
+		// 	// glDepthMask(GL_TRUE);
+		// 	// glEnable(GL_DEPTH_CLAMP);
 
-			updatePosAndVel(simulation.simObject, (float)simulation.dt);
+		// 	// glClearDepth(1.0);
+
+		// }
+		// // stop and reset if stopping condition is met
+		// if (simulation.dtIndex >= simulation.dtIndexMax) {
+		// 	simulation.simState = SimState::idle;
+		// 	simulation.dtIndex = 0;
+		// 	SetPositionSimObject(&tri1, tri1.position_0);
+		// 	printf("Simulation done. \n");
+
+		// 	// glClear(GL_DEPTH_BUFFER_BIT);
+		// 	// glDisable(GL_DEPTH_TEST); 
+		// }
 
 
-			// printf("%f \n", simulation.simObject->translation.z);
+		// // Keep simulation running and check running condition
+		// if (simulation.simState == SimState::running && simulation.dtIndex < simulation.dtIndexMax) {
+
+		// 	simulation.dtIndex++;
+
+		// 	updatePosAndVel(simulation.simObject, (float)simulation.dt);
 
 
-			// printf("%d ", simulation.dtIndex);
+		// 	// printf("%f \n", simulation.simObject->translation.z);
 
-			// Run next time step
 
-			// simulation.setPositionAtT(&tri1, simulation.dtIndex*simulation.dt); 
-		}
+		// 	// printf("%d ", simulation.dtIndex);
+
+		// 	// Run next time step
+
+		// 	// simulation.setPositionAtT(&tri1, simulation.dtIndex*simulation.dt); 
+		// }
 
 
 
@@ -862,91 +932,92 @@ int main()
 
 
 		// GROUND
-		glBindVertexArray(ground_vao);
+		// glBindVertexArray(ground_vao);
 
-		// struct Point3 moveGround1 = {0.0f, -0.01f, 0.1f};
-		// MoveSimObject(&ground1, moveGround1);
+		// // struct Point3 moveGround1 = {0.0f, -0.01f, 0.1f};
+		// // MoveSimObject(&ground1, moveGround1);
 
-		SetSimObjectTranform(&ground1);
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ground1.transformMatrixRowMajor);
+		// SetSimObjectTranform(&ground1);
+		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ground1.transformMatrixRowMajor);
 
-		glUniform4f(colorLoc, 0.0f, 0.5f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		// glUniform4f(colorLoc, 0.0f, 0.5f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
+		// glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
 		// glClear(GL_DEPTH_BUFFER_BIT);
 
-		// TRIANGLE
-		glBindVertexArray(triangle_vao);
+		// // TRIANGLE
+		// glBindVertexArray(triangle_vao);
 
-		// Dynamic movement 
-		// struct Point3 rotTri1 = {0.0f, 0.0f, 0.01f};
-		// RotationSimObject(&tri1, rotTri1);
-		// struct Point3 moveTri1 = {0.01f, 0.0f, 0.0f};
-		// MoveSimObject(&tri1, moveTri1);
+		// // Dynamic movement 
+		// // struct Point3 rotTri1 = {0.0f, 0.0f, 0.01f};
+		// // RotationSimObject(&tri1, rotTri1);
+		// // struct Point3 moveTri1 = {0.01f, 0.0f, 0.0f};
+		// // MoveSimObject(&tri1, moveTri1);
 
-		// RotationSimObject(simulation.simObject, {0.0f, 0.0f, -0.01f});
-		// SetSimObjectTranform(&tri1);
-		SetSimObjectTranform(simulation.simObject);
-		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, simulation.simObject->transformMatrixRowMajor);
-		// glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
+		// // RotationSimObject(simulation.simObject, {0.0f, 0.0f, -0.01f});
+		// // SetSimObjectTranform(&tri1);
+		// SetSimObjectTranform(simulation.simObject);
+		// // glUniformMatrix4fv(transformLoc, 1, GL_TRUE, tri1.transformMatrixRowMajor);
+		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, simulation.simObject->transformMatrixRowMajor);
+		// // glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
 
-		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
+		// glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
-		// CUBE 1
-		glBindVertexArray(cube1_vao);
+		// // CUBE 1
+		// glBindVertexArray(cube1_vao);
 
-		RotationSimObject(&cube1, { 0.03f, 0.01f, 0.0f });
-		MoveSimObject(&cube1, {0.0f, -0.01f, 0.0f});
-		SetSimObjectTranform(&cube1);
+		// RotationSimObject(&cube1, { 0.03f, 0.01f, 0.0f });
+		// MoveSimObject(&cube1, {0.0f, -0.01f, 0.0f});
+		// SetSimObjectTranform(&cube1);
 
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, cube1.transformMatrixRowMajor);
-		// glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
+		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, cube1.transformMatrixRowMajor);
+		// // glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
 
-		glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
+		// glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glBindVertexArray(0); // Make sure that the cibe1-data does not linger and renders the next cube
+		// glBindVertexArray(0); // Make sure that the cibe1-data does not linger and renders the next cube
 
 
 
 		// WORLD CUBE 1
-		worldCube1.shader->use();
-		glBindVertexArray(worldCube1.vao);
+		wr_render(transformLoc);
+		// worldCube1.shader->use();
+		// glBindVertexArray(worldCube1.vao);
 
-		// worldCube1.Rotate({ 0.03f, 0.01f, 0.0f });
-		worldCube1.Translate({ 0.03f, 0.01f, -0.01f });
-		// worldCube1.SetScale({ 100.0f, 100.0f, 100.0f });
-		worldCube1.SetTransformMatrixRowMajor();
+		// // worldCube1.Rotate({ 0.03f, 0.01f, 0.0f });
+		// worldCube1.Translate({ 0.03f, 0.01f, -0.01f });
+		// // worldCube1.SetScale({ 100.0f, 100.0f, 100.0f });
+		// worldCube1.SetTransformMatrixRowMajor();
 
-		// SetSimObjectTranform(&cube1);
+		// // SetSimObjectTranform(&cube1);
 		
-		// float copy[16] = ()
+		// // float copy[16] = ()
 
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldCube1.transformMatrixRowMajor);
+		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldCube1.transformMatrixRowMajor);
 
-		// // glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
+		// // // glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
 
-		// glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// // glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
+		// glDrawArrays(GL_TRIANGLES, 0, 36);
 		// worldCube1.printPosition();
 		// worldCube1.printTransformMatrix();
 
 
 
 		// WORLD TRIANGLE 1
-		worldTriangle1.shader->use();
-		glUniform1i(hasTextureLoc, 1); // set texture bool
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glBindVertexArray(worldTriangle1.vao);
-		worldTriangle1.SetTransformMatrixRowMajor();
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldTriangle1.transformMatrixRowMajor);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glUniform1i(hasTextureLoc, 0); // unset texture bool
+		// worldTriangle1.shader->use();
+		// glUniform1i(hasTextureLoc, 1); // set texture bool
+		// glActiveTexture(GL_TEXTURE0);
+		// glBindTexture(GL_TEXTURE_2D, texture);
+		// glBindVertexArray(worldTriangle1.vao);
+		// worldTriangle1.SetTransformMatrixRowMajor();
+		// glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldTriangle1.transformMatrixRowMajor);
+		// glDrawArrays(GL_TRIANGLES, 0, 3);
+		// glUniform1i(hasTextureLoc, 0); // unset texture bool
 
 
 		/*
@@ -1001,8 +1072,8 @@ int main()
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	// ------------------------------------------------------------------------
-	glDeleteVertexArrays(1, &ground_vao);
-	glDeleteBuffers(1, &ground_vbo);
+	// glDeleteVertexArrays(1, &ground_vao);
+	// glDeleteBuffers(1, &ground_vbo);
 
 	glDeleteProgram(worldShader.ID);
 
