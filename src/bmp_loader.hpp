@@ -1,8 +1,16 @@
+
 #include <vector>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
+
+void bmp_loader_loadBMPFile(std::string path);
+
+
+void bmp_loader_prettyPrint();
+
+std::vector<unsigned char> getImageDataBuffer();
+unsigned int getBmpWidth();
+unsigned int getBmpHeight();
+
+
 
 class BMP_loader
 {

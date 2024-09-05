@@ -20,6 +20,9 @@
 #include "Windowing.hpp"
 #include "WorldRenderer.hpp"
 
+#include "Timing.hpp"
+extern int current_fps;
+
 #include "Model.hpp"
 
 
@@ -31,7 +34,7 @@
 
 Simulation simulation;
 // Camera camera;
-UI ui;
+// UI ui;
 
 
 BMP_loader bmp_loader;
@@ -60,15 +63,15 @@ const float sanityMatrix16[16] = {
 
 
 // timing
-#define TARGET_FPS 60
-#define FRAME_DURATION (1000 / TARGET_FPS) // Duration of each frame in milliseconds
+// #define TARGET_FPS 60
+// #define FRAME_DURATION (1000 / TARGET_FPS) // Duration of each frame in milliseconds
 
-double glfwTime;
+// double glfwTime;
 
-time_t epoch_fps, current_second_fps, current_time_fps, last_frame_fps;
-int secondCount;
-struct timespec wait = { 0, 20000000L }; // nanoseconds of added wait between each frame
-struct timespec waitForFrame = { 0, 0L }; // nanoseconds of added wait between each frame
+// time_t epoch_fps, current_second_fps, current_time_fps, last_frame_fps;
+// int secondCount;
+// struct timespec wait = { 0, 20000000L }; // nanoseconds of added wait between each frame
+// struct timespec waitForFrame = { 0, 0L }; // nanoseconds of added wait between each frame
 
 
 
@@ -94,7 +97,7 @@ struct timespec waitForFrame = { 0, 0L }; // nanoseconds of added wait between e
 
 
 
-
+extern struct InputState inputState;
 
 
 
@@ -104,8 +107,12 @@ int main()
 	srand(0);
 
 	// Point 'inputState_main' to global InputState object
-	InputState* inputState_main_point = getCurrentInputStatePointer();
-	InputState& inputState_main = *inputState_main_point;
+	// InputState* inputState_main_point = getCurrentInputStatePointer();
+	// InputState& inputState_main = *inputState_main_point;
+
+	
+	
+
 
 	// Camera__* camera_main_point = getCurrentCamera_pointer();
 	// Camera__& camera_main = *camera_main_point;
@@ -142,7 +149,7 @@ int main()
 
 	// INPUT
 	// input_main.setUiAndCamera(&ui, &camera); 
-	setUiAndCamera(&ui);
+	// setUiAndCamera(&ui);
 
 
 
@@ -206,20 +213,25 @@ int main()
 
 	// Shader uiShader("src/shaders/ui.vs", "src/shaders/ui.fs");
 	// bmp_loader.loadBMPFile("media/net_100x100.bmp");
-	bmp_loader.loadBMPFile("media/characters-1.bmp");
-	ui.setCharacterTextureData(bmp_loader.imageDataBuffer, bmp_loader.width, bmp_loader.height);
-	ui.init();
-	// ui.reloadUi();
-	ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
-	// Load character texture and copy (!?) values to ui object 
+	// bmp_loader_loadBMPFile("media/characters-1.bmp");
 
+	// ui.setCharacterTextureData(bmp_loader.imageDataBuffer, bmp_loader.width, bmp_loader.height);
+	// ui.init();
+	// ui.newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
+	// ui_setCharacterTextureData(bmp_loader.imageDataBuffer, bmp_loader.width, bmp_loader.height);
+	// ui_setCharacterTextureData(getImageDataBuffer(), getBmpWidth(), getBmpHeight());
+	ui_init();
+	// ui_newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
+
+	// Load character texture and copy (!?) values to ui object 
+	// ui.reloadUi();
 
 
 	// ui.charImageBuffer = bmp_loader.imageDataBuffer;
 	// ui.charImgWidth = bmp_loader.width;
 	// ui.charImgHeight = bmp_loader.height;
 	
-	ui.setWindowSize(800, 600);
+	// ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 	
 	// std::cout << "ASDlkfsd flasd hfkljas hdfklashdfklhdfklajaklshdfklashdkfhaskdfhas\n";
 	// ui.createUiRectange(100, 100, 700, 500, white);
@@ -228,7 +240,7 @@ int main()
 	// ui.createUiRectange(100, 100, 700, 200, green);
 	// ui.createUiRectange(100, 100, 700, 100, blue);
 
-	ui.reloadUi();
+	// ui_reloadUi();
 
 	// ui.loadUiFile("src/main.psoui");
 	
@@ -587,17 +599,17 @@ int main()
 
 
 	// INITIAL CLOCK INFO
-	clock_t lastFrameTime = 0;
-	printf("CLOCKS_PER_SEC = %li \n", CLOCKS_PER_SEC);
+	// clock_t lastFrameTime = 0;
+	// printf("CLOCKS_PER_SEC = %li \n", CLOCKS_PER_SEC);
 
-	glfwTime = glfwGetTime();
-	printf("glfwTime1 = %f \n", glfwTime);
-	glfwTime = glfwGetTime();
-	printf("glfwTime2 = %f \n", glfwTime);
+	// glfwTime = glfwGetTime();
+	// printf("glfwTime1 = %f \n", glfwTime);
+	// glfwTime = glfwGetTime();
+	// printf("glfwTime2 = %f \n", glfwTime);
 
-	time(&epoch_fps);
+	// time(&epoch_fps);
 
-	int current_fps = 0;
+	
 
 
 	// render loop
@@ -622,13 +634,13 @@ int main()
 		//
 
 		// Make ignore start sim click if not idle
-		if (simulation.simState == SimState::idle && inputState_main.startSimClick == 1) {
+		if (simulation.simState == SimState::idle && inputState.startSimClick == 1) {
 			simulation.simState = SimState::startClickDetected;
-			inputState_main.startSimClick = 0;
+			inputState.startSimClick = 0;
 		}
 		else {
 			// printf("Simulation already running! \n");
-			inputState_main.startSimClick = 0;
+			inputState.startSimClick = 0;
 		}
 
 		// Start Simulation
@@ -713,17 +725,18 @@ int main()
 		//
 
 		// time(&last_frame_fps);
-		time(&current_time_fps);
-		++secondCount;
-		// entered new second
-		if (current_time_fps > current_second_fps)
-		{
-			current_second_fps = current_time_fps;
-			printf("FPS: %d \n", secondCount);
-			current_fps = secondCount;
-			// printf("%d \n", (int)(current_time - epoch_time));
-			secondCount = 0;
-		}
+		// time(&current_time_fps);
+		// ++secondCount;
+		// // entered new second
+		// if (current_time_fps > current_second_fps)
+		// {
+		// 	current_second_fps = current_time_fps;
+		// 	printf("FPS: %d \n", secondCount);
+		// 	current_fps = secondCount;
+		// 	// printf("%d \n", (int)(current_time - epoch_time));
+		// 	secondCount = 0;
+		// }
+		timing_newFrame();
 
 
 
@@ -905,7 +918,7 @@ int main()
 		glBindVertexArray(worldCube1.vao);
 
 		// worldCube1.Rotate({ 0.03f, 0.01f, 0.0f });
-		// worldCube1.Translate({ 0.03f, 0.01f, -0.01f });
+		worldCube1.Translate({ 0.03f, 0.01f, -0.01f });
 		// worldCube1.SetScale({ 100.0f, 100.0f, 100.0f });
 		worldCube1.SetTransformMatrixRowMajor();
 
@@ -956,9 +969,10 @@ int main()
 		// ui.createUiRectange(h_, w_, x_, y_);
 		// ui.createUiRectange(h_, w_, x_, y_);
 
-		ui.updateFpsElement(current_fps);
-		ui.renderUI();
-
+		// ui.updateFpsElement(current_fps);
+		// ui.renderUI();
+		ui_update(current_fps);
+		
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -971,15 +985,16 @@ int main()
 		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
 		// Keep track of time since last frame and wait to match the target frame rate
-		clock_t currentTime = clock();
-		double timeTaken = (double)(currentTime - lastFrameTime) / CLOCKS_PER_SEC * 1000.0;
+		// clock_t currentTime = clock();
+		// double timeTaken = (double)(currentTime - lastFrameTime) / CLOCKS_PER_SEC * 1000.0;
 
-		if (timeTaken < FRAME_DURATION)
-		{
-			usleep((FRAME_DURATION - timeTaken) * 1000); // Sleep for the remaining time
-		}
+		// if (timeTaken < FRAME_DURATION)
+		// {
+		// 	usleep((FRAME_DURATION - timeTaken) * 1000); // Sleep for the remaining time
+		// }
 
-		lastFrameTime = clock();
+		// lastFrameTime = clock();
+		timing_waitForNextFrame();
 
 		// nanosleep(&wait, &wait); // old method
 	}

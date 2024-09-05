@@ -2,21 +2,27 @@
 
 #include "Input.hpp"
 
+#include "ui.hpp"
+#include "Camera.hpp"
+
 int inputX = 1;
 
 
 
-UI* ui_input;
+// UI* ui_input;
 // Camera* camera_input;
 
 InputState inputState__;
 
+struct InputState inputState;
+
+
 InputState* getCurrentInputStatePointer() {
 	return &inputState__;
 }
-void setUiAndCamera(UI* _ui) {
-	ui_input = _ui;
-}
+// void setUiAndCamera(UI* _ui) {
+// 	ui_input = _ui;
+// }
 
 
 // ----------------------------------------------------------------------------
@@ -36,9 +42,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 	// THESE ARE NOT REFERENCING THE PROPER INSTANCE OF CAMERA+UI ! ! ! !
 	// camera_input->setPerspectiveMatrix(width, height);
+	cam_setPerspectiveMatrix(width, height);
 
-	ui_input->setWindowSize(width, height);
-	ui_input->reloadUi();
+	// ui_input->setWindowSize(width, height);
+	// ui_input->reloadUi();
+	ui_setWindowSize(width, height);
+	ui_reloadUi();
 }
  
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -53,33 +62,33 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         // if(simulation.simState == SimState::idle && ypos < 100.0 && xpos > 700.0){
 		if(ypos < 100.0 && xpos > 700.0){
 			printf("Start Simulation button clicked! \n");
-			inputState__.startSimClick = 1;
+			inputState.startSimClick = 1;
 			// simulation.simState = SimState::startClickDetected;
 		}
-		inputState__.mousePressActive = 1;
-		inputState__.pointerXLastClick = xpos;
-		inputState__.pointerYLastClick = ypos;
+		inputState.mousePressActive = 1;
+		inputState.pointerXLastClick = xpos;
+		inputState.pointerYLastClick = ypos;
 		
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
 		// printf("RELEASED LEFT MOUSE BUTON\n");
-		inputState__.mousePressActive = 0;
+		inputState.mousePressActive = 0;
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS){
 		glfwGetCursorPos(window, &xpos, &ypos);
-		inputState__.middleMouse = 1;
-		inputState__.pointerXLastFrame = xpos;
-		inputState__.pointerYLastFrame = ypos;
+		inputState.middleMouse = 1;
+		inputState.pointerXLastFrame = xpos;
+		inputState.pointerYLastFrame = ypos;
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
-		inputState__.middleMouse = 0;
+		inputState.middleMouse = 0;
 	
 }
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// printf("%f , %f \n", xpos, ypos);
-	inputState__.pointerX = xpos;
-	inputState__.pointerY = ypos;
+	inputState.pointerX = xpos;
+	inputState.pointerY = ypos;
 	
 }
 
@@ -91,55 +100,55 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	
 
 	if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL ) && action == GLFW_PRESS)
-		inputState__.ctrl = 1;
+		inputState.ctrl = 1;
 	if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL)  && action == GLFW_RELEASE)
-		inputState__.ctrl = 0;
+		inputState.ctrl = 0;
 	
 
 	if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		inputState__.w = 1;
+		inputState.w = 1;
 	if (key == GLFW_KEY_S && action == GLFW_PRESS)
-		inputState__.s = 1;
+		inputState.s = 1;
 	if (key == GLFW_KEY_A && action == GLFW_PRESS){
-		inputState__.a = 1;
-		inputState__.mostRecentADpress = 'a';
+		inputState.a = 1;
+		inputState.mostRecentADpress = 'a';
 		// printf("A \n");
 		// if(inputState.mostRecentADpress == 97)
 		// 	printf("'a' is most recent\n");
 	}
 	if (key == GLFW_KEY_D && action == GLFW_PRESS){
-		inputState__.d = 1;
-		inputState__.mostRecentADpress = 'd';
+		inputState.d = 1;
+		inputState.mostRecentADpress = 'd';
 		
 	}
 
 	if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-		inputState__.w = 0;
+		inputState.w = 0;
 	if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-		inputState__.s = 0;
+		inputState.s = 0;
 	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		inputState__.a = 0;
+		inputState.a = 0;
 	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-		inputState__.d = 0;
+		inputState.d = 0;
 
 	// ARROW KEYS
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-		inputState__.au = 1;
+		inputState.au = 1;
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-		inputState__.al = 1;
+		inputState.al = 1;
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-		inputState__.ad = 1;
+		inputState.ad = 1;
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-		inputState__.ar = 1;
+		inputState.ar = 1;
 
 	if (key == GLFW_KEY_UP && action == GLFW_RELEASE)
-		inputState__.au = 0;
+		inputState.au = 0;
 	if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE)
-		inputState__.al = 0;
+		inputState.al = 0;
 	if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE)
-		inputState__.ad = 0;
+		inputState.ad = 0;
 	if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
-		inputState__.ar = 0;
+		inputState.ar = 0;
 }
  
 

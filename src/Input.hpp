@@ -7,7 +7,7 @@
 
 // #include "InputState.hpp"
 
-#include "ui.hpp"
+
 // #include "Camera.hpp"
 
 extern int inputX;
@@ -41,7 +41,7 @@ struct InputState {
 
 InputState* getCurrentInputStatePointer();
 
-void setUiAndCamera(UI* _ui);
+// void setUiAndCamera(UI* _ui);
 
 
 

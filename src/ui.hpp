@@ -5,82 +5,105 @@
 #include <iostream>
 #include <vector>
 
-#include "shader.hpp"
+
 #include "uiElement.hpp"
 #include "Types.hpp"
 
 
 
 
-class UI {
-    public:
+void ui_update(int fps);
 
-        unsigned int uiVAO = 0;
-        unsigned int uiVBO = 0;
-        unsigned int uiIsCharVAO = 0;
-        unsigned int uiIsCharVBO = 0;
+void ui_updateFpsElement(int fps);
+
+void ui_setCharacterTextureData(std::vector<unsigned char> data, unsigned int imgWidth, unsigned int imgHeight);
+void ui_createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiElement& _uiStringElem);
+void ui_updateStringUi(int fontHeight, int x, int y, std::string str, UiElement& _uiStringElem);
 
 
-        // unsigned int squareVAO = 0;
-        // unsigned int squareVBO = 0;
+void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName);
 
-        int windowWidth = 0;
-        int windowHeight = 0;
 
-        // CHAR TEXTURING
-        unsigned int charTexture;
+void ui_init();
 
-        std::vector<float> isCharBuffer;
+void ui_reloadUi();
 
-        void setCharacterTextureData(std::vector<unsigned char> data, unsigned int imgWidth, unsigned int imgHeight);
-        void createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiElement &_uiStringElem);
-        void updateStringUi(int fontHeight, int x, int y, std::string str, UiElement &_uiStringElem);
-        std::vector<unsigned char> charImageBuffer;
-        unsigned int charImgWidth = 0;
-        unsigned int charImgHeight = 0;
+void ui_setWindowSize(int width, int height);
 
-        // String elements
-        std::vector<UiElement> fpsStringElements;
-        void updateFpsElement(int fps);
+void ui_newShaderPlease(const char* vertexPath, const char* fragmentPath);
+
+void ui_loadUiFile(const char* uiFilePath);
+
+void ui_renderUI();
+
+
+
+
+
+
+
+
+
+// class UI {
+//     public:
+
+        
+
+
+//         // CHAR TEXTURING
+//         unsigned int charTexture;
+
+//         std::vector<float> isCharBuffer;
+
+//         void setCharacterTextureData(std::vector<unsigned char> data, unsigned int imgWidth, unsigned int imgHeight);
+//         void createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiElement &_uiStringElem);
+//         void updateStringUi(int fontHeight, int x, int y, std::string str, UiElement &_uiStringElem);
+//         std::vector<unsigned char> charImageBuffer;
+//         unsigned int charImgWidth = 0;
+//         unsigned int charImgHeight = 0;
+
+//         // String elements
+//         std::vector<UiElement> fpsStringElements;
+//         void updateFpsElement(int fps);
 
         
 
 
-        std::vector<UiElement> uiElements;
-        std::vector<float> uiVertexFloatBuffer;
+//         std::vector<UiElement> uiElements;
+//         std::vector<float> uiVertexFloatBuffer;
 
-        float uiTransform16[16] = {
-                                        2.0f / 800, 0, 0, -1.0f,
-                                        0, 2.0f / 600, 0, -1.0f,
-                                        0, 0, 1, 0,
-                                        0, 0, 0, 1, };
+//         float uiTransform16[16] = {
+//                                         2.0f / 800, 0, 0, -1.0f,
+//                                         0, 2.0f / 600, 0, -1.0f,
+//                                         0, 0, 1, 0,
+//                                         0, 0, 0, 1, };
         
 
-        unsigned int uiTransformLoc;
+//         unsigned int uiTransformLoc;
 
-        void createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName);
+//         void createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName);
         
 
 
-        UI() {};
+//         UI() {};
 
-        void init();
+//         void init();
 
-        void reloadUi();
+//         void reloadUi();
 
-        void setWindowSize(int width, int height);
+//         void setWindowSize(int width, int height);
 
-        void newShaderPlease(const char* vertexPath, const char* fragmentPath);
+//         void newShaderPlease(const char* vertexPath, const char* fragmentPath);
 
-        void loadUiFile(const char* uiFilePath);
+//         void loadUiFile(const char* uiFilePath);
 
-        void renderUI();
+//         void renderUI();
 
         
 
-        Shader shader;
+//         Shader shader;
 
-};
+// };
 
 
 

@@ -13,8 +13,10 @@ struct Camera__ camera__;
 InputState* inputState_cam_point;
 // InputState& inputState_cam;
 
+extern struct InputState inputState;
+
 void initCamera(){
-    inputState_cam_point = getCurrentInputStatePointer();
+    // inputState_cam_point = getCurrentInputStatePointer();
     // inputState_cam = *inputState_cam_point;
 
 
@@ -30,48 +32,48 @@ void initCamera(){
 }
 
 void cam_UpdateCam(){
-    InputState& inputState_main = *inputState_cam_point;
+    // InputState& inputState_main = *inputState_cam_point;
 
     float forwardX = cos(camera__.eulerAnglesRad.c);
     float forwardY = sin(camera__.eulerAnglesRad.c);
 
-    if (inputState_main.w)
+    if (inputState.w)
         cam_translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
-    if (inputState_main.s)
+    if (inputState.s)
         cam_translate(-forwardX * 0.2f, -forwardY * 0.2f, 0.0f);
 
-    if (inputState_main.a)
+    if (inputState.a)
         cam_translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-    if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 97)) {
+    if ((inputState.a && inputState.d) && (inputState.mostRecentADpress == 97)) {
         cam_translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
         // printf("%d\n", inputState_main.mostRecentADpress);
     }
-    if (inputState_main.d)
+    if (inputState.d)
         cam_translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-    if ((inputState_main.a && inputState_main.d) && (inputState_main.mostRecentADpress == 100)) {
+    if ((inputState.a && inputState.d) && (inputState.mostRecentADpress == 100)) {
         cam_translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
         // printf("%d\n", inputState_main.mostRecentADpress);
     }
 
 
-    if (inputState_main.au)
+    if (inputState.au)
         cam_rotateEulerRad(0.0f, 0.05f, 0.0f);
-    if (inputState_main.ad)
+    if (inputState.ad)
         cam_rotateEulerRad(0.0f, -0.05f, 0.0f);
-    if (inputState_main.al)
+    if (inputState.al)
         cam_rotateEulerRad(0.0f, 0.0f, 0.05f);
-    if (inputState_main.ar)
+    if (inputState.ar)
         cam_rotateEulerRad(0.0f, 0.0f, -0.05f);
 
 
     // printf("mouse + ctrl\n");
 // if(inputState_main.mousePressActive && inputState_main.ctrl){
-    if (inputState_main.middleMouse) {
-        float dx = inputState_main.pointerX - inputState_main.pointerXLastFrame;
-        float dy = inputState_main.pointerY - inputState_main.pointerYLastFrame;
+    if (inputState.middleMouse) {
+        float dx = inputState.pointerX - inputState.pointerXLastFrame;
+        float dy = inputState.pointerY - inputState.pointerYLastFrame;
 
-        inputState_main.pointerXLastFrame = inputState_main.pointerX;
-        inputState_main.pointerYLastFrame = inputState_main.pointerY;
+        inputState.pointerXLastFrame = inputState.pointerX;
+        inputState.pointerYLastFrame = inputState.pointerY;
 
         // printf("%f\n", dx);
         // printf("%f\n", dy);
