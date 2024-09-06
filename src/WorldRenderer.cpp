@@ -15,6 +15,8 @@
 
 #include "Simulation.hpp"
 
+#include "Camera.hpp"
+
 Shader worldShader;
 
 WorldObject worldGround1;
@@ -39,6 +41,17 @@ unsigned int hasTextureLoc;
 // NEW GROUND
 
 
+const float sanityMatrix16[16] = {
+    0, -1, 0, 0,
+    0, 0, 1, 0,
+    -1, 0, 0, 0,
+    0, 0, 0, 1,
+};
+
+
+
+
+
 // TEMP SIMULATION UPDATER
 extern SimState simState;
 void update_sim_timestep(){
@@ -49,7 +62,13 @@ void update_sim_timestep(){
 // unsigned int transformLoc_;
 
 void wr_init(){
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
     worldShader.buildShaderProgram("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
+
+    glUseProgram(worldShader.ID);
+   
 
     transformLoc = glGetUniformLocation(worldShader.ID, "transform");
     viewLoc = glGetUniformLocation(worldShader.ID, "view");
@@ -57,6 +76,12 @@ void wr_init(){
     perspectiveLoc = glGetUniformLocation(worldShader.ID, "perspective");
     colorLoc = glGetUniformLocation(worldShader.ID, "vertexColor");
     hasTextureLoc = glGetUniformLocation(worldShader.ID, "hasTexture");
+
+    glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
+    glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(viewLoc, 1, GL_TRUE, cam_getViewMatrix());
+
+    
 
 
     // GROUND 1
@@ -183,8 +208,12 @@ void wr_init(){
 
 
 
-void wr_render(unsigned int transformLoc_) {
-    // glUseProgram(worldShader.ID);
+void wr_render() {
+    glUseProgram(worldShader.ID);
+    
+    // glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(viewLoc, 1, GL_TRUE, cam_getViewMatrix());
 
     // GROUND 1
     worldGround1.shader->use();
@@ -199,7 +228,7 @@ void wr_render(unsigned int transformLoc_) {
 
     // float copy[16] = ()
 
-    glUniformMatrix4fv(transformLoc_, 1, GL_TRUE, worldGround1.transformMatrixRowMajor);
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldGround1.transformMatrixRowMajor);
 
     // // glUniformMatrix4fv(sanityLoc, 1, GL_TRUE, sanityMatrix16);
 
@@ -221,7 +250,7 @@ void wr_render(unsigned int transformLoc_) {
     // SetSimObjectTranform(&cube1);
 
 
-    glUniformMatrix4fv(transformLoc_, 1, GL_TRUE, worldCube1.transformMatrixRowMajor);
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldCube1.transformMatrixRowMajor);
 
     // glUniform4f(colorLoc, 0.5f, 0.0f, 0.0f, 1.0f); // https://learnopengl.com/Getting-started/Shaders
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -235,7 +264,7 @@ void wr_render(unsigned int transformLoc_) {
     // worldCube_spin.Translate({ 0.03f, 0.01f, -0.01f });
     // worldCube1.SetScale({ 100.0f, 100.0f, 100.0f });
     worldCube_spin.SetTransformMatrixRowMajor();
-    glUniformMatrix4fv(transformLoc_, 1, GL_TRUE, worldCube_spin.transformMatrixRowMajor);
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldCube_spin.transformMatrixRowMajor);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
@@ -247,7 +276,7 @@ void wr_render(unsigned int transformLoc_) {
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(worldTriangle1Texture.vao);
     worldTriangle1Texture.SetTransformMatrixRowMajor();
-    glUniformMatrix4fv(transformLoc_, 1, GL_TRUE, worldTriangle1Texture.transformMatrixRowMajor);
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldTriangle1Texture.transformMatrixRowMajor);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glUniform1i(hasTextureLoc, 0); // unset texture bool
 
@@ -260,7 +289,7 @@ void wr_render(unsigned int transformLoc_) {
     // worldTriangle2_bounce.Translate({ 0.03f, 0.01f, -0.01f });
     // worldTriangle2_bounce.SetScale({ 100.0f, 100.0f, 100.0f });
     worldTriangle2_bounce.SetTransformMatrixRowMajor();
-    glUniformMatrix4fv(transformLoc_, 1, GL_TRUE, worldTriangle2_bounce.transformMatrixRowMajor);
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, worldTriangle2_bounce.transformMatrixRowMajor);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
 }

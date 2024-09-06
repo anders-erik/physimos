@@ -51,32 +51,5 @@ struct SimObject {
 void updatePosAndVel(SimObject* so, float dt);
 
 
-// class Simulation
-// {
-// private:
-    
-// public:
-//     Simulation();
-
-    
-
-//     SimState simState = idle;
-// 	double t0 = T0;
-// 	double tf = TF;
-// 	double dt = DT;
-// 	int dtCount = (int) DT_COUNT;
-// 	int dtIndex = 0;
-// 	int dtIndexMax = DT_INDEX_MAX;
-// 	SimObject * simObject;
-
-//     // Simulation
-
-//     void setPositionAtT(SimObject * simObj, double t){
-//         simObj->translation.x = simObj->position_0.x + simObj->velocity_0.x * t;
-//         simObj->translation.y = simObj->position_0.y + simObj->velocity_0.y * t + 0.5 * (-9.8) * t * t;
-//         simObj->translation.z = simObj->position_0.z + simObj->velocity_0.z * t;
-//     }
-// };
-
 
 #endif

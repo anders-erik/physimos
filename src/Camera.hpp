@@ -40,16 +40,16 @@ const float perspectiveMatrix16[16] = {
 
 
 
-struct Camera__ {
+struct Camera {
     struct EulerAnglesRad eulerAnglesRad;
     struct Point3 cameraPosition;
     float viewMatrix[16];
     float perspectiveMatrix16[16];
 };
 
-struct Camera__* getCurrentCamera_pointer();
+struct Camera* getCurrentCamera_pointer();
 
-void initCamera();
+void cam_init();
 
 void cam_UpdateCam();
 
@@ -68,44 +68,5 @@ float* cam_getPerspectiveMatrix();
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-// -------------------------------------
-
-
-
-// class Camera
-// {
-// private:
-// public:
-//     struct EulerAnglesRad eulerAnglesRad;
-//     struct Point3 cameraPosition;
-//     float viewMatrix[16];
-//     float perspectiveMatrix16[16] = {    
-//         ZN / 1.0f, 0, 0, 0,
-//         0, ZN / 1.0f, 0, 0,
-//         0, 0, -(ZF + ZN) / (ZF - ZN), -2 * ZN * ZF / (ZF - ZN),
-//         0, 0, -1.0f, 0,
-//     };
-//     Camera();
-
-//     void setEulerAnglesRad(float a, float b, float c);
-//     void rotateEulerRad(float a, float b, float c);
-//     void setPosition(float x, float y, float z);
-//     void translate(float x, float y, float z);
-
-//     void setViewMatrix();
-//     void setPerspectiveMatrix(int windowWidth, int windowHeight);
-//     void multiplyViewMatrix(float* mat);
-// };
 
 #endif

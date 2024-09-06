@@ -12,9 +12,9 @@
 
 
 
-void ui_update(int fps);
+void ui_update();
 
-void ui_updateFpsElement(int fps);
+void ui_updateFpsElement();
 
 void ui_setCharacterTextureData(std::vector<unsigned char> data, unsigned int imgWidth, unsigned int imgHeight);
 void ui_createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiElement& _uiStringElem);

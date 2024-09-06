@@ -151,20 +151,3 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		inputState.ar = 0;
 }
  
-
-// // process all inputState: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// // ---------------------------------------------------------------------------------------------------------
-// void processInput(GLFWwindow *window)
-// {
-// 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-// 		glfwSetWindowShouldClose(window, true);
-// 	// if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-// 	// 	printf("S pressed! \n");
-	
-// }
-
-
-// void mouse_button_callback_2(GLFWwindow* window, int button, int action, int mods)
-// {
-//    printf("CALLBACK 2\n"); 
-// }  

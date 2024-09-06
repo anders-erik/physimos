@@ -305,3 +305,74 @@ void WorldObject::printVertices() {
     }
     std::cout << std::endl;
 }
+
+
+
+
+
+
+
+float cube1_vertices[] = {
+    	// look + x for correct face reckoing
+    	// Front face
+    	-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
+    	-1.0f, 1.0f, -1.0f, 	0.0f, 0.0f, 1.0f, // botton left
+    	-1.0f, -1.0f, -1.0f,	0.0f, 0.0f, 1.0f, // bottom right
+
+    	-1.0f, -1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top right
+    	-1.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, // top left
+    	-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, // bottom right
+    	// Back Face
+    	1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
+    	1.0f, 1.0f, -1.0f, 	1.0f, 0.0f, 1.0f, // botton left
+    	1.0f, -1.0f, -1.0f,	1.0f, 0.0f, 1.0f, // bottom right
+
+    	1.0f, -1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top right
+    	1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, // top left
+    	1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 1.0f, // bottom right
+
+    	// Right Face - 							look +y
+    	-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
+    	-1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // botton left
+    	 1.0f, -1.0f, -1.0f,	0.0f, 1.0f, 1.0f, // bottom right
+
+    	 1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top right
+    	-1.0f, -1.0f,  1.0f, 	0.0f, 1.0f, 1.0f, // top left
+    	 1.0f, -1.0f, -1.0f, 	0.0f, 1.0f, 1.0f, // bottom right
+    	 // Left Face - 							look +y
+    	-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
+    	-1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // botton left
+    	 1.0f, 1.0f, -1.0f,		1.0f, 1.0f, 0.0f, // bottom right
+
+    	 1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top right
+    	-1.0f, 1.0f,  1.0f, 	1.0f, 1.0f, 0.0f, // top left
+    	 1.0f, 1.0f, -1.0f, 	1.0f, 1.0f, 0.0f, // bottom right
+
+    	 // Bottom Face - 							look +z, +x i right, -y top
+    	-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
+    	-1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // botton left
+    	 1.0f,  1.0f, -1.0f,	0.0f, 0.5f, 1.0f, // bottom right
+
+    	 1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top right
+    	-1.0f, -1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // top left
+    	 1.0f,  1.0f, -1.0f, 	0.0f, 0.5f, 1.0f, // bottom right
+
+    	 // Bottom Face - 							look +z, +x i right, -y top
+    	-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
+    	-1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // botton left
+    	 1.0f,  1.0f,  1.0f,	1.0f, 0.5f, 0.0f, // bottom right
+
+    	 1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top right
+    	-1.0f, -1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // top left
+    	 1.0f,  1.0f,  1.0f, 	1.0f, 0.5f, 0.0f, // bottom right
+    };
+float ground_vertices[] = {
+	// bottom left triangle
+	1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
+	-1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // bottom left
+	-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // botton right
+	// top right triangle
+	1.0f, -1.0f, 0.0f, 	0.3f, 0.0f, 0.0f,	 // top right
+	1.0f, 1.0f, 0.0f, 	0.3f, 0.0f, 0.0f, 	 // top left
+	-1.0f, -1.0f, 0.0f, 0.3f, 0.0f, 0.0f,	 // bottom right
+};

@@ -6,7 +6,7 @@
 
 
 void wr_init();
-void wr_render(unsigned int transformLoc_);
+void wr_render();
 
 void update_sim_timestep();
 

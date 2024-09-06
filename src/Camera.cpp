@@ -3,39 +3,40 @@
 
 #include "Input.hpp"
 
+#include "PSO_util.hpp"
+
 float initialCameraRotRad[3] = { 0.0f, 0.0f, 0.0f };
 float initialCameraPosition[3] = { -10.0, 0, 0.0 };
 
 
-struct Camera__ camera__;
- 
-// Point 'inputState_main' to global InputState object
-InputState* inputState_cam_point;
-// InputState& inputState_cam;
+struct Camera camera;
 
+
+// Global input state
 extern struct InputState inputState;
 
-void initCamera(){
-    // inputState_cam_point = getCurrentInputStatePointer();
-    // inputState_cam = *inputState_cam_point;
 
 
-    camera__.eulerAnglesRad.a = initialCameraRotRad[0];
-    camera__.eulerAnglesRad.b = initialCameraRotRad[1];
-    camera__.eulerAnglesRad.c = initialCameraRotRad[2];
-    camera__.cameraPosition.x = initialCameraPosition[0];
-    camera__.cameraPosition.y = initialCameraPosition[1];
-    camera__.cameraPosition.z = initialCameraPosition[2];
+void cam_init() {
+
+    camera.eulerAnglesRad.a = initialCameraRotRad[0];
+    camera.eulerAnglesRad.b = initialCameraRotRad[1];
+    camera.eulerAnglesRad.c = initialCameraRotRad[2];
+    camera.cameraPosition.x = initialCameraPosition[0];
+    camera.cameraPosition.y = initialCameraPosition[1];
+    camera.cameraPosition.z = initialCameraPosition[2];
 
     for(int i = 0; i < 16; i++)
-        camera__.perspectiveMatrix16[i] = perspectiveMatrix16[i];
+        camera.perspectiveMatrix16[i] = perspectiveMatrix16[i];
+
+    cam_setPerspectiveMatrix(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 }
 
 void cam_UpdateCam(){
     // InputState& inputState_main = *inputState_cam_point;
 
-    float forwardX = cos(camera__.eulerAnglesRad.c);
-    float forwardY = sin(camera__.eulerAnglesRad.c);
+    float forwardX = cos(camera.eulerAnglesRad.c);
+    float forwardY = sin(camera.eulerAnglesRad.c);
 
     if (inputState.w)
         cam_translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
@@ -83,19 +84,19 @@ void cam_UpdateCam(){
 
     }
 
-    cam_rotateEulerRad(0.0f, 0.0f, 0.0f);
+    // cam_rotateEulerRad(0.0f, 0.0f, 0.0f);
     cam_setViewMatrix();
 }
 
-struct Camera__* getCurrentCamera_pointer(){
-    return &camera__;
+struct Camera* getCurrentCamera_pointer(){
+    return &camera;
 }
 
 float* cam_getViewMatrix(){
-    return camera__.viewMatrix;
+    return camera.viewMatrix;
 }
 float* cam_getPerspectiveMatrix(){
-    return camera__.perspectiveMatrix16;
+    return camera.perspectiveMatrix16;
 }
 
 
@@ -106,35 +107,35 @@ void cam_setPerspectiveMatrix(int windowWidth, int windowHeight) {
     float windowHeight_f = (float)windowHeight;
     float windowWidth_f = (float)windowWidth;
 
-    camera__.perspectiveMatrix16[0] = ZN / 1.0f;
+    camera.perspectiveMatrix16[0] = ZN / 1.0f;
     // if height is smaller than width, ZN is divided by <1.0, as intened!
-    camera__.perspectiveMatrix16[5] = ZN / (windowHeight_f / windowWidth_f);
+    camera.perspectiveMatrix16[5] = ZN / (windowHeight_f / windowWidth_f);
 }
 
 
 
 void cam_setEulerAnglesRad(float a, float b, float c)
 {
-    camera__.eulerAnglesRad.a = a;
-    camera__.eulerAnglesRad.b = b;
-    camera__.eulerAnglesRad.c = c;
+    camera.eulerAnglesRad.a = a;
+    camera.eulerAnglesRad.b = b;
+    camera.eulerAnglesRad.c = c;
 }
 void cam_rotateEulerRad(float a, float b, float c) {
-    camera__.eulerAnglesRad.a += a;
-    camera__.eulerAnglesRad.b += b;
-    camera__.eulerAnglesRad.c += c;
+    camera.eulerAnglesRad.a += a;
+    camera.eulerAnglesRad.b += b;
+    camera.eulerAnglesRad.c += c;
 }
 void cam_setPosition(float x, float y, float z)
 {
-    camera__.cameraPosition.x = x;
-    camera__.cameraPosition.y = y;
-    camera__.cameraPosition.z = z;
+    camera.cameraPosition.x = x;
+    camera.cameraPosition.y = y;
+    camera.cameraPosition.z = z;
 }
 void cam_translate(float x, float y, float z)
 {
-    camera__.cameraPosition.x += x;
-    camera__.cameraPosition.y += y;
-    camera__.cameraPosition.z += z;
+    camera.cameraPosition.x += x;
+    camera.cameraPosition.y += y;
+    camera.cameraPosition.z += z;
 }
 
 void cam_setViewMatrix()
@@ -143,7 +144,7 @@ void cam_setViewMatrix()
     // VERY IMPORTANT TO ZERO FOR EVERY FRAME
     for (size_t i = 0; i < 16; i++)
     {
-        camera__.viewMatrix[i] = 0;
+        camera.viewMatrix[i] = 0;
     }
 
     // float tempM[16] = {0};
@@ -151,23 +152,23 @@ void cam_setViewMatrix()
     float tempY[16] = { 0 };
     float tempZ[16] = { 0 };
 
-    float a = camera__.eulerAnglesRad.a;
-    float b = camera__.eulerAnglesRad.b;
-    float c = camera__.eulerAnglesRad.c;
+    float a = camera.eulerAnglesRad.a;
+    float b = camera.eulerAnglesRad.b;
+    float c = camera.eulerAnglesRad.c;
     // printf("c = %f \n", a);
 
     // TRANSLATE
     // Row 1
-    camera__.viewMatrix[0] = 1;
-    camera__.viewMatrix[3] = -camera__.cameraPosition.x;
+    camera.viewMatrix[0] = 1;
+    camera.viewMatrix[3] = -camera.cameraPosition.x;
     // Row 2
-    camera__.viewMatrix[5] = 1;
-    camera__.viewMatrix[7] = -camera__.cameraPosition.y;
+    camera.viewMatrix[5] = 1;
+    camera.viewMatrix[7] = -camera.cameraPosition.y;
     // Row 3
-    camera__.viewMatrix[10] = 1;
-    camera__.viewMatrix[11] = -camera__.cameraPosition.z;
+    camera.viewMatrix[10] = 1;
+    camera.viewMatrix[11] = -camera.cameraPosition.z;
     // Row 4
-    camera__.viewMatrix[15] = 1;
+    camera.viewMatrix[15] = 1;
 
     // rotate X
     // Row 1
@@ -210,24 +211,6 @@ void cam_setViewMatrix()
     cam_multiplyViewMatrix(tempY);
     cam_multiplyViewMatrix(tempX);
 
-    // printf("\n");printf("\n");
-
-    // RESET VIEWMATRIX FOR TESTING - 2024-08-26
-    // THIS WORKS!
-    // for (size_t i = 0; i < 16; i++)
-    // {
-    //     this->viewMatrix[i] = 0;
-    // }
-    // this->viewMatrix[0] = cos(c);
-    // this->viewMatrix[1] = sin(c);
-
-    // this->viewMatrix[4] = -sin(c);
-    // this->viewMatrix[5] = cos(c);
-    // // this->viewMatrix[5] = 1.0f;
-
-    // this->viewMatrix[10] = 1.0f;
-
-    // this->viewMatrix[15] = 1.0f;
 }
 
 void cam_multiplyViewMatrix(float* mat)
@@ -241,14 +224,14 @@ void cam_multiplyViewMatrix(float* mat)
         {
             for (int k = 0; k < 4; k++)
             {
-                result[i * 4 + j] += mat[i * 4 + k] * camera__.viewMatrix[k * 4 + j];
+                result[i * 4 + j] += mat[i * 4 + k] * camera.viewMatrix[k * 4 + j];
             }
         }
     }
 
     for (int i = 0; i < 16; i++)
     {
-        camera__.viewMatrix[i] = result[i];
+        camera.viewMatrix[i] = result[i];
         // printf("%f ", result[i]);
     }
     // printf("\n");
@@ -257,179 +240,4 @@ void cam_multiplyViewMatrix(float* mat)
 
 
 
-
-
-
-
-// -------------------------------------
-
-
-
-
-
-
-
-// // Match the near clipping plane to window dimensions
-// void Camera::setPerspectiveMatrix(int windowWidth, int windowHeight){
-//     float windowHeight_f = (float) windowHeight;
-//     float windowWidth_f = (float)windowWidth;
-    
-//     perspectiveMatrix16[0] = ZN / 1.0f;
-//     // if height is smaller than width, ZN is divided by <1.0, as intened!
-//     perspectiveMatrix16[5] = ZN / (windowHeight_f / windowWidth_f);
-// }
-
-
-
-// void Camera::setEulerAnglesRad(float a, float b, float c)
-// {
-//     this->eulerAnglesRad.a = a;
-//     this->eulerAnglesRad.b = b;
-//     this->eulerAnglesRad.c = c;
-// }
-// void Camera::rotateEulerRad(float a, float b, float c){
-//     this->eulerAnglesRad.a += a;
-//     this->eulerAnglesRad.b += b;
-//     this->eulerAnglesRad.c += c;
-// }
-// void Camera::setPosition(float x, float y, float z)
-// {
-//     this->cameraPosition.x = x;
-//     this->cameraPosition.y = y;
-//     this->cameraPosition.z = z;
-// }
-// void Camera::translate(float x, float y, float z)
-// {
-//     this->cameraPosition.x += x;
-//     this->cameraPosition.y += y;
-//     this->cameraPosition.z += z;
-// }
-
-// void Camera::setViewMatrix()
-// {
-
-//     // VERY IMPORTANT TO ZERO FOR EVERY FRAME
-//     for (size_t i = 0; i < 16; i++)
-//     {
-//         this->viewMatrix[i] = 0;
-//     }
-
-//     // float tempM[16] = {0};
-//     float tempX[16] = { 0 };
-//     float tempY[16] = { 0 };
-//     float tempZ[16] = { 0 };
-
-//     float a = this->eulerAnglesRad.a;
-//     float b = this->eulerAnglesRad.b;
-//     float c = this->eulerAnglesRad.c;
-//     // printf("c = %f \n", a);
-
-//     // TRANSLATE
-//     // Row 1
-//     this->viewMatrix[0] = 1;
-//     this->viewMatrix[3] = -this->cameraPosition.x;
-//     // Row 2
-//     this->viewMatrix[5] = 1;
-//     this->viewMatrix[7] = -this->cameraPosition.y;
-//     // Row 3
-//     this->viewMatrix[10] = 1;
-//     this->viewMatrix[11] = -this->cameraPosition.z;
-//     // Row 4
-//     this->viewMatrix[15] = 1;
-
-//     // rotate X
-//     // Row 1
-//     tempX[0] = 1.0f;
-//     // Row 2
-//     tempX[5] = cos(a);
-//     tempX[6] = sin(a);
-//     // Row 3
-//     tempX[9] = -sin(a);
-//     tempX[10] = cos(a);
-//     // Row 4
-//     tempX[15] = 1.0f;
-
-//     // rotate Y
-//     // Row 1
-//     tempY[0] = cos(b);
-//     tempY[2] = sin(b);
-//     // Row 2
-//     tempY[5] = 1.0f;
-//     // Row 3
-//     tempY[8] = -sin(b);
-//     tempY[10] = cos(b);
-//     // Row 4
-//     tempY[15] = 1.0f;
-
-//     // rotate Z
-//     // Row 1
-//     tempZ[0] = cos(c);
-//     tempZ[1] = sin(c);
-//     // Row 2
-//     tempZ[4] = -sin(c);
-//     tempZ[5] = cos(c);
-//     // Row 3
-//     tempZ[10] = 1.0f;
-//     // Row 4
-//     tempZ[15] = 1.0f;
-
-//     // multiply matrices : X x Y x Z x T
-//     multiplyViewMatrix(tempZ);
-//     multiplyViewMatrix(tempY);
-//     multiplyViewMatrix(tempX);
-
-//     // printf("\n");printf("\n");
-
-//     // RESET VIEWMATRIX FOR TESTING - 2024-08-26
-//     // THIS WORKS!
-//     // for (size_t i = 0; i < 16; i++)
-//     // {
-//     //     this->viewMatrix[i] = 0;
-//     // }
-//     // this->viewMatrix[0] = cos(c);
-//     // this->viewMatrix[1] = sin(c);
-
-//     // this->viewMatrix[4] = -sin(c);
-//     // this->viewMatrix[5] = cos(c);
-//     // // this->viewMatrix[5] = 1.0f;
-
-//     // this->viewMatrix[10] = 1.0f;
-
-//     // this->viewMatrix[15] = 1.0f;
-// }
-
-// void Camera::multiplyViewMatrix(float* mat)
-// {
-
-//     float result[16] = { 0 };
-
-//     for (int i = 0; i < 4; i++)
-//     {
-//         for (int j = 0; j < 4; j++)
-//         {
-//             for (int k = 0; k < 4; k++)
-//             {
-//                 result[i * 4 + j] += mat[i * 4 + k] * this->viewMatrix[k * 4 + j];
-//             }
-//         }
-//     }
-
-//     for (int i = 0; i < 16; i++)
-//     {
-//         this->viewMatrix[i] = result[i];
-//         // printf("%f ", result[i]);
-//     }
-//     // printf("\n");
-// }
-
-// Camera::Camera()
-// {
-//     // eulerAnglesRad.a(11);
-//     this->eulerAnglesRad.a = initialCameraRotRad[0];
-//     this->eulerAnglesRad.b = initialCameraRotRad[1];
-//     this->eulerAnglesRad.c = initialCameraRotRad[2];
-//     this->cameraPosition.x = initialCameraPosition[0];
-//     this->cameraPosition.y = initialCameraPosition[1];
-//     this->cameraPosition.z = initialCameraPosition[2];
-// }
 

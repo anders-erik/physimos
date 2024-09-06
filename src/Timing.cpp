@@ -76,3 +76,8 @@ void timing_waitForNextFrame() {
     lastFrameTime = clock();
 
 }
+
+
+int timing_current_fps(){
+    return current_fps;
+}
