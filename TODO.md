@@ -1,6 +1,20 @@
 
 # TODO
 
+
+
+## 2024-09-06
+
+### TODO:
+- |o| enable ui element texture
+- detect and respond to ui element click
+- physics (non-simulation run)
+	- give worldobject a flag to toggle gravity
+	- apply gravtiy
+	- bounce on ground
+- Obj-file loader
+
+
 ## 2024-09-04
 
 ### TODO

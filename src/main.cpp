@@ -95,7 +95,7 @@ int main()
 
 
 		//
-		// Force wait to limit FPs to specified constant
+		// Force wait to limit FPS to specified constant
 		//
 		timing_waitForNextFrame();
 

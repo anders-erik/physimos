@@ -22,13 +22,13 @@ unsigned int bitsPerPixel;
 std::vector<unsigned char> imageDataBuffer;
 
 
-std::vector<unsigned char> getImageDataBuffer(){
+std::vector<unsigned char> bmp_getImageDataBuffer() {
     return imageDataBuffer;
 }
-unsigned int getBmpWidth(){
+unsigned int bmp_getWidth() {
     return width;
 }
-unsigned int getBmpHeight(){
+unsigned int bmp_getHeight() {
     return height;
 }
 

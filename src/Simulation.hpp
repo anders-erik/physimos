@@ -6,12 +6,7 @@
 
 // Holds the simulation object(s) and keeps the state of the simulation
 
-// Simulation constants
-#define T0 0.0
-#define TF 10.0
-#define DT 0.1  
-#define DT_COUNT (1 + (TF - T0) / DT ) 
-#define DT_INDEX_MAX ((TF - T0) / DT)
+
 
 
 enum SimState {

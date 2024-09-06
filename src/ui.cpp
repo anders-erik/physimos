@@ -16,11 +16,15 @@ unsigned int uiVBO = 0;
 unsigned int uiIsCharVAO = 0;
 unsigned int uiIsCharVBO = 0;
 
+unsigned int uiTextureVAO = 0;
+unsigned int uiTextureVBO = 0;
+
 
 int windowWidth = 0;
 int windowHeight = 0;
 
 Shader shader;
+
 
 // CHAR TEXTURING
 unsigned int charTexture;
@@ -57,8 +61,7 @@ void ui_update() {
 void ui_init() {
 
     // bmp_loader.loadBMPFile("media/characters-1.bmp");
-    bmp_loader_loadBMPFile("media/characters-1.bmp");
-    ui_setCharacterTextureData(getImageDataBuffer(), getBmpWidth(), getBmpHeight());
+    
     ui_newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
     ui_reloadUi();
@@ -98,7 +101,20 @@ void ui_init() {
     glEnableVertexAttribArray(3);
 
 
+    // TEXTURE BUFFER OBJECTS
+    // glGenVertexArrays(1, &uiTextureVAO);
+    // glGenBuffers(1, &uiTextureVBO);
+    // glBindBuffer(GL_ARRAY_BUFFER, uiTextureVBO);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * uiElements.size(), {}, GL_STATIC_DRAW);
+
+    // glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    // glEnableVertexAttribArray(3);
+
+
     // TEXTURE
+    bmp_loader_loadBMPFile("media/characters-1.bmp");
+    ui_setCharacterTextureData(bmp_getImageDataBuffer(), bmp_getWidth(), bmp_getHeight());
+
     glGenTextures(1, &charTexture);
     glBindTexture(GL_TEXTURE_2D, charTexture);
     // set the texture wrapping/filtering options (on the currently bound texture object)
@@ -166,11 +182,11 @@ void ui_reloadUi() {
     uiTransform16[0] = 2.0f / windowWidth;
     uiTransform16[5] = 2.0f / windowHeight;
 
-    ui_createUiRectange(100, 100, 700, 500, pso_white, "w1");
-    ui_createUiRectange(100, 100, 700, 400, pso_black, "b1");
-    ui_createUiRectange(100, 100, 700, 300, pso_red, "r1");
-    ui_createUiRectange(100, 100, 700, 200, pso_green, "g1");
-    ui_createUiRectange(100, 100, 700, 100, pso_blue, "b2");
+    // ui_createUiRectange(100, 100, 700, 500, pso_white, "w1");
+    // ui_createUiRectange(100, 100, 700, 400, pso_black, "b1");
+    // ui_createUiRectange(100, 100, 700, 300, pso_red, "r1");
+    // ui_createUiRectange(100, 100, 700, 200, pso_green, "g1");
+    // ui_createUiRectange(100, 100, 700, 100, pso_blue, "b2");
 
     // createUiChar(300, 0, 120, 'A', white);
 
@@ -191,6 +207,13 @@ void ui_reloadUi() {
 
     ui_loadUiFile("src/main.psoui");
 
+    for(auto _elem : uiElements){
+        if (_elem.name == "textureElem_1"){
+            // std::cout << "_elem.elementTexturePath: " << _elem.elementTexturePath << std::endl;
+            // std::cout << "_elem.elementTextureBuffer.size(): " << _elem.elementTextureBuffer.size() << std::endl;
+        }
+    }
+
 }
 
 
@@ -198,98 +221,109 @@ void ui_reloadUi() {
 void ui_renderUI()
 {
     glUseProgram(shader.ID);
-
-    isCharBuffer.clear();
-
-    // Update the VAO with active elements
-    uiVertexFloatBuffer.erase(uiVertexFloatBuffer.begin(), uiVertexFloatBuffer.end());
+    glBindVertexArray(uiVAO);
+    shader.setMat4("uiTransform", uiTransform16);
 
 
+
+
+    /*
+        RENDER TEXTURED UI ELEMENTS
+    */
     int elemCount = 0;
     for (UiElement uiElem_ : uiElements) {
 
-        // run the same loop for each of the string elements, which each contain character elements!
-        if (uiElem_.isStringElement) {
-            // std::cout << "A " << std::endl;
+        if (uiElem_.elementType == ElementType::TEXTURE) {
+            glBindTexture(GL_TEXTURE_2D, uiElem_.glTexture);
 
-            for (UiElement stringElem_ : uiElem_.stringElements) {
+            isCharBuffer.clear();
+            uiVertexFloatBuffer.erase(uiVertexFloatBuffer.begin(), uiVertexFloatBuffer.end());
 
-                if (stringElem_.activated) {
+            for (size_t i = 0; i < 6; i++)
+                isCharBuffer.push_back(2.0);
+
+            for (float fl_ : uiElem_.vertexFloatBuffer) {
+                uiVertexFloatBuffer.push_back(fl_);
+            }
+
+            // RENDER NEW TEXTURE ELEMENT
+            glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 48, uiVertexFloatBuffer.data(), GL_STATIC_DRAW);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER, uiIsCharVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * isCharBuffer.size(), isCharBuffer.data(), GL_STATIC_DRAW);
+
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+    }
+
+
+
+
+    /*
+            RENDER PLAIN COLOR AND STRING UI ELEMENTS
+    */
+
+    // RESET BUFFERS FOR THIS UI RENDER CALL
+    uiVertexFloatBuffer.erase(uiVertexFloatBuffer.begin(), uiVertexFloatBuffer.end());
+    isCharBuffer.clear();
+    elemCount = 0;
+
+    for (UiElement uiElem_ : uiElements) {
+
+        // Ignore and element not currently active
+        if (!uiElem_.activated)
+            continue;
+
+
+        switch (uiElem_.elementType)
+        {
+
+            case ElementType::STRING:
+
+                // We do not render the string element itself, but its char-elements
+                for (UiElement stringElem_ : uiElem_.stringElements) {
                     elemCount++;
 
-                    // ONE FOR EACH VERTEX
+                    // Each char vertex
                     for (size_t i = 0; i < 6; i++)
-                    {
-                        if (stringElem_.isChar > 1.0)
-                            isCharBuffer.push_back(1.0);
-                        else
-                            isCharBuffer.push_back(0.0);
-                    }
+                        isCharBuffer.push_back(1.0);
 
-
-                    // THESE ARE NOT VERTICES!!!!!!!!!!
-                    for (float fl_ : stringElem_.vertexFloatBuffer) {
-
-
+                    for (float fl_ : stringElem_.vertexFloatBuffer) 
                         uiVertexFloatBuffer.push_back(fl_);
-                    }
+                    
                 }
-            }
-        }
-        else {
+                break;
 
-            if (uiElem_.activated) {
+
+            case ElementType::TEXTURE:
+                /* TEXTURED NON_CHAR ELEMENTS ARE RENEDERED BELOW */
+                break;
+
+
+            case ElementType::RECTANGLE:
+            
                 elemCount++;
 
-                // ONE FOR EACH VERTEX
+                // Each rectangle vertex
                 for (size_t i = 0; i < 6; i++)
-                {
-                    if (uiElem_.isChar > 1.0)
-                        isCharBuffer.push_back(1.0);
-                    else
-                        isCharBuffer.push_back(0.0);
-                }
+                    isCharBuffer.push_back(0.0);
 
-
-                // THESE ARE NOT VERTICES!!!!!!!!!!
                 for (float fl_ : uiElem_.vertexFloatBuffer) {
-
-
                     uiVertexFloatBuffer.push_back(fl_);
                 }
-            }
+            
+                break;
+
+
+            default:
+            std::cout << "UNKNOWN ELEMENT TYPE" << std::endl;
+                break;
         }
 
 
     }
-
-
-    // Strings!
-    // for (UiElement uiElem_ : fpsStringElements) {
-    //     if (uiElem_.activated) {
-    //         elemCount++;
-
-    //         // ONE FOR EACH VERTEX
-    //         for (size_t i = 0; i < 6; i++)
-    //         {
-    //             if (uiElem_.isChar > 1.0)
-    //                 isCharBuffer.push_back(1.0);
-    //             else
-    //                 isCharBuffer.push_back(0.0);
-    //         }
-
-
-    //         // THESE ARE NOT VERTICES!!!!!!!!!!
-    //         for (float fl_ : uiElem_.vertexFloatBuffer) {
-
-
-    //             uiVertexFloatBuffer.push_back(fl_);
-    //         }
-    //     }
-    // }
-    // std::cout << "uiElements.size(): " << uiElements.size() << std::endl;
-    // std::cout << "uiElements: " << uiElements << std::endl;
-
 
 
 
@@ -305,21 +339,11 @@ void ui_renderUI()
     glBindBuffer(GL_ARRAY_BUFFER, uiIsCharVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * isCharBuffer.size(), isCharBuffer.data(), GL_STATIC_DRAW);
 
-
-
-
-    shader.setMat4("uiTransform", uiTransform16);
-    // shader.setBool("isSquare", 1);
-
-    // std::cout << "sizeof(float) * uiElements.size() * 36 == " << sizeof(float) * uiElements.size() * 36 << std::endl;
-    // std::cout << "uiVertexFloatBuffer.data() == " << uiVertexFloatBuffer.data() << std::endl;
-
     glDrawArrays(GL_TRIANGLES, 0, elemCount * 6);
 
 
-    // std::cout << "elemCount == " << elemCount << std::endl;
-    // std::cout << "uiVertexFloatBuffer.size() == " << uiVertexFloatBuffer.size() << std::endl;
-
+    // unbindUnbind GL
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -415,6 +439,13 @@ void ui_loadUiFile(const char* uiFilePath) {
                 else if (key == "h") {
                     uiElem_.height = std::stoi(value);
                 }
+                else if (key == "texture") {
+                    uiElem_.elementTexturePath = value;
+                    // std::cout << "--- " ;
+                    // std::cout << "" << uiElem_.elementTexturePath << std::endl;
+                    
+                    
+                }
                 else if (key == "c") {
 
                     if (value == "black") {
@@ -438,7 +469,7 @@ void ui_loadUiFile(const char* uiFilePath) {
             }
 
             if (uiElem_.type == "rectangle") {
-                ui_createUiRectange(uiElem_.height, uiElem_.width, uiElem_.x, uiElem_.y, uiElem_.color, uiElem_.name);
+                ui_createUiRectange(uiElem_.height, uiElem_.width, uiElem_.x, uiElem_.y, uiElem_.color, uiElem_.name, uiElem_.elementTexturePath);
             }
 
             // uiElements.push_back(uiElem_);
@@ -465,7 +496,7 @@ void ui_loadUiFile(const char* uiFilePath) {
 
 }
 
-void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName) {
+void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName, std::string _texturePath) {
     UiElement uiElem_;
     for (int i = 0; i < uiElem_.vertexCount * 8; i += 8) {
         uiElem_.vertexFloatBuffer[i] = uiElem_.squareVertices[i] * width + x;
@@ -481,6 +512,36 @@ void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::s
 
     uiElem_.activated = 1;
     uiElem_.name = elemName;
+    uiElem_.elementType = ElementType::RECTANGLE;
+
+    if(_texturePath != ""){
+        uiElem_.elementType = ElementType::TEXTURE;
+
+        uiElem_.elementTexturePath = _texturePath;
+        bmp_loader_loadBMPFile(uiElem_.elementTexturePath);
+        uiElem_.elementTextureBuffer = bmp_getImageDataBuffer();
+        uiElem_.textureWidth = bmp_getWidth();
+        uiElem_.textureHeight = bmp_getHeight();
+
+        // Move texture to gpu
+        glGenTextures(1, &uiElem_.glTexture);
+        glBindTexture(GL_TEXTURE_2D, uiElem_.glTexture);
+        // set the texture wrapping/filtering options (on the currently bound texture object)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, uiElem_.textureWidth, uiElem_.textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, uiElem_.elementTextureBuffer.data());
+        // std::cout << "charImageBuffer.size(): " << charImageBuffer.size() << std::endl;
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+        uiElem_.hasTexture = 1;
+    }
 
     // uiElem_.vertices
     uiElements.push_back(uiElem_);
@@ -491,6 +552,7 @@ void ui_updateStringUi(int fontHeight, int x, int y, std::string str, UiElement&
     // UiElement _uiStringElem;
     _uiStringElem.activated = 1;
     _uiStringElem.isStringElement = true;
+    _uiStringElem.elementType = ElementType::STRING;
     _uiStringElem.stringElements.clear();
 
     int charCount = 0;
@@ -523,6 +585,7 @@ void ui_createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiE
 
     uiElem_.activated = 1;
     uiElem_.isChar = 10.0;
+    
 
     // uiElem_.vertexFloatBuffer
     // uiElements.push_back(uiElem_);

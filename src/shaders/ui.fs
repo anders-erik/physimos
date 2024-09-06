@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform vec3 elementColor;
+
 uniform sampler2D charTexture;
 
 in vec3 colorUpdated;
@@ -15,9 +15,13 @@ void main()
 {
     // debug - render
     int debug = 1;
-    vec3 isCharColor = vec3(isCharOut_f, isCharOut_f, isCharOut_f);
+    vec3 isCharColor = vec3(isCharOut_f*0.5, isCharOut_f*0.5, isCharOut_f*0.5);
+
     if(debug == 0){
-        if(isCharOut_f > 0.5){
+        if(isCharOut_f > 0.5 && isCharOut_f < 1.5){
+            FragColor = vec4(isCharColor, 1.0f);
+        }
+        else if(isCharOut_f > 1.5){
             FragColor = vec4(isCharColor, 1.0f);
         }
         else{
@@ -26,7 +30,10 @@ void main()
     }
     else{
 
-        if(isCharOut_f > 0.5){
+        if(isCharOut_f > 0.5 && isCharOut_f < 1.5){
+            FragColor = texture(charTexture, TexCoord);
+        }
+        else if(isCharOut_f > 1.5){
             FragColor = texture(charTexture, TexCoord);
         }
         else{

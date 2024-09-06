@@ -6,9 +6,9 @@ void bmp_loader_loadBMPFile(std::string path);
 
 void bmp_loader_prettyPrint();
 
-std::vector<unsigned char> getImageDataBuffer();
-unsigned int getBmpWidth();
-unsigned int getBmpHeight();
+std::vector<unsigned char> bmp_getImageDataBuffer();
+unsigned int bmp_getWidth();
+unsigned int bmp_getHeight();
 
 
 

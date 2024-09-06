@@ -175,7 +175,7 @@ void wr_init(){
     // bmp_loader.prettyPrint();
     // std::cout << "UI image buffer size: " << ui.charImageBuffer.size() << std::endl;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getBmpWidth(), getBmpHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, getImageDataBuffer().data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp_getWidth(), bmp_getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_getImageDataBuffer().data());
 
 
     // Generate a black and white test 'image'

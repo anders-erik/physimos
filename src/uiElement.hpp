@@ -4,10 +4,11 @@
 #include "Types.hpp"
 
 
-enum elementType {
+typedef enum ElementType {
     RECTANGLE = 0,
-    CHAR = 1,
-};
+    STRING = 1,
+    TEXTURE = 2,
+} ElementType;
 
 class UiElement {
     public:
@@ -21,12 +22,23 @@ class UiElement {
         int activated = 0;
         std::string name;
         std::string type;
+        ElementType elementType;
 
-        // 
+        // Texture / Background
+        int hasTexture = 0;
+        unsigned int glTexture;
+        std::vector<unsigned char> elementTextureBuffer;
+        unsigned int textureWidth;
+        unsigned int textureHeight;
+        std::string elementTexturePath;
+
+        // Element Text/string
         float isChar = 0.0;
         bool isStringElement = false;
         std::vector<UiElement> stringElements;
         char charValue = 0;
+
+
         int height;
         int width;
         int x;

@@ -12,6 +12,14 @@ extern InputState inputState;
 
 SimState simState = idle;
 
+
+// Simulation constants
+#define T0 0.0
+#define TF 30.0
+#define DT 0.1  
+#define DT_COUNT (1 + (TF - T0) / DT ) 
+#define DT_INDEX_MAX ((TF - T0) / DT)
+
 double t0 = T0;
 double tf = TF;
 double dt = DT;
