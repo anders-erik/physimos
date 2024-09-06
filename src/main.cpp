@@ -31,7 +31,7 @@ int main()
 
 
 	ui_init();
-	
+
 
 
 
@@ -63,7 +63,6 @@ int main()
 
 
 		ws_update();
-		
 
 		//
 		// update and render ui

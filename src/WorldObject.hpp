@@ -38,6 +38,7 @@ public:
     unsigned int vbo;
     void setVaoVbo330();
     void setVaoVbo332();
+    void setVaoVbo_obj();
 
     // Texture
     int hasTexture = 0;

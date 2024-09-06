@@ -5,6 +5,8 @@
 #include "Camera.hpp"
 
 #include "WorldObject.hpp"
+#include "obj_loader.hpp"
+
 #include "WorldRenderer.hpp"
 
 extern Shader worldShader;
@@ -26,6 +28,7 @@ WorldObject* worldGround_pointer;
 WorldObject worldCube1;
 WorldObject worldCube_spin;
 WorldObject cube_3_gravity;
+WorldObject worldCube4_obj;
 
 WorldObject worldTriangle1Texture;
 WorldObject worldTriangle2_bounce;
@@ -35,6 +38,7 @@ WorldObject* worldTriangle2_simobj_pointer;
 
 // TEXTURES
 unsigned int mountainTexture;
+unsigned int grayTexture;
 
 // Old Black and white generated texture
 // Generate a black and white test 'image'
@@ -144,7 +148,7 @@ int worldObjectCollidingWithGround_aabb_z(WorldObject& ground, WorldObject& wo2)
         }
         
     }
-    
+
     
     return 0;
     
@@ -170,6 +174,24 @@ void ws_loadTextures(){
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp_getWidth(), bmp_getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_getImageDataBuffer().data());
     glGenerateMipmap(GL_TEXTURE_2D);
 
+
+    // GRAY TEXTURE
+    glGenTextures(1, &grayTexture);
+    glBindTexture(GL_TEXTURE_2D, grayTexture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // bmp_loader_loadBMPFile("media/mountain.bmp");
+    // bmp_loader.prettyPrint();
+
+    float gray_f = 0.5;
+    int gray_i = (int) (gray_f * 255);
+    const unsigned char grayData[3] = { gray_i, gray_i, gray_i };
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, &grayData);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
 
 
@@ -276,6 +298,44 @@ void ws_createWorldObjects(){
     }
 
 
+
+
+    // CUBE 4 - OBJ !
+
+    // CAVEATS:
+    // - exported as triangulated obj file from blender
+    //      - ./resources/models/blend-file.obj
+    // - ignores mtl-file / data
+    // - ignores v.w & vt.w in obj-file
+    // - Render using already defined grayTexture 
+    // - reads vertex normals, but does not consider that data when rendering
+    //      - the vertex normals are put in the color layout location in the vbo/vao
+    //      - because the cube is rendered using texture, the color data is ignored in the shader
+
+    worldCube4_obj.name = "worldCube4_obj";
+    // worldCube1.LoadWorldObject("src/models/cube.pso");
+    obj_loadFromFile("./resources/models/blend-cube.obj");
+    worldCube4_obj.vertices = obj_getVertexBuffer_v_vt_vn();
+    std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
+    worldCube4_obj.vertexCount = worldCube4_obj.vertices.size() / 8;
+
+    // worldCube1.scale = {2.0, 2.0, 2.0};
+    worldCube4_obj.scale = { 2.0, 2.0, 2.0 };
+    worldCube4_obj.position = { 20.0f, -10.0f, 10.0f };
+    // worldCube1.printVertices();
+
+    worldCube4_obj.setVaoVbo_obj();
+    worldCube4_obj.setShaderProgram(&worldShader);
+
+    worldCube4_obj.hasTexture = 1.0;
+    worldCube4_obj.glTexture = grayTexture;
+
+    worldObjects.push_back(worldCube4_obj);
+
+
+
+
+
     // TRIANGLE 2 - BOUNCE
 
     // WorldObject worldCube1("src/models/cube.pso");
@@ -314,6 +374,8 @@ void ws_createWorldObjects(){
     worldTriangle1Texture.glTexture = mountainTexture;
     worldObjects.push_back(worldTriangle1Texture);
    
+
+
 
     // USE NEW WORLD OBJECTS
     for(WorldObject& _worldObject : worldObjects){

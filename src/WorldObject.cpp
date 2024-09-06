@@ -47,6 +47,40 @@ void WorldObject::setVaoVbo332() {
     glEnableVertexAttribArray(2);
 }
 
+void WorldObject::setVaoVbo_obj() {
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+
+    glBindVertexArray(vao);
+
+    // REPLACE VERTEX NORMALS WITH COLORS!
+    for(int i = 0; i < vertices.size(); i += 8){
+        vertices[i + 5] = 0.0f;
+        vertices[i + 6] = 0.0f;
+        vertices[i + 7] = 0.0f;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    // printf("triangel : %lu\n", sizeof(triangle));
+    // printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
+    // printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+}
+
+
+
+
+
 void WorldObject::printPosition() {
     std::cout << this->position.x << " " << this->position.y << " " << this->position.z << std::endl;
 }

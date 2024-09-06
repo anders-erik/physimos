@@ -17,8 +17,7 @@
 			- |o| apply gravtiy
 			- |o| bounce on ground
 		- |o| calls the world renderer
-
-- Obj-file loader
+- |o| Obj-file loader
 
 
 ## 2024-09-04
