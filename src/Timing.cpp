@@ -30,12 +30,12 @@ struct timespec waitForFrame = { 0, 0L }; // nanoseconds of added wait between e
 
 void timing_init(){
     // INITIAL CLOCK INFO
-    printf("CLOCKS_PER_SEC = %li \n", CLOCKS_PER_SEC);
+    // printf("CLOCKS_PER_SEC = %li \n", CLOCKS_PER_SEC);
 
     glfwTime = glfwGetTime();
-    printf("glfwTime1 = %f \n", glfwTime);
+    // printf("glfwTime1 = %f \n", glfwTime);
     glfwTime = glfwGetTime();
-    printf("glfwTime2 = %f \n", glfwTime);
+    // printf("glfwTime2 = %f \n", glfwTime);
 
     time(&epoch_fps);
 
@@ -55,7 +55,7 @@ void timing_newFrame() {
     if (current_time_fps > current_second_fps)
     {
         current_second_fps = current_time_fps;
-        printf("FPS: %d \n", secondCount);
+        // printf("FPS: %d \n", secondCount);
         current_fps = secondCount;
         // printf("%d \n", (int)(current_time - epoch_time));
         secondCount = 0;

@@ -39,7 +39,7 @@ struct InputState {
 
 };
 
-InputState* getCurrentInputStatePointer();
+// InputState* getCurrentInputStatePointer();
 
 // void setUiAndCamera(UI* _ui);
 

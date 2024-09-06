@@ -36,7 +36,7 @@ void ui_loadUiFile(const char* uiFilePath);
 
 void ui_renderUI();
 
-
+void ui_detectElementClick(double x, double y);
 
 
 

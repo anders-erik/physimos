@@ -7,7 +7,7 @@
 
 ### TODO:
 - |o| enable ui element texture
-- detect and respond to ui element click
+- |o| detect and respond to ui element click
 - physics (non-simulation run)
 	- give worldobject a flag to toggle gravity
 	- apply gravtiy

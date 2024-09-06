@@ -7,6 +7,8 @@
 #include "PSO_util.hpp"
 #include "Timing.hpp"
 
+#include "Simulation.hpp"
+extern SimState simState;
 
 extern struct InputState InputState;
 
@@ -50,6 +52,24 @@ float uiTransform16[16] = {
 
 
 unsigned int uiTransformLoc;
+
+void ui_detectElementClick(double x, double y) {
+    int xx = (int)x;
+    int yy = (int) (windowHeight - y);
+    for(UiElement _uiELem : uiElements){
+        // std::cout << "UI ELEMENT CHECK!" << std::endl;
+        // std::cout << "xx= " << xx << "yy= " << yy << std::endl;
+        // std::cout << "_uiELem.name = " << _uiELem.name << ",   :   _uiELem.x = " << _uiELem.x << "  _uiELem.y = " << _uiELem.y << ",     _uiELem.width = " << _uiELem.width << "  _uiELem.height = " << _uiELem.height << std::endl;
+        
+        // Detect element click
+        if (((xx > _uiELem.x) && (xx < (_uiELem.x + _uiELem.width))) && ((yy > _uiELem.y) && (yy < (_uiELem.y + _uiELem.height)))){
+            // std::cout << "CLICKED : " << _uiELem.name << std::endl;
+            if (_uiELem.name == "startSimButton")
+                simState = SimState::startClickDetected;
+        }
+            
+    }
+}
 
 
 void ui_update() {
@@ -512,6 +532,10 @@ void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::s
 
     uiElem_.activated = 1;
     uiElem_.name = elemName;
+    uiElem_.x = x;
+    uiElem_.y = y;
+    uiElem_.width = width;
+    uiElem_.height = height;
     uiElem_.elementType = ElementType::RECTANGLE;
 
     if(_texturePath != ""){
@@ -554,6 +578,11 @@ void ui_updateStringUi(int fontHeight, int x, int y, std::string str, UiElement&
     _uiStringElem.isStringElement = true;
     _uiStringElem.elementType = ElementType::STRING;
     _uiStringElem.stringElements.clear();
+
+    _uiStringElem.x = x;
+    _uiStringElem.y = y;
+    _uiStringElem.width = fontHeight * str.size() * 0.66;
+    _uiStringElem.height = fontHeight;
 
     int charCount = 0;
     int fontWidth = fontHeight / 1.20;

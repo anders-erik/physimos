@@ -17,9 +17,9 @@ InputState inputState__;
 struct InputState inputState;
 
 
-InputState* getCurrentInputStatePointer() {
-	return &inputState__;
-}
+// InputState* getCurrentInputStatePointer() {
+// 	return &inputState__;
+// }
 // void setUiAndCamera(UI* _ui) {
 // 	ui_input = _ui;
 // }
@@ -56,15 +56,15 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	double xpos, ypos;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 		glfwGetCursorPos(window, &xpos, &ypos);
-        printf("Click! -- %f , %f \n", xpos, ypos);
+        // printf("Click! -- %f , %f \n", xpos, ypos);
 		// printf("simstate: %d \n", SimState::idle);
 
         // if(simulation.simState == SimState::idle && ypos < 100.0 && xpos > 700.0){
-		if(ypos < 100.0 && xpos > 700.0){
-			printf("Start Simulation button clicked! \n");
-			inputState.startSimClick = 1;
-			// simulation.simState = SimState::startClickDetected;
-		}
+		// if(ypos < 100.0 && xpos > 700.0){
+		// 	printf("Start Simulation button clicked! \n");
+		// 	inputState.startSimClick = 1;
+		// 	// simulation.simState = SimState::startClickDetected;
+		// }
 		inputState.mousePressActive = 1;
 		inputState.pointerXLastClick = xpos;
 		inputState.pointerYLastClick = ypos;
@@ -83,6 +83,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
 		inputState.middleMouse = 0;
 	
+
+	// NOTIFY UI OF BUTTON CLICK
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+		glfwGetCursorPos(window, &xpos, &ypos);
+		ui_detectElementClick(xpos, ypos);
+	}
+
 }
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {

@@ -26,7 +26,7 @@ void sim_updatePosAndVel(WorldObject* wo);
 
 
 // Turn into model
-struct SimObject {
+typedef struct SimObject {
 	float * vertices;
 	int vertexCount;
 	Point3 rotation = {0.0f, 0.0f, 0.0f};
@@ -40,7 +40,7 @@ struct SimObject {
 	
 	Point3 position_0;
 	Point3 velocity_0;
-};
+} SimObject;
 
 // One timestep forward of 'dt' for SimObject
 void updatePosAndVel(SimObject* so, float dt);
