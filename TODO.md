@@ -8,10 +8,16 @@
 ### TODO:
 - |o| enable ui element texture
 - |o| detect and respond to ui element click
-- physics (non-simulation run)
-	- give worldobject a flag to toggle gravity
-	- apply gravtiy
-	- bounce on ground
+- |o| physics (non-simulation run)
+	- |o| worldscene object - gets updated from the main loop
+		- |o| controls the camera
+		- |o| holds all world objects
+			- |o| give worldobject a flag to toggle gravity
+		- |o| physics updates
+			- |o| apply gravtiy
+			- |o| bounce on ground
+		- |o| calls the world renderer
+
 - Obj-file loader
 
 

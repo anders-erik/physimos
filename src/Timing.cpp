@@ -16,6 +16,8 @@ double glfwTime;
 
 int current_fps = 0;
 
+int frame_count = 0;
+
 clock_t currentTime = 0;
 clock_t lastFrameTime = 0;
 
@@ -44,6 +46,7 @@ void timing_init(){
 
 
 void timing_newFrame() {
+    frame_count++;
     //
             // FPS INFO
             //

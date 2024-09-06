@@ -3,15 +3,17 @@
 
 #include <vector>
 
+#include "WorldObject.hpp"
+
 
 
 void wr_init();
-void wr_render();
+
+void wr_render(std::vector<WorldObject>& _worldObjects);
 
 void update_sim_timestep();
 
-void wr_init_old();
-void wr_render_old();
+
 
 void modelFunction();
 

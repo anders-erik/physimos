@@ -13,11 +13,22 @@
 #include "Types.hpp"
 #include "shader.hpp"
 
-class WorldObject {
+typedef struct BoundingBox {
+    float x_min;
+    float x_max;
+    float y_min;
+    float y_max;
+    float z_min;
+    float z_max;
+} BoundingBox;
 
+
+class WorldObject {
 public:
     WorldObject(const char* path);
     WorldObject();
+
+    std::string name;
 
     void LoadWorldObject(const char* path);
 
@@ -27,6 +38,18 @@ public:
     unsigned int vbo;
     void setVaoVbo330();
     void setVaoVbo332();
+
+    // Texture
+    int hasTexture = 0;
+    unsigned int glTexture = 0;
+    // unsigned int* textureBuffer;
+
+
+    // PHYSICS
+    int gravityOn = 0;
+    float offsetToBottom = 0.0f;
+    BoundingBox boundingBox;
+
 
     std::vector<float> vertices;
 	int vertexCount;

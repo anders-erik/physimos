@@ -3,7 +3,9 @@
 #include "Simulation.hpp"
 
 #include "WorldObject.hpp"
-extern WorldObject worldTriangle2_bounce;
+// extern WorldObject worldTriangle2_bounce;
+extern WorldObject* worldTriangle2_simobj_pointer;
+// WorldObject* worldTriangle2_bounce_pointer;
 
 #include "Input.hpp"
 extern InputState inputState;
@@ -30,7 +32,9 @@ WorldObject* simWorldObject;
 
 
 
-void updateSimulation(){
+void updateSimulation() {
+    WorldObject& worldTriangle2_bounce = *worldTriangle2_simobj_pointer;
+
     if (simState == SimState::idle && inputState.startSimClick == 1) {
         simState = SimState::startClickDetected;
         inputState.startSimClick = 0;
@@ -43,6 +47,7 @@ void updateSimulation(){
     // Start Simulation
     if (simState == SimState::startClickDetected) {
         simState = running;
+
         printf("Simulation Starting: \nsimulation.dtIndexMax = %d \n", dtIndexMax);
 
         // simulation.simObject = &tri1;
@@ -100,9 +105,9 @@ void sim_updatePosAndVel(WorldObject* wo) {
 
     // BOUNCE
     // printf("%d\n", so->translation.y);
-    if (wo->position.z < -20.0f) {
+    if (wo->position.z < 0.0f) {
         wo->velocity.z = -wo->velocity.z * 0.8;
-        wo->position.z = -19.9f; // make sure the bounce condition is not met next 
+        wo->position.z = 0.01f; // make sure the bounce condition is not met next 
         // printf("BOUNCE! \n");
     }
 

@@ -1,11 +1,10 @@
-
 #include <iostream>
-#include "Simulation.hpp"
-#include "Camera.hpp"
+
 #include "Windowing.hpp"
-#include "WorldRenderer.hpp"
-#include "Timing.hpp"
+#include "WorldScene.hpp"
 #include "ui.hpp"
+#include "Timing.hpp"
+
 
 
 
@@ -27,10 +26,9 @@ int main()
 	}
 
 
-	
-	cam_init();
-	
-	wr_init();
+	ws_init();
+
+
 
 	ui_init();
 	
@@ -56,29 +54,15 @@ int main()
 
 
 
-		//
-		// SIMULATION
-		//
-		updateSimulation();
-		
-
+	
 		// 
 		// Check is escape is pressed
 		// 
 		processInput();
 
 
-		//
-		// Update Camera matrices (view/persp.)
-		//
-		cam_UpdateCam();
 
-
-
-		//
-		// Render all world objects (world renderer)
-		//
-		wr_render();
+		ws_update();
 		
 
 		//
