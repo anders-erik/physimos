@@ -2,3 +2,4 @@ name:greenSquare;type:rectangle;w:100;h:100;x:L100;y:B0;c:green
 name:redSquare;type:rectangle;w:100;h:100;x:L0;y:B0;c:red
 name:textureElem_1;type:rectangle;w:150;h:100;x:L0;y:T300;texture:media/net_100x100.bmp
 name:startSimButton;type:rectangle;w:80;h:60;x:R80;y:B0;texture:media/play-button.bmp
+name:resetButton;type:rectangle;w:80;h:60;x:R80;y:B60;texture:media/play-button.bmp

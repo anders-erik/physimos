@@ -1,11 +1,17 @@
 
 #include "ui.hpp"
 
+#include <iomanip>
+
 #include "shader.hpp"
 #include "Input.hpp"
 #include "bmp_loader.hpp"
 #include "PSO_util.hpp"
 #include "Timing.hpp"
+
+#include "WorldScene.hpp"
+#include "WorldObject.hpp"
+extern WorldObject* worldTriangle2_simobj_pointer;
 
 #include "Simulation.hpp"
 extern SimState simState;
@@ -74,6 +80,8 @@ void ui_detectElementClick(double x, double y) {
 
 void ui_update() {
     ui_updateFpsElement();
+    ui_updateTrackedWorldObjectElement();
+
     ui_renderUI();
 }
 
@@ -194,6 +202,41 @@ void ui_updateFpsElement() {
 
 }
 
+int trackedWorldObjectUpdateCount = 0;
+void ui_updateTrackedWorldObjectElement(){
+
+    fpsStringElements.clear();
+
+    std::string worldObjectTracked_str = "WORLD OBJECT TRACKED ";
+    
+    std::string twose_z_str = "twose_Z = ";
+    twose_z_str = (*worldTriangle2_simobj_pointer).name;
+    twose_z_str = twose_z_str.append(".Z = ");
+    
+    // Parse float to string
+    float twose_z_value = (*worldTriangle2_simobj_pointer).position.z;
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(2) << twose_z_value;
+    std::string s = stream.str();
+    twose_z_str = twose_z_str.append(s);
+    // std::cout << "worldTriangle2_simobj_pointer = " << worldTriangle2_simobj_pointer << std::endl;
+    
+    for (UiElement& _uiElem : uiElements) {
+        if (_uiElem.name == "trackedWorldObject")
+            ui_updateStringUi(15, 0, 500, worldObjectTracked_str, _uiElem);
+        if (_uiElem.name == "twose_name"){
+            
+            // Slow down updates
+            if (trackedWorldObjectUpdateCount % 5 == 0) {
+                ui_updateStringUi(15, 0, 478, twose_z_str, _uiElem);
+                // std::cout << "trackedWorldObjectUpdateCount = " << trackedWorldObjectUpdateCount << std::endl;
+
+            }
+            trackedWorldObjectUpdateCount++;
+        }
+    }
+}
+
 void ui_reloadUi() {
 
     uiElements.clear();
@@ -224,6 +267,13 @@ void ui_reloadUi() {
     UiElement fpsStringElement;
     fpsStringElement.name = "fps";
     uiElements.push_back(fpsStringElement);
+
+    UiElement trackedWorldObjectStringElement;
+    trackedWorldObjectStringElement.name = "trackedWorldObject";
+    uiElements.push_back(trackedWorldObjectStringElement);
+    UiElement twose_name;
+    twose_name.name = "twose_name";
+    uiElements.push_back(twose_name);
 
     ui_loadUiFile("src/main.psoui");
 

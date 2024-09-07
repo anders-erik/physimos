@@ -1,6 +1,27 @@
 
 # TODO
 
+## 2024-09-07 - 2024-09-10
+
+### TODO:
+- physics simulation improvement
+	- rotation when falling of ground
+	- collition between world objects
+- Add an improved font
+- obj-file material loader
+	- Add a simple building
+- FPS style navigation
+	- Make build wall impenetrable
+- Add non-flat ground
+- UI
+	- List all world object
+		- Dynamically select to track specific object
+	- Reset Inital value button
+	- Hot reload
+		- New ui elements
+		- new objects, materials, etc. 
+- Slight randomization to world objects
+
 
 
 ## 2024-09-06
@@ -18,6 +39,7 @@
 			- |o| bounce on ground
 		- |o| calls the world renderer
 - |o| Obj-file loader
+- |o| Add dynamic world object information to UI
 
 
 ## 2024-09-04

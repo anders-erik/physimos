@@ -16,7 +16,7 @@ OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.cpp.o,$(filter %.cpp,$(SRCS))) \
 # SRCS := $(patsubst %, $(SRC_DIR)%, $(SRCS))
 
 
-INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp ui.hpp uiElement.hpp Model.hpp bmp_loader.hpp Windowing.hpp WorldRenderer.hpp Timing.hpp WorldScene.hpp obj_loader.hpp
+INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp ui.hpp uiElement.hpp Model.hpp bmp_loader.hpp Windowing.hpp WorldRenderer.hpp Timing.hpp WorldScene.hpp obj_loader.hpp PSO_util.hpp
 INC_HPP := $(patsubst %, $(SRC_DIR)/%, $(INC_HPP))
 # OBJS := main.o
 

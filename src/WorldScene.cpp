@@ -188,7 +188,7 @@ void ws_loadTextures(){
     // bmp_loader.prettyPrint();
 
     float gray_f = 0.5;
-    int gray_i = (int) (gray_f * 255);
+    unsigned char gray_i = (unsigned char)(gray_f * 255);
     const unsigned char grayData[3] = { gray_i, gray_i, gray_i };
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, &grayData);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -261,6 +261,9 @@ void ws_createWorldObjects(){
     worldObjects.push_back(worldCube_spin);
 
 
+
+
+
     // CUBE 3 - GRAVITY
 
     // WorldObject worldCube1("src/models/cube.pso");
@@ -269,7 +272,6 @@ void ws_createWorldObjects(){
 
 
     // GRAVITY ENABLED CUBES
-    
     float cube_3_scale = 2.0;
     cube_3_gravity.scale = { cube_3_scale, cube_3_scale, cube_3_scale };
     cube_3_gravity.position_0 = { 40.0f, -10.0f, 5.0f };
@@ -291,8 +293,8 @@ void ws_createWorldObjects(){
     cube_3_gravity.setVaoVbo330();
     cube_3_gravity.setShaderProgram(&worldShader);
 
-    for (int i = 0; i < 10; i++) {
-        cube_3_gravity.position_0 = { 40.0f, -10.0f + 5.0f * (float)i, 5.0f };
+    for (int i = 0; i < 5; i++) {
+        cube_3_gravity.position_0 = { 40.0f, -10.0f + 5.0f * (float)i, 30.0f };
         cube_3_gravity.position = cube_3_gravity.position_0;
         worldObjects.push_back(cube_3_gravity);
     }
