@@ -203,6 +203,22 @@ void ws_loadTextures(){
 
 void ws_createWorldObjects(){
 
+    // TEMP
+    Cube cube_bounding_1;
+    cube_bounding_1.name = "cube_bounding_1";
+    // worldObjects.push_back(cube_bounding_1);
+
+    // worldCube1.scale = {2.0, 2.0, 2.0};
+    cube_bounding_1.scale = { 0.5, 0.5, 0.5 };
+    cube_bounding_1.position = { -10.0f, -5.0f, 20.0f };
+    // worldCube1.printVertices();
+
+    cube_bounding_1.setVaoVbo330();
+    cube_bounding_1.setShaderProgram(&worldShader);
+    worldObjects.push_back(cube_bounding_1);
+    // std::cout << "cube_1.cubeString = " << cube_1.cubeString << std::endl;
+    
+
 
     // GROUND 1
 
@@ -274,9 +290,11 @@ void ws_createWorldObjects(){
     // GRAVITY ENABLED CUBES
     float cube_3_scale = 2.0;
     cube_3_gravity.scale = { cube_3_scale, cube_3_scale, cube_3_scale };
-    cube_3_gravity.position_0 = { 40.0f, -10.0f, 5.0f };
+    cube_3_gravity.rotation = { 40.0f, -10.0f, 5.0f };
+
+    cube_3_gravity.position_0 = { -5.0f, 0.0f, 6.0f };
     cube_3_gravity.position = cube_3_gravity.position_0;
-    cube_3_gravity.velocity_0 = { 2.0f, 0.0f, 0.0f };
+    cube_3_gravity.velocity_0 = { 0.0f, 0.0f, 0.0f };
     cube_3_gravity.velocity = cube_3_gravity.velocity_0;
     // worldCube1.printVertices();
     cube_3_gravity.gravityOn = 1;
@@ -293,10 +311,13 @@ void ws_createWorldObjects(){
     cube_3_gravity.setVaoVbo330();
     cube_3_gravity.setShaderProgram(&worldShader);
 
-    for (int i = 0; i < 5; i++) {
+    worldObjects.push_back(cube_3_gravity);
+
+    // Add more cubes
+    for (int i = 0; i < 0; i++) {
         cube_3_gravity.position_0 = { 40.0f, -10.0f + 5.0f * (float)i, 30.0f };
         cube_3_gravity.position = cube_3_gravity.position_0;
-        worldObjects.push_back(cube_3_gravity);
+        
     }
 
 

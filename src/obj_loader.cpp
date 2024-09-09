@@ -185,18 +185,18 @@ void obj_loadFromFile(std::string objPath) {
         }
         // this->vertexCount = vertexCounter;
 
-        std::cout << "OK.  [" << objMesh.v.size() << " VERTEX COORD ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-        std::cout << "OK.  [" << objMesh.vt.size() << " TEXTURE COORD ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-        std::cout << "OK.  [" << objMesh.vn.size() << " VERTEX NORMAL ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-        std::cout << "OK.  [" << objMesh.fi.size() << " FACE ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
+        // std::cout << "OK.  [" << objMesh.v.size() << " VERTEX COORD ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
+        // std::cout << "OK.  [" << objMesh.vt.size() << " TEXTURE COORD ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
+        // std::cout << "OK.  [" << objMesh.vn.size() << " VERTEX NORMAL ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
+        // std::cout << "OK.  [" << objMesh.fi.size() << " FACE ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
 
         // ADD ACTUAL FACE VERTEX DATA
         ObjFace objFace;
         for (ObjFaceIndex objFaceIndex : objMesh.fi){
-            std::cout << "fi ";
-            std::cout << objFaceIndex.vert1.v << "/" << objFaceIndex.vert1.vt << "/" << objFaceIndex.vert1.vn << " ";
-            std::cout << objFaceIndex.vert2.v << "/" << objFaceIndex.vert2.vt << "/" << objFaceIndex.vert2.vn << " ";
-            std::cout << objFaceIndex.vert3.v << "/" << objFaceIndex.vert3.vt << "/" << objFaceIndex.vert3.vn << std::endl;
+            // std::cout << "fi ";
+            // std::cout << objFaceIndex.vert1.v << "/" << objFaceIndex.vert1.vt << "/" << objFaceIndex.vert1.vn << " ";
+            // std::cout << objFaceIndex.vert2.v << "/" << objFaceIndex.vert2.vt << "/" << objFaceIndex.vert2.vn << " ";
+            // std::cout << objFaceIndex.vert3.v << "/" << objFaceIndex.vert3.vt << "/" << objFaceIndex.vert3.vn << std::endl;
             
             objFace.vert1.v = objMesh.v[objFaceIndex.vert1.v - 1];
             objFace.vert1.vt = objMesh.vt[objFaceIndex.vert1.vt - 1];

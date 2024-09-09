@@ -23,6 +23,7 @@ typedef struct BoundingBox {
 } BoundingBox;
 
 
+
 class WorldObject {
 public:
     WorldObject(const char* path);
@@ -50,6 +51,7 @@ public:
     int gravityOn = 0;
     float offsetToBottom = 0.0f;
     BoundingBox boundingBox;
+    std::vector<float> boundingVerts;
 
 
     std::vector<float> vertices;
@@ -88,6 +90,15 @@ public:
     void printPosition();
     void printTransformMatrix();
     
+};
+
+
+class Cube : public WorldObject {
+    public:
+        Cube();
+        BoundingBox boundingBox = { -1.0f, 1.0f,-1.0f, 1.0f, -1.0f, 1.0f};
+        std::string cubeString = "CUBECUBE! \n";
+
 };
 
 #endif 

@@ -54,7 +54,7 @@ void WorldObject::setVaoVbo_obj() {
     glBindVertexArray(vao);
 
     // REPLACE VERTEX NORMALS WITH COLORS!
-    for(int i = 0; i < vertices.size(); i += 8){
+    for(unsigned int i = 0; i < vertices.size(); i += 8){
         vertices[i + 5] = 0.0f;
         vertices[i + 6] = 0.0f;
         vertices[i + 7] = 0.0f;
@@ -211,6 +211,12 @@ void WorldObject::SetTransformMatrixRowMajor(){
 
 WorldObject::WorldObject(){
 
+}
+
+Cube::Cube(){
+    LoadWorldObject("src/models/cube.pso");
+    for (float vertex : vertices)
+        boundingVerts.push_back(vertex);
 }
 
 WorldObject::WorldObject(const char* path) {
