@@ -7,10 +7,101 @@
 
 #include "obj_loader.hpp"
 
+
+// MTL
+
+float Kd[3] = {0.0f, 0.0f, 0.0f};
+std::string texturePath = "";
+
+
+
+
+// OBJ
 ObjMesh objMesh;
 
 std::vector<float> vertexBuffer;
 std::vector<int> vertexIndices;
+
+
+
+float * obj_loadKdFromFile(std::string mtlPath){
+    std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
+    // this->modelPath = objPath;
+
+    std::ifstream modelFile;
+    std::stringstream modelStream;
+    std::string modelString;
+
+    modelFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        // std::cout << "000000000000" << std::endl;
+        modelFile.open(mtlPath);
+
+
+
+        modelStream << modelFile.rdbuf();
+
+        modelString = modelStream.str();
+
+        modelFile.close();
+
+        std::string line;
+        std::string item;
+        // float number;
+
+        // int vertexCounter = 0;
+        // Stepping through each comma-separated value
+
+
+        while (std::getline(modelStream, line)) {
+            // Remove any leading or trailing whitespace from the item
+            std::stringstream itemStream(line);
+            // itemStream >> number;
+
+
+            // Split line
+            std::vector<std::string> lineSegments;
+            std::string segment;
+
+
+            while (std::getline(itemStream, segment, ' '))
+            {
+                lineSegments.push_back(segment);
+                std::cout << segment << " ";
+            }
+            std::cout << std::endl;
+
+            if (lineSegments.size() > 0 && lineSegments[0] == "Kd") {
+                std::cout << "" << lineSegments[1] << std::endl;
+                Kd[0] = (float)std::atof(lineSegments[1].data());
+                Kd[1] = (float)std::atof(lineSegments[2].data());
+                Kd[2] = (float)std::atof(lineSegments[3].data());
+                // VertexCoord vertexCoord = {
+                //     (float)std::atof(lineSegments[1].data()),
+                //     (float)std::atof(lineSegments[2].data()),
+                //     (float)std::atof(lineSegments[3].data()),
+                //     1.0,
+                // };
+                // objMesh.v.push_back(vertexCoord);
+            }
+        }
+    }
+    catch (std::ifstream::failure& e)
+    {
+        // std::cout << " ERROR. [" << this->vertices.size() << " values]" << std::endl;
+        std::cout << "ERROR::READING_OBJ_FILE" << e.what() << std::endl;
+    }
+
+
+
+    // std::cout << modelString;
+    std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
+
+    std::cout << "" << std::endl;
+
+    return Kd;
+}
 
 
 std::vector<float> obj_getVertexBuffer_v_vt_vn(){

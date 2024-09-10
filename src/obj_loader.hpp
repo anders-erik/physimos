@@ -1,6 +1,22 @@
+#ifndef OBJ_LOADER_HPP
+#define OBJ_LOADER_HPP
 
 #include <string>
 #include <vector>
+
+
+/* 
+    MTL
+*/
+
+
+float * obj_loadKdFromFile(std::string mtlPath);
+
+
+
+/* 
+    OBJ
+*/
 
 // One Vertex Coordinate
 typedef struct VertexCoord {
@@ -67,3 +83,6 @@ typedef struct ObjMesh {
 
 std::vector<float> obj_getVertexBuffer_v_vt_vn();
 void obj_loadFromFile(std::string objPath);
+
+
+#endif

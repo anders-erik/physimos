@@ -338,6 +338,11 @@ void ws_createWorldObjects(){
     worldCube4_obj.name = "worldCube4_obj";
     // worldCube1.LoadWorldObject("src/models/cube.pso");
     obj_loadFromFile("./resources/models/blend-cube.obj");
+    float * Kd_temp = obj_loadKdFromFile("./resources/models/blend-cube.mtl");
+    worldCube4_obj.Kd[0] = Kd_temp[0];
+    worldCube4_obj.Kd[1] = Kd_temp[1];
+    worldCube4_obj.Kd[2] = Kd_temp[2];
+
     worldCube4_obj.vertices = obj_getVertexBuffer_v_vt_vn();
     std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
     worldCube4_obj.vertexCount = worldCube4_obj.vertices.size() / 8;

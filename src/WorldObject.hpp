@@ -45,6 +45,8 @@ public:
     int hasTexture = 0;
     unsigned int glTexture = 0;
     // unsigned int* textureBuffer;
+    int hasMtlKd = 0;
+    float Kd[3] = {0.0f, 0.0f, 0.0f};
 
 
     // PHYSICS

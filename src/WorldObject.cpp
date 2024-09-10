@@ -55,9 +55,12 @@ void WorldObject::setVaoVbo_obj() {
 
     // REPLACE VERTEX NORMALS WITH COLORS!
     for(unsigned int i = 0; i < vertices.size(); i += 8){
-        vertices[i + 5] = 0.0f;
-        vertices[i + 6] = 0.0f;
-        vertices[i + 7] = 0.0f;
+        // vertices[i + 5] = 0.0f;
+        // vertices[i + 6] = 0.0f;
+        // vertices[i + 7] = 0.0f;
+        vertices[i + 5] = Kd[0];
+        vertices[i + 6] = Kd[1];
+        vertices[i + 7] = Kd[2];
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
