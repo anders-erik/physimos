@@ -43,7 +43,7 @@ void obj_loadMtlFromFile(std::string modelName) {
     std::string mtlPath = modelsDirectory + modelName + "/" + modelName + ".mtl";
 
 
-    std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
+    // std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
     // this->modelPath = objPath;
 
     std::ifstream modelFile;
@@ -86,9 +86,9 @@ void obj_loadMtlFromFile(std::string modelName) {
             while (std::getline(itemStream, segment, ' '))
             {
                 lineSegments.push_back(segment);
-                std::cout << segment << " ";
+                // std::cout << segment << " ";
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
 
             // Make sure the line ins't empty
             if (lineSegments.size() < 1)
@@ -141,9 +141,9 @@ void obj_loadMtlFromFile(std::string modelName) {
 
 
     // std::cout << modelString;
-    std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
+    // std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
 
-    std::cout << "" << std::endl;
+    // std::cout << "" << std::endl;
 
 }
 
@@ -153,7 +153,7 @@ void obj_loadMtlFromFile(std::string modelName) {
 
 
 float * obj_loadKdFromFile(std::string mtlPath){
-    std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
+    // std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
     // this->modelPath = objPath;
 
     std::ifstream modelFile;
@@ -196,9 +196,9 @@ float * obj_loadKdFromFile(std::string mtlPath){
             while (std::getline(itemStream, segment, ' '))
             {
                 lineSegments.push_back(segment);
-                std::cout << segment << " ";
+                // std::cout << segment << " ";
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
 
             if (lineSegments.size() > 0 && lineSegments[0] == "Kd") {
                 std::cout << "" << lineSegments[1] << std::endl;
@@ -224,9 +224,9 @@ float * obj_loadKdFromFile(std::string mtlPath){
 
 
     // std::cout << modelString;
-    std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
+    // std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
 
-    std::cout << "" << std::endl;
+    // std::cout << "" << std::endl;
 
     return Kd;
 }
@@ -242,7 +242,7 @@ void obj_loadFromFile(std::string modelName) {
     // grab the path to file with obj-extension
     std::string objPath = modelsDirectory + modelName + "/" + modelName + ".obj";
     
-    std::cout << "Loading obj model: " << objPath << ". " << std::endl;
+    // std::cout << "Loading obj model: " << modelName << ". " << std::endl;
     // this->modelPath = objPath;
 
     vertexBuffer.clear();
@@ -511,12 +511,12 @@ void obj_loadFromFile(std::string modelName) {
 
 
     // std::cout << modelString;
-    std::cout << "DONE READING OBJ FILE " << objPath  << std::endl;
+    // std::cout << "DONE READING OBJ FILE " << objPath  << std::endl;
 
-    std::cout << "vertexBuffer.size() = " << vertexBuffer.size() << std::endl;
+    // std::cout << "vertexBuffer.size() = " << vertexBuffer.size() << std::endl;
     
 
-    std::cout << ""<< std::endl;
+    // std::cout << ""<< std::endl;
     
 
 }

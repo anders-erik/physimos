@@ -94,10 +94,10 @@ void WorldObject::printPosition() {
 }
 
 void WorldObject::printTransformMatrix() {
-    std::cout << this->transformMatrixRowMajor[0] << " " << this->transformMatrixRowMajor[1] << " " << this->transformMatrixRowMajor[2] << " " << this->transformMatrixRowMajor[3] << std::endl;
-    std::cout << this->transformMatrixRowMajor[4] << " " << this->transformMatrixRowMajor[5] << " " << this->transformMatrixRowMajor[6] << " " << this->transformMatrixRowMajor[7] << std::endl;
-    std::cout << this->transformMatrixRowMajor[8] << " " << this->transformMatrixRowMajor[9] << " " << this->transformMatrixRowMajor[10] << " " << this->transformMatrixRowMajor[11] << std::endl;
-    std::cout << this->transformMatrixRowMajor[12] << " " << this->transformMatrixRowMajor[13] << " " << this->transformMatrixRowMajor[14] << " " << this->transformMatrixRowMajor[15] << std::endl;
+    std::cout << this->modelMatrixRowMajor[0] << " " << this->modelMatrixRowMajor[1] << " " << this->modelMatrixRowMajor[2] << " " << this->modelMatrixRowMajor[3] << std::endl;
+    std::cout << this->modelMatrixRowMajor[4] << " " << this->modelMatrixRowMajor[5] << " " << this->modelMatrixRowMajor[6] << " " << this->modelMatrixRowMajor[7] << std::endl;
+    std::cout << this->modelMatrixRowMajor[8] << " " << this->modelMatrixRowMajor[9] << " " << this->modelMatrixRowMajor[10] << " " << this->modelMatrixRowMajor[11] << std::endl;
+    std::cout << this->modelMatrixRowMajor[12] << " " << this->modelMatrixRowMajor[13] << " " << this->modelMatrixRowMajor[14] << " " << this->modelMatrixRowMajor[15] << std::endl;
 }
 
 
@@ -126,7 +126,7 @@ void WorldObject::SetScale(Vec3 scaleVector) {
 }
 
 
-void WorldObject::SetTransformMatrixRowMajor(){
+void WorldObject::SetModelMatrixRowMajor(){
     // this->transformMatrixRowMajor
     float Sx = this->scale.x;
     float Sy = this->scale.y;
@@ -192,28 +192,28 @@ void WorldObject::SetTransformMatrixRowMajor(){
 
 
     // Row 1
-    this->transformMatrixRowMajor[0] = Sx * (a11 + Tx * a41);
-    this->transformMatrixRowMajor[1] = Sy * (a12 + Tx * a42);
-    this->transformMatrixRowMajor[2] = Sz * (a13 + Tx * a43);
-    this->transformMatrixRowMajor[3] = a14 + Tx * a44;
+    this->modelMatrixRowMajor[0] = Sx * (a11 + Tx * a41);
+    this->modelMatrixRowMajor[1] = Sy * (a12 + Tx * a42);
+    this->modelMatrixRowMajor[2] = Sz * (a13 + Tx * a43);
+    this->modelMatrixRowMajor[3] = a14 + Tx * a44;
 
     // Row 2
-    this->transformMatrixRowMajor[4] = Sx * (a21 + Ty * a41);
-    this->transformMatrixRowMajor[5] = Sy * (a22 + Ty * a42);
-    this->transformMatrixRowMajor[6] = Sz * (a23 + Ty * a43);
-    this->transformMatrixRowMajor[7] = a24 + Ty * a44;;
+    this->modelMatrixRowMajor[4] = Sx * (a21 + Ty * a41);
+    this->modelMatrixRowMajor[5] = Sy * (a22 + Ty * a42);
+    this->modelMatrixRowMajor[6] = Sz * (a23 + Ty * a43);
+    this->modelMatrixRowMajor[7] = a24 + Ty * a44;;
 
     // Row 3
-    this->transformMatrixRowMajor[8] = Sx * (a31 + Tz * a41);
-    this->transformMatrixRowMajor[9] = Sy * (a32 + Tz * a42);
-    this->transformMatrixRowMajor[10] = Sz * (a33 + Tz * a43);
-    this->transformMatrixRowMajor[11] = a34 + Tz * a44;;
+    this->modelMatrixRowMajor[8] = Sx * (a31 + Tz * a41);
+    this->modelMatrixRowMajor[9] = Sy * (a32 + Tz * a42);
+    this->modelMatrixRowMajor[10] = Sz * (a33 + Tz * a43);
+    this->modelMatrixRowMajor[11] = a34 + Tz * a44;;
 
     // Row 4
-    this->transformMatrixRowMajor[12] = Sx * a41;
-    this->transformMatrixRowMajor[13] = Sy * a42;
-    this->transformMatrixRowMajor[14] = Sx * a43;
-    this->transformMatrixRowMajor[15] = a44;
+    this->modelMatrixRowMajor[12] = Sx * a41;
+    this->modelMatrixRowMajor[13] = Sy * a42;
+    this->modelMatrixRowMajor[14] = Sx * a43;
+    this->modelMatrixRowMajor[15] = a44;
 
 }
 

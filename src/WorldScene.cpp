@@ -11,6 +11,7 @@
 
 extern Shader worldShader;
 extern Shader worldObjShader;
+extern Shader wireframeShader;
 
 
 #include "WorldScene.hpp"
@@ -18,6 +19,8 @@ extern Shader worldObjShader;
 #include "bmp_loader.hpp"
 
 #include "Timing.hpp"
+
+#include "VectorMath.hpp"
 
 // WORLD OBJECTS
 
@@ -71,6 +74,10 @@ void ws_update() {
 
     // }
 
+
+    // for(WorldObject& _wo : worldObjects)
+    //     _wo.SetModelMatrixRowMajor();
+
     ws_physics();
 
     // Update Camera matrices (view/persp.)
@@ -87,6 +94,7 @@ void ws_update() {
 void ws_physics(){
     WorldObject& worldGround = *worldGround_pointer;
 
+    // float modelMatrix16[16] = {0};
 
     for (WorldObject& _worldObject : worldObjects){
         // std::cout << "_worldObject.name =  " << _worldObject.name << std::endl;
@@ -94,23 +102,70 @@ void ws_physics(){
        
         if (_worldObject.name == "worldCube_spin")
             _worldObject.Rotate({ 0.03f, 0.01f, 0.0f });
+        if (_worldObject.name == "cube_3_gravity")
+            _worldObject.Rotate(_worldObject.angularVelocity);
         
         // GRAVITY
         if (_worldObject.gravityOn == 1){
             _worldObject.velocity.z += -9.8 * 0.0133; // dt = 0.0133s
             _worldObject.position.z += _worldObject.velocity.z * 0.0133;
 
+
+            // Need to update after movement for collision check
+            _worldObject.SetModelMatrixRowMajor();
+
+
             // Check ground bounce
+
+            // USING RIGID BODY
+            // for(int i = 2; i < _worldObject.)
+            if(_worldObject.hasRigidBody){
+                float worldVertex[3] = {0};
+                float localVertex[3] = {0};
+                float * tempVertex = NULL;
+
+                // Loop through the verticies of the rigid body, apply model transform, if one is below ground, BOUNCE
+                for(unsigned int i = 0; i < _worldObject.rigidBody.vertices.size(); i += 3){
+                    
+                    // float localVertex[3] = { _worldObject.rigidBody.vertices[i], _worldObject.rigidBody.vertices[i+1] , _worldObject.rigidBody.vertices[i+2] };
+                    localVertex[0] = _worldObject.rigidBody.vertices[i];
+                    localVertex[1] = _worldObject.rigidBody.vertices[i+1];
+                    localVertex[2] = _worldObject.rigidBody.vertices[i+2];
+                    
+                    // std::cout << "localVertex[0] " << localVertex[0] << std::endl;
+                    tempVertex = mul_vec3_mat16(localVertex, _worldObject.modelMatrixRowMajor);
+                    
+
+                    worldVertex[0] = tempVertex[0];
+                    worldVertex[1] = tempVertex[1];
+                    worldVertex[2] = tempVertex[2];
+                    // std::cout << "worldVertex[2] " << worldVertex[2] << std::endl;
+
+                    // std::cout << "OKOKOKOKOKOKKOK" << std::endl;
+                    if (worldVertex[2] < 0.0){
+                        // std::cout << "RIGID BODY COLLISION  ===================" << std::endl;
+                        _worldObject.position.z -= _worldObject.velocity.z * 0.0133;
+                        _worldObject.velocity.z = -_worldObject.velocity.z * 0.8;
+
+                        // Improve by checking direction of vertex velocity??
+                        _worldObject.angularVelocity = { -_worldObject.angularVelocity.x, -_worldObject.angularVelocity.y , -_worldObject.angularVelocity.z };
+
+                        // Make sure we don't collide more than one vertexs
+                        break;
+                    }
+                }
+            }
+
+
+            // USING WORLD OBJECT BOUNDING BOX
             // worldObjectsCollide_aabb_z(worldGround, _worldObject);
             // if (_worldObject.position.z < (worldGround.position.z + _worldObject.offsetToBottom)) {
             if ( worldObjectCollidingWithGround_aabb_z(worldGround, _worldObject) == 1) {
                 // std::cout << "COLLISION" << std::endl;
                 
-                _worldObject.position.z -= _worldObject.velocity.z * 0.0133;
-                _worldObject.velocity.z = -_worldObject.velocity.z * 0.8;
+                // _worldObject.position.z -= _worldObject.velocity.z * 0.0133;
+                // _worldObject.velocity.z = -_worldObject.velocity.z * 0.8;
             }
-            // Vec3 deltaPos = {};
-            // _worldObject.Translate({ 0.0f, 0.0f, -0.01f });
         }
 
         _worldObject.position.x += _worldObject.velocity.x * 0.0133;
@@ -329,13 +384,18 @@ void ws_createWorldObjects(){
     cube_3_gravity.name = "cube_3_gravity";
     cube_3_gravity.LoadWorldObject("src/models/cube.pso");
 
+    // RIGID BODY
+    cube_3_gravity.hasRigidBody = true;
+    cube_3_gravity.rigidBody.shader = &wireframeShader;
+    cube_3_gravity.rigidBody.setVaoVbo_wireframe();
 
     // GRAVITY ENABLED CUBES
     float cube_3_scale = 2.0;
     cube_3_gravity.scale = { cube_3_scale, cube_3_scale, cube_3_scale };
     cube_3_gravity.rotation = { 40.0f, -10.0f, 5.0f };
+    cube_3_gravity.angularVelocity = { 0.01f, 0.01f, 0.0f };
 
-    cube_3_gravity.position_0 = { -5.0f, 0.0f, 6.0f };
+    cube_3_gravity.position_0 = { -5.0f, 0.0f, 15.0f };
     cube_3_gravity.position = cube_3_gravity.position_0;
     cube_3_gravity.velocity_0 = { 0.0f, 0.0f, 0.0f };
     cube_3_gravity.velocity = cube_3_gravity.velocity_0;

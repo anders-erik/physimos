@@ -36,7 +36,7 @@ typedef struct SimObject {
     Point3 translationPrevStep = {0.0f, 0.0f, 0.0f};
     Point3 velocity = {0.0f, 0.0f, 0.0f};
     Point3 velocityPrevStep = {0.0f, 0.0f, 0.0f};
-	float transformMatrixRowMajor[16] = {0};
+	float modelMatrixRowMajor[16] = {0};
 	
 	Point3 position_0;
 	Point3 velocity_0;

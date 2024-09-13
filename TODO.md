@@ -10,9 +10,9 @@
 	- |o| no ambient, specular, etc. information. Just plain texture.
 - |o| import obj+mtl with texture
 	- |o| Make a building in blender that we can import and 'walk' into
-- improved world ground collisions
-	- bounce on object vertex hit
-	- rotation on collision
+- |o| improved world ground collisions
+	- |o| bounce on object vertex hit
+	- |o| rotation on collision
 
 
 

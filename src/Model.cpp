@@ -19,6 +19,7 @@ extern unsigned int obj_imgHeight;
 
 void Model::loadObjModel(std::string objModelName) {
 
+    std::cout << "Loading obj model: " << objModelName << ". ";
 
     obj_loadFromFile(objModelName);
 
@@ -31,6 +32,7 @@ void Model::loadObjModel(std::string objModelName) {
     // std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
     vertexCount = vertices.size() / 8;
 
+    std::cout << " OK. [" << vertices.size() << " values]" << std::endl;
 
     // MTL
     // obj_loadMtlFromFile("./resources/models/blend-cube-no-texture.mtl");
@@ -108,6 +110,8 @@ void Model::loadObjModel(std::string objModelName) {
     // this->Kd[1] = Kd[1];
     // this->Kd[2] = Kd[2];
 
+    // std::cout << "Loading obj model: " << objModelName << ". " << std::endl;
+    
 
     // obj_loadMtlFromFile("./resources/models/blend-cube-texture-1/blend-cube-texture-1.mtl");
     // if (!hasTextureMap) {

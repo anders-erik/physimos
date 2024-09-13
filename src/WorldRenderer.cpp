@@ -41,12 +41,16 @@ unsigned int colorLoc;
 unsigned int hasTextureLoc;
 
 Shader worldObjShader;
-unsigned int transformObjLoc;
+unsigned int modelObjLoc;
 unsigned int viewObjLoc;
 unsigned int sanityObjLoc;
 unsigned int perspectiveObjLoc;
-// unsigned int colorObjLoc;
-// unsigned int hasTextureObjLoc;
+
+Shader wireframeShader;
+unsigned int modelWireLoc;
+unsigned int viewWireLoc;
+unsigned int sanityWireLoc;
+unsigned int perspectiveWireLoc;
 
 // NEW GROUND
 
@@ -94,7 +98,7 @@ void wr_init(){
     worldObjShader.buildShaderProgram("src/shaders/worldObjShader_vs.glsl", "src/shaders/worldObjShader_fs.glsl");
 
     glUseProgram(worldObjShader.ID);
-    transformObjLoc = glGetUniformLocation(worldObjShader.ID, "transform");
+    modelObjLoc = glGetUniformLocation(worldObjShader.ID, "model");
     viewObjLoc = glGetUniformLocation(worldObjShader.ID, "view");
     sanityObjLoc = glGetUniformLocation(worldObjShader.ID, "sanityTransform");
     perspectiveObjLoc = glGetUniformLocation(worldObjShader.ID, "perspective");
@@ -106,6 +110,17 @@ void wr_init(){
     glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
 
     
+    wireframeShader.buildShaderProgram("src/shaders/worldWireframeShader_vs.glsl", "src/shaders/worldWireframeShader_fs.glsl");
+
+    glUseProgram(wireframeShader.ID);
+    modelWireLoc = glGetUniformLocation(wireframeShader.ID, "model");
+    viewWireLoc = glGetUniformLocation(wireframeShader.ID, "view");
+    sanityWireLoc = glGetUniformLocation(wireframeShader.ID, "sanityTransform");
+    perspectiveWireLoc = glGetUniformLocation(wireframeShader.ID, "perspective");
+
+    glUniformMatrix4fv(sanityWireLoc, 1, GL_TRUE, sanityMatrix16);
+    glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
 }
 
 
@@ -128,16 +143,28 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
             continue;
         }
 
+        if(_worldObject.hasRigidBody){
+            // std::cout << _worldObject.name << " : HAS RIGID BODY!!!!!!!!!!!!!!!" << std::endl;
+            _worldObject.rigidBody.shader->use();
+            glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+            glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
+            glUniformMatrix4fv(modelWireLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
+            glBindVertexArray(_worldObject.rigidBody.vao);
+            glDrawArrays(GL_LINES, 0, _worldObject.rigidBody.vertices.size()/3);
+        }
+
+
         glBindVertexArray(_worldObject.vao);
-        _worldObject.SetTransformMatrixRowMajor();
+        _worldObject.SetModelMatrixRowMajor();
 
         
         // WORLD SHADER
         if(_worldObject.shader->ID == worldShader.ID){
+            _worldObject.shader->use();
 
             glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
             glUniformMatrix4fv(viewLoc, 1, GL_TRUE, cam_getViewMatrix());
-            glUniformMatrix4fv(transformLoc, 1, GL_TRUE, _worldObject.transformMatrixRowMajor);
+            glUniformMatrix4fv(transformLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
 
             if (_worldObject.hasTexture) {
                 glUniform1i(hasTextureLoc, 1); // set texture bool
@@ -155,11 +182,13 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
         }
         // WORLD OBJ SHADER
         else if(_worldObject.shader->ID == worldObjShader.ID){
-            std::cout << "WORLD OBJ SHADER" << std::endl;
+            // std::cout << "WORLD OBJ SHADER" << std::endl;
+
+            _worldObject.shader->use();
 
             glUniformMatrix4fv(perspectiveObjLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
             glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
-            glUniformMatrix4fv(transformObjLoc, 1, GL_TRUE, _worldObject.transformMatrixRowMajor);
+            glUniformMatrix4fv(modelObjLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, _worldObject.model.glTexture);
@@ -172,10 +201,10 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
             // }
 
             glDrawArrays(GL_TRIANGLES, 0, _worldObject.model.vertexCount);
-            std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
-            std::cout << "_worldObject.model.glTexture = " << _worldObject.model.glTexture << std::endl;
-            std::cout << "_worldObject.model.vertexCount = " << _worldObject.model.vertexCount << std::endl;
-            std::cout << "_worldObject.model.vertices.size() = " << _worldObject.model.vertices.size() << std::endl;
+            // std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
+            // std::cout << "_worldObject.model.glTexture = " << _worldObject.model.glTexture << std::endl;
+            // std::cout << "_worldObject.model.vertexCount = " << _worldObject.model.vertexCount << std::endl;
+            // std::cout << "_worldObject.model.vertices.size() = " << _worldObject.model.vertices.size() << std::endl;
             
 
             // glUniform1i(hasTextureObjLoc, 0);

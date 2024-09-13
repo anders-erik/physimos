@@ -13,6 +13,7 @@
 #include "Types.hpp"
 #include "shader.hpp"
 #include "Model.hpp"
+#include "RigidBody.hpp"
 
 
 typedef struct BoundingBox {
@@ -46,38 +47,43 @@ public:
 
 
     Model model;
-    
+
     // Texture
     int hasTexture = 0;
     unsigned int glTexture = 0;
-    // unsigned int* textureBuffer;
-    int hasMtlKd = 0;
-    float Kd[3] = {0.0f, 0.0f, 0.0f};
 
     // Verts
     std::vector<float> vertices;
 	int vertexCount;
 
     // PHYSICS
+    RigidBody rigidBody;
+    bool hasRigidBody = false;
+
     int gravityOn = 0;
     float offsetToBottom = 0.0f;
     BoundingBox boundingBox;
     std::vector<float> boundingVerts;
 
 
-	Vec3 rotation = {0.0f, 0.0f, 0.0f};
-	Vec3 position = {0.0f, 0.0f, 0.0f};
 	Vec3 scale = {1.0f, 1.0f, 1.0f};
-	float transformMatrixRowMajor[16] = {0};
+
+	Vec3 position = {0.0f, 0.0f, 0.0f};
+    Vec3 translationPrevStep = {0.0f, 0.0f, 0.0f};
+    Vec3 velocityPrevStep = {0.0f, 0.0f, 0.0f};
+    Vec3 velocity = {0.0f, 0.0f, 0.0f};
+
+	Vec3 rotation = {0.0f, 0.0f, 0.0f};
+    Vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };
+	
+    
+    float modelMatrixRowMajor[16] = {0};
 
     std::string modelPath = "";
 
 
 
 
-    Vec3 translationPrevStep = {0.0f, 0.0f, 0.0f};
-    Vec3 velocity = {0.0f, 0.0f, 0.0f};
-    Vec3 velocityPrevStep = {0.0f, 0.0f, 0.0f};
 	
 	Vec3 position_0;
 	Vec3 velocity_0;
@@ -89,7 +95,7 @@ public:
     void Translate(Vec3 moveVector);
     void SetPosition(Vec3 positionVector);
     void SetScale(Vec3 scaleVector);
-    void SetTransformMatrixRowMajor();
+    void SetModelMatrixRowMajor();
     
 
     void loadVerticexFromFile(); // Not currently in use !
@@ -108,5 +114,6 @@ class Cube : public WorldObject {
         std::string cubeString = "CUBECUBE! \n";
 
 };
+
 
 #endif 
