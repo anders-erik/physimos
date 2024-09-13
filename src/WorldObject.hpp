@@ -12,6 +12,8 @@
 
 #include "Types.hpp"
 #include "shader.hpp"
+#include "Model.hpp"
+
 
 typedef struct BoundingBox {
     float x_min;
@@ -30,6 +32,7 @@ public:
     WorldObject();
 
     std::string name;
+    bool isActive = true;
 
     void LoadWorldObject(const char* path);
 
@@ -41,6 +44,9 @@ public:
     void setVaoVbo332();
     void setVaoVbo_obj();
 
+
+    Model model;
+    
     // Texture
     int hasTexture = 0;
     unsigned int glTexture = 0;
@@ -48,6 +54,9 @@ public:
     int hasMtlKd = 0;
     float Kd[3] = {0.0f, 0.0f, 0.0f};
 
+    // Verts
+    std::vector<float> vertices;
+	int vertexCount;
 
     // PHYSICS
     int gravityOn = 0;
@@ -55,9 +64,6 @@ public:
     BoundingBox boundingBox;
     std::vector<float> boundingVerts;
 
-
-    std::vector<float> vertices;
-	int vertexCount;
 
 	Vec3 rotation = {0.0f, 0.0f, 0.0f};
 	Vec3 position = {0.0f, 0.0f, 0.0f};

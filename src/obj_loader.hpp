@@ -12,6 +12,8 @@
 
 float * obj_loadKdFromFile(std::string mtlPath);
 
+void obj_loadMtlFromFile(std::string mtlPath);
+
 
 
 /* 

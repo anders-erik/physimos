@@ -7,11 +7,21 @@
 
 #include "obj_loader.hpp"
 
+#include "bmp_loader.hpp"
+
+
+
+// UTIL
+std::string modelsDirectory = "resources/models/";
 
 // MTL
-
+bool hasTextureMap = false;
 float Kd[3] = {0.0f, 0.0f, 0.0f};
 std::string texturePath = "";
+
+std::vector<unsigned char> obj_textureDataBuffer;
+unsigned int obj_imgWidth = 0;
+unsigned int obj_imgHeight = 0;
 
 
 
@@ -21,6 +31,119 @@ ObjMesh objMesh;
 
 std::vector<float> vertexBuffer;
 std::vector<int> vertexIndices;
+
+
+
+void obj_loadMtlFromFile(std::string modelName) {
+
+    // grab the path to file with mtl-extension
+    std::string mtlPath = modelsDirectory + modelName + "/" + modelName + ".mtl";
+
+
+    std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
+    // this->modelPath = objPath;
+
+    std::ifstream modelFile;
+    std::stringstream modelStream;
+    std::string modelString;
+
+    modelFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        // std::cout << "000000000000" << std::endl;
+        modelFile.open(mtlPath);
+
+
+
+        modelStream << modelFile.rdbuf();
+
+        modelString = modelStream.str();
+
+        modelFile.close();
+
+        std::string line;
+        std::string item;
+        // float number;
+
+        // int vertexCounter = 0;
+        // Stepping through each comma-separated value
+
+
+        while (std::getline(modelStream, line)) {
+            // Remove any leading or trailing whitespace from the item
+            std::stringstream itemStream(line);
+            // itemStream >> number;
+
+
+            // Split line
+            std::vector<std::string> lineSegments;
+            std::string segment;
+
+
+            while (std::getline(itemStream, segment, ' '))
+            {
+                lineSegments.push_back(segment);
+                std::cout << segment << " ";
+            }
+            std::cout << std::endl;
+
+            // Make sure the line ins't empty
+            if (lineSegments.size() < 1)
+                continue;
+
+            if (lineSegments[0] == "Kd") {
+                std::cout << "" << lineSegments[1] << std::endl;
+                Kd[0] = (float)std::atof(lineSegments[1].data());
+                Kd[1] = (float)std::atof(lineSegments[2].data());
+                Kd[2] = (float)std::atof(lineSegments[3].data());
+                // VertexCoord vertexCoord = {
+                //     (float)std::atof(lineSegments[1].data()),
+                //     (float)std::atof(lineSegments[2].data()),
+                //     (float)std::atof(lineSegments[3].data()),
+                //     1.0,
+                // };
+                // objMesh.v.push_back(vertexCoord);
+            }
+            else if (lineSegments[0] == "map_Kd"){
+                std::cout << "MAP_KD ------------------" << std::endl;
+                
+                std::string modelDirectory;
+                const size_t last_slash_idx = mtlPath.rfind('/');
+                if (std::string::npos != last_slash_idx)
+                {
+                    modelDirectory = mtlPath.substr(0, last_slash_idx);
+                }
+                
+                std::string texturePath = modelDirectory + "/" + lineSegments[1];
+
+                bmp_loader_loadBMPFile(texturePath);
+                obj_textureDataBuffer = bmp_getImageDataBuffer();
+                obj_imgWidth = bmp_getWidth();
+                obj_imgHeight = bmp_getHeight();
+
+                hasTextureMap = true;
+            }
+        }
+
+
+    }
+    catch (std::ifstream::failure& e)
+    {
+        // std::cout << " ERROR. [" << this->vertices.size() << " values]" << std::endl;
+        std::cout << "ERROR::READING_OBJ_FILE" << e.what() << std::endl;
+    }
+
+
+
+    // std::cout << modelString;
+    std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
+
+    std::cout << "" << std::endl;
+
+}
+
+
+
 
 
 
@@ -109,7 +232,10 @@ std::vector<float> obj_getVertexBuffer_v_vt_vn(){
 }
 
 
-void obj_loadFromFile(std::string objPath) {
+void obj_loadFromFile(std::string modelName) {
+
+    // grab the path to file with obj-extension
+    std::string objPath = modelsDirectory + modelName + "/" + modelName + ".obj";
     
     std::cout << "Loading obj model: " << objPath << ". " << std::endl;
     // this->modelPath = objPath;
@@ -314,36 +440,38 @@ void obj_loadFromFile(std::string objPath) {
                 vertexBuffer.push_back(objFace.vert1.v.y);
                 vertexBuffer.push_back(objFace.vert1.v.z);
 
-                vertexBuffer.push_back(objFace.vert1.vt.u);
-                vertexBuffer.push_back(objFace.vert1.vt.v);
-
                 vertexBuffer.push_back(objFace.vert1.vn.x);
                 vertexBuffer.push_back(objFace.vert1.vn.y);
                 vertexBuffer.push_back(objFace.vert1.vn.z);
+
+                vertexBuffer.push_back(objFace.vert1.vt.u);
+                vertexBuffer.push_back(objFace.vert1.vt.v);
 
                 // VERT 2
                 vertexBuffer.push_back(objFace.vert2.v.x);
                 vertexBuffer.push_back(objFace.vert2.v.y);
                 vertexBuffer.push_back(objFace.vert2.v.z);
 
-                vertexBuffer.push_back(objFace.vert2.vt.u);
-                vertexBuffer.push_back(objFace.vert2.vt.v);
-
                 vertexBuffer.push_back(objFace.vert2.vn.x);
                 vertexBuffer.push_back(objFace.vert2.vn.y);
                 vertexBuffer.push_back(objFace.vert2.vn.z);
+
+                vertexBuffer.push_back(objFace.vert2.vt.u);
+                vertexBuffer.push_back(objFace.vert2.vt.v);
+
 
                 // VERT 3
                 vertexBuffer.push_back(objFace.vert3.v.x);
                 vertexBuffer.push_back(objFace.vert3.v.y);
                 vertexBuffer.push_back(objFace.vert3.v.z);
+                
+                vertexBuffer.push_back(objFace.vert3.vn.x);
+                vertexBuffer.push_back(objFace.vert3.vn.y);
+                vertexBuffer.push_back(objFace.vert3.vn.z);
 
                 vertexBuffer.push_back(objFace.vert3.vt.u);
                 vertexBuffer.push_back(objFace.vert3.vt.v);
 
-                vertexBuffer.push_back(objFace.vert3.vn.x);
-                vertexBuffer.push_back(objFace.vert3.vn.y);
-                vertexBuffer.push_back(objFace.vert3.vn.z);
 
             }
 

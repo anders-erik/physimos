@@ -15,9 +15,6 @@ void update_sim_timestep();
 
 
 
-void modelFunction();
-
-
 
 
 

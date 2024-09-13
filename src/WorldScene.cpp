@@ -10,6 +10,7 @@
 #include "WorldRenderer.hpp"
 
 extern Shader worldShader;
+extern Shader worldObjShader;
 
 
 #include "WorldScene.hpp"
@@ -39,13 +40,8 @@ WorldObject* worldTriangle2_simobj_pointer;
 // TEXTURES
 unsigned int mountainTexture;
 unsigned int grayTexture;
+unsigned int qrTexture;
 
-// Old Black and white generated texture
-// Generate a black and white test 'image'
-int blackWhiteWidth = 100;
-int blackWhiteHeight = 100;
-// Generate black and white texture : 3 * blackWhiteWidth * blackWhiteHeight
-unsigned char blackWhiteImageBuffer[30000]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
 
 #define GROUND_Z_0 0.0f
 
@@ -169,10 +165,15 @@ void ws_loadTextures(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     bmp_loader_loadBMPFile("media/mountain.bmp");
+    // bmp_loader_loadBMPFile("resources/models/blend-cube-texture-1.bmp");
+
+    // blend-cube-texture-1
     // bmp_loader.prettyPrint();
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp_getWidth(), bmp_getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_getImageDataBuffer().data());
     glGenerateMipmap(GL_TEXTURE_2D);
+
+
 
 
     // GRAY TEXTURE
@@ -194,6 +195,47 @@ void ws_loadTextures(){
     glGenerateMipmap(GL_TEXTURE_2D);
 
 
+    // RANDOM TEXTURE
+    glGenTextures(1, &qrTexture);
+    glBindTexture(GL_TEXTURE_2D, qrTexture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // bmp_loader_loadBMPFile("media/mountain.bmp");
+    // bmp_loader.prettyPrint();
+
+    // RANDOM DATA GENERATION
+    // Old Black and white generated texture
+    // Generate a black and white test 'image'
+    int blackWhiteWidth = 100;
+    int blackWhiteHeight = 100;
+    // Generate black and white texture : 3 * blackWhiteWidth * blackWhiteHeight
+    unsigned char blackWhiteImageBuffer[30000]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
+
+    for (long unsigned int rgb_i = 0; rgb_i < sizeof(blackWhiteImageBuffer); rgb_i += 3) {
+        // std::cout << rgb_i << " ";
+        int r = rand();
+
+        if (r < 1073741823) {
+            blackWhiteImageBuffer[rgb_i] = 0;
+            blackWhiteImageBuffer[rgb_i + 1] = 0;
+            blackWhiteImageBuffer[rgb_i + 2] = 0;
+        }
+        else {
+            blackWhiteImageBuffer[rgb_i] = 255;
+            blackWhiteImageBuffer[rgb_i + 1] = 255;
+            blackWhiteImageBuffer[rgb_i + 2] = 255;
+        }
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, blackWhiteWidth, blackWhiteHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, &blackWhiteImageBuffer);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+
+
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -203,7 +245,7 @@ void ws_loadTextures(){
 
 void ws_createWorldObjects(){
 
-    // TEMP
+    // TEMP -BOUNDING BOX ??
     Cube cube_bounding_1;
     cube_bounding_1.name = "cube_bounding_1";
     // worldObjects.push_back(cube_bounding_1);
@@ -337,15 +379,25 @@ void ws_createWorldObjects(){
 
     worldCube4_obj.name = "worldCube4_obj";
     // worldCube1.LoadWorldObject("src/models/cube.pso");
-    obj_loadFromFile("./resources/models/blend-cube.obj");
-    float * Kd_temp = obj_loadKdFromFile("./resources/models/blend-cube.mtl");
-    worldCube4_obj.Kd[0] = Kd_temp[0];
-    worldCube4_obj.Kd[1] = Kd_temp[1];
-    worldCube4_obj.Kd[2] = Kd_temp[2];
 
-    worldCube4_obj.vertices = obj_getVertexBuffer_v_vt_vn();
-    std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
-    worldCube4_obj.vertexCount = worldCube4_obj.vertices.size() / 8;
+    // worldCube4_obj.hasTexture = 1;
+    // worldCube4_obj.glTexture = qrTexture;
+
+    // worldCube4_obj.model.loadObjModel("./resources/models/blend-cube-no-texture.obj");
+
+    worldCube4_obj.model.loadObjModel("blend-cube-texture-1");
+    // worldCube4_obj.model.loadObjModel("blend-cube-no-texture");
+    
+    // // REPLACED WITH ABOVE model-call
+    // obj_loadFromFile("./resources/models/blend-cube.obj");
+    // float * Kd_temp = obj_loadKdFromFile("./resources/models/blend-cube.mtl");
+    // worldCube4_obj.Kd[0] = Kd_temp[0];
+    // worldCube4_obj.Kd[1] = Kd_temp[1];
+    // worldCube4_obj.Kd[2] = Kd_temp[2];
+
+    // worldCube4_obj.vertices = obj_getVertexBuffer_v_vt_vn();
+    // std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
+    // worldCube4_obj.vertexCount = worldCube4_obj.vertices.size() / 8;
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     worldCube4_obj.scale = { 2.0, 2.0, 2.0 };
@@ -353,10 +405,12 @@ void ws_createWorldObjects(){
     // worldCube1.printVertices();
 
     worldCube4_obj.setVaoVbo_obj();
-    worldCube4_obj.setShaderProgram(&worldShader);
+    // worldCube4_obj.setShaderProgram(&worldShader);
+    worldCube4_obj.setShaderProgram(&worldObjShader);
 
-    worldCube4_obj.hasTexture = 1.0;
-    worldCube4_obj.glTexture = grayTexture;
+    
+
+    // worldCube4_obj.isActive = false;
 
     worldObjects.push_back(worldCube4_obj);
 
@@ -414,25 +468,25 @@ void ws_createWorldObjects(){
     }
 }
 
-void generateBlackWhiteImageBuffer(){
+// void generateBlackWhiteImageBuffer(){
 
 
-    for (long unsigned int rgb_i = 0; rgb_i < sizeof(blackWhiteImageBuffer); rgb_i += 3) {
-        // std::cout << rgb_i << " ";
-        int r = rand();
+//     for (long unsigned int rgb_i = 0; rgb_i < sizeof(blackWhiteImageBuffer); rgb_i += 3) {
+//         // std::cout << rgb_i << " ";
+//         int r = rand();
 
-        if (r < 1073741823) {
-            blackWhiteImageBuffer[rgb_i] = 0;
-            blackWhiteImageBuffer[rgb_i + 1] = 0;
-            blackWhiteImageBuffer[rgb_i + 2] = 0;
-        }
-        else {
-            blackWhiteImageBuffer[rgb_i] = 255;
-            blackWhiteImageBuffer[rgb_i + 1] = 255;
-            blackWhiteImageBuffer[rgb_i + 2] = 255;
-        }
-    }
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+//         if (r < 1073741823) {
+//             blackWhiteImageBuffer[rgb_i] = 0;
+//             blackWhiteImageBuffer[rgb_i + 1] = 0;
+//             blackWhiteImageBuffer[rgb_i + 2] = 0;
+//         }
+//         else {
+//             blackWhiteImageBuffer[rgb_i] = 255;
+//             blackWhiteImageBuffer[rgb_i + 1] = 255;
+//             blackWhiteImageBuffer[rgb_i + 2] = 255;
+//         }
+//     }
+//     // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
 
-}
+// }

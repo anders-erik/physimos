@@ -1,6 +1,22 @@
 
 # TODO
 
+
+## 2024-09-13
+
+### TODO:
+- |o| obj-no-light-shaders/program
+	- |o| shaderprogram based on obj-files (v, vn, vt)
+	- |o| no ambient, specular, etc. information. Just plain texture.
+- |o| import obj+mtl with texture
+	- Make a building in blender that we can import and 'walk' into
+- improved world ground collisions
+	- bounce on object vertex hit
+	- rotation on collision
+
+
+
+
 ## 2024-09-07 - 2024-09-10
 
 ### TODO:
