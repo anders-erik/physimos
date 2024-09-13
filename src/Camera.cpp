@@ -6,7 +6,7 @@
 #include "PSO_util.hpp"
 
 float initialCameraRotRad[3] = { 0.0f, -0.3f, 0.0f };
-float initialCameraPosition[3] = { -25.0, 0.0f, 15.0 };
+float initialCameraPosition[3] = { -25.0, 0.0f, 2.0 };
 
 
 struct Camera camera;

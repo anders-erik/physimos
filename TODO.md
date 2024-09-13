@@ -9,7 +9,7 @@
 	- |o| shaderprogram based on obj-files (v, vn, vt)
 	- |o| no ambient, specular, etc. information. Just plain texture.
 - |o| import obj+mtl with texture
-	- Make a building in blender that we can import and 'walk' into
+	- |o| Make a building in blender that we can import and 'walk' into
 - improved world ground collisions
 	- bounce on object vertex hit
 	- rotation on collision

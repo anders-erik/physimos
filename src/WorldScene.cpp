@@ -30,6 +30,7 @@ WorldObject worldCube1;
 WorldObject worldCube_spin;
 WorldObject cube_3_gravity;
 WorldObject worldCube4_obj;
+WorldObject house1_obj;
 
 WorldObject worldTriangle1Texture;
 WorldObject worldTriangle2_bounce;
@@ -386,6 +387,7 @@ void ws_createWorldObjects(){
     // worldCube4_obj.model.loadObjModel("./resources/models/blend-cube-no-texture.obj");
 
     worldCube4_obj.model.loadObjModel("blend-cube-texture-1");
+    // worldCube4_obj.model.loadObjModel("house-1");
     // worldCube4_obj.model.loadObjModel("blend-cube-no-texture");
     
     // // REPLACED WITH ABOVE model-call
@@ -415,6 +417,19 @@ void ws_createWorldObjects(){
     worldObjects.push_back(worldCube4_obj);
 
 
+
+    // // HOUSE 1 - OBJ MODEL
+
+    house1_obj.name = "house_1_obj";
+    house1_obj.model.loadObjModel("house-1");
+    // house1_obj.model.loadObjModel("blend-cube-texture-1");
+    house1_obj.scale = { 1.0, 1.0, 1.0 };
+    house1_obj.position = { 10.0f, 20.0f, 0.0f };
+
+    house1_obj.setVaoVbo_obj();
+    house1_obj.setShaderProgram(&worldObjShader);
+
+    worldObjects.push_back(house1_obj);
 
 
 

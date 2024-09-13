@@ -24,7 +24,10 @@ void Model::loadObjModel(std::string objModelName) {
 
 
     // OBJ
-    vertices = obj_getVertexBuffer_v_vt_vn();
+    std::vector<float> _vertBuffer = obj_getVertexBuffer_v_vt_vn();
+    // vertices = obj_getVertexBuffer_v_vt_vn();
+    for(float vertElement : _vertBuffer)
+        vertices.push_back(vertElement);
     // std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
     vertexCount = vertices.size() / 8;
 

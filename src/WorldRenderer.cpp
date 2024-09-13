@@ -155,7 +155,7 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
         }
         // WORLD OBJ SHADER
         else if(_worldObject.shader->ID == worldObjShader.ID){
-            // std::cout << "WORLD OBJ SHADER" << std::endl;
+            std::cout << "WORLD OBJ SHADER" << std::endl;
 
             glUniformMatrix4fv(perspectiveObjLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
             glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
@@ -172,6 +172,11 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
             // }
 
             glDrawArrays(GL_TRIANGLES, 0, _worldObject.model.vertexCount);
+            std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
+            std::cout << "_worldObject.model.glTexture = " << _worldObject.model.glTexture << std::endl;
+            std::cout << "_worldObject.model.vertexCount = " << _worldObject.model.vertexCount << std::endl;
+            std::cout << "_worldObject.model.vertices.size() = " << _worldObject.model.vertices.size() << std::endl;
+            
 
             // glUniform1i(hasTextureObjLoc, 0);
             

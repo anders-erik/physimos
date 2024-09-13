@@ -36,6 +36,9 @@ std::vector<int> vertexIndices;
 
 void obj_loadMtlFromFile(std::string modelName) {
 
+    obj_textureDataBuffer.clear();
+    hasTextureMap = false;
+
     // grab the path to file with mtl-extension
     std::string mtlPath = modelsDirectory + modelName + "/" + modelName + ".mtl";
 
@@ -92,7 +95,7 @@ void obj_loadMtlFromFile(std::string modelName) {
                 continue;
 
             if (lineSegments[0] == "Kd") {
-                std::cout << "" << lineSegments[1] << std::endl;
+                // std::cout << "" << lineSegments[1] << std::endl;
                 Kd[0] = (float)std::atof(lineSegments[1].data());
                 Kd[1] = (float)std::atof(lineSegments[2].data());
                 Kd[2] = (float)std::atof(lineSegments[3].data());
@@ -103,9 +106,11 @@ void obj_loadMtlFromFile(std::string modelName) {
                 //     1.0,
                 // };
                 // objMesh.v.push_back(vertexCoord);
+                
+                hasTextureMap = false;
             }
             else if (lineSegments[0] == "map_Kd"){
-                std::cout << "MAP_KD ------------------" << std::endl;
+                // std::cout << "MAP_KD ------------------" << std::endl;
                 
                 std::string modelDirectory;
                 const size_t last_slash_idx = mtlPath.rfind('/');
@@ -239,6 +244,20 @@ void obj_loadFromFile(std::string modelName) {
     
     std::cout << "Loading obj model: " << objPath << ". " << std::endl;
     // this->modelPath = objPath;
+
+    vertexBuffer.clear();
+    // objMesh.clear();
+    objMesh.v.clear();
+    objMesh.vn.clear();
+    objMesh.vt.clear();
+    objMesh.fi.clear();
+    objMesh.f.clear();
+    // std::vector<VertexCoord> v;
+    // std::vector<VertexTextCoord> vt;
+    // std::vector<VertexNorm> vn;
+    // std::vector<ObjFaceIndex> fi;
+    // std::vector<ObjFace> f;
+    
 
     std::ifstream modelFile;
     std::stringstream modelStream;
@@ -464,7 +483,7 @@ void obj_loadFromFile(std::string modelName) {
                 vertexBuffer.push_back(objFace.vert3.v.x);
                 vertexBuffer.push_back(objFace.vert3.v.y);
                 vertexBuffer.push_back(objFace.vert3.v.z);
-                
+
                 vertexBuffer.push_back(objFace.vert3.vn.x);
                 vertexBuffer.push_back(objFace.vert3.vn.y);
                 vertexBuffer.push_back(objFace.vert3.vn.z);
