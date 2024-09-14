@@ -31,7 +31,7 @@ void initGlThrowSimWindow() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    window__ = glfwCreateWindow(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT, "GLThrowSim", NULL, NULL);
+    window__ = glfwCreateWindow(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT, "Physimos", NULL, NULL);
 
     if (window__ == NULL)
     {

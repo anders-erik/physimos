@@ -2,6 +2,62 @@
 # TODO
 
 
+## 2024-09-14/15
+
+### TODO: ONE top-level bullet point done [or one UI sub-bullet]
+- Object Renderer class
+	- Shader program
+	- vao's, vbo's
+	- gl-config (setting vao, vbo, uniforms [, switch shader], etc.)
+	- rendering call
+- Rigid body
+	- use rendering class
+	- draw all (12?) lines of a cube
+- simulation widget
+	- 1D gravity
+		- inital condition
+		- start + cancel
+			- resource utilization
+		- Write simulation output
+			- simulation file format
+				- input
+				- output
+					- file
+						- my own format?
+						- format formats?
+					- graphs
+		- Minimal graph
+- Logging
+	- loaders
+	- errors
+	- General output
+	-
+- UI
+	- Multiple UI's
+		- Scene UI
+		- Simulation UI/widgets
+		- Hardware UI
+			- cpu/memory
+			- GPU's
+				- resources/usage
+				- drivers
+		- Log
+			- Errors !
+	- timer info:
+		- fps
+		- frame counter
+		- world time
+	- start/pause/stop
+	- list of world objects
+		- selectable list-items to get more info on specifc objects
+	- All three of the above menus should be toggleable/hidable
+	- resource utilization
+		- GPU usage timeseries (~60sec)
+		- CPU
+		- App memory usage
+
+
+
 ## 2024-09-13
 
 ### TODO:
