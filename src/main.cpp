@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "process_info.hpp"
 #include "Windowing.hpp"
 #include "WorldScene.hpp"
 #include "ui.hpp"
@@ -40,6 +41,8 @@ int main()
 	ui_init();
 
 
+	process_info_init();
+
 
 
 	/* 
@@ -50,7 +53,8 @@ int main()
 
 	while (shouldWindowKeepGoing())
 	{
-
+		process_info_init();
+		
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 

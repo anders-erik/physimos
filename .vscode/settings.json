@@ -57,7 +57,10 @@
 		"ratio": "cpp",
 		"fstream": "cpp",
 		"sstream": "cpp",
-		"iomanip": "cpp"
+		"iomanip": "cpp",
+		"process_info.h": "c",
+		"stdio.h": "c",
+		"unistd.h": "c"
 	}
 }
 
