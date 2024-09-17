@@ -1,9 +1,11 @@
 
 #include "ui.hpp"
 
+#include "uiRenderer.hpp"
+
 #include <iomanip>
 
-#include "shader.hpp"
+
 #include "Input.hpp"
 #include "bmp_loader.hpp"
 #include "PSO_util.hpp"
@@ -19,29 +21,32 @@ extern SimState simState;
 extern struct InputState InputState;
 
 
-unsigned int uiVAO = 0;
-unsigned int uiVBO = 0;
-unsigned int uiIsCharVAO = 0;
-unsigned int uiIsCharVBO = 0;
+// unsigned int uiVAO = 0;
+// unsigned int uiVBO = 0;
+// // unsigned int uiIsCharVAO = 0;
+// unsigned int uiIsCharVBO = 0;
 
-unsigned int uiTextureVAO = 0;
-unsigned int uiTextureVBO = 0;
+// unsigned int uiTextureVAO = 0;
+// unsigned int uiTextureVBO = 0;
+
+
+UiFile uiFile_main;
 
 
 int windowWidth = 0;
 int windowHeight = 0;
 
-Shader shader;
+
 
 
 // CHAR TEXTURING
-unsigned int charTexture;
+// unsigned int charTexture;
 
 std::vector<float> isCharBuffer;
 
-std::vector<unsigned char> charImageBuffer;
-unsigned int charImgWidth = 0;
-unsigned int charImgHeight = 0;
+// std::vector<unsigned char> charImageBuffer;
+// unsigned int charImgWidth = 0;
+// unsigned int charImgHeight = 0;
 
 // String elements
 std::vector<UiElement> fpsStringElements;
@@ -59,6 +64,7 @@ float uiTransform16[16] = {
 
 unsigned int uiTransformLoc;
 
+// Called from the primary glfw input callback!
 void ui_detectElementClick(double x, double y) {
     int xx = (int)x;
     int yy = (int) (windowHeight - y);
@@ -72,140 +78,82 @@ void ui_detectElementClick(double x, double y) {
             // std::cout << "CLICKED : " << _uiELem.name << std::endl;
             if (_uiELem.name == "startSimButton")
                 simState = SimState::startClickDetected;
+            if (_uiELem.name == "timerWidget_toggle"){
+                // std::cout << "TIMER WIDGET!" << std::endl;
+                for(UiElement& _UiE : uiElements){
+                    if (_UiE.name == "fps"){
+                        if (_UiE.activated == 0)
+                            _UiE.activated = 1;
+                        else
+                            _UiE.activated = 0;
+                    }
+                }
+            }
         }
             
     }
 }
 
-
+// GOOD
 void ui_update() {
     ui_updateFpsElement();
     ui_updateTrackedWorldObjectElement();
 
-    ui_renderUI();
+    ui_renderer_render(uiElements);
 }
 
 
 void ui_init() {
 
+    ui_renderer_init(uiElements);
+
+
     // bmp_loader.loadBMPFile("media/characters-1.bmp");
     
-    ui_newShaderPlease("src/shaders/ui.vs", "src/shaders/ui.fs");
+    // ui_newShaderPlease("src/shaders/ui_vert.glsl", "src/shaders/ui_frag.glsl");
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
+
+    // ui_loadUiFile();
+
     ui_reloadUi();
+    ui_loadUiFile("src/main.psoui");
+    ui_parseUiFileString();
+    ui_createWidgets();
 
-
-    glGenVertexArrays(1, &uiVAO);
-    glGenBuffers(1, &uiVBO);
-
-    // fill buffer
-    glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * uiElements.size() * 36, uiVertexFloatBuffer.data(), GL_STATIC_DRAW);
-    // glBufferData(GL_ARRAY_BUFFER, vertexVector.size() * sizeof(float), vertexVector.data(), GL_STATIC_DRAW);
-    // link vertex attributes
-    glBindVertexArray(uiVAO);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
-
-
-
-    // CHAR BUFER
-    // glGenVertexArrays(1, &uiIsCharVAO);
-    glGenBuffers(1, &uiIsCharVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, uiIsCharVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * uiElements.size(), {}, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glEnableVertexAttribArray(3);
-
-
-    // TEXTURE BUFFER OBJECTS
-    // glGenVertexArrays(1, &uiTextureVAO);
-    // glGenBuffers(1, &uiTextureVBO);
-    // glBindBuffer(GL_ARRAY_BUFFER, uiTextureVBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * uiElements.size(), {}, GL_STATIC_DRAW);
-
-    // glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    // glEnableVertexAttribArray(3);
-
-
-    // TEXTURE
-    bmp_loader_loadBMPFile("media/characters-1.bmp");
-    ui_setCharacterTextureData(bmp_getImageDataBuffer(), bmp_getWidth(), bmp_getHeight());
-
-    glGenTextures(1, &charTexture);
-    glBindTexture(GL_TEXTURE_2D, charTexture);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, charImgWidth, charImgHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, charImageBuffer.data());
-    // std::cout << "charImageBuffer.size(): " << charImageBuffer.size() << std::endl;
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    // glUniform1i(glGetUniformLocation(shader.ID, "charTexture"), 0);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void ui_setCharacterTextureData(std::vector<unsigned char> data, unsigned int imgWidth, unsigned int imgHeight) {
-    charImageBuffer = data;
-    charImgWidth = imgWidth;
-    charImgHeight = imgHeight;
+void ui_createWidgets() {
+
 }
 
 
-void ui_newShaderPlease(const char* vertexPath, const char* fragmentPath) {
-    shader.buildShaderProgram(vertexPath, fragmentPath);
-}
 
-int firstRun = 1;
+
+
+
 void ui_updateFpsElement() {
+    
     int fps = timing_current_fps();
     fpsStringElements.clear();
 
     std::string fps_str = "FPS: ";
     fps_str.append(std::to_string(fps));
 
-    // To prevent deletion of other elements on the first update
-    // if(firstRun == 1){
-    //     firstRun = 0;
-    // }
-    // else{
-    //     uiElements.pop_back();
-    //     uiElements.pop_back();
-    //     uiElements.pop_back();
-    // }
-
-    // uiElements.pop_back();
-    // uiElements.pop_back();
-    // uiElements.pop_back();
+   
     for (UiElement& _uiElem : uiElements) {
-        if (_uiElem.name == "fps")
+        if (_uiElem.name == "fps"){
+            // std::cout << "FPS is active? : " << _uiElem.activated << std::endl;
             ui_updateStringUi(15, 0, 570, fps_str, _uiElem);
+        }
     }
-    // updateStringUi(15, 0, 570, fps_str, fpsStringElement);
-    // updateStringUi(15, 200, 30, "A!!!123000", firstStringElement);
-    // updateStringUi(15, 200, 0, "Second string! []{}()", secondStringElement);
+
 
 }
 
 int trackedWorldObjectUpdateCount = 0;
 void ui_updateTrackedWorldObjectElement(){
 
-    fpsStringElements.clear();
+    // fpsStringElements.clear();
 
     std::string worldObjectTracked_str = "WORLD OBJECT TRACKED ";
     
@@ -237,191 +185,40 @@ void ui_updateTrackedWorldObjectElement(){
     }
 }
 
+
+
 void ui_reloadUi() {
 
     uiElements.clear();
     fpsStringElements.clear();
 
-    uiTransform16[0] = 2.0f / windowWidth;
-    uiTransform16[5] = 2.0f / windowHeight;
+    // uiTransform16[0] = 2.0f / windowWidth;
+    // uiTransform16[5] = 2.0f / windowHeight;
 
-    // ui_createUiRectange(100, 100, 700, 500, pso_white, "w1");
-    // ui_createUiRectange(100, 100, 700, 400, pso_black, "b1");
-    // ui_createUiRectange(100, 100, 700, 300, pso_red, "r1");
-    // ui_createUiRectange(100, 100, 700, 200, pso_green, "g1");
-    // ui_createUiRectange(100, 100, 700, 100, pso_blue, "b2");
-
-    // createUiChar(300, 0, 120, 'A', white);
-
-    UiElement newStringELement_1("AnotherStringElem");
-    ui_updateStringUi(15, 200, 570, "ANOTHER STRING!", newStringELement_1);
-    uiElements.push_back(newStringELement_1);
-
-    UiElement firstStringElement("firstStrElem");
-    ui_updateStringUi(15, 200, 30, "A!!!123000", firstStringElement);
-    uiElements.push_back(firstStringElement);
-    UiElement secondStringElement("secondStrElem");
-    ui_updateStringUi(15, 200, 0, "Second string! []{}()", secondStringElement);
-    uiElements.push_back(secondStringElement);
 
     UiElement fpsStringElement;
     fpsStringElement.name = "fps";
+    fpsStringElement.activated = 1;
     uiElements.push_back(fpsStringElement);
 
     UiElement trackedWorldObjectStringElement;
     trackedWorldObjectStringElement.name = "trackedWorldObject";
+    trackedWorldObjectStringElement.activated = 1;
     uiElements.push_back(trackedWorldObjectStringElement);
     UiElement twose_name;
     twose_name.name = "twose_name";
+    twose_name.activated = 1;
     uiElements.push_back(twose_name);
 
-    ui_loadUiFile("src/main.psoui");
-
-    for(auto _elem : uiElements){
-        if (_elem.name == "textureElem_1"){
-            // std::cout << "_elem.elementTexturePath: " << _elem.elementTexturePath << std::endl;
-            // std::cout << "_elem.elementTextureBuffer.size(): " << _elem.elementTextureBuffer.size() << std::endl;
-        }
-    }
+    // ui_loadUiFile("src/main.psoui");
+    ui_parseUiFileString();
 
 }
 
 
 
-void ui_renderUI()
-{
-    glUseProgram(shader.ID);
-    glBindVertexArray(uiVAO);
-    shader.setMat4("uiTransform", uiTransform16);
 
 
-
-
-    /*
-        RENDER TEXTURED UI ELEMENTS
-    */
-    int elemCount = 0;
-    for (UiElement uiElem_ : uiElements) {
-
-        if (uiElem_.elementType == ElementType::TEXTURE) {
-            glBindTexture(GL_TEXTURE_2D, uiElem_.glTexture);
-
-            isCharBuffer.clear();
-            uiVertexFloatBuffer.erase(uiVertexFloatBuffer.begin(), uiVertexFloatBuffer.end());
-
-            for (size_t i = 0; i < 6; i++)
-                isCharBuffer.push_back(2.0);
-
-            for (float fl_ : uiElem_.vertexFloatBuffer) {
-                uiVertexFloatBuffer.push_back(fl_);
-            }
-
-            // RENDER NEW TEXTURE ELEMENT
-            glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 48, uiVertexFloatBuffer.data(), GL_STATIC_DRAW);
-
-
-            glBindBuffer(GL_ARRAY_BUFFER, uiIsCharVBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * isCharBuffer.size(), isCharBuffer.data(), GL_STATIC_DRAW);
-
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
-    }
-
-
-
-
-    /*
-            RENDER PLAIN COLOR AND STRING UI ELEMENTS
-    */
-
-    // RESET BUFFERS FOR THIS UI RENDER CALL
-    uiVertexFloatBuffer.erase(uiVertexFloatBuffer.begin(), uiVertexFloatBuffer.end());
-    isCharBuffer.clear();
-    elemCount = 0;
-
-    for (UiElement uiElem_ : uiElements) {
-
-        // Ignore and element not currently active
-        if (!uiElem_.activated)
-            continue;
-
-
-        switch (uiElem_.elementType)
-        {
-
-            case ElementType::STRING:
-
-                // We do not render the string element itself, but its char-elements
-                for (UiElement stringElem_ : uiElem_.stringElements) {
-                    elemCount++;
-
-                    // Each char vertex
-                    for (size_t i = 0; i < 6; i++)
-                        isCharBuffer.push_back(1.0);
-
-                    for (float fl_ : stringElem_.vertexFloatBuffer) 
-                        uiVertexFloatBuffer.push_back(fl_);
-                    
-                }
-                break;
-
-
-            case ElementType::TEXTURE:
-                /* TEXTURED NON_CHAR ELEMENTS ARE RENEDERED BELOW */
-                break;
-
-
-            case ElementType::RECTANGLE:
-            
-                elemCount++;
-
-                // Each rectangle vertex
-                for (size_t i = 0; i < 6; i++)
-                    isCharBuffer.push_back(0.0);
-
-                for (float fl_ : uiElem_.vertexFloatBuffer) {
-                    uiVertexFloatBuffer.push_back(fl_);
-                }
-            
-                break;
-
-
-            default:
-            std::cout << "UNKNOWN ELEMENT TYPE" << std::endl;
-                break;
-        }
-
-
-    }
-
-
-
-    // glUniform1i(glGetUniformLocation(shader.ID, "charTexture"), 0);
-    // glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, charTexture);
-
-    glBindVertexArray(uiVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * elemCount * 48, uiVertexFloatBuffer.data(), GL_STATIC_DRAW);
-
-
-    glBindBuffer(GL_ARRAY_BUFFER, uiIsCharVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * isCharBuffer.size(), isCharBuffer.data(), GL_STATIC_DRAW);
-
-    glDrawArrays(GL_TRIANGLES, 0, elemCount * 6);
-
-
-    // unbindUnbind GL
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void ui_setWindowSize(int width, int height) {
-    windowWidth = width;
-    windowHeight = height;
-}
 
 
 
@@ -445,114 +242,10 @@ void ui_loadUiFile(const char* uiFilePath) {
 
         psouiString = psouiStream.str();
 
+        uiFile_main.fileContents = psouiString;
+
         psouiFile.close();
-
-        std::string keyValString;
-        std::string key;
-        std::string value;
-        std::string line;
-        // float number;
-
-
-        // UiElement uiElem_;
-
-        // Grab line
-        while (std::getline(psouiStream, line)) {
-
-            std::istringstream lineStream(line);
-
-            UiElement uiElem_;
-
-            // split line into key-value pairs
-            while (std::getline(lineStream, keyValString, ';')) {
-
-                // for(std::string KV : item){}
-                // std::cout << keyValString << std::endl;
-
-                std::string::size_type n;
-                n = keyValString.find(":");
-
-                // error parsing key-value pair
-                if (n == std::string::npos) // -1 ??
-                    std::cout << "ERROR::PARSING_PSOUI_FILE. " << __FILE__ << std::endl;
-
-
-                // keyValString.copy(key, n);
-                key = keyValString.substr(0, n);
-                value = keyValString.substr(n + 1, keyValString.size());
-                // std::cout << key << std::endl;
-                // std::cout << value << std::endl;
-
-
-
-                if (key == "name") {
-                    uiElem_.name = value;
-                }
-                else if (key == "type") {
-                    uiElem_.type = value;
-                }
-                else if (key == "x") {
-                    if (value[0] == 'L')
-                        uiElem_.x = std::stoi(value.substr(1, value.size()));
-                    else if (value[0] == 'R')
-                        uiElem_.x = windowWidth - std::stoi(value.substr(1, value.size()));
-                }
-                else if (key == "y") {
-                    if (value[0] == 'B')
-                        uiElem_.y = std::stoi(value.substr(1, value.size()));
-                    else if (value[0] == 'T')
-                        uiElem_.y = windowHeight - std::stoi(value.substr(1, value.size()));
-                }
-                else if (key == "w") {
-                    uiElem_.width = std::stoi(value);
-                }
-                else if (key == "h") {
-                    uiElem_.height = std::stoi(value);
-                }
-                else if (key == "texture") {
-                    uiElem_.elementTexturePath = value;
-                    // std::cout << "--- " ;
-                    // std::cout << "" << uiElem_.elementTexturePath << std::endl;
-                    
-                    
-                }
-                else if (key == "c") {
-
-                    if (value == "black") {
-                        uiElem_.color = pso_black;
-                    }
-                    else if (value == "white") {
-                        uiElem_.color = pso_white;
-                    }
-                    else if (value == "red") {
-                        uiElem_.color = pso_red;
-                    }
-                    else if (value == "green") {
-                        uiElem_.color = pso_green;
-                    }
-                    else if (value == "blue") {
-                        uiElem_.color = pso_blue;
-                    }
-                }
-
-
-            }
-
-            if (uiElem_.type == "rectangle") {
-                ui_createUiRectange(uiElem_.height, uiElem_.width, uiElem_.x, uiElem_.y, uiElem_.color, uiElem_.name, uiElem_.elementTexturePath);
-            }
-
-            // uiElements.push_back(uiElem_);
-
-            // for(std::string KV : item){}
-            // std::cout << item << std::endl;
-
-            // std::stringstream itemStream(item);
-            // itemStream >> number;
-
-            // // Add the parsed float to the vector
-            // this->vertexFloatBuffer.push_back(number);
-        }
+        
 
         std::cout << "PSUI OK. " << uiFilePath << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
 
@@ -565,6 +258,118 @@ void ui_loadUiFile(const char* uiFilePath) {
 
 
 }
+
+
+
+
+void ui_parseUiFileString(){
+
+    std::stringstream psouiStream;
+    psouiStream.str(uiFile_main.fileContents);
+
+
+    std::string keyValString;
+    std::string key;
+    std::string value;
+    std::string line;
+
+
+
+    // Grab line
+    while (std::getline(psouiStream, line)) {
+
+        std::istringstream lineStream(line);
+
+        UiElement uiElem_;
+
+        // split line into key-value pairs
+        while (std::getline(lineStream, keyValString, ';')) {
+
+            // for(std::string KV : item){}
+            // std::cout << keyValString << std::endl;
+
+            std::string::size_type n;
+            n = keyValString.find(":");
+
+            // error parsing key-value pair
+            if (n == std::string::npos) // -1 ??
+                std::cout << "ERROR::PARSING_PSOUI_FILE. " << __FILE__ << std::endl;
+
+
+            // keyValString.copy(key, n);
+            key = keyValString.substr(0, n);
+            value = keyValString.substr(n + 1, keyValString.size());
+            // std::cout << key << std::endl;
+            // std::cout << value << std::endl;
+
+
+
+            if (key == "name") {
+                uiElem_.name = value;
+            }
+            else if (key == "type") {
+                uiElem_.type = value;
+            }
+            else if (key == "x") {
+                if (value[0] == 'L')
+                    uiElem_.x = std::stoi(value.substr(1, value.size()));
+                else if (value[0] == 'R')
+                    uiElem_.x = windowWidth - std::stoi(value.substr(1, value.size()));
+            }
+            else if (key == "y") {
+                if (value[0] == 'B')
+                    uiElem_.y = std::stoi(value.substr(1, value.size()));
+                else if (value[0] == 'T')
+                    uiElem_.y = windowHeight - std::stoi(value.substr(1, value.size()));
+            }
+            else if (key == "w") {
+                uiElem_.width = std::stoi(value);
+            }
+            else if (key == "h") {
+                uiElem_.height = std::stoi(value);
+            }
+            else if (key == "texture") {
+                uiElem_.elementTexturePath = value;
+                // std::cout << "--- " ;
+                // std::cout << "" << uiElem_.elementTexturePath << std::endl;
+
+
+            }
+            else if (key == "c") {
+
+                if (value == "black") {
+                    uiElem_.color = pso_black;
+                }
+                else if (value == "white") {
+                    uiElem_.color = pso_white;
+                }
+                else if (value == "red") {
+                    uiElem_.color = pso_red;
+                }
+                else if (value == "green") {
+                    uiElem_.color = pso_green;
+                }
+                else if (value == "blue") {
+                    uiElem_.color = pso_blue;
+                }
+            }
+
+
+        }
+
+        if (uiElem_.type == "rectangle") {
+            ui_createUiRectange(uiElem_.height, uiElem_.width, uiElem_.x, uiElem_.y, uiElem_.color, uiElem_.name, uiElem_.elementTexturePath);
+        }
+
+    }
+}
+
+
+
+
+
+
+
 
 void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName, std::string _texturePath) {
     UiElement uiElem_;
@@ -588,33 +393,10 @@ void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::s
     uiElem_.height = height;
     uiElem_.elementType = ElementType::RECTANGLE;
 
+
     if(_texturePath != ""){
-        uiElem_.elementType = ElementType::TEXTURE;
+        ui_renderer_setTexture(uiElem_, _texturePath);
 
-        uiElem_.elementTexturePath = _texturePath;
-        bmp_loader_loadBMPFile(uiElem_.elementTexturePath);
-        uiElem_.elementTextureBuffer = bmp_getImageDataBuffer();
-        uiElem_.textureWidth = bmp_getWidth();
-        uiElem_.textureHeight = bmp_getHeight();
-
-        // Move texture to gpu
-        glGenTextures(1, &uiElem_.glTexture);
-        glBindTexture(GL_TEXTURE_2D, uiElem_.glTexture);
-        // set the texture wrapping/filtering options (on the currently bound texture object)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, uiElem_.textureWidth, uiElem_.textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, uiElem_.elementTextureBuffer.data());
-        // std::cout << "charImageBuffer.size(): " << charImageBuffer.size() << std::endl;
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-
-
-        uiElem_.hasTexture = 1;
     }
 
     // uiElem_.vertices
@@ -622,9 +404,11 @@ void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::s
 }
 
 
+
+
 void ui_updateStringUi(int fontHeight, int x, int y, std::string str, UiElement& _uiStringElem) {
     // UiElement _uiStringElem;
-    _uiStringElem.activated = 1;
+    // _uiStringElem.activated = 1;
     _uiStringElem.isStringElement = true;
     _uiStringElem.elementType = ElementType::STRING;
     _uiStringElem.stringElements.clear();
@@ -642,6 +426,8 @@ void ui_updateStringUi(int fontHeight, int x, int y, std::string str, UiElement&
     }
     // uiElements.push_back(_uiStringElem);
 }
+
+
 
 
 void ui_createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiElement& _uiStringElem) {
@@ -675,6 +461,18 @@ void ui_createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiE
 
 
 
+
+void ui_setWindowSize(int width, int height) {
+    windowWidth = width;
+    windowHeight = height;
+
+    uiTransform16[0] = 2.0f / windowWidth;
+    uiTransform16[5] = 2.0f / windowHeight;
+}
+
+
+
+
 float playVertices[] = {
     // back face
     0.7f, 0.7f, -0.9f,  0.0f,  0.0f, 0.2f, // bottom-left
@@ -689,9 +487,6 @@ float playVertices[] = {
     0.8f,  0.8f, -1.0f,  0.0f,  1.0f, 0.0f, // botton-left
     0.9f, 0.85f, -1.0f,  0.0f,  1.0f, 0.0f, // middle-right
 };
-
-
-
 
 
 

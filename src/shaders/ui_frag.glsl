@@ -1,5 +1,6 @@
 #version 330 core
 
+// layout (location = 3) in float isCharOut_f;
 
 uniform sampler2D charTexture;
 

@@ -1,3 +1,6 @@
+#ifndef UI_ELEMENT_HPP
+#define UI_ELEMENT_HPP
+
 #include <vector>
 #include <string>
 
@@ -76,3 +79,5 @@ class TextElement : UiElement {
         std::string text = "4";
 };
 
+
+#endif

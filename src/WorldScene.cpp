@@ -145,7 +145,7 @@ void ws_physics(){
                     if (worldVertex[2] < 0.0){
                         // std::cout << "RIGID BODY COLLISION  ===================" << std::endl;
                         _worldObject.position.z -= _worldObject.velocity.z * 0.0133;
-                        _worldObject.velocity.z = -_worldObject.velocity.z * 0.8;
+                        _worldObject.velocity.z = -_worldObject.velocity.z * 0.5;
 
                         // Improve by checking direction of vertex velocity??
                         _worldObject.angularVelocity = { -_worldObject.angularVelocity.x, -_worldObject.angularVelocity.y , -_worldObject.angularVelocity.z };

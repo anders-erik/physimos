@@ -1,6 +1,13 @@
 
 # TODO
 
+## 2024-09-17
+- UI 
+	- timing widget
+		- fps, frame, time
+	- start/pause/stop
+	- hardware widget
+	- list world objects
 
 ## 2024-09-14/15
 

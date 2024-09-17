@@ -4,7 +4,7 @@
 #include "Model.hpp"
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+// #include <GLFW/glfw3.h>
 
 
 #include "WorldObject.hpp"
@@ -143,6 +143,7 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
             continue;
         }
 
+        // Add wireframe
         if(_worldObject.hasRigidBody){
             // std::cout << _worldObject.name << " : HAS RIGID BODY!!!!!!!!!!!!!!!" << std::endl;
             _worldObject.rigidBody.shader->use();
