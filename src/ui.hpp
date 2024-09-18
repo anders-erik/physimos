@@ -20,7 +20,7 @@ typedef struct UiFile {
 
 void ui_update();
 
-void ui_updateFpsElement();
+void ui_updateTimerWidget();
 void ui_updateTrackedWorldObjectElement();
 
 // void ui_setCharacterTextureData(std::vector<unsigned char> data, unsigned int imgWidth, unsigned int imgHeight);
@@ -28,6 +28,7 @@ void ui_createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiE
 void ui_updateStringUi(int fontHeight, int x, int y, std::string str, UiElement& _uiStringElem);
 
 void ui_createWidgets();
+void ui_updateWidgets();
 
 void ui_createUiRectange(int height, int width, int x, int y, Vec3 color, std::string elemName, std::string texturePath);
 

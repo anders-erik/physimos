@@ -4,6 +4,7 @@
 void ws_init();
 
 void ws_createWorldObjects();
+void ws_resetWorldObjects();
 
 void ws_loadTextures();
 

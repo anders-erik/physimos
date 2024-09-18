@@ -15,8 +15,12 @@
 double glfwTime;
 
 int current_fps = 0;
-
 int frame_count = 0;
+
+bool worldIsPaused = false;
+int worldTimeLastReset = 0;
+double worldTime = 0;
+double worldEpoch = 0;
 
 clock_t currentTime = 0;
 clock_t lastFrameTime = 0;
@@ -44,9 +48,30 @@ void timing_init(){
     
 }
 
+void timing_resetWorldEpoch(){
+    worldEpoch = 0.0;
+    worldTimeLastReset = worldTime;
+}
+
+void timing_pauseWorldTime(){
+    worldIsPaused = true;
+}
+void timing_startWorldTime() {
+    worldIsPaused = false;
+}
+
+bool timing_worldIsPaused(){
+    return worldIsPaused;
+}
+
 
 void timing_newFrame() {
     frame_count++;
+    worldTime += (double) FRAME_DURATION / 1000;
+    
+    if(!worldIsPaused)
+        worldEpoch += (double)FRAME_DURATION / 1000;
+
     //
             // FPS INFO
             //
@@ -83,4 +108,16 @@ void timing_waitForNextFrame() {
 
 int timing_current_fps(){
     return current_fps;
+}
+int timing_currentFrameCount() {
+    return frame_count;
+}
+int timing_worldTime() {
+    return frame_count;
+}
+double timing_getWorldTime(){
+    return worldTime;
+}
+double timing_getWorldEpoch(){
+    return worldEpoch;
 }

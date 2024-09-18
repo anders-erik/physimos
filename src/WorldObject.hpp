@@ -68,12 +68,16 @@ public:
 
 	Vec3 scale = {1.0f, 1.0f, 1.0f};
 
+    Vec3 position_0;
 	Vec3 position = {0.0f, 0.0f, 0.0f};
     Vec3 translationPrevStep = {0.0f, 0.0f, 0.0f};
+    Vec3 velocity_0;
     Vec3 velocityPrevStep = {0.0f, 0.0f, 0.0f};
     Vec3 velocity = {0.0f, 0.0f, 0.0f};
 
+    Vec3 rotation_0;
 	Vec3 rotation = {0.0f, 0.0f, 0.0f};
+    Vec3 angularVelocity_0;
     Vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };
 	
     
@@ -85,8 +89,8 @@ public:
 
 
 	
-	Vec3 position_0;
-	Vec3 velocity_0;
+	
+	
 
 
 

@@ -116,7 +116,7 @@ void ui_renderer_render(std::vector<UiElement>& uiElements) {
 
         if (uiElem_.elementType == ElementType::TEXTURE) {
             glBindTexture(GL_TEXTURE_2D, uiElem_.glTexture);
-            std::cout << "uiElem_.glTexture = " << uiElem_.glTexture << std::endl;
+            // std::cout << "uiElem_.glTexture = " << uiElem_.glTexture << std::endl;
             
 
             isCharBuffer.clear();

@@ -62,6 +62,17 @@ void ws_init(){
 
 }
 
+void ws_resetWorldObjects(){
+    for(WorldObject& _worldObject : worldObjects){
+        if(_worldObject.hasRigidBody){
+            _worldObject.position = _worldObject.position_0;
+            _worldObject.velocity = _worldObject.velocity_0;
+            _worldObject.rotation = _worldObject.rotation_0;
+            _worldObject.angularVelocity = _worldObject.angularVelocity_0;
+        }
+    }
+}
+
 
 void ws_update() {
 
@@ -78,7 +89,9 @@ void ws_update() {
     // for(WorldObject& _wo : worldObjects)
     //     _wo.SetModelMatrixRowMajor();
 
-    ws_physics();
+    if(!timing_worldIsPaused()){
+        ws_physics();
+    }
 
     // Update Camera matrices (view/persp.)
     cam_UpdateCam();
@@ -393,7 +406,9 @@ void ws_createWorldObjects(){
     float cube_3_scale = 2.0;
     cube_3_gravity.scale = { cube_3_scale, cube_3_scale, cube_3_scale };
     cube_3_gravity.rotation = { 40.0f, -10.0f, 5.0f };
+    cube_3_gravity.rotation_0 = cube_3_gravity.rotation;
     cube_3_gravity.angularVelocity = { 0.01f, 0.01f, 0.0f };
+    cube_3_gravity.angularVelocity_0 = cube_3_gravity.angularVelocity;
 
     cube_3_gravity.position_0 = { -5.0f, 0.0f, 15.0f };
     cube_3_gravity.position = cube_3_gravity.position_0;
@@ -485,6 +500,7 @@ void ws_createWorldObjects(){
     // house1_obj.model.loadObjModel("blend-cube-texture-1");
     house1_obj.scale = { 1.0, 1.0, 1.0 };
     house1_obj.position = { 10.0f, 20.0f, 0.0f };
+    house1_obj.position_0 = house1_obj.position;
 
     house1_obj.setVaoVbo_obj();
     house1_obj.setShaderProgram(&worldObjShader);

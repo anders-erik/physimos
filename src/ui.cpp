@@ -33,6 +33,7 @@ extern struct InputState InputState;
 UiFile uiFile_main;
 
 
+// Gets updated by glfw in local method
 int windowWidth = 0;
 int windowHeight = 0;
 
@@ -48,8 +49,14 @@ std::vector<float> isCharBuffer;
 // unsigned int charImgWidth = 0;
 // unsigned int charImgHeight = 0;
 
-// String elements
+
+// TIMER WIDGET
+bool timerWidgetIsOn = true;
 std::vector<UiElement> fpsStringElements;
+std::vector<UiElement> frameCountStringElements;
+std::vector<UiElement> worldTimeStringElements;
+std::vector<UiElement> worldEpochStringElements;
+
 
 
 std::vector<UiElement> uiElements;
@@ -76,12 +83,26 @@ void ui_detectElementClick(double x, double y) {
         // Detect element click
         if (((xx > _uiELem.x) && (xx < (_uiELem.x + _uiELem.width))) && ((yy > _uiELem.y) && (yy < (_uiELem.y + _uiELem.height)))){
             // std::cout << "CLICKED : " << _uiELem.name << std::endl;
-            if (_uiELem.name == "startSimButton")
+
+            // Do stuff to elements with specific names
+
+            if (_uiELem.name == "greenSquare")
                 simState = SimState::startClickDetected;
+            if (_uiELem.name == "startSimButton")
+                timing_startWorldTime();
+            if (_uiELem.name == "pauseSimButton"){
+                timing_pauseWorldTime();
+            }
+            if (_uiELem.name == "stopSimButton") {
+                timing_resetWorldEpoch();
+                timing_pauseWorldTime();
+                ws_resetWorldObjects();
+            }
             if (_uiELem.name == "timerWidget_toggle"){
                 // std::cout << "TIMER WIDGET!" << std::endl;
+                timerWidgetIsOn = timerWidgetIsOn ? false : true;
                 for(UiElement& _UiE : uiElements){
-                    if (_UiE.name == "fps"){
+                    if (_UiE.name == "fps" || _UiE.name == "frame_count" || _UiE.name == "world_time" || _UiE.name == "world_epoch" ) {
                         if (_UiE.activated == 0)
                             _UiE.activated = 1;
                         else
@@ -89,6 +110,18 @@ void ui_detectElementClick(double x, double y) {
                     }
                 }
             }
+            if (_uiELem.name == "trackedWorldObject_toggle") {
+                // std::cout << "TIMER WIDGET!" << std::endl;
+                for (UiElement& _UiE : uiElements) {
+                    if (_UiE.name == "trackedWorldObject" || _UiE.name == "twose_name") {
+                        if (_UiE.activated == 0)
+                            _UiE.activated = 1;
+                        else
+                            _UiE.activated = 0;
+                    }
+                }
+            }
+            
         }
             
     }
@@ -96,8 +129,8 @@ void ui_detectElementClick(double x, double y) {
 
 // GOOD
 void ui_update() {
-    ui_updateFpsElement();
-    ui_updateTrackedWorldObjectElement();
+    
+    ui_updateWidgets();
 
     ui_renderer_render(uiElements);
 }
@@ -105,45 +138,128 @@ void ui_update() {
 
 void ui_init() {
 
-    ui_renderer_init(uiElements);
 
-
-    // bmp_loader.loadBMPFile("media/characters-1.bmp");
-    
-    // ui_newShaderPlease("src/shaders/ui_vert.glsl", "src/shaders/ui_frag.glsl");
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
-    // ui_loadUiFile();
 
-    ui_reloadUi();
+    // load into memory
     ui_loadUiFile("src/main.psoui");
-    ui_parseUiFileString();
+
+    // Removes all ui elements and regenerate them
+    ui_reloadUi();
+
+    ui_renderer_init(uiElements);
+}
+
+
+void ui_reloadUi() {
+
+    uiElements.clear();
+
+
     ui_createWidgets();
 
+    ui_parseUiFileString();
+
 }
+
 
 void ui_createWidgets() {
+    // TIMER WIDGET
+    UiElement fpsStringElement;
+    fpsStringElement.name = "fps";
+    fpsStringElement.activated = 1;
+    uiElements.push_back(fpsStringElement);
+    UiElement frameCountStringElement;
+    frameCountStringElement.name = "frame_count";
+    frameCountStringElement.activated = 1;
+    uiElements.push_back(frameCountStringElement);
+    UiElement worldTimeStringElement;
+    worldTimeStringElement.name = "world_time";
+    worldTimeStringElement.activated = 1;
+    uiElements.push_back(worldTimeStringElement);
+    UiElement epochTimeStringElement;
+    epochTimeStringElement.name = "world_epoch";
+    epochTimeStringElement.activated = 1;
+    uiElements.push_back(epochTimeStringElement);
 
+    // WORLD OBJECTS
+    UiElement trackedWorldObjectStringElement;
+    trackedWorldObjectStringElement.name = "trackedWorldObject";
+    trackedWorldObjectStringElement.activated = 1;
+    uiElements.push_back(trackedWorldObjectStringElement);
+    UiElement twose_name;
+    twose_name.name = "twose_name";
+    twose_name.activated = 1;
+    uiElements.push_back(twose_name);
+}
+
+
+void ui_updateWidgets(){
+    // std::cout << "timerWidgetIsOn = " << timerWidgetIsOn << std::endl;
+    if (timerWidgetIsOn)
+        ui_updateTimerWidget();
+
+    ui_updateTrackedWorldObjectElement();
 }
 
 
 
 
+void ui_updateTimerWidget() {
+    // std::cout << "timerWidgetIsOn = " << timerWidgetIsOn << std::endl;
 
-
-void ui_updateFpsElement() {
-    
+    // fps
     int fps = timing_current_fps();
     fpsStringElements.clear();
-
     std::string fps_str = "FPS: ";
     fps_str.append(std::to_string(fps));
 
-   
+    // Frame Counter
+    int frame_count = timing_currentFrameCount();
+    frameCountStringElements.clear();
+    std::string frameCount_str = "frames: ";
+    frameCount_str.append(std::to_string(frame_count));
+
+    // world Time
+    double world_time = timing_getWorldTime();
+    worldTimeStringElements.clear();
+    std::string worldTime_str = "World_t: ";
+    std::string worldTime_cast = std::to_string(world_time);
+    worldTime_cast.pop_back();
+    worldTime_cast.pop_back();
+    worldTime_cast.pop_back();
+    // worldTime_str = std::to_string(world_time);
+    worldTime_str.append(worldTime_cast);
+
+    // World Epoch
+    double world_epoch = timing_getWorldEpoch();
+    worldEpochStringElements.clear();
+    std::string worldEpoch_str = "World_e: ";
+    std::string worldEpoch_cast = std::to_string(world_epoch);
+    worldEpoch_cast.pop_back();
+    worldEpoch_cast.pop_back();
+    worldEpoch_cast.pop_back();
+    worldEpoch_str.append(worldEpoch_cast);
+
+
+    // Update elements
     for (UiElement& _uiElem : uiElements) {
         if (_uiElem.name == "fps"){
             // std::cout << "FPS is active? : " << _uiElem.activated << std::endl;
-            ui_updateStringUi(15, 0, 570, fps_str, _uiElem);
+            ui_updateStringUi(15, 0, windowHeight - 45, fps_str, _uiElem);
+        }
+        else if (_uiElem.name == "frame_count") {
+            // std::cout << "FPS is active? : " << _uiElem.activated << std::endl;
+            ui_updateStringUi(15, 0, windowHeight - 65, frameCount_str, _uiElem);
+        }
+        else if (_uiElem.name == "world_time") {
+            // std::cout << "FPS is active? : " << _uiElem.activated << std::endl;
+            ui_updateStringUi(15, 0, windowHeight - 85, worldTime_str, _uiElem);
+        }
+        else if (_uiElem.name == "world_epoch") {
+            // std::cout << "FPS is active? : " << _uiElem.activated << std::endl;
+            ui_updateStringUi(15, 0, windowHeight - 105, worldEpoch_str, _uiElem);
         }
     }
 
@@ -184,37 +300,6 @@ void ui_updateTrackedWorldObjectElement(){
         }
     }
 }
-
-
-
-void ui_reloadUi() {
-
-    uiElements.clear();
-    fpsStringElements.clear();
-
-    // uiTransform16[0] = 2.0f / windowWidth;
-    // uiTransform16[5] = 2.0f / windowHeight;
-
-
-    UiElement fpsStringElement;
-    fpsStringElement.name = "fps";
-    fpsStringElement.activated = 1;
-    uiElements.push_back(fpsStringElement);
-
-    UiElement trackedWorldObjectStringElement;
-    trackedWorldObjectStringElement.name = "trackedWorldObject";
-    trackedWorldObjectStringElement.activated = 1;
-    uiElements.push_back(trackedWorldObjectStringElement);
-    UiElement twose_name;
-    twose_name.name = "twose_name";
-    twose_name.activated = 1;
-    uiElements.push_back(twose_name);
-
-    // ui_loadUiFile("src/main.psoui");
-    ui_parseUiFileString();
-
-}
-
 
 
 

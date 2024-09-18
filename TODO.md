@@ -1,13 +1,18 @@
 
 # TODO
 
-## 2024-09-17
+## 2024-09-17/18
 - UI 
-	- timing widget
+	- |o| timing widget
 		- fps, frame, time
-	- start/pause/stop
+	- |o| start/pause/stop
 	- hardware widget
-	- list world objects
+	- world objects widget
+- ui-file
+	- nested elements
+	- widgets
+- Simulation UI
+
 
 ## 2024-09-14/15
 
