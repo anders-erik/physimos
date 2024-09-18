@@ -7,11 +7,14 @@
 		- fps, frame, time
 	- |o| start/pause/stop
 	- hardware widget
-	- world objects widget
+	- |o| world objects widget
+		- |o| click on name - turn object on/off
+	- |o| prevent reloading textures
 - ui-file
-	- nested elements
+	- |x| nested elements
 	- widgets
 - Simulation UI
+- detect click on worldObjects
 
 
 ## 2024-09-14/15

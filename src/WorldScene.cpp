@@ -73,6 +73,10 @@ void ws_resetWorldObjects(){
     }
 }
 
+std::vector<WorldObject>& ws_getWorldObjects(){
+    return worldObjects;
+}
+
 
 void ws_update() {
 

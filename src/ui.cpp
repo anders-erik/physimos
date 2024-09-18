@@ -52,11 +52,17 @@ std::vector<float> isCharBuffer;
 
 // TIMER WIDGET
 bool timerWidgetIsOn = true;
-std::vector<UiElement> fpsStringElements;
+// std::vector<UiElement> fpsStringElements;
 std::vector<UiElement> frameCountStringElements;
 std::vector<UiElement> worldTimeStringElements;
 std::vector<UiElement> worldEpochStringElements;
 
+// WORLD OBJECT WIDGET
+bool worldObjectWidgetIsOn = true;
+std::vector< std::vector<UiElement> > worldObjectsWidgetArray;
+
+// TRACKED OBJECT WIDGET
+bool trackedWorldObjectWidgetIsOn = true;
 
 
 std::vector<UiElement> uiElements;
@@ -110,8 +116,26 @@ void ui_detectElementClick(double x, double y) {
                     }
                 }
             }
+            if (_uiELem.name == "worldObjects_toggle") {
+                // std::cout << "TIMER WIDGET!" << std::endl;
+                std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+                worldObjectWidgetIsOn = worldObjectWidgetIsOn ? false : true;
+
+                for (WorldObject _wo : _worldObjects) {
+                    for (UiElement& _UiE : uiElements) {
+                        if (_wo.name == _UiE.name || _UiE.name == "WORLD_OBJECTS_HEADER") {
+                            if (_UiE.activated == 0)
+                                _UiE.activated = 1;
+                            else
+                                _UiE.activated = 0;
+                        }
+                    }
+                }
+            }
             if (_uiELem.name == "trackedWorldObject_toggle") {
                 // std::cout << "TIMER WIDGET!" << std::endl;
+                trackedWorldObjectWidgetIsOn = trackedWorldObjectWidgetIsOn ? false : true;
+
                 for (UiElement& _UiE : uiElements) {
                     if (_UiE.name == "trackedWorldObject" || _UiE.name == "twose_name") {
                         if (_UiE.activated == 0)
@@ -121,6 +145,27 @@ void ui_detectElementClick(double x, double y) {
                     }
                 }
             }
+
+            if(worldObjectWidgetIsOn){
+                std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+
+                for (WorldObject& _wo : _worldObjects) {
+                    if(_wo.name == _uiELem.name){
+                        std::cout << "CLICKED : " << _wo.name << std::endl;
+                        _wo.isActive = _wo.isActive ? false : true;
+                        
+                    }
+                    // for (UiElement& _UiE : uiElements) {
+                        // if (_wo.name == _UiE.name || _UiE.name == "WORLD_OBJECTS_HEADER") {
+                        //     if (_UiE.activated == 0)
+                        //         _UiE.activated = 1;
+                        //     else
+                        //         _UiE.activated = 0;
+                        // }
+                    // }
+                }
+            }
+            
             
         }
             
@@ -183,7 +228,24 @@ void ui_createWidgets() {
     epochTimeStringElement.activated = 1;
     uiElements.push_back(epochTimeStringElement);
 
+
     // WORLD OBJECTS
+    std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+
+    UiElement woHeaderStringElement;
+    woHeaderStringElement.name = "WORLD_OBJECTS_HEADER";
+    woHeaderStringElement.activated = 1;
+    uiElements.push_back(woHeaderStringElement);
+    for (WorldObject _wo : _worldObjects){
+        UiElement woStringElement;
+        woStringElement.name = _wo.name;
+        woStringElement.activated = 1;
+        uiElements.push_back(woStringElement);
+        
+    }
+        
+
+    // World object tracking
     UiElement trackedWorldObjectStringElement;
     trackedWorldObjectStringElement.name = "trackedWorldObject";
     trackedWorldObjectStringElement.activated = 1;
@@ -199,10 +261,36 @@ void ui_updateWidgets(){
     // std::cout << "timerWidgetIsOn = " << timerWidgetIsOn << std::endl;
     if (timerWidgetIsOn)
         ui_updateTimerWidget();
-
-    ui_updateTrackedWorldObjectElement();
+    if (worldObjectWidgetIsOn)
+        ui_updateWorldObjectWidget();
+    if (trackedWorldObjectWidgetIsOn)
+        ui_updateTrackedWorldObjectElement();
 }
 
+
+void ui_updateWorldObjectWidget(){
+    std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+
+    int wo_count = 0; 
+    for (WorldObject _wo : _worldObjects) {
+
+        // Update elements
+        for (UiElement& _uiElem : uiElements) {
+            
+            
+            if (_uiElem.name == _wo.name) {
+                // std::cout << "_uiElem.name = " << _uiElem.name << std::endl;
+                // std::cout << "FPS is active? : " << _uiElem.activated << std::endl;
+                ui_updateStringUi(15, 0, windowHeight - 160 - (wo_count * 20), _wo.name, _uiElem);
+                wo_count++;
+            }
+            if (_uiElem.name == "WORLD_OBJECTS_HEADER")
+                ui_updateStringUi(15, 0, windowHeight - 140 , "WORLD OBEJCTS", _uiElem);
+
+        }
+        
+    }
+}
 
 
 
@@ -211,7 +299,7 @@ void ui_updateTimerWidget() {
 
     // fps
     int fps = timing_current_fps();
-    fpsStringElements.clear();
+    // fpsStringElements.clear();
     std::string fps_str = "FPS: ";
     fps_str.append(std::to_string(fps));
 
@@ -224,7 +312,7 @@ void ui_updateTimerWidget() {
     // world Time
     double world_time = timing_getWorldTime();
     worldTimeStringElements.clear();
-    std::string worldTime_str = "World_t: ";
+    std::string worldTime_str = "W. time : ";
     std::string worldTime_cast = std::to_string(world_time);
     worldTime_cast.pop_back();
     worldTime_cast.pop_back();
@@ -235,7 +323,7 @@ void ui_updateTimerWidget() {
     // World Epoch
     double world_epoch = timing_getWorldEpoch();
     worldEpochStringElements.clear();
-    std::string worldEpoch_str = "World_e: ";
+    std::string worldEpoch_str = "W. epoch: ";
     std::string worldEpoch_cast = std::to_string(world_epoch);
     worldEpoch_cast.pop_back();
     worldEpoch_cast.pop_back();
@@ -258,7 +346,7 @@ void ui_updateTimerWidget() {
             ui_updateStringUi(15, 0, windowHeight - 85, worldTime_str, _uiElem);
         }
         else if (_uiElem.name == "world_epoch") {
-            // std::cout << "FPS is active? : " << _uiElem.activated << std::endl;
+            // std::cout << "UiElement.elementType = " << _uiElem.elementType << std::endl;
             ui_updateStringUi(15, 0, windowHeight - 105, worldEpoch_str, _uiElem);
         }
     }
@@ -287,12 +375,15 @@ void ui_updateTrackedWorldObjectElement(){
     
     for (UiElement& _uiElem : uiElements) {
         if (_uiElem.name == "trackedWorldObject")
-            ui_updateStringUi(15, 0, 500, worldObjectTracked_str, _uiElem);
+            ui_updateStringUi(15, 0, 300, worldObjectTracked_str, _uiElem);
+
         if (_uiElem.name == "twose_name"){
-            
+            // make sure element has correct type, even when not rendered for multiple frames
+            _uiElem.elementType = ElementType::STRING;
+
             // Slow down updates
             if (trackedWorldObjectUpdateCount % 5 == 0) {
-                ui_updateStringUi(15, 0, 478, twose_z_str, _uiElem);
+                ui_updateStringUi(15, 0, 278, twose_z_str, _uiElem);
                 // std::cout << "trackedWorldObjectUpdateCount = " << trackedWorldObjectUpdateCount << std::endl;
 
             }

@@ -1,10 +1,14 @@
 
+#include <vector>
+
 #include "WorldObject.hpp"
 
 void ws_init();
 
 void ws_createWorldObjects();
 void ws_resetWorldObjects();
+
+std::vector<WorldObject>& ws_getWorldObjects();
 
 void ws_loadTextures();
 

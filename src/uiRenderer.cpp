@@ -1,6 +1,9 @@
 
 #include "uiRenderer.hpp"
 
+#include <map>
+#include <string>
+
 #include "shader.hpp"
 
 #include "bmp_loader.hpp"
@@ -14,8 +17,11 @@ unsigned int uiVBO = 0;
 unsigned int uiIsCharVBO = 0;
 
 
-unsigned int charTexture;
+// Texture caching
+std::map<std::string, unsigned int> uiTextures;
 
+
+unsigned int charTexture;
 
 std::vector<unsigned char> charImageBuffer;
 unsigned int charImgWidth = 0;
@@ -202,6 +208,8 @@ void ui_renderer_render(std::vector<UiElement>& uiElements) {
 
         default:
             std::cout << "UNKNOWN ELEMENT TYPE" << std::endl;
+            std::cout << "uiElem_.name = " << uiElem_.name << std::endl;
+            
             break;
         }
 
@@ -250,6 +258,19 @@ void ui_renderer_setTexture(UiElement& uiElem_, std::string _texturePath){
     uiElem_.elementType = ElementType::TEXTURE;
 
     uiElem_.elementTexturePath = _texturePath;
+
+    // Make sure texture is not loaded if already in VRAM
+    for (const auto& _texturePair : uiTextures) {
+        if (_texturePair.first == _texturePath){
+            // textureLoaded = true;
+            uiElem_.glTexture = _texturePair.second;
+            uiElem_.hasTexture = 1;
+
+            return;
+        }
+    }
+
+
     bmp_loader_loadBMPFile(uiElem_.elementTexturePath);
     uiElem_.elementTextureBuffer = bmp_getImageDataBuffer();
     uiElem_.textureWidth = bmp_getWidth();
@@ -257,6 +278,8 @@ void ui_renderer_setTexture(UiElement& uiElem_, std::string _texturePath){
 
     // Move texture to gpu
     glGenTextures(1, &uiElem_.glTexture);
+    uiTextures.insert({ _texturePath,  uiElem_.glTexture });
+
     glBindTexture(GL_TEXTURE_2D, uiElem_.glTexture);
     // set the texture wrapping/filtering options (on the currently bound texture object)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
