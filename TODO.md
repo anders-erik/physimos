@@ -1,7 +1,7 @@
 
 # TODO
 
-## 2024-09-17/18
+## 2024-09-17/18/19
 - UI 
 	- |o| timing widget
 		- fps, frame, time
@@ -13,8 +13,16 @@
 - ui-file
 	- |x| nested elements
 	- widgets
-- Simulation UI
+- Simulation 'Environments'
+	- each environment has a separate goal
+		- e.g. compare algorithms, specific visulaization, accuracy, etc.
+	- Each environment has it's one physical location/dimensions in the world
 - detect click on worldObjects
+	- matrix/vector math functions
+- strings
+	- change color
+	- alpha character background
+	- (BIG PROBLEM IS IMPORTING TEXTURE WITH ALPHA....)
 
 
 ## 2024-09-14/15

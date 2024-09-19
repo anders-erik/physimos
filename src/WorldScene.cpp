@@ -501,9 +501,11 @@ void ws_createWorldObjects(){
 
     house1_obj.name = "house_1_obj";
     house1_obj.model.loadObjModel("house-1");
+    
     // house1_obj.model.loadObjModel("blend-cube-texture-1");
     house1_obj.scale = { 1.0, 1.0, 1.0 };
     house1_obj.position = { 10.0f, 20.0f, 0.0f };
+    // house1_obj.position = { 10.0f, 20.0f, 10.0f };
     house1_obj.position_0 = house1_obj.position;
 
     house1_obj.setVaoVbo_obj();

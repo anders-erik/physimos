@@ -10,7 +10,7 @@ CXXFLAGS := -g -Wall -lglfw3 -MMD -MP #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 
 INC   := -I./include
 LIB := -L./lib
-SRCS := glad.c main.cpp Input.cpp ui.cpp shader.cpp Simulation.cpp Camera.cpp Windowing.cpp WorldObject.cpp WorldRenderer.cpp Model.cpp bmp_loader.cpp Timing.cpp WorldScene.cpp obj_loader.cpp RigidBody.cpp VectorMath.cpp process_info.cpp uiRenderer.cpp
+SRCS := glad.c main.cpp Input.cpp ui.cpp shader.cpp Simulation.cpp Camera.cpp Windowing.cpp WorldObject.cpp WorldRenderer.cpp Model.cpp bmp_loader.cpp Timing.cpp WorldScene.cpp obj_loader.cpp RigidBody.cpp VectorMath.cpp process_info.cpp uiRenderer.cpp png_loader.cpp
 # OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 # OBJS := $(patsubst %, $(BUILD_DIR)%, $(SRCS))
 OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.cpp.o,$(filter %.cpp,$(SRCS))) \
@@ -19,7 +19,7 @@ OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.cpp.o,$(filter %.cpp,$(SRCS))) \
 DEPS = $(OBJS:.o=.d) # dependency files
 
 
-INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp ui.hpp uiElement.hpp Model.hpp bmp_loader.hpp Windowing.hpp WorldRenderer.hpp Timing.hpp WorldScene.hpp obj_loader.hpp PSO_util.hpp RigidBody.hpp VectorMath.hpp process_info.hpp uiRenderer.hpp
+INC_HPP := shader.hpp Simulation.hpp Types.hpp Camera.hpp Input.hpp WorldObject.hpp ui.hpp uiElement.hpp Model.hpp bmp_loader.hpp Windowing.hpp WorldRenderer.hpp Timing.hpp WorldScene.hpp obj_loader.hpp PSO_util.hpp RigidBody.hpp VectorMath.hpp process_info.hpp uiRenderer.hpp png_loader.hpp
 INC_HPP := $(patsubst %, $(SRC_DIR)/%, $(INC_HPP))
 # OBJS := main.o
 

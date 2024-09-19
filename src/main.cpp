@@ -9,6 +9,8 @@
 
 
 
+// TEMP FOR PNG DEV!
+#include "png_loader.hpp"
 
 int main()
 {
@@ -23,6 +25,10 @@ int main()
 	srand(0);
 
 
+	// TEMP FOR PNG DEV!
+	// png::loadFile("./media/4black.png");
+	// png::prettyPrint();
+	// return 0;
 
 
 	// glfw window creation

@@ -151,7 +151,7 @@ void ui_detectElementClick(double x, double y) {
 
                 for (WorldObject& _wo : _worldObjects) {
                     if(_wo.name == _uiELem.name){
-                        std::cout << "CLICKED : " << _wo.name << std::endl;
+                        // std::cout << "CLICKED : " << _wo.name << std::endl;
                         _wo.isActive = _wo.isActive ? false : true;
                         
                     }
