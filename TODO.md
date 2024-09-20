@@ -1,6 +1,28 @@
 
 # TODO
 
+
+## 2024-09-21/22
+- restructuring src folder into directories
+	- world object directory with its own namespace
+
+## 2024-09-20
+
+
+### TODO:
+- Simulator
+	- |o| separate 3D space (inside wireframe)
+	- simple particle gravity
+	- start simulation 'button'
+- UI improvements
+	- change color of text
+	- containers for widgets
+		- z values will be equal -> z fighting!
+	- click on world objects
+		- indicate that by altering the color of the object in world object widget
+
+
+
 ## 2024-09-17/18/19
 - UI 
 	- |o| timing widget

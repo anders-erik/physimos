@@ -3,6 +3,11 @@
 #include "WorldObject.hpp"
 
 
+
+
+
+
+
 void WorldObject::setShaderProgram(Shader * shader){
     this->shader = shader;
 }

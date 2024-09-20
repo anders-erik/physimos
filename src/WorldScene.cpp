@@ -22,6 +22,15 @@ extern Shader wireframeShader;
 
 #include "VectorMath.hpp"
 
+
+// SIMULATORS
+#include "simulator.hpp"
+
+
+
+
+
+
 // WORLD OBJECTS
 
 std::vector<WorldObject> worldObjects;
@@ -37,6 +46,8 @@ WorldObject house1_obj;
 
 WorldObject worldTriangle1Texture;
 WorldObject worldTriangle2_bounce;
+
+Simulator simulator_1;
 
 WorldObject* worldTriangle2_simobj_pointer;
 
@@ -56,6 +67,7 @@ void ws_init(){
 
     ws_loadTextures();
 
+    // ws_createSimulators();
     ws_createWorldObjects();
 
     cam_init();
@@ -314,7 +326,10 @@ void ws_loadTextures(){
 }
 
 
-
+void ws_createSimulators(){
+    // Simulator simulator_1("simulator_1");
+    // simulators.push_back(simulator_1);
+}
 
 void ws_createWorldObjects(){
 
@@ -552,6 +567,30 @@ void ws_createWorldObjects(){
     worldTriangle1Texture.hasTexture = 1;
     worldTriangle1Texture.glTexture = mountainTexture;
     worldObjects.push_back(worldTriangle1Texture);
+
+
+
+    // SIMULATOR 1 - WIREFRAME
+    simulator_1.name = "simulator_1";
+    // simulator_1.worldObjectType = WorldObjectType::Simulator;
+
+    simulator_1.scale = { 2.0, 2.0, 2.0 };
+    simulator_1.position = { 0.0f, 0.0f, 2.0f };
+
+    // simulator_1.renderer.setVaoVbo_obj();
+    simulator_1.addSimulatorVertices();
+    simulator_1.renderer.createSimulatorRenderer(simulator_1.vertices);
+
+    worldObjects.push_back(simulator_1);
+
+    std::cout << "simulator_1.name = " << simulator_1.name << std::endl;
+    std::cout << "simulator_1.vertices.size() = " << simulator_1.vertices.size() << std::endl;
+    
+
+
+
+
+
    
 
 

@@ -5,6 +5,8 @@
 
 void ws_init();
 
+void ws_createSimulators();
+
 void ws_createWorldObjects();
 void ws_resetWorldObjects();
 

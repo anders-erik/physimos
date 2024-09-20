@@ -15,6 +15,45 @@
 #include "Model.hpp"
 #include "RigidBody.hpp"
 
+#include "wo_renderer.hpp"
+
+
+// enum WorldObjectType {
+//     Default = 0,
+//     Simulator = 1,
+//     Ground = 2,
+//     Sky = 3,
+//     Light = 4,
+// };
+
+
+
+typedef struct WorldObject_Addons {
+    bool hasModel = 0;
+    Model model;
+
+    bool hasRigidBody = false;
+    RigidBody rigidBody;
+
+} WorldObject_Addons;
+
+
+// enum WorldObjectType {
+//     StaticModel = 0,
+//     RigidBody_ = 1,
+//     Simulator = 2,
+//     Light = 3,
+//     Sky = 4,
+// };
+
+// enum WorldObjectType {
+//     StaticModel,
+//     RigidBody_,
+//     Simulator,
+//     Light,
+//     Sky
+// };
+
 
 typedef struct BoundingBox {
     float x_min;
@@ -32,11 +71,16 @@ public:
     WorldObject(const char* path);
     WorldObject();
 
+    // WorldObjectType worldObjectType;
+
     std::string name;
     bool isActive = true;
 
     void LoadWorldObject(const char* path);
 
+
+    // RENDER STUFF
+    Renderer renderer;
     Shader * shader;
     void setShaderProgram(Shader* shader);
     unsigned int vao;
@@ -47,6 +91,7 @@ public:
 
 
     Model model;
+    bool hasModel = false;
 
     // Texture
     int hasTexture = 0;
@@ -86,7 +131,7 @@ public:
     std::string modelPath = "";
 
 
-
+    std::vector<WorldObject> children;
 
 	
 	

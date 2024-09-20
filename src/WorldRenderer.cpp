@@ -8,6 +8,7 @@
 
 
 #include "WorldObject.hpp"
+// #include "simulator.hpp"
 #include "WorldScene.hpp"
 
 #include "shader.hpp"
@@ -133,19 +134,49 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
     // glUniformMatrix4fv(viewLoc, 1, GL_TRUE, cam_getViewMatrix());
 
 
-    // RENDER !
+
+
+    // RENDER WORLD OBJECTS !
     for(WorldObject& _worldObject : _worldObjects){
         // std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
         
-        _worldObject.shader->use();
-
         if(!_worldObject.isActive){
             continue;
         }
 
+
+
+        /* 
+
+            USING NEW RENDERER
+        
+        */
+        if (_worldObject.name == "simulator_1"){
+            // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
+            
+            _worldObject.renderer.shader->use();
+            glBindVertexArray(_worldObject.renderer.vao);
+            
+            _worldObject.SetModelMatrixRowMajor();
+            
+            glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+            glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
+            glUniformMatrix4fv(modelWireLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
+            glBindVertexArray(_worldObject.renderer.vao);
+            glDrawArrays(GL_LINES, 0, _worldObject.vertices.size() / 3);
+
+            continue;
+        }
+        
+
+
+        
+        _worldObject.shader->use();
+
+
         // Add wireframe
         if(_worldObject.hasRigidBody){
-            // std::cout << _worldObject.name << " : HAS RIGID BODY!!!!!!!!!!!!!!!" << std::endl;
+            // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
             _worldObject.rigidBody.shader->use();
             glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
             glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
@@ -212,8 +243,10 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
             
         }
 
-        
     }
+
+
+
 
 }
 
