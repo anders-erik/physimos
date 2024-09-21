@@ -20,7 +20,7 @@
 
 // enum WorldObjectType {
 //     Default = 0,
-//     Simulator = 1,
+//     SimWorldContainer = 1,
 //     Ground = 2,
 //     Sky = 3,
 //     Light = 4,
@@ -41,7 +41,7 @@ typedef struct WorldObject_Addons {
 // enum WorldObjectType {
 //     StaticModel = 0,
 //     RigidBody_ = 1,
-//     Simulator = 2,
+//     SimWorldContainer = 2,
 //     Light = 3,
 //     Sky = 4,
 // };
@@ -49,7 +49,7 @@ typedef struct WorldObject_Addons {
 // enum WorldObjectType {
 //     StaticModel,
 //     RigidBody_,
-//     Simulator,
+//     SimWorldContainer,
 //     Light,
 //     Sky
 // };
@@ -70,6 +70,8 @@ class WorldObject {
 public:
     WorldObject(const char* path);
     WorldObject();
+
+    // virtual ~WorldObject() {};
 
     // WorldObjectType worldObjectType;
 

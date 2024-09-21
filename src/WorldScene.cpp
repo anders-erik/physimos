@@ -24,7 +24,7 @@ extern Shader wireframeShader;
 
 
 // SIMULATORS
-#include "simulator.hpp"
+#include "SimWorldContainer.hpp"
 
 
 
@@ -47,7 +47,7 @@ WorldObject house1_obj;
 WorldObject worldTriangle1Texture;
 WorldObject worldTriangle2_bounce;
 
-Simulator simulator_1;
+SimWorldContainer simContainer_1;
 
 WorldObject* worldTriangle2_simobj_pointer;
 
@@ -327,8 +327,8 @@ void ws_loadTextures(){
 
 
 void ws_createSimulators(){
-    // Simulator simulator_1("simulator_1");
-    // simulators.push_back(simulator_1);
+    // SimWorldContainer simContainer_1("simContainer_1");
+    // simulators.push_back(simContainer_1);
 }
 
 void ws_createWorldObjects(){
@@ -571,20 +571,20 @@ void ws_createWorldObjects(){
 
 
     // SIMULATOR 1 - WIREFRAME
-    simulator_1.name = "simulator_1";
-    // simulator_1.worldObjectType = WorldObjectType::Simulator;
+    simContainer_1.name = "simContainer_1";
+    // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
 
-    simulator_1.scale = { 2.0, 2.0, 2.0 };
-    simulator_1.position = { 0.0f, 0.0f, 2.0f };
+    simContainer_1.scale = { 2.0, 2.0, 2.0 };
+    simContainer_1.position = { -15.0f, -5.0f, 2.1f };
 
-    // simulator_1.renderer.setVaoVbo_obj();
-    simulator_1.addSimulatorVertices();
-    simulator_1.renderer.createSimulatorRenderer(simulator_1.vertices);
+    // simContainer_1.renderer.setVaoVbo_obj();
+    simContainer_1.addSimulatorVertices();
+    simContainer_1.renderer.createSimulatorRenderer(simContainer_1.vertices);
 
-    worldObjects.push_back(simulator_1);
+    worldObjects.push_back(simContainer_1);
 
-    std::cout << "simulator_1.name = " << simulator_1.name << std::endl;
-    std::cout << "simulator_1.vertices.size() = " << simulator_1.vertices.size() << std::endl;
+    std::cout << "simContainer_1.name = " << simContainer_1.name << std::endl;
+    std::cout << "simContainer_1.vertices.size() = " << simContainer_1.vertices.size() << std::endl;
     
 
 

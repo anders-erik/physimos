@@ -7,7 +7,7 @@
 #include "Timing.hpp"
 
 
-
+#include "Simulator.hpp"
 
 // TEMP FOR PNG DEV!
 #include "png_loader.hpp"
@@ -49,6 +49,11 @@ int main()
 
 	process_info_init();
 
+
+
+	// START SIMULATORS
+	Sim::init();
+	Sim::compute();
 
 
 	/* 

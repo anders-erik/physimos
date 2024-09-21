@@ -1,18 +1,18 @@
 
-#include "simulator.hpp"
+#include "SimWorldContainer.hpp"
 
 #include "shapes.hpp"
 
 // #include <iostream>
 
 
-void Simulator::render(){
+void SimWorldContainer::render(){
     // std::cout << "RENDERING simulaton. Name = " << this->name << std::endl;
     
 }
 
 
-void Simulator::addSimulatorVertices() {
+void SimWorldContainer::addSimulatorVertices() {
     for(float vertexFloat : simulatorPoints){
         vertices.push_back(vertexFloat);
     }

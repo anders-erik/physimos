@@ -2,17 +2,22 @@
 # TODO
 
 
-## 2024-09-21/22
-- restructuring src folder into directories
-	- world object directory with its own namespace
+## 2024-09-21/26
+- Cmake!
+	- restructuring src folder into directories
+		- world objects directory
+		- simulator directory
+		- renderers
+- render the fist simulator in its world container
+- import first png file
+- UI widget containers
 
 ## 2024-09-20
-
 
 ### TODO:
 - Simulator
 	- |o| separate 3D space (inside wireframe)
-	- simple particle gravity
+	- |o| simple particle gravity
 	- start simulation 'button'
 - UI improvements
 	- change color of text

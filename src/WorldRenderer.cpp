@@ -19,6 +19,9 @@
 
 #include "Camera.hpp"
 
+// WORLD OBJECT CLASSES
+#include "SimWorldContainer.hpp"
+
 
 
 
@@ -151,9 +154,34 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
             USING NEW RENDERER
         
         */
-        if (_worldObject.name == "simulator_1"){
-            // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
+        // Try RTTI determination
+        // WorldObject* _worldObject_ptr = &_worldObject;
+        // try
+        // {
+        //     SimWorldContainer* sim = dynamic_cast<SimWorldContainer*>(&_worldObject);
+        //     std::cout << "" << sim << std::endl;
             
+        // }
+        // catch(const std::exception& e)
+        // {
+        //     std::cerr << e.what() << '\n';
+        // }
+
+        // SimWorldContainer* sim_2 = dynamic_cast<SimWorldContainer*>(&_worldObject)
+            
+        // std::cout << "sim_2 = " << &sim_2 << std::endl;
+        
+        // std::cout << "&_worldObject = s" << &_worldObject << std::endl;
+        
+        // if (SimWorldContainer* sim_2 = dynamic_cast<SimWorldContainer*>(&_worldObject))
+        //     std::cout << "RTTI WORKS!!!!!!" << std::endl;
+        
+        // std::cout << "YELLO"  << std::endl;
+        
+            
+        if (_worldObject.name == "simContainer_1"){
+            // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
+
             _worldObject.renderer.shader->use();
             glBindVertexArray(_worldObject.renderer.vao);
             
