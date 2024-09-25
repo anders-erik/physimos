@@ -12,6 +12,10 @@ namespace Sim {
     Simulator* sim_1_ptr = nullptr;
     Simulator sim_1;
 
+    Simulator* getSim1Pointer(){
+        return sim_1_ptr;
+    }
+
     void init(){
         std::cout << "HELLO FROM SIM INIT! " << std::endl;
         
@@ -21,6 +25,8 @@ namespace Sim {
         
         // Temporary reference object for local convenience
         Simulator& simulator_1 = *sim_1_ptr;
+
+        simulator_1.simtype = Simtypes::VertThrow1;
 
         std::cout << "Sim::sim_1_ptr = " << sim_1_ptr << std::endl;
         

@@ -12,7 +12,7 @@ void SimWorldContainer::render(){
 }
 
 
-void SimWorldContainer::addSimulatorVertices() {
+void SimWorldContainer::addSimulatorContainerVertices() {
     for(float vertexFloat : simulatorPoints){
         vertices.push_back(vertexFloat);
     }

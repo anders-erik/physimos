@@ -4,8 +4,8 @@
 
 ## 2024-09-25
 ### TODO
-- vector math library
-- render the fist simulator in its world container
+- |o| vector math library
+- render the first simulator in its world container
 
 
 

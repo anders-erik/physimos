@@ -17,6 +17,8 @@ namespace Sim {
 
     };
 
+
+
     typedef struct TimeStep
     {
         int i;
@@ -30,7 +32,9 @@ namespace Sim {
 
 
     class Simulator {
+        
         public:
+        
             Simulator() {};
             
             std::string name;
@@ -64,6 +68,7 @@ namespace Sim {
 
 
 
+    Simulator* getSim1Pointer();
 
 }
 

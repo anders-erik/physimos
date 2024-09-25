@@ -180,18 +180,29 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
         
             
         if (_worldObject.name == "simContainer_1"){
-            // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
+            
+            wr_renderSimContainer(_worldObject);
+            
+            
+            // TODO : ACCESS AND RENDER THE SIM CONTAINER OBJECTS....
 
-            _worldObject.renderer.shader->use();
-            glBindVertexArray(_worldObject.renderer.vao);
+            // Force a sim container!
+            // _worldObject* b2 = new SimWorldContainer;
+            // SimWorldContainer& new_d = dynamic_cast<SimWorldContainer&>(_worldObject);
+            // std::cout << "lfasjdfkasdhf kjshdka" << std::endl;
+
+
+            // https://en.cppreference.com/w/cpp/language/static_cast
+            SimWorldContainer& another_d = static_cast<SimWorldContainer&>(_worldObject);
+            // No success...
+            // std::cout << "lfasjdfkasdhf kjshdka" << std::endl;
+            // std::cout << "another_d.containerWorldObjects.size() = " << another_d.containerWorldObjects.size() << std::endl;
             
-            _worldObject.SetModelMatrixRowMajor();
-            
-            glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
-            glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
-            glUniformMatrix4fv(modelWireLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
-            glBindVertexArray(_worldObject.renderer.vao);
-            glDrawArrays(GL_LINES, 0, _worldObject.vertices.size() / 3);
+            for (WorldObject& _simContainerWorldObject : another_d.containerWorldObjects){
+                std::cout << "lfasjdfkasdhf kjshdka"  << std::endl;
+                
+                wr_renderWorldObjShader(_simContainerWorldObject);
+            }
 
             continue;
         }
@@ -204,13 +215,9 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
 
         // Add wireframe
         if(_worldObject.hasRigidBody){
-            // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
-            _worldObject.rigidBody.shader->use();
-            glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
-            glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
-            glUniformMatrix4fv(modelWireLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
-            glBindVertexArray(_worldObject.rigidBody.vao);
-            glDrawArrays(GL_LINES, 0, _worldObject.rigidBody.vertices.size()/3);
+
+            wr_renderWireframeShader(_worldObject);
+           
         }
 
 
@@ -220,63 +227,103 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
         
         // WORLD SHADER
         if(_worldObject.shader->ID == worldShader.ID){
-            _worldObject.shader->use();
-
-            glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
-            glUniformMatrix4fv(viewLoc, 1, GL_TRUE, cam_getViewMatrix());
-            glUniformMatrix4fv(transformLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
-
-            if (_worldObject.hasTexture) {
-                glUniform1i(hasTextureLoc, 1); // set texture bool
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, _worldObject.glTexture);
-            }
-            else {
-                glUniform1i(hasTextureLoc, 0); // unset texture bool
-            }
-            
-            glDrawArrays(GL_TRIANGLES, 0, _worldObject.vertexCount);
-
-            glUniform1i(hasTextureLoc, 0);
+            wr_renderWorldShader(_worldObject);
             
         }
         // WORLD OBJ SHADER
         else if(_worldObject.shader->ID == worldObjShader.ID){
             // std::cout << "WORLD OBJ SHADER" << std::endl;
 
-            _worldObject.shader->use();
+            wr_renderWorldObjShader(_worldObject);
 
-            glUniformMatrix4fv(perspectiveObjLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
-            glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
-            glUniformMatrix4fv(modelObjLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, _worldObject.model.glTexture);
-            // if (_worldObject.hasTexture) {
-            //     glUniform1i(hasTextureObjLoc, 1); // set texture bool
-                
-            // }
-            // else {
-            //     glUniform1i(hasTextureObjLoc, 0); // unset texture bool
-            // }
-
-            glDrawArrays(GL_TRIANGLES, 0, _worldObject.model.vertexCount);
-            // std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
-            // std::cout << "_worldObject.model.glTexture = " << _worldObject.model.glTexture << std::endl;
-            // std::cout << "_worldObject.model.vertexCount = " << _worldObject.model.vertexCount << std::endl;
-            // std::cout << "_worldObject.model.vertices.size() = " << _worldObject.model.vertices.size() << std::endl;
-            
-
-            // glUniform1i(hasTextureObjLoc, 0);
             
         }
 
     }
 
+}
 
+void wr_renderWorldShader(WorldObject& _worldObject){
 
+    _worldObject.shader->use();
+
+    glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(viewLoc, 1, GL_TRUE, cam_getViewMatrix());
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
+
+    if (_worldObject.hasTexture) {
+        glUniform1i(hasTextureLoc, 1); // set texture bool
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, _worldObject.glTexture);
+    }
+    else {
+        glUniform1i(hasTextureLoc, 0); // unset texture bool
+    }
+
+    glDrawArrays(GL_TRIANGLES, 0, _worldObject.vertexCount);
+
+    glUniform1i(hasTextureLoc, 0);
 
 }
+
+
+void wr_renderWorldObjShader(WorldObject& _worldObject){
+
+    _worldObject.shader->use();
+
+    glUniformMatrix4fv(perspectiveObjLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
+    glUniformMatrix4fv(modelObjLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _worldObject.model.glTexture);
+    // if (_worldObject.hasTexture) {
+    //     glUniform1i(hasTextureObjLoc, 1); // set texture bool
+
+    // }
+    // else {
+    //     glUniform1i(hasTextureObjLoc, 0); // unset texture bool
+    // }
+
+    glDrawArrays(GL_TRIANGLES, 0, _worldObject.model.vertexCount);
+    // std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
+    // std::cout << "_worldObject.model.glTexture = " << _worldObject.model.glTexture << std::endl;
+    // std::cout << "_worldObject.model.vertexCount = " << _worldObject.model.vertexCount << std::endl;
+    // std::cout << "_worldObject.model.vertices.size() = " << _worldObject.model.vertices.size() << std::endl;
+
+
+    // glUniform1i(hasTextureObjLoc, 0);
+
+}
+
+
+
+void wr_renderWireframeShader(WorldObject& _worldObject){
+    // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
+    _worldObject.rigidBody.shader->use();
+    glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
+    glUniformMatrix4fv(modelWireLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
+    glBindVertexArray(_worldObject.rigidBody.vao);
+    glDrawArrays(GL_LINES, 0, _worldObject.rigidBody.vertices.size() / 3);
+}
+
+
+void wr_renderSimContainer(WorldObject& _worldObject){
+    // std::cout << _worldObject.name << " : HAS WIREFRAME" << std::endl;
+
+    _worldObject.renderer.shader->use();
+    glBindVertexArray(_worldObject.renderer.vao);
+
+    _worldObject.SetModelMatrixRowMajor();
+
+    glUniformMatrix4fv(perspectiveWireLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    glUniformMatrix4fv(viewWireLoc, 1, GL_TRUE, cam_getViewMatrix());
+    glUniformMatrix4fv(modelWireLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
+    glBindVertexArray(_worldObject.renderer.vao);
+    glDrawArrays(GL_LINES, 0, _worldObject.vertices.size() / 3);
+}
+
 
 
 
