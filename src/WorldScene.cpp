@@ -34,10 +34,13 @@ extern Sim::Simulator* sim_1_ptr;
 
 // WORLD OBJECTS
 
-std::vector<WorldObject> worldObjects;
+// std::vector<WorldObject> worldObjects;
+std::vector<WorldObject*> worldObjects;
 
 WorldObject worldGround1;
 WorldObject* worldGround_pointer;
+
+Cube cube_bounding_1;
 
 WorldObject worldCube1;
 WorldObject worldCube_spin;
@@ -76,7 +79,8 @@ void ws_init(){
 }
 
 void ws_resetWorldObjects(){
-    for(WorldObject& _worldObject : worldObjects){
+    for(WorldObject* _worldObject_p : worldObjects){
+        WorldObject& _worldObject = *_worldObject_p;
         if(_worldObject.hasRigidBody){
             _worldObject.position = _worldObject.position_0;
             _worldObject.velocity = _worldObject.velocity_0;
@@ -86,7 +90,7 @@ void ws_resetWorldObjects(){
     }
 }
 
-std::vector<WorldObject>& ws_getWorldObjects(){
+std::vector<WorldObject*> ws_getWorldObjects(){
     return worldObjects;
 }
 
@@ -126,7 +130,8 @@ void ws_physics(){
 
     // float modelMatrix16[16] = {0};
 
-    for (WorldObject& _worldObject : worldObjects){
+    for (WorldObject* _worldObject_p : worldObjects){
+        WorldObject& _worldObject = *_worldObject_p;
         // std::cout << "_worldObject.name =  " << _worldObject.name << std::endl;
         // std::cout << "_worldObject.rotation.x =  " << _worldObject.rotation.x << std::endl;
        
@@ -335,7 +340,7 @@ void ws_createSimulators(){
 void ws_createWorldObjects(){
 
     // TEMP -BOUNDING BOX ??
-    Cube cube_bounding_1;
+    
     cube_bounding_1.name = "cube_bounding_1";
     // worldObjects.push_back(cube_bounding_1);
 
@@ -346,7 +351,7 @@ void ws_createWorldObjects(){
 
     cube_bounding_1.setVaoVbo330();
     cube_bounding_1.setShaderProgram(&worldShader);
-    worldObjects.push_back(cube_bounding_1);
+    worldObjects.push_back(&cube_bounding_1);
     // std::cout << "cube_1.cubeString = " << cube_1.cubeString << std::endl;
     
 
@@ -371,7 +376,7 @@ void ws_createWorldObjects(){
 
     worldGround1.setVaoVbo330();
     worldGround1.setShaderProgram(&worldShader);
-    worldObjects.push_back(worldGround1);
+    worldObjects.push_back(&worldGround1);
 
 
     // CUBE 1
@@ -387,7 +392,7 @@ void ws_createWorldObjects(){
 
     worldCube1.setVaoVbo330();
     worldCube1.setShaderProgram(&worldShader);
-    worldObjects.push_back(worldCube1);
+    worldObjects.push_back(&worldCube1);
 
 
 
@@ -405,7 +410,7 @@ void ws_createWorldObjects(){
 
     worldCube_spin.setVaoVbo330();
     worldCube_spin.setShaderProgram(&worldShader);
-    worldObjects.push_back(worldCube_spin);
+    worldObjects.push_back(&worldCube_spin);
 
 
 
@@ -449,7 +454,7 @@ void ws_createWorldObjects(){
     cube_3_gravity.setVaoVbo330();
     cube_3_gravity.setShaderProgram(&worldShader);
 
-    worldObjects.push_back(cube_3_gravity);
+    worldObjects.push_back(&cube_3_gravity);
 
     // Add more cubes
     for (int i = 0; i < 0; i++) {
@@ -509,7 +514,7 @@ void ws_createWorldObjects(){
 
     // worldCube4_obj.isActive = false;
 
-    worldObjects.push_back(worldCube4_obj);
+    worldObjects.push_back(&worldCube4_obj);
 
 
 
@@ -527,7 +532,7 @@ void ws_createWorldObjects(){
     house1_obj.setVaoVbo_obj();
     house1_obj.setShaderProgram(&worldObjShader);
 
-    worldObjects.push_back(house1_obj);
+    worldObjects.push_back(&house1_obj);
 
 
 
@@ -549,7 +554,7 @@ void ws_createWorldObjects(){
 
     worldTriangle2_bounce.setVaoVbo330();
     worldTriangle2_bounce.setShaderProgram(&worldShader);
-    worldObjects.push_back(worldTriangle2_bounce);
+    worldObjects.push_back(&worldTriangle2_bounce);
 
 
 
@@ -567,7 +572,7 @@ void ws_createWorldObjects(){
 
     worldTriangle1Texture.hasTexture = 1;
     worldTriangle1Texture.glTexture = mountainTexture;
-    worldObjects.push_back(worldTriangle1Texture);
+    worldObjects.push_back(&worldTriangle1Texture);
 
 
 
@@ -586,16 +591,18 @@ void ws_createWorldObjects(){
 
     Sim::Simulator * simulator1_ptr = Sim::getSim1Pointer();
     simContainer_1.SetSimulator(simulator1_ptr);
+  
     // std::cout << "simulator1_ptr->simSaveDirectory = " << simulator1_ptr->simSaveDirectory << std::endl;
     
     // SIMULATOR 1 - OBJECT 1
-    WorldObject sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
+    WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
     sim1_containerObj_1.name = "simContainer1_Object1";
     sim1_containerObj_1.LoadWorldObject("src/models/cube.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
-    sim1_containerObj_1.position = { -15.0f, -5.0f, 2.0f };
+    sim1_containerObj_1.position_0 = { 0.0f, 0.0f, 0.0f };
+    sim1_containerObj_1.position = { 0.0f, 0.0f, 0.0f };
     // worldCube1.printVertices();
 
     sim1_containerObj_1.setVaoVbo330();
@@ -604,7 +611,16 @@ void ws_createWorldObjects(){
 
 
 
-    worldObjects.push_back(simContainer_1);
+    worldObjects.push_back(&simContainer_1);
+
+    // for (WorldObject& _worldObject : worldObjects) {
+    //         std::cout << "!!!!" << std::endl;
+
+    //     if (_worldObject.name == "simContainer_1"){
+    //         SimWorldContainer* container = static_cast<SimWorldContainer*>(&_worldObject);
+    //         std::cout << "__________" << std::endl;
+    //     }
+    // }
 
     std::cout << "simContainer_1.name = " << simContainer_1.name << std::endl;
     std::cout << "simContainer_1.vertices.size() = " << simContainer_1.vertices.size() << std::endl;
@@ -619,7 +635,8 @@ void ws_createWorldObjects(){
 
 
     // USE NEW WORLD OBJECTS
-    for(WorldObject& _worldObject : worldObjects){
+    for(WorldObject* _worldObject_p : worldObjects){
+        WorldObject& _worldObject = *_worldObject_p;
         if (_worldObject.name == "worldTriangle2_bounce")
             worldTriangle2_simobj_pointer = &_worldObject;
         if (_worldObject.name == "worldGround1")

@@ -10,7 +10,7 @@ void ws_createSimulators();
 void ws_createWorldObjects();
 void ws_resetWorldObjects();
 
-std::vector<WorldObject>& ws_getWorldObjects();
+std::vector<WorldObject*> ws_getWorldObjects();
 
 void ws_loadTextures();
 

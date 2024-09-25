@@ -10,7 +10,7 @@
 
 void wr_init();
 
-void wr_render(std::vector<WorldObject>& _worldObjects);
+void wr_render(std::vector<WorldObject*> _worldObjects);
 
 void wr_renderWorldShader(WorldObject& _worldObject);
 void wr_renderWorldObjShader(WorldObject& _worldObject);

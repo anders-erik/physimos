@@ -129,7 +129,7 @@ void wr_init(){
 
 
 
-void wr_render(std::vector<WorldObject>& _worldObjects) {
+void wr_render(std::vector<WorldObject*> _worldObjects) {
     // glUseProgram(worldShader.ID);
     
     // glUniformMatrix4fv(perspectiveLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
@@ -140,7 +140,8 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
 
 
     // RENDER WORLD OBJECTS !
-    for(WorldObject& _worldObject : _worldObjects){
+    for(WorldObject* _worldObject_p : _worldObjects){
+        WorldObject& _worldObject = *_worldObject_p;
         // std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
         
         if(!_worldObject.isActive){
@@ -181,8 +182,38 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
             
         if (_worldObject.name == "simContainer_1"){
             
-            wr_renderSimContainer(_worldObject);
+            wr_renderSimContainer(*_worldObject_p);
             
+            SimWorldContainer* container = static_cast<SimWorldContainer*>(_worldObject_p);
+
+            // SimWorldContainer& cont = *container;
+            // std::cout << "container->simulator->simtype = " << container->simulator->simtype << std::endl;
+
+            for (WorldObject& _wo : container->containerWorldObjects){
+                // std::cout << "_wo.name = " << _wo.name << std::endl;
+
+                // Move object into sim-container
+                _wo.position.x = _wo.position_0.x + container->position.x;
+                _wo.position.y = _wo.position_0.x + container->position.y;
+                _wo.position.z = _wo.position_0.x + container->position.z;
+
+                // Move object into sim-container
+                _wo.scale.x = container->simulationScale;
+                _wo.scale.y = container->simulationScale;
+                _wo.scale.z = container->simulationScale;
+
+                glBindVertexArray(_wo.vao);
+                _wo.SetModelMatrixRowMajor();
+
+                wr_renderWorldShader(_wo);
+                // wr_renderWorldObjShader(_wo);
+
+            }
+            
+            // if (SimWorldContainer* container = dynamic_cast<SimWorldContainer*>(&_worldObject)) {
+            //     std::cout << "1" << std::endl;
+                
+            // }
             
             // TODO : ACCESS AND RENDER THE SIM CONTAINER OBJECTS....
 
@@ -193,16 +224,20 @@ void wr_render(std::vector<WorldObject>& _worldObjects) {
 
 
             // https://en.cppreference.com/w/cpp/language/static_cast
-            SimWorldContainer& another_d = static_cast<SimWorldContainer&>(_worldObject);
+            // void * simContObj = &_worldObject;
+
+            // SimWorldContainer& xx = 
+            
+            // SimWorldContainer& another_d = static_cast<SimWorldContainer&>(_worldObject);
             // No success...
             // std::cout << "lfasjdfkasdhf kjshdka" << std::endl;
             // std::cout << "another_d.containerWorldObjects.size() = " << another_d.containerWorldObjects.size() << std::endl;
             
-            for (WorldObject& _simContainerWorldObject : another_d.containerWorldObjects){
-                std::cout << "lfasjdfkasdhf kjshdka"  << std::endl;
+            // for (WorldObject& _simContainerWorldObject : another_d.containerWorldObjects){
+            //     std::cout << "lfasjdfkasdhf kjshdka"  << std::endl;
                 
-                wr_renderWorldObjShader(_simContainerWorldObject);
-            }
+            //     wr_renderWorldObjShader(_simContainerWorldObject);
+            // }
 
             continue;
         }

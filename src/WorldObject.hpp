@@ -70,6 +70,7 @@ class WorldObject {
 public:
     WorldObject(const char* path);
     WorldObject();
+    virtual ~WorldObject() = default;
 
     // virtual ~WorldObject() {};
 

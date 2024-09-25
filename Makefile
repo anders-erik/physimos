@@ -6,7 +6,7 @@ BUILD_DIR := build
 CXX := g++
 # -MMD generates dependencies for user header files, excluding system headers.
 # -MP prevents issues if header files are deleted by creating dummy rules.
-CXXFLAGS := -g -Wall -lglfw3 -MMD -MP -no-pie #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
+CXXFLAGS := -g -Wall -lglfw3 -MMD -MP #-lpthread  -ldl -lGL -lX11 -lXrandr -lXi
 
 INC   := -I./include
 LIB := -L./lib

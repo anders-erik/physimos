@@ -25,6 +25,7 @@ class SimWorldContainer : public WorldObject {
         Sim::Simulator* simulator;
 
         std::vector<WorldObject> containerWorldObjects;
+        float simulationScale = 0.1;
 
         void addSimulatorContainerVertices();
 

@@ -118,10 +118,11 @@ void ui_detectElementClick(double x, double y) {
             }
             if (_uiELem.name == "worldObjects_toggle") {
                 // std::cout << "TIMER WIDGET!" << std::endl;
-                std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+                std::vector<WorldObject*> _worldObjects = ws_getWorldObjects();
                 worldObjectWidgetIsOn = worldObjectWidgetIsOn ? false : true;
 
-                for (WorldObject _wo : _worldObjects) {
+                for (WorldObject* _wo_p : _worldObjects) {
+                    WorldObject& _wo = *_wo_p;
                     for (UiElement& _UiE : uiElements) {
                         if (_wo.name == _UiE.name || _UiE.name == "WORLD_OBJECTS_HEADER") {
                             if (_UiE.activated == 0)
@@ -147,9 +148,10 @@ void ui_detectElementClick(double x, double y) {
             }
 
             if(worldObjectWidgetIsOn){
-                std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+                std::vector<WorldObject*> _worldObjects = ws_getWorldObjects();
 
-                for (WorldObject& _wo : _worldObjects) {
+                for (WorldObject* _wo_p : _worldObjects) {
+                    WorldObject& _wo = *_wo_p;
                     if(_wo.name == _uiELem.name){
                         // std::cout << "CLICKED : " << _wo.name << std::endl;
                         _wo.isActive = _wo.isActive ? false : true;
@@ -230,13 +232,14 @@ void ui_createWidgets() {
 
 
     // WORLD OBJECTS
-    std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+    std::vector<WorldObject*> _worldObjects = ws_getWorldObjects();
 
     UiElement woHeaderStringElement;
     woHeaderStringElement.name = "WORLD_OBJECTS_HEADER";
     woHeaderStringElement.activated = 1;
     uiElements.push_back(woHeaderStringElement);
-    for (WorldObject _wo : _worldObjects){
+    for (WorldObject* _wo_p : _worldObjects){
+        WorldObject& _wo = *_wo_p;
         UiElement woStringElement;
         woStringElement.name = _wo.name;
         woStringElement.activated = 1;
@@ -269,11 +272,11 @@ void ui_updateWidgets(){
 
 
 void ui_updateWorldObjectWidget(){
-    std::vector<WorldObject>& _worldObjects = ws_getWorldObjects();
+    std::vector<WorldObject*> _worldObjects = ws_getWorldObjects();
 
     int wo_count = 0; 
-    for (WorldObject _wo : _worldObjects) {
-
+    for (WorldObject* _wo_p : _worldObjects) {
+        WorldObject& _wo = *_wo_p;
         // Update elements
         for (UiElement& _uiElem : uiElements) {
             
