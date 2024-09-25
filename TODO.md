@@ -2,6 +2,13 @@
 # TODO
 
 
+## 2024-09-25
+### TODO
+- vector math library
+- render the fist simulator in its world container
+
+
+
 ## 2024-09-21/26
 - Cmake!
 	- restructuring src folder into directories

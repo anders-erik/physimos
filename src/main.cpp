@@ -6,6 +6,8 @@
 #include "ui.hpp"
 #include "Timing.hpp"
 
+#include "Math.hpp"
+
 
 #include "Simulator.hpp"
 
@@ -14,6 +16,20 @@
 
 int main()
 {
+	math::pvec3 a = { 1.0, 2.0, 3.0 };
+	math::pvec3 b = { 4.0, 5.0, 6.0 };
+	math::add_v3(a, b);
+
+	math::pvec3 crossOutput = {0};
+	math::cross_v3(a, b, crossOutput);
+
+	// std::cout << "In main: " << a[0] << std::endl;
+
+	math::print_v3(crossOutput);
+
+	std::cout << "OKOKOK"  << std::endl;
+	
+	return 0;
 	
 	// std::cout << std::endl << "---------- MAIN() ----------" << std::endl << std::endl;
 	

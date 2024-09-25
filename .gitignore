@@ -2,6 +2,8 @@ GLFW/*
 glad/*
 glad.zip
 
+tests/math-test
+
 build/*
 
 *~

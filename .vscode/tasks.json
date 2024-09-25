@@ -64,6 +64,23 @@
                 "panel": "shared",
                 "focus": true
             }
-        }
+        },
+        {
+            "type": "shell",
+            "label": "Test!",
+            "command": "g++ -I./src -o ./tests/math-test ./tests/Math-test.cpp ./src/Math.cpp && ./tests/math-test",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/g++",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
     ]
 }
