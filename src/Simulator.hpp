@@ -62,7 +62,7 @@ namespace Sim {
             Simtypes simtype;
 
 
-            void runSimulation();
+            void compute();
             
     };
 

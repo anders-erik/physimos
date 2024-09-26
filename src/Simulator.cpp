@@ -51,7 +51,7 @@ namespace Sim {
     void compute(){
         // std::cout << "sim_1_ptr = " << sim_1_ptr << std::endl;
         // Simulator& _simulator = *sim_1_ptr;
-        Sim::sim_1_ptr->runSimulation();
+        Sim::sim_1_ptr->compute();
         // Sim::sim_1_ptr->name;
         // std::cout << "Sim::sim_1_ptr->t0 = " << Sim::sim_1_ptr->t0 << std::endl;
         // std::cout << "_simulator.t0 = " << _simulator.t0 << std::endl;
@@ -60,7 +60,7 @@ namespace Sim {
 
 
 
-    void Simulator::runSimulation(){
+    void Simulator::compute() {
         
         std::cout << " Setting up Simulation " << name << std::endl;
 
@@ -85,8 +85,8 @@ namespace Sim {
             _timestep.i = i;
             _timestep.t = t0 + dt * i_d;
             _timestep.acc = acc;
-            _timestep.vel = { 0.0, 0.0, SimData[i - 1].vel.z + acc.z };
-            _timestep.pos = { 0.0, 0.0, SimData[i - 1].pos.z + SimData[i - 1].vel.z };
+            _timestep.vel = { 0.0, 0.0, SimData[i - 1].vel.z + acc.z*(float)dt };
+            _timestep.pos = { 0.0, 0.0, SimData[i - 1].pos.z + SimData[i- 1].vel.z };
             // std::cout << "timestep.t = " << _timestep.t << std::endl;
         }
 
@@ -103,8 +103,8 @@ namespace Sim {
             for (TimeStep& _timeStep : SimData) {
                 // std::cout << "_timeStep.t" << _timeStep.t << std::endl;
                 file << _timeStep.i << delim << _timeStep.t << delim;
-                file << _timeStep.pos.x << delim << _timeStep.pos.y << delim << _timeStep.pos.z;
-                file << _timeStep.vel.x << delim << _timeStep.vel.y << delim << _timeStep.vel.z;
+                file << _timeStep.pos.x << delim << _timeStep.pos.y << delim << _timeStep.pos.z << delim;
+                file << _timeStep.vel.x << delim << _timeStep.vel.y << delim << _timeStep.vel.z << delim;
                 file << _timeStep.acc.x << delim << _timeStep.acc.y << delim << _timeStep.acc.z << "\n";
                 
                 // file << _timeStep.acc.z << "\n";

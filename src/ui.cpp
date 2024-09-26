@@ -99,6 +99,12 @@ void ui_detectElementClick(double x, double y) {
             if (_uiELem.name == "pauseSimButton"){
                 timing_pauseWorldTime();
             }
+
+            if (_uiELem.name == "startSimCont"){
+                std::cout << "STARTING SIM CONTAINER!"  << std::endl;
+                
+            }
+                
             if (_uiELem.name == "stopSimButton") {
                 timing_resetWorldEpoch();
                 timing_pauseWorldTime();

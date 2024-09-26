@@ -192,15 +192,16 @@ void wr_render(std::vector<WorldObject*> _worldObjects) {
             for (WorldObject& _wo : container->containerWorldObjects){
                 // std::cout << "_wo.name = " << _wo.name << std::endl;
 
-                // Move object into sim-container
+                // Assumes that the object being used in the simulator is zero-centered
+                // Move object into sim-container, then shift according to simulator scale
                 _wo.position.x = _wo.position_0.x + container->position.x;
                 _wo.position.y = _wo.position_0.x + container->position.y;
                 _wo.position.z = _wo.position_0.x + container->position.z;
 
-                // Move object into sim-container
-                _wo.scale.x = container->simulationScale;
-                _wo.scale.y = container->simulationScale;
-                _wo.scale.z = container->simulationScale;
+                // Scale the simulation realtive to container z-dimension + use Z
+                _wo.scale.x = container->scale.z * container->simulationScale;
+                _wo.scale.y = container->scale.z * container->simulationScale;
+                _wo.scale.z = container->scale.z * container->simulationScale;
 
                 glBindVertexArray(_wo.vao);
                 _wo.SetModelMatrixRowMajor();

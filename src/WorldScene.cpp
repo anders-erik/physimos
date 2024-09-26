@@ -582,8 +582,8 @@ void ws_createWorldObjects(){
     simContainer_1.name = "simContainer_1";
     // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
 
-    simContainer_1.scale = { 2.0, 2.0, 2.0 };
-    simContainer_1.position = { -15.0f, -5.0f, 2.1f };
+    simContainer_1.scale = { 3.0, 3.0, 3.0 };
+    simContainer_1.position = { -15.0f, -5.0f, 3.1f };
 
     // simContainer_1.renderer.setVaoVbo_obj();
     simContainer_1.addSimulatorContainerVertices();
