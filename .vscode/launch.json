@@ -10,7 +10,7 @@
             "name": "(gdb) Launch gltrhowsim",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/physimos",
+            "program": "${workspaceFolder}/build_cmake/physimos",
             // You could place a .blend file path here to open it by default, or any other Blender args.
             "args": [],
             "stopAtEntry": false,

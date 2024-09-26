@@ -5,5 +5,6 @@ glad.zip
 tests/math-test
 
 build/*
+build*
 
 *~

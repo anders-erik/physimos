@@ -54,7 +54,7 @@
         {
             "type": "shell",
             "label": "gdb",
-            "command": "gdb ${workspaceFolder}/build/glthrowsim ",
+            "command": "gdb ${workspaceFolder}/build_cmake/physimos",
             "options": {},
             "group": "build",
             "detail": "debugger: /usr/bin/gdb",

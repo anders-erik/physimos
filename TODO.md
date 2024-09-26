@@ -2,6 +2,11 @@
 # TODO
 
 
+## 2024-09-26
+- `compile and run program using CMake`
+- rename files to have cc/hh extension instead of cpp/hpp
+
+
 ## 2024-09-25
 ### TODO
 - |o| vector math library
