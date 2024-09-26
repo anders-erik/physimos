@@ -68,7 +68,41 @@
         {
             "type": "shell",
             "label": "Test!",
-            "command": "g++ -I./src -o ./tests/math-test ./tests/Math-test.cpp ./src/Math.cpp && ./tests/math-test",
+            "command": "g++ -I./src/math -o ./tests/math-test ./tests/Math-test.cpp ./src/math/Math.cpp && ./tests/math-test",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/g++",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Cmake Clean",
+            "command": "rm -rf ${workspaceFolder}/build_cmake && mkdir ${workspaceFolder}/build_cmake && cd ${workspaceFolder}/build_cmake && cmake ..",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/g++",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Cmake : make & run",
+            "command": "cd ${workspaceFolder}/build_cmake && make && cd .. && ./build_cmake/physimos",
             "args": [],
             "options": {},
             "problemMatcher": [

@@ -7,7 +7,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch gltrhowsim",
+            "name": "(gdb) Launch Physimos",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build_cmake/physimos",
@@ -33,7 +33,7 @@
             ],
             "showDisplayString": true,
             // Optional, you can use if you want it to build before launching.
-            "preLaunchTask": "build"
+            // "preLaunchTask": "build"
         }
     ]
 }

@@ -1,6 +1,7 @@
 {
 	// https://stackoverflow.com/questions/48945319/a-keybindings-json-per-workspace-in-visual-studio-code
-    "workspaceKeybindings.glthrowsim_BuildRun.enabled": true, 
+
+    "workspaceKeybindings.physimos_BuildRun.enabled": true, 
 
 	// make sure the clang-formatter doesn't destroy my array-format..
 	"C_Cpp.formatting": "vcFormat",

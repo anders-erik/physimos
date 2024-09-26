@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "Math.hpp"
+#include "Math.hh"
 
 namespace math {
 

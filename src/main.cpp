@@ -6,7 +6,7 @@
 #include "ui.hpp"
 #include "Timing.hpp"
 
-#include "Math.hpp"
+#include "Math.hh"
 
 
 #include "Simulator.hpp"
