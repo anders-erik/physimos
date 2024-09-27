@@ -124,4 +124,14 @@ namespace Sim {
 
     }
 
+    TimeStep* Simulator::nextTimeStep(){
+        // std::cout << "Simulator::nextTimeStep()" << std::endl;
+        static int i = 0;
+        i++;
+        if(i >= SimData.size())
+            i = 0;
+        
+        return &SimData[i];
+    }
+
 }

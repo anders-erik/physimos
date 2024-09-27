@@ -358,9 +358,9 @@ void ws_createWorldObjects(){
 
     // GROUND 1
 
-    // WorldObject worldCube1("src/models/cube.pso");
+    // WorldObject worldCube1("resources/models/cube.pso");
     worldGround1.name = "worldGround1";
-    worldGround1.LoadWorldObject("src/models/ground_1.pso");
+    worldGround1.LoadWorldObject("resources/models/ground_1.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     float groundScale = 50.0f;
@@ -381,9 +381,9 @@ void ws_createWorldObjects(){
 
     // CUBE 1
 
-    // WorldObject worldCube1("src/models/cube.pso");
+    // WorldObject worldCube1("resources/models/cube.pso");
     worldCube1.name = "worldCube1";
-    worldCube1.LoadWorldObject("src/models/cube.pso");
+    worldCube1.LoadWorldObject("resources/models/cube.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     worldCube1.scale = { 0.5, 0.5, 0.5 };
@@ -398,9 +398,9 @@ void ws_createWorldObjects(){
 
     // CUBE 2 - SPIN
 
-    // WorldObject worldCube1("src/models/cube.pso");
+    // WorldObject worldCube1("resources/models/cube.pso");
     worldCube_spin.name = "worldCube_spin";
-    worldCube_spin.LoadWorldObject("src/models/cube.pso");
+    worldCube_spin.LoadWorldObject("resources/models/cube.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     float cubeSpinScale = 1.0f;
@@ -418,9 +418,9 @@ void ws_createWorldObjects(){
 
     // CUBE 3 - GRAVITY
 
-    // WorldObject worldCube1("src/models/cube.pso");
+    // WorldObject worldCube1("resources/models/cube.pso");
     cube_3_gravity.name = "cube_3_gravity";
-    cube_3_gravity.LoadWorldObject("src/models/cube.pso");
+    cube_3_gravity.LoadWorldObject("resources/models/cube.pso");
 
     // RIGID BODY
     cube_3_gravity.hasRigidBody = true;
@@ -479,7 +479,7 @@ void ws_createWorldObjects(){
     //      - because the cube is rendered using texture, the color data is ignored in the shader
 
     worldCube4_obj.name = "worldCube4_obj";
-    // worldCube1.LoadWorldObject("src/models/cube.pso");
+    // worldCube1.LoadWorldObject("resources/models/cube.pso");
 
     // worldCube4_obj.hasTexture = 1;
     // worldCube4_obj.glTexture = qrTexture;
@@ -538,9 +538,9 @@ void ws_createWorldObjects(){
 
     // TRIANGLE 2 - BOUNCE
 
-    // WorldObject worldCube1("src/models/cube.pso");
+    // WorldObject worldCube1("resources/models/cube.pso");
     worldTriangle2_bounce.name = "worldTriangle2_bounce";
-    worldTriangle2_bounce.LoadWorldObject("src/models/firstSimTriangle.pso");
+    worldTriangle2_bounce.LoadWorldObject("resources/models/firstSimTriangle.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     // float  = 1.0f;
@@ -562,7 +562,7 @@ void ws_createWorldObjects(){
 
     // WorldObject worldTriangle1("src/models/triangle.pso");
     worldTriangle1Texture.name = "worldTriangle1Texture";
-    worldTriangle1Texture.LoadWorldObject("src/models/triangle.pso");
+    worldTriangle1Texture.LoadWorldObject("resources/models/triangle.pso");
 
     worldTriangle1Texture.scale = { 1.0, 5.0, 5.0 };
     worldTriangle1Texture.position = { -5.0f, -10.0f, 10.0f };
@@ -579,6 +579,7 @@ void ws_createWorldObjects(){
 
 
     // SIMULATOR 1 - WIREFRAME
+    
     simContainer_1.name = "simContainer_1";
     // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
 
@@ -597,7 +598,7 @@ void ws_createWorldObjects(){
     // SIMULATOR 1 - OBJECT 1
     WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
     sim1_containerObj_1.name = "simContainer1_Object1";
-    sim1_containerObj_1.LoadWorldObject("src/models/cube.pso");
+    sim1_containerObj_1.LoadWorldObject("resources/models/cube.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
@@ -622,15 +623,60 @@ void ws_createWorldObjects(){
     //     }
     // }
 
-    std::cout << "simContainer_1.name = " << simContainer_1.name << std::endl;
-    std::cout << "simContainer_1.vertices.size() = " << simContainer_1.vertices.size() << std::endl;
+    // std::cout << "simContainer_1.name = " << simContainer_1.name << std::endl;
+    // std::cout << "simContainer_1.vertices.size() = " << simContainer_1.vertices.size() << std::endl;
     
 
 
 
 
 
-   
+
+
+
+
+    /* 
+        rendpipe_obj   ::   NEW RENDER PIPLINE OBJECT
+    */
+
+    WorldObject* rendpipe_obj_ptr = new WorldObject();
+    // MAKE SURE TO MAKE ACTIVE WHEN YOU START TO RENDER!
+    rendpipe_obj_ptr->isActive = false;
+    worldObjects.push_back(rendpipe_obj_ptr);
+    WorldObject& rendpipe_obj = *rendpipe_obj_ptr;
+
+    rendpipe_obj.name = "rendpipe_obj";
+
+    // rendpipe_obj.rendpipe = render::worldObject_noLight;
+
+    rendpipe_obj.createRendpipe(render::worldObject_noLight, "blend-cube-texture-1");
+
+    // rendpipe_obj.renderer_ptr = new render::Renderer(rendpipe_obj.rendpipe);
+
+
+    // USING "worldCube4_obj" AS TEMPLATE ! !
+    rendpipe_obj.model.loadObjModel("blend-cube-texture-1");
+
+    rendpipe_obj.scale = { 0.5, 0.5, 0.5 };
+    rendpipe_obj.position_0 = { -10.0f, 0.0f, 5.0f };
+    rendpipe_obj.position = { -10.0f, 0.0f, 5.0f };
+
+    rendpipe_obj.setVaoVbo_obj();
+    // worldCube4_obj.setShaderProgram(&worldShader);
+    rendpipe_obj.setShaderProgram(&worldObjShader);
+
+    rendpipe_obj_ptr->isActive = true;
+
+
+
+
+
+
+
+
+
+
+
 
 
 

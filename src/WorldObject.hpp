@@ -15,7 +15,9 @@
 #include "Model.hpp"
 #include "RigidBody.hpp"
 
+// librender
 #include "wo_renderer.hpp"
+#include "render_types.hh"
 
 
 // enum WorldObjectType {
@@ -30,7 +32,7 @@
 
 typedef struct WorldObject_Addons {
     bool hasModel = 0;
-    Model model;
+    objects::Model model;
 
     bool hasRigidBody = false;
     RigidBody rigidBody;
@@ -66,11 +68,12 @@ typedef struct BoundingBox {
 
 
 
+
 class WorldObject {
 public:
     WorldObject(const char* path);
     WorldObject();
-    virtual ~WorldObject() = default;
+    // virtual ~WorldObject() = default;
 
     // virtual ~WorldObject() {};
 
@@ -83,7 +86,10 @@ public:
 
 
     // RENDER STUFF
-    Renderer renderer;
+    render::RENDPIPE rendpipe;
+    void createRendpipe(render::RENDPIPE _rendpipe, std::string modelname);
+    render::Renderer* renderer_ptr;
+    render::Renderer renderer;
     Shader * shader;
     void setShaderProgram(Shader* shader);
     unsigned int vao;
@@ -93,7 +99,8 @@ public:
     void setVaoVbo_obj();
 
 
-    Model model;
+    objects::Model model;
+    objects::Model* model_ptr;
     bool hasModel = false;
 
     // Texture

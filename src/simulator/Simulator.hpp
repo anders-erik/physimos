@@ -61,6 +61,9 @@ namespace Sim {
 
             Simtypes simtype;
 
+            TimeStep* nextTimeStep();
+
+
 
             void compute();
             

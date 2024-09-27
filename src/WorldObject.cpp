@@ -1,9 +1,39 @@
 
+#include <string>
 
 #include "WorldObject.hpp"
 
+/**
+ * This call set/implies the follwoing:
+ *  - model source
+ *  - verted data format
+ *  - shader
+ */
+void WorldObject::createRendpipe(render::RENDPIPE _rendpipe, std::string modelname) {
+    // render::RENDPIPE _rendpipe = rendpipe;
+
+    rendpipe = _rendpipe; // WorldObject.rendpipe : make sure I can check WO-rendpipe type later!
 
 
+    // HOW SHOULD MODEL BE ADDED TO RENEDER ??
+    //  - loaded from world obejct, and the info sent to render:: ?
+    //  - passed to render. which then loads it?
+    //      - no, because then librender needs the world object??
+    //  --> PASS THE MODEL NAME WHICH SHOULD BE IDENTIFIED BY **LIBLOADER** AS A RESOURCE AND ALL INFO CAN BE GRABBED FROM THERE!
+    //          - MAP OF STRINGS TO IDENTIFY MODELS!!!!! ! !!!!
+
+    // NEED TO MAP EFFECTIVELY EVENTUALLY
+    objects::MODELNAME _modelname_enum;
+    if (modelname == "blend-cube-texture-1")
+        _modelname_enum = objects::MODELNAME::blend_cube_texture_1; // manually mapping
+    else
+        _modelname_enum = objects::MODELNAME::blend_cube_texture_1; // DEFAULT MODEL FOR NOW : 2024-09-27
+
+    model_ptr = new objects::Model(_modelname_enum);
+    renderer_ptr = new render::Renderer(_rendpipe, modelname);
+
+
+}
 
 
 
@@ -227,7 +257,7 @@ WorldObject::WorldObject(){
 }
 
 Cube::Cube(){
-    LoadWorldObject("src/models/cube.pso");
+    LoadWorldObject("resources/models/cube.pso");
     for (float vertex : vertices)
         boundingVerts.push_back(vertex);
 }

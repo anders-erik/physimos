@@ -7,9 +7,15 @@
 #include <vector>
 #include <string>
 
+#include "object_types.hh"
+
+namespace objects {
+
+
 class Model {
     public:
         Model() {};
+        Model(MODELNAME _modelname);
 
         void loadObjModel(std::string objModelName);
 
@@ -24,6 +30,9 @@ class Model {
         // float Kd[3] = { 0.0f, 0.0f, 0.0f };
 
 };
+
+
+}
 
 
 #endif

@@ -186,17 +186,25 @@ void wr_render(std::vector<WorldObject*> _worldObjects) {
             
             SimWorldContainer* container = static_cast<SimWorldContainer*>(_worldObject_p);
 
+            // container->render();
+
             // SimWorldContainer& cont = *container;
             // std::cout << "container->simulator->simtype = " << container->simulator->simtype << std::endl;
+            // std::cout << "container->simulator->nextTimeStep()->t = " << container->simulator->nextTimeStep()->t << std::endl;
 
             for (WorldObject& _wo : container->containerWorldObjects){
                 // std::cout << "_wo.name = " << _wo.name << std::endl;
 
+                Sim::TimeStep& _timeStep = *container->simulator->nextTimeStep();
+                int sim_x = _timeStep.pos.x;
+                int sim_y = _timeStep.pos.y;
+                int sim_z = _timeStep.pos.z;
+
                 // Assumes that the object being used in the simulator is zero-centered
                 // Move object into sim-container, then shift according to simulator scale
-                _wo.position.x = _wo.position_0.x + container->position.x;
-                _wo.position.y = _wo.position_0.x + container->position.y;
-                _wo.position.z = _wo.position_0.x + container->position.z;
+                _wo.position.x = _wo.position_0.x + sim_x * container->simulationScale + container->position.x;
+                _wo.position.y = _wo.position_0.x + sim_y * container->simulationScale + container->position.y;
+                _wo.position.z = _wo.position_0.x + sim_z * container->simulationScale + container->position.z;
 
                 // Scale the simulation realtive to container z-dimension + use Z
                 _wo.scale.x = container->scale.z * container->simulationScale;

@@ -1,5 +1,28 @@
-
 # TODO
+
+## 2024-09-28/02
+- Implement on at least one type of world object with new RENDPIPE [expect quite a few hours!]
+	- NEW WORLD OBJECT SPECIFICALLY FOR THIS PURPOSE
+		- name = rendpipe_obj
+
+
+## 2024-09-27
+- |o|render the first simulator in its world container
+- |x| Implement render class for world objects
+	- |x| automate the world object creation
+		- |x| scene file!
+- FIXED RENDERING PIPLINES
+	- |o| Define
+		- |o| ./notes/cmake-refactoring.md
+			- [each rendered object has to have a renderer-object attached to it; each renederer obejct has to be inlizalied with an explicit renering pipline that specifices vertex data format, shader to use, data source]
+	- Implement on at least one type of world object
+		- NEW WORLD OBJECT SPECIFICALLY FOR THIS PURPOSE
+			- name = rendpipe_obj
+		- NOTES
+			- Modelccp/hhp is taking on a central role in managing the model interface for both the world objects AND the renderer!
+				- IT should (maybe, I can't guarentee it right now... lol) keep the vertices, certex count etc.
+			- I should make a tranform-like structure for position-scale-rotaion etc. - this would include the current Vec3 that I am using!
+			- probably a rigidbody-library that uses the tranform=lib
 
 
 ## 2024-09-26
