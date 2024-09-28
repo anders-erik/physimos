@@ -29,6 +29,9 @@ extern Shader wireframeShader;
 extern Sim::Simulator* sim_1_ptr;
 
 
+// SCENE - RENDPIPE - 2024-09-28
+#include "Scene.hh"
+Scene scene_1;
 
 
 
@@ -76,6 +79,9 @@ void ws_init(){
 
     cam_init();
 
+    // RENDPIPE
+    scene_1.camera = getCurrentCamera_pointer();
+
 }
 
 void ws_resetWorldObjects(){
@@ -121,6 +127,24 @@ void ws_update() {
     // Render all world objects (world renderer)
     wr_render(worldObjects);
 
+    // new rendering pipeline - 2024-09-28
+    ws_update_objects();
+    ws_render();
+}
+
+
+// RENDPIPE
+void ws_update_objects(){
+    for (WorldObject* _worldObject : worldObjects) {
+        if (_worldObject->isRendpipe)
+            _worldObject->update();
+    }
+}
+void ws_render(){
+    for(WorldObject* _worldObject : worldObjects){
+        if (_worldObject->isRendpipe)
+            _worldObject->render();
+    }
 }
 
 
@@ -639,33 +663,20 @@ void ws_createWorldObjects(){
         rendpipe_obj   ::   NEW RENDER PIPLINE OBJECT
     */
 
-    WorldObject* rendpipe_obj_ptr = new WorldObject();
-    // MAKE SURE TO MAKE ACTIVE WHEN YOU START TO RENDER!
-    rendpipe_obj_ptr->isActive = false;
+    WorldObject* rendpipe_obj_ptr = new WorldObject("blend-cube-texture-1", "rendpipe_obj");
     worldObjects.push_back(rendpipe_obj_ptr);
-    WorldObject& rendpipe_obj = *rendpipe_obj_ptr;
 
-    rendpipe_obj.name = "rendpipe_obj";
+    // MAKE SURE TO MAKE NOT ACTIVE TO PREVENT OLD RENDERING PIPELINE!
+    rendpipe_obj_ptr->isActive = false;
+    // ENABLE NEW RENDPIPE
+    rendpipe_obj_ptr->isRendpipe = true;
 
-    // rendpipe_obj.rendpipe = render::worldObject_noLight;
+    // WorldObject& rendpipe_obj = *rendpipe_obj_ptr;
 
-    rendpipe_obj.createRendpipe(render::worldObject_noLight, "blend-cube-texture-1");
+    // rendpipe_obj.scale = { 0.5, 0.5, 0.5 };
+    // rendpipe_obj.position_0 = { -10.0f, 0.0f, 5.0f };
+    // rendpipe_obj.position = { -10.0f, 0.0f, 5.0f };
 
-    // rendpipe_obj.renderer_ptr = new render::Renderer(rendpipe_obj.rendpipe);
-
-
-    // USING "worldCube4_obj" AS TEMPLATE ! !
-    rendpipe_obj.model.loadObjModel("blend-cube-texture-1");
-
-    rendpipe_obj.scale = { 0.5, 0.5, 0.5 };
-    rendpipe_obj.position_0 = { -10.0f, 0.0f, 5.0f };
-    rendpipe_obj.position = { -10.0f, 0.0f, 5.0f };
-
-    rendpipe_obj.setVaoVbo_obj();
-    // worldCube4_obj.setShaderProgram(&worldShader);
-    rendpipe_obj.setShaderProgram(&worldObjShader);
-
-    rendpipe_obj_ptr->isActive = true;
 
 
 

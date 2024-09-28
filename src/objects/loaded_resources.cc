@@ -11,6 +11,10 @@ namespace objects {
     // LOADED TEXTURES
     // std::map<objects::MODELNAME, unsigned int> textureMap;
 
+    
+
+
+
 
 
     // extern std::vector<unsigned char> obj_textureDataBuffer;

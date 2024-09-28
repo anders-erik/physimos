@@ -63,3 +63,21 @@ I prefer the second one.
     - math interface
     - inherited object transforms
         - parent/child relationship for worldObjects
+
+# 2024-09-28
+- World object : pointers to objects kept
+    - scene
+    - parent object
+    - children objects
+    - model
+    - transform
+    - renderer/shader
+    - rigidbody?
+- WorldObject : key methods
+    - constructor
+        - requires all parameters to set up a minimally viable rendered object (pointers to objects, or enum representing a specific configuration)
+            - model (probably as string name / enum value)
+
+UPDATES:
+- worldscene:
+    -

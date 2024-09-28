@@ -13,7 +13,7 @@
 		- |x| scene file!
 - FIXED RENDERING PIPLINES
 	- |o| Define
-		- |o| ./notes/cmake-refactoring.md
+		- |o| .znotes/cmake-refactoring.md
 			- [each rendered object has to have a renderer-object attached to it; each renederer obejct has to be inlizalied with an explicit renering pipline that specifices vertex data format, shader to use, data source]
 	- Implement on at least one type of world object
 		- NEW WORLD OBJECT SPECIFICALLY FOR THIS PURPOSE

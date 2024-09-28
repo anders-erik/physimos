@@ -2,12 +2,33 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <glad/glad.h>
+
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
+typedef enum Shaders {
+    UI,
+    world,
+    worldObj,
+    worldWireframe
+} Shaders;
+
+
+// Shader _worldObjShader;
+// unsigned int _modelObjLoc;
+// unsigned int _viewObjLoc;
+// unsigned int _sanityObjLoc;
+// unsigned int _perspectiveObjLoc;
+// typedef struct WorldObjShader_locations {
+    
+// }   WorldObjShader_locations;
+
+void shader_setWorldObject_uniforms(float* model_mat, float* view_mat, float* perspective_mat, const float* sanity_mat);
+void drawTriangles(int vertexCount);
+
 
 class Shader
 {
@@ -38,6 +59,11 @@ private:
     // ------------------------------------------------------------------------
     void checkCompileErrors(unsigned int shader, std::string type);
 };
+
+
+
+Shader* getShader(Shaders _shaderType);
+void shader_init_shaders();
   
  
 #endif

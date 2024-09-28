@@ -15,12 +15,20 @@ namespace objects {
 class Model {
     public:
         Model() {};
-        Model(MODELNAME _modelname);
+        Model(std::string _modelname);
 
+        MODELNAME modelname;
+
+        void setVaoVbo_obj();
         void loadObjModel(std::string objModelName);
+        void useTexture();
+
 
         std::vector<float> vertices;
         int vertexCount;
+
+        unsigned int vao;
+        unsigned int vbo;
 
         // Texture
         // int hasTexture = 0;

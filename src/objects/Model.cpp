@@ -13,6 +13,7 @@
 #include "loaded_resources.hh"
 
 
+// EXTERNAL OBJ  PROPERTIES
 extern float Kd[3];
 extern bool hasTextureMap;
 
@@ -22,37 +23,61 @@ extern unsigned int obj_imgHeight;
 
 namespace objects {
 
+    // keeps track of loaded models
+    // std::map<objects::MODELNAME, bool> modelLoadedMap;
 
-    Model::Model(MODELNAME _modelname) {
-        switch (_modelname)
-        {
-        case MODELNAME::blend_cube_texture_1 :
-            std::cout << "CREATING MODEL : \"MODELNAME::blend_cube_texture_1\": " << MODELNAME::blend_cube_texture_1 << std::endl;
-            obj_loadFromFile("blend-cube-texture-1");
-            vertices = obj_getVertexBuffer_v_vt_vn();
-            vertexCount = vertices.size();
-            
-            if(hasTextureMap){
-                // std::cout << "TEXUTRE MAP _^_^_^_^_^^"  << std::endl;
 
-                /* 
-                    DINDN'T MANAGE TO MAKE THIS WORK
-                    END OF 2024-09-28
-                */
-                // objects::createGlTexture(MODELNAME::blend_cube_texture_1, obj_textureDataBuffer, obj_imgWidth, obj_imgHeight);
-            }
-            // glTexture = 
-            // needs access to rendering resources:
-            //  - shaders
-            //      - textures
-            //      - shader-programs?
-            //          - THIS! I NEED ACCESS TO ALL SHADERS!
-            break;
-        
-        default:
-            break;
-        }
+    Model::Model(std::string _modelname) {
+
+        // TODO : Implement more than just obj models!
+
+        loadObjModel(_modelname);
+
     };
+
+
+    void Model::useTexture() {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, glTexture);
+    }
+
+    void Model::setVaoVbo_obj() {
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+
+        glBindVertexArray(vao);
+
+        // REPLACE VERTEX NORMALS WITH COLORS!
+        for (unsigned int i = 0; i < vertices.size(); i += 8) {
+            // vertices[i + 5] = 0.0f;
+            // vertices[i + 6] = 0.0f;
+            // vertices[i + 7] = 0.0f;
+
+            // vertices[i + 5] = Kd[0];
+            // vertices[i + 6] = Kd[1];
+            // vertices[i + 7] = Kd[2];
+
+            // model.vertices[i + 5] = model.Kd[0];
+            // model.vertices[i + 6] = model.Kd[1];
+            // model.vertices[i + 7] = model.Kd[2];
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        // printf("triangel : %lu\n", sizeof(triangle));
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+    }
 
 
     void Model::loadObjModel(std::string objModelName) {

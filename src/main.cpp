@@ -2,6 +2,7 @@
 
 #include "process_info.hpp"
 #include "Windowing.hpp"
+#include "shader.hpp"
 #include "WorldScene.hpp"
 #include "ui.hpp"
 #include "Timing.hpp"
@@ -62,6 +63,8 @@ int main()
 	Sim::init();
 	Sim::compute();
 
+	// TEMPORARY SETUP CALL LOCATION
+	shader_init_shaders();
 
 	ws_init();
 

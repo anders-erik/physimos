@@ -1,7 +1,87 @@
-
-
+#include <glad/glad.h>
 
 #include "shader.hpp"
+
+
+
+Shader _worldShader;
+unsigned int _transformLoc;
+unsigned int _viewLoc;
+unsigned int _sanityLoc;
+unsigned int _perspectiveLoc;
+unsigned int _colorLoc;
+unsigned int _hasTextureLoc;
+
+Shader _worldObjShader;
+unsigned int _modelObjLoc;
+unsigned int _viewObjLoc;
+unsigned int _sanityObjLoc;
+unsigned int _perspectiveObjLoc;
+
+Shader _wireframeShader;
+unsigned int _modelWireLoc;
+unsigned int _viewWireLoc;
+unsigned int _sanityWireLoc;
+unsigned int _perspectiveWireLoc;
+
+
+void shader_setWorldObject_uniforms(float* model_mat, float* view_mat, float* perspective_mat, const float* sanity_mat) {
+    glUniformMatrix4fv(_modelObjLoc, 1, GL_TRUE, model_mat);
+    glUniformMatrix4fv(_viewObjLoc, 1, GL_TRUE, view_mat);
+    glUniformMatrix4fv(_sanityObjLoc, 1, GL_TRUE, sanity_mat);
+    glUniformMatrix4fv(_perspectiveObjLoc, 1, GL_TRUE, perspective_mat);
+}
+
+void drawTriangles(int vertexCount){
+    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+}
+
+
+Shader* getShader(Shaders _shaderType) {
+    switch (_shaderType)
+    {
+    case Shaders::worldObj :
+        return &_worldObjShader;
+        break;
+    
+    default:
+        return nullptr; // break if no match !
+        break;
+    }
+}
+
+void shader_init_shaders(){
+
+
+    _worldShader.buildShaderProgram("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
+
+    glUseProgram(_worldShader.ID);
+    _transformLoc = glGetUniformLocation(_worldShader.ID, "transform");
+    _viewLoc = glGetUniformLocation(_worldShader.ID, "view");
+    _sanityLoc = glGetUniformLocation(_worldShader.ID, "sanityTransform");
+    _perspectiveLoc = glGetUniformLocation(_worldShader.ID, "perspective");
+    _colorLoc = glGetUniformLocation(_worldShader.ID, "vertexColor");
+    _hasTextureLoc = glGetUniformLocation(_worldShader.ID, "hasTexture");
+
+
+    _worldObjShader.buildShaderProgram("src/shaders/worldObjShader_vs.glsl", "src/shaders/worldObjShader_fs.glsl");
+
+    glUseProgram(_worldObjShader.ID);
+    _modelObjLoc = glGetUniformLocation(_worldObjShader.ID, "model");
+    _viewObjLoc = glGetUniformLocation(_worldObjShader.ID, "view");
+    _sanityObjLoc = glGetUniformLocation(_worldObjShader.ID, "sanityTransform");
+    _perspectiveObjLoc = glGetUniformLocation(_worldObjShader.ID, "perspective");
+
+    _wireframeShader.buildShaderProgram("src/shaders/worldWireframeShader_vs.glsl", "src/shaders/worldWireframeShader_fs.glsl");
+
+    glUseProgram(_wireframeShader.ID);
+    _modelWireLoc = glGetUniformLocation(_wireframeShader.ID, "model");
+    _viewWireLoc = glGetUniformLocation(_wireframeShader.ID, "view");
+    _sanityWireLoc = glGetUniformLocation(_wireframeShader.ID, "sanityTransform");
+    _perspectiveWireLoc = glGetUniformLocation(_wireframeShader.ID, "perspective");
+
+}
+
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {

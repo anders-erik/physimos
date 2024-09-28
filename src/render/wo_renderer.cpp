@@ -1,6 +1,8 @@
 
 #include "wo_renderer.hpp"
 
+#include <glad/glad.h>
+
 #include <vector>
 #include <string>
 

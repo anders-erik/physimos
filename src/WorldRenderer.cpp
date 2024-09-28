@@ -80,8 +80,11 @@ void update_sim_timestep(){
 // unsigned int transformLoc_;
 
 void wr_init(){
+
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+    // shader_init_shaders();
 
     worldShader.buildShaderProgram("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
 
@@ -148,6 +151,10 @@ void wr_render(std::vector<WorldObject*> _worldObjects) {
             continue;
         }
 
+        // // make sure the object is not rendered this way, occationally causes segfaults
+        // if (_worldObject.name == "rendpipe_obj"){
+        //     continue;
+        // }
 
 
         /* 

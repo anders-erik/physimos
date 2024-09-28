@@ -3,6 +3,91 @@
 
 #include "WorldObject.hpp"
 
+#include "shader.hpp"
+
+extern Scene scene_1;
+
+
+const float sanityMatrix16[16] = {
+    0, -1, 0, 0,
+    0, 0, 1, 0,
+    -1, 0, 0, 0,
+    0, 0, 0, 1,
+};
+
+
+
+WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
+
+    name = _objectName;
+    // LoadWorldObject(path);
+
+    model_ptr = new objects::Model(_modelName);
+    model = *model_ptr;
+    model_ptr->setVaoVbo_obj();
+
+    scene = &scene_1;
+
+    // setVaoVbo_obj();
+    // worldCube4_obj.setShaderProgram(&worldShader);
+    // setShaderProgram(&worldObjShader);
+    shader = getShader(Shaders::worldObj);
+
+}
+
+// void WorldObject::setShader(Shaders _shader) {
+//     switch (_shader)
+//     {
+//     case Shaders::worldObj :
+        
+//         break;
+    
+//     default:
+//         break;
+//     }
+// }
+
+void WorldObject::update() {
+    SetModelMatrixRowMajor();
+
+
+}
+
+void WorldObject::render() {
+    // int x = 0;
+    // std::cout << "rendering " << name << std::endl;
+    // std::cout << "rendering " << name << std::endl;
+
+    shader->use();
+    glBindVertexArray(model_ptr->vao);
+
+    // std::cout << "modelMatrixRowMajor = " << modelMatrixRowMajor << std::endl;
+    // std::cout << "scene->camera->viewMatrix = " << scene->camera->viewMatrix << std::endl;
+    // std::cout << "modelMatrixRowMajor = " << modelMatrixRowMajor << std::endl;
+    // std::cout << "modelMatrixRowMajor = " << modelMatrixRowMajor << std::endl;
+
+    shader_setWorldObject_uniforms(modelMatrixRowMajor, scene->camera->viewMatrix, scene->camera->perspectiveMatrix16, sanityMatrix16);
+
+    // glUniformMatrix4fv(perspectiveObjLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
+    // glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
+    // glUniformMatrix4fv(modelObjLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
+
+    model_ptr->useTexture();
+    // if (_worldObject.hasTexture) {
+    //     glUniform1i(hasTextureObjLoc, 1); // set texture bool
+
+    // }
+    // else {
+    //     glUniform1i(hasTextureObjLoc, 0); // unset texture bool
+    // }
+
+    // glDrawArrays(GL_TRIANGLES, 0, model.vertexCount);
+    drawTriangles(model_ptr->vertexCount);
+
+    
+}
+
+
 /**
  * This call set/implies the follwoing:
  *  - model source
@@ -12,25 +97,26 @@
 void WorldObject::createRendpipe(render::RENDPIPE _rendpipe, std::string modelname) {
     // render::RENDPIPE _rendpipe = rendpipe;
 
-    rendpipe = _rendpipe; // WorldObject.rendpipe : make sure I can check WO-rendpipe type later!
+    // rendpipe = _rendpipe; // WorldObject.rendpipe : make sure I can check WO-rendpipe type later!
 
 
-    // HOW SHOULD MODEL BE ADDED TO RENEDER ??
-    //  - loaded from world obejct, and the info sent to render:: ?
-    //  - passed to render. which then loads it?
-    //      - no, because then librender needs the world object??
-    //  --> PASS THE MODEL NAME WHICH SHOULD BE IDENTIFIED BY **LIBLOADER** AS A RESOURCE AND ALL INFO CAN BE GRABBED FROM THERE!
-    //          - MAP OF STRINGS TO IDENTIFY MODELS!!!!! ! !!!!
+    // // HOW SHOULD MODEL BE ADDED TO RENEDER ??
+    // //  - loaded from world obejct, and the info sent to render:: ?
+    // //  - passed to render. which then loads it?
+    // //      - no, because then librender needs the world object??
+    // //  --> PASS THE MODEL NAME WHICH SHOULD BE IDENTIFIED BY **LIBLOADER** AS A RESOURCE AND ALL INFO CAN BE GRABBED FROM THERE!
+    // //          - MAP OF STRINGS TO IDENTIFY MODELS!!!!! ! !!!!
 
-    // NEED TO MAP EFFECTIVELY EVENTUALLY
-    objects::MODELNAME _modelname_enum;
-    if (modelname == "blend-cube-texture-1")
-        _modelname_enum = objects::MODELNAME::blend_cube_texture_1; // manually mapping
-    else
-        _modelname_enum = objects::MODELNAME::blend_cube_texture_1; // DEFAULT MODEL FOR NOW : 2024-09-27
+    // // NEED TO MAP EFFECTIVELY EVENTUALLY
+    // objects::MODELNAME _modelname_enum;
+    // if (modelname == "blend-cube-texture-1")
+    //     _modelname_enum = objects::MODELNAME::blend_cube_texture_1; // manually mapping
+    // else
+    //     _modelname_enum = objects::MODELNAME::blend_cube_texture_1; // DEFAULT MODEL FOR NOW : 2024-09-27
 
-    model_ptr = new objects::Model(_modelname_enum);
-    renderer_ptr = new render::Renderer(_rendpipe, modelname);
+
+    // model_ptr = new objects::Model();
+    // renderer_ptr = new render::Renderer(_rendpipe, modelname);
 
 
 }

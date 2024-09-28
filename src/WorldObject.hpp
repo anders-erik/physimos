@@ -15,9 +15,14 @@
 #include "Model.hpp"
 #include "RigidBody.hpp"
 
+#include "Scene.hh"
+// #include "WorldScene.hpp"
+
 // librender
 #include "wo_renderer.hpp"
 #include "render_types.hh"
+
+
 
 
 // enum WorldObjectType {
@@ -26,6 +31,11 @@
 //     Ground = 2,
 //     Sky = 3,
 //     Light = 4,
+// };
+
+
+// struct wo_core {
+
 // };
 
 
@@ -71,6 +81,7 @@ typedef struct BoundingBox {
 
 class WorldObject {
 public:
+    WorldObject(std::string _modelName, std::string _objectName);
     WorldObject(const char* path);
     WorldObject();
     // virtual ~WorldObject() = default;
@@ -83,6 +94,16 @@ public:
     bool isActive = true;
 
     void LoadWorldObject(const char* path);
+
+
+    // NEW RENDER 2024-09-28
+    bool isRendpipe = false;
+    void setShader(Shaders _shader);
+    void update();
+    void render();
+    objects::Model* model_ptr;
+    Scene* scene;
+
 
 
     // RENDER STUFF
@@ -100,7 +121,6 @@ public:
 
 
     objects::Model model;
-    objects::Model* model_ptr;
     bool hasModel = false;
 
     // Texture
@@ -123,16 +143,16 @@ public:
 
 	Vec3 scale = {1.0f, 1.0f, 1.0f};
 
-    Vec3 position_0;
+    Vec3 position_0 = { 0.0f, 0.0f, 0.0f };;
 	Vec3 position = {0.0f, 0.0f, 0.0f};
     Vec3 translationPrevStep = {0.0f, 0.0f, 0.0f};
-    Vec3 velocity_0;
+    Vec3 velocity_0 = { 0.0f, 0.0f, 0.0f };;
     Vec3 velocityPrevStep = {0.0f, 0.0f, 0.0f};
     Vec3 velocity = {0.0f, 0.0f, 0.0f};
 
-    Vec3 rotation_0;
+    Vec3 rotation_0 = { 0.0f, 0.0f, 0.0f };;
 	Vec3 rotation = {0.0f, 0.0f, 0.0f};
-    Vec3 angularVelocity_0;
+    Vec3 angularVelocity_0 = { 0.0f, 0.0f, 0.0f };;
     Vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };
 	
     
