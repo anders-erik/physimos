@@ -38,6 +38,8 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
         shader = getShader(Shaders::worldObj);
     else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3c3)
         shader = getShader(Shaders::world);
+    else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3c3t2)
+        shader = getShader(Shaders::world);
 
 }
 
@@ -66,12 +68,25 @@ void WorldObject::render() {
     // Shader program
     shader->use();
 
+
     // object/scene data
     shader_setWorldObject_uniforms(modelMatrixRowMajor, scene->camera->viewMatrix, scene->camera->perspectiveMatrix16, sanityMatrix16);
 
-    // Model data
+
+    // Bind Model Data
     glBindVertexArray(model_ptr->vao);
+
+
+    // TEXTURE
+    
+    // Currently the pso shader branches, forcing me to toggle the 'hasTexture' uniform for each object..
+    if (model_ptr->modelFileType == res::ModelFileType::pso && model_ptr->glTexture != 0) 
+        setHasTextureUniform(1);
+    else
+        setHasTextureUniform(0);
+
     model_ptr->useTexture();
+
 
     // Shader call
     drawTriangles(model_ptr->vertexCount);

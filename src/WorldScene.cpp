@@ -279,7 +279,7 @@ void ws_loadTextures(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    bmp_loader_loadBMPFile("media/mountain.bmp");
+    bmp_loader_loadBMPFile("resources/textures/mountain.bmp");
     // bmp_loader_loadBMPFile("resources/models/blend-cube-texture-1.bmp");
 
     // blend-cube-texture-1
@@ -721,6 +721,30 @@ void ws_createWorldObjects(){
     tri_pso->position = { -20.0f, 1.0f, 2.0f };
 
 
+    /*
+        tri_tex_pso : First pso with texture in new rendering pipline
+    */
+    WorldObject* tri_tex_pso = new WorldObject("tri_tex_pso.pso", "tri_tex_pso");
+    worldObjects.push_back(tri_tex_pso);
+
+    tri_tex_pso->isActive = false;
+    tri_tex_pso->isRendpipe = true;
+
+    tri_tex_pso->position = { -20.1f, 1.0f, 3.0f };
+
+
+    // worldTriangle1Texture.name = "worldTriangle1Texture";
+    // worldTriangle1Texture.LoadWorldObject("resources/models/pso/triangle.pso");
+
+    // worldTriangle1Texture.scale = { 1.0, 5.0, 5.0 };
+    // worldTriangle1Texture.position = { -5.0f, -10.0f, 10.0f };
+
+    // worldTriangle1Texture.setVaoVbo332();
+    // worldTriangle1Texture.setShaderProgram(&worldShader);
+
+    // worldTriangle1Texture.hasTexture = 1;
+    // worldTriangle1Texture.glTexture = mountainTexture;
+    // worldObjects.push_back(&worldTriangle1Texture);
 
 
 

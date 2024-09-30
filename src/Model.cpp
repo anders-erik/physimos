@@ -46,15 +46,20 @@ namespace objects {
         switch (_mf->fileType) {
 
             case res::ModelFileType::obj :
+                modelFileType = res::ModelFileType::obj;
                 loadObjModel(_modelname);
                 loadedVertStructure = res::ModelVertStucture::p3n3t2;
                 setVaoVbo_obj();
                 break;
 
             case res::ModelFileType::pso :
-                std::cout << "ABABABABABABBABAABBABABBABAB"  << std::endl;
+                // std::cout << "ABABABABABABBABAABBABABBABAB"  << std::endl;
+                modelFileType = res::ModelFileType::pso;
                 loadPsoModel(_modelname);
-                setVaoVbo_p3c3();
+                if(loadedVertStructure == res::ModelVertStucture::p3c3)
+                    setVaoVbo_p3c3();
+                else if (loadedVertStructure == res::ModelVertStucture::p3c3t2)
+                    setVaoVbo_p3c3t2();
                 break;
             
             default:
@@ -70,6 +75,30 @@ namespace objects {
     void Model::useTexture() {
         // glActiveTexture(GL_TEXTURE0); // I turned off 2024-09-30 - unsure if this has an impoact on actual texture usage...
         glBindTexture(GL_TEXTURE_2D, glTexture);
+    }
+
+    void Model::createGLTexture(unsigned int imgWith, unsigned int imgHeight, unsigned char* imgData) {
+        std::cout << "GLGLGLGLGLGL" << imgWith << std::endl;
+        std::cout << "GLGLGLGLGLGL" << imgHeight << std::endl;
+        std::cout << "GLGLGLGLGLGL" << imgData[0] << std::endl;
+        
+        // LOAD TEXTURE
+        glGenTextures(1, &glTexture);
+        glBindTexture(GL_TEXTURE_2D, glTexture);
+        // set the texture wrapping/filtering options (on the currently bound texture object)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // bmp_loader_loadBMPFile("media/mountain.bmp");
+        // bmp_loader_loadBMPFile("resources/models/blend-cube-texture-1.bmp");
+
+        // blend-cube-texture-1
+        // bmp_loader.prettyPrint();
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWith, imgHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData);
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     void Model::setVaoVbo_obj() {
@@ -228,10 +257,21 @@ namespace objects {
         for(float _vertexFloat : _psoLoader->vertexFloatBuffer){
             vertices.push_back(_vertexFloat);
         }
-
         vertexCount = _psoLoader->vertexCount;
-
         loadedVertStructure = _psoLoader->vertStructure;
+
+        if(_psoLoader->hasTexture){
+
+            createGLTexture(_psoLoader->textureWidth, _psoLoader->textureHeight, _psoLoader->textureDataBuffer.data());
+
+            // std::vector<unsigned char> imageData = _psoLoader->textureDataBuffer;
+
+            // for (unsigned char dataByte : imageData) {
+            //     psoLoader->textureDataBuffer.push_back(dataByte);
+            // }
+            // psoLoader->textureHeight = bmp_getHeight();
+            // psoLoader->textureWidth = bmp_getWidth();
+        }
         
         delete _psoLoader;
 
@@ -254,6 +294,28 @@ namespace objects {
 
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
+    }
+
+    void Model::setVaoVbo_p3c3t2() {
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+
+        glBindVertexArray(vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        // printf("triangel : %lu\n", sizeof(triangle));
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
     }
 
 

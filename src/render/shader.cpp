@@ -59,6 +59,10 @@ Shader* getShader(Shaders _shaderType) {
     }
 }
 
+void setHasTextureUniform(unsigned int _hasTexture) {
+    glUniform1i(_hasTextureLoc, _hasTexture);
+}
+
 void shader_init_shaders(){
 
     // char * shaderDir = "resources/shaders/";
