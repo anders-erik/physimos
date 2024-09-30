@@ -86,7 +86,7 @@ void wr_init(){
 
     // shader_init_shaders();
 
-    worldShader.buildShaderProgram("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
+    worldShader.buildShaderProgram("resources/shaders/worldShader.vs", "resources/shaders/worldShader.fs");
 
     glUseProgram(worldShader.ID);
     transformLoc = glGetUniformLocation(worldShader.ID, "transform");
@@ -102,7 +102,7 @@ void wr_init(){
 
 
 
-    worldObjShader.buildShaderProgram("src/shaders/worldObjShader_vs.glsl", "src/shaders/worldObjShader_fs.glsl");
+    worldObjShader.buildShaderProgram("resources/shaders/worldObjShader_vs.glsl", "resources/shaders/worldObjShader_fs.glsl");
 
     glUseProgram(worldObjShader.ID);
     modelObjLoc = glGetUniformLocation(worldObjShader.ID, "model");
@@ -117,7 +117,7 @@ void wr_init(){
     glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
 
     
-    wireframeShader.buildShaderProgram("src/shaders/worldWireframeShader_vs.glsl", "src/shaders/worldWireframeShader_fs.glsl");
+    wireframeShader.buildShaderProgram("resources/shaders/worldWireframeShader_vs.glsl", "resources/shaders/worldWireframeShader_fs.glsl");
 
     glUseProgram(wireframeShader.ID);
     modelWireLoc = glGetUniformLocation(wireframeShader.ID, "model");

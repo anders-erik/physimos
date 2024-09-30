@@ -1,7 +1,7 @@
 #ifndef RENDER_TYPES_HH
 #define RENDER_TYPES_HH
 
-#include "object_types.hh"
+// #include "object_types.hh"
 
 namespace render {
 
@@ -27,7 +27,7 @@ typedef enum SHADER {
 
 
 typedef struct Rendpipe {
-    objects::MODELNAME modelname; // we need to make sure this is compatible with the render-specific fields of the struct
+    // objects::MODELNAME modelname; // we need to make sure this is compatible with the render-specific fields of the struct
     MODEL_SOURCE modelSource;
     VDF vfd;
     SHADER shader;

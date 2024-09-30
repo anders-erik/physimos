@@ -15,6 +15,12 @@
 // TEMP FOR PNG DEV!
 #include "png_loader.hpp"
 
+// io tests
+#include "resources.hh"
+
+// logger
+#include "logger.hh"
+
 int main()
 {
 	// math::pvec3 a = { 1.0, 2.0, 3.0 };
@@ -46,6 +52,13 @@ int main()
 	// png::loadFile("./media/4black.png");
 	// png::prettyPrint();
 	// return 0;
+
+	// LOGGER
+	logger::init();
+	
+
+	// START LOADING RESOURCES
+	res::createInventory();
 
 
 	// glfw window creation

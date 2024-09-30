@@ -384,7 +384,7 @@ void ws_createWorldObjects(){
 
     // WorldObject worldCube1("resources/models/cube.pso");
     worldGround1.name = "worldGround1";
-    worldGround1.LoadWorldObject("resources/models/ground_1.pso");
+    worldGround1.LoadWorldObject("resources/models/pso/ground_1.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     float groundScale = 50.0f;
@@ -407,7 +407,7 @@ void ws_createWorldObjects(){
 
     // WorldObject worldCube1("resources/models/cube.pso");
     worldCube1.name = "worldCube1";
-    worldCube1.LoadWorldObject("resources/models/cube.pso");
+    worldCube1.LoadWorldObject("resources/models/pso/cube.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     worldCube1.scale = { 0.5, 0.5, 0.5 };
@@ -424,7 +424,7 @@ void ws_createWorldObjects(){
 
     // WorldObject worldCube1("resources/models/cube.pso");
     worldCube_spin.name = "worldCube_spin";
-    worldCube_spin.LoadWorldObject("resources/models/cube.pso");
+    worldCube_spin.LoadWorldObject("resources/models/pso/cube.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     float cubeSpinScale = 1.0f;
@@ -444,7 +444,7 @@ void ws_createWorldObjects(){
 
     // WorldObject worldCube1("resources/models/cube.pso");
     cube_3_gravity.name = "cube_3_gravity";
-    cube_3_gravity.LoadWorldObject("resources/models/cube.pso");
+    cube_3_gravity.LoadWorldObject("resources/models/pso/cube.pso");
 
     // RIGID BODY
     cube_3_gravity.hasRigidBody = true;
@@ -564,7 +564,7 @@ void ws_createWorldObjects(){
 
     // WorldObject worldCube1("resources/models/cube.pso");
     worldTriangle2_bounce.name = "worldTriangle2_bounce";
-    worldTriangle2_bounce.LoadWorldObject("resources/models/firstSimTriangle.pso");
+    worldTriangle2_bounce.LoadWorldObject("resources/models/pso/firstSimTriangle.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     // float  = 1.0f;
@@ -586,7 +586,7 @@ void ws_createWorldObjects(){
 
     // WorldObject worldTriangle1("src/models/triangle.pso");
     worldTriangle1Texture.name = "worldTriangle1Texture";
-    worldTriangle1Texture.LoadWorldObject("resources/models/triangle.pso");
+    worldTriangle1Texture.LoadWorldObject("resources/models/pso/triangle.pso");
 
     worldTriangle1Texture.scale = { 1.0, 5.0, 5.0 };
     worldTriangle1Texture.position = { -5.0f, -10.0f, 10.0f };
@@ -622,7 +622,7 @@ void ws_createWorldObjects(){
     // SIMULATOR 1 - OBJECT 1
     WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
     sim1_containerObj_1.name = "simContainer1_Object1";
-    sim1_containerObj_1.LoadWorldObject("resources/models/cube.pso");
+    sim1_containerObj_1.LoadWorldObject("resources/models/pso/cube.pso");
 
     // worldCube1.scale = {2.0, 2.0, 2.0};
     sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
@@ -679,11 +679,46 @@ void ws_createWorldObjects(){
 
 
 
+    /*
+        rendpipe_cube2_ptr   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
+    */
+    // blend-cube-no-texture
+    WorldObject* rendpipe_cube2_ptr = new WorldObject("cube", "rendpipe_cube2");
+    worldObjects.push_back(rendpipe_cube2_ptr);
+
+    // MAKE SURE TO MAKE NOT ACTIVE TO PREVENT OLD RENDERING PIPELINE!
+    rendpipe_cube2_ptr->isActive = false;
+    // ENABLE NEW RENDPIPE
+    rendpipe_cube2_ptr->isRendpipe = true;
+
+    rendpipe_cube2_ptr->position = { -10.0f, 0.0f, 5.0f };
 
 
+    /*
+           ground_01   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
+    */
+       // blend-cube-no-texture
+    WorldObject* ground_01 = new WorldObject("ground-01", "ground_01");
+    worldObjects.push_back(ground_01);
+
+    // MAKE SURE TO MAKE NOT ACTIVE TO PREVENT OLD RENDERING PIPELINE!
+    ground_01->isActive = false;
+    // ENABLE NEW RENDPIPE
+    ground_01->isRendpipe = true;
+
+    ground_01->position = { -10.0f, 0.0f, 0.01f };
 
 
+    /* 
+        tri_pso : First pso in new rendering pipline
+    */
+    WorldObject* tri_pso = new WorldObject("tri_pso.pso", "tri_pso");
+    worldObjects.push_back(tri_pso);
 
+    tri_pso->isActive = false;
+    tri_pso->isRendpipe = true;
+
+    tri_pso->position = { -20.0f, 1.0f, 2.0f };
 
 
 

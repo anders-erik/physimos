@@ -35,7 +35,7 @@ extern float uiTransform16[16];
 
 
 void ui_renderer_init(std::vector<UiElement>& uiElements) {
-    ui_renderer_newShaderPlease("src/shaders/ui_vert.glsl", "src/shaders/ui_frag.glsl");
+    ui_renderer_newShaderPlease("resources/shaders/ui_vert.glsl", "resources/shaders/ui_frag.glsl");
 
 
     glGenVertexArrays(1, &uiVAO);

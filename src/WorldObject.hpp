@@ -103,7 +103,8 @@ public:
     void render();
     objects::Model* model_ptr;
     Scene* scene;
-
+    WorldObject* parent;
+    std::vector<WorldObject> children;
 
 
     // RENDER STUFF
@@ -161,7 +162,7 @@ public:
     std::string modelPath = "";
 
 
-    std::vector<WorldObject> children;
+    
 
 	
 	

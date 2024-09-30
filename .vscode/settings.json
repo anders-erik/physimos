@@ -62,7 +62,9 @@
 		"process_info.h": "c",
 		"stdio.h": "c",
 		"unistd.h": "c",
-		"map": "cpp"
+		"map": "cpp",
+		"codecvt": "cpp",
+		"filesystem": "cpp"
 	}
 }
 

@@ -1,6 +1,29 @@
 # TODO
 
-## 2024-09-28/02
+## LONG TERM
+- simulation backend can perform distributed simuilation computation
+- all objects and simulation handling is done through the UI/GUI/Editor/World
+
+## SHORT TERM
+- run simulations that does not keep up with 60 fps!
+- lighting shader
+- obj loader can handle n-edged convex  polygon faces (render calls or force triangulation on load)
+- simulation backend can perform compute using parallel code and GPU
+- timing object
+	- for each scene
+
+
+## 2024-09-29
+- move objects to new rendering pipeline!
+- add a child of a rotating world object [to make sure the transform is inherited!]
+- UI
+	- clean up rendering pipline
+	- input callback function
+	- be able to reposition world object in world
+	- change text-color
+
+
+## 2024-09-28
 - Implement on at least one type of world object with new RENDPIPE [expect quite a few hours!]
 	- NEW WORLD OBJECT SPECIFICALLY FOR THIS PURPOSE
 		- name = rendpipe_obj

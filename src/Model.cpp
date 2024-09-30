@@ -9,8 +9,11 @@
 #include <GLFW/glfw3.h>
 
 #include "obj_loader.hpp"
-#include "object_types.hh"
-#include "loaded_resources.hh"
+// #include "object_types.hh"
+// #include "loaded_resources.hh"
+
+#include "resources.hh"
+#include "pso_loader.hh"
 
 
 // EXTERNAL OBJ  PROPERTIES
@@ -27,17 +30,45 @@ namespace objects {
     // std::map<objects::MODELNAME, bool> modelLoadedMap;
 
 
+
+
     Model::Model(std::string _modelname) {
 
-        // TODO : Implement more than just obj models!
+        // NEED TO KNOW WHICH TYPE OF MODEL WERE DEALING WITH BECAUSE WE DON'T HAVE A MODEL-INDEPENDENT FORMAT!
+        res::ModelFormat* _mf  = res::getModelFormat(_modelname);
 
-        loadObjModel(_modelname);
+        if(_mf == nullptr){
+            std::cerr << "NO Model Matching the name : " << _modelname << std::endl;
+        }
+        else {
+
+        // TODO : Implement more than just obj models!
+        switch (_mf->fileType) {
+
+            case res::ModelFileType::obj :
+                loadObjModel(_modelname);
+                loadedVertStructure = res::ModelVertStucture::p3n3t2;
+                setVaoVbo_obj();
+                break;
+
+            case res::ModelFileType::pso :
+                std::cout << "ABABABABABABBABAABBABABBABAB"  << std::endl;
+                loadPsoModel(_modelname);
+                setVaoVbo_p3c3();
+                break;
+            
+            default:
+                break;
+        }
+
+        }
+
 
     };
 
 
     void Model::useTexture() {
-        glActiveTexture(GL_TEXTURE0);
+        // glActiveTexture(GL_TEXTURE0); // I turned off 2024-09-30 - unsure if this has an impoact on actual texture usage...
         glBindTexture(GL_TEXTURE_2D, glTexture);
     }
 
@@ -185,6 +216,44 @@ namespace objects {
         //     std::cout << "HAS TEXTURE MAP" << std::endl;
         // }
 
+    }
+
+
+    /**
+     *  Calls the Pso-loader and sets the model vertices, vertex count, and vertex structure.
+     */
+    void Model::loadPsoModel(std::string _modelname) {
+        res::PsoLoader* _psoLoader = res::loadPsoModel(_modelname);
+
+        for(float _vertexFloat : _psoLoader->vertexFloatBuffer){
+            vertices.push_back(_vertexFloat);
+        }
+
+        vertexCount = _psoLoader->vertexCount;
+
+        loadedVertStructure = _psoLoader->vertStructure;
+        
+        delete _psoLoader;
+
+    }
+
+    void Model::setVaoVbo_p3c3() {
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+
+        glBindVertexArray(vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        // printf("triangel : %lu\n", sizeof(triangle));
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
     }
 
 

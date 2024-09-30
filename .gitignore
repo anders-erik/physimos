@@ -2,7 +2,11 @@ GLFW/*
 glad/*
 glad.zip
 
+*.blend1
+
 tests/math-test
+
+logs*
 
 build/*
 build*

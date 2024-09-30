@@ -5,6 +5,8 @@
 
 #include "shader.hpp"
 
+#include "resources.hh"
+
 extern Scene scene_1;
 
 
@@ -23,15 +25,19 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
     // LoadWorldObject(path);
 
     model_ptr = new objects::Model(_modelName);
-    model = *model_ptr;
-    model_ptr->setVaoVbo_obj();
+    // model = *model_ptr;
+    // model_ptr->setVaoVbo_obj();
 
     scene = &scene_1;
 
     // setVaoVbo_obj();
     // worldCube4_obj.setShaderProgram(&worldShader);
     // setShaderProgram(&worldObjShader);
-    shader = getShader(Shaders::worldObj);
+
+    if(model_ptr->loadedVertStructure == res::ModelVertStucture::p3n3t2)
+        shader = getShader(Shaders::worldObj);
+    else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3c3)
+        shader = getShader(Shaders::world);
 
 }
 
@@ -48,44 +54,37 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
 // }
 
 void WorldObject::update() {
-    SetModelMatrixRowMajor();
+    // std::cout << "updating : " << name << std::endl;
 
+    SetModelMatrixRowMajor();
 
 }
 
 void WorldObject::render() {
-    // int x = 0;
-    // std::cout << "rendering " << name << std::endl;
     // std::cout << "rendering " << name << std::endl;
 
+    // Shader program
     shader->use();
-    glBindVertexArray(model_ptr->vao);
 
-    // std::cout << "modelMatrixRowMajor = " << modelMatrixRowMajor << std::endl;
-    // std::cout << "scene->camera->viewMatrix = " << scene->camera->viewMatrix << std::endl;
-    // std::cout << "modelMatrixRowMajor = " << modelMatrixRowMajor << std::endl;
-    // std::cout << "modelMatrixRowMajor = " << modelMatrixRowMajor << std::endl;
-
+    // object/scene data
     shader_setWorldObject_uniforms(modelMatrixRowMajor, scene->camera->viewMatrix, scene->camera->perspectiveMatrix16, sanityMatrix16);
 
-    // glUniformMatrix4fv(perspectiveObjLoc, 1, GL_TRUE, cam_getPerspectiveMatrix());
-    // glUniformMatrix4fv(viewObjLoc, 1, GL_TRUE, cam_getViewMatrix());
-    // glUniformMatrix4fv(modelObjLoc, 1, GL_TRUE, _worldObject.modelMatrixRowMajor);
-
+    // Model data
+    glBindVertexArray(model_ptr->vao);
     model_ptr->useTexture();
-    // if (_worldObject.hasTexture) {
-    //     glUniform1i(hasTextureObjLoc, 1); // set texture bool
 
-    // }
-    // else {
-    //     glUniform1i(hasTextureObjLoc, 0); // unset texture bool
-    // }
-
-    // glDrawArrays(GL_TRIANGLES, 0, model.vertexCount);
+    // Shader call
     drawTriangles(model_ptr->vertexCount);
-
     
 }
+
+
+
+
+
+
+
+
 
 
 /**
@@ -343,7 +342,7 @@ WorldObject::WorldObject(){
 }
 
 Cube::Cube(){
-    LoadWorldObject("resources/models/cube.pso");
+    LoadWorldObject("resources/models/pso/cube.pso");
     for (float vertex : vertices)
         boundingVerts.push_back(vertex);
 }

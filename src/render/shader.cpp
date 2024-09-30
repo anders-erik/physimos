@@ -38,10 +38,19 @@ void drawTriangles(int vertexCount){
 
 
 Shader* getShader(Shaders _shaderType) {
-    switch (_shaderType)
-    {
-    case Shaders::worldObj :
+    switch (_shaderType) {
+
+    case Shaders::UI :
         return &_worldObjShader;
+        break;
+    case Shaders::worldObj:
+        return &_worldObjShader;
+        break;
+    case Shaders::world:
+        return &_worldShader;
+        break;
+    case Shaders::worldWireframe:
+        return &_wireframeShader;
         break;
     
     default:
@@ -52,8 +61,9 @@ Shader* getShader(Shaders _shaderType) {
 
 void shader_init_shaders(){
 
+    // char * shaderDir = "resources/shaders/";
 
-    _worldShader.buildShaderProgram("src/shaders/worldShader.vs", "src/shaders/worldShader.fs");
+    _worldShader.buildShaderProgram("resources/shaders/worldShader.vs", "resources/shaders/worldShader.fs");
 
     glUseProgram(_worldShader.ID);
     _transformLoc = glGetUniformLocation(_worldShader.ID, "transform");
@@ -62,9 +72,15 @@ void shader_init_shaders(){
     _perspectiveLoc = glGetUniformLocation(_worldShader.ID, "perspective");
     _colorLoc = glGetUniformLocation(_worldShader.ID, "vertexColor");
     _hasTextureLoc = glGetUniformLocation(_worldShader.ID, "hasTexture");
+    // unsigned int _transformLoc;
+    // unsigned int _viewLoc;
+    // unsigned int _sanityLoc;
+    // unsigned int _perspectiveLoc;
+    // unsigned int _colorLoc;
+    // unsigned int _hasTextureLoc;
 
 
-    _worldObjShader.buildShaderProgram("src/shaders/worldObjShader_vs.glsl", "src/shaders/worldObjShader_fs.glsl");
+    _worldObjShader.buildShaderProgram("resources/shaders/worldObjShader_vs.glsl", "resources/shaders/worldObjShader_fs.glsl");
 
     glUseProgram(_worldObjShader.ID);
     _modelObjLoc = glGetUniformLocation(_worldObjShader.ID, "model");
@@ -72,7 +88,7 @@ void shader_init_shaders(){
     _sanityObjLoc = glGetUniformLocation(_worldObjShader.ID, "sanityTransform");
     _perspectiveObjLoc = glGetUniformLocation(_worldObjShader.ID, "perspective");
 
-    _wireframeShader.buildShaderProgram("src/shaders/worldWireframeShader_vs.glsl", "src/shaders/worldWireframeShader_fs.glsl");
+    _wireframeShader.buildShaderProgram("resources/shaders/worldWireframeShader_vs.glsl", "resources/shaders/worldWireframeShader_fs.glsl");
 
     glUseProgram(_wireframeShader.ID);
     _modelWireLoc = glGetUniformLocation(_wireframeShader.ID, "model");
