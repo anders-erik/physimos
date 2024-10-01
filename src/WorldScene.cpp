@@ -54,10 +54,10 @@ void ws_resetWorldObjects(){
     for(WorldObject* _worldObject_p : worldObjects){
         WorldObject& _worldObject = *_worldObject_p;
         if(_worldObject.hasRigidBody){
-            _worldObject.position = _worldObject.position_0;
-            _worldObject.velocity = _worldObject.velocity_0;
-            _worldObject.rotation = _worldObject.rotation_0;
-            _worldObject.angularVelocity = _worldObject.angularVelocity_0;
+            _worldObject.transform->position = _worldObject.transform->position_0;
+            _worldObject.transform->velocity = _worldObject.transform->velocity_0;
+            _worldObject.transform->rotation = _worldObject.transform->rotation_0;
+            _worldObject.transform->angularVelocity = _worldObject.transform->angularVelocity_0;
         }
     }
 }
@@ -81,7 +81,7 @@ void ws_update() {
     cam_UpdateCam();
 
     // new rendering pipeline - 2024-09-28
-    // UUPDATE OBJECTS
+    // UPDATE OBJECTS
     for (WorldObject* _worldObject : worldObjects) {
         if (_worldObject->isActive)
             _worldObject->update();
@@ -127,26 +127,22 @@ float* mul_vec3_mat16(float* _vec3, float* _mat16) {
 
     return _vec3;
 }
+
 void ws_physics(){
     WorldObject& worldGround = *worldGround_pointer;
-
-    // float modelMatrix16[16] = {0};
 
     for (WorldObject* _worldObject_p : worldObjects){
         WorldObject& _worldObject = *_worldObject_p;
         // std::cout << "_worldObject.name =  " << _worldObject.name << std::endl;
         // std::cout << "_worldObject.rotation.x =  " << _worldObject.rotation.x << std::endl;
-       
-        if (_worldObject.name == "worldCube_spin")
-            _worldObject.Rotate({ 0.03f, 0.01f, 0.0f });
-        if (_worldObject.name == "cube_3_gravity")
-            _worldObject.Rotate(_worldObject.angularVelocity);
-        
+
+
         // GRAVITY
         if (_worldObject.gravityOn == 1){
-            _worldObject.velocity.z += -9.8 * 0.0133; // dt = 0.0133s
-            _worldObject.position.z += _worldObject.velocity.z * 0.0133;
-
+            _worldObject.transform->velocity.z += -9.8 * 0.0133; // dt = 0.0133s
+            _worldObject.transform->position.z += _worldObject.transform->velocity.z * 0.0133;
+            
+            
 
             // Need to update after movement for collision check
             _worldObject.SetModelMatrixRowMajor();
@@ -155,6 +151,7 @@ void ws_physics(){
             // Check ground bounce
 
             // USING RIGID BODY
+
             // for(int i = 2; i < _worldObject.)
             if(_worldObject.hasRigidBody){
                 float worldVertex[3] = {0};
@@ -176,16 +173,20 @@ void ws_physics(){
                     worldVertex[0] = tempVertex[0];
                     worldVertex[1] = tempVertex[1];
                     worldVertex[2] = tempVertex[2];
-                    // std::cout << "worldVertex[2] " << worldVertex[2] << std::endl;
+
+                    // std::cout << "localVertex[2] = " << localVertex[2] << std::endl;
+                    // std::cout << "worldVertex[2] = " << worldVertex[2] << std::endl;
+
 
                     // std::cout << "OKOKOKOKOKOKKOK" << std::endl;
                     if (worldVertex[2] < 0.0){
                         // std::cout << "RIGID BODY COLLISION  ===================" << std::endl;
-                        _worldObject.position.z -= _worldObject.velocity.z * 0.0133;
-                        _worldObject.velocity.z = -_worldObject.velocity.z * 0.5;
+                        // std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
+                        _worldObject.transform->position.z -= _worldObject.transform->velocity.z * 0.0133;
+                        _worldObject.transform->velocity.z = -_worldObject.transform->velocity.z * 0.5;
 
                         // Improve by checking direction of vertex velocity??
-                        _worldObject.angularVelocity = { -_worldObject.angularVelocity.x, -_worldObject.angularVelocity.y , -_worldObject.angularVelocity.z };
+                        _worldObject.transform->angularVelocity = { -_worldObject.transform->angularVelocity.x, -_worldObject.transform->angularVelocity.y , -_worldObject.transform->angularVelocity.z };
 
                         // Make sure we don't collide more than one vertexs
                         break;
@@ -205,8 +206,18 @@ void ws_physics(){
             }
         }
 
-        _worldObject.position.x += _worldObject.velocity.x * 0.0133;
-        _worldObject.position.y += _worldObject.velocity.y * 0.0133;
+
+        // APPLY VELOCITIES
+
+        if (_worldObject.name == "worldCube_spin")
+            _worldObject.transform->Rotate({ 0.03f, 0.01f, 0.0f });
+        if (_worldObject.name == "cube_3_gravity")
+            _worldObject.transform->Rotate(_worldObject.transform->angularVelocity);
+        if (_worldObject.name == "transform_1")
+            _worldObject.transform->Rotate(_worldObject.transform->angularVelocity);
+
+        _worldObject.transform->position.x += _worldObject.transform->velocity.x * 0.0133;
+        _worldObject.transform->position.y += _worldObject.transform->velocity.y * 0.0133;
         
     }
 }
@@ -259,8 +270,8 @@ void ws_createWorldObjects(){
     worldObjects.push_back(worldCube1);
     worldCube1->isActive = true;
 
-    worldCube1->scale = { 0.5, 0.5, 0.5 };
-    worldCube1->position = { 20.0f, 0.0f, 0.0f };
+    worldCube1->transform->scale = { 0.5, 0.5, 0.5 };
+    worldCube1->transform->position = { 20.0f, 0.0f, 0.0f };
 
 
 
@@ -272,8 +283,8 @@ void ws_createWorldObjects(){
     worldCube_spin->isActive = true;
 
     float cubeSpinScale = 1.0f;
-    worldCube_spin->scale = { cubeSpinScale, cubeSpinScale, cubeSpinScale };
-    worldCube_spin->position = { 5.0f, 0.0f, 3.0f };
+    worldCube_spin->transform->scale = { cubeSpinScale, cubeSpinScale, cubeSpinScale };
+    worldCube_spin->transform->position = { 5.0f, 0.0f, 3.0f };
 
 
 
@@ -294,18 +305,18 @@ void ws_createWorldObjects(){
 
     // GRAVITY ENABLED CUBES
     float cube_3_scale = 2.0;
-    cube_3_gravity->scale = { cube_3_scale, cube_3_scale, cube_3_scale };
-    cube_3_gravity->rotation = { 40.0f, -10.0f, 185.0f };
-    cube_3_gravity->rotation_0 = cube_3_gravity->rotation;
-    cube_3_gravity->angularVelocity = { 0.01f, 0.01f, 0.0f };
-    cube_3_gravity->angularVelocity_0 = cube_3_gravity->angularVelocity;
+    cube_3_gravity->transform->scale = { cube_3_scale, cube_3_scale, cube_3_scale };
+    cube_3_gravity->transform->rotation = { 40.0f, -10.0f, 185.0f };
+    cube_3_gravity->transform->rotation_0 = cube_3_gravity->transform->rotation;
+    cube_3_gravity->transform->angularVelocity = { 0.01f, 0.01f, 0.0f };
+    cube_3_gravity->transform->angularVelocity_0 = cube_3_gravity->transform->angularVelocity;
 
-    cube_3_gravity->position_0 = { -5.0f, 0.0f, 15.0f };
-    cube_3_gravity->position = cube_3_gravity->position_0;
-    cube_3_gravity->velocity_0 = { 0.0f, 0.0f, 0.0f };
-    cube_3_gravity->velocity = cube_3_gravity->velocity_0;
+    cube_3_gravity->transform->position_0 = { -5.0f, 0.0f, 15.0f };
+    cube_3_gravity->transform->position = cube_3_gravity->transform->position_0;
+    cube_3_gravity->transform->velocity_0 = { 0.0f, 0.0f, 0.0f };
+    cube_3_gravity->transform->velocity = cube_3_gravity->transform->velocity_0;
     // worldCube1.printVertices();
-    cube_3_gravity->gravityOn = 1;
+    cube_3_gravity->gravityOn = true;
 
     cube_3_gravity->offsetToBottom = cube_3_scale;
 
@@ -329,11 +340,12 @@ void ws_createWorldObjects(){
 
     // 4. - CUBE 4 - OBJ !
 
-    WorldObject* worldCube4_obj = new WorldObject("cube", "worldCube4_obj");
+    WorldObject* worldCube4_obj = new WorldObject("blend-cube-texture-1", "worldCube4_obj");
     worldObjects.push_back(worldCube4_obj);
     worldCube4_obj->isActive = true;
-    worldCube4_obj->scale = { 2.0, 2.0, 2.0 };
-    worldCube4_obj->position = { 20.0f, -10.0f, 10.0f };
+    worldCube4_obj->transform->scale = { 2.0, 2.0, 2.0 };
+    worldCube4_obj->transform->position = { 20.0f, -10.0f, 10.0f };
+    worldCube4_obj->gravityOn = true;
 
 
 
@@ -343,8 +355,8 @@ void ws_createWorldObjects(){
     worldObjects.push_back(cube_bounding_1);
     cube_bounding_1->isActive = true;
 
-    cube_bounding_1->scale = { 0.5, 0.5, 0.5 };
-    cube_bounding_1->position = { -10.0f, -5.0f, 20.0f };
+    cube_bounding_1->transform->scale = { 0.5, 0.5, 0.5 };
+    cube_bounding_1->transform->position = { -10.0f, -5.0f, 20.0f };
 
 
 
@@ -355,9 +367,9 @@ void ws_createWorldObjects(){
     worldObjects.push_back(house1_obj);
     house1_obj->isActive = true;
 
-    house1_obj->scale = { 1.0, 1.0, 1.0 };
-    house1_obj->position = { 10.0f, 20.0f, 3.0f };
-    house1_obj->position_0 = house1_obj->position;
+    house1_obj->transform->scale = { 1.0, 1.0, 1.0 };
+    house1_obj->transform->position = { 10.0f, 20.0f, 3.0f };
+    house1_obj->transform->position_0 = house1_obj->position;
 
 
 
@@ -370,11 +382,11 @@ void ws_createWorldObjects(){
     worldTriangle2_bounce->isActive = true;
 
     float triBounceScale = 5.0f;
-    worldTriangle2_bounce->scale = { 1.0f, triBounceScale, triBounceScale };
-    worldTriangle2_bounce->position_0 = { 45.0f, 25.0f, 10.0f };
-    worldTriangle2_bounce->position = worldTriangle2_bounce->position_0;
-    worldTriangle2_bounce->velocity = { 0.0f, 0.0f, 0.0f };
-    worldTriangle2_bounce->velocity_0 = { -1.0f, -0.5f, 25.0f };
+    worldTriangle2_bounce->transform->scale = { 1.0f, triBounceScale, triBounceScale };
+    worldTriangle2_bounce->transform->position_0 = { 45.0f, 25.0f, 10.0f };
+    worldTriangle2_bounce->transform->position = worldTriangle2_bounce->transform->position_0;
+    worldTriangle2_bounce->transform->velocity = { 0.0f, 0.0f, 0.0f };
+    worldTriangle2_bounce->transform->velocity_0 = { -1.0f, -0.5f, 25.0f };
 
 
 
@@ -384,8 +396,8 @@ void ws_createWorldObjects(){
     worldObjects.push_back(worldTriangle1Texture);
     worldTriangle1Texture->isActive = true;
 
-    worldTriangle1Texture->scale = { 1.0, 5.0, 5.0 };
-    worldTriangle1Texture->position = { -5.0f, -10.0f, 10.0f };
+    worldTriangle1Texture->transform->scale = { 1.0, 5.0, 5.0 };
+    worldTriangle1Texture->transform->position = { -5.0f, -10.0f, 10.0f };
 
 
 
@@ -413,9 +425,9 @@ void ws_createWorldObjects(){
     WorldObject* rendpipe_cube2_ptr = new WorldObject("cube", "rendpipe_cube2");
     worldObjects.push_back(rendpipe_cube2_ptr);
 
-    rendpipe_cube2_ptr->isActive = true;
-
-    rendpipe_cube2_ptr->position = { -10.0f, 0.0f, 5.0f };
+    rendpipe_cube2_ptr->isActive = true;    
+    rendpipe_cube2_ptr->toggleWireframe();
+    rendpipe_cube2_ptr->transform->position = { -10.0f, 0.0f, 5.0f };
 
 
     /*
@@ -429,7 +441,7 @@ void ws_createWorldObjects(){
 
     float groundScale = 40; // currently scaled in blender..
 
-    ground_01->position = { -10.0f, 0.0f, GROUND_Z_0 };
+    ground_01->transform->position = { -10.0f, 0.0f, GROUND_Z_0 };
     // worldCube1.printVertices();
     ground_01->boundingBox.x_min = ground_01->position.x - groundScale;
     ground_01->boundingBox.x_max = ground_01->position.x + groundScale;
@@ -447,7 +459,7 @@ void ws_createWorldObjects(){
 
     tri_pso->isActive = true;
 
-    tri_pso->position = { -20.0f, 1.0f, 2.0f };
+    tri_pso->transform->position = { -20.0f, 1.0f, 2.0f };
 
 
     /*
@@ -458,34 +470,21 @@ void ws_createWorldObjects(){
 
     tri_tex_pso->isActive = true;
 
-    tri_tex_pso->position = { -20.1f, 1.0f, 3.0f };
-
-
-
-    /*  
-        14. wire_pos_1 : first wireframe pso-object loaded
-    */
-
-    WorldObject* wire_pos_1 = new WorldObject("cube-wire.pso", "wire_pos_1");
-    worldObjects.push_back(wire_pos_1);
-
-    wire_pos_1->scale = { 1.0, 1.0, 1.0 };
-    wire_pos_1->position = { -21.0f, 15.0f, 4.1f };
-    wire_pos_1->isActive = true;
+    tri_tex_pso->transform->position = { -20.1f, 1.0f, 3.0f };
 
 
 
 
     /* 
-        15. - wordlSim_1  - First WorldSimulator
+        14. - wordlSim_1  - First WorldSimulator
      */
 
     WorldSimulator* worldSim_1 = new WorldSimulator("worldSim_1");
     worldSimulators.push_back(worldSim_1);
 
     worldSim_1->createSimContainer("cube-wire.pso", "worldSim_1_container");
-    worldSim_1->simContainer->scale = { 3.0, 3.0, 3.0 };
-    worldSim_1->simContainer->position = { -15.0f, -5.0f, 3.1f };
+    worldSim_1->simContainer->transform->scale = { 3.0, 3.0, 3.0 };
+    worldSim_1->simContainer->transform->position = { -15.0f, -5.0f, 3.1f };
     worldSim_1->simContainer->isActive = true;
 
     Sim::Simulator* simulator1_ptr = Sim::getSim1Pointer();
@@ -495,15 +494,39 @@ void ws_createWorldObjects(){
     WorldObject* worldSim_1_obj_1 = new WorldObject("cube", "worldSim_1_obj_1");
     worldSim_1->simulatorWorldObjects.push_back(worldSim_1_obj_1);
     worldSim_1_obj_1->isActive = true;
-    worldSim_1_obj_1->scale = { 0.5, 0.5, 0.5 };
-    worldSim_1_obj_1->position_0 = { 0.0f, 0.0f, 0.0f };
-    worldSim_1_obj_1->position = { 0.0f, 0.0f, 0.0f };
+    worldSim_1_obj_1->transform->scale = { 0.5, 0.5, 0.5 };
+    worldSim_1_obj_1->transform->position_0 = { 0.0f, 0.0f, 0.0f };
+    worldSim_1_obj_1->transform->position = { 0.0f, 0.0f, 0.0f };
 
 
 
 
 
 
+    /*
+        14. transform_1 : first WO with a transform-object AND a child object
+    */
+
+    WorldObject* transform_1 = new WorldObject("cube", "transform_1");
+    worldObjects.push_back(transform_1);
+
+    transform_1->transform->scale = { 0.1, 0.1, 0.1 };
+    transform_1->transform->position = { -25.0f, -5.0f, 2.0f };
+    transform_1->transform->velocity = { 0.0f, -0.1f, 0.0f };
+    transform_1->transform->rotation = { 0.0f, 0.0f, 0.0f };
+    transform_1->transform->angularVelocity = { 0.0f, 0.01f, 0.1f };
+    transform_1->isActive = true;
+    // transform_1->gravityOn = true;
+
+    WorldObject* transform_1_child_1 = new WorldObject("cube", "transform_1_child_1");
+    transform_1_child_1->parent = transform_1;
+    transform_1->children.push_back(transform_1_child_1);
+
+    transform_1_child_1->transform->scale = { 0.05, 0.05, 0.05 };
+    transform_1_child_1->transform->position = { 0.0f, 0.0f, 1.0f };
+    transform_1_child_1->transform->rotation = { 0.0f, 0.0f, 0.0f };
+    transform_1_child_1->transform->angularVelocity = { 0.0f, 0.0f, 0.1f }; // not being updated in 'physics'
+    transform_1_child_1->isActive = true;
 
 
 

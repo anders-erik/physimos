@@ -56,8 +56,8 @@ void updateSimulation() {
 
 
         simWorldObject = &worldTriangle2_bounce;
-        simWorldObject->translationPrevStep = simWorldObject->position_0;
-        simWorldObject->velocityPrevStep = simWorldObject->velocity_0;
+        simWorldObject->transform->translationPrevStep = simWorldObject->transform->position_0;
+        simWorldObject->transform->velocityPrevStep = simWorldObject->transform->velocity_0;
 
     }
     // stop and reset if stopping condition is met
@@ -66,7 +66,7 @@ void updateSimulation() {
         dtIndex = 0;
         // SetPositionSimObject(&tri1, tri1.position_0);
 
-        simWorldObject->SetPosition(simWorldObject->position_0);
+        simWorldObject->transform->SetPosition(simWorldObject->transform->position_0);
         printf("Simulation done. \n");
 
     }
@@ -86,9 +86,9 @@ void updateSimulation() {
 
 
 void sim_setPositionAtT(WorldObject* simObj, double t) {
-    simObj->position.x = simObj->position_0.x + simObj->velocity_0.x * t;
-    simObj->position.y = simObj->position_0.y + simObj->velocity_0.y * t + 0.5 * (-9.8) * t * t;
-    simObj->position.z = simObj->position_0.z + simObj->velocity_0.z * t;
+    simObj->transform->position.x = simObj->transform->position_0.x + simObj->transform->velocity_0.x * t;
+    simObj->transform->position.y = simObj->transform->position_0.y + simObj->transform->velocity_0.y * t + 0.5 * (-9.8) * t * t;
+    simObj->transform->position.z = simObj->transform->position_0.z + simObj->transform->velocity_0.z * t;
 }
 
 
@@ -97,25 +97,25 @@ void sim_updatePosAndVel(WorldObject* wo) {
 
 
     // GRAVITY
-    wo->velocity.z = wo->velocityPrevStep.z + (-9.8) * dt;
+    wo->transform->velocity.z = wo->transform->velocityPrevStep.z + (-9.8) * dt;
 
-    wo->position.x = wo->translationPrevStep.x + wo->velocityPrevStep.x * dt;
-    wo->position.y = wo->translationPrevStep.y + wo->velocityPrevStep.y * dt;
-    wo->position.z = wo->translationPrevStep.z + wo->velocityPrevStep.z * dt;
+    wo->transform->position.x = wo->transform->translationPrevStep.x + wo->transform->velocityPrevStep.x * dt;
+    wo->transform->position.y = wo->transform->translationPrevStep.y + wo->transform->velocityPrevStep.y * dt;
+    wo->transform->position.z = wo->transform->translationPrevStep.z + wo->transform->velocityPrevStep.z * dt;
 
     // BOUNCE
     // printf("%d\n", so->translation.y);
-    if (wo->position.z < 0.0f) {
-        wo->velocity.z = -wo->velocity.z * 0.8;
-        wo->position.z = 0.01f; // make sure the bounce condition is not met next 
+    if (wo->transform->position.z < 0.0f) {
+        wo->transform->velocity.z = -wo->transform->velocity.z * 0.8;
+        wo->transform->position.z = 0.01f; // make sure the bounce condition is not met next 
         // printf("BOUNCE! \n");
     }
 
     // update prev step values
-    wo->velocityPrevStep.z = wo->velocity.z;
-    wo->translationPrevStep.x = wo->position.x;
-    wo->translationPrevStep.y = wo->position.y;
-    wo->translationPrevStep.z = wo->position.z;
+    wo->transform->velocityPrevStep.z = wo->transform->velocity.z;
+    wo->transform->translationPrevStep.x = wo->transform->position.x;
+    wo->transform->translationPrevStep.y = wo->transform->position.y;
+    wo->transform->translationPrevStep.z = wo->transform->position.z;
 }
 
 

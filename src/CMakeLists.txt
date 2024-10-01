@@ -22,6 +22,7 @@ set(SOURCES
     uiRenderer.cpp
     Model.cpp
     WorldSimulator.cc
+    transform.cc
 )
 
 #   set(SOURCES )

@@ -22,7 +22,7 @@
 #include "wo_renderer.hpp"
 #include "render_types.hh"
 
-
+#include "transform.hh"
 
 
 // enum WorldObjectType {
@@ -96,9 +96,10 @@ public:
     void render();
     objects::Model* model_ptr;
     Scene* scene;
-    WorldObject* parent;
-    std::vector<WorldObject> children;
+    WorldObject* parent = nullptr;
+    std::vector<WorldObject*> children;
 
+    Transform* transform = nullptr;
 
     Shader * shader;
     
@@ -112,15 +113,21 @@ public:
     RigidBody rigidBody;
     bool hasRigidBody = false;
 
-    int gravityOn = 0;
+    bool gravityOn = false;
     float offsetToBottom = 0.0f;
     BoundingBox boundingBox;
     std::vector<float> boundingVerts;
 
 
+    // CALCULATED MODEL MATRIX
+    void SetModelMatrixRowMajor_withParent();
+    void SetModelMatrixRowMajor();
+    float modelMatrixRowMajor[16] = { 0 };
 
+
+    bool hasTransform = false;
     
-    // TRANSFORM
+    // MOVED TO 'TRANSFORM'
 	Vec3 scale = {1.0f, 1.0f, 1.0f};
 
     Vec3 position_0 = { 0.0f, 0.0f, 0.0f };;
@@ -136,7 +143,6 @@ public:
     Vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };
 	
     
-    float modelMatrixRowMajor[16] = {0};
 
 
 
@@ -144,12 +150,14 @@ public:
 
 	
 
-    // MATH
+    // MOVED TO 'TRANSFORM'
     void Rotate(Vec3 rotationVector);
     void Translate(Vec3 moveVector);
     void SetPosition(Vec3 positionVector);
     void SetScale(Vec3 scaleVector);
-    void SetModelMatrixRowMajor();
+    
+    
+
     
 
     void printVertices();

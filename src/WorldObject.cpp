@@ -7,6 +7,8 @@
 
 #include "resources.hh"
 
+#include "transform.hh"
+
 extern Scene scene_1;
 
 
@@ -25,8 +27,7 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
     // LoadWorldObject(path);
 
     model_ptr = new objects::Model(_modelName);
-    // model = *model_ptr;
-    // model_ptr->setVaoVbo_obj();
+    transform = new Transform();
 
     scene = &scene_1;
 
@@ -52,11 +53,31 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
     }
 }
 
+/**
+ *  Adds the values of mat2 to mat1
+ */
+void add_mat16(float* mat1, float* mat2){
+    for(int i = 0; i<15; i++){ // ignore the last value 
+        mat1[i] += mat2[i];
+    }
+}
+
 
 void WorldObject::update() {
     // std::cout << "updating : " << name << std::endl;
+    // if(name == "transform_1")
 
-    SetModelMatrixRowMajor();
+    // Set model transform before calling children, as the children will use it!
+    if(parent == nullptr){
+        SetModelMatrixRowMajor();
+    }
+    else{
+        SetModelMatrixRowMajor_withParent();
+    }   
+
+    for(WorldObject* _wo : children){
+        _wo->update();
+    }
 
 }
 
@@ -102,6 +123,11 @@ void WorldObject::render() {
         glBindVertexArray(model_ptr->vao);
         // Shader call
         drawTriangles(model_ptr->vertexCount);
+    }
+
+
+    for (WorldObject* _wo : children) {
+        _wo->render();
     }
     
 }
@@ -170,15 +196,15 @@ void WorldObject::SetScale(Vec3 scaleVector) {
 }
 
 
-void WorldObject::SetModelMatrixRowMajor(){
+void WorldObject::SetModelMatrixRowMajor() {
     // this->transformMatrixRowMajor
-    float Sx = this->scale.x;
-    float Sy = this->scale.y;
-    float Sz = this->scale.z;
+    float Sx = transform->scale.x;
+    float Sy = transform->scale.y;
+    float Sz = transform->scale.z;
 
-    float Tx = this->position.x;
-    float Ty = this->position.y;
-    float Tz = this->position.z;
+    float Tx = transform->position.x;
+    float Ty = transform->position.y;
+    float Tz = transform->position.z;
 
     // // Row 1
     // this->transformMatrixRowMajor[0] = Sx;
@@ -207,12 +233,77 @@ void WorldObject::SetModelMatrixRowMajor(){
     // this->transformMatrixRowMajor[15] = 1;
 
 
-    float c_ph = cos(this->rotation.x);
-    float s_ph = sin(this->rotation.x);
-    float c_th = cos(this->rotation.y);
-    float s_th = sin(this->rotation.y);
-    float c_ps = cos(this->rotation.z);
-    float s_ps = sin(this->rotation.z);
+    float c_ph = cos(transform->rotation.x);
+    float s_ph = sin(transform->rotation.x);
+    float c_th = cos(transform->rotation.y);
+    float s_th = sin(transform->rotation.y);
+    float c_ps = cos(transform->rotation.z);
+    float s_ps = sin(transform->rotation.z);
+
+    float a11 = c_ps * c_ph - s_ps * c_th * s_ph;
+    float a12 = -c_ps * s_ph - s_ps * c_th * c_ph;
+    float a13 = s_ps * s_th;
+    float a14 = 0;
+
+    float a21 = s_ps * c_ph + c_ps * c_th * s_ph;
+    float a22 = -s_ps * s_ph + c_ps * c_th * c_ph;
+    float a23 = -c_ps * s_th;
+    float a24 = 0;
+
+    float a31 = s_th * s_ph;
+    float a32 = s_th * c_ph;
+    float a33 = c_th;
+    float a34 = 0;
+
+    float a41 = 0;
+    float a42 = 0;
+    float a43 = 0;
+    float a44 = 1;
+
+
+    // Row 1
+    this->modelMatrixRowMajor[0] = Sx * (a11 + Tx * a41);
+    this->modelMatrixRowMajor[1] = Sy * (a12 + Tx * a42);
+    this->modelMatrixRowMajor[2] = Sz * (a13 + Tx * a43);
+    this->modelMatrixRowMajor[3] = a14 + Tx * a44;
+
+    // Row 2
+    this->modelMatrixRowMajor[4] = Sx * (a21 + Ty * a41);
+    this->modelMatrixRowMajor[5] = Sy * (a22 + Ty * a42);
+    this->modelMatrixRowMajor[6] = Sz * (a23 + Ty * a43);
+    this->modelMatrixRowMajor[7] = a24 + Ty * a44;;
+
+    // Row 3
+    this->modelMatrixRowMajor[8] = Sx * (a31 + Tz * a41);
+    this->modelMatrixRowMajor[9] = Sy * (a32 + Tz * a42);
+    this->modelMatrixRowMajor[10] = Sz * (a33 + Tz * a43);
+    this->modelMatrixRowMajor[11] = a34 + Tz * a44;;
+
+    // Row 4
+    this->modelMatrixRowMajor[12] = Sx * a41;
+    this->modelMatrixRowMajor[13] = Sy * a42;
+    this->modelMatrixRowMajor[14] = Sx * a43;
+    this->modelMatrixRowMajor[15] = a44;
+
+}
+
+void WorldObject::SetModelMatrixRowMajor_withParent() {
+    // this->transformMatrixRowMajor
+    float Sx = transform->scale.x;
+    float Sy = transform->scale.y;
+    float Sz = transform->scale.z;
+
+    float Tx = transform->position.x + parent->transform->position.x;
+    float Ty = transform->position.y + parent->transform->position.y;
+    float Tz = transform->position.z + parent->transform->position.z;
+
+
+    float c_ph = cos(transform->rotation.x + parent->transform->rotation.x);
+    float s_ph = sin(transform->rotation.x + parent->transform->rotation.x);
+    float c_th = cos(transform->rotation.y + parent->transform->rotation.y);
+    float s_th = sin(transform->rotation.y + parent->transform->rotation.y);
+    float c_ps = cos(transform->rotation.z + parent->transform->rotation.z);
+    float s_ps = sin(transform->rotation.z + parent->transform->rotation.z);
 
     float a11 = c_ps * c_ph - s_ps * c_th * s_ph;
     float a12 = -c_ps * s_ph - s_ps * c_th * c_ph;

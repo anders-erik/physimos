@@ -17,7 +17,7 @@
 - |o| move objects to new rendering pipeline!
 - |o| move simulator container to new pipeline
 - |o| lean out the wireframe generation (get rid of duplicate lines)
-- Create transform object for world objects
+- |o| Create transform object for world objects
 - add a child of a rotating world object [to make sure the transform is inherited!]
 - UI
 	- clean up rendering pipline
