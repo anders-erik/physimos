@@ -34,13 +34,18 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
     // worldCube4_obj.setShaderProgram(&worldShader);
     // setShaderProgram(&worldObjShader);
 
-    if(model_ptr->loadedVertStructure == res::ModelVertStucture::p3n3t2)
+    if(model_ptr->loadedVertStructure == res::ModelVertStucture::p3n3t2){
         shader = getShader(Shaders::worldObj);
-    else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3c3)
+        shaderType = Shaders::worldObj;
+    }
+    else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3c3){
         shader = getShader(Shaders::world);
-    else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3c3t2)
+        shaderType = Shaders::world;
+    }
+    else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3c3t2){
         shader = getShader(Shaders::world);
-
+        shaderType = Shaders::world;
+    }
 }
 
 // void WorldObject::setShader(Shaders _shader) {
@@ -63,7 +68,11 @@ void WorldObject::update() {
 }
 
 void WorldObject::render() {
-    // std::cout << "rendering " << name << std::endl;
+    
+    // if (name == "worldTriangle2_bounce") {
+    //     std::cout << "rendering " << name << std::endl;
+    //     std::cout << "shader->ID:  " << shader->ID << std::endl;
+    // }
 
     // Shader program
     shader->use();
@@ -73,12 +82,10 @@ void WorldObject::render() {
     shader_setWorldObject_uniforms(modelMatrixRowMajor, scene->camera->viewMatrix, scene->camera->perspectiveMatrix16, sanityMatrix16);
 
 
-    // Bind Model Data
-    glBindVertexArray(model_ptr->vao);
 
 
     // TEXTURE
-    
+
     // Currently the pso shader branches, forcing me to toggle the 'hasTexture' uniform for each object..
     if (model_ptr->modelFileType == res::ModelFileType::pso && model_ptr->glTexture != 0) 
         setHasTextureUniform(1);
@@ -88,14 +95,40 @@ void WorldObject::render() {
     model_ptr->useTexture();
 
 
-    // Shader call
-    drawTriangles(model_ptr->vertexCount);
+
+    // VAO & DRAW
+    if (shaderType == Shaders::worldWireframe){
+        glBindVertexArray(model_ptr->vaoWire);
+        drawLines(model_ptr->wireVertexCount);
+    }
+    else{
+        glBindVertexArray(model_ptr->vao);
+        // Shader call
+        drawTriangles(model_ptr->vertexCount);
+    }
     
 }
 
 
 
-
+void WorldObject::toggleWireframe(){
+    // set wireframe
+    if (shaderType == Shaders::world || shaderType == Shaders::worldObj){
+        shader = getShader(Shaders::worldWireframe);
+        shaderType = Shaders::worldWireframe;
+    }
+    // Set regular renderers
+    else if (shaderType == Shaders::worldWireframe){
+        if (model_ptr->modelFileType == res::ModelFileType::obj){
+            shader = getShader(Shaders::worldObj);
+            shaderType = Shaders::worldObj;
+        }
+        else if (model_ptr->modelFileType == res::ModelFileType::pso){
+            shader = getShader(Shaders::world);
+            shaderType = Shaders::world;
+        }
+    }
+}
 
 
 

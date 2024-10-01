@@ -13,8 +13,9 @@
 	- for each scene
 
 
-## 2024-09-29
-- move objects to new rendering pipeline!
+## 2024-09-29/30
+- |o| move objects to new rendering pipeline!
+- move simulator container to new pipeline
 - add a child of a rotating world object [to make sure the transform is inherited!]
 - UI
 	- clean up rendering pipline

@@ -43,7 +43,7 @@ std::vector<WorldObject*> worldObjects;
 WorldObject worldGround1;
 WorldObject* worldGround_pointer;
 
-Cube cube_bounding_1;
+// Cube cube_bounding_1;
 
 WorldObject worldCube1;
 WorldObject worldCube_spin;
@@ -363,304 +363,156 @@ void ws_createSimulators(){
 
 void ws_createWorldObjects(){
 
-    // TEMP -BOUNDING BOX ??
     
-    cube_bounding_1.name = "cube_bounding_1";
-    // worldObjects.push_back(cube_bounding_1);
-
-    // worldCube1.scale = {2.0, 2.0, 2.0};
-    cube_bounding_1.scale = { 0.5, 0.5, 0.5 };
-    cube_bounding_1.position = { -10.0f, -5.0f, 20.0f };
-    // worldCube1.printVertices();
-
-    cube_bounding_1.setVaoVbo330();
-    cube_bounding_1.setShaderProgram(&worldShader);
-    worldObjects.push_back(&cube_bounding_1);
-    // std::cout << "cube_1.cubeString = " << cube_1.cubeString << std::endl;
     
 
 
-    // GROUND 1
+    // 1. - CUBE 1
+
+    WorldObject* worldCube1 = new WorldObject("cube", "worldCube1");
+    worldObjects.push_back(worldCube1);
+    worldCube1->isActive = false;
+    worldCube1->isRendpipe = true;
+
+    worldCube1->scale = { 0.5, 0.5, 0.5 };
+    worldCube1->position = { 20.0f, 0.0f, 0.0f };
+
+
+
+    // 2. - CUBE 2 - SPIN
 
     // WorldObject worldCube1("resources/models/cube.pso");
-    worldGround1.name = "worldGround1";
-    worldGround1.LoadWorldObject("resources/models/pso/ground_1.pso");
+    WorldObject* worldCube_spin = new WorldObject("cube", "worldCube_spin");
+    worldObjects.push_back(worldCube_spin);
+    worldCube_spin->isActive = false;
+    worldCube_spin->isRendpipe = true;
 
-    // worldCube1.scale = {2.0, 2.0, 2.0};
-    float groundScale = 50.0f;
-    worldGround1.scale = { groundScale, groundScale, 1.0f };
-    worldGround1.position = { 0.0f, 0.0f, GROUND_Z_0 };
-    // worldCube1.printVertices();
-    worldGround1.boundingBox.x_min = worldGround1.position.x - groundScale;
-    worldGround1.boundingBox.x_max = worldGround1.position.x + groundScale;
-    worldGround1.boundingBox.y_min = worldGround1.position.y - groundScale;
-    worldGround1.boundingBox.y_max = worldGround1.position.y + groundScale;
-    worldGround1.boundingBox.z_min = worldGround1.position.z + GROUND_Z_0;
-    worldGround1.boundingBox.z_max = worldGround1.position.z + GROUND_Z_0;
-
-    worldGround1.setVaoVbo330();
-    worldGround1.setShaderProgram(&worldShader);
-    worldObjects.push_back(&worldGround1);
-
-
-    // CUBE 1
-
-    // WorldObject worldCube1("resources/models/cube.pso");
-    worldCube1.name = "worldCube1";
-    worldCube1.LoadWorldObject("resources/models/pso/cube.pso");
-
-    // worldCube1.scale = {2.0, 2.0, 2.0};
-    worldCube1.scale = { 0.5, 0.5, 0.5 };
-    worldCube1.position = { 20.0f, 0.0f, 0.0f };
-    // worldCube1.printVertices();
-
-    worldCube1.setVaoVbo330();
-    worldCube1.setShaderProgram(&worldShader);
-    worldObjects.push_back(&worldCube1);
-
-
-
-    // CUBE 2 - SPIN
-
-    // WorldObject worldCube1("resources/models/cube.pso");
-    worldCube_spin.name = "worldCube_spin";
-    worldCube_spin.LoadWorldObject("resources/models/pso/cube.pso");
-
-    // worldCube1.scale = {2.0, 2.0, 2.0};
     float cubeSpinScale = 1.0f;
-    worldCube_spin.scale = { cubeSpinScale, cubeSpinScale, cubeSpinScale };
-    worldCube_spin.position = { 5.0f, 0.0f, 3.0f };
-    // worldCube1.printVertices();
-
-    worldCube_spin.setVaoVbo330();
-    worldCube_spin.setShaderProgram(&worldShader);
-    worldObjects.push_back(&worldCube_spin);
+    worldCube_spin->scale = { cubeSpinScale, cubeSpinScale, cubeSpinScale };
+    worldCube_spin->position = { 5.0f, 0.0f, 3.0f };
 
 
 
 
 
-    // CUBE 3 - GRAVITY
 
-    // WorldObject worldCube1("resources/models/cube.pso");
-    cube_3_gravity.name = "cube_3_gravity";
-    cube_3_gravity.LoadWorldObject("resources/models/pso/cube.pso");
+    // 3. - CUBE 3 - GRAVITY
+
+    WorldObject* cube_3_gravity = new WorldObject("cube", "cube_3_gravity");
+    worldObjects.push_back(cube_3_gravity);
+    cube_3_gravity->isActive = false;
+    cube_3_gravity->isRendpipe = true;
 
     // RIGID BODY
-    cube_3_gravity.hasRigidBody = true;
-    cube_3_gravity.rigidBody.shader = &wireframeShader;
-    cube_3_gravity.rigidBody.setVaoVbo_wireframe();
+    cube_3_gravity->hasRigidBody = true;
+    cube_3_gravity->rigidBody.shader = &wireframeShader;
+    cube_3_gravity->rigidBody.setVaoVbo_wireframe();
 
     // GRAVITY ENABLED CUBES
     float cube_3_scale = 2.0;
-    cube_3_gravity.scale = { cube_3_scale, cube_3_scale, cube_3_scale };
-    cube_3_gravity.rotation = { 40.0f, -10.0f, 5.0f };
-    cube_3_gravity.rotation_0 = cube_3_gravity.rotation;
-    cube_3_gravity.angularVelocity = { 0.01f, 0.01f, 0.0f };
-    cube_3_gravity.angularVelocity_0 = cube_3_gravity.angularVelocity;
+    cube_3_gravity->scale = { cube_3_scale, cube_3_scale, cube_3_scale };
+    cube_3_gravity->rotation = { 40.0f, -10.0f, 185.0f };
+    cube_3_gravity->rotation_0 = cube_3_gravity->rotation;
+    cube_3_gravity->angularVelocity = { 0.01f, 0.01f, 0.0f };
+    cube_3_gravity->angularVelocity_0 = cube_3_gravity->angularVelocity;
 
-    cube_3_gravity.position_0 = { -5.0f, 0.0f, 15.0f };
-    cube_3_gravity.position = cube_3_gravity.position_0;
-    cube_3_gravity.velocity_0 = { 0.0f, 0.0f, 0.0f };
-    cube_3_gravity.velocity = cube_3_gravity.velocity_0;
+    cube_3_gravity->position_0 = { -5.0f, 0.0f, 15.0f };
+    cube_3_gravity->position = cube_3_gravity->position_0;
+    cube_3_gravity->velocity_0 = { 0.0f, 0.0f, 0.0f };
+    cube_3_gravity->velocity = cube_3_gravity->velocity_0;
     // worldCube1.printVertices();
-    cube_3_gravity.gravityOn = 1;
+    cube_3_gravity->gravityOn = 1;
 
-    cube_3_gravity.offsetToBottom = cube_3_scale;
+    cube_3_gravity->offsetToBottom = cube_3_scale;
 
-    cube_3_gravity.boundingBox.x_min = - cube_3_scale;
-    cube_3_gravity.boundingBox.x_max =   cube_3_scale;
-    cube_3_gravity.boundingBox.y_min = - cube_3_scale;
-    cube_3_gravity.boundingBox.y_max =   cube_3_scale;
-    cube_3_gravity.boundingBox.z_min =  -cube_3_scale;
-    cube_3_gravity.boundingBox.z_max =   cube_3_scale;
+    cube_3_gravity->boundingBox.x_min = - cube_3_scale;
+    cube_3_gravity->boundingBox.x_max =   cube_3_scale;
+    cube_3_gravity->boundingBox.y_min = - cube_3_scale;
+    cube_3_gravity->boundingBox.y_max =   cube_3_scale;
+    cube_3_gravity->boundingBox.z_min =  -cube_3_scale;
+    cube_3_gravity->boundingBox.z_max =   cube_3_scale;
 
-    cube_3_gravity.setVaoVbo330();
-    cube_3_gravity.setShaderProgram(&worldShader);
-
-    worldObjects.push_back(&cube_3_gravity);
 
     // Add more cubes
-    for (int i = 0; i < 0; i++) {
-        cube_3_gravity.position_0 = { 40.0f, -10.0f + 5.0f * (float)i, 30.0f };
-        cube_3_gravity.position = cube_3_gravity.position_0;
+    // for (int i = 0; i < 1; i++) {
+    //     cube_3_gravity->position_0 = { 40.0f, -10.0f + 5.0f * (float)i, 30.0f };
+    //     cube_3_gravity->position = cube_3_gravity->position_0;
         
-    }
-
-
-
-
-    // CUBE 4 - OBJ !
-
-    // CAVEATS:
-    // - exported as triangulated obj file from blender
-    //      - ./resources/models/blend-file.obj
-    // - ignores mtl-file / data
-    // - ignores v.w & vt.w in obj-file
-    // - Render using already defined grayTexture 
-    // - reads vertex normals, but does not consider that data when rendering
-    //      - the vertex normals are put in the color layout location in the vbo/vao
-    //      - because the cube is rendered using texture, the color data is ignored in the shader
-
-    worldCube4_obj.name = "worldCube4_obj";
-    // worldCube1.LoadWorldObject("resources/models/cube.pso");
-
-    // worldCube4_obj.hasTexture = 1;
-    // worldCube4_obj.glTexture = qrTexture;
-
-    // worldCube4_obj.model.loadObjModel("./resources/models/blend-cube-no-texture.obj");
-
-    worldCube4_obj.model.loadObjModel("blend-cube-texture-1");
-    // worldCube4_obj.model.loadObjModel("house-1");
-    // worldCube4_obj.model.loadObjModel("blend-cube-no-texture");
-    
-    // // REPLACED WITH ABOVE model-call
-    // obj_loadFromFile("./resources/models/blend-cube.obj");
-    // float * Kd_temp = obj_loadKdFromFile("./resources/models/blend-cube.mtl");
-    // worldCube4_obj.Kd[0] = Kd_temp[0];
-    // worldCube4_obj.Kd[1] = Kd_temp[1];
-    // worldCube4_obj.Kd[2] = Kd_temp[2];
-
-    // worldCube4_obj.vertices = obj_getVertexBuffer_v_vt_vn();
-    // std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
-    // worldCube4_obj.vertexCount = worldCube4_obj.vertices.size() / 8;
-
-    // worldCube1.scale = {2.0, 2.0, 2.0};
-    worldCube4_obj.scale = { 2.0, 2.0, 2.0 };
-    worldCube4_obj.position = { 20.0f, -10.0f, 10.0f };
-    // worldCube1.printVertices();
-
-    worldCube4_obj.setVaoVbo_obj();
-    // worldCube4_obj.setShaderProgram(&worldShader);
-    worldCube4_obj.setShaderProgram(&worldObjShader);
-
-    
-
-    // worldCube4_obj.isActive = false;
-
-    worldObjects.push_back(&worldCube4_obj);
-
-
-
-    // // HOUSE 1 - OBJ MODEL
-
-    house1_obj.name = "house_1_obj";
-    house1_obj.model.loadObjModel("house-1");
-    
-    // house1_obj.model.loadObjModel("blend-cube-texture-1");
-    house1_obj.scale = { 1.0, 1.0, 1.0 };
-    house1_obj.position = { 10.0f, 20.0f, 0.0f };
-    // house1_obj.position = { 10.0f, 20.0f, 10.0f };
-    house1_obj.position_0 = house1_obj.position;
-
-    house1_obj.setVaoVbo_obj();
-    house1_obj.setShaderProgram(&worldObjShader);
-
-    worldObjects.push_back(&house1_obj);
-
-
-
-    // TRIANGLE 2 - BOUNCE
-
-    // WorldObject worldCube1("resources/models/cube.pso");
-    worldTriangle2_bounce.name = "worldTriangle2_bounce";
-    worldTriangle2_bounce.LoadWorldObject("resources/models/pso/firstSimTriangle.pso");
-
-    // worldCube1.scale = {2.0, 2.0, 2.0};
-    // float  = 1.0f;
-    float triBounceScale = 5.0f;
-    worldTriangle2_bounce.scale = { 1.0f, triBounceScale, triBounceScale };
-    worldTriangle2_bounce.position_0 = { 45.0f, 25.0f, 10.0f };
-    worldTriangle2_bounce.position = worldTriangle2_bounce.position_0;
-    worldTriangle2_bounce.velocity = { 0.0f, 0.0f, 0.0f };
-    worldTriangle2_bounce.velocity_0 = { -1.0f, -0.5f, 25.0f };
-    // worldCube1.printVertices();
-
-    worldTriangle2_bounce.setVaoVbo330();
-    worldTriangle2_bounce.setShaderProgram(&worldShader);
-    worldObjects.push_back(&worldTriangle2_bounce);
-
-
-
-    // TRIANGLE 1 - TEXTURE
-
-    // WorldObject worldTriangle1("src/models/triangle.pso");
-    worldTriangle1Texture.name = "worldTriangle1Texture";
-    worldTriangle1Texture.LoadWorldObject("resources/models/pso/triangle.pso");
-
-    worldTriangle1Texture.scale = { 1.0, 5.0, 5.0 };
-    worldTriangle1Texture.position = { -5.0f, -10.0f, 10.0f };
-
-    worldTriangle1Texture.setVaoVbo332();
-    worldTriangle1Texture.setShaderProgram(&worldShader);
-
-    worldTriangle1Texture.hasTexture = 1;
-    worldTriangle1Texture.glTexture = mountainTexture;
-    worldObjects.push_back(&worldTriangle1Texture);
-
-
-
-
-
-    // SIMULATOR 1 - WIREFRAME
-    
-    simContainer_1.name = "simContainer_1";
-    // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
-
-    simContainer_1.scale = { 3.0, 3.0, 3.0 };
-    simContainer_1.position = { -15.0f, -5.0f, 3.1f };
-
-    // simContainer_1.renderer.setVaoVbo_obj();
-    simContainer_1.addSimulatorContainerVertices();
-    simContainer_1.renderer.createSimulatorRenderer(simContainer_1.vertices);
-
-    Sim::Simulator * simulator1_ptr = Sim::getSim1Pointer();
-    simContainer_1.SetSimulator(simulator1_ptr);
-  
-    // std::cout << "simulator1_ptr->simSaveDirectory = " << simulator1_ptr->simSaveDirectory << std::endl;
-    
-    // SIMULATOR 1 - OBJECT 1
-    WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
-    sim1_containerObj_1.name = "simContainer1_Object1";
-    sim1_containerObj_1.LoadWorldObject("resources/models/pso/cube.pso");
-
-    // worldCube1.scale = {2.0, 2.0, 2.0};
-    sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
-    sim1_containerObj_1.position_0 = { 0.0f, 0.0f, 0.0f };
-    sim1_containerObj_1.position = { 0.0f, 0.0f, 0.0f };
-    // worldCube1.printVertices();
-
-    sim1_containerObj_1.setVaoVbo330();
-    sim1_containerObj_1.setShaderProgram(&worldShader);
-    // sim1_containerObj_1.push_back(worldCube1);
-
-
-
-    worldObjects.push_back(&simContainer_1);
-
-    // for (WorldObject& _worldObject : worldObjects) {
-    //         std::cout << "!!!!" << std::endl;
-
-    //     if (_worldObject.name == "simContainer_1"){
-    //         SimWorldContainer* container = static_cast<SimWorldContainer*>(&_worldObject);
-    //         std::cout << "__________" << std::endl;
-    //     }
     // }
 
-    // std::cout << "simContainer_1.name = " << simContainer_1.name << std::endl;
-    // std::cout << "simContainer_1.vertices.size() = " << simContainer_1.vertices.size() << std::endl;
-    
+
+
+
+    // 4. - CUBE 4 - OBJ !
+
+    WorldObject* worldCube4_obj = new WorldObject("cube", "worldCube4_obj");
+    worldObjects.push_back(worldCube4_obj);
+    worldCube4_obj->isActive = false;
+    worldCube4_obj->isRendpipe = true;
+
+    worldCube4_obj->scale = { 2.0, 2.0, 2.0 };
+    worldCube4_obj->position = { 20.0f, -10.0f, 10.0f };
+
+
+
+
+    // 5. - TEMP - BOUNDING BOX ??
+    WorldObject* cube_bounding_1 = new WorldObject("cube", "cube_bounding_1");
+    worldObjects.push_back(cube_bounding_1);
+    cube_bounding_1->isActive = false;
+    cube_bounding_1->isRendpipe = true;
+
+    cube_bounding_1->scale = { 0.5, 0.5, 0.5 };
+    cube_bounding_1->position = { -10.0f, -5.0f, 20.0f };
+
+
+
+
+    // 6. -  HOUSE 1 - OBJ MODEL
+
+    WorldObject* house1_obj = new WorldObject("house-1", "house1_obj");
+    worldObjects.push_back(house1_obj);
+    house1_obj->isActive = false;
+    house1_obj->isRendpipe = true;
+
+    house1_obj->scale = { 1.0, 1.0, 1.0 };
+    house1_obj->position = { 10.0f, 20.0f, 3.0f };
+    house1_obj->position_0 = house1_obj->position;
 
 
 
 
 
+    // 7. - TRIANGLE 2 - BOUNCE
 
+    WorldObject* worldTriangle2_bounce = new WorldObject("tri_pso.pso", "worldTriangle2_bounce");
+    worldObjects.push_back(worldTriangle2_bounce);
+    worldTriangle2_bounce->isActive = false;
+    worldTriangle2_bounce->isRendpipe = true;
+
+    float triBounceScale = 5.0f;
+    worldTriangle2_bounce->scale = { 1.0f, triBounceScale, triBounceScale };
+    worldTriangle2_bounce->position_0 = { 45.0f, 25.0f, 10.0f };
+    worldTriangle2_bounce->position = worldTriangle2_bounce->position_0;
+    worldTriangle2_bounce->velocity = { 0.0f, 0.0f, 0.0f };
+    worldTriangle2_bounce->velocity_0 = { -1.0f, -0.5f, 25.0f };
+
+
+
+    // 8. - TRIANGLE 1 - TEXTURE
+
+    WorldObject* worldTriangle1Texture = new WorldObject("tri_tex_pso.pso", "worldTriangle1Texture");
+    worldObjects.push_back(worldTriangle1Texture);
+    worldTriangle1Texture->isActive = false;
+    worldTriangle1Texture->isRendpipe = true;
+
+    worldTriangle1Texture->scale = { 1.0, 5.0, 5.0 };
+    worldTriangle1Texture->position = { -5.0f, -10.0f, 10.0f };
 
 
 
     /* 
-        rendpipe_obj   ::   NEW RENDER PIPLINE OBJECT
+        9. - rendpipe_obj   ::   FIRST RENDER PIPLINE OBJECT
     */
 
     WorldObject* rendpipe_obj_ptr = new WorldObject("blend-cube-texture-1", "rendpipe_obj");
@@ -680,7 +532,7 @@ void ws_createWorldObjects(){
 
 
     /*
-        rendpipe_cube2_ptr   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
+        10. - rendpipe_cube2_ptr   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
     */
     // blend-cube-no-texture
     WorldObject* rendpipe_cube2_ptr = new WorldObject("cube", "rendpipe_cube2");
@@ -695,7 +547,7 @@ void ws_createWorldObjects(){
 
 
     /*
-           ground_01   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
+        11. - ground_01   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
     */
        // blend-cube-no-texture
     WorldObject* ground_01 = new WorldObject("ground-01", "ground_01");
@@ -706,11 +558,20 @@ void ws_createWorldObjects(){
     // ENABLE NEW RENDPIPE
     ground_01->isRendpipe = true;
 
-    ground_01->position = { -10.0f, 0.0f, 0.01f };
+    float groundScale = 40; // currently scaled in blender..
+
+    ground_01->position = { -10.0f, 0.0f, GROUND_Z_0 };
+    // worldCube1.printVertices();
+    ground_01->boundingBox.x_min = ground_01->position.x - groundScale;
+    ground_01->boundingBox.x_max = ground_01->position.x + groundScale;
+    ground_01->boundingBox.y_min = ground_01->position.y - groundScale;
+    ground_01->boundingBox.y_max = ground_01->position.y + groundScale;
+    ground_01->boundingBox.z_min = ground_01->position.z + GROUND_Z_0;
+    ground_01->boundingBox.z_max = ground_01->position.z + GROUND_Z_0;
 
 
     /* 
-        tri_pso : First pso in new rendering pipline
+        12. - tri_pso : First pso in new rendering pipline
     */
     WorldObject* tri_pso = new WorldObject("tri_pso.pso", "tri_pso");
     worldObjects.push_back(tri_pso);
@@ -722,7 +583,7 @@ void ws_createWorldObjects(){
 
 
     /*
-        tri_tex_pso : First pso with texture in new rendering pipline
+        13. - tri_tex_pso : First pso with texture in new rendering pipline
     */
     WorldObject* tri_tex_pso = new WorldObject("tri_tex_pso.pso", "tri_tex_pso");
     worldObjects.push_back(tri_tex_pso);
@@ -733,18 +594,62 @@ void ws_createWorldObjects(){
     tri_tex_pso->position = { -20.1f, 1.0f, 3.0f };
 
 
-    // worldTriangle1Texture.name = "worldTriangle1Texture";
-    // worldTriangle1Texture.LoadWorldObject("resources/models/pso/triangle.pso");
 
-    // worldTriangle1Texture.scale = { 1.0, 5.0, 5.0 };
-    // worldTriangle1Texture.position = { -5.0f, -10.0f, 10.0f };
 
-    // worldTriangle1Texture.setVaoVbo332();
-    // worldTriangle1Texture.setShaderProgram(&worldShader);
 
-    // worldTriangle1Texture.hasTexture = 1;
-    // worldTriangle1Texture.glTexture = mountainTexture;
-    // worldObjects.push_back(&worldTriangle1Texture);
+
+
+
+
+    // 14. - SIMULATOR 1 - WIREFRAME
+
+    simContainer_1.name = "simContainer_1";
+    // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
+
+    simContainer_1.scale = { 3.0, 3.0, 3.0 };
+    simContainer_1.position = { -15.0f, -5.0f, 3.1f };
+
+    // simContainer_1.renderer.setVaoVbo_obj();
+    simContainer_1.addSimulatorContainerVertices();
+    simContainer_1.renderer.createSimulatorRenderer(simContainer_1.vertices);
+
+    Sim::Simulator* simulator1_ptr = Sim::getSim1Pointer();
+    simContainer_1.SetSimulator(simulator1_ptr);
+
+    // std::cout << "simulator1_ptr->simSaveDirectory = " << simulator1_ptr->simSaveDirectory << std::endl;
+
+    // 15. - SIMULATOR 1 - OBJECT 1
+    WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
+    sim1_containerObj_1.name = "simContainer1_Object1";
+    sim1_containerObj_1.LoadWorldObject("resources/models/pso/cube.pso");
+
+    // worldCube1.scale = {2.0, 2.0, 2.0};
+    sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
+    sim1_containerObj_1.position_0 = { 0.0f, 0.0f, 0.0f };
+    sim1_containerObj_1.position = { 0.0f, 0.0f, 0.0f };
+    // worldCube1.printVertices();
+
+    sim1_containerObj_1.setVaoVbo330();
+    sim1_containerObj_1.setShaderProgram(&worldShader);
+    // sim1_containerObj_1.push_back(worldCube1);
+
+    worldObjects.push_back(&simContainer_1);
+
+    // for (WorldObject& _worldObject : worldObjects) {
+    //         std::cout << "!!!!" << std::endl;
+
+    //     if (_worldObject.name == "simContainer_1"){
+    //         SimWorldContainer* container = static_cast<SimWorldContainer*>(&_worldObject);
+    //         std::cout << "__________" << std::endl;
+    //     }
+    // }
+
+    // std::cout << "simContainer_1.name = " << simContainer_1.name << std::endl;
+    // std::cout << "simContainer_1.vertices.size() = " << simContainer_1.vertices.size() << std::endl;
+
+
+
+
 
 
 
@@ -755,30 +660,9 @@ void ws_createWorldObjects(){
         WorldObject& _worldObject = *_worldObject_p;
         if (_worldObject.name == "worldTriangle2_bounce")
             worldTriangle2_simobj_pointer = &_worldObject;
-        if (_worldObject.name == "worldGround1")
-            worldGround_pointer = &_worldObject;
+        if (_worldObject.name == "ground_01")
+            worldGround_pointer = ground_01;
     }
 }
 
-// void generateBlackWhiteImageBuffer(){
 
-
-//     for (long unsigned int rgb_i = 0; rgb_i < sizeof(blackWhiteImageBuffer); rgb_i += 3) {
-//         // std::cout << rgb_i << " ";
-//         int r = rand();
-
-//         if (r < 1073741823) {
-//             blackWhiteImageBuffer[rgb_i] = 0;
-//             blackWhiteImageBuffer[rgb_i + 1] = 0;
-//             blackWhiteImageBuffer[rgb_i + 2] = 0;
-//         }
-//         else {
-//             blackWhiteImageBuffer[rgb_i] = 255;
-//             blackWhiteImageBuffer[rgb_i + 1] = 255;
-//             blackWhiteImageBuffer[rgb_i + 2] = 255;
-//         }
-//     }
-//     // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-
-
-// }

@@ -159,8 +159,8 @@ void ui_detectElementClick(double x, double y) {
                 for (WorldObject* _wo_p : _worldObjects) {
                     WorldObject& _wo = *_wo_p;
                     if(_wo.name == _uiELem.name){
-                        // std::cout << "CLICKED : " << _wo.name << std::endl;
-                        _wo.isActive = _wo.isActive ? false : true;
+                        // _wo.isRendpipe = _wo.isRendpipe ? false : true; // toggle visibility
+                        _wo.toggleWireframe();
                         
                     }
                     // for (UiElement& _UiE : uiElements) {

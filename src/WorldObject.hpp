@@ -98,7 +98,8 @@ public:
 
     // NEW RENDER 2024-09-28
     bool isRendpipe = false;
-    void setShader(Shaders _shader);
+    Shaders shaderType;
+    void toggleWireframe();
     void update();
     void render();
     objects::Model* model_ptr;

@@ -21,8 +21,13 @@
 // logger
 #include "logger.hh"
 
+// DEBUGGING - 2024-09-30
+#include "obj_loader.hpp"
+
 int main()
 {
+
+
 	// math::pvec3 a = { 1.0, 2.0, 3.0 };
 	// math::pvec3 b = { 4.0, 5.0, 6.0 };
 	// math::add_v3(a, b);

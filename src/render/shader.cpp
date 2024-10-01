@@ -32,6 +32,18 @@ void shader_setWorldObject_uniforms(float* model_mat, float* view_mat, float* pe
     glUniformMatrix4fv(_perspectiveObjLoc, 1, GL_TRUE, perspective_mat);
 }
 
+void shader_setWireframe_uniforms(float* model_mat, float* view_mat, float* perspective_mat, const float* sanity_mat) {
+    glUniformMatrix4fv(_modelObjLoc, 1, GL_TRUE, model_mat);
+    glUniformMatrix4fv(_viewObjLoc, 1, GL_TRUE, view_mat);
+    glUniformMatrix4fv(_sanityObjLoc, 1, GL_TRUE, sanity_mat);
+    glUniformMatrix4fv(_perspectiveObjLoc, 1, GL_TRUE, perspective_mat);
+}
+
+
+void drawLines(int vertexCount) {
+    glDrawArrays(GL_LINES, 0, vertexCount);
+}
+
 void drawTriangles(int vertexCount){
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 }

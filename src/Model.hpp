@@ -21,6 +21,7 @@ class Model {
         // MODELNAME modelname;
 
         // OBJ || PSO, currently
+        std::string modelname;
         res::ModelFileType modelFileType;
 
         // OBJ
@@ -41,9 +42,16 @@ class Model {
 
         // MODEL DATA
         std::vector<float> vertices;
-        int vertexCount;
-        unsigned int vao;
-        unsigned int vbo;
+        int vertexCount = 0;
+        unsigned int vao = 0;
+        unsigned int vbo = 0;
+
+        // WIREFRAME
+        void generateWireframeFromModel();
+        std::vector<float> wireData;
+        int wireVertexCount = 0;
+        unsigned int vaoWire = 0;
+        unsigned int vboWire = 0;
 
         // Additional derived models:
         // 1. wireframe/bounding box

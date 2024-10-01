@@ -73,27 +73,29 @@ PsoLoader* loadPsoModel(std::string _modelname) {
         std::cout  << std::endl;
         
         while (std::getline(metaStringStream, metaPair, ';')){
-            std::cout << "metaPair = " << metaPair << std::endl;
+            // std::cout << "metaPair = " << metaPair << std::endl;
 
             std::string key = metaPair.substr(0, metaPair.find(":"));
             std::string value = metaPair.substr(metaPair.find(":")+1, metaPair.size()-1);
             if(key == "vdf"){
                 if(value == "p3c3"){
                     psoLoader->vertStructure = res::ModelVertStucture::p3c3;
+                    psoLoader->floatsPerVertex = 6;
                 }
                 else if (value == "p3c3t2") {
                     psoLoader->vertStructure = res::ModelVertStucture::p3c3t2;
+                    psoLoader->floatsPerVertex = 8;
                 }
             }
             else if (key == "texture"){
                 // std::cout << "HAS TEXTURE! "  << std::endl;
                 psoLoader->hasTexture = true;
                 texturePath = texturesDirectory + value; // texture path from the meta-line
-                std::cout << "texturePath = " << texturePath << std::endl;
+                // std::cout << "texturePath = " << texturePath << std::endl;
                 
                 bmp_loader_loadBMPFile(texturePath);
                 std::vector<unsigned char> imageData = bmp_getImageDataBuffer();
-                std::cout << "imageData.size() imageData.size() = " << imageData.size() << std::endl;
+                // std::cout << "imageData.size() imageData.size() = " << imageData.size() << std::endl;
                 for(unsigned char dataByte : imageData){
                     
                     psoLoader->textureDataBuffer.push_back(dataByte);
@@ -118,6 +120,7 @@ PsoLoader* loadPsoModel(std::string _modelname) {
             psoLoader->vertexFloatBuffer.push_back(number);
             psoLoader->vertexCount++;
         }
+        psoLoader->vertexCount /= psoLoader->floatsPerVertex;
 
         std::cout << "OK.  [" << psoLoader->vertexFloatBuffer.size() << " values]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
 

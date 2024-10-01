@@ -28,6 +28,9 @@ typedef enum Shaders {
 
 void setHasTextureUniform(unsigned int _hasTexture);
 void shader_setWorldObject_uniforms(float* model_mat, float* view_mat, float* perspective_mat, const float* sanity_mat);
+
+
+void drawLines(int vertexCount);
 void drawTriangles(int vertexCount);
 
 

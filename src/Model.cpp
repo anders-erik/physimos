@@ -33,6 +33,7 @@ namespace objects {
 
 
     Model::Model(std::string _modelname) {
+        modelname = _modelname;
 
         // NEED TO KNOW WHICH TYPE OF MODEL WERE DEALING WITH BECAUSE WE DON'T HAVE A MODEL-INDEPENDENT FORMAT!
         res::ModelFormat* _mf  = res::getModelFormat(_modelname);
@@ -42,34 +43,108 @@ namespace objects {
         }
         else {
 
-        // TODO : Implement more than just obj models!
-        switch (_mf->fileType) {
+            // TODO : Implement more than just obj models!
+            switch (_mf->fileType) {
 
-            case res::ModelFileType::obj :
-                modelFileType = res::ModelFileType::obj;
-                loadObjModel(_modelname);
-                loadedVertStructure = res::ModelVertStucture::p3n3t2;
-                setVaoVbo_obj();
-                break;
+                case res::ModelFileType::obj :
+                    modelFileType = res::ModelFileType::obj;
+                    loadedVertStructure = res::ModelVertStucture::p3n3t2;
+                    loadObjModel(_modelname);
+                    setVaoVbo_obj();
+                    break;
 
-            case res::ModelFileType::pso :
-                // std::cout << "ABABABABABABBABAABBABABBABAB"  << std::endl;
-                modelFileType = res::ModelFileType::pso;
-                loadPsoModel(_modelname);
-                if(loadedVertStructure == res::ModelVertStucture::p3c3)
-                    setVaoVbo_p3c3();
-                else if (loadedVertStructure == res::ModelVertStucture::p3c3t2)
-                    setVaoVbo_p3c3t2();
-                break;
-            
-            default:
-                break;
-        }
+                case res::ModelFileType::pso :
+                    // std::cout << "ABABABABABABBABAABBABABBABAB"  << std::endl;
+                    modelFileType = res::ModelFileType::pso;
+                    loadPsoModel(_modelname);
+                    if(loadedVertStructure == res::ModelVertStucture::p3c3)
+                        setVaoVbo_p3c3();
+                    else if (loadedVertStructure == res::ModelVertStucture::p3c3t2)
+                        setVaoVbo_p3c3t2();
+                    break;
+                
+                default:
+                    break;
+            }
+
+            generateWireframeFromModel();
 
         }
 
 
     };
+
+    /** 
+    *   Assumes that the regular triangulated model has been loaded and that each vertex begin with 3 position values (x, y, z)
+    */
+    void Model::generateWireframeFromModel(){
+        // std::cout << "GENERATING WIREFRAME MODEL FOR MODEL : " << modelname  << std::endl;
+
+        int stride;
+        switch (loadedVertStructure) {
+        case res::ModelVertStucture::p3c3: 
+            stride = 6;
+            break;
+        case res::ModelVertStucture::p3c3t2:
+            stride = 8;
+            break;
+        case res::ModelVertStucture::p3n3t2:
+            stride = 8;
+            break;
+        }
+
+        
+        // Because all models consist of triangle faces we can easily grab one face at a time and 'connect' all three vertices
+        for (int i = 0; i < vertexCount*stride; i = i + stride * 3) {
+            
+            // vert 2 -> 1
+            wireData.push_back(vertices[i + 2*stride + 0]);
+            wireData.push_back(vertices[i + 2*stride + 1]);
+            wireData.push_back(vertices[i + 2*stride + 2]);
+
+            wireData.push_back(vertices[i + 1*stride + 0]);
+            wireData.push_back(vertices[i + 1*stride + 1]);
+            wireData.push_back(vertices[i + 1*stride + 2]);
+
+            // vert 1 -> 0
+            wireData.push_back(vertices[i + 1 * stride + 0]);
+            wireData.push_back(vertices[i + 1 * stride + 1]);
+            wireData.push_back(vertices[i + 1 * stride + 2]);
+
+            wireData.push_back(vertices[i + 0]);
+            wireData.push_back(vertices[i + 1]);
+            wireData.push_back(vertices[i + 2]);
+
+            // vert 1 -> 0
+            wireData.push_back(vertices[i + 0]);
+            wireData.push_back(vertices[i + 1]);
+            wireData.push_back(vertices[i + 2]);
+
+            wireData.push_back(vertices[i + 2 * stride + 0]);
+            wireData.push_back(vertices[i + 2 * stride + 1]);
+            wireData.push_back(vertices[i + 2 * stride + 2]);
+
+
+            wireVertexCount += 6;
+            
+        }
+
+
+        glGenVertexArrays(1, &vaoWire);
+        glGenBuffers(1, &vboWire);
+
+        glBindVertexArray(vaoWire);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboWire);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(wireData[0]) * wireData.size(), wireData.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glBindVertexArray(0);
+
+        
+    }
 
 
     void Model::useTexture() {
@@ -78,9 +153,6 @@ namespace objects {
     }
 
     void Model::createGLTexture(unsigned int imgWith, unsigned int imgHeight, unsigned char* imgData) {
-        std::cout << "GLGLGLGLGLGL" << imgWith << std::endl;
-        std::cout << "GLGLGLGLGLGL" << imgHeight << std::endl;
-        std::cout << "GLGLGLGLGLGL" << imgData[0] << std::endl;
         
         // LOAD TEXTURE
         glGenTextures(1, &glTexture);
@@ -141,6 +213,7 @@ namespace objects {
 
 
     void Model::loadObjModel(std::string objModelName) {
+        
 
         std::cout << "Loading obj model: " << objModelName << ". ";
 
@@ -154,6 +227,7 @@ namespace objects {
             vertices.push_back(vertElement);
         // std::cout << "worldCube4_obj.vertices.size() = " << worldCube4_obj.vertices.size() << std::endl;
         vertexCount = vertices.size() / 8;
+
 
         std::cout << " OK. [" << vertices.size() << " values]" << std::endl;
 

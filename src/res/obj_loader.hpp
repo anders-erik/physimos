@@ -84,7 +84,7 @@ typedef struct ObjMesh {
 
 
 std::vector<float> obj_getVertexBuffer_v_vt_vn();
-void obj_loadFromFile(std::string objPath);
+void obj_loadFromFile(std::string modelName);
 
 
 #endif

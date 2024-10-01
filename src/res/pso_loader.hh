@@ -15,6 +15,7 @@ namespace res {
             ModelVertStucture vertStructure;
             std::vector<float> vertexFloatBuffer;
             int vertexCount = 0;
+            int floatsPerVertex = 0;
 
             bool hasTexture = 0;
             std::vector<unsigned char> textureDataBuffer;

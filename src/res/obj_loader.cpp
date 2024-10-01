@@ -401,6 +401,8 @@ void obj_loadFromFile(std::string modelName) {
 
                 objMesh.fi.push_back(objFaceIndex);
 
+
+                vertexCounter += 3;
             }
 
             // std::cout << "segment = ";
@@ -412,13 +414,14 @@ void obj_loadFromFile(std::string modelName) {
             
             
 
-            vertexCounter++;
+            // vertexCounter++;
 
 
             // Add the parsed float to the vector
             // this->vertices.push_back(number);
             
         }
+        
         // this->vertexCount = vertexCounter;
 
         // std::cout << "OK.  [" << objMesh.v.size() << " VERTEX COORD ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
@@ -452,7 +455,7 @@ void obj_loadFromFile(std::string modelName) {
 
 
             // ADD ALL FACES TO THE VERTEX BUFFER
-            for (ObjFace objFace : objMesh.f) {
+            // for (ObjFace objFace : objMesh.f) {
 
                 // VERT 1
                 vertexBuffer.push_back(objFace.vert1.v.x);
@@ -492,7 +495,7 @@ void obj_loadFromFile(std::string modelName) {
                 vertexBuffer.push_back(objFace.vert3.vt.v);
 
 
-            }
+            // }
 
             // std::cout << "f ";
             
