@@ -5,80 +5,42 @@
 #include "Camera.hpp"
 
 #include "WorldObject.hpp"
-#include "obj_loader.hpp"
-
-#include "WorldRenderer.hpp"
-
-extern Shader worldShader;
-extern Shader worldObjShader;
-extern Shader wireframeShader;
-
 
 #include "WorldScene.hpp"
 
-#include "bmp_loader.hpp"
-
 #include "Timing.hpp"
 
-#include "VectorMath.hpp"
-
-
-// SIMULATORS
-#include "SimWorldContainer.hpp"
-#include "Simulator.hpp"
-extern Sim::Simulator* sim_1_ptr;
 
 
 // SCENE - RENDPIPE - 2024-09-28
 #include "Scene.hh"
 Scene scene_1;
 
-// WORLD SIMULATOR
+// WORLD SIMULATORS
 #include "WorldSimulator.cc"
 std::vector<WorldSimulator*> worldSimulators;
 
 
-
 // WORLD OBJECTS
-
-// std::vector<WorldObject> worldObjects;
 std::vector<WorldObject*> worldObjects;
 
+// WORLD GROUND
+#define GROUND_Z_0 0.0f
 WorldObject worldGround1;
 WorldObject* worldGround_pointer;
 
-// Cube cube_bounding_1;
 
-WorldObject worldCube1;
-WorldObject worldCube_spin;
-WorldObject cube_3_gravity;
-WorldObject worldCube4_obj;
-WorldObject house1_obj;
-
-WorldObject worldTriangle1Texture;
-WorldObject worldTriangle2_bounce;
-
-SimWorldContainer simContainer_1;
-
+// Bouncy triangle for nostalgia
 WorldObject* worldTriangle2_simobj_pointer;
 
 
-// TEXTURES
-unsigned int mountainTexture;
-unsigned int grayTexture;
-unsigned int qrTexture;
 
 
-#define GROUND_Z_0 0.0f
 
 
 void ws_init(){
 
-    wr_init();
 
-    ws_loadTextures();
-
-    // ws_createSimulators();
     ws_createWorldObjects();
 
     cam_init();
@@ -109,16 +71,7 @@ void ws_update() {
 
     // SIMULATION
     updateSimulation();
-    // USE NEW WORLD OBJECTS
-    // for (WorldObject& _worldObject : worldObjects) {
-    //     if (_worldObject.name == "worldTriangle2_bounce")
-    //         updateSimulation(_worldObject);
 
-    // }
-
-
-    // for(WorldObject& _wo : worldObjects)
-    //     _wo.SetModelMatrixRowMajor();
 
     if(!timing_worldIsPaused()){
         ws_physics();
@@ -127,30 +80,26 @@ void ws_update() {
     // Update Camera matrices (view/persp.)
     cam_UpdateCam();
 
-
-    // Render all world objects (world renderer)
-    wr_render(worldObjects);
-
     // new rendering pipeline - 2024-09-28
-    ws_update_objects();
-    ws_render();
-}
-
-
-// RENDPIPE
-void ws_update_objects(){
+    // UUPDATE OBJECTS
     for (WorldObject* _worldObject : worldObjects) {
         if (_worldObject->isRendpipe)
             _worldObject->update();
     }
-
     for (WorldSimulator* _worldSim : worldSimulators) {
-            _worldSim->update();
+        _worldSim->update();
     }
-
     
 }
+
+
 void ws_render(){
+
+    // Enable later only when enabling a specific scene
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+
     for(WorldObject* _worldObject : worldObjects){
         if (_worldObject->isRendpipe)
             _worldObject->render();
@@ -163,6 +112,21 @@ void ws_render(){
 
 
 
+float* mul_vec3_mat16(float* _vec3, float* _mat16) {
+    float _tempVec3[3] = { 0.0f, 0.0f, 0.0f };
+
+    _tempVec3[0] += _mat16[0] * _vec3[0] + _mat16[1] * _vec3[1] + _mat16[2] * _vec3[2] + _mat16[3] * 1.0f;
+    _tempVec3[1] += _mat16[4] * _vec3[0] + _mat16[5] * _vec3[1] + _mat16[6] * _vec3[2] + _mat16[7] * 1.0f;
+    _tempVec3[2] += _mat16[8] * _vec3[0] + _mat16[9] * _vec3[1] + _mat16[10] * _vec3[2] + _mat16[11] * 1.0f;
+    // 1.0f += _mat16[12] * _vec3[0] + _mat16[13] * _vec3[1] + _mat16[14] * _vec3[2] + _mat16[15] * 1.0f;
+
+
+    _vec3[0] = _tempVec3[0];
+    _vec3[1] = _tempVec3[1];
+    _vec3[2] = _tempVec3[2];
+
+    return _vec3;
+}
 void ws_physics(){
     WorldObject& worldGround = *worldGround_pointer;
 
@@ -281,104 +245,12 @@ int worldObjectCollidingWithGround_aabb_z(WorldObject& ground, WorldObject& wo2)
 
 
 
-void ws_loadTextures(){
-
-
-    // MOUNTAIN TEXTURE
-    glGenTextures(1, &mountainTexture);
-    glBindTexture(GL_TEXTURE_2D, mountainTexture);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    bmp_loader_loadBMPFile("resources/textures/mountain.bmp");
-    // bmp_loader_loadBMPFile("resources/models/blend-cube-texture-1.bmp");
-
-    // blend-cube-texture-1
-    // bmp_loader.prettyPrint();
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp_getWidth(), bmp_getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, bmp_getImageDataBuffer().data());
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-
-
-
-    // GRAY TEXTURE
-    glGenTextures(1, &grayTexture);
-    glBindTexture(GL_TEXTURE_2D, grayTexture);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // bmp_loader_loadBMPFile("media/mountain.bmp");
-    // bmp_loader.prettyPrint();
-
-    float gray_f = 0.5;
-    unsigned char gray_i = (unsigned char)(gray_f * 255);
-    const unsigned char grayData[3] = { gray_i, gray_i, gray_i };
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, &grayData);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-
-    // RANDOM TEXTURE
-    glGenTextures(1, &qrTexture);
-    glBindTexture(GL_TEXTURE_2D, qrTexture);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // bmp_loader_loadBMPFile("media/mountain.bmp");
-    // bmp_loader.prettyPrint();
-
-    // RANDOM DATA GENERATION
-    // Old Black and white generated texture
-    // Generate a black and white test 'image'
-    int blackWhiteWidth = 100;
-    int blackWhiteHeight = 100;
-    // Generate black and white texture : 3 * blackWhiteWidth * blackWhiteHeight
-    unsigned char blackWhiteImageBuffer[30000]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
-
-    for (long unsigned int rgb_i = 0; rgb_i < sizeof(blackWhiteImageBuffer); rgb_i += 3) {
-        // std::cout << rgb_i << " ";
-        int r = rand();
-
-        if (r < 1073741823) {
-            blackWhiteImageBuffer[rgb_i] = 0;
-            blackWhiteImageBuffer[rgb_i + 1] = 0;
-            blackWhiteImageBuffer[rgb_i + 2] = 0;
-        }
-        else {
-            blackWhiteImageBuffer[rgb_i] = 255;
-            blackWhiteImageBuffer[rgb_i + 1] = 255;
-            blackWhiteImageBuffer[rgb_i + 2] = 255;
-        }
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, blackWhiteWidth, blackWhiteHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, &blackWhiteImageBuffer);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-
-
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-
-void ws_createSimulators(){
-    // SimWorldContainer simContainer_1("simContainer_1");
-    // simulators.push_back(simContainer_1);
-}
-
+/**
+ *  Populates the scene with all objects it will contain.
+ * 
+ * 
+ */
 void ws_createWorldObjects(){
-
-    
-    
 
 
     // 1. - CUBE 1
@@ -419,8 +291,9 @@ void ws_createWorldObjects(){
 
     // RIGID BODY
     cube_3_gravity->hasRigidBody = true;
-    cube_3_gravity->rigidBody.shader = &wireframeShader;
-    cube_3_gravity->rigidBody.setVaoVbo_wireframe();
+    // TODO : RENDER THE RIGID BODY AS WIREFRAME
+    // cube_3_gravity->rigidBody.shader = &wireframeShader;
+    // cube_3_gravity->rigidBody.setVaoVbo_wireframe();
 
     // GRAVITY ENABLED CUBES
     float cube_3_scale = 2.0;
@@ -649,56 +522,6 @@ void ws_createWorldObjects(){
     worldSim_1_obj_1->position_0 = { 0.0f, 0.0f, 0.0f };
     worldSim_1_obj_1->position = { 0.0f, 0.0f, 0.0f };
 
-
-
-    /*
-        OLD SIMULATOR
-    */
-
-
-    // simContainer_1.name = "simContainer_1";
-    // // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
-
-    // simContainer_1.scale = { 3.0, 3.0, 3.0 };
-    // simContainer_1.position = { 25.0f, -5.0f, 3.1f };
-
-    // // simContainer_1.renderer.setVaoVbo_obj();
-    // simContainer_1.addSimulatorContainerVertices();
-    // simContainer_1.renderer.createSimulatorRenderer(simContainer_1.vertices);
-
-    // simulator1_ptr = Sim::getSim1Pointer();
-    // simContainer_1.SetSimulator(simulator1_ptr);
-
-    // // std::cout << "simulator1_ptr->simSaveDirectory = " << simulator1_ptr->simSaveDirectory << std::endl;
-
-    // // 15. - SIMULATOR 1 - OBJECT 1
-    // WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
-    // sim1_containerObj_1.name = "simContainer1_Object1";
-    // sim1_containerObj_1.LoadWorldObject("resources/models/pso/cube.pso");
-
-    // // worldCube1.scale = {2.0, 2.0, 2.0};
-    // sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
-    // sim1_containerObj_1.position_0 = { 0.0f, 0.0f, 0.0f };
-    // sim1_containerObj_1.position = { 0.0f, 0.0f, 0.0f };
-    // // worldCube1.printVertices();
-
-    // sim1_containerObj_1.setVaoVbo330();
-    // sim1_containerObj_1.setShaderProgram(&worldShader);
-    // // sim1_containerObj_1.push_back(worldCube1);
-
-    // worldObjects.push_back(&simContainer_1);
-
-    // for (WorldObject& _worldObject : worldObjects) {
-    //         std::cout << "!!!!" << std::endl;
-
-    //     if (_worldObject.name == "simContainer_1"){
-    //         SimWorldContainer* container = static_cast<SimWorldContainer*>(&_worldObject);
-    //         std::cout << "__________" << std::endl;
-    //     }
-    // }
-
-    // std::cout << "simContainer_1.name = " << simContainer_1.name << std::endl;
-    // std::cout << "simContainer_1.vertices.size() = " << simContainer_1.vertices.size() << std::endl;
 
 
 

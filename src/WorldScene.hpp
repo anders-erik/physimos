@@ -17,6 +17,7 @@ std::vector<WorldObject*> ws_getWorldObjects();
 
 void ws_loadTextures();
 
+float* mul_vec3_mat16(float* _vec3, float* _mat16);
 void ws_physics();
 int worldObjectCollidingWithGround_aabb_z(WorldObject& ground, WorldObject& wo2);
 

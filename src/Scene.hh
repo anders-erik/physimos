@@ -11,10 +11,6 @@ public:
 
     Camera* camera;
 
-    
-    // unsigned int _viewObjLoc;
-    // unsigned int _sanityObjLoc;
-    // unsigned int _perspectiveObjLoc;
 };
 
 

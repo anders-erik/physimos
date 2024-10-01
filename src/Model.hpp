@@ -12,6 +12,8 @@
 
 namespace objects {
 
+void generateRandomTexture();
+
 
 class Model {
     public:

@@ -12,7 +12,7 @@ int glThrowSimWindowOK();
 GLFWwindow* glThrowSimReturnWindowPointer();
 
 // Terminate
-int terminatGlThrowSimWindow();
+int terminatePhysimosWindow();
 
 // Runtime
 int shouldWindowKeepGoing();

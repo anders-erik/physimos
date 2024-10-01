@@ -75,7 +75,7 @@ GLFWwindow* glThrowSimReturnWindowPointer() {
 
 
 // TERMINATE
-int terminatGlThrowSimWindow(){
+int terminatePhysimosWindow() {
     glfwDestroyWindow(window__);
     glfwTerminate();
     return 0;

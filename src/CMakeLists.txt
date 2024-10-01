@@ -14,15 +14,12 @@ set(SOURCES
     Simulation.cpp 
     Camera.cpp 
     Windowing.cpp 
-    WorldObject.cpp 
-    WorldRenderer.cpp 
+    WorldObject.cpp
     Timing.cpp 
     WorldScene.cpp 
-    RigidBody.cpp 
-    VectorMath.cpp 
+    RigidBody.cpp
     process_info.cpp 
-    uiRenderer.cpp 
-    SimWorldContainer.cpp
+    uiRenderer.cpp
     Model.cpp
     WorldSimulator.cc
 )

@@ -8,7 +8,7 @@ WorldSimulator::WorldSimulator(std::string _simname) {
 }
 
 void WorldSimulator::update(){
-    std::cout << "WorldSimulator::update()" << std::endl;
+    // std::cout << "WorldSimulator::update()" << std::endl;
     simContainer->update();
 
     // step through all the simulator objects and update them using the simulator data
@@ -34,7 +34,7 @@ void WorldSimulator::update(){
 }
 
 void WorldSimulator::render() {
-    std::cout << "WorldSimulator::render()" << std::endl;
+    // std::cout << "WorldSimulator::render()" << std::endl;
     simContainer->render();
 
     for (WorldObject* _wo : simulatorWorldObjects) {

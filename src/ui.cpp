@@ -196,7 +196,7 @@ void ui_init() {
 
 
     // load into memory
-    ui_loadUiFile("src/main.psoui");
+    ui_loadUiFile("resources/ui/main.psoui");
 
     // Removes all ui elements and regenerate them
     ui_reloadUi();
