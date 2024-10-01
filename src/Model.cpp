@@ -98,42 +98,86 @@ namespace objects {
             break;
         }
 
-        
+        std::vector<float> tempWireData;
         // Because all models consist of triangle faces we can easily grab one face at a time and 'connect' all three vertices
         for (int i = 0; i < vertexCount*stride; i = i + stride * 3) {
             
             // vert 2 -> 1
-            wireData.push_back(vertices[i + 2*stride + 0]);
-            wireData.push_back(vertices[i + 2*stride + 1]);
-            wireData.push_back(vertices[i + 2*stride + 2]);
+            tempWireData.push_back(vertices[i + 2 * stride + 0]);
+            tempWireData.push_back(vertices[i + 2 * stride + 1]);
+            tempWireData.push_back(vertices[i + 2 * stride + 2]);
 
-            wireData.push_back(vertices[i + 1*stride + 0]);
-            wireData.push_back(vertices[i + 1*stride + 1]);
-            wireData.push_back(vertices[i + 1*stride + 2]);
-
-            // vert 1 -> 0
-            wireData.push_back(vertices[i + 1 * stride + 0]);
-            wireData.push_back(vertices[i + 1 * stride + 1]);
-            wireData.push_back(vertices[i + 1 * stride + 2]);
-
-            wireData.push_back(vertices[i + 0]);
-            wireData.push_back(vertices[i + 1]);
-            wireData.push_back(vertices[i + 2]);
+            tempWireData.push_back(vertices[i + 1 * stride + 0]);
+            tempWireData.push_back(vertices[i + 1 * stride + 1]);
+            tempWireData.push_back(vertices[i + 1 * stride + 2]);
 
             // vert 1 -> 0
-            wireData.push_back(vertices[i + 0]);
-            wireData.push_back(vertices[i + 1]);
-            wireData.push_back(vertices[i + 2]);
+            tempWireData.push_back(vertices[i + 1 * stride + 0]);
+            tempWireData.push_back(vertices[i + 1 * stride + 1]);
+            tempWireData.push_back(vertices[i + 1 * stride + 2]);
 
-            wireData.push_back(vertices[i + 2 * stride + 0]);
-            wireData.push_back(vertices[i + 2 * stride + 1]);
-            wireData.push_back(vertices[i + 2 * stride + 2]);
+            tempWireData.push_back(vertices[i + 0]);
+            tempWireData.push_back(vertices[i + 1]);
+            tempWireData.push_back(vertices[i + 2]);
+
+            // vert 1 -> 0
+            tempWireData.push_back(vertices[i + 0]);
+            tempWireData.push_back(vertices[i + 1]);
+            tempWireData.push_back(vertices[i + 2]);
+
+            tempWireData.push_back(vertices[i + 2 * stride + 0]);
+            tempWireData.push_back(vertices[i + 2 * stride + 1]);
+            tempWireData.push_back(vertices[i + 2 * stride + 2]);
 
 
             wireVertexCount += 6;
             
         }
 
+
+        // lean out wireframe model because each edge consists of two lines!
+        std::vector<PVertPair> vertexPairCache;
+        // std::cout << "tempWireData.size() = " << tempWireData.size() << std::endl;
+        
+        // Loops through each 'line' by grabbing two vertices at a time
+        for (size_t i = 0; i < tempWireData.size(); i += 6) {
+            // New pair in existing model
+            PVertPair modelPair;
+            modelPair.vert1.x = tempWireData[i + 0];
+            modelPair.vert1.y = tempWireData[i + 1];
+            modelPair.vert1.z = tempWireData[i + 2];
+            modelPair.vert2.x = tempWireData[i + 3];
+            modelPair.vert2.y = tempWireData[i + 4];
+            modelPair.vert2.z = tempWireData[i + 5];
+
+
+            // Every time a vertex pair makes it through the loop below, it is added to cache and also appended to the final wireframe-data-vector
+            bool pairMatch = false;
+            for (PVertPair cachedPair : vertexPairCache){
+                if (pVertPairsAreEquivelent(cachedPair, modelPair)) {
+                    pairMatch = true;
+                    // std::cout << "PAIR MATCH" << std::endl;
+                }
+            }
+
+            if(pairMatch){
+                pairMatch = false;
+            }
+            else{
+                vertexPairCache.push_back(modelPair);
+                
+                wireData.push_back(modelPair.vert1.x);
+                wireData.push_back(modelPair.vert1.y);
+                wireData.push_back(modelPair.vert1.z);
+                wireData.push_back(modelPair.vert2.x);
+                wireData.push_back(modelPair.vert2.y);
+                wireData.push_back(modelPair.vert2.z);
+            }
+
+        }
+
+        // std::cout << "vertexPairCache.size()*6 = " << vertexPairCache.size()*6 << std::endl;
+        // std::cout << "wireData.size() = " << wireData.size() << std::endl;
 
         glGenVertexArrays(1, &vaoWire);
         glGenBuffers(1, &vboWire);
@@ -149,6 +193,24 @@ namespace objects {
         glBindVertexArray(0);
 
         
+    }
+    
+
+    bool pVertPairsAreEquivelent(PVertPair& pair1, PVertPair& pair2){
+        return  
+            (pair1.vert1.x == pair2.vert1.x &&
+            pair1.vert1.y == pair2.vert1.y &&
+            pair1.vert1.z == pair2.vert1.z &&
+            pair1.vert2.x == pair2.vert2.x &&
+            pair1.vert2.y == pair2.vert2.y &&
+            pair1.vert2.z == pair2.vert2.z )
+            ||
+            (pair1.vert1.x == pair2.vert2.x &&
+            pair1.vert1.y == pair2.vert2.y &&
+            pair1.vert1.z == pair2.vert2.z &&
+            pair1.vert2.x == pair2.vert1.x &&
+            pair1.vert2.y == pair2.vert1.y &&
+            pair1.vert2.z == pair2.vert1.z);
     }
 
 

@@ -14,6 +14,19 @@ namespace objects {
 
 void generateRandomTexture();
 
+typedef struct PVert{
+    float x;
+    float y;
+    float z;
+} PVert;
+
+typedef struct PVertPair {
+    PVert vert1;
+    PVert vert2;
+} PVertPair;
+
+bool pVertPairsAreEquivelent(PVertPair& pair1, PVertPair& pair2);
+
 
 class Model {
     public:

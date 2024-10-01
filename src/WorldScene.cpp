@@ -83,7 +83,7 @@ void ws_update() {
     // new rendering pipeline - 2024-09-28
     // UUPDATE OBJECTS
     for (WorldObject* _worldObject : worldObjects) {
-        if (_worldObject->isRendpipe)
+        if (_worldObject->isActive)
             _worldObject->update();
     }
     for (WorldSimulator* _worldSim : worldSimulators) {
@@ -101,7 +101,7 @@ void ws_render(){
 
 
     for(WorldObject* _worldObject : worldObjects){
-        if (_worldObject->isRendpipe)
+        if (_worldObject->isActive)
             _worldObject->render();
     }
 
@@ -257,8 +257,7 @@ void ws_createWorldObjects(){
 
     WorldObject* worldCube1 = new WorldObject("cube", "worldCube1");
     worldObjects.push_back(worldCube1);
-    worldCube1->isActive = false;
-    worldCube1->isRendpipe = true;
+    worldCube1->isActive = true;
 
     worldCube1->scale = { 0.5, 0.5, 0.5 };
     worldCube1->position = { 20.0f, 0.0f, 0.0f };
@@ -270,8 +269,7 @@ void ws_createWorldObjects(){
     // WorldObject worldCube1("resources/models/cube.pso");
     WorldObject* worldCube_spin = new WorldObject("cube", "worldCube_spin");
     worldObjects.push_back(worldCube_spin);
-    worldCube_spin->isActive = false;
-    worldCube_spin->isRendpipe = true;
+    worldCube_spin->isActive = true;
 
     float cubeSpinScale = 1.0f;
     worldCube_spin->scale = { cubeSpinScale, cubeSpinScale, cubeSpinScale };
@@ -286,8 +284,7 @@ void ws_createWorldObjects(){
 
     WorldObject* cube_3_gravity = new WorldObject("cube", "cube_3_gravity");
     worldObjects.push_back(cube_3_gravity);
-    cube_3_gravity->isActive = false;
-    cube_3_gravity->isRendpipe = true;
+    cube_3_gravity->isActive = true;
 
     // RIGID BODY
     cube_3_gravity->hasRigidBody = true;
@@ -334,9 +331,7 @@ void ws_createWorldObjects(){
 
     WorldObject* worldCube4_obj = new WorldObject("cube", "worldCube4_obj");
     worldObjects.push_back(worldCube4_obj);
-    worldCube4_obj->isActive = false;
-    worldCube4_obj->isRendpipe = true;
-
+    worldCube4_obj->isActive = true;
     worldCube4_obj->scale = { 2.0, 2.0, 2.0 };
     worldCube4_obj->position = { 20.0f, -10.0f, 10.0f };
 
@@ -346,8 +341,7 @@ void ws_createWorldObjects(){
     // 5. - TEMP - BOUNDING BOX ??
     WorldObject* cube_bounding_1 = new WorldObject("cube", "cube_bounding_1");
     worldObjects.push_back(cube_bounding_1);
-    cube_bounding_1->isActive = false;
-    cube_bounding_1->isRendpipe = true;
+    cube_bounding_1->isActive = true;
 
     cube_bounding_1->scale = { 0.5, 0.5, 0.5 };
     cube_bounding_1->position = { -10.0f, -5.0f, 20.0f };
@@ -359,8 +353,7 @@ void ws_createWorldObjects(){
 
     WorldObject* house1_obj = new WorldObject("house-1", "house1_obj");
     worldObjects.push_back(house1_obj);
-    house1_obj->isActive = false;
-    house1_obj->isRendpipe = true;
+    house1_obj->isActive = true;
 
     house1_obj->scale = { 1.0, 1.0, 1.0 };
     house1_obj->position = { 10.0f, 20.0f, 3.0f };
@@ -374,8 +367,7 @@ void ws_createWorldObjects(){
 
     WorldObject* worldTriangle2_bounce = new WorldObject("tri_pso.pso", "worldTriangle2_bounce");
     worldObjects.push_back(worldTriangle2_bounce);
-    worldTriangle2_bounce->isActive = false;
-    worldTriangle2_bounce->isRendpipe = true;
+    worldTriangle2_bounce->isActive = true;
 
     float triBounceScale = 5.0f;
     worldTriangle2_bounce->scale = { 1.0f, triBounceScale, triBounceScale };
@@ -390,8 +382,7 @@ void ws_createWorldObjects(){
 
     WorldObject* worldTriangle1Texture = new WorldObject("tri_tex_pso.pso", "worldTriangle1Texture");
     worldObjects.push_back(worldTriangle1Texture);
-    worldTriangle1Texture->isActive = false;
-    worldTriangle1Texture->isRendpipe = true;
+    worldTriangle1Texture->isActive = true;
 
     worldTriangle1Texture->scale = { 1.0, 5.0, 5.0 };
     worldTriangle1Texture->position = { -5.0f, -10.0f, 10.0f };
@@ -405,10 +396,7 @@ void ws_createWorldObjects(){
     WorldObject* rendpipe_obj_ptr = new WorldObject("blend-cube-texture-1", "rendpipe_obj");
     worldObjects.push_back(rendpipe_obj_ptr);
 
-    // MAKE SURE TO MAKE NOT ACTIVE TO PREVENT OLD RENDERING PIPELINE!
-    rendpipe_obj_ptr->isActive = false;
-    // ENABLE NEW RENDPIPE
-    rendpipe_obj_ptr->isRendpipe = true;
+    rendpipe_obj_ptr->isActive = true;
 
     // WorldObject& rendpipe_obj = *rendpipe_obj_ptr;
 
@@ -425,10 +413,7 @@ void ws_createWorldObjects(){
     WorldObject* rendpipe_cube2_ptr = new WorldObject("cube", "rendpipe_cube2");
     worldObjects.push_back(rendpipe_cube2_ptr);
 
-    // MAKE SURE TO MAKE NOT ACTIVE TO PREVENT OLD RENDERING PIPELINE!
-    rendpipe_cube2_ptr->isActive = false;
-    // ENABLE NEW RENDPIPE
-    rendpipe_cube2_ptr->isRendpipe = true;
+    rendpipe_cube2_ptr->isActive = true;
 
     rendpipe_cube2_ptr->position = { -10.0f, 0.0f, 5.0f };
 
@@ -440,10 +425,7 @@ void ws_createWorldObjects(){
     WorldObject* ground_01 = new WorldObject("ground-01", "ground_01");
     worldObjects.push_back(ground_01);
 
-    // MAKE SURE TO MAKE NOT ACTIVE TO PREVENT OLD RENDERING PIPELINE!
-    ground_01->isActive = false;
-    // ENABLE NEW RENDPIPE
-    ground_01->isRendpipe = true;
+    ground_01->isActive = true;
 
     float groundScale = 40; // currently scaled in blender..
 
@@ -463,8 +445,7 @@ void ws_createWorldObjects(){
     WorldObject* tri_pso = new WorldObject("tri_pso.pso", "tri_pso");
     worldObjects.push_back(tri_pso);
 
-    tri_pso->isActive = false;
-    tri_pso->isRendpipe = true;
+    tri_pso->isActive = true;
 
     tri_pso->position = { -20.0f, 1.0f, 2.0f };
 
@@ -475,8 +456,7 @@ void ws_createWorldObjects(){
     WorldObject* tri_tex_pso = new WorldObject("tri_tex_pso.pso", "tri_tex_pso");
     worldObjects.push_back(tri_tex_pso);
 
-    tri_tex_pso->isActive = false;
-    tri_tex_pso->isRendpipe = true;
+    tri_tex_pso->isActive = true;
 
     tri_tex_pso->position = { -20.1f, 1.0f, 3.0f };
 
@@ -491,8 +471,7 @@ void ws_createWorldObjects(){
 
     wire_pos_1->scale = { 1.0, 1.0, 1.0 };
     wire_pos_1->position = { -21.0f, 15.0f, 4.1f };
-    wire_pos_1->isActive = false;
-    wire_pos_1->isRendpipe = true;
+    wire_pos_1->isActive = true;
 
 
 
@@ -507,8 +486,7 @@ void ws_createWorldObjects(){
     worldSim_1->createSimContainer("cube-wire.pso", "worldSim_1_container");
     worldSim_1->simContainer->scale = { 3.0, 3.0, 3.0 };
     worldSim_1->simContainer->position = { -15.0f, -5.0f, 3.1f };
-    worldSim_1->simContainer->isActive = false;
-    worldSim_1->simContainer->isRendpipe = true;
+    worldSim_1->simContainer->isActive = true;
 
     Sim::Simulator* simulator1_ptr = Sim::getSim1Pointer();
     worldSim_1->setSimulator(simulator1_ptr);
@@ -516,8 +494,7 @@ void ws_createWorldObjects(){
     // 16. - worldSim_1_obj_1 - First simulator, first sim object
     WorldObject* worldSim_1_obj_1 = new WorldObject("cube", "worldSim_1_obj_1");
     worldSim_1->simulatorWorldObjects.push_back(worldSim_1_obj_1);
-    worldSim_1_obj_1->isActive = false;
-    worldSim_1_obj_1->isRendpipe = true;
+    worldSim_1_obj_1->isActive = true;
     worldSim_1_obj_1->scale = { 0.5, 0.5, 0.5 };
     worldSim_1_obj_1->position_0 = { 0.0f, 0.0f, 0.0f };
     worldSim_1_obj_1->position = { 0.0f, 0.0f, 0.0f };

@@ -81,19 +81,11 @@ typedef struct BoundingBox {
 
 class WorldObject {
 public:
+    WorldObject() {};
     WorldObject(std::string _modelName, std::string _objectName);
-    WorldObject(const char* path);
-    WorldObject();
-    // virtual ~WorldObject() = default;
-
-    // virtual ~WorldObject() {};
-
-    // WorldObjectType worldObjectType;
 
     std::string name;
     bool isActive = true;
-
-    void LoadWorldObject(const char* path);
 
 
     // NEW RENDER 2024-09-28
@@ -108,26 +100,9 @@ public:
     std::vector<WorldObject> children;
 
 
-    // RENDER STUFF
-    render::RENDPIPE rendpipe;
-    void createRendpipe(render::RENDPIPE _rendpipe, std::string modelname);
-    render::Renderer* renderer_ptr;
-    render::Renderer renderer;
     Shader * shader;
-    void setShaderProgram(Shader* shader);
-    unsigned int vao;
-    unsigned int vbo;
-    void setVaoVbo330();
-    void setVaoVbo332();
-    void setVaoVbo_obj();
+    
 
-
-    objects::Model model;
-    bool hasModel = false;
-
-    // Texture
-    int hasTexture = 0;
-    unsigned int glTexture = 0;
 
     // Verts
     std::vector<float> vertices;
@@ -143,6 +118,9 @@ public:
     std::vector<float> boundingVerts;
 
 
+
+    
+    // TRANSFORM
 	Vec3 scale = {1.0f, 1.0f, 1.0f};
 
     Vec3 position_0 = { 0.0f, 0.0f, 0.0f };;
@@ -160,16 +138,11 @@ public:
     
     float modelMatrixRowMajor[16] = {0};
 
-    std::string modelPath = "";
 
 
     
 
 	
-	
-	
-
-
 
     // MATH
     void Rotate(Vec3 rotationVector);
@@ -179,7 +152,6 @@ public:
     void SetModelMatrixRowMajor();
     
 
-    void loadVerticexFromFile(); // Not currently in use !
     void printVertices();
 
     void printPosition();
