@@ -33,6 +33,10 @@ extern Sim::Simulator* sim_1_ptr;
 #include "Scene.hh"
 Scene scene_1;
 
+// WORLD SIMULATOR
+#include "WorldSimulator.cc"
+std::vector<WorldSimulator*> worldSimulators;
+
 
 
 // WORLD OBJECTS
@@ -139,11 +143,21 @@ void ws_update_objects(){
         if (_worldObject->isRendpipe)
             _worldObject->update();
     }
+
+    for (WorldSimulator* _worldSim : worldSimulators) {
+            _worldSim->update();
+    }
+
+    
 }
 void ws_render(){
     for(WorldObject* _worldObject : worldObjects){
         if (_worldObject->isRendpipe)
             _worldObject->render();
+    }
+
+    for (WorldSimulator* _worldSim : worldSimulators){
+            _worldSim->render();
     }
 }
 
@@ -595,45 +609,84 @@ void ws_createWorldObjects(){
 
 
 
+    /*  
+        14. wire_pos_1 : first wireframe pso-object loaded
+    */
+
+    WorldObject* wire_pos_1 = new WorldObject("cube-wire.pso", "wire_pos_1");
+    worldObjects.push_back(wire_pos_1);
+
+    wire_pos_1->scale = { 1.0, 1.0, 1.0 };
+    wire_pos_1->position = { -21.0f, 15.0f, 4.1f };
+    wire_pos_1->isActive = false;
+    wire_pos_1->isRendpipe = true;
 
 
 
 
+    /* 
+        15. - wordlSim_1  - First WorldSimulator
+     */
 
+    WorldSimulator* worldSim_1 = new WorldSimulator("worldSim_1");
+    worldSimulators.push_back(worldSim_1);
 
-    // 14. - SIMULATOR 1 - WIREFRAME
-
-    simContainer_1.name = "simContainer_1";
-    // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
-
-    simContainer_1.scale = { 3.0, 3.0, 3.0 };
-    simContainer_1.position = { -15.0f, -5.0f, 3.1f };
-
-    // simContainer_1.renderer.setVaoVbo_obj();
-    simContainer_1.addSimulatorContainerVertices();
-    simContainer_1.renderer.createSimulatorRenderer(simContainer_1.vertices);
+    worldSim_1->createSimContainer("cube-wire.pso", "worldSim_1_container");
+    worldSim_1->simContainer->scale = { 3.0, 3.0, 3.0 };
+    worldSim_1->simContainer->position = { -15.0f, -5.0f, 3.1f };
+    worldSim_1->simContainer->isActive = false;
+    worldSim_1->simContainer->isRendpipe = true;
 
     Sim::Simulator* simulator1_ptr = Sim::getSim1Pointer();
-    simContainer_1.SetSimulator(simulator1_ptr);
+    worldSim_1->setSimulator(simulator1_ptr);
 
-    // std::cout << "simulator1_ptr->simSaveDirectory = " << simulator1_ptr->simSaveDirectory << std::endl;
+    // 16. - worldSim_1_obj_1 - First simulator, first sim object
+    WorldObject* worldSim_1_obj_1 = new WorldObject("cube", "worldSim_1_obj_1");
+    worldSim_1->simulatorWorldObjects.push_back(worldSim_1_obj_1);
+    worldSim_1_obj_1->isActive = false;
+    worldSim_1_obj_1->isRendpipe = true;
+    worldSim_1_obj_1->scale = { 0.5, 0.5, 0.5 };
+    worldSim_1_obj_1->position_0 = { 0.0f, 0.0f, 0.0f };
+    worldSim_1_obj_1->position = { 0.0f, 0.0f, 0.0f };
 
-    // 15. - SIMULATOR 1 - OBJECT 1
-    WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
-    sim1_containerObj_1.name = "simContainer1_Object1";
-    sim1_containerObj_1.LoadWorldObject("resources/models/pso/cube.pso");
 
-    // worldCube1.scale = {2.0, 2.0, 2.0};
-    sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
-    sim1_containerObj_1.position_0 = { 0.0f, 0.0f, 0.0f };
-    sim1_containerObj_1.position = { 0.0f, 0.0f, 0.0f };
-    // worldCube1.printVertices();
 
-    sim1_containerObj_1.setVaoVbo330();
-    sim1_containerObj_1.setShaderProgram(&worldShader);
-    // sim1_containerObj_1.push_back(worldCube1);
+    /*
+        OLD SIMULATOR
+    */
 
-    worldObjects.push_back(&simContainer_1);
+
+    // simContainer_1.name = "simContainer_1";
+    // // simContainer_1.worldObjectType = WorldObjectType::SimWorldContainer;
+
+    // simContainer_1.scale = { 3.0, 3.0, 3.0 };
+    // simContainer_1.position = { 25.0f, -5.0f, 3.1f };
+
+    // // simContainer_1.renderer.setVaoVbo_obj();
+    // simContainer_1.addSimulatorContainerVertices();
+    // simContainer_1.renderer.createSimulatorRenderer(simContainer_1.vertices);
+
+    // simulator1_ptr = Sim::getSim1Pointer();
+    // simContainer_1.SetSimulator(simulator1_ptr);
+
+    // // std::cout << "simulator1_ptr->simSaveDirectory = " << simulator1_ptr->simSaveDirectory << std::endl;
+
+    // // 15. - SIMULATOR 1 - OBJECT 1
+    // WorldObject& sim1_containerObj_1 = simContainer_1.containerWorldObjects.emplace_back();
+    // sim1_containerObj_1.name = "simContainer1_Object1";
+    // sim1_containerObj_1.LoadWorldObject("resources/models/pso/cube.pso");
+
+    // // worldCube1.scale = {2.0, 2.0, 2.0};
+    // sim1_containerObj_1.scale = { 0.5, 0.5, 0.5 };
+    // sim1_containerObj_1.position_0 = { 0.0f, 0.0f, 0.0f };
+    // sim1_containerObj_1.position = { 0.0f, 0.0f, 0.0f };
+    // // worldCube1.printVertices();
+
+    // sim1_containerObj_1.setVaoVbo330();
+    // sim1_containerObj_1.setShaderProgram(&worldShader);
+    // // sim1_containerObj_1.push_back(worldCube1);
+
+    // worldObjects.push_back(&simContainer_1);
 
     // for (WorldObject& _worldObject : worldObjects) {
     //         std::cout << "!!!!" << std::endl;

@@ -24,6 +24,7 @@ set(SOURCES
     uiRenderer.cpp 
     SimWorldContainer.cpp
     Model.cpp
+    WorldSimulator.cc
 )
 
 #   set(SOURCES )

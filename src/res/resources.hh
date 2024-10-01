@@ -21,6 +21,7 @@ namespace res {
         p3c3,
         p3c3t2,
         p3t2,
+        p3,
     } ModelVertStucture;
 
     typedef struct ModelFormat {

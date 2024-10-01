@@ -32,6 +32,7 @@ class Model {
         void loadPsoModel(std::string path);
         void setVaoVbo_p3c3();
         void setVaoVbo_p3c3t2();
+        void setVaoVbo_p3();
         res::ModelVertStucture loadedVertStructure;
 
         // TEXTURE   

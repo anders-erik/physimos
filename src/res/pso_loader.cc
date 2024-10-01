@@ -86,6 +86,10 @@ PsoLoader* loadPsoModel(std::string _modelname) {
                     psoLoader->vertStructure = res::ModelVertStucture::p3c3t2;
                     psoLoader->floatsPerVertex = 8;
                 }
+                else if (value == "p3") {
+                    psoLoader->vertStructure = res::ModelVertStucture::p3;
+                    psoLoader->floatsPerVertex = 3;
+                }
             }
             else if (key == "texture"){
                 // std::cout << "HAS TEXTURE! "  << std::endl;
@@ -121,6 +125,11 @@ PsoLoader* loadPsoModel(std::string _modelname) {
             psoLoader->vertexCount++;
         }
         psoLoader->vertexCount /= psoLoader->floatsPerVertex;
+
+        if (_modelname == "cube-wire.pso"){
+            std::cout << "_modelname = " << _modelname << std::endl;
+            
+        }
 
         std::cout << "OK.  [" << psoLoader->vertexFloatBuffer.size() << " values]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
 

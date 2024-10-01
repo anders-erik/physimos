@@ -61,6 +61,8 @@ namespace objects {
                         setVaoVbo_p3c3();
                     else if (loadedVertStructure == res::ModelVertStucture::p3c3t2)
                         setVaoVbo_p3c3t2();
+                    else if (loadedVertStructure == res::ModelVertStucture::p3)
+                        setVaoVbo_p3();
                     break;
                 
                 default:
@@ -82,6 +84,9 @@ namespace objects {
 
         int stride;
         switch (loadedVertStructure) {
+        case res::ModelVertStucture::p3:
+            stride = 3;
+            break;
         case res::ModelVertStucture::p3c3: 
             stride = 6;
             break;
@@ -390,6 +395,24 @@ namespace objects {
 
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
+    }
+
+    void Model::setVaoVbo_p3() {
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+
+        glBindVertexArray(vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        // printf("triangel : %lu\n", sizeof(triangle));
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices.data()); // I guess this returns the size of the pointer to the underlaying data/array on the heap?
+        // printf("data()   : %lu\n", sizeof(worldCube1.vertices[0])*worldCube1.vertices.size());
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+
     }
 
 

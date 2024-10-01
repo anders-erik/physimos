@@ -46,6 +46,10 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
         shader = getShader(Shaders::world);
         shaderType = Shaders::world;
     }
+    else if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3) {
+        shader = getShader(Shaders::worldWireframe);
+        shaderType = Shaders::worldWireframe;
+    }
 }
 
 // void WorldObject::setShader(Shaders _shader) {
@@ -97,11 +101,15 @@ void WorldObject::render() {
 
 
     // VAO & DRAW
-    if (shaderType == Shaders::worldWireframe){
+    if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3){ // if it is a wireframe model, use wireframe shader but regular model
+        glBindVertexArray(model_ptr->vao);
+        drawLines(model_ptr->wireVertexCount);
+    }
+    else if (shaderType == Shaders::worldWireframe){ // if model with faces but wireframe shader, use wire-vao
         glBindVertexArray(model_ptr->vaoWire);
         drawLines(model_ptr->wireVertexCount);
     }
-    else{
+    else{ // Just draw regular triangles
         glBindVertexArray(model_ptr->vao);
         // Shader call
         drawTriangles(model_ptr->vertexCount);
