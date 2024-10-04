@@ -9,14 +9,18 @@
 
 namespace logger {
 
-
+    // Naive implmeentation of clearing the file
     void init(){
         // std::filesystem::remove_all("logs/");
         // std::filesystem::create_directory("logs/");
 
-        std::ofstream outfile("logs/models.log");
-        outfile << "";
-        outfile.close();
+        std::ofstream modelLogFile("logs/models.log");
+        modelLogFile << "";
+        modelLogFile.close();
+
+        std::ofstream textureLogFile("logs/textures.log");
+        textureLogFile << "";
+        textureLogFile.close();
     }
 
     void log(Logtype logtype, std::string logString){
@@ -28,6 +32,9 @@ namespace logger {
         {
         case Logtype::Models :
             logFileName = "logs/models.log";
+            break;
+        case Logtype::Textures:
+            logFileName = "logs/textures.log";
             break;
         
         default:

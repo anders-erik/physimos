@@ -23,6 +23,8 @@ set(SOURCES
     Model.cpp
     WorldSimulator.cc
     transform.cc
+    uiElement.cc
+    uiModule.cc
 )
 
 #   set(SOURCES )

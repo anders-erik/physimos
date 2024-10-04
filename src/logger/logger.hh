@@ -7,7 +7,7 @@ namespace logger {
 
     typedef enum Logtype {
         Models,
-
+        Textures,
     } Logtype;
 
     void init();

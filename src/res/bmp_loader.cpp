@@ -6,6 +6,7 @@
 
 #include "bmp_loader.hpp"
 
+#include "logger.hh"
 
 
 // loaded file
@@ -34,7 +35,8 @@ unsigned int bmp_getHeight() {
 
      
 void bmp_loader_loadBMPFile(std::string path) {
-    std::cout << "BMP file: " << path << ". ";
+    // std::cout << "BMP file: " << path << ". ";
+    
     imagePath = path;
 
 
@@ -61,7 +63,7 @@ void bmp_loader_loadBMPFile(std::string path) {
 
     imageSize = (unsigned int)fileSize;
 
-    std::cout << "Filesize: " << fileSize << std::endl;
+    // std::cout << "Filesize: " << fileSize << std::endl;
 
     // Create a vector to hold the file data
     std::vector<unsigned char> fileData(fileSize);
@@ -114,6 +116,14 @@ void bmp_loader_loadBMPFile(std::string path) {
 
     file.close();
 
+
+    // Converts the ssize_t of "std::streamsize" to string for logging
+    std::stringstream sizeStringStream;
+    sizeStringStream << fileSize;
+    std::string sizeString = sizeStringStream.str();
+
+
+    logger::log(logger::Logtype::Textures, "BMP file: " + path + ". " + "Filesize: " + sizeString);
 }
 
 

@@ -222,7 +222,7 @@ void ui_renderer_render(std::vector<UiElement>& uiElements) {
     // glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, charTexture);
 
-    glBindVertexArray(uiVAO);
+    // glBindVertexArray(uiVAO);
     glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * elemCount * 48, uiVertexFloatBuffer.data(), GL_STATIC_DRAW);
 

@@ -7,7 +7,7 @@
 
 class Scene {
 public:
-    Scene() { std::cout << "NEW SCENE" << std::endl;};
+    Scene() { /* std::cout << "NEW SCENE" << std::endl; */};
 
     Camera* camera;
 

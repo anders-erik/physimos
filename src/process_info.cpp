@@ -20,7 +20,7 @@ std::string memBloater = "";
 
 
 void process_info_init() {
-    std::cout  << std::endl;
+    // std::cout  << std::endl;
 
     // BLOAT MEMORY
     // for(int i = 0; i<1000; i++)

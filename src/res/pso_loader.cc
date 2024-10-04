@@ -11,6 +11,8 @@
 
 #include "resources.hh"
 
+#include "logger.hh"
+
 
 namespace res {
 
@@ -42,7 +44,7 @@ PsoLoader* loadPsoModel(std::string _modelname) {
     modelPath = modelsDirectory + _modelname;
 
 
-    std::cout << "Loading model: " << modelPath << ". ";
+    // std::cout << "Loading model: " << modelPath << ". ";
     // modelPath = _modelPath;
 
     vertexCount = 0;
@@ -70,7 +72,7 @@ PsoLoader* loadPsoModel(std::string _modelname) {
 
         std::string metaPair;
 
-        std::cout  << std::endl;
+        // std::cout  << std::endl;
         
         while (std::getline(metaStringStream, metaPair, ';')){
             // std::cout << "metaPair = " << metaPair << std::endl;
@@ -127,11 +129,11 @@ PsoLoader* loadPsoModel(std::string _modelname) {
         psoLoader->vertexCount /= psoLoader->floatsPerVertex;
 
         if (_modelname == "cube-wire.pso"){
-            std::cout << "_modelname = " << _modelname << std::endl;
+            // std::cout << "_modelname = " << _modelname << std::endl;
             
         }
 
-        std::cout << "OK.  [" << psoLoader->vertexFloatBuffer.size() << " values]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
+        // std::cout << "OK.  [" << psoLoader->vertexFloatBuffer.size() << " values]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
 
     }
     catch (std::ifstream::failure& e)
@@ -140,8 +142,10 @@ PsoLoader* loadPsoModel(std::string _modelname) {
         std::cout << "ERROR::READING_PSO_FILE" << e.what() << std::endl;
     }
 
-
-
+    std::string logMessage = "Loading model: " + modelPath + ". " + "OK. " + " Called from : (FILE=" + __FILE__ + ";  _LINE=" + ")";
+    // logMessage += "OK. " + " Called from : (FILE:" +  __FILE__ + "; _LINE:" << __LINE__ << ")";
+    logger::log(logger::Logtype::Models, logMessage);
+    
     // std::cout << modelString;
 
 

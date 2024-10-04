@@ -13,6 +13,16 @@
 	- for each scene
 
 
+
+## 2024-10-04
+- each UI element has its own render-call
+- add a world object list with toggleable properties
+	- visibility, active, texture, rigidbody, parent-transform, etc.
+- Potential UI structure:
+	- Element [char, string?, square, checkbox]-> Unit [toggle worldobject properties] -> Module [list of toggle-units]
+
+
+
 ## 2024-09-29/30/1
 - |o| move objects to new rendering pipeline!
 - |o| move simulator container to new pipeline

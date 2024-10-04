@@ -49,8 +49,10 @@ void WorldSimulator::createSimContainer(std::string _modelName, std::string _obj
 
 void WorldSimulator::setSimulator(Sim::Simulator* _simulator) {
     simulator = _simulator;
-    if (simulator->simtype == Sim::Simtypes::VertThrow1)
-        std::cout << "CONFIRMED SIMULATOR TYPE!" << std::endl;
+    if (simulator->simtype == Sim::Simtypes::VertThrow1){
+        
+    }
+        // std::cout << "CONFIRMED SIMULATOR TYPE!" << std::endl;
 
 }
 

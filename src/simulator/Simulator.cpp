@@ -17,18 +17,18 @@ namespace Sim {
     }
 
     void init(){
-        std::cout << "HELLO FROM SIM INIT! " << std::endl;
+        // std::cout << "HELLO FROM SIM INIT! " << std::endl;
         
         sim_1_ptr = new Simulator();
         // sim_1_ptr = &Simulator_1;
-        std::cout << "Sim::sim_1_ptr = " << sim_1_ptr << std::endl;
+        // std::cout << "Sim::sim_1_ptr = " << sim_1_ptr << std::endl;
         
         // Temporary reference object for local convenience
         Simulator& simulator_1 = *sim_1_ptr;
 
         simulator_1.simtype = Simtypes::VertThrow1;
 
-        std::cout << "Sim::sim_1_ptr = " << sim_1_ptr << std::endl;
+        // std::cout << "Sim::sim_1_ptr = " << sim_1_ptr << std::endl;
         
 
         simulator_1.name = "vertithrow_1";
@@ -62,7 +62,7 @@ namespace Sim {
 
     void Simulator::compute() {
         
-        std::cout << " Setting up Simulation " << name << std::endl;
+        // std::cout << " Setting up Simulation " << name << std::endl;
 
         int steps = (int)((tf-t0)/dt);
 
@@ -75,7 +75,7 @@ namespace Sim {
         timestep.acc = {0.0, 0.0, 0.0};
         // timestep.f = f;
 
-        std::cout << " Starting Simulation " << std::endl;
+        // std::cout << " Starting Simulation " << std::endl;
 
         for(int i = 1; i < steps; i++){
             double i_d = (double) i;
@@ -90,7 +90,7 @@ namespace Sim {
             // std::cout << "timestep.t = " << _timestep.t << std::endl;
         }
 
-        std::cout << " Finished Simulation " << std::endl;
+        // std::cout << " Finished Simulation " << std::endl;
         
         std::ofstream file(simSaveDirectory + saveFileName);
 
@@ -120,7 +120,7 @@ namespace Sim {
         }
         
 
-        std::cout << " Simulation Output written to : " << saveFileName << std::endl;
+        std::cout << "Simulation Output written to : " << saveFileName << std::endl;
 
     }
 

@@ -2,6 +2,7 @@
 #include "Model.hpp"
 
 #include <string>
+#include <sstream> // FOR LOGGING
 #include <vector>
 #include <iostream>
 
@@ -12,6 +13,7 @@
 // #include "object_types.hh"
 // #include "loaded_resources.hh"
 
+#include "logger.hh"
 #include "resources.hh"
 #include "pso_loader.hh"
 
@@ -282,7 +284,7 @@ namespace objects {
     void Model::loadObjModel(std::string objModelName) {
         
 
-        std::cout << "Loading obj model: " << objModelName << ". ";
+        // std::cout << "Loading obj model: " << objModelName << ". ";
 
         obj_loadFromFile(objModelName);
 
@@ -296,7 +298,7 @@ namespace objects {
         vertexCount = vertices.size() / 8;
 
 
-        std::cout << " OK. [" << vertices.size() << " values]" << std::endl;
+        // std::cout << " OK. [" << vertices.size() << " values]" << std::endl;
 
         // MTL
         // obj_loadMtlFromFile("./resources/models/blend-cube-no-texture.mtl");
@@ -386,6 +388,13 @@ namespace objects {
         //     std::cout << "HAS TEXTURE MAP" << std::endl;
         // }
 
+
+        // Converts the size_t of "vertices.size()" to string for logging
+        std::stringstream sizeStringStream;
+        sizeStringStream << vertices.size();
+        std::string sizeString = sizeStringStream.str();
+
+        logger::log(logger::Logtype::Models, "Loading obj model: " + objModelName + ". " + " OK. [" + sizeString + " values]");
     }
 
 

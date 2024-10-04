@@ -180,19 +180,18 @@ void ui_detectElementClick(double x, double y) {
     }
 }
 
-// GOOD
-void ui_update() {
-    
-    ui_updateWidgets();
 
-    ui_renderer_render(uiElements);
-}
-
+// REFACTOR - 2024-10-04
+std::vector<UiElement*> uiElement_ptrs;
 
 void ui_init() {
 
 
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
+
+    // REFACTOR - 2024-10-04
+    // CREATE NEW UI TREE
+    
 
 
     // load into memory
@@ -215,6 +214,26 @@ void ui_reloadUi() {
     ui_parseUiFileString();
 
 }
+
+
+
+void ui_update() {
+
+    // REFACTORING - 2024-10-04
+    // MAKE SURE TO RENDER ON TOP OF 3D SCENE
+    glDisable(GL_DEPTH_TEST);
+
+    
+    ui_updateWidgets();
+
+
+    ui_renderer_render(uiElements);
+}
+
+
+
+
+
 
 
 void ui_createWidgets() {

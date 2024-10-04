@@ -13,10 +13,21 @@ typedef enum ElementType {
     TEXTURE = 2,
 } ElementType;
 
+
+
+
 class UiElement {
     public:
         UiElement() {};
         UiElement(std::string _name) {name = _name;};
+
+        // REFACTOR - 2024-10-04
+        UiElement* parent = nullptr;
+        std::vector<UiElement*> children;
+        
+        void render();
+
+
     
         int vertexCount = 6;
         // float vertexFloatBuffer[6*6];

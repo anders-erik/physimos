@@ -26,8 +26,8 @@ int main()
 	// std::cout << std::endl << "---------- MAIN() ----------" << std::endl << std::endl;
 	
 	// 2024-09-13
-	std::cout << std::endl << "   Consistent incremental improvement is the fundamental action of anything worthwhile. " << std::endl;
-	std::cout              << "   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " << std::endl << std::endl;
+	std::cout << std::endl << " Consistent incremental improvement is the fundamental action of anything worthwhile. " << std::endl;
+	std::cout              << " ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " << std::endl << std::endl;
 
 	
 	srand(0);

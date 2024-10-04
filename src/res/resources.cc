@@ -71,6 +71,7 @@ namespace res {
                 // _mf.vertStructure = ModelVertStucture::p3n3t2; // NOT ALWAYS!
             }
         }
+        logger::log(logger::Logtype::Models, "\n"); // New line for log clarity
 
     }
 
