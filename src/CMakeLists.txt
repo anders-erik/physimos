@@ -6,6 +6,7 @@ add_subdirectory(math)
 add_subdirectory(render)
 # add_subdirectory(objects)
 add_subdirectory(logger)
+add_subdirectory(ui)
 
 
 set(SOURCES 

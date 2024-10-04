@@ -10,7 +10,7 @@
 #include <iostream>
 
 typedef enum Shaders {
-    UI,
+    ui,
     world,
     worldObj,
     worldWireframe

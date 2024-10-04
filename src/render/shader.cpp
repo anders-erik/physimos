@@ -52,7 +52,7 @@ void drawTriangles(int vertexCount){
 Shader* getShader(Shaders _shaderType) {
     switch (_shaderType) {
 
-    case Shaders::UI :
+    case Shaders::ui :
         return &_worldObjShader;
         break;
     case Shaders::worldObj:

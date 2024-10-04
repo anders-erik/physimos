@@ -1,4 +1,27 @@
 
+# 2024-10-04 - Reflection on completion
+- The inital thought from last week were good AND flawed
+    - The falwed part was that the inital brainstorm didn't generate the structure for immediate implementaiton, but
+    - the good part was that I essensially formed all the constituen parts more clearly in my head.
+- The refactoring too place over a few days following the initial brainstorm, and took a completely different shape that originally planned
+- SPECIFICS:
+    - I originally planned a linear pipeline
+        - scene -> worldobject -> model -> renderer -> vao -> vbo -> gpu call
+    - instead it turned out that it made more sense to make a connecting world object like so
+        - scene -> world object -> model -> vao+vbo
+        -                       -> transform 
+        -                       -> render
+- takeaway:
+    - "Consistent incremental improvement is the fundamental action of anything worthwhile."
+    - I set the stage a week ago, but the result came from the cumultaive effort over multiple days.
+    - Just keep trying to refine your thought and ideas, and you'll get there.
+        - "Better to get your dopamine from improving your ideas than from having them validated"
+            - Nat Friedman (https://nat.org/)
+
+<br>
+
+
+
 # 2024-09-27
 
 ## Manage the gl-interface variations

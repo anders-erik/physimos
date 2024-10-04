@@ -21,6 +21,12 @@ extern SimState simState;
 extern struct InputState InputState;
 
 
+// REFACTOR - 2024-10-04
+#include "uiModule.hh"
+std::vector<UI::Module*> uiModules;
+
+
+
 // unsigned int uiVAO = 0;
 // unsigned int uiVBO = 0;
 // // unsigned int uiIsCharVAO = 0;
@@ -181,8 +187,6 @@ void ui_detectElementClick(double x, double y) {
 }
 
 
-// REFACTOR - 2024-10-04
-std::vector<UiElement*> uiElement_ptrs;
 
 void ui_init() {
 
@@ -190,8 +194,12 @@ void ui_init() {
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
     // REFACTOR - 2024-10-04
-    // CREATE NEW UI TREE
-    
+    // CREATE NEW UI MODULE
+    UI::ModuleInfo* _woListModule_info = new UI::ModuleInfo();
+    UI::Module* _woListModule = new UI::Module();
+    uiModules.push_back(_woListModule);
+    _woListModule->init(_woListModule_info);
+
 
 
     // load into memory
@@ -216,12 +224,19 @@ void ui_reloadUi() {
 }
 
 
-
+/* 
+    // REFACTOR 2024-10-04
+    Don't need an update function because the ui state is event driven.
+    Instead we simply need to change this to a rendering  method that renderes the app state every frame.
+*/
 void ui_update() {
 
     // REFACTORING - 2024-10-04
     // MAKE SURE TO RENDER ON TOP OF 3D SCENE
     glDisable(GL_DEPTH_TEST);
+    for(UI::Module* _uiModule : uiModules){
+        _uiModule->render();
+    }
 
     
     ui_updateWidgets();

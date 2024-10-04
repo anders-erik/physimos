@@ -14,13 +14,14 @@
 
 
 
-## 2024-10-04
+
+## 2024-10-04/05/06
 - each UI element has its own render-call
 - add a world object list with toggleable properties
 	- visibility, active, texture, rigidbody, parent-transform, etc.
 - Potential UI structure:
 	- Element [char, string?, square, checkbox]-> Unit [toggle worldobject properties] -> Module [list of toggle-units]
-
+- Make sure all WO with velocities/rigidbodies are reset when clicking on STOP
 
 
 ## 2024-09-29/30/1
