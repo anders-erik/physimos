@@ -25,18 +25,18 @@ set(SOURCES
     WorldSimulator.cc
     transform.cc
     uiElement.cc
-    uiModule.cc
 )
 
 #   set(SOURCES )
 add_library(source ${SOURCES})
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/res)
+target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/ui)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/simulator)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/render)
 # target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/objects)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/logger)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include/)
 
-target_link_libraries(source res simulator render)
+target_link_libraries(source res simulator render ui)
 

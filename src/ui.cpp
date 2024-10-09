@@ -2,6 +2,7 @@
 #include "ui.hpp"
 
 #include "uiRenderer.hpp"
+#include "ui/ui_globals.hh"
 
 #include <iomanip>
 
@@ -22,7 +23,7 @@ extern struct InputState InputState;
 
 
 // REFACTOR - 2024-10-04
-#include "uiModule.hh"
+#include "ui_module.hh"
 std::vector<UI::Module*> uiModules;
 
 
@@ -194,11 +195,13 @@ void ui_init() {
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
     // REFACTOR - 2024-10-04
-    // CREATE NEW UI MODULE
-    UI::ModuleInfo* _woListModule_info = new UI::ModuleInfo();
-    UI::Module* _woListModule = new UI::Module();
+    // REFACTOR - 2024-10-9
+    std::vector<UI::Module*> modulesLoadedFromFile = UI::loadModulesFromFile();
+    for(UI::Module* _module_ptr : modulesLoadedFromFile)
+        uiModules.push_back(_module_ptr);
+
+    UI::Module* _woListModule = new UI::Module( UI::ModuleType::List, "woToggleList");
     uiModules.push_back(_woListModule);
-    _woListModule->init(_woListModule_info);
 
 
 
@@ -235,6 +238,7 @@ void ui_update() {
     // MAKE SURE TO RENDER ON TOP OF 3D SCENE
     glDisable(GL_DEPTH_TEST);
     for(UI::Module* _uiModule : uiModules){
+        _uiModule->update();
         _uiModule->render();
     }
 
@@ -681,12 +685,15 @@ void ui_createUiChar(int fontHeight, int x, int y, char chValue, Vec3 color, UiE
 
 
 
-void ui_setWindowSize(int width, int height) {
-    windowWidth = width;
-    windowHeight = height;
+void ui_setWindowSize(int _width, int _height) {
+    windowWidth = _width;
+    windowHeight = _height;
 
     uiTransform16[0] = 2.0f / windowWidth;
     uiTransform16[5] = 2.0f / windowHeight;
+
+    UI::setViewportDimensions(_width, _height);
+
 }
 
 

@@ -3,6 +3,11 @@
 #include "shader.hpp"
 
 
+Shader uiPrimitiveShader;
+unsigned int uiViewportTransformLoc;
+unsigned int uiPrimitiveTransformLoc;
+
+
 
 Shader _worldShader;
 unsigned int _transformLoc;
@@ -24,6 +29,13 @@ unsigned int _viewWireLoc;
 unsigned int _sanityWireLoc;
 unsigned int _perspectiveWireLoc;
 
+
+
+void shader_setUiPrimitiveUniforms_uniforms(float* viewportTransform_mat, float* primitiveTransform_mat) {
+    glUseProgram(uiPrimitiveShader.ID);
+    glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform_mat);
+    glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitiveTransform_mat);
+}
 
 void shader_setWorldObject_uniforms(float* model_mat, float* view_mat, float* perspective_mat, const float* sanity_mat) {
     glUniformMatrix4fv(_modelObjLoc, 1, GL_TRUE, model_mat);
@@ -52,8 +64,8 @@ void drawTriangles(int vertexCount){
 Shader* getShader(Shaders _shaderType) {
     switch (_shaderType) {
 
-    case Shaders::ui :
-        return &_worldObjShader;
+    case Shaders::ui_primitive:
+        return &uiPrimitiveShader;
         break;
     case Shaders::worldObj:
         return &_worldObjShader;
@@ -79,6 +91,12 @@ void shader_init_shaders(){
 
     // char * shaderDir = "resources/shaders/";
 
+
+    uiPrimitiveShader.buildShaderProgram("resources/shaders/ui_primitive_vert.glsl", "resources/shaders/ui_primitive_frag.glsl");
+    uiViewportTransformLoc = glGetUniformLocation(uiPrimitiveShader.ID, "viewportTransform");
+    uiPrimitiveTransformLoc = glGetUniformLocation(uiPrimitiveShader.ID, "primitiveTransform");
+
+    
     _worldShader.buildShaderProgram("resources/shaders/worldShader.vs", "resources/shaders/worldShader.fs");
 
     glUseProgram(_worldShader.ID);

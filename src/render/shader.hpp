@@ -10,10 +10,11 @@
 #include <iostream>
 
 typedef enum Shaders {
-    ui,
-    world,
-    worldObj,
-    worldWireframe
+    ui = 0,
+    ui_primitive = 1,
+    world = 2,
+    worldObj = 3,
+    worldWireframe = 4,
 } Shaders;
 
 
@@ -27,6 +28,8 @@ typedef enum Shaders {
 // }   WorldObjShader_locations;
 
 void setHasTextureUniform(unsigned int _hasTexture);
+
+void shader_setUiPrimitiveUniforms_uniforms(float* viewportTransform_mat, float* primitiveTransform_mat);
 void shader_setWorldObject_uniforms(float* model_mat, float* view_mat, float* perspective_mat, const float* sanity_mat);
 
 

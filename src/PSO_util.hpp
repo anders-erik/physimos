@@ -4,8 +4,8 @@
 // const unsigned int SCREEN_INIT_WIDTH = 800;
 // const unsigned int SCREEN_INIT_HEIGHT = 600;
 
-const unsigned int SCREEN_INIT_WIDTH = 1000;
-const unsigned int SCREEN_INIT_HEIGHT = 750;
+const unsigned int SCREEN_INIT_WIDTH = 1400;
+const unsigned int SCREEN_INIT_HEIGHT = 800;
 
 
 #endif
