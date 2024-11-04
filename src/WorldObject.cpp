@@ -129,7 +129,7 @@ void WorldObject::render() {
     for (WorldObject* _wo : children) {
         _wo->render();
     }
-    
+
 }
 
 

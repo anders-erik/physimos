@@ -10,5 +10,7 @@ logs*
 
 build/*
 build*
+cmake-build*
+
 
 *~

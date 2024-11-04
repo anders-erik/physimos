@@ -12,7 +12,7 @@ namespace logger {
     // Naive implmeentation of clearing the file
     void init(){
         // std::filesystem::remove_all("logs/");
-        // std::filesystem::create_directory("logs/");
+        std::filesystem::create_directory("logs/");
 
         std::ofstream modelLogFile("logs/models.log");
         modelLogFile << "";
@@ -46,7 +46,7 @@ namespace logger {
         logFile.open(logFileName, std::ios_base::app);
 
         if (!logFile.is_open()) {
-            std::cerr << "Unable to open file!" << std::endl;
+            std::cerr << "Unable to open file! [ " << logFileName << " ]" << std::endl;
         }
         else {
             logFile << logString << std::endl;

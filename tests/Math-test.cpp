@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cassert>
 
-#include "Math.hpp"
+#include "Math.hh"
 
 // Enable easy additional messaging ?
 // https://en.cppreference.com/w/cpp/error/assert

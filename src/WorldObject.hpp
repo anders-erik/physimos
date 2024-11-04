@@ -102,7 +102,6 @@ public:
     Transform* transform = nullptr;
 
     Shader * shader;
-    
 
 
     // Verts
