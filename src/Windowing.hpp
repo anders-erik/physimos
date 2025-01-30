@@ -7,15 +7,15 @@
 
 
 // Init
-void initGlThrowSimWindow();
-int glThrowSimWindowOK();
-GLFWwindow* glThrowSimReturnWindowPointer();
+void initPhysimosWindow();
+int physimosWindowOK();
+GLFWwindow* physimosReturnWindowPointer();
 
 // Terminate
 int terminatePhysimosWindow();
 
 // Runtime
-int shouldWindowKeepGoing();
+int windowIsStillGood();
 void processInput();
 void endOfFrameGlfwCalls();
 

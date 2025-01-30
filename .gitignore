@@ -14,3 +14,7 @@ cmake-build*
 
 
 *~
+
+
+gmon.out
+gprof.txt

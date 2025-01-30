@@ -49,9 +49,9 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	initGlThrowSimWindow();
-	glThrowSimReturnWindowPointer();
-	if (glThrowSimWindowOK() == 0) {
+	initPhysimosWindow();
+	physimosReturnWindowPointer();
+	if (physimosWindowOK() == 0) {
 		return -1;
 	}
 
@@ -82,7 +82,7 @@ int main()
 	
 	*/
 
-	while (shouldWindowKeepGoing())
+	while (windowIsStillGood())
 	{
 		// process_info_init();
 

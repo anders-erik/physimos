@@ -64,7 +64,8 @@
 		"unistd.h": "c",
 		"map": "cpp",
 		"codecvt": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"optional": "cpp"
 	}
 }
 

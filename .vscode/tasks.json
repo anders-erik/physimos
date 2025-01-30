@@ -68,7 +68,7 @@
         {
             "type": "shell",
             "label": "Test!",
-            "command": "g++ -I./src/math -o ./tests/math-test ./tests/Math-test.cpp ./src/math/Math.cpp && ./tests/math-test",
+            "command": "g++ -I./src/math -o ./tests/math-test ./tests/Math-test.cpp ./src/math/Math.cc && ./tests/math-test",
             "args": [],
             "options": {},
             "problemMatcher": [
@@ -109,6 +109,58 @@
                 "$gcc"
             ],
             "group": "build",
+            "detail": "compiler: /usr/bin/g++",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Valgrind - run",
+            "command": "valgrind --leak-check=yes ${workspaceFolder}/build_cmake/physimos",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/g++",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "gprof - build",
+            "command": "",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/g++",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "gprof - generate gprof.txt",
+            "command": "gprof ./build_cmake/physimos > gprof.txt",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "dependsOn": "gprof - build",
             "detail": "compiler: /usr/bin/g++",
             "presentation": {
                 "echo": true,

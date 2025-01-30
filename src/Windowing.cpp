@@ -19,7 +19,7 @@ int glThrowSimLoadedOk;
 
 
 
-void initGlThrowSimWindow() {
+void initPhysimosWindow() {
     glfwInit();
     // glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -66,10 +66,10 @@ void initGlThrowSimWindow() {
 }
 
 
-int glThrowSimWindowOK(){
+int physimosWindowOK(){
     return glThrowSimLoadedOk;
 }
-GLFWwindow* glThrowSimReturnWindowPointer() {
+GLFWwindow* physimosReturnWindowPointer() {
     return window__;
 }
 
@@ -84,7 +84,7 @@ int terminatePhysimosWindow() {
 
 
 // Runtime
-int shouldWindowKeepGoing(){
+int windowIsStillGood(){
     return !glfwWindowShouldClose(window__);
 }
 

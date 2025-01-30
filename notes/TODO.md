@@ -1,5 +1,43 @@
 # TODO
 
+
+# 2025
+
+## Goals:
+- lighting
+- scripting
+- terrain generator
+- object builder
+	- mesh
+	- parametric
+- drawing utility
+- simulations
+- physimos introspection
+
+
+### 2025-01-31:
+- add more code to all subsystems
+	- explore and add features until natural subsystems emerge
+
+1. proper window callback
+	- implement mouse pointer location widget
+2. highlight on hover
+	- mouse pointer change
+	- ui element color change
+3. nested ui elements
+4. improved font
+
+
+
+
+---
+---
+---
+
+
+# 2024
+
+
 ## LONG TERM
 - simulation backend can perform distributed simuilation computation
 - all objects and simulation handling is done through the UI/GUI/Editor/World
@@ -11,7 +49,6 @@
 - simulation backend can perform compute using parallel code and GPU
 - timing object
 	- for each scene
-
 
 
 
