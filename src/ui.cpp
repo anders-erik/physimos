@@ -251,8 +251,12 @@ void ui_reloadUi() {
 */
 void ui_update() {
 
-    std::cout << "UI::cursor_x=" << UI::cursor_x << ", UI::cursor_y=" << UI::cursor_y << "\n";
-    
+    // check if cursor is hovering over ui elements (post refactoring-elements)
+    // std::cout << "UI::cursor_x=" << UI::cursor_x << ", UI::cursor_y=" << UI::cursor_y << "\n";
+    for (UI::List* _uiList : uiLists) {
+        // Will remove transprancy during hover
+        _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
+    }
 
     // REFACTORING - 2024-10-04
     // MAKE SURE TO RENDER ON TOP OF 3D SCENE

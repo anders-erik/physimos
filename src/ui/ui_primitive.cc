@@ -42,6 +42,24 @@ namespace UI {
 
         std::cout << "new primitive!!  ! !" << std::endl;
 
+
+        x = _primitiveInfo_ptr->x;
+        y = _primitiveInfo_ptr->y;
+        width = _primitiveInfo_ptr->width;
+        height = _primitiveInfo_ptr->height;
+
+        R = _primitiveInfo_ptr->R;
+        G = _primitiveInfo_ptr->G;
+        B = _primitiveInfo_ptr->B;
+        A = _primitiveInfo_ptr->A;
+
+        // this->primitiveInfo_ptr = 
+        // this->primitiveInfo_ptr->A = _primitiveInfo_ptr->A;
+
+
+        // this->primitiveInfo_ptr->x = _primitiveInfo_ptr->x;
+        // this->primitiveInfo_ptr->y = _primitiveInfo_ptr->y;
+
         // primitiveInfo_ptr = _primitiveInfo_ptr;
 
         shader = getShader(Shaders::ui_primitive);
@@ -107,20 +125,43 @@ namespace UI {
         // RANDOM DATA GENERATION
         // Old Black and white generated texture
         // Generate a black and white test 'image'
-        int blackWhiteWidth = 1;
-        int blackWhiteHeight = 1;
+        int imageBufferWidth = 1;
+        int imageBufferHeight = 1;
         // Generate black and white texture : 3 * blackWhiteWidth * blackWhiteHeight
-        unsigned char blackWhiteImageBuffer[4]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
-        blackWhiteImageBuffer[0] = _primitiveInfo_ptr->R;
-        blackWhiteImageBuffer[1] = _primitiveInfo_ptr->G;
-        blackWhiteImageBuffer[2] = _primitiveInfo_ptr->B;
-        blackWhiteImageBuffer[3] = _primitiveInfo_ptr->A;
+        unsigned char colorBuffer[4]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
+        colorBuffer[0] = _primitiveInfo_ptr->R;
+        colorBuffer[1] = _primitiveInfo_ptr->G;
+        colorBuffer[2] = _primitiveInfo_ptr->B;
+        colorBuffer[3] = _primitiveInfo_ptr->A;
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, blackWhiteWidth, blackWhiteHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &blackWhiteImageBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
 
     }
 
+    bool Primitive::containsPoint(double _x, double _y) {
+        // std::cout << "UPDATING UI PRIMITIVE" << std::endl;
+        
+        bool x_between_min_and_max = (_x > (double)x) && (_x < (double)(x + width));
+        bool y_between_min_and_max = (_y > (double)y) && (_y < (double)(y + height));
+        // bool below_x_max = _x < (double)(x+width);
+        // bool above_y_min = _y > (double)y;
+        // bool below_y_max = _y < (double)(y+height);
+
+        if (x_between_min_and_max && y_between_min_and_max) {
+            std::cout << "IN PRIMITIVE\n";
+            A = 255;
+            return true;
+        }
+        else {
+            A = 127;
+            return false;
+        }
+
+        // if () {
+        //     std::cout << "Y OK\n";
+        // }
+    }
 
 
     

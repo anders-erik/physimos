@@ -44,7 +44,10 @@ class Primitive {
         void update();
         void render();
 
+        bool containsPoint(double x, double y);
+
         PrimitiveType primitiveType;
+
         int height = 0;
         int width = 0;
         int x = 0;
