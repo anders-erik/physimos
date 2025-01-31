@@ -108,32 +108,77 @@ namespace UI {
 
 
 
-        //  TEXTURE
-        glGenTextures(1, &glTexture);
-        
-        glBindTexture(GL_TEXTURE_2D, glTexture);
-        // set the texture wrapping/filtering options (on the currently bound texture object)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+        generateTextures();
 
-        generateTexture();
-
+        // Set current texture
+        glTexture = defaultTexture;
     }
 
 
     /**
      * Binds the primitive's glTexture and generates a new color buffer for it.
      */
-    void Primitive::generateTexture(){
+    void Primitive::generateTextures(){
 
-        glBindTexture(GL_TEXTURE_2D, glTexture);
 
         int imageBufferWidth = 1;
         int imageBufferHeight = 1;
         unsigned char colorBuffer[4]; // = { 255, 255, 255, 255 };
+
+
+        //  DEFAULT
+        glGenTextures(1, &defaultTexture);
+        glBindTexture(GL_TEXTURE_2D, defaultTexture);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, defaultTexture);
+
+        colorBuffer[0] = R;
+        colorBuffer[1] = G;
+        colorBuffer[2] = B;
+        colorBuffer[3] = A;
+
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+
+        //  HOVER
+        glGenTextures(1, &hoverTexture);
+        glBindTexture(GL_TEXTURE_2D, hoverTexture);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, hoverTexture);
+
+        colorBuffer[0] = R;
+        colorBuffer[1] = G;
+        colorBuffer[2] = B;
+        colorBuffer[3] = 255;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+
+        //  SELECTED
+        glGenTextures(1, &selectedTexture);
+        glBindTexture(GL_TEXTURE_2D, selectedTexture);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, selectedTexture);
+
         colorBuffer[0] = R;
         colorBuffer[1] = G;
         colorBuffer[2] = B;
@@ -152,20 +197,17 @@ namespace UI {
 
         if (x_between_min_and_max && y_between_min_and_max) {
             // std::cout << "IN PRIMITIVE\n";
-            A = 255;
-            generateTexture();
+            glTexture = hoverTexture;
             return true;
         }
         else {
-            // generate texture when leaving primitive
-            if (A != 127) {
-                A = 127;
-                generateTexture();
+            // make sure default texture is being used
+            if (glTexture != defaultTexture) {
+                glTexture = defaultTexture;
             }
-            
             return false;
         }
-        
+
     }
 
 

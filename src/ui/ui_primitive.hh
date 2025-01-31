@@ -40,8 +40,8 @@ class Primitive {
         Primitive(PrimitiveInfo* _primitiveInfo_ptr);
 
         // void setGlData();
-        void generateTexture();
-        
+        void generateTextures();
+
         void init();
         void update();
         void render();
@@ -72,7 +72,15 @@ class Primitive {
 
         unsigned int vao;
         unsigned int vbo; 
+
+        /** The currently rendered texture for UI::Primitive. */
         unsigned int glTexture;
+
+        // Available textures for different ui pritimitve states
+        unsigned int defaultTexture;
+        unsigned int hoverTexture;
+        unsigned int selectedTexture;
+
 
         float uiPrimitiveTransform16[16] = {
                                     1, 0, 0, 0,
