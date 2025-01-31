@@ -188,9 +188,24 @@ void ui_detectElementClick(double x, double y) {
 }
 
 
+namespace UI {
+
+double cursor_x = 0.0;
+double cursor_y = 0.0;
+// Callback for cursor position subscription
+void pointerPositionCallback(double x, double y) {
+    cursor_x = x;
+
+    double viewport_height_double = (double) viewport_height;
+    cursor_y = -(y - viewport_height_double);
+}
+
+}
 
 void ui_init() {
 
+    // Subscribe to cursor position from input library
+    input_subscribe_cursor_position(UI::pointerPositionCallback);
 
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
@@ -235,6 +250,9 @@ void ui_reloadUi() {
     Instead we simply need to change this to a rendering  method that renderes the app state every frame.
 */
 void ui_update() {
+
+    std::cout << "UI::cursor_x=" << UI::cursor_x << ", UI::cursor_y=" << UI::cursor_y << "\n";
+    
 
     // REFACTORING - 2024-10-04
     // MAKE SURE TO RENDER ON TOP OF 3D SCENE

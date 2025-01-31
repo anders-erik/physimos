@@ -91,13 +91,21 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	}
 
 }
+
+// Only one subscriber curently possible
+void (*cursor_position_subscriber)(double x, double y) = nullptr;
+void input_subscribe_cursor_position(void (*callback_subscriber)(double x, double y)) {
+	cursor_position_subscriber = callback_subscriber;
+}
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// printf("%f , %f \n", xpos, ypos);
 	inputState.pointerX = xpos;
 	inputState.pointerY = ypos;
-	
+	cursor_position_subscriber(xpos, ypos);
 }
+
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
