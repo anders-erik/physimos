@@ -111,10 +111,10 @@ namespace UI {
         int blackWhiteHeight = 1;
         // Generate black and white texture : 3 * blackWhiteWidth * blackWhiteHeight
         unsigned char blackWhiteImageBuffer[4]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
-        blackWhiteImageBuffer[0] = 255;
-        blackWhiteImageBuffer[1] = 0;
-        blackWhiteImageBuffer[2] = 0;
-        blackWhiteImageBuffer[3] = 127;
+        blackWhiteImageBuffer[0] = _primitiveInfo_ptr->R;
+        blackWhiteImageBuffer[1] = _primitiveInfo_ptr->G;
+        blackWhiteImageBuffer[2] = _primitiveInfo_ptr->B;
+        blackWhiteImageBuffer[3] = _primitiveInfo_ptr->A;
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, blackWhiteWidth, blackWhiteHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &blackWhiteImageBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);

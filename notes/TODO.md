@@ -18,6 +18,7 @@
 ### 2025-01-31:
 - add more code to all subsystems
 	- explore and add features until natural subsystems emerge
+	- many shaders !
 
 1. proper window callback
 	- implement mouse pointer location widget
@@ -29,11 +30,13 @@
 
 
 
+<br>
 
 ---
 ---
 ---
 
+<br>
 
 # 2024
 

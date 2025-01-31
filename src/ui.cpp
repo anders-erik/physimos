@@ -23,8 +23,8 @@ extern struct InputState InputState;
 
 
 // REFACTOR - 2024-10-04
-#include "ui_module.hh"
-std::vector<UI::Module*> uiModules;
+#include "ui_list.hh"
+std::vector<UI::List*> uiLists;
 
 
 
@@ -196,12 +196,14 @@ void ui_init() {
 
     // REFACTOR - 2024-10-04
     // REFACTOR - 2024-10-9
-    std::vector<UI::Module*> modulesLoadedFromFile = UI::loadModulesFromFile();
-    for(UI::Module* _module_ptr : modulesLoadedFromFile)
-        uiModules.push_back(_module_ptr);
+    std::vector<UI::List*> listsLoadedFromFile = UI::loadListsFromFile();
+    // std::cout << "Yello";
+    for(UI::List* _list_ptr : listsLoadedFromFile)
+        uiLists.push_back(_list_ptr);
 
-    UI::Module* _woListModule = new UI::Module( UI::ModuleType::List, "woToggleList");
-    uiModules.push_back(_woListModule);
+
+    UI::List* _woList = new UI::List(UI::ListType::Stack, "woToggleList");
+    uiLists.push_back(_woList);
 
 
 
@@ -237,9 +239,9 @@ void ui_update() {
     // REFACTORING - 2024-10-04
     // MAKE SURE TO RENDER ON TOP OF 3D SCENE
     glDisable(GL_DEPTH_TEST);
-    for(UI::Module* _uiModule : uiModules){
-        _uiModule->update();
-        _uiModule->render();
+    for(UI::List* _uiList : uiLists){
+        _uiList->update();
+        _uiList->render();
     }
 
     

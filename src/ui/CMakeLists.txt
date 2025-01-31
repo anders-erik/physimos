@@ -1,6 +1,6 @@
 
 add_library(ui 
-    ui_module.cc
+    ui_list.cc
     ui_element.cc
     ui_primitive.cc
     ui_globals.cc
