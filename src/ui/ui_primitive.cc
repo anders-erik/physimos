@@ -109,9 +109,8 @@ namespace UI {
 
 
         //  TEXTURE
-
-        // RANDOM TEXTURE
         glGenTextures(1, &glTexture);
+        
         glBindTexture(GL_TEXTURE_2D, glTexture);
         // set the texture wrapping/filtering options (on the currently bound texture object)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -119,48 +118,54 @@ namespace UI {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // bmp_loader_loadBMPFile("media/mountain.bmp");
-        // bmp_loader.prettyPrint();
 
-        // RANDOM DATA GENERATION
-        // Old Black and white generated texture
-        // Generate a black and white test 'image'
-        int imageBufferWidth = 1;
-        int imageBufferHeight = 1;
-        // Generate black and white texture : 3 * blackWhiteWidth * blackWhiteHeight
-        unsigned char colorBuffer[4]; // = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, };
-        colorBuffer[0] = _primitiveInfo_ptr->R;
-        colorBuffer[1] = _primitiveInfo_ptr->G;
-        colorBuffer[2] = _primitiveInfo_ptr->B;
-        colorBuffer[3] = _primitiveInfo_ptr->A;
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        generateTexture();
 
     }
 
+
+    /**
+     * Binds the primitive's glTexture and generates a new color buffer for it.
+     */
+    void Primitive::generateTexture(){
+
+        glBindTexture(GL_TEXTURE_2D, glTexture);
+
+        int imageBufferWidth = 1;
+        int imageBufferHeight = 1;
+        unsigned char colorBuffer[4]; // = { 255, 255, 255, 255 };
+        colorBuffer[0] = R;
+        colorBuffer[1] = G;
+        colorBuffer[2] = B;
+        colorBuffer[3] = A;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+
+
     bool Primitive::containsPoint(double _x, double _y) {
-        // std::cout << "UPDATING UI PRIMITIVE" << std::endl;
         
         bool x_between_min_and_max = (_x > (double)x) && (_x < (double)(x + width));
         bool y_between_min_and_max = (_y > (double)y) && (_y < (double)(y + height));
-        // bool below_x_max = _x < (double)(x+width);
-        // bool above_y_min = _y > (double)y;
-        // bool below_y_max = _y < (double)(y+height);
 
         if (x_between_min_and_max && y_between_min_and_max) {
-            std::cout << "IN PRIMITIVE\n";
+            // std::cout << "IN PRIMITIVE\n";
             A = 255;
+            generateTexture();
             return true;
         }
         else {
-            A = 127;
+            // generate texture when leaving primitive
+            if (A != 127) {
+                A = 127;
+                generateTexture();
+            }
+            
             return false;
         }
-
-        // if () {
-        //     std::cout << "Y OK\n";
-        // }
+        
     }
 
 

@@ -40,6 +40,8 @@ class Primitive {
         Primitive(PrimitiveInfo* _primitiveInfo_ptr);
 
         // void setGlData();
+        void generateTexture();
+        
         void init();
         void update();
         void render();
