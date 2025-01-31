@@ -34,17 +34,63 @@ namespace UI {
     // };
 
 
-   
+
+    // Store x_input and make appropriate conversions to update x_real
+    void Primitive::setX(int _x){
+        x_input = _x;
+        int _x_input_px = _x; // will change below if unit is set to percent
+
+        // Make sure all calculations are made using pixel units
+        if(x_unit == Unit::Percent){
+            // Multiply _first_ to reduce compounding error from integer division rounding 
+            _x_input_px = (viewport_width * x_input)/100;
+        }
+
+
+        if(horiRef == HoriRef::Right){
+            // Subtract the input from the far right position
+            int zero_point_right = viewport_width - width;
+            x_real = zero_point_right - _x_input_px;
+        }
+        else {
+            x_real = _x_input_px;
+        }
+    }
+    // Store y_input and make appropriate conversions to update y_real
+    void Primitive::setY(int _y){
+        y_input = _y;
+       
+        int _y_input_px = _y; // will change below if unit is set to percent
+
+        // Make sure all calculations are made using pixel units
+        if (y_unit == Unit::Percent) {
+            // Multiply _first_ to reduce compounding error from integer division rounding 
+            _y_input_px = (viewport_height * y_input) / 100;
+        }
+
+
+        if (vertRef == VertRef::Top) {
+            // Subtract the input from the far right position
+            int zero_point_top = viewport_height - height;
+            y_real = zero_point_top - _y_input_px;
+        }
+        else {
+            y_real = _y_input_px;
+        }
+    }
+
+    // Empty primitive 
+    Primitive::Primitive() {
+    }
     
     
-    
+    // Create Primitive element using a pre-populated primitiveInfo data object. 
     Primitive::Primitive(PrimitiveInfo * _primitiveInfo_ptr) {
 
         std::cout << "new primitive!!  ! !" << std::endl;
 
-
-        x = _primitiveInfo_ptr->x;
-        y = _primitiveInfo_ptr->y;
+        x_real = _primitiveInfo_ptr->x;
+        y_real = _primitiveInfo_ptr->y;
         width = _primitiveInfo_ptr->width;
         height = _primitiveInfo_ptr->height;
 
@@ -53,14 +99,14 @@ namespace UI {
         B = _primitiveInfo_ptr->B;
         A = _primitiveInfo_ptr->A;
 
-        // this->primitiveInfo_ptr = 
-        // this->primitiveInfo_ptr->A = _primitiveInfo_ptr->A;
+        parent = _primitiveInfo_ptr->parent;
+
+        initGraphics();
+    }
 
 
-        // this->primitiveInfo_ptr->x = _primitiveInfo_ptr->x;
-        // this->primitiveInfo_ptr->y = _primitiveInfo_ptr->y;
+    void Primitive::initGraphics(){
 
-        // primitiveInfo_ptr = _primitiveInfo_ptr;
 
         shader = getShader(Shaders::ui_primitive);
 
@@ -71,17 +117,17 @@ namespace UI {
         // 
         if (parent == nullptr) {
 
-            uiPrimitiveTransform16[0] = _primitiveInfo_ptr->width;
-            uiPrimitiveTransform16[5] = _primitiveInfo_ptr->height;
-            uiPrimitiveTransform16[3] = _primitiveInfo_ptr->x;
-            uiPrimitiveTransform16[7] = _primitiveInfo_ptr->y;
+            uiPrimitiveTransform16[0] = width;
+            uiPrimitiveTransform16[5] = height;
+            uiPrimitiveTransform16[3] = x_real;
+            uiPrimitiveTransform16[7] = y_real;
 
         }
         else {
-            uiPrimitiveTransform16[0] = _primitiveInfo_ptr->width;
-            uiPrimitiveTransform16[5] = _primitiveInfo_ptr->height;
-            uiPrimitiveTransform16[3] = _primitiveInfo_ptr->x;
-            uiPrimitiveTransform16[7] = _primitiveInfo_ptr->y;
+            uiPrimitiveTransform16[0] = width;
+            uiPrimitiveTransform16[5] = height;
+            uiPrimitiveTransform16[3] = x_real;
+            uiPrimitiveTransform16[7] = y_real;
         }
 
         shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);
@@ -113,6 +159,7 @@ namespace UI {
 
         // Set current texture
         glTexture = defaultTexture;
+
     }
 
 
@@ -192,8 +239,8 @@ namespace UI {
 
     bool Primitive::containsPoint(double _x, double _y) {
         
-        bool x_between_min_and_max = (_x > (double)x) && (_x < (double)(x + width));
-        bool y_between_min_and_max = (_y > (double)y) && (_y < (double)(y + height));
+        bool x_between_min_and_max = (_x > (double)x_real) && (_x < (double)(x_real + width));
+        bool y_between_min_and_max = (_y > (double)y_real) && (_y < (double)(y_real + height));
 
         if (x_between_min_and_max && y_between_min_and_max) {
             // std::cout << "IN PRIMITIVE\n";

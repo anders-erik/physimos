@@ -10,6 +10,25 @@ namespace UI {
 class Primitive; // forward declare
 
 
+enum Unit {
+    Pixel = 0,
+    Percent = 1
+};
+
+enum VertRef {
+    // Distance will be measured from parent top to primitive top
+    Top = 0,
+    // Distance will be measured from parent bottom to primitive bottom
+    Bottom = 1
+};
+
+enum HoriRef {
+    // Distance will be measured from parent left edge to primitive left edge
+    Left = 0,
+    // Distance will be measured from parent right edge to primitive right edge
+    Right = 1
+};
+
 typedef enum PrimitiveType {
     Rectangle = 0,
 } PrimitiveType;
@@ -36,10 +55,11 @@ struct PrimitiveInfo {
 
 class Primitive {
     public:
-        Primitive() {};
+        Primitive();
         Primitive(PrimitiveInfo* _primitiveInfo_ptr);
 
         // void setGlData();
+        void initGraphics();
         void generateTextures();
 
         void init();
@@ -48,18 +68,38 @@ class Primitive {
 
         bool containsPoint(double x, double y);
 
-        PrimitiveType primitiveType;
+        PrimitiveType primitiveType = PrimitiveType::Rectangle;
 
-        int height = 0;
-        int width = 0;
-        int x = 0;
-        int y = 0;
+        int height = 200;
+        Unit h_unit = Unit::Pixel;
+        int width = 200;
+        Unit w_unit = Unit::Pixel;
+
+        // Raw input values to setX/y methods
+        int x_input = 0;
+        int y_input = 0;
+        // Units of the x/y input values
+        Unit x_unit = Unit::Pixel;
+        Unit y_unit = Unit::Pixel;
+        // x/y is measured from where?
+        HoriRef horiRef = HoriRef::Left;
+        VertRef vertRef = VertRef::Bottom;
+        // Getters/setters
+        void setX(int _x);
+        void setY(int _y);
+
+
+        /// x window coordinate of primitive's bottom left corner, relative to bottom left of window.
+        int x_real = 0;
+        /// y window coordinate of primitive's bottom left corner, relative to bottom left of window.
+        int y_real = 0;
+
 
         // Colors
-        int R = 0;
-        int G = 0;
-        int B = 0;
-        int A = 0;
+        int R = 255;
+        int G = 255;
+        int B = 255;
+        int A = 255;
 
         Primitive* parent = nullptr;
 

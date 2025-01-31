@@ -16,18 +16,18 @@ std::vector<List*> uiLists;
 
 
 
-List::List(ListType _listType, std::string _name) {
+// List::List(ListType _listType, std::string _name) {
 
-    init(_listType, _name);
-}
+//     init(_listType, _name);
+// }
 
-void List::init(ListType _listType, std::string _name) {
-    name = _name;
+// void List::init(ListType _listType, std::string _name) {
+//     name = _name;
 
-    if (_listType == ListType::Stack) {
-        initWoListList();
-    }
-}
+//     if (_listType == ListType::Stack) {
+//         initWoListList();
+//     }
+// }
 
 void List::update() {
     containingPrimitive->update();
@@ -54,26 +54,54 @@ void List::render() {
 void List::initWoListList() {
     std::cout << "NEW NEW UI LIST" << std::endl;
 
-    // Primitive
-    PrimitiveInfo primitiveInfo;
+    Primitive* _primitive = new Primitive();
 
-    primitiveInfo.height = 400;
-    primitiveInfo.width = 200;
-    primitiveInfo.x = 400;
-    primitiveInfo.y = 200;
+    // _primitive->x_real = 400; // readonly
+    // _primitive->y_real = 200; // readonly
 
-    primitiveInfo.R = 255;
-    primitiveInfo.G = 0;
-    primitiveInfo.B = 0;
-    primitiveInfo.A = 127;
 
-    // This is a root ui element
-    primitiveInfo.parent = nullptr;
+    _primitive->width = 200;
+    _primitive->height = 400;
+
+    _primitive->horiRef = HoriRef::Right;
+    _primitive->x_unit = Unit::Percent;
+    _primitive->setX(50);
+    _primitive->vertRef = VertRef::Top;
+    _primitive->y_unit = Unit::Percent;
+    _primitive->setY(50);
+
+
+    _primitive->R = 100;
+    _primitive->G = 100;
+    _primitive->B = 100;
+    _primitive->A = 150;
+
+    // _primitive->parent = nullptr;
+
+    _primitive->initGraphics();
+    containingPrimitive = _primitive;
+
+
+    // // // Primitive
+    // PrimitiveInfo primitiveInfo;
+
+    // primitiveInfo.height = 400;
+    // primitiveInfo.width = 200;
+    // primitiveInfo.x = 400;
+    // primitiveInfo.y = 200;
+
+    // primitiveInfo.R = 255;
+    // primitiveInfo.G = 0;
+    // primitiveInfo.B = 0;
+    // primitiveInfo.A = 127;
+
+    // // This is a root ui element
+    // primitiveInfo.parent = nullptr;
     
 
-    containingPrimitive = new Primitive(&primitiveInfo);
+    // containingPrimitive = new Primitive(&primitiveInfo);
 
-
+    // int a = 1;
 }
 
 
@@ -186,9 +214,9 @@ void addToUiList(std::string _KVstring, List* _list){
     else if (key == "width")
         _list->containingPrimitive->width = std::stoi(value);
     else if (key == "x")
-        _list->containingPrimitive->x = std::stoi(value);
+        _list->containingPrimitive->x_real = std::stoi(value);
     else if (key == "y")
-        _list->containingPrimitive->y = std::stoi(value);
+        _list->containingPrimitive->y_real = std::stoi(value);
 
 }
 

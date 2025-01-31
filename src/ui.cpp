@@ -217,7 +217,10 @@ void ui_init() {
         uiLists.push_back(_list_ptr);
 
 
-    UI::List* _woList = new UI::List(UI::ListType::Stack, "woToggleList");
+    // UI::List* _woList = new UI::List(UI::ListType::Stack, "woToggleList");
+    UI::List* _woList = new UI::List();
+    _woList->initWoListList();
+
     uiLists.push_back(_woList);
 
 
