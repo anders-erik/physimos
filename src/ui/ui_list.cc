@@ -60,16 +60,17 @@ void List::initWoListList() {
     // _primitive->y_real = 200; // readonly
 
 
-    _primitive->width = 200;
-    _primitive->height = 400;
+    _primitive->width = 16;
+    _primitive->height = 24;
 
     _primitive->horiRef = HoriRef::Right;
     _primitive->x_unit = Unit::Percent;
-    _primitive->setX(50);
+    _primitive->setX(30);
     _primitive->vertRef = VertRef::Top;
     _primitive->y_unit = Unit::Percent;
-    _primitive->setY(50);
+    _primitive->setY(20);
 
+    _primitive->setString("A");
 
     _primitive->R = 100;
     _primitive->G = 100;

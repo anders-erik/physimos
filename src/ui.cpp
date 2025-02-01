@@ -3,6 +3,7 @@
 
 #include "uiRenderer.hpp"
 #include "ui/ui_globals.hh"
+#include "ui/font.hh"
 
 #include <iomanip>
 
@@ -203,6 +204,9 @@ void pointerPositionCallback(double x, double y) {
 }
 
 void ui_init() {
+
+    // Load characters-2.bmp character map
+    UI::loadFont();
 
     // Subscribe to cursor position from input library
     input_subscribe_cursor_position(UI::pointerPositionCallback);

@@ -4,6 +4,7 @@ add_library(ui
     ui_element.cc
     ui_primitive.cc
     ui_globals.cc
+    font.cc
 )
 
 target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/src/)

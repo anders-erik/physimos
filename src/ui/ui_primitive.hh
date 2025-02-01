@@ -101,6 +101,11 @@ class Primitive {
         int B = 255;
         int A = 255;
 
+
+        std::string text = "";
+        void setString(std::string _str);
+
+
         Primitive* parent = nullptr;
 
 

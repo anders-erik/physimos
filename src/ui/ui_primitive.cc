@@ -2,11 +2,12 @@
 #include <glad/glad.h>
 #include <iostream>
 
-#include "ui_primitive.hh"
-
-#include "ui_globals.hh"
-
 #include "render/shader.hpp"
+#include "res/bmp_loader.hpp"
+
+#include "ui_primitive.hh"
+#include "ui_globals.hh"
+#include "ui/font.hh"
 
 
 namespace UI {
@@ -33,6 +34,17 @@ namespace UI {
     //    0.0f, 0.0f, 0.0f, 1.0f,
     // };
 
+
+    void Primitive::setString(std::string _str) {
+
+        for (unsigned char _char : _str)
+        {
+            std::cout << _char << std::endl;
+
+
+        }
+
+    }
 
 
     // Store x_input and make appropriate conversions to update x_real
@@ -233,6 +245,9 @@ namespace UI {
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
+
+
+        
     }
 
 
@@ -244,7 +259,9 @@ namespace UI {
 
         if (x_between_min_and_max && y_between_min_and_max) {
             // std::cout << "IN PRIMITIVE\n";
-            glTexture = hoverTexture;
+            // glTexture = hoverTexture;
+            glTexture = a_texture;
+            // glTexture = fontTexture;
             return true;
         }
         else {

@@ -83,7 +83,7 @@ void ui_renderer_init(std::vector<UiElement>& uiElements) {
 
 
     // TEXTURE
-    bmp_loader_loadBMPFile("resources/textures/characters-2.bmp");
+    bmp_loader_loadBMPFile("resources/textures/characters-1.bmp");
     ui_setCharacterTextureData(bmp_getImageDataBuffer(), bmp_getWidth(), bmp_getHeight());
 
     glGenTextures(1, &charTexture);
