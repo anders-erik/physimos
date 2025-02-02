@@ -6,6 +6,12 @@
 #include "WorldObject.hpp"
 
 
+namespace WS {
+
+WorldObject* getWorldObjectByName(std::string _name);
+
+}
+
 void ws_init();
 
 void ws_createSimulators();

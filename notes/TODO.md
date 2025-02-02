@@ -15,6 +15,16 @@
 - physimos introspection
 
 
+### 2025-02-03
+- nested HoriRef::Right is not working properly
+- linear primitives structure for components
+- components extend primitive with pointers to scene object!
+	- an updateComponent() to load 'static' scene object data, and  
+		- e.g. position, current shader, etc.
+	- interactive ui primitives bound to methods on scene object
+		- e.g. toggle wireframe, move up 1m, set velocity, etc.
+
+
 ### 2025-02-02
 - |o| font/text rendering
 	- |o| rearrange the ascii table with 30 at bottom left, as BMP structure
@@ -22,7 +32,7 @@
 		- |o| rendered text will automatically be added to primitive on 'setText'
 - |o| create nested element
 	- |o| location is relative to parent
-	- proper list-
+	- proper list- ??
 - |o| detect primitive interaction
 	- |o| id
 	- |o| hover

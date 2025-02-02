@@ -11,7 +11,7 @@
 #include <glad/glad.h>
 
 #include "Types.hpp"
-#include "shader.hpp"
+#include "render/shader.hpp"
 #include "Model.hpp"
 #include "RigidBody.hpp"
 
@@ -19,8 +19,8 @@
 // #include "WorldScene.hpp"
 
 // librender
-#include "wo_renderer.hpp"
-#include "render_types.hh"
+#include "render/wo_renderer.hpp"
+#include "render/render_types.hh"
 
 #include "transform.hh"
 

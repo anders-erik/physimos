@@ -7,8 +7,9 @@
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
 #include "ui_list.hh"
+#include "ui/components.hh"
 std::vector<UI::List*> uiLists;
-std::vector<UI::Primitive*> primitiveTree;
+std::vector<UI::Primitive*> primitiveTreeHeads;
 std::vector<UI::Primitive*> primitiveList;
 
 
@@ -281,6 +282,15 @@ void ui_init() {
     UI::loadFont();
 
 
+    // WORLD OBJECT COMPONENT 1
+    WorldObject* house1_wo = WS::getWorldObjectByName("house1_obj");
+    if(house1_wo != nullptr){
+        std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
+    }
+    UI::Primitive* worldObjectComponent_tree = UI::newWorldObjectComponent(house1_wo);
+    primitiveTreeHeads.push_back(worldObjectComponent_tree);
+
+
     // test-primitives
     UI::Primitive* _primitive_root = new UI::Primitive();
     _primitive_root->id = "root";
@@ -290,7 +300,7 @@ void ui_init() {
     _primitive_root->setY(100);
     _primitive_root->fontSize = UI::FontSize::f15;
     // _primitive_root->setString("I am root primitive!");
-    primitiveTree.push_back(_primitive_root);
+    primitiveTreeHeads.push_back(_primitive_root);
     primitiveList.push_back(_primitive_root);
 
     _primitive_root->printId();
@@ -380,6 +390,8 @@ void ui_reloadUi() {
     Instead we simply need to change this to a rendering  method that renderes the app state every frame.
 */
 void ui_update() {
+    // make sure all ui rendering is rendered on top of 3d scene
+    glDisable(GL_DEPTH_TEST);
 
     // check if cursor is hovering over ui elements (post refactoring-elements)
     // std::cout << "UI::cursor_x=" << UI::cursor_x << ", UI::cursor_y=" << UI::cursor_y << "\n";
@@ -390,10 +402,10 @@ void ui_update() {
 
     // UI::setCurrentlyHoveredPrimitive();
 
-    for (UI::Primitive* primitive : primitiveTree) {
+    for (UI::Primitive* primitiveTreeHead : primitiveTreeHeads) {
         // Will remove transprancy during hover
-        primitive->update();
-        primitive->render();
+        primitiveTreeHead->update();
+        primitiveTreeHead->render();
         // _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
     }
 

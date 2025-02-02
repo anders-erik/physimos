@@ -102,6 +102,8 @@ class Primitive {
         // Getters/setters
         void setX(int _x);
         void setY(int _y);
+        void setHeight(int _height);
+        void setWidth(int _width);
 
 
         /// x window coordinate of primitive's bottom left corner, relative to bottom left of window.

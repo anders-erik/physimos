@@ -85,6 +85,16 @@ namespace UI {
         return stringLength == 0 ? false : true;
     }
 
+    void Primitive::setHeight(int _height){
+        height = _height;
+
+        reloadHWXY();
+    }
+    void Primitive::setWidth(int _width) {
+        width = _width;
+
+        reloadHWXY();
+    }
 
 
     // Store x_input and make appropriate conversions to update x_real.
@@ -409,10 +419,6 @@ namespace UI {
         // std::cout << "RENDERING UI PRIMITIVE" << std::endl;
         glUseProgram(shader->ID);
 
-        for (Primitive* child : children) {
-            child->render();
-        }
-
         // Transform
         shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);
 
@@ -426,6 +432,11 @@ namespace UI {
         glDrawArrays(GL_TRIANGLES,0, 6);
         glDisable(GL_BLEND);
         
+
+        // Make sure that children are rendered after parent as depth test is turned of!
+        for (Primitive* child : children) {
+            child->render();
+        }
     }
 
 

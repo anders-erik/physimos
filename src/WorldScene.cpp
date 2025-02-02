@@ -35,6 +35,17 @@ WorldObject* worldTriangle2_simobj_pointer;
 
 
 
+namespace WS {
+
+    WorldObject* getWorldObjectByName(std::string _name){
+        for (WorldObject* wo : worldObjects){
+            if (wo->name == _name)
+                return wo;
+        }
+        return nullptr;
+    }
+
+}
 
 
 
