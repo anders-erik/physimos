@@ -15,18 +15,33 @@
 - physimos introspection
 
 
-### 2025-01-31:
+### 2025-02-02
+- font/text rendering
+	- rearrange the ascii table with 30 at bottom left, as BMP structure
+	- display words using primitives
+		- rendered text will automatically be added to primitive on 'setText'
+- create nested element
+	- location is relative to parent
+	- proper list-
+- primitive flags
+	- clickable
+	- hovarable
+- bind worldobject properties to primitive (next next step)
+
+
+
+### 2025-01-31/02-01:
 - add more code to all subsystems
 	- explore and add features until natural subsystems emerge
 	- many shaders !
 
-1. proper window callback
+1. |o| proper window callback
 	- implement mouse pointer location widget
-2. highlight on hover
+2. |o| highlight on hover
 	- mouse pointer change
-	- ui element color change
-3. nested ui elements
-4. improved font
+	- |o| ui element color change
+3. || nested ui elements
+4. |o| improved font
 
 
 

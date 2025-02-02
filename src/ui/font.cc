@@ -56,14 +56,12 @@ void loadFont(){
 
     size_t ascii_A = 'A';
 
-    // map the ascii value to the character index, starting from BOTTOM LEFT
-    size_t ascii_A_low = ascii_A % 10;
-    size_t ascii_A_high = ascii_A - ascii_A_low;
-    size_t bitmap_index = 120 - ascii_A_high + ascii_A_low;
+    // Ascii chars start at 30 in bitmap table, starting at BOTTOM LEFT
+    size_t bitmapAsciiIndex = ascii_A - 30;
 
     // which row row and column is the character on in the bitmap table
-    size_t col_index = bitmap_index % 10;
-    size_t row_index = bitmap_index / 10;
+    size_t col_index = bitmapAsciiIndex % 10;
+    size_t row_index = bitmapAsciiIndex / 10;
     // printf("col_index = %d\n", col_index);
     // printf("row_index = %d\n", row_index);
 
