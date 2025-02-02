@@ -19,24 +19,13 @@ extern unsigned int a_texture;
 // };
 
 
-// // Pixel height
-// enum FontSize {
-//     f8 = 0,
-//     f12 = 1,
-//     // Default font size. 16 px height.
-//     f16 = 2,
-//     f24 = 3,
-// };
+// Pixel height
+typedef enum FontSize {
+    f15 = 15,
+    // Default font size. 24 px height.
+    f24 = 24,
+} FontSize;
 
-
-// class Fonts {
-
-//     Fonts() {};
-//     Fonts(FontList _font);
-
-
-
-// };
 
 
 

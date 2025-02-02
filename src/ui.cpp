@@ -3,10 +3,14 @@
 
 #include "uiRenderer.hpp"
 #include "ui/ui_globals.hh"
+// REFACTOR
 #include "ui/font.hh"
+#include "ui/ui_primitive.hh"
+#include "ui_list.hh"
+std::vector<UI::List*> uiLists;
+std::vector<UI::Primitive*> primitives;
 
 #include <iomanip>
-
 
 #include "Input.hpp"
 #include "bmp_loader.hpp"
@@ -22,10 +26,6 @@ extern SimState simState;
 
 extern struct InputState InputState;
 
-
-// REFACTOR - 2024-10-04
-#include "ui_list.hh"
-std::vector<UI::List*> uiLists;
 
 
 
@@ -208,6 +208,13 @@ void ui_init() {
     // Load characters-2.bmp character map
     UI::loadFont();
 
+    UI::Primitive* _primitive = new UI::Primitive();
+    _primitive->initGraphics();
+    _primitive->setX(400);
+    _primitive->setY(400);
+    _primitive->setString("AA");
+    primitives.push_back(_primitive);
+
     // Subscribe to cursor position from input library
     input_subscribe_cursor_position(UI::pointerPositionCallback);
 
@@ -262,6 +269,13 @@ void ui_update() {
     // std::cout << "UI::cursor_x=" << UI::cursor_x << ", UI::cursor_y=" << UI::cursor_y << "\n";
     for (UI::List* _uiList : uiLists) {
         // Will remove transprancy during hover
+        _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
+    }
+
+    for (UI::Primitive* primitive : primitives) {
+        // Will remove transprancy during hover
+        primitive->update();
+        primitive->render();
         // _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
     }
 

@@ -39,10 +39,18 @@ namespace UI {
     // will load a texture contining the passed string into the default gl texture
     void Primitive::setString(std::string _str) {
 
+        this->height = this->fontSize;
+
+        size_t charWidth = 2 * (this->fontSize / 3);
+
+        this->width = charWidth * _str.length();
+
+
         // loadCharIntoGlTexture(defaultTexture, _str[0]);
         loadStringIntoGlTexture(defaultTexture, _str);
         // loadStringIntoGlTexture(glTexture, _str);
 
+        reloadHWXY();
     }
 
 
@@ -66,6 +74,8 @@ namespace UI {
         else {
             x_real = _x_input_px;
         }
+
+        reloadHWXY();
     }
     // Store y_input and make appropriate conversions to update y_real
     void Primitive::setY(int _y){
@@ -88,11 +98,13 @@ namespace UI {
         else {
             y_real = _y_input_px;
         }
+
+        reloadHWXY();
     }
 
     // Empty primitive 
-    Primitive::Primitive() {
-    }
+    // Primitive::Primitive() {
+    // }
     
     
     // Create Primitive element using a pre-populated primitiveInfo data object. 
@@ -115,17 +127,9 @@ namespace UI {
         initGraphics();
     }
 
+    // make sure the transform matrix is updated to current height, width, x, and y
+    void Primitive::reloadHWXY(){
 
-    void Primitive::initGraphics(){
-
-
-        shader = getShader(Shaders::ui_primitive);
-
-        // Transforms
-        // uiViewportTransform16[0] = 2.0f / 1000.0;
-        // uiViewportTransform16[5] = 2.0f / 750.0;
-
-        // 
         if (parent == nullptr) {
 
             uiPrimitiveTransform16[0] = width;
@@ -140,6 +144,21 @@ namespace UI {
             uiPrimitiveTransform16[3] = x_real;
             uiPrimitiveTransform16[7] = y_real;
         }
+
+    }
+
+    void Primitive::initGraphics(){
+
+
+        shader = getShader(Shaders::ui_primitive);
+
+        // Transforms
+        // uiViewportTransform16[0] = 2.0f / 1000.0;
+        // uiViewportTransform16[5] = 2.0f / 750.0;
+
+
+        reloadHWXY();
+
 
         shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);
 
@@ -258,9 +277,7 @@ namespace UI {
 
         if (x_between_min_and_max && y_between_min_and_max) {
             // std::cout << "IN PRIMITIVE\n";
-            // glTexture = hoverTexture;
-            glTexture = a_texture;
-            // glTexture = fontTexture;
+            glTexture = hoverTexture;
             return true;
         }
         else {

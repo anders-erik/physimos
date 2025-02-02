@@ -5,6 +5,8 @@
 
 #include "render/shader.hpp"
 
+#include "ui/font.hh"
+
 namespace UI {
 
 class Primitive; // forward declare
@@ -55,10 +57,11 @@ struct PrimitiveInfo {
 
 class Primitive {
     public:
-        Primitive();
+        Primitive() {};
         Primitive(PrimitiveInfo* _primitiveInfo_ptr);
 
         // void setGlData();
+        void reloadHWXY();
         void initGraphics();
         void generateTextures();
 
@@ -70,9 +73,9 @@ class Primitive {
 
         PrimitiveType primitiveType = PrimitiveType::Rectangle;
 
-        int height = 200;
+        size_t height = 200;
         Unit h_unit = Unit::Pixel;
-        int width = 200;
+        size_t width = 200;
         Unit w_unit = Unit::Pixel;
 
         // Raw input values to setX/y methods
@@ -103,6 +106,7 @@ class Primitive {
 
 
         std::string text = "";
+        FontSize fontSize = FontSize::f24;
         void setString(std::string _str);
 
 

@@ -60,10 +60,10 @@ void List::initWoListList() {
     // _primitive->y_real = 200; // readonly
 
 
-    // _primitive->width = 32;
-    // _primitive->height = 48;
-    _primitive->width = 64;
-    _primitive->height = 24;
+    _primitive->width = 200;
+    _primitive->height = 400;
+    // _primitive->width = 64;
+    // _primitive->height = 24;
 
     _primitive->horiRef = HoriRef::Right;
     _primitive->x_unit = Unit::Percent;
@@ -81,7 +81,7 @@ void List::initWoListList() {
     // _primitive->parent = nullptr;
 
     _primitive->initGraphics();
-    _primitive->setString("AAAA");
+    // _primitive->setString("AAAA");
     containingPrimitive = _primitive;
 
 
