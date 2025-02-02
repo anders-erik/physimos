@@ -108,6 +108,7 @@ class Primitive {
         std::string text = "";
         FontSize fontSize = FontSize::f24;
         void setString(std::string _str);
+        bool isTextPrimitive();
 
 
         Primitive* parent = nullptr;

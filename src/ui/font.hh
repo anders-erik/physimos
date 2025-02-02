@@ -28,17 +28,10 @@ typedef enum FontSize {
 
 
 
-
-
-
-
 void loadFont();
 
-std::vector<unsigned char> getCharBitmap(unsigned char ascii_char);
-
-void loadCharIntoGlTexture(unsigned int glTexture, unsigned char character);
 void extractCharFromBitmap(unsigned char ascii_char);
-
+std::vector<unsigned char> getCharBitmap(unsigned char ascii_char);
 
 void loadStringIntoGlTexture(unsigned int glTexture, std::string stringToRender);
 std::vector<unsigned char> getStringBitmap(std::string stringToRender);

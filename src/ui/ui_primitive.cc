@@ -53,6 +53,14 @@ namespace UI {
         reloadHWXY();
     }
 
+    bool Primitive::isTextPrimitive(){
+        // return this->text
+        bool stringLength = this->text.length();
+        
+        return stringLength == 0 ? false : true;
+    }
+
+    
 
     // Store x_input and make appropriate conversions to update x_real
     void Primitive::setX(int _x){

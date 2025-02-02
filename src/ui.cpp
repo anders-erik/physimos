@@ -208,6 +208,7 @@ void ui_init() {
     // Load characters-2.bmp character map
     UI::loadFont();
 
+    // test-primitive
     UI::Primitive* _primitive = new UI::Primitive();
     _primitive->initGraphics();
     _primitive->setX(400);
@@ -216,6 +217,7 @@ void ui_init() {
     // _primitive->setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
     _primitive->setString("My name is Al!");
     primitives.push_back(_primitive);
+
 
     // Subscribe to cursor position from input library
     input_subscribe_cursor_position(UI::pointerPositionCallback);
