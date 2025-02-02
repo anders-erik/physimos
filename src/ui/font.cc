@@ -57,8 +57,14 @@ void loadFont(){
 
     // LOAD CHAR A
 
-    // size_t ascii_A = 'A';
-    extractCharFromBitmap('A');
+    // loop through all available ascii chars in table
+    for (size_t ascii = ' '; ascii <= '~'; ascii++)
+    {
+        extractCharFromBitmap(ascii);
+        printf("%d\n", ascii);
+    }
+    
+    // extractCharFromBitmap('A');
     
     a_bitmapBuffer = getCharBitmap('A');
     
@@ -167,7 +173,8 @@ std::vector<unsigned char> getCharBitmapRow(unsigned char character, unsigned in
 
 
 
-
+// extract the bitmap of for the specific character frmo the full ascii bitmap table
+// Stores the character bitmap in 'charToBitmap' map for quick retrieval
 void extractCharFromBitmap(unsigned char ascii_char) {
 
     // new vector will hold the char bitmap throughout the process lifetime

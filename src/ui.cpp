@@ -212,7 +212,9 @@ void ui_init() {
     _primitive->initGraphics();
     _primitive->setX(400);
     _primitive->setY(400);
-    _primitive->setString("AA");
+    _primitive->fontSize = UI::FontSize::f15;
+    // _primitive->setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+    _primitive->setString("My name is Al!");
     primitives.push_back(_primitive);
 
     // Subscribe to cursor position from input library
