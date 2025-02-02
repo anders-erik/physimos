@@ -262,7 +262,7 @@ void ui_update() {
     // std::cout << "UI::cursor_x=" << UI::cursor_x << ", UI::cursor_y=" << UI::cursor_y << "\n";
     for (UI::List* _uiList : uiLists) {
         // Will remove transprancy during hover
-        _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
+        // _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
     }
 
     // REFACTORING - 2024-10-04

@@ -2,6 +2,8 @@
 #ifndef UI_FONT_HH
 #define UI_FONT_HH
 
+#include <vector>
+
 
 namespace UI {
 
@@ -43,10 +45,15 @@ extern unsigned int a_texture;
 
 void loadFont();
 
+std::vector<unsigned char> getCharBitmap(unsigned char ascii_char);
+
+void loadCharIntoGlTexture(unsigned int glTexture, unsigned char character);
+void extractCharFromBitmap(unsigned char ascii_char);
 
 
-
-
+void loadStringIntoGlTexture(unsigned int glTexture, std::string stringToRender);
+std::vector<unsigned char> getStringBitmap(std::string stringToRender);
+std::vector<unsigned char> getCharBitmapRow(unsigned char character, unsigned int rowIndex);
 
 }
 

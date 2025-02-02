@@ -35,14 +35,13 @@ namespace UI {
     // };
 
 
+
+    // will load a texture contining the passed string into the default gl texture
     void Primitive::setString(std::string _str) {
 
-        for (unsigned char _char : _str)
-        {
-            std::cout << _char << std::endl;
-
-
-        }
+        // loadCharIntoGlTexture(defaultTexture, _str[0]);
+        loadStringIntoGlTexture(defaultTexture, _str);
+        // loadStringIntoGlTexture(glTexture, _str);
 
     }
 
