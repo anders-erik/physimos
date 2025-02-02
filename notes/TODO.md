@@ -16,16 +16,20 @@
 
 
 ### 2025-02-02
-- font/text rendering
-	- rearrange the ascii table with 30 at bottom left, as BMP structure
-	- display words using primitives
-		- rendered text will automatically be added to primitive on 'setText'
-- create nested element
-	- location is relative to parent
+- |o| font/text rendering
+	- |o| rearrange the ascii table with 30 at bottom left, as BMP structure
+	- |o| display words using primitives
+		- |o| rendered text will automatically be added to primitive on 'setText'
+- |o| create nested element
+	- |o| location is relative to parent
 	- proper list-
+- |o| detect primitive interaction
+	- |o| id
+	- |o| hover
+	- click
 - primitive flags
 	- clickable
-	- hovarable
+	- |o| hovarable
 - bind worldobject properties to primitive (next next step)
 
 

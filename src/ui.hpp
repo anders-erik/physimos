@@ -18,6 +18,14 @@ typedef struct UiFile {
 } UiFile;
 
 
+namespace UI {
+
+    void pointerPositionCallback(double x, double y);
+
+    void setCurrentlyHoveredPrimitive();
+
+}
+
 void ui_update();
 
 void ui_createWidgets();

@@ -13,6 +13,11 @@ namespace UI {
     void setViewportDimensions(unsigned int _width, unsigned int _height);
 
     extern float squareVertices[30];
+
+    // Colors
+    extern unsigned char color_default[4];
+    extern unsigned char color_hover[4];
+    extern unsigned char color_selected[4];
     
 }
 

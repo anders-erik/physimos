@@ -35,6 +35,31 @@ namespace UI {
     // };
 
 
+    void Primitive::setState(PrimitiveState _newState){
+        state = _newState;
+
+        if(_newState == PrimitiveState::Default){
+            glTexture = defaultTexture;
+        }
+        else if (_newState == PrimitiveState::Hover) {
+            glTexture = hoverTexture;
+        }
+        else if (_newState == PrimitiveState::Selected) {
+            glTexture = selectedTexture;
+        }
+
+    }
+
+
+    // No children primitives
+    bool Primitive::isLeaf() {
+        return children.size() == 0 ? true : false;
+    }
+
+    void Primitive::printId(){
+        std::cout << "primitive id = " << id << std::endl;
+    }
+
 
     // will load a texture contining the passed string into the default gl texture
     void Primitive::setString(std::string _str) {
@@ -278,7 +303,8 @@ namespace UI {
         colorBuffer[3] = A;
 
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
+        // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color_default);
         glGenerateMipmap(GL_TEXTURE_2D);
 
 
@@ -293,12 +319,12 @@ namespace UI {
 
         glBindTexture(GL_TEXTURE_2D, hoverTexture);
 
-        colorBuffer[0] = R;
-        colorBuffer[1] = G;
-        colorBuffer[2] = B;
+        colorBuffer[0] = R + 30;
+        colorBuffer[1] = G + 30;
+        colorBuffer[2] = B + 30;
         colorBuffer[3] = 255;
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color_hover);
         glGenerateMipmap(GL_TEXTURE_2D);
 
 
@@ -326,7 +352,19 @@ namespace UI {
     }
 
 
+    bool Primitive::childrenContainPoint(double _x, double _y) {
 
+        bool _childrenContainPoint = false;
+
+        for (Primitive* child : children){
+            if (child->containsPoint(_x, _y))
+                _childrenContainPoint = true;
+        }
+
+        return _childrenContainPoint;
+    }
+
+    // 
     bool Primitive::containsPoint(double _x, double _y) {
         
         bool x_between_min_and_max = (_x > (double)x_real) && (_x < (double)(x_real + width));
@@ -334,14 +372,14 @@ namespace UI {
 
         if (x_between_min_and_max && y_between_min_and_max) {
             // std::cout << "IN PRIMITIVE\n";
-            glTexture = hoverTexture;
+            // glTexture = hoverTexture;
             return true;
         }
         else {
             // make sure default texture is being used
-            if (glTexture != defaultTexture) {
-                glTexture = defaultTexture;
-            }
+            // if (glTexture != defaultTexture) {
+            //     glTexture = defaultTexture;
+            // }
             return false;
         }
 

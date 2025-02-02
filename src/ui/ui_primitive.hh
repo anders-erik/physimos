@@ -12,6 +12,12 @@ namespace UI {
 class Primitive; // forward declare
 
 
+enum PrimitiveState {
+    Default = 1,
+    Hover = 2,
+    Selected = 3,
+};
+
 enum Unit {
     Pixel = 0,
     Percent = 1
@@ -69,7 +75,13 @@ class Primitive {
         void update();
         void render();
 
+        bool childrenContainPoint(double _x, double _y);
         bool containsPoint(double x, double y);
+
+        std::string id = "";
+        void printId();
+
+        bool isLeaf();
 
         PrimitiveType primitiveType = PrimitiveType::Rectangle;
 
@@ -99,9 +111,9 @@ class Primitive {
 
 
         // Colors
-        int R = 255;
-        int G = 255;
-        int B = 255;
+        int R = 155;
+        int G = 155;
+        int B = 155;
         int A = 255;
 
 
@@ -127,7 +139,12 @@ class Primitive {
         /** The currently rendered texture for UI::Primitive. */
         unsigned int glTexture;
 
+
         // Available textures for different ui pritimitve states
+        PrimitiveState state = PrimitiveState::Default;
+        void setState(PrimitiveState _newState);
+        bool isHoverable = false;
+        bool isClickable = false;
         unsigned int defaultTexture;
         unsigned int hoverTexture;
         unsigned int selectedTexture;

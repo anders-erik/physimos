@@ -113,8 +113,8 @@ void loadStringIntoGlTexture(unsigned int glTexture, std::string stringToRender)
 
     std::vector<unsigned char> stringBitmap = getStringBitmap(stringToRender);
 
-    std::cout << stringBitmap.size() << std::endl;
-    std::cout << charCount << std::endl;
+    // std::cout << stringBitmap.size() << std::endl;
+    // std::cout << charCount << std::endl;
 
     glBindTexture(GL_TEXTURE_2D, glTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, charBitmapWidth * charCount, charBitmapHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, stringBitmap.data());

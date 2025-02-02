@@ -7,6 +7,10 @@
 
 
 namespace UI {
+    // colors
+    unsigned char color_default[4] = {185, 185,  185, 255};
+    unsigned char color_hover[4] = { 155, 155,  155, 255 };
+    unsigned char color_selected[4] = { 115, 115,  115, 255 };
 
 
     float viewportTransform16[16] = {

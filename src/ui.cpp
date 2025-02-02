@@ -8,7 +8,9 @@
 #include "ui/ui_primitive.hh"
 #include "ui_list.hh"
 std::vector<UI::List*> uiLists;
-std::vector<UI::Primitive*> primitives;
+std::vector<UI::Primitive*> primitiveTree;
+std::vector<UI::Primitive*> primitiveList;
+
 
 #include <iomanip>
 
@@ -199,6 +201,75 @@ void pointerPositionCallback(double x, double y) {
 
     double viewport_height_double = (double) viewport_height;
     cursor_y = -(y - viewport_height_double);
+
+    setCurrentlyHoveredPrimitive();
+}
+
+
+Primitive* hoveringPrimitive = nullptr;
+void setCurrentlyHoveredPrimitive(){
+    // reset currently selected
+    if (hoveringPrimitive != nullptr){
+        hoveringPrimitive->setState(PrimitiveState::Default);
+        hoveringPrimitive = nullptr;
+    }
+
+    // flag to check if any primitive maches the cursor location
+    bool hoveringAnyPrimitive = false;
+
+    // find the leaves first
+    for (Primitive* primitive : primitiveList){
+        
+        bool isLeaf = primitive->isLeaf();
+        bool containsPoint = primitive->containsPoint(cursor_x, cursor_y);
+
+        if(containsPoint)
+            hoveringAnyPrimitive = true;
+        
+        
+        // If the primitive is a leaf and contains the cursor location, the primitive is being hovered!
+        if (containsPoint && isLeaf) {
+            // primitive->printId();
+
+            // Simply do nothing of primitive is set to not hoverable
+            if (primitive->isHoverable){
+                hoveringPrimitive = primitive;
+                primitive->setState(UI::PrimitiveState::Hover);
+            }
+            return;
+
+        }
+    }
+
+
+    if (!hoveringAnyPrimitive){
+        std::cout << "No primitive hovered. " << std::endl;
+        return;
+    }
+
+
+    // If we did match a primitive for the current location, but no leaf matches, then we check non-leaf primitives for non-hovered children
+    for (Primitive* primitive : primitiveList) {
+        // only check non-leaves
+        bool isLeaf = primitive->isLeaf();
+        if (isLeaf)
+            continue;
+
+        // If the primitive is NOT a leaf, yet none of it's children is being hovered, then the primitive itself is being hovered
+        bool containsPoint = primitive->containsPoint(cursor_x, cursor_y);
+        bool childrenContainsPoint = primitive->childrenContainPoint(cursor_x, cursor_y);
+        // std::cout << "Non leaf: " << primitive->id << ".   " << containsPoint << ", " << childrenContainsPoint << std::endl;
+        if (containsPoint && !childrenContainsPoint) {
+            // primitive->printId();
+
+            // Simply do nothing of primitive is set to not hoverable
+            if (primitive->isHoverable){
+                hoveringPrimitive = primitive;
+                primitive->setState(UI::PrimitiveState::Hover);
+            }
+            return;
+        }
+    }
 }
 
 }
@@ -211,18 +282,24 @@ void ui_init() {
 
 
     // test-primitives
-    UI::Primitive* _primitive_parent = new UI::Primitive();
-    _primitive_parent->vertRef = UI::VertRef::Top;
-    _primitive_parent->initGraphics();
-    _primitive_parent->setX(300);
-    _primitive_parent->setY(100);
-    _primitive_parent->fontSize = UI::FontSize::f15;
-    // _primitive_parent->setString("I am parent!");
-    primitives.push_back(_primitive_parent);
+    UI::Primitive* _primitive_root = new UI::Primitive();
+    _primitive_root->id = "root";
+    _primitive_root->vertRef = UI::VertRef::Top;
+    _primitive_root->initGraphics();
+    _primitive_root->setX(300);
+    _primitive_root->setY(100);
+    _primitive_root->fontSize = UI::FontSize::f15;
+    // _primitive_root->setString("I am root primitive!");
+    primitiveTree.push_back(_primitive_root);
+    primitiveList.push_back(_primitive_root);
 
+    _primitive_root->printId();
 
     UI::Primitive* _primitive_child = new UI::Primitive();
-    _primitive_parent->appendChild(_primitive_child);
+    primitiveList.push_back(_primitive_child);
+    _primitive_child->id = "1st child";
+    _primitive_root->appendChild(_primitive_child);
+    _primitive_child->isHoverable = true;
     _primitive_child->vertRef = UI::VertRef::Top;
     _primitive_child->initGraphics();
     _primitive_child->fontSize = UI::FontSize::f15;
@@ -231,7 +308,10 @@ void ui_init() {
     _primitive_child->setY(10);
 
     UI::Primitive* _primitive_grandchild = new UI::Primitive();
+    primitiveList.push_back(_primitive_grandchild);
+    _primitive_grandchild->id = "1st grandchild";
     _primitive_child->appendChild(_primitive_grandchild);
+    _primitive_grandchild->isHoverable = true;
     _primitive_grandchild->vertRef = UI::VertRef::Top;
     _primitive_grandchild->initGraphics();
     _primitive_grandchild->fontSize = UI::FontSize::f15;
@@ -240,7 +320,9 @@ void ui_init() {
     _primitive_grandchild->setY(20);
 
     UI::Primitive* _primitive_child_2 = new UI::Primitive();
-    _primitive_parent->appendChild(_primitive_child_2);
+    primitiveList.push_back(_primitive_child_2);
+    _primitive_child_2->id = "2st child";
+    _primitive_root->appendChild(_primitive_child_2);
     _primitive_child_2->vertRef = UI::VertRef::Top;
     _primitive_child_2->initGraphics();
     _primitive_child_2->fontSize = UI::FontSize::f15;
@@ -306,7 +388,9 @@ void ui_update() {
         _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
     }
 
-    for (UI::Primitive* primitive : primitives) {
+    // UI::setCurrentlyHoveredPrimitive();
+
+    for (UI::Primitive* primitive : primitiveTree) {
         // Will remove transprancy during hover
         primitive->update();
         primitive->render();
@@ -327,8 +411,6 @@ void ui_update() {
 
     ui_renderer_render(uiElements);
 }
-
-
 
 
 
