@@ -60,12 +60,18 @@ namespace UI {
         return stringLength == 0 ? false : true;
     }
 
-    
 
-    // Store x_input and make appropriate conversions to update x_real
+
+    // Store x_input and make appropriate conversions to update x_real.
+    // x_input is relative to parent. If no parent then relative to ui origin.
     void Primitive::setX(int _x){
         x_input = _x;
         int _x_input_px = _x; // will change below if unit is set to percent
+
+        // real x coordinate offset. If a root ui primitive then this is viewport/ui coordinates
+        int _x_real_offset;
+
+
 
         // Make sure all calculations are made using pixel units
         if(x_unit == Unit::Percent){
@@ -77,37 +83,77 @@ namespace UI {
         if(horiRef == HoriRef::Right){
             // Subtract the input from the far right position
             int zero_point_right = viewport_width - width;
-            x_real = zero_point_right - _x_input_px;
+            _x_real_offset = zero_point_right - _x_input_px;
         }
         else {
-            x_real = _x_input_px;
+            _x_real_offset = _x_input_px;
         }
+
+
+        if (parent == nullptr) {
+            x_real = _x_real_offset;
+        }
+        else {
+            x_real = parent->x_real + _x_real_offset;
+        }
+
 
         reloadHWXY();
     }
+
+
+
     // Store y_input and make appropriate conversions to update y_real
+    // y_input is relative to parent. If no parent then relative to ui origin.
     void Primitive::setY(int _y){
         y_input = _y;
        
-        int _y_input_px = _y; // will change below if unit is set to percent
-
-        // Make sure all calculations are made using pixel units
+        // y input in number of PIXELS
+        int _y_input_px = _y;
         if (y_unit == Unit::Percent) {
             // Multiply _first_ to reduce compounding error from integer division rounding 
             _y_input_px = (viewport_height * y_input) / 100;
         }
 
+        // real y coordinate offset from reference
+        // If primitive is a root element, then this is viewport/ui coordinates
+        int _y_real_offset;
 
-        if (vertRef == VertRef::Top) {
-            // Subtract the input from the far right position
-            int zero_point_top = viewport_height - height;
-            y_real = zero_point_top - _y_input_px;
-        }
-        else {
-            y_real = _y_input_px;
-        }
+        // Draw root primitives directly
+        if (vertRef == VertRef::Bottom) {
 
-        reloadHWXY();
+            _y_real_offset = _y_input_px;
+
+            if (parent == nullptr) {
+                y_real = _y_input_px;
+            }
+            else {
+                y_real = parent->y_real + _y_input_px;
+            }
+
+            reloadHWXY();
+            return;
+
+        }
+        else if (vertRef == VertRef::Top) {
+
+            // The real offset is in the negative direction when using top as vertical reference
+            _y_real_offset = -_y_input_px;
+
+            if (parent == nullptr) {
+                int zero_point_top = viewport_height - height;
+                // _y_real_offset = zero_point_top - _y_input_px;
+                y_real = zero_point_top + _y_real_offset;
+            }
+            else {
+                // move child to align with parent top, the subtract top offset (_y_real_offset)
+                y_real = parent->y_real + parent->height - this->height + _y_real_offset;
+            }
+
+            reloadHWXY();
+            return;
+
+        }
     }
 
     // Empty primitive 
@@ -138,20 +184,23 @@ namespace UI {
     // make sure the transform matrix is updated to current height, width, x, and y
     void Primitive::reloadHWXY(){
 
-        if (parent == nullptr) {
+        uiPrimitiveTransform16[0] = width;
+        uiPrimitiveTransform16[5] = height;
 
-            uiPrimitiveTransform16[0] = width;
-            uiPrimitiveTransform16[5] = height;
-            uiPrimitiveTransform16[3] = x_real;
-            uiPrimitiveTransform16[7] = y_real;
+        uiPrimitiveTransform16[3] = x_real;
+        uiPrimitiveTransform16[7] = y_real;
 
-        }
-        else {
-            uiPrimitiveTransform16[0] = width;
-            uiPrimitiveTransform16[5] = height;
-            uiPrimitiveTransform16[3] = x_real;
-            uiPrimitiveTransform16[7] = y_real;
-        }
+        // if (parent == nullptr) {
+        //     // set pure ui coordinates
+        //     uiPrimitiveTransform16[3] = x_real;
+        //     uiPrimitiveTransform16[7] = y_real;
+
+        // }
+        // else {
+        //     // 
+        //     uiPrimitiveTransform16[3] = x_real;
+        //     uiPrimitiveTransform16[7] = y_real;
+        // }
 
     }
 
@@ -298,10 +347,20 @@ namespace UI {
 
     }
 
+    void Primitive::appendChild(Primitive* childPrimitive){
+        children.push_back(childPrimitive);
+
+        childPrimitive->parent = this;
+
+    }
+
 
     
     void Primitive::update() {
         // std::cout << "UPDATING UI PRIMITIVE" << std::endl;
+        for (Primitive* child : children){
+            child->update();
+        }
 
         shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);
 
@@ -311,6 +370,10 @@ namespace UI {
     void Primitive::render() {
         // std::cout << "RENDERING UI PRIMITIVE" << std::endl;
         glUseProgram(shader->ID);
+
+        for (Primitive* child : children) {
+            child->render();
+        }
 
         // Transform
         shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);

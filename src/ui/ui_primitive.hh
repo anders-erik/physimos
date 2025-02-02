@@ -113,7 +113,8 @@ class Primitive {
 
         Primitive* parent = nullptr;
 
-
+        std::vector<Primitive*> children;
+        void appendChild(Primitive* childPrimitive);
 
         PrimitiveInfo* primitiveInfo_ptr;
 

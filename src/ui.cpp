@@ -204,25 +204,55 @@ void pointerPositionCallback(double x, double y) {
 }
 
 void ui_init() {
+    ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
     // Load characters-2.bmp character map
     UI::loadFont();
 
-    // test-primitive
-    UI::Primitive* _primitive = new UI::Primitive();
-    _primitive->initGraphics();
-    _primitive->setX(400);
-    _primitive->setY(400);
-    _primitive->fontSize = UI::FontSize::f15;
-    // _primitive->setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-    _primitive->setString("My name is Al!");
-    primitives.push_back(_primitive);
+
+    // test-primitives
+    UI::Primitive* _primitive_parent = new UI::Primitive();
+    _primitive_parent->vertRef = UI::VertRef::Top;
+    _primitive_parent->initGraphics();
+    _primitive_parent->setX(300);
+    _primitive_parent->setY(100);
+    _primitive_parent->fontSize = UI::FontSize::f15;
+    // _primitive_parent->setString("I am parent!");
+    primitives.push_back(_primitive_parent);
+
+
+    UI::Primitive* _primitive_child = new UI::Primitive();
+    _primitive_parent->appendChild(_primitive_child);
+    _primitive_child->vertRef = UI::VertRef::Top;
+    _primitive_child->initGraphics();
+    _primitive_child->fontSize = UI::FontSize::f15;
+    _primitive_child->setString("I am child!");
+    _primitive_child->setX(10);
+    _primitive_child->setY(10);
+
+    UI::Primitive* _primitive_grandchild = new UI::Primitive();
+    _primitive_child->appendChild(_primitive_grandchild);
+    _primitive_grandchild->vertRef = UI::VertRef::Top;
+    _primitive_grandchild->initGraphics();
+    _primitive_grandchild->fontSize = UI::FontSize::f15;
+    _primitive_grandchild->setString("I am grandchild!");
+    _primitive_grandchild->setX(10);
+    _primitive_grandchild->setY(20);
+
+    UI::Primitive* _primitive_child_2 = new UI::Primitive();
+    _primitive_parent->appendChild(_primitive_child_2);
+    _primitive_child_2->vertRef = UI::VertRef::Top;
+    _primitive_child_2->initGraphics();
+    _primitive_child_2->fontSize = UI::FontSize::f15;
+    _primitive_child_2->setString("I am 2nd child!");
+    _primitive_child_2->setX(10);
+    _primitive_child_2->setY(60);
+
 
 
     // Subscribe to cursor position from input library
     input_subscribe_cursor_position(UI::pointerPositionCallback);
 
-    ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
     // REFACTOR - 2024-10-04
     // REFACTOR - 2024-10-9
