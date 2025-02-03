@@ -5,8 +5,105 @@
 namespace UI::WorldObject {
 
 
+Container::Container(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+
+    id = worldObject->name + "_primitive_head";
+    vertRef = UI::VertRef::Bottom;
+    setWidth(400);
+    setHeight(100);
+    initGraphics();
+    setX(300);
+    setY(10);
+}
+
+
+
+NameLabel::NameLabel(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+    id = worldObject->name + "_name_label";
+    vertRef = UI::VertRef::Top;
+    initGraphics();
+    fontSize = UI::FontSize::f24;
+    setString(_worldObject->name);
+}
+
+XPosition::XPosition(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+    id = worldObject->name + "_x_position";
+    vertRef = UI::VertRef::Bottom;
+    initGraphics();
+    fontSize = UI::FontSize::f15;
+    std::string x_pos_string = std::to_string(_worldObject->transform->position.x);
+    setString("x = " + x_pos_string.substr(0, 5));
+    setX(300);
+    setY(80);
+}
+XPosIncrease::XPosIncrease(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+    id = worldObject->name + "_x_pos_increase";
+    isHoverable = true;
+    vertRef = UI::VertRef::Bottom;
+    initGraphics();
+    fontSize = UI::FontSize::f15;
+    setString("inc");
+    setX(360);
+    setY(80);
+}
+void XPosIncrease::click(){
+    worldObject->transform->position.x += 2.0;
+}
+XPosDecrease::XPosDecrease(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+    id = worldObject->name + "_x_pos_decrease";
+    isHoverable = true;
+    vertRef = UI::VertRef::Bottom;
+    initGraphics();
+    fontSize = UI::FontSize::f15;
+    setString("dec");
+}
+void XPosDecrease::click() {
+    worldObject->transform->position.x -= 2.0;
+}
+
+YPosition::YPosition(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+    id = worldObject->name + "_y_position";
+    vertRef = UI::VertRef::Bottom;
+    initGraphics();
+    fontSize = UI::FontSize::f15;
+    std::string x_pos_string = std::to_string(_worldObject->transform->position.y);
+    setString("y = " + x_pos_string.substr(0, 5));
+    setX(300);
+    setY(60);
+}
+
+
+ZPosition::ZPosition(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+    id = worldObject->name + "_z_position";
+    vertRef = UI::VertRef::Bottom;
+    initGraphics();
+    fontSize = UI::FontSize::f15;
+    std::string x_pos_string = std::to_string(_worldObject->transform->position.z);
+    setString("z = " + x_pos_string.substr(0, 5));
+    setX(300);
+    setY(40);
+}
+
+
+ToggleWireframe::ToggleWireframe(::WorldObject* _worldObject) {
+    worldObject = _worldObject;
+    isHoverable = true;
+    id = worldObject->name + "_toggle_wireframe_";
+    vertRef = UI::VertRef::Bottom;
+    initGraphics();
+    fontSize = UI::FontSize::f15;
+    setString("Toggle wireframe");
+}
+
 void ToggleWireframe::click() {
-    std::cout << "Clicked ToggleWireframe" << std::endl;
+    // std::cout << "Clicked ToggleWireframe" << std::endl;
     if (worldObject == nullptr) {
         std::cout << "ERROR: Cant toggle wireframe. Bound world object is null. " << std::endl;
         return;
@@ -16,101 +113,61 @@ void ToggleWireframe::click() {
 
 
 
+
 Primitive* newComponent(::WorldObject* _worldObject) {
-    Primitive* worldObjectComponentHead = new UI::Primitive();
 
     std::string _name = _worldObject->name;
 
-    // World Object Head Primitive
-    // Primitive* worldObjectComponentHead = new UI::Primitive();
-    worldObjectComponentHead->id = _name + "_primitive_head";
-    worldObjectComponentHead->vertRef = UI::VertRef::Bottom;
-    worldObjectComponentHead->setWidth(400);
-    worldObjectComponentHead->setHeight(100);
-    worldObjectComponentHead->initGraphics();
-    worldObjectComponentHead->setX(300);
-    worldObjectComponentHead->setY(10);
-    // worldObjectComponentHead->fontSize = UI::FontSize::f15;
-    // _primitive_root->setString("I am root primitive!");
-    // primitiveTree.push_back(_primitive_root);
-    // primitiveList.push_back(_primitive_root);
+    // Container
+    Primitive* worldObjectComponentHead = new UI::WorldObject::Container(_worldObject);
 
-    // worldObjectComponentHead->printId();
 
-    // World Object Name Label
-    UI::Primitive* name_label = new UI::Primitive();
-    // primitiveList.push_back(_primitive_child);
-    name_label->id = _name + "_name_label";
+    // Name Label
+    UI::Primitive* name_label = new UI::WorldObject::NameLabel(_worldObject);
     worldObjectComponentHead->appendChild(name_label);
-    // name_label->isHoverable = true;
-    name_label->vertRef = UI::VertRef::Top;
-    name_label->initGraphics();
-    name_label->fontSize = UI::FontSize::f15;
-    name_label->setString(_worldObject->name);
     name_label->setX(10);
     name_label->setY(10);
 
 
-    // X pos
-    UI::Primitive* x_pos = new UI::Primitive();
-    // primitiveList.push_back(_primitive_child_2);
-    x_pos->id = _name + "_x_pos";
-    worldObjectComponentHead->appendChild(x_pos);
-    x_pos->vertRef = UI::VertRef::Bottom;
-    // toggle_wireframe->horiRef = UI::HoriRef::Right;
-    x_pos->initGraphics();
-    x_pos->fontSize = UI::FontSize::f15;
-    std::string x_pos_string = std::to_string(_worldObject->transform->position.x);
-    x_pos->setString("x = " + x_pos_string.substr(0, 5));
-    x_pos->setX(300);
-    x_pos->setY(80);
+    // X position
+    UI::Primitive* x_position = new UI::WorldObject::XPosition(_worldObject);
+    worldObjectComponentHead->appendChild(x_position);
+    x_position->setX(220);
+    x_position->setY(80);
+    // X pos. increase
+    UI::Primitive* x_pos_increase = new UI::WorldObject::XPosIncrease(_worldObject);
+    worldObjectComponentHead->appendChild(x_pos_increase);
+    x_pos_increase->setX(320);
+    x_pos_increase->setY(80);
+    // X pos. decrease
+    UI::Primitive* x_pos_decrease = new UI::WorldObject::XPosDecrease(_worldObject);
+    worldObjectComponentHead->appendChild(x_pos_decrease);
+    x_pos_decrease->setX(360);
+    x_pos_decrease->setY(80);
 
     // Y pos
-    UI::Primitive* y_pos = new UI::Primitive();
-    // primitiveList.push_back(_primitive_child_2);
-    y_pos->id = _name + "_y_pos";
+    UI::Primitive* y_pos = new UI::WorldObject::YPosition(_worldObject);
     worldObjectComponentHead->appendChild(y_pos);
-    y_pos->vertRef = UI::VertRef::Bottom;
-    // toggle_wireframe->horiRef = UI::HoriRef::Right;
-    y_pos->initGraphics();
-    y_pos->fontSize = UI::FontSize::f15;
-    std::string y_pos_string = std::to_string(_worldObject->transform->position.y);
-    y_pos->setString("y = " + y_pos_string.substr(0, 5));
-    y_pos->setX(300);
+    y_pos->setX(260);
     y_pos->setY(60);
 
     // Z pos
-    UI::Primitive* z_pos = new UI::Primitive();
-    // primitiveList.push_back(_primitive_child_2);
-    z_pos->id = _name + "_z_pos";
+    UI::Primitive* z_pos = new UI::WorldObject::ZPosition(_worldObject);
     worldObjectComponentHead->appendChild(z_pos);
-    z_pos->vertRef = UI::VertRef::Bottom;
-    // toggle_wireframe->horiRef = UI::HoriRef::Right;
-    z_pos->initGraphics();
-    z_pos->fontSize = UI::FontSize::f15;
-    std::string z_pos_string = std::to_string(_worldObject->transform->position.z);
-    z_pos->setString("z = " + z_pos_string.substr(0, 5));
-    z_pos->setX(300);
+    z_pos->setX(260);
     z_pos->setY(40);
 
-    // Wireframe Toggle ( NOT IMPLEMENTED!)
-    // UI::Primitive* toggle_wireframe_ = new UI::Primitive();
-    UI::WorldObject::ToggleWireframe* toggle_wireframe_ = new UI::WorldObject::ToggleWireframe();
-    toggle_wireframe_->worldObject = _worldObject;
-    // primitiveList.push_back(_primitive_child_2);
-    toggle_wireframe_->id = _name + "_toggle_wireframe_";
+
+    // Wireframe Toggle
+    UI::WorldObject::ToggleWireframe* toggle_wireframe_ = new UI::WorldObject::ToggleWireframe(_worldObject);
     worldObjectComponentHead->appendChild(toggle_wireframe_);
-    toggle_wireframe_->isHoverable = true;
-    // toggle_wireframe_->clickCallback = _worldObject->toggleWireframe;
-    toggle_wireframe_->vertRef = UI::VertRef::Bottom;
-    // toggle_wireframe->horiRef = UI::HoriRef::Right;
-    toggle_wireframe_->initGraphics();
-    toggle_wireframe_->fontSize = UI::FontSize::f15;
-    toggle_wireframe_->setString("Toggle wireframe");
+    // Necessary to place relative to parent
     toggle_wireframe_->setX(10);
     toggle_wireframe_->setY(10);
 
     return worldObjectComponentHead;
 }
+
+
 
 }

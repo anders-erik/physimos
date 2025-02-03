@@ -236,7 +236,7 @@ void leftClickCallback(double x, double y) {
     // double viewport_height_double = (double)viewport_height;
     // cursor_y = -(y - viewport_height_double);
 
-    std::cout << "Left click : ";
+    // std::cout << "Left click : ";
     
     // Grab current target
     Primitive* targetedPrimitive = getTargetingPrimitive();
