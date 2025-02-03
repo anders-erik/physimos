@@ -10,6 +10,8 @@
 #include "uiElement.hpp"
 #include "Types.hpp"
 
+#include "ui/ui_primitive.hh"
+
 
 typedef struct UiFile {
     bool loaded = 0;
@@ -22,7 +24,9 @@ namespace UI {
 
     void pointerPositionCallback(double x, double y);
 
-    void setCurrentlyHoveredPrimitive();
+    Primitive* getTargetingPrimitive();
+
+    void setCurrentlyHoveredPrimitive(Primitive* primitiveToHover);
 
 }
 

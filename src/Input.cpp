@@ -31,6 +31,31 @@ struct InputState inputState;
 // UI* ui_input;
 // Camera* camera_input;
 
+
+
+
+
+
+namespace Input {
+
+	// Only one subscriber implemented
+	void (*cursorSubscriberCallback)(double x, double y) = nullptr;
+	void (*leftClickSubscriberCallback)(double x, double y) = nullptr;
+
+	void subscribeCursorPosition(void (*subscriberCallback)(double x, double y)) {
+		cursorSubscriberCallback = subscriberCallback;
+	}
+
+	void subscribeLeftClickPosition(void (*subscriberCallback)(double x, double y)) {
+		leftClickSubscriberCallback = subscriberCallback;
+	}
+
+}
+
+
+
+
+
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -52,10 +77,18 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
  
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	// printf("MOUSE BUTTON CALLBACK!\n");
 	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+
+	// Callbacks
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		Input::leftClickSubscriberCallback(xpos, ypos);
+	}
+	
+	// printf("MOUSE BUTTON CALLBACK!\n");
+	
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-		glfwGetCursorPos(window, &xpos, &ypos);
+		
         // printf("Click! -- %f , %f \n", xpos, ypos);
 		// printf("simstate: %d \n", SimState::idle);
 
@@ -92,17 +125,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 }
 
-// Only one subscriber curently possible
-void (*cursor_position_subscriber)(double x, double y) = nullptr;
-void input_subscribe_cursor_position(void (*callback_subscriber)(double x, double y)) {
-	cursor_position_subscriber = callback_subscriber;
-}
+
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// printf("%f , %f \n", xpos, ypos);
 	inputState.pointerX = xpos;
 	inputState.pointerY = ypos;
-	cursor_position_subscriber(xpos, ypos);
+
+	Input::cursorSubscriberCallback(xpos, ypos);
 }
 
 

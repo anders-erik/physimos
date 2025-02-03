@@ -196,6 +196,8 @@ namespace UI {
 
 double cursor_x = 0.0;
 double cursor_y = 0.0;
+Primitive* currentlyHoveredPrimitive = nullptr;
+
 // Callback for cursor position subscription
 void pointerPositionCallback(double x, double y) {
     cursor_x = x;
@@ -203,49 +205,72 @@ void pointerPositionCallback(double x, double y) {
     double viewport_height_double = (double) viewport_height;
     cursor_y = -(y - viewport_height_double);
 
-    setCurrentlyHoveredPrimitive();
+
+    // setCurrentlyHoveredPrimitive();
+    Primitive* targetedPrimitive = getTargetingPrimitive();
+    if(targetedPrimitive == nullptr){
+        // std::cout << "No primitive targeted." << std::endl;
+        return;
+    }
+    // targetedPrimitive->printId();
+
+
+    // Update currently hovered primitive
+    setCurrentlyHoveredPrimitive(targetedPrimitive);
+
+
 }
 
 
-Primitive* hoveringPrimitive = nullptr;
-void setCurrentlyHoveredPrimitive(){
-    // reset currently selected
-    if (hoveringPrimitive != nullptr){
-        hoveringPrimitive->setState(PrimitiveState::Default);
-        hoveringPrimitive = nullptr;
+
+// Don't need cursor position update as it will stay current using pointer position callback
+void leftClickCallback(double x, double y) {
+    // cursor_x = x;
+    // double viewport_height_double = (double)viewport_height;
+    // cursor_y = -(y - viewport_height_double);
+
+    std::cout << "Left click : ";
+    
+    // Grab current target
+    Primitive* targetedPrimitive = getTargetingPrimitive();
+    if (targetedPrimitive == nullptr) {
+        std::cout << "No primitive targeted." << std::endl;
+        return;
     }
+    targetedPrimitive->printId();
+
+}
+
+// Returns the primitive that the current mouse cursor is targeting
+Primitive* getTargetingPrimitive() {
 
     // flag to check if any primitive maches the cursor location
-    bool hoveringAnyPrimitive = false;
+    bool targetingAnyPrimitive = false;
 
     // find the leaves first
-    for (Primitive* primitive : primitiveList){
-        
+    for (Primitive* primitive : primitiveList) {
+
         bool isLeaf = primitive->isLeaf();
         bool containsPoint = primitive->containsPoint(cursor_x, cursor_y);
 
-        if(containsPoint)
-            hoveringAnyPrimitive = true;
-        
-        
+        if (containsPoint)
+            targetingAnyPrimitive = true;
+
+
         // If the primitive is a leaf and contains the cursor location, the primitive is being hovered!
         if (containsPoint && isLeaf) {
             // primitive->printId();
 
-            // Simply do nothing of primitive is set to not hoverable
-            if (primitive->isHoverable){
-                hoveringPrimitive = primitive;
-                primitive->setState(UI::PrimitiveState::Hover);
-            }
-            return;
+            return primitive;
 
         }
     }
 
 
-    if (!hoveringAnyPrimitive){
-        std::cout << "No primitive hovered. " << std::endl;
-        return;
+    // No matches
+    if (!targetingAnyPrimitive) {
+        // std::cout << "No primitive targeted. " << std::endl;
+        return nullptr;
     }
 
 
@@ -263,17 +288,36 @@ void setCurrentlyHoveredPrimitive(){
         if (containsPoint && !childrenContainsPoint) {
             // primitive->printId();
 
-            // Simply do nothing of primitive is set to not hoverable
-            if (primitive->isHoverable){
-                hoveringPrimitive = primitive;
-                primitive->setState(UI::PrimitiveState::Hover);
-            }
-            return;
+            return primitive;
         }
     }
+
+    std::cout << "Warn: matching non-leaves in forst loop BUT not matched in second loop!" << std::endl;
+    
+    return nullptr;
 }
 
+
+void setCurrentlyHoveredPrimitive(Primitive* newHoverPrimitive){
+    // reset currently selected
+    if (currentlyHoveredPrimitive != nullptr){
+        currentlyHoveredPrimitive->setState(PrimitiveState::Default);
+        currentlyHoveredPrimitive = nullptr;
+    }
+
+    // Simply do nothing of primitive is not set to hoverable
+    if (newHoverPrimitive->isHoverable) {
+        currentlyHoveredPrimitive = newHoverPrimitive;
+        newHoverPrimitive->setState(UI::PrimitiveState::Hover);
+    }
+
+    return;
 }
+
+
+} // End UI namespace
+
+
 
 void ui_init() {
     ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
@@ -348,7 +392,8 @@ void ui_init() {
 
 
     // Subscribe to cursor position from input library
-    input_subscribe_cursor_position(UI::pointerPositionCallback);
+    Input::subscribeCursorPosition(UI::pointerPositionCallback);
+    Input::subscribeLeftClickPosition(UI::leftClickCallback);
 
 
     // REFACTOR - 2024-10-04
