@@ -130,6 +130,9 @@ class Primitive {
         std::vector<Primitive*> children;
         void appendChild(Primitive* childPrimitive);
 
+        std::vector<Primitive*> flattenTree();
+        void appendtoFlatTreeNested(Primitive* _primitive);
+
         PrimitiveInfo* primitiveInfo_ptr;
 
 

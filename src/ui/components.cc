@@ -8,9 +8,11 @@ namespace UI {
     Primitive* newWorldObjectComponent(WorldObject* _worldObject){
         Primitive* worldObjectComponentHead = new UI::Primitive();
         
+        std::string _name = _worldObject->name;
+
         // World Object Head Primitive
         // Primitive* worldObjectComponentHead = new UI::Primitive();
-        worldObjectComponentHead->id = "worldObjectComponentHead";
+        worldObjectComponentHead->id = _name + "_primitive_head";
         worldObjectComponentHead->vertRef = UI::VertRef::Bottom;
         worldObjectComponentHead->setWidth(400);
         worldObjectComponentHead->setHeight(100);
@@ -27,7 +29,7 @@ namespace UI {
         // World Object Name Label
         UI::Primitive* name_label = new UI::Primitive();
         // primitiveList.push_back(_primitive_child);
-        name_label->id = "aba432f";
+        name_label->id = _name + "_name_label";
         worldObjectComponentHead->appendChild(name_label);
         name_label->isHoverable = true;
         name_label->vertRef = UI::VertRef::Top;
@@ -41,7 +43,7 @@ namespace UI {
         // X pos
         UI::Primitive* x_pos = new UI::Primitive();
         // primitiveList.push_back(_primitive_child_2);
-        x_pos->id = "4fe892f";
+        x_pos->id = _name + "_x_pos";
         worldObjectComponentHead->appendChild(x_pos);
         x_pos->vertRef = UI::VertRef::Bottom;
         // toggle_wireframe->horiRef = UI::HoriRef::Right;
@@ -55,7 +57,7 @@ namespace UI {
         // Y pos
         UI::Primitive* y_pos = new UI::Primitive();
         // primitiveList.push_back(_primitive_child_2);
-        y_pos->id = "4fe892f";
+        y_pos->id = _name + "_y_pos";
         worldObjectComponentHead->appendChild(y_pos);
         y_pos->vertRef = UI::VertRef::Bottom;
         // toggle_wireframe->horiRef = UI::HoriRef::Right;
@@ -69,7 +71,7 @@ namespace UI {
         // Z pos
         UI::Primitive* z_pos = new UI::Primitive();
         // primitiveList.push_back(_primitive_child_2);
-        z_pos->id = "4fe892f";
+        z_pos->id = _name + "_z_pos";
         worldObjectComponentHead->appendChild(z_pos);
         z_pos->vertRef = UI::VertRef::Bottom;
         // toggle_wireframe->horiRef = UI::HoriRef::Right;
@@ -83,7 +85,7 @@ namespace UI {
         // Wireframe Toggle ( NOT IMPLEMENTED!)
         UI::Primitive* toggle_wireframe_ = new UI::Primitive();
         // primitiveList.push_back(_primitive_child_2);
-        toggle_wireframe_->id = "4fe892f";
+        toggle_wireframe_->id = _name + "_toggle_wireframe_";
         worldObjectComponentHead->appendChild(toggle_wireframe_);
         toggle_wireframe_->vertRef = UI::VertRef::Bottom;
         // toggle_wireframe->horiRef = UI::HoriRef::Right;

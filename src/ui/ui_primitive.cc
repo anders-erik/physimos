@@ -403,6 +403,28 @@ namespace UI {
     }
 
 
+
+    std::vector<Primitive*> tempFlatTree = {};
+
+    std::vector<Primitive*> Primitive::flattenTree(){
+        // std::cout << "tempFlatTree.size() = " << tempFlatTree.size() << std::endl;
+        
+        while(tempFlatTree.size() != 0)
+            tempFlatTree.pop_back();
+        
+        appendtoFlatTreeNested(this);
+
+        return tempFlatTree;
+    }
+
+    void Primitive::appendtoFlatTreeNested(Primitive* _primitive){
+        tempFlatTree.push_back(_primitive);
+        // appendChildrenNested()
+        for (Primitive* child : _primitive->children){
+            appendtoFlatTreeNested(child);
+        }
+    }
+
     
     void Primitive::update() {
         // std::cout << "UPDATING UI PRIMITIVE" << std::endl;

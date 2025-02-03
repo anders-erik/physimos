@@ -289,7 +289,12 @@ void ui_init() {
     }
     UI::Primitive* worldObjectComponent_tree = UI::newWorldObjectComponent(house1_wo);
     primitiveTreeHeads.push_back(worldObjectComponent_tree);
-
+    // Flatten component for easy traversal
+    std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
+    for (UI::Primitive* _primitive : flatComponent ){
+        std::cout << "_primitive->id = " << _primitive->id << std::endl;
+        primitiveList.push_back(_primitive);
+    }
 
     // test-primitives
     UI::Primitive* _primitive_root = new UI::Primitive();
