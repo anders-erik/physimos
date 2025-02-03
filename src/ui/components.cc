@@ -31,7 +31,7 @@ namespace UI {
         // primitiveList.push_back(_primitive_child);
         name_label->id = _name + "_name_label";
         worldObjectComponentHead->appendChild(name_label);
-        name_label->isHoverable = true;
+        // name_label->isHoverable = true;
         name_label->vertRef = UI::VertRef::Top;
         name_label->initGraphics();
         name_label->fontSize = UI::FontSize::f15;
@@ -49,7 +49,7 @@ namespace UI {
         // toggle_wireframe->horiRef = UI::HoriRef::Right;
         x_pos->initGraphics();
         x_pos->fontSize = UI::FontSize::f15;
-        std::string x_pos_string = std::to_string(_worldObject->position.x);
+        std::string x_pos_string = std::to_string(_worldObject->transform->position.x);
         x_pos->setString("x = " + x_pos_string.substr(0, 5));
         x_pos->setX(300);
         x_pos->setY(80);
@@ -63,7 +63,7 @@ namespace UI {
         // toggle_wireframe->horiRef = UI::HoriRef::Right;
         y_pos->initGraphics();
         y_pos->fontSize = UI::FontSize::f15;
-        std::string y_pos_string = std::to_string(_worldObject->position.y);
+        std::string y_pos_string = std::to_string(_worldObject->transform->position.y);
         y_pos->setString("y = " + y_pos_string.substr(0, 5));
         y_pos->setX(300);
         y_pos->setY(60);
@@ -77,7 +77,7 @@ namespace UI {
         // toggle_wireframe->horiRef = UI::HoriRef::Right;
         z_pos->initGraphics();
         z_pos->fontSize = UI::FontSize::f15;
-        std::string z_pos_string = std::to_string(_worldObject->position.z);
+        std::string z_pos_string = std::to_string(_worldObject->transform->position.z);
         z_pos->setString("z = " + z_pos_string.substr(0, 5));
         z_pos->setX(300);
         z_pos->setY(40);
@@ -87,6 +87,8 @@ namespace UI {
         // primitiveList.push_back(_primitive_child_2);
         toggle_wireframe_->id = _name + "_toggle_wireframe_";
         worldObjectComponentHead->appendChild(toggle_wireframe_);
+        toggle_wireframe_->isHoverable = true;
+        // toggle_wireframe_->clickCallback = _worldObject->toggleWireframe;
         toggle_wireframe_->vertRef = UI::VertRef::Bottom;
         // toggle_wireframe->horiRef = UI::HoriRef::Right;
         toggle_wireframe_->initGraphics();

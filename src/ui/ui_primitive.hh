@@ -150,6 +150,8 @@ class Primitive {
         void setState(PrimitiveState _newState);
         bool isHoverable = false;
         bool isClickable = false;
+        void click();
+        // void (*clickCallback)() = nullptr;
         unsigned int defaultTexture;
         unsigned int hoverTexture;
         unsigned int selectedTexture;

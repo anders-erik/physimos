@@ -234,10 +234,11 @@ void leftClickCallback(double x, double y) {
     // Grab current target
     Primitive* targetedPrimitive = getTargetingPrimitive();
     if (targetedPrimitive == nullptr) {
-        std::cout << "No primitive targeted." << std::endl;
+        std::cout << "No primitive targeted during click." << std::endl;
         return;
     }
-    targetedPrimitive->printId();
+    // targetedPrimitive->printId();
+    targetedPrimitive->click();
 
 }
 

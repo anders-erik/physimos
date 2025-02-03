@@ -50,6 +50,16 @@ namespace UI {
 
     }
 
+    // Default click method
+    void Primitive::click(){
+        std::cout << id << " clicked!" << std::endl;
+        
+        // if(clickCallback == nullptr)
+        //     return;
+        
+        // (*clickCallback)();
+    }
+
 
     // No children primitives
     bool Primitive::isLeaf() {
