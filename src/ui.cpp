@@ -7,7 +7,8 @@
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
 #include "ui_list.hh"
-#include "ui/components.hh"
+#include "ui/UiWorldObject.hh"
+
 std::vector<UI::List*> uiLists;
 std::vector<UI::Primitive*> primitiveTreeHeads;
 std::vector<UI::Primitive*> primitiveList;
@@ -206,6 +207,12 @@ void pointerPositionCallback(double x, double y) {
     cursor_y = -(y - viewport_height_double);
 
 
+    // clear currently hovering primitive
+    if (currentlyHoveredPrimitive != nullptr) {
+        currentlyHoveredPrimitive->setState(PrimitiveState::Default);
+        currentlyHoveredPrimitive = nullptr;
+    }
+
     // setCurrentlyHoveredPrimitive();
     Primitive* targetedPrimitive = getTargetingPrimitive();
     if(targetedPrimitive == nullptr){
@@ -300,11 +307,6 @@ Primitive* getTargetingPrimitive() {
 
 
 void setCurrentlyHoveredPrimitive(Primitive* newHoverPrimitive){
-    // reset currently selected
-    if (currentlyHoveredPrimitive != nullptr){
-        currentlyHoveredPrimitive->setState(PrimitiveState::Default);
-        currentlyHoveredPrimitive = nullptr;
-    }
 
     // Simply do nothing of primitive is not set to hoverable
     if (newHoverPrimitive->isHoverable) {
@@ -332,7 +334,8 @@ void ui_init() {
     if(house1_wo != nullptr){
         std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
     }
-    UI::Primitive* worldObjectComponent_tree = UI::newWorldObjectComponent(house1_wo);
+
+    UI::Primitive* worldObjectComponent_tree = UI::WorldObject::newComponent(house1_wo);
     primitiveTreeHeads.push_back(worldObjectComponent_tree);
     // Flatten component for easy traversal
     std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
@@ -340,6 +343,7 @@ void ui_init() {
         std::cout << "_primitive->id = " << _primitive->id << std::endl;
         primitiveList.push_back(_primitive);
     }
+
 
     // test-primitives
     UI::Primitive* _primitive_root = new UI::Primitive();

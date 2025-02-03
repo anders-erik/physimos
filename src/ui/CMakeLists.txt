@@ -4,7 +4,7 @@ add_library(ui
     ui_element.cc
     ui_primitive.cc
     ui_globals.cc
-    components.cc
+    UiWorldObject.cc
     font.cc
 )
 
