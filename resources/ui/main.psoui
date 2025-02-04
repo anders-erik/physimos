@@ -1,6 +1,6 @@
-name:greenSquare;type:rectangle;w:100;h:100;x:L100;y:B0;c:green
-name:redSquare;type:rectangle;w:100;h:100;x:L0;y:B0;c:red
-name:textureElem_1;type:rectangle;w:150;h:100;x:L0;y:B150;texture:resources/textures/net_100x100.bmp
+name:greenSquare;type:rectangle;w:100;h:100;x:L500;y:B0;c:green
+name:redSquare;type:rectangle;w:100;h:100;x:L400;y:B0;c:red
+name:textureElem_1;type:rectangle;w:150;h:100;x:L500;y:B150;texture:resources/textures/net_100x100.bmp
 name:startSimButton;type:rectangle;w:60;h:60;x:R180;y:B0;texture:resources/textures/play-button.bmp
 name:pauseSimButton;type:rectangle;w:60;h:60;x:R120;y:B0;texture:resources/textures/pause-button.bmp
 name:stopSimButton;type:rectangle;w:60;h:60;x:R60;y:B0;texture:resources/textures/stop-button.bmp

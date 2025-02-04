@@ -51,13 +51,9 @@ namespace UI {
     }
 
     // Default click method
-    void Primitive::click(){
+    UI::Action Primitive::click(){
         std::cout << id << " clicked!" << std::endl;
-        
-        // if(clickCallback == nullptr)
-        //     return;
-        
-        // (*clickCallback)();
+        return UI::Action::None;
     }
 
 

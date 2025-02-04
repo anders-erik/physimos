@@ -11,9 +11,9 @@ Container::Container(::WorldObject* _worldObject) {
     id = worldObject->name + "_primitive_head";
     vertRef = UI::VertRef::Bottom;
     setWidth(400);
-    setHeight(100);
+    setHeight(200);
     initGraphics();
-    setX(300);
+    setX(10);
     setY(10);
 }
 
@@ -54,8 +54,10 @@ XPosIncrease::XPosIncrease(::WorldObject* _worldObject) {
     setX(320);
     setY(80);
 }
-void XPosIncrease::click(){
+UI::Action XPosIncrease::click() {
     worldObject->transform->position.x += 2.0;
+
+    return UI::Action::None;
 }
 XPosDecrease::XPosDecrease(::WorldObject* _worldObject) {
     worldObject = _worldObject;
@@ -68,8 +70,10 @@ XPosDecrease::XPosDecrease(::WorldObject* _worldObject) {
     setX(360);
     setY(80);
 }
-void XPosDecrease::click() {
+UI::Action XPosDecrease::click() {
     worldObject->transform->position.x -= 2.0;
+
+    return UI::Action::None;
 }
 
 
@@ -97,8 +101,10 @@ YPosIncrease::YPosIncrease(::WorldObject* _worldObject) {
     setX(320);
     setY(60);
 }
-void YPosIncrease::click() {
+UI::Action YPosIncrease::click() {
     worldObject->transform->position.y += 2.0;
+
+    return UI::Action::None;
 }
 YPosDecrease::YPosDecrease(::WorldObject* _worldObject) {
     worldObject = _worldObject;
@@ -111,8 +117,10 @@ YPosDecrease::YPosDecrease(::WorldObject* _worldObject) {
     setX(360);
     setY(60);
 }
-void YPosDecrease::click() {
+UI::Action YPosDecrease::click() {
     worldObject->transform->position.y -= 2.0;
+
+    return UI::Action::None;
 }
 
 
@@ -139,8 +147,10 @@ ZPosIncrease::ZPosIncrease(::WorldObject* _worldObject) {
     setX(320);
     setY(40);
 }
-void ZPosIncrease::click() {
+UI::Action ZPosIncrease::click() {
     worldObject->transform->position.z += 2.0;
+
+    return UI::Action::None;
 }
 ZPosDecrease::ZPosDecrease(::WorldObject* _worldObject) {
     worldObject = _worldObject;
@@ -153,8 +163,10 @@ ZPosDecrease::ZPosDecrease(::WorldObject* _worldObject) {
     setX(360);
     setY(40);
 }
-void ZPosDecrease::click() {
+UI::Action ZPosDecrease::click() {
     worldObject->transform->position.z -= 2.0;
+
+    return UI::Action::None;
 }
 
 
@@ -171,13 +183,15 @@ ToggleWireframe::ToggleWireframe(::WorldObject* _worldObject) {
     setY(10);
 }
 
-void ToggleWireframe::click() {
+UI::Action ToggleWireframe::click() {
     // std::cout << "Clicked ToggleWireframe" << std::endl;
     if (worldObject == nullptr) {
         std::cout << "ERROR: Cant toggle wireframe. Bound world object is null. " << std::endl;
-        return;
+        return UI::Action::None;;
     }
     worldObject->toggleWireframe();
+
+    return UI::Action::None;
 }
 
 

@@ -245,11 +245,34 @@ void leftClickCallback(double x, double y) {
         return;
     }
     // targetedPrimitive->printId();
-    targetedPrimitive->click();
+    UI::Action postClickAction = targetedPrimitive->click();
 
+    // Post Click Actions!
+    switch (postClickAction)
+    {
+    case Action::UpdatePObjectPosition :
+        /* code */
+        break;
+    
+    default:
+        break;
+    }
+    // 
+    UI::WorldObject::Base* pObjectPrimitive = dynamic_cast<UI::WorldObject::Base*>(targetedPrimitive);
+    if (pObjectPrimitive){
+        std::cout << "pObjectPrimitive! clicked!!" << std::endl;
+        
+    }
+}
+
+UI::Action updatePObjectPosition(::WorldObject* pObject){
+    
+
+    return UI::Action::None;
 }
 
 // Returns the primitive that the current mouse cursor is targeting
+// BUG: breaks if outside parent bounds but above grandparent!
 Primitive* getTargetingPrimitive() {
 
     // flag to check if any primitive maches the cursor location

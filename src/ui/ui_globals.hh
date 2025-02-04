@@ -4,6 +4,12 @@
 
 namespace UI {
 
+    enum Action {
+        None = 0,
+        TogglePObjectContainer = 10,
+        LoadPObject = 11,
+        UpdatePObjectPosition = 12,
+    };
 
     extern unsigned int viewport_width;
     extern unsigned int viewport_height;

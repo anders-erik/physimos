@@ -10,75 +10,69 @@ namespace UI::WorldObject {
 
     Primitive* newComponent(::WorldObject* _worldObject);
 
+    // Primitive with a WorldObject pointer. 
+    struct Base : public UI::Primitive {
+        ::WorldObject* worldObject = nullptr;
+
+        Base(){};
+    };
 
 
-    struct Container : public UI::Primitive {
+    struct Container : public UI::WorldObject::Base {
         Container(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
     };
 
 
-    struct NameLabel : public UI::Primitive {
+    struct NameLabel : public UI::WorldObject::Base {
         NameLabel(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
     };
 
 
-    struct XPosition : public UI::Primitive {
+    struct XPosition : public UI::WorldObject::Base {
         XPosition(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
     };
-    struct XPosIncrease : public UI::Primitive {
+    struct XPosIncrease : public UI::WorldObject::Base {
         XPosIncrease(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
-        void click();
+        UI::Action click();
     };
-    struct XPosDecrease : public UI::Primitive {
+    struct XPosDecrease : public UI::WorldObject::Base {
         XPosDecrease(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
-        void click();
+        UI::Action click();
     };
 
 
-    struct YPosition : public UI::Primitive {
+    struct YPosition : public UI::WorldObject::Base {
         YPosition(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
     };
-    struct YPosIncrease : public UI::Primitive {
+    struct YPosIncrease : public UI::WorldObject::Base {
         YPosIncrease(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
-        void click();
+        UI::Action click();
     };
-    struct YPosDecrease : public UI::Primitive {
+    struct YPosDecrease : public UI::WorldObject::Base {
         YPosDecrease(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
-        void click();
+        UI::Action click();
     };
 
 
-    struct ZPosition : public UI::Primitive {
+    struct ZPosition : public UI::WorldObject::Base {
         ZPosition(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
     };
-    struct ZPosIncrease : public UI::Primitive {
+    struct ZPosIncrease : public UI::WorldObject::Base {
         ZPosIncrease(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
-        void click();
+        UI::Action click();
     };
-    struct ZPosDecrease : public UI::Primitive {
+    struct ZPosDecrease : public UI::WorldObject::Base {
         ZPosDecrease(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
-        void click();
+        UI::Action click();
     };
 
 
 
     // Setting to public to be able to use primitive base pointer without cast
-    class ToggleWireframe : public UI::Primitive {
+    class ToggleWireframe : public UI::WorldObject::Base {
     public:
         ToggleWireframe(::WorldObject* _worldObject);
-        ::WorldObject* worldObject = nullptr;
-        void click();
+        UI::Action click();
     };
 
 }

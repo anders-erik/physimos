@@ -5,6 +5,7 @@
 
 #include "render/shader.hpp"
 
+#include "ui/ui_globals.hh"
 #include "ui/font.hh"
 
 namespace UI {
@@ -150,7 +151,7 @@ class Primitive {
         void setState(PrimitiveState _newState);
         bool isHoverable = false;
         bool isClickable = false;
-        virtual void click();
+        virtual UI::Action click();
         // void (*clickCallback)() = nullptr;
         unsigned int defaultTexture;
         unsigned int hoverTexture;

@@ -11,6 +11,7 @@
 #include "Types.hpp"
 
 #include "ui/ui_primitive.hh"
+#include "ui/ui_globals.hh"
 
 
 typedef struct UiFile {
@@ -23,6 +24,9 @@ typedef struct UiFile {
 namespace UI {
 
     void pointerPositionCallback(double x, double y);
+
+
+    UI::Action updatePObjectPosition();
 
     Primitive* getTargetingPrimitive();
 
