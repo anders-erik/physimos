@@ -39,15 +39,39 @@ namespace UI::WorldObject {
         void click();
     };
 
+
     struct YPosition : public UI::Primitive {
         YPosition(::WorldObject* _worldObject);
         ::WorldObject* worldObject = nullptr;
     };
+    struct YPosIncrease : public UI::Primitive {
+        YPosIncrease(::WorldObject* _worldObject);
+        ::WorldObject* worldObject = nullptr;
+        void click();
+    };
+    struct YPosDecrease : public UI::Primitive {
+        YPosDecrease(::WorldObject* _worldObject);
+        ::WorldObject* worldObject = nullptr;
+        void click();
+    };
+
 
     struct ZPosition : public UI::Primitive {
         ZPosition(::WorldObject* _worldObject);
         ::WorldObject* worldObject = nullptr;
     };
+    struct ZPosIncrease : public UI::Primitive {
+        ZPosIncrease(::WorldObject* _worldObject);
+        ::WorldObject* worldObject = nullptr;
+        void click();
+    };
+    struct ZPosDecrease : public UI::Primitive {
+        ZPosDecrease(::WorldObject* _worldObject);
+        ::WorldObject* worldObject = nullptr;
+        void click();
+    };
+
+
 
     // Setting to public to be able to use primitive base pointer without cast
     class ToggleWireframe : public UI::Primitive {

@@ -72,7 +72,7 @@ class Primitive {
         void generateTextures();
 
         void init();
-        void update();
+        void updateTransformsRecursive();
         void render();
 
         bool childrenContainPoint(double _x, double _y);

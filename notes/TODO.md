@@ -4,25 +4,55 @@
 # 2025
 
 ## Goals:
-- lighting
-- scripting
-- terrain generator
-- object builder
+- simulations
+	- 
+- shaders
+	- lighting
+	- outline
+- vector visualization
+- object builder mode
 	- mesh
 	- parametric
+	- terrain generator
 - drawing utility
-- simulations
+- scripting
+	- language?
 - physimos introspection
+	- process
+	- object files
+	- assembly
+
+
+### 2025-02-04
+- |o| automatically update primitive properly when set as child/parent
+	- |o| specifically the setX and setY methods should be reloaded on child after parent is set
+- Expand the UiWorldObject
+	- properties
+		- visibility
+		- position step size
+		- rotate
+		- scale
+	- icon textures
+		- increase/decrease
+- UiWorldScene
+	- world object list
+		- add new
+		- buttons per world object
+			- populate UiWorldObject with clicked object
+			- toggle visibility
+			- delete
+	- cameras
+	- simulators
 
 
 ### 2025-02-03
 - nested HoriRef::Right is not working properly
 - linear primitives structure for components
-- components extend primitive with pointers to scene object!
+- |o| extend primitive object with pointers to scene object!
 	- an updateComponent() to load 'static' scene object data, and  
-		- e.g. position, current shader, etc.
-	- interactive ui primitives bound to methods on scene object
-		- e.g. toggle wireframe, move up 1m, set velocity, etc.
+		- |o|  e.g. position, current shader, etc.
+	- |o| interactive ui primitives bound to methods on scene object
+		- |o| e.g. toggle wireframe, move up 1m, set velocity, etc.
 
 
 ### 2025-02-02

@@ -30,7 +30,7 @@ std::vector<List*> uiLists;
 // }
 
 void List::update() {
-    containingPrimitive->update();
+    containingPrimitive->updateTransformsRecursive();
 
 }
 

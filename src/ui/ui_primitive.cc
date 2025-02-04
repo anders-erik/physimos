@@ -405,11 +405,15 @@ namespace UI {
 
     }
 
+    // Set both parent and child relations and update where necesary
     void Primitive::appendChild(Primitive* childPrimitive){
         children.push_back(childPrimitive);
 
         childPrimitive->parent = this;
 
+        // TODO: better automatic detection on new parent?
+        childPrimitive->setX(childPrimitive->x_input);
+        childPrimitive->setY(childPrimitive->y_input);
     }
 
 
@@ -435,11 +439,11 @@ namespace UI {
         }
     }
 
-    
-    void Primitive::update() {
+    // will set the shader transforms for the ui primitive
+    void Primitive::updateTransformsRecursive() {
         // std::cout << "UPDATING UI PRIMITIVE" << std::endl;
         for (Primitive* child : children){
-            child->update();
+            child->updateTransformsRecursive();
         }
 
         shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);

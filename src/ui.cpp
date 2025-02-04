@@ -459,7 +459,7 @@ void ui_update() {
 
     for (UI::Primitive* primitiveTreeHead : primitiveTreeHeads) {
         // Will remove transprancy during hover
-        primitiveTreeHead->update();
+        primitiveTreeHead->updateTransformsRecursive();
         primitiveTreeHead->render();
         // _uiList->containingPrimitive->containsPoint(UI::cursor_x, UI::cursor_y);
     }
