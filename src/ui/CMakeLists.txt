@@ -3,7 +3,7 @@ add_library(ui
     ui_list.cc
     ui_primitive.cc
     ui_globals.cc
-    UiWorldObject.cc
+    UiPObject.cc
     font.cc
 )
 

@@ -7,7 +7,7 @@
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
 #include "ui_list.hh"
-#include "ui/UiWorldObject.hh"
+#include "ui/UiPObject.hh"
 
 std::vector<UI::List*> uiLists;
 std::vector<UI::Primitive*> primitiveTreeHeads;
@@ -258,7 +258,7 @@ void leftClickCallback(double x, double y) {
         break;
     }
     // 
-    UI::WorldObject::Base* pObjectPrimitive = dynamic_cast<UI::WorldObject::Base*>(targetedPrimitive);
+    UI::PObject::Base* pObjectPrimitive = dynamic_cast<UI::PObject::Base*>(targetedPrimitive);
     if (pObjectPrimitive){
         std::cout << "pObjectPrimitive! clicked!!" << std::endl;
         
@@ -358,15 +358,23 @@ void ui_init() {
         std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
     }
 
-    UI::Primitive* worldObjectComponent_tree = UI::WorldObject::newComponent(house1_wo);
-    primitiveTreeHeads.push_back(worldObjectComponent_tree);
-    // Flatten component for easy traversal
-    std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
+    // UI::Primitive* worldObjectComponent_tree = UI::PObject::newComponent(house1_wo);
+    // primitiveTreeHeads.push_back(worldObjectComponent_tree);
+    // // Flatten component for easy traversal
+    // std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
+    // for (UI::Primitive* _primitive : flatComponent ){
+    //     std::cout << "_primitive->id = " << _primitive->id << std::endl;
+    //     primitiveList.push_back(_primitive);
+    // }
+
+    UI::PObject::Context* UiPObjectContext = new UI::PObject::Context();
+    UiPObjectContext->populateContext(house1_wo);
+    primitiveTreeHeads.push_back(UiPObjectContext->container);
+    std::vector<UI::Primitive*> flatComponent = UiPObjectContext->container->flattenTree();
     for (UI::Primitive* _primitive : flatComponent ){
         std::cout << "_primitive->id = " << _primitive->id << std::endl;
         primitiveList.push_back(_primitive);
     }
-
 
     // test-primitives
     UI::Primitive* _primitive_root = new UI::Primitive();
