@@ -59,6 +59,7 @@ namespace Input {
 
 void subscribeCursorPosition(void (*subscriberCallback)(double x, double y));
 void subscribeLeftClickPosition(void (*subscriberCallback)(double x, double y));
+void subscribeFrameBufferUpdated(void (*subscriberCallback)(unsigned int height, unsigned int width));
 
 }
 

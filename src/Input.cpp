@@ -2,7 +2,7 @@
 
 #include "Input.hpp"
 
-#include "ui.hpp"
+#include "ui_old.hpp"
 #include "Camera.hpp"
 
 int inputX = 1;
@@ -41,6 +41,7 @@ namespace Input {
 	// Only one subscriber implemented
 	void (*cursorSubscriberCallback)(double x, double y) = nullptr;
 	void (*leftClickSubscriberCallback)(double x, double y) = nullptr;
+	void (*frameBufferSubscriberCallback)(unsigned int height, unsigned int width) = nullptr;
 
 	void subscribeCursorPosition(void (*subscriberCallback)(double x, double y)) {
 		cursorSubscriberCallback = subscriberCallback;
@@ -48,6 +49,10 @@ namespace Input {
 
 	void subscribeLeftClickPosition(void (*subscriberCallback)(double x, double y)) {
 		leftClickSubscriberCallback = subscriberCallback;
+	}
+
+	void subscribeFrameBufferUpdated(void (*subscriberCallback)(unsigned int height, unsigned int width)){
+		frameBufferSubscriberCallback = subscriberCallback;
 	}
 
 }

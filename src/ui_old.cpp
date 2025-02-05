@@ -1,22 +1,22 @@
 
-#include "ui.hpp"
+#include "ui_old.hpp"
 
 #include "uiRenderer.hpp"
 #include "ui/ui_globals.hh"
 // REFACTOR
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
-#include "ui_list.hh"
+#include "ui/ui_list.hh"
 #include "ui/UiPObject.hh"
 #include "ui/UiPScene.hh"
-std::vector<UI::List*> uiLists;
+// std::vector<UI::List*> uiLists;
 
 
 
 #include <iomanip>
 
 #include "Input.hpp"
-#include "bmp_loader.hpp"
+#include "res/bmp_loader.hpp"
 #include "PSO_util.hpp"
 #include "Timing.hpp"
 

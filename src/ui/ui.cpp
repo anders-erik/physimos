@@ -4,9 +4,9 @@
 #include "ui/ui_globals.hh"
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
-#include "ui_list.hh"
 #include "ui/UiPObject.hh"
 #include "ui/UiPScene.hh"
+#include "ui_list.hh"
 
 
 #include "Input.hpp"
@@ -16,8 +16,8 @@
 
 
 // KEEP THE OLD UI ALIVE FOR A BIT LONGER
-#include "ui_old.cpp"
-
+// #include "ui_old.cpp"
+#include "PSO_util.hpp"
 
 
 
@@ -36,8 +36,8 @@ Primitive* currentlyHoveredPrimitive = nullptr;
 
 void init(){
     // Necessary to render the UI Scene Module
-    ::ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
-
+    // ::ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
+    setViewportDimensions(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
 
     // Load characters-2.bmp character map
     UI::loadFont();
@@ -95,6 +95,7 @@ void init(){
     // Subscribe to cursor position from input library
     ::Input::subscribeCursorPosition(pointerPositionCallback);
     ::Input::subscribeLeftClickPosition(leftClickCallback);
+    ::Input::subscribeFrameBufferUpdated(setViewportDimensions);
 
 }
 
@@ -262,6 +263,7 @@ void setCurrentlyHoveredPrimitive(Primitive* newHoverPrimitive){
 }
 
 
+extern std::vector<UI::List*> uiLists;
 void listsInitialRefactoring(){
     // REFACTOR - 2024-10-04
     // REFACTOR - 2024-10-9

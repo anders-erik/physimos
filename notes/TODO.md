@@ -22,13 +22,24 @@
 	- object files
 	- assembly
 
+
+### 2025-02-06
+- PScene
+	- move current global functions into namespace
+	- Scene object as Scene contents interface
+	- 
+- UI
+	- play around with new components
+		- make small adjustments
+		- write down thoughts
+
 ### 2025-02-05
 - UiPScene
-	- list Pobjects
-	- reload UiPObject
+	- |o| list Pobjects
+	- |o| reload UiPObject
 	- new object
-- UiPObject
-	- update pos on inc/dec
+- |o| UiPObject
+	- |o| update pos on inc/dec
 
 ### 2025-02-04
 - |o| automatically update primitive properly when set as child/parent

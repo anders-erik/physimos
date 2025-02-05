@@ -13,7 +13,7 @@
 #include "ui/ui_primitive.hh"
 #include "ui/ui_globals.hh"
 
-#include "ui_old.hpp"
+// #include "ui_old.hpp"
 
 
 
@@ -24,6 +24,7 @@ namespace UI {
 
     void pointerPositionCallback(double x, double y);
     void leftClickCallback(double x, double y);
+    void windowSizeChangeCallback(double x, double y);
 
     UI::Action updatePObjectPosition();
 
