@@ -63,14 +63,14 @@ std::vector<float> isCharBuffer;
 
 
 // TIMER WIDGET
-bool timerWidgetIsOn = true;
+bool timerWidgetIsOn = false;
 // std::vector<UiElement> fpsStringElements;
 std::vector<UiElement> frameCountStringElements;
 std::vector<UiElement> worldTimeStringElements;
 std::vector<UiElement> worldEpochStringElements;
 
 // WORLD OBJECT WIDGET
-bool worldObjectWidgetIsOn = true;
+bool worldObjectWidgetIsOn = false;
 std::vector< std::vector<UiElement> > worldObjectsWidgetArray;
 
 // TRACKED OBJECT WIDGET
@@ -357,59 +357,23 @@ void setCurrentlyHoveredPrimitive(Primitive* newHoverPrimitive){
 }
 
 
-} // End UI namespace
+void listsInitialRefactoring(){
+    // REFACTOR - 2024-10-04
+    // REFACTOR - 2024-10-9
+    std::vector<UI::List*> listsLoadedFromFile = UI::loadListsFromFile();
+    // std::cout << "Yello";
+    for(UI::List* _list_ptr : listsLoadedFromFile)
+        uiLists.push_back(_list_ptr);
 
 
+    // UI::List* _woList = new UI::List(UI::ListType::Stack, "woToggleList");
+    UI::List* _woList = new UI::List();
+    _woList->initWoListList();
 
-void ui_init() {
-    ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
+    uiLists.push_back(_woList);
+}
 
-    // Load characters-2.bmp character map
-    UI::loadFont();
-
-
-    // WORLD OBJECT COMPONENT 1
-    WorldObject* house1_wo = PScene::getWorldObjectByName("house1_obj");
-    if(house1_wo != nullptr){
-        std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
-    }
-    // WORLD OBJECT COMPONENT 
-    WorldObject* ground_01 = PScene::getWorldObjectByName("ground_01");
-    if (ground_01 != nullptr) {
-        std::cout << "house1_wo->name = " << ground_01->name << std::endl;
-    }
-
-    // UI::Primitive* worldObjectComponent_tree = UI::PObject::newComponent(house1_wo);
-    // primitiveTreeHeads.push_back(worldObjectComponent_tree);
-    // // Flatten component for easy traversal
-    // std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
-    // for (UI::Primitive* _primitive : flatComponent ){
-    //     std::cout << "_primitive->id = " << _primitive->id << std::endl;
-    //     primitiveList.push_back(_primitive);
-    // }
-
-
-    // PObject Context
-    UI::PObject::uiPObjectContext = new UI::PObject::Context();
-    UI::PObject::uiPObjectContext->populateContext(house1_wo);
-    UI::PObject::uiPObjectContext->newPObject(ground_01);
-    // add the uiPObject to the global ui lists
-    primitiveTreeHeads.push_back(UI::PObject::uiPObjectContext->container);
-    std::vector<UI::Primitive*> flatComponent = UI::PObject::uiPObjectContext->container->flattenTree();
-    for (UI::Primitive* _primitive : flatComponent ){
-        std::cout << "_primitive->id = " << _primitive->id << std::endl;
-        primitiveList.push_back(_primitive);
-    }
-
-    // UiPScene Context
-    UI::PScene::uiPSceneContext = new UI::PScene::Context();
-    UI::PScene::uiPSceneContext->populateContext();
-    std::vector<UI::Primitive*> flatUiPScene = UI::PScene::uiPSceneContext->container->flattenTree();
-    primitiveTreeHeads.push_back(UI::PScene::uiPSceneContext->container);
-    for (UI::Primitive* _primitive : flatUiPScene) {
-        std::cout << "_primitive->id = " << _primitive->id << std::endl;
-        primitiveList.push_back(_primitive);
-    }
+void primtiiveUiInitialTests(){
 
 
     // test-primitives
@@ -461,6 +425,66 @@ void ui_init() {
     _primitive_child_2->setX(10);
     _primitive_child_2->setY(60);
 
+}
+
+
+} // End UI namespace
+
+
+
+void ui_init() {
+    ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
+
+    // Load characters-2.bmp character map
+    UI::loadFont();
+
+
+    // WORLD OBJECT COMPONENT 1
+    WorldObject* house1_wo = PScene::getWorldObjectByName("house1_obj");
+    if(house1_wo != nullptr){
+        std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
+    }
+    // WORLD OBJECT COMPONENT 
+    // WorldObject* ground_01 = PScene::getWorldObjectByName("ground_01");
+    // if (ground_01 != nullptr) {
+    //     std::cout << "house1_wo->name = " << ground_01->name << std::endl;
+    // }
+
+    // UI::Primitive* worldObjectComponent_tree = UI::PObject::newComponent(house1_wo);
+    // primitiveTreeHeads.push_back(worldObjectComponent_tree);
+    // // Flatten component for easy traversal
+    // std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
+    // for (UI::Primitive* _primitive : flatComponent ){
+    //     std::cout << "_primitive->id = " << _primitive->id << std::endl;
+    //     primitiveList.push_back(_primitive);
+    // }
+
+
+    // PObject Context
+    UI::PObject::uiPObjectContext = new UI::PObject::Context();
+    UI::PObject::uiPObjectContext->populateContext(house1_wo);
+    // UI::PObject::uiPObjectContext->newPObject(ground_01);
+    // add the uiPObject to the global ui lists
+    primitiveTreeHeads.push_back(UI::PObject::uiPObjectContext->container);
+    std::vector<UI::Primitive*> flatComponent = UI::PObject::uiPObjectContext->container->flattenTree();
+    for (UI::Primitive* _primitive : flatComponent ){
+        std::cout << "_primitive->id = " << _primitive->id << std::endl;
+        primitiveList.push_back(_primitive);
+    }
+
+    // UiPScene Context
+    UI::PScene::uiPSceneContext = new UI::PScene::Context();
+    UI::PScene::uiPSceneContext->populateContext();
+    std::vector<UI::Primitive*> flatUiPScene = UI::PScene::uiPSceneContext->container->flattenTree();
+    primitiveTreeHeads.push_back(UI::PScene::uiPSceneContext->container);
+    for (UI::Primitive* _primitive : flatUiPScene) {
+        std::cout << "_primitive->id = " << _primitive->id << std::endl;
+        primitiveList.push_back(_primitive);
+    }
+
+
+    // UI::listsInitialRefactoring();
+    // UI::primtiiveUiInitialTests();
 
 
     // Subscribe to cursor position from input library
@@ -468,19 +492,7 @@ void ui_init() {
     Input::subscribeLeftClickPosition(UI::leftClickCallback);
 
 
-    // REFACTOR - 2024-10-04
-    // REFACTOR - 2024-10-9
-    std::vector<UI::List*> listsLoadedFromFile = UI::loadListsFromFile();
-    // std::cout << "Yello";
-    for(UI::List* _list_ptr : listsLoadedFromFile)
-        uiLists.push_back(_list_ptr);
-
-
-    // UI::List* _woList = new UI::List(UI::ListType::Stack, "woToggleList");
-    UI::List* _woList = new UI::List();
-    _woList->initWoListList();
-
-    uiLists.push_back(_woList);
+    
 
 
 

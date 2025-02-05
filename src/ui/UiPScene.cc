@@ -12,12 +12,12 @@ Context* uiPSceneContext = nullptr;
 Container::Container() {
     id = "UiPScenelContainer_1";
     vertRef = UI::VertRef::Top;
-    horiRef = UI::HoriRef::Right;
+    horiRef = UI::HoriRef::Left;
     setWidth(300);
-    setHeight(300);
+    setHeight(400);
     initGraphics();
     setX(10);
-    setY(10);
+    setY(150);
 }
 
 
@@ -57,7 +57,7 @@ PObjectList::PObjectList(){
 
 void PObjectList::addPObject(::WorldObject* _pObject) {
     pObjects.push_back(_pObject);
-    reloadList();
+    // reloadList();
 }
 void PObjectList::removePObject(::WorldObject* _pObject) {}
 
@@ -68,7 +68,7 @@ void PObjectList::reloadList() {
 
         ::UI::Primitive* _pObjectPrimtive = new ::UI::PScene::PObjectListObject(_pObject);
         
-        _pObjectPrimtive->setY(10 + 25*index);
+        _pObjectPrimtive->setY(10 + 20*index);
         
         appendChild(_pObjectPrimtive);
         
@@ -87,7 +87,7 @@ void Context::populateContext() {
     container = new UI::PScene::Container();
 
     // Name Label
-    nameLabel = new UI::PScene::NameLabel("NAME_HERE");
+    nameLabel = new UI::PScene::NameLabel("SCENE MENU");
     container->appendChild(nameLabel);
 
     pObjectList = new UI::PScene::PObjectList();
@@ -96,8 +96,16 @@ void Context::populateContext() {
     ::WorldObject* house1 =  ::PScene::getWorldObjectByName("house1_obj");
     ::WorldObject* ground01 = ::PScene::getWorldObjectByName("ground_01");
 
-    pObjectList->addPObject(house1);
-    pObjectList->addPObject(ground01);
+    std::vector<::WorldObject*> pObjects = ::PScene::getPObjects();
+
+    for (::WorldObject* pObject : pObjects){
+        // pObjectList->addPObject(pObject);
+        pObjectList->pObjects.push_back(pObject);
+    }
+    pObjectList->reloadList();
+
+    // pObjectList->addPObject(house1);
+    // pObjectList->addPObject(ground01);
     // pObjectList->addPObject(house1);
 
 }
