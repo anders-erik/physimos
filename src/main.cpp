@@ -68,7 +68,7 @@ int main()
 	ws_init();
 
 
-
+	UI::init();
 	ui_init();
 
 
@@ -110,6 +110,7 @@ int main()
 		//
 		// update and render ui
 		//
+		UI::update();
 		ui_update();
 		
 
