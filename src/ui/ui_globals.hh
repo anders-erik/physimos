@@ -8,7 +8,7 @@ namespace UI {
         None = 0,
         TogglePObjectContainer = 10,
         LoadPObject = 11,
-        UpdatePObjectPosition = 12,
+        ReloadPObject = 12,
     };
 
     extern unsigned int viewport_width;

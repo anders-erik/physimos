@@ -247,22 +247,27 @@ void leftClickCallback(double x, double y) {
     // targetedPrimitive->printId();
     UI::Action postClickAction = targetedPrimitive->click();
 
+
+    // detect UiPObject primitive
+    UI::PObject::Base* pObjectPrimitive = dynamic_cast<UI::PObject::Base*>(targetedPrimitive);
+    // bool isValid
+    if (pObjectPrimitive && pObjectPrimitive->pObject != nullptr) {
+        std::cout << "Valid pObjectPrimitive! clicked!!" << std::endl;
+    }
+
     // Post Click Actions!
     switch (postClickAction)
     {
-    case Action::UpdatePObjectPosition :
-        /* code */
+    case Action::ReloadPObject :
+        std::cout << "RELOAD" << std::endl;
+        UI::PObject::uiPObjectContext->reloadComponent();
+        
         break;
     
     default:
         break;
     }
-    // 
-    UI::PObject::Base* pObjectPrimitive = dynamic_cast<UI::PObject::Base*>(targetedPrimitive);
-    if (pObjectPrimitive){
-        std::cout << "pObjectPrimitive! clicked!!" << std::endl;
-        
-    }
+    
 }
 
 UI::Action updatePObjectPosition(::WorldObject* pObject){
@@ -357,6 +362,11 @@ void ui_init() {
     if(house1_wo != nullptr){
         std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
     }
+    // WORLD OBJECT COMPONENT 
+    WorldObject* ground_01 = WS::getWorldObjectByName("ground_01");
+    if (ground_01 != nullptr) {
+        std::cout << "house1_wo->name = " << ground_01->name << std::endl;
+    }
 
     // UI::Primitive* worldObjectComponent_tree = UI::PObject::newComponent(house1_wo);
     // primitiveTreeHeads.push_back(worldObjectComponent_tree);
@@ -367,14 +377,21 @@ void ui_init() {
     //     primitiveList.push_back(_primitive);
     // }
 
-    UI::PObject::Context* UiPObjectContext = new UI::PObject::Context();
-    UiPObjectContext->populateContext(house1_wo);
-    primitiveTreeHeads.push_back(UiPObjectContext->container);
-    std::vector<UI::Primitive*> flatComponent = UiPObjectContext->container->flattenTree();
+
+    // PObject Context
+    UI::PObject::uiPObjectContext = new UI::PObject::Context();
+    UI::PObject::uiPObjectContext->populateContext(house1_wo);
+    UI::PObject::uiPObjectContext->newPObject(ground_01);
+
+
+    // add the uiPObject to the global ui lists
+    primitiveTreeHeads.push_back(UI::PObject::uiPObjectContext->container);
+    std::vector<UI::Primitive*> flatComponent = UI::PObject::uiPObjectContext->container->flattenTree();
     for (UI::Primitive* _primitive : flatComponent ){
         std::cout << "_primitive->id = " << _primitive->id << std::endl;
         primitiveList.push_back(_primitive);
     }
+
 
     // test-primitives
     UI::Primitive* _primitive_root = new UI::Primitive();

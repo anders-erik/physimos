@@ -11,6 +11,8 @@ namespace UI::PObject {
     // Primitive with a WorldObject pointer. 
     struct Base : public UI::Primitive {
         ::WorldObject* pObject = nullptr;
+        virtual void setPObject(::WorldObject* _pObject) {};
+        virtual void reload() {};
 
         Base(){};
     };
@@ -18,23 +20,29 @@ namespace UI::PObject {
 
     struct Container : public UI::PObject::Base {
         Container(::WorldObject* _pObject);
+        void setPObject(::WorldObject* _pObject);
     };
 
 
     struct NameLabel : public UI::PObject::Base {
         NameLabel(::WorldObject* _pObject);
+        void setPObject(::WorldObject* _pObject);
     };
 
 
     struct XPosition : public UI::PObject::Base {
         XPosition(::WorldObject* _pObject);
+        void setPObject(::WorldObject* _pObject);
+        void reload();
     };
     struct XPosIncrease : public UI::PObject::Base {
         XPosIncrease(::WorldObject* _pObject);
+        void setPObject(::WorldObject* _pObject);
         UI::Action click();
     };
     struct XPosDecrease : public UI::PObject::Base {
         XPosDecrease(::WorldObject* _pObject);
+        void setPObject(::WorldObject* _pObject);
         UI::Action click();
     };
 
@@ -70,6 +78,7 @@ namespace UI::PObject {
     class ToggleWireframe : public UI::PObject::Base {
     public:
         ToggleWireframe(::WorldObject* _pObject);
+        void setPObject(::WorldObject* _pObject);
         UI::Action click();
     };
 
@@ -99,8 +108,13 @@ namespace UI::PObject {
         Context() {};
         
         void populateContext(::WorldObject* _pObject);
+        void newPObject(::WorldObject* _pObject);
+
+        void reloadComponent();
+
     };
 
+    extern Context* uiPObjectContext;
 }
 
 

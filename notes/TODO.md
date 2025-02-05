@@ -22,11 +22,19 @@
 	- object files
 	- assembly
 
+### 2025-02-05
+- UiPScene
+	- list Pobjects
+	- reload UiPObject
+	- new object
+- UiPObject
+	- update pos on inc/dec
 
 ### 2025-02-04
 - |o| automatically update primitive properly when set as child/parent
 	- |o| specifically the setX and setY methods should be reloaded on child after parent is set
 - Expand the UiWorldObject
+	- UiPObject
 	- properties
 		- visibility
 		- position step size
