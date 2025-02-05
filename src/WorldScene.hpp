@@ -5,10 +5,22 @@
 
 #include "WorldObject.hpp"
 
+#include "Camera.hpp"
 
-namespace WS {
+namespace PScene {
+
+    // NOT YET IN USE
+    class Scene {
+    public:
+        Scene() {};
+
+        Camera* camera;
+
+    };
+
 
 WorldObject* getWorldObjectByName(std::string _name);
+std::vector<WorldObject*> getPObjects();
 
 }
 

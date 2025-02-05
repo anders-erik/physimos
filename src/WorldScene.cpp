@@ -13,7 +13,7 @@
 
 
 // SCENE - RENDPIPE - 2024-09-28
-#include "Scene.hh"
+#include "PScene.hh"
 Scene scene_1;
 
 // WORLD SIMULATORS
@@ -35,14 +35,18 @@ WorldObject* worldTriangle2_simobj_pointer;
 
 
 
-namespace WS {
+namespace PScene {
 
     WorldObject* getWorldObjectByName(std::string _name){
-        for (WorldObject* wo : worldObjects){
+        for (WorldObject* wo : ::worldObjects){
             if (wo->name == _name)
                 return wo;
         }
         return nullptr;
+    }
+
+    std::vector<WorldObject*> getPObjects() {
+        return ::worldObjects;
     }
 
 }

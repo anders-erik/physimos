@@ -1,5 +1,5 @@
-#ifndef SCENE_HH
-#define SCENE_HH
+#ifndef PSCENE_HH
+#define PSCENE_HH
 
 #include <iostream>
 

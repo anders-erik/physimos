@@ -15,7 +15,7 @@
 #include "Model.hpp"
 #include "RigidBody.hpp"
 
-#include "Scene.hh"
+#include "PScene.hh"
 // #include "WorldScene.hpp"
 
 // librender

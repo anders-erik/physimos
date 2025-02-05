@@ -8,7 +8,7 @@
 #include "ui/ui_primitive.hh"
 #include "ui_list.hh"
 #include "ui/UiPObject.hh"
-
+#include "ui/UiPScene.hh"
 std::vector<UI::List*> uiLists;
 std::vector<UI::Primitive*> primitiveTreeHeads;
 std::vector<UI::Primitive*> primitiveList;
@@ -74,7 +74,7 @@ bool worldObjectWidgetIsOn = true;
 std::vector< std::vector<UiElement> > worldObjectsWidgetArray;
 
 // TRACKED OBJECT WIDGET
-bool trackedWorldObjectWidgetIsOn = true;
+bool trackedWorldObjectWidgetIsOn = false;
 
 
 std::vector<UiElement> uiElements;
@@ -248,12 +248,15 @@ void leftClickCallback(double x, double y) {
     UI::Action postClickAction = targetedPrimitive->click();
 
 
-    // detect UiPObject primitive
+    // cast the PObject primitives in the Primary PObject component, all of which has a World/PObject
     UI::PObject::Base* pObjectPrimitive = dynamic_cast<UI::PObject::Base*>(targetedPrimitive);
     // bool isValid
     if (pObjectPrimitive && pObjectPrimitive->pObject != nullptr) {
         std::cout << "Valid pObjectPrimitive! clicked!!" << std::endl;
     }
+
+    // cast the PObject primtiives in the PScene UI element
+    UI::PScene::PObjectListObject* uiPScenePObjectPrimitive = dynamic_cast<UI::PScene::PObjectListObject*>(targetedPrimitive);
 
     // Post Click Actions!
     switch (postClickAction)
@@ -263,8 +266,16 @@ void leftClickCallback(double x, double y) {
         UI::PObject::uiPObjectContext->reloadComponent();
         
         break;
+
+    case Action::LoadPObject :
+        std::cout << "RELOAD" << std::endl;
+        
+        UI::PObject::uiPObjectContext->newPObject(uiPScenePObjectPrimitive->pObject);
+
+        break;
     
     default:
+
         break;
     }
     
@@ -358,12 +369,12 @@ void ui_init() {
 
 
     // WORLD OBJECT COMPONENT 1
-    WorldObject* house1_wo = WS::getWorldObjectByName("house1_obj");
+    WorldObject* house1_wo = PScene::getWorldObjectByName("house1_obj");
     if(house1_wo != nullptr){
         std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
     }
     // WORLD OBJECT COMPONENT 
-    WorldObject* ground_01 = WS::getWorldObjectByName("ground_01");
+    WorldObject* ground_01 = PScene::getWorldObjectByName("ground_01");
     if (ground_01 != nullptr) {
         std::cout << "house1_wo->name = " << ground_01->name << std::endl;
     }
@@ -382,12 +393,20 @@ void ui_init() {
     UI::PObject::uiPObjectContext = new UI::PObject::Context();
     UI::PObject::uiPObjectContext->populateContext(house1_wo);
     UI::PObject::uiPObjectContext->newPObject(ground_01);
-
-
     // add the uiPObject to the global ui lists
     primitiveTreeHeads.push_back(UI::PObject::uiPObjectContext->container);
     std::vector<UI::Primitive*> flatComponent = UI::PObject::uiPObjectContext->container->flattenTree();
     for (UI::Primitive* _primitive : flatComponent ){
+        std::cout << "_primitive->id = " << _primitive->id << std::endl;
+        primitiveList.push_back(_primitive);
+    }
+
+    // UiPScene Context
+    UI::PScene::uiPSceneContext = new UI::PScene::Context();
+    UI::PScene::uiPSceneContext->populateContext();
+    std::vector<UI::Primitive*> flatUiPScene = UI::PScene::uiPSceneContext->container->flattenTree();
+    primitiveTreeHeads.push_back(UI::PScene::uiPSceneContext->container);
+    for (UI::Primitive* _primitive : flatUiPScene) {
         std::cout << "_primitive->id = " << _primitive->id << std::endl;
         primitiveList.push_back(_primitive);
     }

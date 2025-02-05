@@ -207,9 +207,9 @@ void ui_renderer_render(std::vector<UiElement>& uiElements) {
 
 
         default:
-            std::cout << "UNKNOWN ELEMENT TYPE" << std::endl;
-            std::cout << "uiElem_.name = " << uiElem_.name << std::endl;
-            
+            // std::cout << "UNKNOWN ELEMENT TYPE" << std::endl;
+            // std::cout << "uiElem_.name = " << uiElem_.name << std::endl;
+            // std::cout << "UNKNOWN UI TYPE";
             break;
         }
 

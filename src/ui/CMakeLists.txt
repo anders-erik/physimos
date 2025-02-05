@@ -4,6 +4,7 @@ add_library(ui
     ui_primitive.cc
     ui_globals.cc
     UiPObject.cc
+    UiPScene.cc
     font.cc
 )
 
