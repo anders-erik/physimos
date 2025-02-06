@@ -9,7 +9,6 @@
 
 #include "transform.hh"
 
-extern Scene scene_1;
 
 
 const float sanityMatrix16[16] = {
@@ -29,7 +28,6 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
     model_ptr = new objects::Model(_modelName);
     transform = new Transform();
 
-    scene = &scene_1;
 
     // setVaoVbo_obj();
     // worldCube4_obj.setShaderProgram(&worldShader);
@@ -77,57 +75,6 @@ void WorldObject::update() {
 
     for(WorldObject* _wo : children){
         _wo->update();
-    }
-
-}
-
-void WorldObject::render() {
-    
-    // if (name == "worldTriangle2_bounce") {
-    //     std::cout << "rendering " << name << std::endl;
-    //     std::cout << "shader->ID:  " << shader->ID << std::endl;
-    // }
-
-    // Shader program
-    shader->use();
-
-
-    // object/scene data
-    shader_setWorldObject_uniforms(modelMatrixRowMajor, scene->camera->viewMatrix, scene->camera->perspectiveMatrix16, sanityMatrix16);
-
-
-
-
-    // TEXTURE
-
-    // Currently the pso shader branches, forcing me to toggle the 'hasTexture' uniform for each object..
-    if (model_ptr->modelFileType == res::ModelFileType::pso && model_ptr->glTexture != 0) 
-        setHasTextureUniform(1);
-    else
-        setHasTextureUniform(0);
-
-    model_ptr->useTexture();
-
-
-
-    // VAO & DRAW
-    if (model_ptr->loadedVertStructure == res::ModelVertStucture::p3){ // if it is a wireframe model, use wireframe shader but regular model
-        glBindVertexArray(model_ptr->vao);
-        drawLines(model_ptr->wireVertexCount);
-    }
-    else if (shaderType == Shaders::worldWireframe){ // if model with faces but wireframe shader, use wire-vao
-        glBindVertexArray(model_ptr->vaoWire);
-        drawLines(model_ptr->wireVertexCount);
-    }
-    else{ // Just draw regular triangles
-        glBindVertexArray(model_ptr->vao);
-        // Shader call
-        drawTriangles(model_ptr->vertexCount);
-    }
-
-
-    for (WorldObject* _wo : children) {
-        _wo->render();
     }
 
 }

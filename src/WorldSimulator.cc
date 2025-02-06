@@ -33,14 +33,6 @@ void WorldSimulator::update(){
     }
 }
 
-void WorldSimulator::render() {
-    // std::cout << "WorldSimulator::render()" << std::endl;
-    simContainer->render();
-
-    for (WorldObject* _wo : simulatorWorldObjects) {
-        _wo->render();
-    }
-}
 
 
 void WorldSimulator::createSimContainer(std::string _modelName, std::string _objectName) {

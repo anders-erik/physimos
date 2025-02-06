@@ -13,7 +13,7 @@
 
 
 // SCENE - RENDPIPE - 2024-09-28
-#include "PScene.hh"
+#include "Scene.hh"
 Scene scene_1;
 
 // WORLD SIMULATORS
@@ -95,10 +95,10 @@ namespace PScene {
         }
 
         // Update Camera matrices (view/persp.)
-        // ::cam_UpdateCam();
+        ::cam_UpdateCam();
         
         // This will write to the same inputstate and make the scene interactions wonky if used parallel to the old global camera object
-        currentScene->pCamera->update();
+        // currentScene->pCamera->update();
 
 
         // UPDATE OBJECTS
@@ -121,14 +121,69 @@ namespace PScene {
 
 
         for (WorldObject* oPobject : currentScene->pObjects) {
-            if (oPobject->isActive)
-                oPobject->render();
+            if (oPobject->isActive){
+                // oPobject->render();
+                
+                renderPObject(oPobject);
+            }
         }
 
-        for (WorldSimulator* _worldSim : worldSimulators) {
-            _worldSim->render();
+        // TODO: NOT APPLYING
+        for (WorldSimulator* _worldSim : pScene1.worldSimulators) {
+            // _worldSim->render();
+            // ::WorldObject* pSim = dynamic_cast<::WorldObject*>(_worldSim);
+            renderPObject(_worldSim->simContainer);
+
+            for (WorldObject* _wo : _worldSim->simulatorWorldObjects) {
+                renderPObject(_wo);
+            }
+        }
+    }
+
+    // moved rendering to scene to to prevent PObject dependency on PScene
+    void renderPObject(::WorldObject* pObject){
+        // pObject->render();
+        pObject->shader->use();
+
+
+        // object/scene data
+        shader_setWorldObject_uniforms(pObject->modelMatrixRowMajor, scene_1.camera->viewMatrix, scene_1.camera->perspectiveMatrix16, sanityMatrix16);
+
+
+
+        // TEXTURE
+
+        // Currently the pso shader branches, forcing me to toggle the 'hasTexture' uniform for each object..
+        if (pObject->model_ptr->modelFileType == res::ModelFileType::pso && pObject->model_ptr->glTexture != 0)
+            setHasTextureUniform(1);
+        else
+            setHasTextureUniform(0);
+
+        pObject->model_ptr->useTexture();
+
+
+
+        // VAO & DRAW
+        if (pObject->model_ptr->loadedVertStructure == res::ModelVertStucture::p3) { // if it is a wireframe model, use wireframe shader but regular model
+            glBindVertexArray(pObject->model_ptr->vao);
+            drawLines(pObject->model_ptr->wireVertexCount);
+        }
+        else if (pObject->shaderType == Shaders::worldWireframe) { // if model with faces but wireframe shader, use wire-vao
+            glBindVertexArray(pObject->model_ptr->vaoWire);
+            drawLines(pObject->model_ptr->wireVertexCount);
+        }
+        else { // Just draw regular triangles
+            glBindVertexArray(pObject->model_ptr->vao);
+            // Shader call
+            drawTriangles(pObject->model_ptr->vertexCount);
         }
 
+
+        // Recursive rendering
+        for (WorldObject* _wo : pObject->children) {
+            // _wo->render();
+            renderPObject(_wo);
+        }
     }
 
 
@@ -621,12 +676,12 @@ void ws_render(){
 
 
     for(WorldObject* _worldObject : worldObjects){
-        if (_worldObject->isActive)
-            _worldObject->render();
+        if (_worldObject->isActive){}
+            // _worldObject->render();
     }
 
     for (WorldSimulator* _worldSim : worldSimulators){
-            _worldSim->render();
+            // _worldSim->render();
     }
 }
 

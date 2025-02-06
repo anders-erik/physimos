@@ -33,6 +33,8 @@ namespace PScene {
     void updateCurrentScene();
     void renderCurrentScene();
 
+    void renderPObject(::WorldObject* pObject);
+
     float* _mul_vec3_mat16(float* _vec3, float* _mat16);
     void physics();
     int _worldObjectCollidingWithGround_aabb_z(WorldObject& ground, WorldObject& wo2);

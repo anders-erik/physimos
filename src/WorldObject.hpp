@@ -15,8 +15,6 @@
 #include "Model.hpp"
 #include "RigidBody.hpp"
 
-#include "PScene.hh"
-// #include "WorldScene.hpp"
 
 // librender
 #include "render/wo_renderer.hpp"
@@ -24,6 +22,8 @@
 
 #include "transform.hh"
 
+
+extern const float sanityMatrix16[16];
 
 // enum WorldObjectType {
 //     Default = 0,
@@ -93,9 +93,7 @@ public:
     Shaders shaderType;
     void toggleWireframe();
     void update();
-    void render();
     objects::Model* model_ptr;
-    Scene* scene;
     WorldObject* parent = nullptr;
     std::vector<WorldObject*> children;
 
