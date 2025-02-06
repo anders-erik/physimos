@@ -13,7 +13,7 @@
 
 
 GLFWwindow* window__;
-int glThrowSimLoadedOk;
+int physimosLoadedOk;
 
 
 
@@ -38,17 +38,17 @@ void initPhysimosWindow() {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         // return -1;
-        glThrowSimLoadedOk = 0;
+        physimosLoadedOk = 0;
         return;
     }
     glfwMakeContextCurrent(window__);
 
     // User input
-    glfwSetFramebufferSizeCallback(window__, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window__, mouse_button_callback);
+    glfwSetFramebufferSizeCallback(window__, PInput::framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window__, PInput::mouse_button_callback);
     // glfwSetMouseButtonCallback(window__, mouse_button_callback_2); // this deactivates the first one!
-    glfwSetCursorPosCallback(window__, cursor_position_callback);
-    glfwSetKeyCallback(window__, key_callback);
+    glfwSetCursorPosCallback(window__, PInput::cursor_position_callback);
+    glfwSetKeyCallback(window__, PInput::key_callback);
 
 
 
@@ -58,16 +58,16 @@ void initPhysimosWindow() {
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         // return -1;
-        glThrowSimLoadedOk = 0;
+        physimosLoadedOk = 0;
         return;
 }
 
-    glThrowSimLoadedOk = 1;
+    physimosLoadedOk = 1;
 }
 
 
 int physimosWindowOK(){
-    return glThrowSimLoadedOk;
+    return physimosLoadedOk;
 }
 GLFWwindow* physimosReturnWindowPointer() {
     return window__;

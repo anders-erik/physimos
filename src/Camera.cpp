@@ -11,25 +11,26 @@ float initialCameraPosition[3] = { -25.0, 0.0f, 2.0 };
 struct Camera camera;
 
 
-// Global input state
-extern struct InputState inputState;
-
-
-
 namespace PCamera {
 
+    float initialCameraRotRad[3] = { 0.0f, -0.3f, 0.0f };
+    float initialCameraPosition[3] = { -25.0, 0.0f, 2.0 };
 
-    Camera::Camera(/* args */)
+
+
+
+
+    Camera::Camera()
     {
-        eulerAnglesRad.a = initialCameraRotRad[0];
-        eulerAnglesRad.b = initialCameraRotRad[1];
-        eulerAnglesRad.c = initialCameraRotRad[2];
-        cameraPosition.x = initialCameraPosition[0];
-        cameraPosition.y = initialCameraPosition[1];
-        cameraPosition.z = initialCameraPosition[2];
+        eulerAnglesRad.a = ::PCamera::initialCameraRotRad[0];
+        eulerAnglesRad.b = ::PCamera::initialCameraRotRad[1];
+        eulerAnglesRad.c = ::PCamera::initialCameraRotRad[2];
+        cameraPosition.x = ::PCamera::initialCameraPosition[0];
+        cameraPosition.y = ::PCamera::initialCameraPosition[1];
+        cameraPosition.z = ::PCamera::initialCameraPosition[2];
 
         for (int i = 0; i < 16; i++)
-            perspectiveMatrix16[i] = perspectiveMatrix16[i];
+            perspectiveMatrix16[i] = ::perspectiveMatrix16[i];
         
         setPerspectiveMatrix(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
     }
@@ -46,43 +47,45 @@ namespace PCamera {
         float forwardX = cos(eulerAnglesRad.c);
         float forwardY = sin(eulerAnglesRad.c);
 
-        if (inputState.w)
-            translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
-        if (inputState.s)
-            translate(-forwardX * 0.2f, -forwardY * 0.2f, 0.0f);
+        float speed = 0.4f;
 
-        if (inputState.a)
-            translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-        if ((inputState.a && inputState.d) && (inputState.mostRecentADpress == 97)) {
-            translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-            // printf("%d\n", inputState_main.mostRecentADpress);
+        if (PInput::inputState.w)
+            translate(forwardX * speed, forwardY * speed, 0.0f);
+        if (PInput::inputState.s)
+            translate(-forwardX * speed, -forwardY * speed, 0.0f);
+
+        if (PInput::inputState.a)
+            translate(-forwardY * speed, forwardX * speed, 0.0f);
+        if ((PInput::inputState.a && PInput::inputState.d) && (PInput::inputState.mostRecentADpress == 97)) {
+            translate(-forwardY * speed, forwardX * speed, 0.0f);
+            // printf("%d\n", Input::inputState_main.mostRecentADpress);
         }
-        if (inputState.d)
-            translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-        if ((inputState.a && inputState.d) && (inputState.mostRecentADpress == 100)) {
-            translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-            // printf("%d\n", inputState_main.mostRecentADpress);
+        if (PInput::inputState.d)
+            translate(forwardY * speed, -forwardX * speed, 0.0f);
+        if ((PInput::inputState.a && PInput::inputState.d) && (PInput::inputState.mostRecentADpress == 100)) {
+            translate(forwardY * speed, -forwardX * speed, 0.0f);
+            // printf("%d\n", Input::inputState_main.mostRecentADpress);
         }
 
 
-        if (inputState.au)
-            rotateEulerRad(0.0f, 0.05f, 0.0f);
-        if (inputState.ad)
-            rotateEulerRad(0.0f, -0.05f, 0.0f);
-        if (inputState.al)
-            rotateEulerRad(0.0f, 0.0f, 0.05f);
-        if (inputState.ar)
-            rotateEulerRad(0.0f, 0.0f, -0.05f);
+        if (PInput::inputState.au)
+            rotateEulerRad(0.0f, 0.03f, 0.0f);
+        if (PInput::inputState.ad)
+            rotateEulerRad(0.0f, -0.03f, 0.0f);
+        if (PInput::inputState.al)
+            rotateEulerRad(0.0f, 0.0f, 0.03f);
+        if (PInput::inputState.ar)
+            rotateEulerRad(0.0f, 0.0f, -0.03f);
 
 
         // printf("mouse + ctrl\n");
     // if(inputState_main.mousePressActive && inputState_main.ctrl){
-        if (inputState.middleMouse) {
-            float dx = inputState.pointerX - inputState.pointerXLastFrame;
-            float dy = inputState.pointerY - inputState.pointerYLastFrame;
+        if (PInput::inputState.middleMouse) {
+            float dx = PInput::inputState.pointerX - PInput::inputState.pointerXLastFrame;
+            float dy = PInput::inputState.pointerY - PInput::inputState.pointerYLastFrame;
 
-            inputState.pointerXLastFrame = inputState.pointerX;
-            inputState.pointerYLastFrame = inputState.pointerY;
+            PInput::inputState.pointerXLastFrame = PInput::inputState.pointerX;
+            PInput::inputState.pointerYLastFrame = PInput::inputState.pointerY;
 
             // printf("%f\n", dx);
             // printf("%f\n", dy);
@@ -101,10 +104,10 @@ namespace PCamera {
     // }
 
     float* Camera::getViewMatrix() {
-        return camera.viewMatrix;
+        return viewMatrix;
     }
     float* Camera::getPerspectiveMatrix() {
-        return camera.perspectiveMatrix16;
+        return perspectiveMatrix16;
     }
 
 
@@ -115,35 +118,35 @@ namespace PCamera {
         float windowHeight_f = (float)windowHeight;
         float windowWidth_f = (float)windowWidth;
 
-        camera.perspectiveMatrix16[0] = ZN / 1.0f;
+        perspectiveMatrix16[0] = ZN / 1.0f;
         // if height is smaller than width, ZN is divided by <1.0, as intened!
-        camera.perspectiveMatrix16[5] = ZN / (windowHeight_f / windowWidth_f);
+        perspectiveMatrix16[5] = ZN / (windowHeight_f / windowWidth_f);
     }
 
 
 
     void Camera::setEulerAnglesRad(float a, float b, float c)
     {
-        camera.eulerAnglesRad.a = a;
-        camera.eulerAnglesRad.b = b;
-        camera.eulerAnglesRad.c = c;
+        eulerAnglesRad.a = a;
+        eulerAnglesRad.b = b;
+        eulerAnglesRad.c = c;
     }
     void Camera::rotateEulerRad(float a, float b, float c) {
-        camera.eulerAnglesRad.a += a;
-        camera.eulerAnglesRad.b += b;
-        camera.eulerAnglesRad.c += c;
+        eulerAnglesRad.a += a;
+        eulerAnglesRad.b += b;
+        eulerAnglesRad.c += c;
     }
     void Camera::setPosition(float x, float y, float z)
     {
-        camera.cameraPosition.x = x;
-        camera.cameraPosition.y = y;
-        camera.cameraPosition.z = z;
+        cameraPosition.x = x;
+        cameraPosition.y = y;
+        cameraPosition.z = z;
     }
     void Camera::translate(float x, float y, float z)
     {
-        camera.cameraPosition.x += x;
-        camera.cameraPosition.y += y;
-        camera.cameraPosition.z += z;
+        cameraPosition.x += x;
+        cameraPosition.y += y;
+        cameraPosition.z += z;
     }
 
     void Camera::setViewMatrix()
@@ -152,7 +155,7 @@ namespace PCamera {
         // VERY IMPORTANT TO ZERO FOR EVERY FRAME
         for (size_t i = 0; i < 16; i++)
         {
-            camera.viewMatrix[i] = 0;
+            viewMatrix[i] = 0;
         }
 
         // float tempM[16] = {0};
@@ -160,23 +163,23 @@ namespace PCamera {
         float tempY[16] = { 0 };
         float tempZ[16] = { 0 };
 
-        float a = camera.eulerAnglesRad.a;
-        float b = camera.eulerAnglesRad.b;
-        float c = camera.eulerAnglesRad.c;
+        float a = eulerAnglesRad.a;
+        float b = eulerAnglesRad.b;
+        float c = eulerAnglesRad.c;
         // printf("c = %f \n", a);
 
         // TRANSLATE
         // Row 1
-        camera.viewMatrix[0] = 1;
-        camera.viewMatrix[3] = -camera.cameraPosition.x;
+        viewMatrix[0] = 1;
+        viewMatrix[3] = -cameraPosition.x;
         // Row 2
-        camera.viewMatrix[5] = 1;
-        camera.viewMatrix[7] = -camera.cameraPosition.y;
+        viewMatrix[5] = 1;
+        viewMatrix[7] = -cameraPosition.y;
         // Row 3
-        camera.viewMatrix[10] = 1;
-        camera.viewMatrix[11] = -camera.cameraPosition.z;
+        viewMatrix[10] = 1;
+        viewMatrix[11] = -cameraPosition.z;
         // Row 4
-        camera.viewMatrix[15] = 1;
+        viewMatrix[15] = 1;
 
         // rotate X
         // Row 1
@@ -232,14 +235,14 @@ namespace PCamera {
             {
                 for (int k = 0; k < 4; k++)
                 {
-                    result[i * 4 + j] += mat[i * 4 + k] * camera.viewMatrix[k * 4 + j];
+                    result[i * 4 + j] += mat[i * 4 + k] * viewMatrix[k * 4 + j];
                 }
             }
         }
 
         for (int i = 0; i < 16; i++)
         {
-            camera.viewMatrix[i] = result[i];
+            viewMatrix[i] = result[i];
             // printf("%f ", result[i]);
         }
         // printf("\n");
@@ -279,43 +282,43 @@ void cam_UpdateCam(){
     float forwardX = cos(camera.eulerAnglesRad.c);
     float forwardY = sin(camera.eulerAnglesRad.c);
 
-    if (inputState.w)
+    if (PInput::inputState.w)
         cam_translate(forwardX * 0.2f, forwardY * 0.2f, 0.0f);
-    if (inputState.s)
+    if (PInput::inputState.s)
         cam_translate(-forwardX * 0.2f, -forwardY * 0.2f, 0.0f);
 
-    if (inputState.a)
+    if (PInput::inputState.a)
         cam_translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
-    if ((inputState.a && inputState.d) && (inputState.mostRecentADpress == 97)) {
+    if ((PInput::inputState.a && PInput::inputState.d) && (PInput::inputState.mostRecentADpress == 97)) {
         cam_translate(-forwardY * 0.2f, forwardX * 0.2f, 0.0f);
         // printf("%d\n", inputState_main.mostRecentADpress);
     }
-    if (inputState.d)
+    if (PInput::inputState.d)
         cam_translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
-    if ((inputState.a && inputState.d) && (inputState.mostRecentADpress == 100)) {
+    if ((PInput::inputState.a && PInput::inputState.d) && (PInput::inputState.mostRecentADpress == 100)) {
         cam_translate(forwardY * 0.2f, -forwardX * 0.2f, 0.0f);
         // printf("%d\n", inputState_main.mostRecentADpress);
     }
 
 
-    if (inputState.au)
+    if (PInput::inputState.au)
         cam_rotateEulerRad(0.0f, 0.05f, 0.0f);
-    if (inputState.ad)
+    if (PInput::inputState.ad)
         cam_rotateEulerRad(0.0f, -0.05f, 0.0f);
-    if (inputState.al)
+    if (PInput::inputState.al)
         cam_rotateEulerRad(0.0f, 0.0f, 0.05f);
-    if (inputState.ar)
+    if (PInput::inputState.ar)
         cam_rotateEulerRad(0.0f, 0.0f, -0.05f);
 
 
     // printf("mouse + ctrl\n");
 // if(inputState_main.mousePressActive && inputState_main.ctrl){
-    if (inputState.middleMouse) {
-        float dx = inputState.pointerX - inputState.pointerXLastFrame;
-        float dy = inputState.pointerY - inputState.pointerYLastFrame;
+    if (PInput::inputState.middleMouse) {
+        float dx = PInput::inputState.pointerX - PInput::inputState.pointerXLastFrame;
+        float dy = PInput::inputState.pointerY - PInput::inputState.pointerYLastFrame;
 
-        inputState.pointerXLastFrame = inputState.pointerX;
-        inputState.pointerYLastFrame = inputState.pointerY;
+        PInput::inputState.pointerXLastFrame = PInput::inputState.pointerX;
+        PInput::inputState.pointerYLastFrame = PInput::inputState.pointerY;
 
         // printf("%f\n", dx);
         // printf("%f\n", dy);

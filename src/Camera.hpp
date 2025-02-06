@@ -39,13 +39,13 @@ const float perspectiveMatrix16[16] = {
 namespace PCamera {
     class Camera
     {
-    private:
+    // private:
+    public:
         struct EulerAnglesRad eulerAnglesRad;
         struct Point3 cameraPosition;
         float viewMatrix[16];
         float perspectiveMatrix16[16];
 
-    public:
         Camera();
         ~Camera();
 

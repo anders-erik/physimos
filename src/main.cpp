@@ -4,7 +4,7 @@
 #include "Windowing.hpp"
 #include "shader.hpp"
 #include "WorldScene.hpp"
-#include "ui_old.hpp"
+// #include "ui_old.hpp"
 #include "ui/ui.hh"
 #include "Timing.hpp"
 
@@ -71,7 +71,7 @@ int main()
 
 
 	UI::init();
-	ui_init();
+	// ui_init();
 
 
 	process_info_init();
@@ -116,7 +116,7 @@ int main()
 		// update and render ui
 		//
 		UI::update();
-		ui_update();
+		// ui_update();
 		
 
 

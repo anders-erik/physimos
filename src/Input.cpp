@@ -2,7 +2,7 @@
 
 #include "Input.hpp"
 
-#include "ui_old.hpp"
+// #include "ui_old.hpp"
 #include "Camera.hpp"
 
 int inputX = 1;
@@ -12,9 +12,9 @@ int inputX = 1;
 // UI* ui_input;
 // Camera* camera_input;
 
-InputState inputState__;
+// InputState inputState__;
 
-struct InputState inputState;
+
 
 
 // InputState* getCurrentInputStatePointer() {
@@ -36,7 +36,9 @@ struct InputState inputState;
 
 
 
-namespace Input {
+namespace PInput {
+
+	InputState inputState;
 
 	// Only one subscriber implemented
 	void (*cursorSubscriberCallback)(double x, double y) = nullptr;
@@ -55,7 +57,7 @@ namespace Input {
 		frameBufferSubscriberCallback = subscriberCallback;
 	}
 
-}
+
 
 
 
@@ -74,10 +76,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// camera_input->setPerspectiveMatrix(width, height);
 	cam_setPerspectiveMatrix(width, height);
 
+	// OLD UI
 	// ui_input->setWindowSize(width, height);
 	// ui_input->reloadUi();
-	ui_setWindowSize(width, height);
-	ui_reloadUi();
+	// ui_setWindowSize(width, height);
+	// ui_reloadUi();
 }
  
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -87,7 +90,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 	// Callbacks
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		Input::leftClickSubscriberCallback(xpos, ypos);
+		PInput::leftClickSubscriberCallback(xpos, ypos);
 	}
 	
 	// printf("MOUSE BUTTON CALLBACK!\n");
@@ -125,7 +128,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	// NOTIFY UI OF BUTTON CLICK
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 		glfwGetCursorPos(window, &xpos, &ypos);
-		ui_detectElementClick(xpos, ypos);
+		
+		// OLD UI
+		// ui_detectElementClick(xpos, ypos);
 	}
 
 }
@@ -137,7 +142,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 	inputState.pointerX = xpos;
 	inputState.pointerY = ypos;
 
-	Input::cursorSubscriberCallback(xpos, ypos);
+	PInput::cursorSubscriberCallback(xpos, ypos);
 }
 
 
@@ -201,3 +206,4 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		inputState.ar = 0;
 }
  
+} // End INPUT

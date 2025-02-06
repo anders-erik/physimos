@@ -93,9 +93,9 @@ void init(){
 
 
     // Subscribe to cursor position from input library
-    ::Input::subscribeCursorPosition(pointerPositionCallback);
-    ::Input::subscribeLeftClickPosition(leftClickCallback);
-    ::Input::subscribeFrameBufferUpdated(setViewportDimensions);
+    ::PInput::subscribeCursorPosition(pointerPositionCallback);
+    ::PInput::subscribeLeftClickPosition(leftClickCallback);
+    ::PInput::subscribeFrameBufferUpdated(setViewportDimensions);
 
 }
 

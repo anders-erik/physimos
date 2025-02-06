@@ -10,8 +10,7 @@ add_subdirectory(ui)
 
 
 set(SOURCES 
-    Input.cpp 
-    ui_old.cpp
+    Input.cpp
     Simulation.cpp 
     Camera.cpp 
     Windowing.cpp 

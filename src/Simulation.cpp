@@ -9,7 +9,7 @@ extern WorldObject* worldTriangle2_simobj_pointer;
 // WorldObject* worldTriangle2_bounce_pointer;
 
 #include "Input.hpp"
-extern InputState inputState;
+// extern Input::InputState inputState;
 
 // Holds the simulation object(s) and keeps the state of the simulation
 
@@ -43,13 +43,13 @@ void updateSimulation() {
     WorldObject& worldTriangle2_bounce = *bouncyTrianglePointer;
     
 
-    if (simState == SimState::idle && inputState.startSimClick == 1) {
+    if (simState == SimState::idle && PInput::inputState.startSimClick == 1) {
         simState = SimState::startClickDetected;
-        inputState.startSimClick = 0;
+        PInput::inputState.startSimClick = 0;
     }
     else {
         // printf("Simulation already running! \n");
-        inputState.startSimClick = 0;
+        PInput::inputState.startSimClick = 0;
     }
 
     // Start Simulation
