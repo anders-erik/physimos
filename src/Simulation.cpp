@@ -5,6 +5,7 @@
 #include "WorldObject.hpp"
 // extern WorldObject worldTriangle2_bounce;
 extern WorldObject* worldTriangle2_simobj_pointer;
+
 // WorldObject* worldTriangle2_bounce_pointer;
 
 #include "Input.hpp"
@@ -31,9 +32,16 @@ int dtIndexMax = DT_INDEX_MAX;
 WorldObject* simWorldObject;
 
 
+WorldObject* bouncyTrianglePointer;
+void updateSimWithBouncyTriangle(WorldObject* bouncyTriangle){
+    bouncyTrianglePointer = bouncyTriangle;
+    updateSimulation();
+}
 
 void updateSimulation() {
-    WorldObject& worldTriangle2_bounce = *worldTriangle2_simobj_pointer;
+    // WorldObject& worldTriangle2_bounce = *worldTriangle2_simobj_pointer;
+    WorldObject& worldTriangle2_bounce = *bouncyTrianglePointer;
+    
 
     if (simState == SimState::idle && inputState.startSimClick == 1) {
         simState = SimState::startClickDetected;

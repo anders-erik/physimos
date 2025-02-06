@@ -30,8 +30,12 @@
 	- 
 - UI
 	- play around with new components
-		- make small adjustments
-		- write down thoughts
+		- make appropriate adjustments
+		- write thoughts down
+	- UiPObject
+		- setPobject is part of base calss and calls update method
+			- is that possible ?
+		
 
 ### 2025-02-05
 - UiPScene

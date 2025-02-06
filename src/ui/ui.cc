@@ -1,5 +1,5 @@
 
-#include "ui.hpp"
+#include "ui.hh"
 
 #include "ui/ui_globals.hh"
 #include "ui/font.hh"
@@ -72,7 +72,7 @@ void init(){
     UI::primitiveTreeHeads.push_back(UI::PObject::uiPObjectContext->container);
     std::vector<UI::Primitive*> flatComponent = UI::PObject::uiPObjectContext->container->flattenTree();
     for (UI::Primitive* _primitive : flatComponent) {
-        std::cout << "_primitive->id = " << _primitive->id << std::endl;
+        // std::cout << "_primitive->id = " << _primitive->id << std::endl;
         UI::primitiveList.push_back(_primitive);
     }
 
@@ -82,7 +82,7 @@ void init(){
     std::vector<UI::Primitive*> flatUiPScene = UI::PScene::uiPSceneContext->container->flattenTree();
     UI::primitiveTreeHeads.push_back(UI::PScene::uiPSceneContext->container);
     for (UI::Primitive* _primitive : flatUiPScene) {
-        std::cout << "_primitive->id = " << _primitive->id << std::endl;
+        // std::cout << "_primitive->id = " << _primitive->id << std::endl;
         UI::primitiveList.push_back(_primitive);
     }
 

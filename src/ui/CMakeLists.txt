@@ -1,6 +1,6 @@
 
 add_library(ui
-    ui.cpp
+    ui.cc
     ui_list.cc
     ui_primitive.cc
     ui_globals.cc

@@ -4,7 +4,7 @@
 #include <string>
 
 #include "WorldObject.hpp"
-#include "Simulator.hpp"
+#include "simulator/Simulator.hpp"
 
 
 class WorldSimulator{

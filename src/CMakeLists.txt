@@ -37,6 +37,7 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/render)
 # target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/objects)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/logger)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include/)
+target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)
 
 target_link_libraries(source res simulator render ui)
 

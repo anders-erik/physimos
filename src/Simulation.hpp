@@ -15,6 +15,7 @@ enum SimState {
 	    running = 2
 };
 
+void updateSimWithBouncyTriangle(WorldObject* bouncyTriangle);
 void updateSimulation();
 
 void sim_setPositionAtT(WorldObject* simObj, double t);

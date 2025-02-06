@@ -5,7 +5,7 @@
 #include "shader.hpp"
 #include "WorldScene.hpp"
 #include "ui_old.hpp"
-#include "ui/ui.hpp"
+#include "ui/ui.hh"
 #include "Timing.hpp"
 
 
@@ -66,7 +66,8 @@ int main()
 	// TEMPORARY SETUP CALL LOCATION
 	shader_init_shaders();
 
-	ws_init();
+	// ws_init();
+	PScene::init();
 
 
 	UI::init();
@@ -105,8 +106,11 @@ int main()
 
 
 
-		ws_update();
-		ws_render();
+		// ws_update();
+		// ws_render();
+		PScene::updateCurrentScene();
+		PScene::renderCurrentScene();
+
 
 		//
 		// update and render ui
