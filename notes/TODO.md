@@ -25,9 +25,12 @@
 
 ### 2025-02-06
 - PScene
-	- move current global functions into namespace
-	- Scene object as Scene contents interface
-	- 
+	- |o| move current global functions into namespace
+	- || Scene object
+		- |o| usable class
+		- || interface for scene contents
+	- PCamera
+		- PVec?
 - UI
 	- play around with new components
 		- make appropriate adjustments

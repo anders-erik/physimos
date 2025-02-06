@@ -9,9 +9,6 @@
 
 #include "Types.hpp"
 
-
-
-
 // settings 
 #define ZF 300.0f // far plane
 #define ZN 1.0f // near plane 
@@ -38,6 +35,39 @@ const float perspectiveMatrix16[16] = {
     0, 0, -1.0f, 0,
 };
 
+
+namespace PCamera {
+    class Camera
+    {
+    private:
+        struct EulerAnglesRad eulerAnglesRad;
+        struct Point3 cameraPosition;
+        float viewMatrix[16];
+        float perspectiveMatrix16[16];
+
+    public:
+        Camera();
+        ~Camera();
+
+
+        void update();
+
+        void setEulerAnglesRad(float a, float b, float c);
+        void rotateEulerRad(float a, float b, float c);
+        void setPosition(float x, float y, float z);
+        void translate(float x, float y, float z);
+
+        void setViewMatrix();
+        float* getViewMatrix();
+        void multiplyViewMatrix(float* mat);
+
+        void setPerspectiveMatrix(int windowWidth, int windowHeight);
+        float* getPerspectiveMatrix();
+
+
+    };
+    
+}
 
 
 struct Camera {

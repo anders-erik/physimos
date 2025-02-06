@@ -75,9 +75,10 @@ namespace PScene {
         // ::ws_createWorldObjects();
 
         ::cam_init();
-
-        // RENDPIPE
         ::scene_1.camera = ::getCurrentCamera_pointer();
+        
+        pScene1.pCamera = new PCamera::Camera();
+
 
     }
 
@@ -91,11 +92,13 @@ namespace PScene {
 
         if (!::timing_worldIsPaused()) {
             physics();
-
         }
 
         // Update Camera matrices (view/persp.)
-        ::cam_UpdateCam();
+        // ::cam_UpdateCam();
+        
+        // This will write to the same inputstate and make the scene interactions wonky if used parallel to the old global camera object
+        currentScene->pCamera->update();
 
 
         // UPDATE OBJECTS

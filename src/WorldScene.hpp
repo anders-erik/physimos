@@ -14,7 +14,7 @@ namespace PScene {
     extern WorldObject* bouncyTrianglePointer;
     extern WorldObject* groundObjectPointerScene1;
 
-    // NOT YET IN USE
+
     class Scene {
     public:
         Scene() {};
@@ -24,6 +24,7 @@ namespace PScene {
         std::vector<WorldSimulator*> worldSimulators;
 
         Camera* camera;
+        ::PCamera::Camera* pCamera;
 
     };
 
