@@ -4,6 +4,8 @@
 
 // #include "ui_old.hpp"
 #include "scene/Camera.hpp"
+#include "scene/pscene.hh"
+#include "ui/ui.hh"
 
 int inputX = 1;
 
@@ -72,15 +74,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 
 
-	// THESE ARE NOT REFERENCING THE PROPER INSTANCE OF CAMERA+UI ! ! ! !
-	// camera_input->setPerspectiveMatrix(width, height);
-	cam_setPerspectiveMatrix(width, height);
+	// Update viewpost size dependencies
+	// TODO: turn into subscription callbacks
+	::PScene::getCurrentScene()->camera->setPerspectiveMatrix(width, height);
+	::UI::setViewportDimensions(width, height);
 
-	// OLD UI
-	// ui_input->setWindowSize(width, height);
-	// ui_input->reloadUi();
-	// ui_setWindowSize(width, height);
-	// ui_reloadUi();
 }
  
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
