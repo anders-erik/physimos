@@ -9,27 +9,27 @@ add_subdirectory(logger)
 add_subdirectory(ui)
 
 
+
 set(SOURCES 
     Input.cpp
-    Simulation.cpp 
-    Camera.cpp 
-    Windowing.cpp 
-    WorldObject.cpp
-    Timing.cpp 
-    pscene.cc 
+    Simulation.cpp
+    Windowing.cpp
+    Timing.cpp
     RigidBody.cpp
-    process_info.cpp 
+    process_info.cpp
     uiRenderer.cpp
     Model.cpp
-    WorldSimulator.cc
     transform.cc
     uiElement.cc
 )
+
+
 
 #   set(SOURCES )
 add_library(source ${SOURCES})
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/res)
+target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/scene)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/ui)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/simulator)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/render)
@@ -38,5 +38,7 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/logger)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include/)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)
 
-target_link_libraries(source res simulator render ui)
+add_subdirectory(scene)
+
+target_link_libraries(source res simulator render ui scene)
 

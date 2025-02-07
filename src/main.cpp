@@ -3,7 +3,7 @@
 #include "process_info.hpp"
 #include "Windowing.hpp"
 #include "shader.hpp"
-#include "pscene.hh"
+#include "scene/pscene.hh"
 // #include "ui_old.hpp"
 #include "ui/ui.hh"
 #include "Timing.hpp"

@@ -1,8 +1,8 @@
 #ifndef UI_PSCENE_HH
 #define UI_PSCENE_HH
 
-#include "pscene.hh"
-#include "WorldObject.hpp"
+#include "scene/pscene.hh"
+#include "scene/WorldObject.hpp"
 // #include "Scene.hh"
 
 #include "ui/ui_primitive.hh"

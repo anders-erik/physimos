@@ -6,7 +6,7 @@
 
 #include "WorldObject.hpp"
 
-#include "WorldSimulator.hh"
+#include "scene/WorldSimulator.hh"
 
 #include "Camera.hpp"
 

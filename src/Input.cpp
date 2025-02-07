@@ -3,7 +3,7 @@
 #include "Input.hpp"
 
 // #include "ui_old.hpp"
-#include "Camera.hpp"
+#include "scene/Camera.hpp"
 
 int inputX = 1;
 

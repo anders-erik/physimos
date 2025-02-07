@@ -1,7 +1,7 @@
 #ifndef UI_WORLDOBJECT_HH
 #define UI_WORLDOBJECT_HH
 
-#include "WorldObject.hpp"
+#include "scene/WorldObject.hpp"
 
 #include "ui/ui_primitive.hh"
 

@@ -11,8 +11,8 @@
 
 #include "Input.hpp"
 
-#include "pscene.hh"
-#include "WorldObject.hpp"
+#include "scene/pscene.hh"
+#include "scene/WorldObject.hpp"
 
 
 // KEEP THE OLD UI ALIVE FOR A BIT LONGER
