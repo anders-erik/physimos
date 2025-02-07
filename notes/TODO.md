@@ -23,6 +23,18 @@
 	- assembly
 
 
+
+### 2025-02-07
+- PVec3
+	- class
+		- operations
+		- methods
+	- model
+	- renderer
+- UI
+	- mess around with new component system
+
+
 ### 2025-02-06
 - PScene
 	- |o| move current global functions into namespace

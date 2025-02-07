@@ -50,7 +50,8 @@ namespace UI {
 
     }
 
-    // Default click method
+    // Virtual click method.
+    // Implmements behavior within current container scope and returns action(s) to be executed globally.
     UI::Action Primitive::click(){
         std::cout << id << " clicked!" << std::endl;
         return UI::Action::None;

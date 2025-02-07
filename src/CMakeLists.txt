@@ -16,7 +16,7 @@ set(SOURCES
     Windowing.cpp 
     WorldObject.cpp
     Timing.cpp 
-    WorldScene.cpp 
+    pscene.cc 
     RigidBody.cpp
     process_info.cpp 
     uiRenderer.cpp

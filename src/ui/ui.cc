@@ -11,7 +11,7 @@
 
 #include "Input.hpp"
 
-#include "WorldScene.hpp"
+#include "pscene.hh"
 #include "WorldObject.hpp"
 
 
@@ -45,8 +45,8 @@ void init(){
 
     // WORLD OBJECT COMPONENT 1
     WorldObject* house1_wo = ::PScene::getWorldObjectByName("house1_obj");
-    if (house1_wo != nullptr) {
-        std::cout << "house1_wo->name = " << house1_wo->name << std::endl;
+    if (house1_wo == nullptr) {
+        std::cout << "Error init ui. Unable to find house 1 obj." << std::endl;
     }
     // WORLD OBJECT COMPONENT 
     // WorldObject* ground_01 = PScene::getWorldObjectByName("ground_01");
@@ -78,7 +78,7 @@ void init(){
 
     // UiPScene Context
     UI::PScene::uiPSceneContext = new UI::PScene::Context();
-    UI::PScene::uiPSceneContext->populateContext();
+    UI::PScene::uiPSceneContext->populateContext(::PScene::getCurrentScene());
     std::vector<UI::Primitive*> flatUiPScene = UI::PScene::uiPSceneContext->container->flattenTree();
     UI::primitiveTreeHeads.push_back(UI::PScene::uiPSceneContext->container);
     for (UI::Primitive* _primitive : flatUiPScene) {
@@ -143,28 +143,24 @@ void pointerPositionCallback(double x, double y) {
 
 // Don't need cursor position update as it will stay current using pointer position callback
 void leftClickCallback(double x, double y) {
-    // cursor_x = x;
-    // double viewport_height_double = (double)viewport_height;
-    // cursor_y = -(y - viewport_height_double);
-
-    // std::cout << "Left click : ";
+    
     
     // Grab current target
     Primitive* targetedPrimitive = getTargetingPrimitive();
     if (targetedPrimitive == nullptr) {
-        std::cout << "No primitive targeted during click." << std::endl;
+        // std::cout << "No primitive targeted during click." << std::endl;
         return;
     }
-    // targetedPrimitive->printId();
+
     UI::Action postClickAction = targetedPrimitive->click();
 
 
     // cast the PObject primitives in the Primary PObject component, all of which has a World/PObject
-    UI::PObject::Base* pObjectPrimitive = dynamic_cast<UI::PObject::Base*>(targetedPrimitive);
-    // bool isValid
-    if (pObjectPrimitive && pObjectPrimitive->pObject != nullptr) {
-        std::cout << "Valid pObjectPrimitive! clicked!!" << std::endl;
-    }
+    // UI::PObject::Base* pObjectPrimitive = dynamic_cast<UI::PObject::Base*>(targetedPrimitive);
+    // // bool isValid
+    // if (pObjectPrimitive && pObjectPrimitive->pObject != nullptr) {
+    //     std::cout << "Valid pObjectPrimitive! clicked!!" << std::endl;
+    // }
 
     // cast the PObject primtiives in the PScene UI element
     UI::PScene::PObjectListObject* uiPScenePObjectPrimitive = dynamic_cast<UI::PScene::PObjectListObject*>(targetedPrimitive);
@@ -194,59 +190,55 @@ void leftClickCallback(double x, double y) {
 
 
 // Returns the primitive that the current mouse cursor is targeting
-// BUG: breaks if outside parent bounds but above grandparent!
+// Note: assumes that all children to be found is within the parent primitive bounds.
 Primitive* getTargetingPrimitive() {
 
     // flag to check if any primitive maches the cursor location
-    bool targetingAnyPrimitive = false;
+    // used in conjunction with matchedNonLeaves to indentify non-leaf matches
+    bool targetingAPrimitive = false;
+    // keep track of which non-leaves primitives are being targeted
+    // is used when no leaf matches were found
+    std::vector<UI::Primitive*> matchedNonLeaves;
 
-    // find the leaves first
+
+    // sort leaf and non-leaves. Return immediately if matched a targeted leaf.
     for (Primitive* primitive : primitiveList) {
 
         bool isLeaf = primitive->isLeaf();
         bool containsPoint = primitive->containsPoint(cursor_x, cursor_y);
 
-        if (containsPoint)
-            targetingAnyPrimitive = true;
-
-
-        // If the primitive is a leaf and contains the cursor location, the primitive is being hovered!
-        if (containsPoint && isLeaf) {
-            // primitive->printId();
-
-            return primitive;
-
-        }
-    }
-
-
-    // No matches
-    if (!targetingAnyPrimitive) {
-        // std::cout << "No primitive targeted. " << std::endl;
-        return nullptr;
-    }
-
-
-    // If we did match a primitive for the current location, but no leaf matches, then we check non-leaf primitives for non-hovered children
-    for (Primitive* primitive : primitiveList) {
-        // only check non-leaves
-        bool isLeaf = primitive->isLeaf();
-        if (isLeaf)
+        if (!containsPoint)
             continue;
+        
 
-        // If the primitive is NOT a leaf, yet none of it's children is being hovered, then the primitive itself is being hovered
-        bool containsPoint = primitive->containsPoint(cursor_x, cursor_y);
-        bool childrenContainsPoint = primitive->childrenContainPoint(cursor_x, cursor_y);
-        // std::cout << "Non leaf: " << primitive->id << ".   " << containsPoint << ", " << childrenContainsPoint << std::endl;
-        if (containsPoint && !childrenContainsPoint) {
-            // primitive->printId();
-
+        // If the primitive is a leaf and contains the cursor location, the primitive is being we found our target!
+        if (isLeaf) {
             return primitive;
         }
+
+        targetingAPrimitive = true;
+        matchedNonLeaves.push_back(primitive);
     }
 
-    std::cout << "Warn: matching non-leaves in forst loop BUT not matched in second loop!" << std::endl;
-    
+
+    // No matches, so not necessary to check non-leaves
+    if (!targetingAPrimitive)
+        return nullptr;
+
+
+    // heck non-leaf primitives
+    // if none of a targeted primitives children are being targeted, then the primitive itself is being targeted
+    for (Primitive* primitive : matchedNonLeaves) {
+
+        bool childrenContainsPoint = primitive->childrenContainPoint(cursor_x, cursor_y);
+
+        if (!childrenContainsPoint) 
+            return primitive;
+
+    }
+
+
+    std::cout << "Warn: matching non-leaves in forst loop BUT not matched in second loop!" << std::endl;    
     return nullptr;
 }
 

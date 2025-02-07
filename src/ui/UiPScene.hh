@@ -1,7 +1,7 @@
 #ifndef UI_PSCENE_HH
 #define UI_PSCENE_HH
 
-#include "WorldScene.hpp"
+#include "pscene.hh"
 #include "WorldObject.hpp"
 // #include "Scene.hh"
 
@@ -35,6 +35,7 @@ namespace UI::PScene {
 
         PObjectListObject(::WorldObject* _pObject);
         
+        // will reload the pobject container with pobject currently pointed to by this primitive
         ::UI::Action click() {
             return ::UI::Action::LoadPObject;
         };
@@ -56,13 +57,15 @@ namespace UI::PScene {
     // Full context ui component for PObjects (formerly WorldObject)
     class Context {
     public:
+        ::PScene::Scene* scene = nullptr;
+
         Container* container = nullptr;
         NameLabel* nameLabel = nullptr;
         PObjectList* pObjectList = nullptr;
 
         Context() {};
         
-        void populateContext();
+        void populateContext(::PScene::Scene* _scene);
         // void newPObject(::WorldObject* _pObject);
 
         // void reloadComponent();

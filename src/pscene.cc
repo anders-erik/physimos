@@ -6,7 +6,7 @@
 
 #include "WorldObject.hpp"
 
-#include "WorldScene.hpp"
+#include "pscene.hh"
 
 #include "Timing.hpp"
 
@@ -33,8 +33,8 @@ WorldObject* worldTriangle2_simobj_pointer;
 
 namespace PScene {
 
-    ::PScene::Scene scene1;
-    ::PScene::Scene* currentScene;
+    static ::PScene::Scene scene1;
+    static ::PScene::Scene* currentScene;
 
     WorldObject* bouncyTrianglePointer;
     WorldObject* groundObjectPointerScene1;
@@ -49,6 +49,7 @@ namespace PScene {
         return nullptr;
     }
 
+    // returns the objects of the current scene.
     std::vector<WorldObject*> getPObjects() {
         return currentScene->pObjects;
     }
@@ -73,6 +74,10 @@ namespace PScene {
         scene1.camera = new PCamera::Camera();
 
 
+    }
+
+    Scene* getCurrentScene(){
+        return currentScene;
     }
 
 

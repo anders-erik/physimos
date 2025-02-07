@@ -12,7 +12,7 @@ Context* uiPObjectContext = nullptr;
 Container::Container(::WorldObject* _pObject) {
     pObject = _pObject;
 
-    id = pObject->name + "_primitive_head";
+    id = pObject->name + "_container";
     vertRef = UI::VertRef::Bottom;
     setWidth(400);
     setHeight(200);
@@ -23,7 +23,7 @@ Container::Container(::WorldObject* _pObject) {
 void Container::setPObject(::WorldObject* _pObject) {
     pObject = _pObject;
 
-    id = pObject->name + "_name_label";
+    id = pObject->name + "_container";
 }
 
 

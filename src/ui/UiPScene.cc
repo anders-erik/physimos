@@ -23,7 +23,7 @@ Container::Container() {
 
 
 NameLabel::NameLabel(std::string sceneName) {
-    id = "UiPScenelLabel_1";
+    id = "UiPScenelNameLabel_1";
     vertRef = UI::VertRef::Top;
     initGraphics();
     fontSize = UI::FontSize::f24;
@@ -46,7 +46,7 @@ PObjectListObject::PObjectListObject(::WorldObject* _pObject) {
 }
 
 PObjectList::PObjectList(){
-    id = "UiPScenelLabel_1";
+    id = "UiPScenelObjectList_1";
     vertRef = UI::VertRef::Top;
     initGraphics();
     fontSize = UI::FontSize::f24;
@@ -77,24 +77,23 @@ void PObjectList::reloadList() {
 
 
 
-// void Context::reloadComponent() {
-//     // xPosition->reload();
-// }
-
-void Context::populateContext() {
-    // std::cout << "POPULATING CONTEXT" << std::endl;
+void Context::populateContext(::PScene::Scene* _scene) {
     
     container = new UI::PScene::Container();
 
     // Name Label
-    nameLabel = new UI::PScene::NameLabel("SCENE MENU");
+    // nameLabel = new UI::PScene::NameLabel("SCENE MENU");
+    nameLabel = new UI::PScene::NameLabel(_scene->name);
     container->appendChild(nameLabel);
 
     pObjectList = new UI::PScene::PObjectList();
     container->appendChild(pObjectList);
 
-    ::WorldObject* house1 =  ::PScene::getWorldObjectByName("house1_obj");
-    ::WorldObject* ground01 = ::PScene::getWorldObjectByName("ground_01");
+    // ::WorldObject* house1 =  ::PScene::getWorldObjectByName("house1_obj");
+    // ::WorldObject* ground01 = ::PScene::getWorldObjectByName("ground_01");
+    // pObjectList->addPObject(house1);
+    // pObjectList->addPObject(ground01);
+    // pObjectList->addPObject(house1);
 
     std::vector<::WorldObject*> pObjects = ::PScene::getPObjects();
 
@@ -104,9 +103,6 @@ void Context::populateContext() {
     }
     pObjectList->reloadList();
 
-    // pObjectList->addPObject(house1);
-    // pObjectList->addPObject(ground01);
-    // pObjectList->addPObject(house1);
 
 }
 

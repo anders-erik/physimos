@@ -2,6 +2,7 @@
 #define WORLD_SCENE_HPP
 
 #include <vector>
+#include <string>
 
 #include "WorldObject.hpp"
 
@@ -17,20 +18,20 @@ namespace PScene {
 
     class Scene {
     public:
-        Scene() {};
-
+        std::string name;
         std::vector<WorldObject*> pObjects;
-
         std::vector<WorldSimulator*> worldSimulators;
-
         ::PCamera::Camera* camera;
 
+        Scene() : name("default_scene") {};
     };
 
 
     void init();
     void updateCurrentScene();
     void renderCurrentScene();
+
+    Scene* getCurrentScene();
 
     void renderPObject(::WorldObject* pObject);
 
