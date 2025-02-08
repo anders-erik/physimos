@@ -14,6 +14,12 @@ namespace pmath {
         return fdata;
     }
 
+    void Vec3::setData(double data0, double data1, double data2) {
+        data[0] = data0;
+        data[1] = data1;
+        data[2] = data2;
+    }
+
 
 
     bool Vec3::operator==(Vec3 b){
@@ -58,7 +64,6 @@ namespace pmath {
         
         return this->copy(cross);;
     }
-
     Vec3 Vec3::toCross(const Vec3& rhs) {
         Vec3 vec3 = Vec3(data[0], data[1], data[2]);
         return vec3.cross(rhs);

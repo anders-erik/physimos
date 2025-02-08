@@ -2,6 +2,7 @@
 #define TRANSFORM_HH
 
 #include "Types.hpp"
+#include "math/vec3.hh"
 
 
 class Transform {
@@ -12,10 +13,9 @@ class Transform {
         void Rotate(Vec3 rotationVector);
         void Translate(Vec3 moveVector);
         void SetPosition(Vec3 positionVector);
-        void SetScale(Vec3 scaleVector);
 
 
-        Vec3 scale = { 1.0f, 1.0f, 1.0f };
+        ::pmath::Vec3 scale = ::pmath::Vec3( 1.0, 1.0, 1.0 );
 
         Vec3 position_0 = { 0.0f, 0.0f, 0.0f };;
         Vec3 position = { 0.0f, 0.0f, 0.0f };

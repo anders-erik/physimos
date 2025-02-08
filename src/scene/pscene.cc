@@ -337,7 +337,8 @@ namespace PScene {
         scene1.pObjects.push_back(worldCube1);
         worldCube1->isActive = true;
 
-        worldCube1->transform->scale = { 0.5, 0.5, 0.5 };
+        // Will properly set the data-array thanks to initializer list constructor
+        worldCube1->transform->scale = { 1.5, 0.5, 0.5 };
         worldCube1->transform->position = { -20.0f, 0.0f, 0.0f };
 
 

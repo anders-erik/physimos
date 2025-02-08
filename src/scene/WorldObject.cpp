@@ -145,9 +145,10 @@ void WorldObject::SetScale(Vec3 scaleVector) {
 
 void WorldObject::SetModelMatrixRowMajor() {
     // this->transformMatrixRowMajor
-    float Sx = transform->scale.x;
-    float Sy = transform->scale.y;
-    float Sz = transform->scale.z;
+    float* scaleVecData = transform->scale.get_fdata();
+    float Sx = scaleVecData[0];
+    float Sy = scaleVecData[1];
+    float Sz = scaleVecData[2];
 
     float Tx = transform->position.x;
     float Ty = transform->position.y;
@@ -236,9 +237,10 @@ void WorldObject::SetModelMatrixRowMajor() {
 
 void WorldObject::SetModelMatrixRowMajor_withParent() {
     // this->transformMatrixRowMajor
-    float Sx = transform->scale.x;
-    float Sy = transform->scale.y;
-    float Sz = transform->scale.z;
+    float* scaleVecData = transform->scale.get_fdata();
+    float Sx = scaleVecData[0];
+    float Sy = scaleVecData[1];
+    float Sz = scaleVecData[2];
 
     float Tx = transform->position.x + parent->transform->position.x;
     float Ty = transform->position.y + parent->transform->position.y;

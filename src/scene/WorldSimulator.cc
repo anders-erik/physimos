@@ -25,9 +25,9 @@ void WorldSimulator::update(){
         _wo->transform->position.z = _wo->transform->position_0.x + sim_z * simulationScale + simContainer->transform->position.z;
 
         // Scale the simulation realtive to container z-dimension + use Z
-        _wo->transform->scale.x = simContainer->transform->scale.z * simulationScale;
-        _wo->transform->scale.y = simContainer->transform->scale.z * simulationScale;
-        _wo->transform->scale.z = simContainer->transform->scale.z * simulationScale;
+        _wo->transform->scale.data[0] = simContainer->transform->scale.data[0] * simulationScale;
+        _wo->transform->scale.data[1] = simContainer->transform->scale.data[1] * simulationScale;
+        _wo->transform->scale.data[2] = simContainer->transform->scale.data[2] * simulationScale;
 
         _wo->update();
     }

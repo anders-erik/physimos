@@ -20,8 +20,5 @@ void Transform::SetPosition(Vec3 positionVector) {
     this->position.y = positionVector.y;
     this->position.z = positionVector.z;
 }
-void Transform::SetScale(Vec3 scaleVector) {
-    this->scale.x = scaleVector.x;
-    this->scale.y = scaleVector.y;
-}
+
 

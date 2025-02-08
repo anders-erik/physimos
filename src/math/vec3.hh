@@ -8,6 +8,7 @@ namespace pmath {
     {
         double data[3];
         float  fdata[3] { 0.0f, 0.0f, 0.0f};
+        void setData(double data0, double data1, double data2);
         float* get_fdata();
         
         Vec3&  copy(const Vec3& rhs);

@@ -112,11 +112,26 @@ int main(){
     // https://onlinemschool.com/math/assistance/vector/multiply1/
     c.cross(b) == Vec3(61747.1111, -76616.28688, 22682.165) ? passed("c.cross(b) == Vec3(61747.1111, -76616.28688, 22682.165)") : failed("c.cross(b) == Vec3(61747.1111, -76616.28688, 22682.165)");
     c.copy(c0);
-    c.cross(bn) == Vec3(-61747.1111, 76616.28688, -22682.165) ? passed("c.cross(b) == Vec3(61747.1111, -76616.28688, 22682.165)") : failed("c.cross(b) == Vec3(61747.1111, -76616.28688, 22682.165)");
+    c.cross(bn) == Vec3(-61747.1111, 76616.28688, -22682.165) ? passed("c.cross(bn) == Vec3(-61747.1111, 76616.28688, -22682.165)") : failed("c.cross(bn) == Vec3(-61747.1111, 76616.28688, -22682.165)");
     c.copy(c0);
 
 
 
+
+    // Memory investigation
+    // std::cout << "" << &a << std::endl;    
+    // a = { 1.5, 0.5, 0.5 };
+    // std::cout << "" << &a << std::endl;
+    // a = Vec3(1.5, 0.5, 0.5);
+    // std::cout << "" << &a << std::endl;
+    // std::cout << "" << &a0 << std::endl;
+    // std::cout << "" << &an << std::endl;
+
+    // std::cout << "a.data[0] = " << a.data[0] << std::endl;
+    // std::cout << "a.fdata[0] = " << a.fdata[0] << std::endl;
+    
+    // std::cout << "s" << a << std::endl;
+    
 
 
     std::cout << std::endl << "-------------------------" << std::endl;
