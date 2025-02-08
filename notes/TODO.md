@@ -23,6 +23,9 @@
 	- assembly
 
 
+### 2025-02-08
+- 
+
 
 ### 2025-02-07
 - PVec3
@@ -31,8 +34,9 @@
 		- methods
 	- model
 	- renderer
-- UI
-	- mess around with new component system
+- |o| UI
+	- |o| play around with new component system
+- |o| scene library
 
 
 ### 2025-02-06

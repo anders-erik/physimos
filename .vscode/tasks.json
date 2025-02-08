@@ -67,8 +67,8 @@
         },
         {
             "type": "shell",
-            "label": "Test!",
-            "command": "g++ -I./src/math -o ./tests/math-test ./tests/Math-test.cpp ./src/math/Math.cc && ./tests/math-test",
+            "label": "Test : pmath::vec3",
+            "command": "python3 ${workspaceFolder}/tests/ptest_pmath_vec3.py",
             "args": [],
             "options": {},
             "problemMatcher": [
