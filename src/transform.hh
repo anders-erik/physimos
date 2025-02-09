@@ -20,6 +20,7 @@ class Transform {
         Transform() {};
 };
 
+void printPosition(::pmath::Vec3& pos);
 
 
 #endif

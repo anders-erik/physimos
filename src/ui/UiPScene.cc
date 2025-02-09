@@ -34,7 +34,7 @@ NameLabel::NameLabel(std::string sceneName) {
 
 
 
-PObjectListObject::PObjectListObject(::WorldObject* _pObject) {
+PObjectListObject::PObjectListObject(::PObject* _pObject) {
     pObject = _pObject;
     id = _pObject->name;
     vertRef = UI::VertRef::Top;
@@ -55,15 +55,15 @@ PObjectList::PObjectList(){
     setY(50);
 }
 
-void PObjectList::addPObject(::WorldObject* _pObject) {
+void PObjectList::addPObject(::PObject* _pObject) {
     pObjects.push_back(_pObject);
     // reloadList();
 }
-void PObjectList::removePObject(::WorldObject* _pObject) {}
+void PObjectList::removePObject(::PObject* _pObject) {}
 
 void PObjectList::reloadList() {
     int index = 0;
-    for(::WorldObject* _pObject : pObjects){
+    for(::PObject* _pObject : pObjects){
         index++;
 
         ::UI::Primitive* _pObjectPrimtive = new ::UI::PScene::PObjectListObject(_pObject);
@@ -95,9 +95,9 @@ void Context::populateContext(::PScene::Scene* _scene) {
     // pObjectList->addPObject(ground01);
     // pObjectList->addPObject(house1);
 
-    std::vector<::WorldObject*> pObjects = ::PScene::getPObjects();
+    std::vector<::PObject*> pObjects = ::PScene::getPObjects();
 
-    for (::WorldObject* pObject : pObjects){
+    for (::PObject* pObject : pObjects){
         // pObjectList->addPObject(pObject);
         pObjectList->pObjects.push_back(pObject);
     }

@@ -2,7 +2,7 @@
 #define SIMULATION_HPP
 
 #include "Types.hpp"
-#include "WorldObject.hpp"
+#include "pobject.hh"
 
 // Holds the simulation object(s) and keeps the state of the simulation
 
@@ -15,11 +15,11 @@ enum SimState {
 	    running = 2
 };
 
-void updateSimWithBouncyTriangle(WorldObject* bouncyTriangle);
+void updateSimWithBouncyTriangle(PObject* bouncyTriangle);
 void updateSimulation();
 
-void sim_setPositionAtT(WorldObject* simObj, double t);
-void sim_updatePosAndVel(WorldObject* wo);
+void sim_setPositionAtT(PObject* simObj, double t);
+void sim_updatePosAndVel(PObject* wo);
 
 
 

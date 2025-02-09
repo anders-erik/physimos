@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "WorldObject.hpp"
+#include "pobject.hh"
 #include "simulator/Simulator.hpp"
 
 
@@ -23,8 +23,8 @@ public:
     
     Sim::Simulator* simulator = nullptr;
 
-    WorldObject* simContainer = nullptr; // wireframe that will contain the simulation
-    std::vector<WorldObject*> simulatorWorldObjects; // objects that are part of the simulation
+    PObject* simContainer = nullptr; // wireframe that will contain the simulation
+    std::vector<PObject*> simulatorWorldObjects; // objects that are part of the simulation
 
     // Simulation scale / world scale
     float simulationScale = 0.1;

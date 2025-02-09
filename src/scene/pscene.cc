@@ -4,7 +4,7 @@
 #include "Simulation.hpp"
 #include "Camera.hpp"
 
-#include "WorldObject.hpp"
+#include "pobject.hh"
 
 #include "pscene.hh"
 
@@ -18,16 +18,16 @@ std::vector<WorldSimulator*> worldSimulators;
 
 
 // WORLD OBJECTS
-std::vector<WorldObject*> worldObjects;
+std::vector<PObject*> worldObjects;
 
 // WORLD GROUND
 #define GROUND_Z_0 0.0f
-WorldObject worldGround1;
-WorldObject* worldGround_pointer;
+PObject worldGround1;
+PObject* worldGround_pointer;
 
 
 // Bouncy triangle for nostalgia
-WorldObject* worldTriangle2_simobj_pointer;
+PObject* worldTriangle2_simobj_pointer;
 
 
 
@@ -36,13 +36,13 @@ namespace PScene {
     static ::PScene::Scene scene1;
     static ::PScene::Scene* currentScene;
 
-    WorldObject* bouncyTrianglePointer;
-    WorldObject* groundObjectPointerScene1;
+    PObject* bouncyTrianglePointer;
+    PObject* groundObjectPointerScene1;
 
 
 
-    WorldObject* getWorldObjectByName(std::string _name){
-        for (WorldObject* pObject : currentScene->pObjects) {
+    PObject* getWorldObjectByName(std::string _name){
+        for (PObject* pObject : currentScene->pObjects) {
             if (pObject->name == _name)
                 return pObject;
         }
@@ -50,12 +50,12 @@ namespace PScene {
     }
 
     // returns the objects of the current scene.
-    std::vector<WorldObject*> getPObjects() {
+    std::vector<PObject*> getPObjects() {
         return currentScene->pObjects;
     }
 
 
-    void addPObjectToCurrentScene(::WorldObject* pObject){
+    void addPObjectToCurrentScene(::PObject* pObject){
         currentScene->pObjects.push_back(pObject);
     }
 
@@ -100,7 +100,7 @@ namespace PScene {
 
 
         // UPDATE OBJECTS
-        for (WorldObject* pObject : currentScene->pObjects) {
+        for (PObject* pObject : currentScene->pObjects) {
             if (pObject->isActive)
                 pObject->update();
         }
@@ -118,7 +118,7 @@ namespace PScene {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 
-        for (WorldObject* oPobject : currentScene->pObjects) {
+        for (PObject* oPobject : currentScene->pObjects) {
             if (oPobject->isActive){
                 // oPobject->render();
                 
@@ -132,14 +132,14 @@ namespace PScene {
             // ::WorldObject* pSim = dynamic_cast<::WorldObject*>(_worldSim);
             renderPObject(_worldSim->simContainer);
 
-            for (WorldObject* _wo : _worldSim->simulatorWorldObjects) {
+            for (PObject* _wo : _worldSim->simulatorWorldObjects) {
                 renderPObject(_wo);
             }
         }
     }
 
     // moved rendering to scene to to prevent PObject dependency on PScene
-    void renderPObject(::WorldObject* pObject){
+    void renderPObject(::PObject* pObject){
         // pObject->render();
         pObject->shader->use();
 
@@ -178,7 +178,7 @@ namespace PScene {
 
 
         // Recursive rendering
-        for (WorldObject* _wo : pObject->children) {
+        for (PObject* _wo : pObject->children) {
             // _wo->render();
             renderPObject(_wo);
         }
@@ -203,10 +203,10 @@ namespace PScene {
     }
 
     void physics() {
-        WorldObject& worldGround = *groundObjectPointerScene1;
+        PObject& worldGround = *groundObjectPointerScene1;
 
-        for (WorldObject* _worldObject_p : currentScene->pObjects) {
-            WorldObject& _worldObject = *_worldObject_p;
+        for (PObject* _worldObject_p : currentScene->pObjects) {
+            PObject& _worldObject = *_worldObject_p;
             // std::cout << "_worldObject.name =  " << _worldObject.name << std::endl;
             // std::cout << "_worldObject.rotation.x =  " << _worldObject.rotation.x << std::endl;
 
@@ -300,11 +300,11 @@ namespace PScene {
     }
 
 
-    int _worldObjectCollidingWithGround_aabb_z(WorldObject& ground, WorldObject& wo2) {
+    int _worldObjectCollidingWithGround_aabb_z(PObject& ground, PObject& wo2) {
 
         // vertical test
         // if (wo2.position.z < (ground.position.z + wo2.offsetToBottom)) {
-        if ((wo2.position.z + wo2.boundingBox.z_min) < ground.boundingBox.z_max) {
+        if ((wo2.transform->position.data[2] + wo2.boundingBox.z_min) < ground.boundingBox.z_max) {
             // if(wo)
             // std::cout << "wo2.boundingBox.z_min   " << wo2.boundingBox.z_min << std::endl;
             // std::cout << "ground.boundingBox.z_max   " << ground.boundingBox.z_max << std::endl;
@@ -315,11 +315,11 @@ namespace PScene {
             // std::cout << "ground.boundingBox.x_max               = " << ground.boundingBox.x_max << std::endl;
 
 
-            if ((wo2.position.x + wo2.boundingBox.x_min < ground.boundingBox.x_max) && (wo2.position.x + wo2.boundingBox.x_min > ground.boundingBox.x_min)) {
+            if ((wo2.transform->position.data[0] + wo2.boundingBox.x_min < ground.boundingBox.x_max) && (wo2.transform->position.data[0] + wo2.boundingBox.x_min > ground.boundingBox.x_min)) {
                 // std::cout << "ddddddddddddddddddd" << std::endl;
 
                 // y test
-                if ((wo2.position.y + wo2.boundingBox.y_min < ground.boundingBox.y_max) && (wo2.position.y + wo2.boundingBox.y_max > ground.boundingBox.y_min)) {
+                if ((wo2.transform->position.data[1] + wo2.boundingBox.y_min < ground.boundingBox.y_max) && (wo2.transform->position.data[1] + wo2.boundingBox.y_max > ground.boundingBox.y_min)) {
                     return 1;
                 }
             }
@@ -336,7 +336,7 @@ namespace PScene {
 
         // 1. - CUBE 1
 
-        WorldObject* worldCube1 = new WorldObject("cube", "worldCube1");
+        PObject* worldCube1 = new PObject("cube", "worldCube1");
         scene1.pObjects.push_back(worldCube1);
         worldCube1->isActive = true;
 
@@ -351,7 +351,7 @@ namespace PScene {
         // 2. - CUBE 2 - SPIN
 
         // WorldObject worldCube1("resources/models/cube.pso");
-        WorldObject* worldCube_spin = new WorldObject("cube", "worldCube_spin");
+        PObject* worldCube_spin = new PObject("cube", "worldCube_spin");
         scene1.pObjects.push_back(worldCube_spin);
         worldCube_spin->isActive = true;
 
@@ -367,7 +367,7 @@ namespace PScene {
 
         // 3. - CUBE 3 - GRAVITY
 
-        WorldObject* cube_3_gravity = new WorldObject("cube", "cube_3_gravity");
+        PObject* cube_3_gravity = new PObject("cube", "cube_3_gravity");
         scene1.pObjects.push_back(cube_3_gravity);
         cube_3_gravity->isActive = true;
 
@@ -414,7 +414,7 @@ namespace PScene {
 
         // 4. - CUBE 4 - OBJ !
 
-        WorldObject* worldCube4_obj = new WorldObject("blend-cube-texture-1", "worldCube4_obj");
+        PObject* worldCube4_obj = new PObject("blend-cube-texture-1", "worldCube4_obj");
         scene1.pObjects.push_back(worldCube4_obj);
         worldCube4_obj->isActive = true;
         worldCube4_obj->transform->scale = { 2.0, 2.0, 2.0 };
@@ -426,7 +426,7 @@ namespace PScene {
 
 
         // 5. - TEMP - BOUNDING BOX ??
-        WorldObject* cube_bounding_1 = new WorldObject("cube", "cube_bounding_1");
+        PObject* cube_bounding_1 = new PObject("cube", "cube_bounding_1");
         scene1.pObjects.push_back(cube_bounding_1);
         cube_bounding_1->isActive = true;
 
@@ -438,7 +438,7 @@ namespace PScene {
 
         // 6. -  HOUSE 1 - OBJ MODEL
 
-        WorldObject* house1_obj = new WorldObject("house-1", "house1_obj");
+        PObject* house1_obj = new PObject("house-1", "house1_obj");
         scene1.pObjects.push_back(house1_obj);
         house1_obj->isActive = true;
 
@@ -453,7 +453,7 @@ namespace PScene {
 
         // 7. - TRIANGLE 2 - BOUNCE
 
-        WorldObject* worldTriangle2_bounce = new WorldObject("tri_pso.pso", "worldTriangle2_bounce");
+        PObject* worldTriangle2_bounce = new PObject("tri_pso.pso", "worldTriangle2_bounce");
         scene1.pObjects.push_back(worldTriangle2_bounce);
         worldTriangle2_bounce->isActive = true;
 
@@ -468,7 +468,7 @@ namespace PScene {
 
         // 8. - TRIANGLE 1 - TEXTURE
 
-        WorldObject* worldTriangle1Texture = new WorldObject("tri_tex_pso.pso", "worldTriangle1Texture");
+        PObject* worldTriangle1Texture = new PObject("tri_tex_pso.pso", "worldTriangle1Texture");
         scene1.pObjects.push_back(worldTriangle1Texture);
         worldTriangle1Texture->isActive = true;
 
@@ -481,7 +481,7 @@ namespace PScene {
             9. - rendpipe_obj   ::   FIRST RENDER PIPLINE OBJECT
         */
 
-        WorldObject* rendpipe_obj_ptr = new WorldObject("blend-cube-texture-1", "rendpipe_obj");
+        PObject* rendpipe_obj_ptr = new PObject("blend-cube-texture-1", "rendpipe_obj");
         scene1.pObjects.push_back(rendpipe_obj_ptr);
 
         rendpipe_obj_ptr->isActive = true;
@@ -498,7 +498,7 @@ namespace PScene {
             10. - rendpipe_cube2_ptr   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
         */
         // blend-cube-no-texture
-        WorldObject* rendpipe_cube2_ptr = new WorldObject("cube", "rendpipe_cube2");
+        PObject* rendpipe_cube2_ptr = new PObject("cube", "rendpipe_cube2");
         scene1.pObjects.push_back(rendpipe_cube2_ptr);
 
         rendpipe_cube2_ptr->isActive = true;
@@ -510,7 +510,7 @@ namespace PScene {
             11. - ground_01   ::  TEST PIPLINE WITH NO TEXTURE OBJECT
         */
         // blend-cube-no-texture
-        WorldObject* ground_01 = new WorldObject("ground-01", "ground_01");
+        PObject* ground_01 = new PObject("ground-01", "ground_01");
         scene1.pObjects.push_back(ground_01);
 
         ground_01->isActive = true;
@@ -519,18 +519,18 @@ namespace PScene {
 
         ground_01->transform->position = { -10.0f, 0.0f, GROUND_Z_0 };
         // worldCube1.printVertices();
-        ground_01->boundingBox.x_min = ground_01->position.x - groundScale;
-        ground_01->boundingBox.x_max = ground_01->position.x + groundScale;
-        ground_01->boundingBox.y_min = ground_01->position.y - groundScale;
-        ground_01->boundingBox.y_max = ground_01->position.y + groundScale;
-        ground_01->boundingBox.z_min = ground_01->position.z + GROUND_Z_0;
-        ground_01->boundingBox.z_max = ground_01->position.z + GROUND_Z_0;
+        ground_01->boundingBox.x_min = ground_01->transform->position.data[0] - groundScale;
+        ground_01->boundingBox.x_max = ground_01->transform->position.data[0] + groundScale;
+        ground_01->boundingBox.y_min = ground_01->transform->position.data[1] - groundScale;
+        ground_01->boundingBox.y_max = ground_01->transform->position.data[1] + groundScale;
+        ground_01->boundingBox.z_min = ground_01->transform->position.data[2] + GROUND_Z_0;
+        ground_01->boundingBox.z_max = ground_01->transform->position.data[2] + GROUND_Z_0;
 
 
         /*
             12. - tri_pso : First pso in new rendering pipline
         */
-        WorldObject* tri_pso = new WorldObject("tri_pso.pso", "tri_pso");
+        PObject* tri_pso = new PObject("tri_pso.pso", "tri_pso");
         scene1.pObjects.push_back(tri_pso);
 
         tri_pso->isActive = true;
@@ -541,7 +541,7 @@ namespace PScene {
         /*
             13. - tri_tex_pso : First pso with texture in new rendering pipline
         */
-        WorldObject* tri_tex_pso = new WorldObject("tri_tex_pso.pso", "tri_tex_pso");
+        PObject* tri_tex_pso = new PObject("tri_tex_pso.pso", "tri_tex_pso");
         scene1.pObjects.push_back(tri_tex_pso);
 
         tri_tex_pso->isActive = true;
@@ -567,7 +567,7 @@ namespace PScene {
         worldSim_1->setSimulator(simulator1_ptr);
 
         // 16. - worldSim_1_obj_1 - First simulator, first sim object
-        WorldObject* worldSim_1_obj_1 = new WorldObject("cube", "worldSim_1_obj_1");
+        PObject* worldSim_1_obj_1 = new PObject("cube", "worldSim_1_obj_1");
         worldSim_1->simulatorWorldObjects.push_back(worldSim_1_obj_1);
         worldSim_1_obj_1->isActive = true;
         worldSim_1_obj_1->transform->scale = { 0.5, 0.5, 0.5 };
@@ -583,7 +583,7 @@ namespace PScene {
             14. transform_1 : first WO with a transform-object AND a child object
         */
 
-        WorldObject* transform_1 = new WorldObject("cube", "transform_1");
+        PObject* transform_1 = new PObject("cube", "transform_1");
         scene1.pObjects.push_back(transform_1);
 
         transform_1->transform->scale = { 0.1, 0.1, 0.1 };
@@ -594,7 +594,7 @@ namespace PScene {
         transform_1->isActive = true;
         // transform_1->gravityOn = true;
 
-        WorldObject* transform_1_child_1 = new WorldObject("cube", "transform_1_child_1");
+        PObject* transform_1_child_1 = new PObject("cube", "transform_1_child_1");
         transform_1_child_1->parent = transform_1;
         transform_1->children.push_back(transform_1_child_1);
 
@@ -608,8 +608,8 @@ namespace PScene {
 
 
         // Set Single variables using object names
-        for (WorldObject* pObject_p : scene1.pObjects ) {
-            WorldObject& pObject = *pObject_p;
+        for (PObject* pObject_p : scene1.pObjects ) {
+            PObject& pObject = *pObject_p;
             if (pObject.name == "worldTriangle2_bounce")
                 bouncyTrianglePointer = &pObject;
             if (pObject.name == "ground_01")

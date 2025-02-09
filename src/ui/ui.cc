@@ -12,8 +12,8 @@
 #include "Input.hpp"
 
 #include "scene/pscene.hh"
-#include "scene/WorldObject.hpp"
-
+#include "scene/pobject.hh"
+struct PObject;
 
 // KEEP THE OLD UI ALIVE FOR A BIT LONGER
 // #include "ui_old.cpp"
@@ -44,7 +44,7 @@ void init(){
 
 
     // WORLD OBJECT COMPONENT 1
-    WorldObject* house1_wo = ::PScene::getWorldObjectByName("house1_obj");
+    ::PObject* house1_wo = ::PScene::getWorldObjectByName("house1_obj");
     if (house1_wo == nullptr) {
         std::cout << "Error init ui. Unable to find house 1 obj." << std::endl;
     }

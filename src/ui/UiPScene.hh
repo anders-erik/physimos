@@ -2,7 +2,7 @@
 #define UI_PSCENE_HH
 
 #include "scene/pscene.hh"
-#include "scene/WorldObject.hpp"
+#include "scene/pobject.hh"
 // #include "Scene.hh"
 
 #include "ui/ui_primitive.hh"
@@ -31,9 +31,9 @@ namespace UI::PScene {
 
 
     struct PObjectListObject : public UI::PScene::Base {
-        ::WorldObject* pObject = nullptr;
+        ::PObject* pObject = nullptr;
 
-        PObjectListObject(::WorldObject* _pObject);
+        PObjectListObject(::PObject* _pObject);
         
         // will reload the pobject container with pobject currently pointed to by this primitive
         ::UI::Action click() {
@@ -42,12 +42,12 @@ namespace UI::PScene {
     };
 
     struct PObjectList : public UI::PScene::Base {
-        std::vector<::WorldObject*> pObjects;
+        std::vector<::PObject*> pObjects;
         
         PObjectList();
 
-        void addPObject(::WorldObject* _pObject);
-        void removePObject(::WorldObject* _pObject);
+        void addPObject(::PObject* _pObject);
+        void removePObject(::PObject* _pObject);
         void reloadList();
     };
 

@@ -2,9 +2,9 @@
 // #include "Types.hpp"
 #include "Simulation.hpp"
 
-#include "WorldObject.hpp"
+#include "pobject.hh"
 // extern WorldObject worldTriangle2_bounce;
-extern WorldObject* worldTriangle2_simobj_pointer;
+extern PObject* worldTriangle2_simobj_pointer;
 
 // WorldObject* worldTriangle2_bounce_pointer;
 
@@ -29,18 +29,18 @@ double dt = DT;
 int dtCount = (int)DT_COUNT;
 int dtIndex = 0;
 int dtIndexMax = DT_INDEX_MAX;
-WorldObject* simWorldObject;
+PObject* simWorldObject;
 
 
-WorldObject* bouncyTrianglePointer;
-void updateSimWithBouncyTriangle(WorldObject* bouncyTriangle){
+PObject* bouncyTrianglePointer;
+void updateSimWithBouncyTriangle(PObject* bouncyTriangle){
     bouncyTrianglePointer = bouncyTriangle;
     updateSimulation();
 }
 
 void updateSimulation() {
     // WorldObject& worldTriangle2_bounce = *worldTriangle2_simobj_pointer;
-    WorldObject& worldTriangle2_bounce = *bouncyTrianglePointer;
+    PObject& worldTriangle2_bounce = *bouncyTrianglePointer;
     
 
     if (simState == SimState::idle && PInput::inputState.startSimClick == 1) {
@@ -94,7 +94,7 @@ void updateSimulation() {
 }
 
 
-void sim_setPositionAtT(WorldObject* simObj, double t) {
+void sim_setPositionAtT(PObject* simObj, double t) {
     simObj->transform->position.data[0] = simObj->transform_0->position.data[0] + simObj->transform_0->velocity.data[0] * t;
     simObj->transform->position.data[1] = simObj->transform_0->position.data[1] + simObj->transform_0->velocity.data[1] * t + 0.5 * (-9.8) * t * t;
     simObj->transform->position.data[2] = simObj->transform_0->position.data[2] + simObj->transform_0->velocity.data[2] * t;
@@ -102,7 +102,7 @@ void sim_setPositionAtT(WorldObject* simObj, double t) {
 
 
 // One timestep forward of 'dt' for SimObject
-void sim_updatePosAndVel(WorldObject* wo) {
+void sim_updatePosAndVel(PObject* wo) {
 
 
     // GRAVITY

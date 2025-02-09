@@ -1,7 +1,7 @@
 
 #include "WorldSimulator.hh"
 
-#include "WorldObject.hpp"
+#include "pobject.hh"
 
 WorldSimulator::WorldSimulator(std::string _simname) {
     simname = _simname;
@@ -12,7 +12,7 @@ void WorldSimulator::update(){
     simContainer->update();
 
     // step through all the simulator objects and update them using the simulator data
-    for(WorldObject* _wo : simulatorWorldObjects){
+    for(PObject* _wo : simulatorWorldObjects){
         Sim::TimeStep* _timeStep = simulator->nextTimeStep();
         int sim_x = _timeStep->pos.x;
         int sim_y = _timeStep->pos.y;
@@ -36,7 +36,7 @@ void WorldSimulator::update(){
 
 
 void WorldSimulator::createSimContainer(std::string _modelName, std::string _objectName) {
-    simContainer = new WorldObject(_modelName, _objectName);
+    simContainer = new PObject(_modelName, _objectName);
 }
 
 void WorldSimulator::setSimulator(Sim::Simulator* _simulator) {

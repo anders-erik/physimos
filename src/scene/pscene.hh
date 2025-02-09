@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "WorldObject.hpp"
+#include "pobject.hh"
 
 #include "scene/WorldSimulator.hh"
 
@@ -12,14 +12,14 @@
 
 namespace PScene {
 
-    extern WorldObject* bouncyTrianglePointer;
-    extern WorldObject* groundObjectPointerScene1;
+    extern PObject* bouncyTrianglePointer;
+    extern PObject* groundObjectPointerScene1;
 
 
     class Scene {
     public:
         std::string name;
-        std::vector<WorldObject*> pObjects;
+        std::vector<PObject*> pObjects;
         std::vector<WorldSimulator*> worldSimulators;
         ::PCamera::Camera* camera;
 
@@ -33,16 +33,16 @@ namespace PScene {
 
     Scene* getCurrentScene();
 
-    void renderPObject(::WorldObject* pObject);
+    void renderPObject(::PObject* pObject);
 
     float* _mul_vec3_mat16(float* _vec3, float* _mat16);
     void physics();
-    int _worldObjectCollidingWithGround_aabb_z(WorldObject& ground, WorldObject& wo2);
+    int _worldObjectCollidingWithGround_aabb_z(PObject& ground, PObject& wo2);
     void populateScene1();
 
-    void addPObjectToCurrentScene(::WorldObject* pObject);
-    WorldObject* getWorldObjectByName(std::string _name);
-    std::vector<WorldObject*> getPObjects();
+    void addPObjectToCurrentScene(::PObject* pObject);
+    PObject* getWorldObjectByName(std::string _name);
+    std::vector<PObject*> getPObjects();
 
 }
 

@@ -9,7 +9,7 @@ Context* uiPObjectContext = nullptr;
 
 
 
-Container::Container(::WorldObject* _pObject) {
+Container::Container(::PObject* _pObject) {
     pObject = _pObject;
 
     id = pObject->name + "_container";
@@ -20,7 +20,7 @@ Container::Container(::WorldObject* _pObject) {
     setX(10);
     setY(10);
 }
-void Container::setPObject(::WorldObject* _pObject) {
+void Container::setPObject(::PObject* _pObject) {
     pObject = _pObject;
 
     id = pObject->name + "_container";
@@ -28,7 +28,7 @@ void Container::setPObject(::WorldObject* _pObject) {
 
 
 
-NameLabel::NameLabel(::WorldObject* _pObject) {
+NameLabel::NameLabel(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_name_label";
     vertRef = UI::VertRef::Top;
@@ -38,7 +38,7 @@ NameLabel::NameLabel(::WorldObject* _pObject) {
     setX(10);
     setY(10);
 }
-void NameLabel::setPObject(::WorldObject* _pObject) {
+void NameLabel::setPObject(::PObject* _pObject) {
     pObject = _pObject;
 
     id = pObject->name + "_name_label";
@@ -46,7 +46,7 @@ void NameLabel::setPObject(::WorldObject* _pObject) {
 }
 
 
-XPosition::XPosition(::WorldObject* _pObject) {
+XPosition::XPosition(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_x_position";
     vertRef = UI::VertRef::Bottom;
@@ -63,7 +63,7 @@ void XPosition::reload() {
     std::string x_pos_string = std::to_string(pObject->transform->position.data[0]);
     setString("x = " + x_pos_string.substr(0, 5));
 }
-void XPosition::setPObject(::WorldObject* _pObject) {
+void XPosition::setPObject(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_name_label";
 
@@ -71,7 +71,7 @@ void XPosition::setPObject(::WorldObject* _pObject) {
     setString("x = " + x_pos_string.substr(0, 5));
 }
 
-XPosIncrease::XPosIncrease(::WorldObject* _pObject) {
+XPosIncrease::XPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_x_pos_increase";
     isHoverable = true;
@@ -82,7 +82,7 @@ XPosIncrease::XPosIncrease(::WorldObject* _pObject) {
     setX(320);
     setY(80);
 }
-void XPosIncrease::setPObject(::WorldObject* _pObject) {
+void XPosIncrease::setPObject(::PObject* _pObject) {
     pObject = _pObject;
 }
 UI::Action XPosIncrease::click() {
@@ -91,7 +91,7 @@ UI::Action XPosIncrease::click() {
     return UI::Action::ReloadPObject;
 }
 
-XPosDecrease::XPosDecrease(::WorldObject* _pObject) {
+XPosDecrease::XPosDecrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_x_pos_decrease";
     isHoverable = true;
@@ -102,7 +102,7 @@ XPosDecrease::XPosDecrease(::WorldObject* _pObject) {
     setX(360);
     setY(80);
 }
-void XPosDecrease::setPObject(::WorldObject* _pObject) {
+void XPosDecrease::setPObject(::PObject* _pObject) {
     pObject = _pObject;
 }
 UI::Action XPosDecrease::click() {
@@ -113,7 +113,7 @@ UI::Action XPosDecrease::click() {
 
 
 
-ToggleWireframe::ToggleWireframe(::WorldObject* _pObject) {
+ToggleWireframe::ToggleWireframe(::PObject* _pObject) {
     pObject = _pObject;
     isHoverable = true;
     id = pObject->name + "_toggle_wireframe_";
@@ -124,7 +124,7 @@ ToggleWireframe::ToggleWireframe(::WorldObject* _pObject) {
     setX(10);
     setY(10);
 }
-void ToggleWireframe::setPObject(::WorldObject* _pObject) {
+void ToggleWireframe::setPObject(::PObject* _pObject) {
     pObject = _pObject;
 }
 UI::Action ToggleWireframe::click() {
@@ -140,7 +140,7 @@ UI::Action ToggleWireframe::click() {
 
 
 
-void Context::newPObject(::WorldObject* _pObject){
+void Context::newPObject(::PObject* _pObject){
     container->setPObject(_pObject);
 
     nameLabel->setPObject(_pObject);
@@ -165,7 +165,7 @@ void Context::reloadComponent() {
 }
 
 
-void Context::populateContext(::WorldObject* _pObject) {
+void Context::populateContext(::PObject* _pObject) {
     // std::cout << "POPOLATING CONTEXT" << std::endl;
     
     container = new UI::PObject::Container(_pObject);
@@ -235,7 +235,7 @@ void Context::populateContext(::WorldObject* _pObject) {
 
 
 
-YPosition::YPosition(::WorldObject* _pObject) {
+YPosition::YPosition(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_y_position";
     vertRef = UI::VertRef::Bottom;
@@ -246,7 +246,7 @@ YPosition::YPosition(::WorldObject* _pObject) {
     setX(220);
     setY(60);
 }
-YPosIncrease::YPosIncrease(::WorldObject* _pObject) {
+YPosIncrease::YPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_y_pos_increase";
     isHoverable = true;
@@ -262,7 +262,7 @@ UI::Action YPosIncrease::click() {
 
     return UI::Action::None;
 }
-YPosDecrease::YPosDecrease(::WorldObject* _pObject) {
+YPosDecrease::YPosDecrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_y_pos_decrease";
     isHoverable = true;
@@ -281,7 +281,7 @@ UI::Action YPosDecrease::click() {
 
 
 
-ZPosition::ZPosition(::WorldObject* _pObject) {
+ZPosition::ZPosition(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_z_position";
     vertRef = UI::VertRef::Bottom;
@@ -292,7 +292,7 @@ ZPosition::ZPosition(::WorldObject* _pObject) {
     setX(220);
     setY(40);
 }
-ZPosIncrease::ZPosIncrease(::WorldObject* _pObject) {
+ZPosIncrease::ZPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_z_pos_increase";
     isHoverable = true;
@@ -308,7 +308,7 @@ UI::Action ZPosIncrease::click() {
 
     return UI::Action::None;
 }
-ZPosDecrease::ZPosDecrease(::WorldObject* _pObject) {
+ZPosDecrease::ZPosDecrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_z_pos_decrease";
     isHoverable = true;

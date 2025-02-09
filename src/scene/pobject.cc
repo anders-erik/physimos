@@ -1,7 +1,11 @@
 
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <cmath>
 
-#include "WorldObject.hpp"
+#include "pobject.hh"
 
 #include "shader.hpp"
 
@@ -20,7 +24,7 @@ const float sanityMatrix16[16] = {
 
 
 
-WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
+PObject::PObject(std::string _modelName, std::string _objectName) {
 
     name = _objectName;
     // LoadWorldObject(path);
@@ -62,7 +66,7 @@ void add_mat16(float* mat1, float* mat2){
 }
 
 
-void WorldObject::update() {
+void PObject::update() {
     // std::cout << "updating : " << name << std::endl;
     // if(name == "transform_1")
 
@@ -74,7 +78,7 @@ void WorldObject::update() {
         SetModelMatrixRowMajor_withParent();
     }   
 
-    for(WorldObject* _wo : children){
+    for(PObject* _wo : children){
         _wo->update();
     }
 
@@ -82,7 +86,7 @@ void WorldObject::update() {
 
 
 
-void WorldObject::toggleWireframe(){
+void PObject::toggleWireframe(){
     // set wireframe
     if (shaderType == Shaders::world || shaderType == Shaders::worldObj){
         shader = getShader(Shaders::worldWireframe);
@@ -107,11 +111,9 @@ void WorldObject::toggleWireframe(){
 
 
 
-void WorldObject::printPosition() {
-    std::cout << this->position.x << " " << this->position.y << " " << this->position.z << std::endl;
-}
 
-void WorldObject::printTransformMatrix() {
+
+void PObject::printTransformMatrix() {
     std::cout << this->modelMatrixRowMajor[0] << " " << this->modelMatrixRowMajor[1] << " " << this->modelMatrixRowMajor[2] << " " << this->modelMatrixRowMajor[3] << std::endl;
     std::cout << this->modelMatrixRowMajor[4] << " " << this->modelMatrixRowMajor[5] << " " << this->modelMatrixRowMajor[6] << " " << this->modelMatrixRowMajor[7] << std::endl;
     std::cout << this->modelMatrixRowMajor[8] << " " << this->modelMatrixRowMajor[9] << " " << this->modelMatrixRowMajor[10] << " " << this->modelMatrixRowMajor[11] << std::endl;
@@ -121,30 +123,8 @@ void WorldObject::printTransformMatrix() {
 
 
 
-void WorldObject::Rotate(Vec3 rotationVector) {
-    this->rotation.x += rotationVector.x;
-    this->rotation.y += rotationVector.y;
-    this->rotation.z += rotationVector.z;
-}
 
-void WorldObject::Translate(Vec3 moveVector) {
-    this->position.x += moveVector.x;
-    this->position.y += moveVector.y;
-    this->position.z += moveVector.z;
-}
-void WorldObject::SetPosition(Vec3 positionVector) {
-    this->position.x = positionVector.x;
-    this->position.y = positionVector.y;
-    this->position.z = positionVector.z;
-}
-void WorldObject::SetScale(Vec3 scaleVector) {
-    this->scale.x = scaleVector.x;
-    this->scale.y = scaleVector.y;
-    this->scale.z = scaleVector.z;
-}
-
-
-void WorldObject::SetModelMatrixRowMajor() {
+void PObject::SetModelMatrixRowMajor() {
     // this->transformMatrixRowMajor
     float* scaleVecData = transform->scale.get_fdata();
     float Sx = scaleVecData[0];
@@ -236,7 +216,7 @@ void WorldObject::SetModelMatrixRowMajor() {
 
 }
 
-void WorldObject::SetModelMatrixRowMajor_withParent() {
+void PObject::SetModelMatrixRowMajor_withParent() {
     // this->transformMatrixRowMajor
     float* scaleVecData = transform->scale.get_fdata();
     float Sx = scaleVecData[0];
@@ -304,17 +284,6 @@ void WorldObject::SetModelMatrixRowMajor_withParent() {
 
 
 
-void WorldObject::printVertices() {
-    // Check contents
-    std::cout << "Values stored in the vector: \n";
-    int i = 0;
-    for (float value : this->vertices) {
-        std::cout << value << " ";
-        i++;
-        if (i % 6 == 0)
-            std::cout << std::endl;
-    }
-    std::cout << std::endl;
-}
+
 
 

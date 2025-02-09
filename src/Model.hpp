@@ -61,6 +61,7 @@ class Model {
         int vertexCount = 0;
         unsigned int vao = 0;
         unsigned int vbo = 0;
+        void printVertices();
 
         // WIREFRAME
         void generateWireframeFromModel();

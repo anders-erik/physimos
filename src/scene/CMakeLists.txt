@@ -4,7 +4,7 @@
 set(SCENE_OBJS 
     test.cc
     pscene.cc
-    WorldObject.cpp
+    pobject.cc
     WorldSimulator.cc
     Camera.cpp
 )

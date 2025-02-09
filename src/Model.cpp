@@ -487,4 +487,17 @@ namespace objects {
     }
 
 
+    void Model::printVertices() {
+        // Check contents
+        std::cout << "Values stored in the vector: \n";
+        int i = 0;
+        for (float value : this->vertices) {
+            std::cout << value << " ";
+            i++;
+            if (i % 6 == 0)
+                std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
 }
