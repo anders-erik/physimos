@@ -21,6 +21,12 @@ namespace pmath {
     }
 
 
+    Vec3& Vec3::operator=(const Vec3& rhs) {
+        data[0] = rhs.data[0];
+        data[1] = rhs.data[1];
+        data[2] = rhs.data[2];
+        return *this;
+    }
 
     bool Vec3::operator==(Vec3 b){
         return (data[0] == b.data[0] && \

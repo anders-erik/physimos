@@ -20,9 +20,9 @@ void WorldSimulator::update(){
         
         // Assumes that the object being used in the simulator is zero-centered
         // Move object into sim-container, then shift according to simulator scale
-        _wo->transform->position.x = _wo->transform->position_0.x + sim_x * simulationScale + simContainer->transform->position.x;
-        _wo->transform->position.y = _wo->transform->position_0.x + sim_y * simulationScale + simContainer->transform->position.y;
-        _wo->transform->position.z = _wo->transform->position_0.x + sim_z * simulationScale + simContainer->transform->position.z;
+        _wo->transform->position.data[0] = _wo->transform_0->position.data[0] + sim_x * simulationScale + simContainer->transform->position.data[0];
+        _wo->transform->position.data[1] = _wo->transform_0->position.data[1] + sim_y * simulationScale + simContainer->transform->position.data[1];
+        _wo->transform->position.data[2] = _wo->transform_0->position.data[2] + sim_z * simulationScale + simContainer->transform->position.data[2];
 
         // Scale the simulation realtive to container z-dimension + use Z
         _wo->transform->scale.data[0] = simContainer->transform->scale.data[0] * simulationScale;

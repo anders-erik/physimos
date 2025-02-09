@@ -18,7 +18,7 @@ namespace Sim {
     };
 
 
-
+    // TODO: change the Vec3 types!
     typedef struct TimeStep
     {
         int i;

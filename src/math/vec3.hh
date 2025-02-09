@@ -13,6 +13,7 @@ namespace pmath {
         
         Vec3&  copy(const Vec3& rhs);
 
+        Vec3& operator=(const Vec3& rhs);
         bool   operator==(Vec3);
         Vec3&  operator+=(const Vec3& rhs);
         Vec3&  operator-=(const Vec3& rhs);

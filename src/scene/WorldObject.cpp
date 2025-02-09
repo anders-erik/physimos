@@ -27,6 +27,7 @@ WorldObject::WorldObject(std::string _modelName, std::string _objectName) {
 
     model_ptr = new objects::Model(_modelName);
     transform = new Transform();
+    transform_0 = new Transform();
 
 
     // setVaoVbo_obj();
@@ -150,9 +151,9 @@ void WorldObject::SetModelMatrixRowMajor() {
     float Sy = scaleVecData[1];
     float Sz = scaleVecData[2];
 
-    float Tx = transform->position.x;
-    float Ty = transform->position.y;
-    float Tz = transform->position.z;
+    float Tx = transform->position.data[0];
+    float Ty = transform->position.data[1];
+    float Tz = transform->position.data[2];
 
     // // Row 1
     // this->transformMatrixRowMajor[0] = Sx;
@@ -181,12 +182,12 @@ void WorldObject::SetModelMatrixRowMajor() {
     // this->transformMatrixRowMajor[15] = 1;
 
 
-    float c_ph = cos(transform->rotation.x);
-    float s_ph = sin(transform->rotation.x);
-    float c_th = cos(transform->rotation.y);
-    float s_th = sin(transform->rotation.y);
-    float c_ps = cos(transform->rotation.z);
-    float s_ps = sin(transform->rotation.z);
+    float c_ph = cos(transform->rotation.data[0]);
+    float s_ph = sin(transform->rotation.data[0]);
+    float c_th = cos(transform->rotation.data[1]);
+    float s_th = sin(transform->rotation.data[1]);
+    float c_ps = cos(transform->rotation.data[2]);
+    float s_ps = sin(transform->rotation.data[2]);
 
     float a11 = c_ps * c_ph - s_ps * c_th * s_ph;
     float a12 = -c_ps * s_ph - s_ps * c_th * c_ph;
@@ -242,17 +243,17 @@ void WorldObject::SetModelMatrixRowMajor_withParent() {
     float Sy = scaleVecData[1];
     float Sz = scaleVecData[2];
 
-    float Tx = transform->position.x + parent->transform->position.x;
-    float Ty = transform->position.y + parent->transform->position.y;
-    float Tz = transform->position.z + parent->transform->position.z;
+    float Tx = transform->position.data[0] + parent->transform->position.data[0];
+    float Ty = transform->position.data[1] + parent->transform->position.data[1];
+    float Tz = transform->position.data[2] + parent->transform->position.data[2];
 
 
-    float c_ph = cos(transform->rotation.x + parent->transform->rotation.x);
-    float s_ph = sin(transform->rotation.x + parent->transform->rotation.x);
-    float c_th = cos(transform->rotation.y + parent->transform->rotation.y);
-    float s_th = sin(transform->rotation.y + parent->transform->rotation.y);
-    float c_ps = cos(transform->rotation.z + parent->transform->rotation.z);
-    float s_ps = sin(transform->rotation.z + parent->transform->rotation.z);
+    float c_ph = cos(transform->rotation.data[0] + parent->transform->rotation.data[0]);
+    float s_ph = sin(transform->rotation.data[0] + parent->transform->rotation.data[0]);
+    float c_th = cos(transform->rotation.data[1] + parent->transform->rotation.data[1]);
+    float s_th = sin(transform->rotation.data[1] + parent->transform->rotation.data[1]);
+    float c_ps = cos(transform->rotation.data[2] + parent->transform->rotation.data[2]);
+    float s_ps = sin(transform->rotation.data[2] + parent->transform->rotation.data[2]);
 
     float a11 = c_ps * c_ph - s_ps * c_th * s_ph;
     float a12 = -c_ps * s_ph - s_ps * c_th * c_ph;

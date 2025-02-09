@@ -23,9 +23,27 @@
 	- assembly
 
 
-### 2025-02-08
-- 
+### 2025-02-09
+- Vec3
+	- update transform
+	- rotation - euler angles
+	- methods
+		- distanceBetween(vec)
+			- difference?
+		- angleBetween(vec3)
+		- normalize()
+		- unitVectorPointingTowards(vec3)
+- transform:
+	- separate transform for initial, current, and previous steps
+- draw vector in scene
+	- x, y, z
+	- start with one at scene origin
 
+
+
+### 2025-02-08
+- Vec3
+- ptest
 
 ### 2025-02-07
 - PVec3

@@ -213,8 +213,8 @@ namespace PScene {
 
             // GRAVITY
             if (_worldObject.gravityOn == 1) {
-                _worldObject.transform->velocity.z += -9.8 * 0.0133; // dt = 0.0133s
-                _worldObject.transform->position.z += _worldObject.transform->velocity.z * 0.0133;
+                _worldObject.transform->velocity.data[2] += -9.8 * 0.0133; // dt = 0.0133s
+                _worldObject.transform->position.data[2] += _worldObject.transform->velocity.data[2] * 0.0133;
 
 
 
@@ -256,11 +256,11 @@ namespace PScene {
                         if (worldVertex[2] < 0.0) {
                             // std::cout << "RIGID BODY COLLISION  ===================" << std::endl;
                             // std::cout << "_worldObject.name = " << _worldObject.name << std::endl;
-                            _worldObject.transform->position.z -= _worldObject.transform->velocity.z * 0.0133;
-                            _worldObject.transform->velocity.z = -_worldObject.transform->velocity.z * 0.5;
+                            _worldObject.transform->position.data[2] -= _worldObject.transform->velocity.data[2] * 0.0133;
+                            _worldObject.transform->velocity.data[2] = -_worldObject.transform->velocity.data[2] * 0.5;
 
                             // Improve by checking direction of vertex velocity??
-                            _worldObject.transform->angularVelocity = { -_worldObject.transform->angularVelocity.x, -_worldObject.transform->angularVelocity.y , -_worldObject.transform->angularVelocity.z };
+                            _worldObject.transform->angularVelocity = { -_worldObject.transform->angularVelocity.data[0], -_worldObject.transform->angularVelocity.data[1] , -_worldObject.transform->angularVelocity.data[2] };
 
                             // Make sure we don't collide more than one vertexs
                             break;
@@ -284,14 +284,17 @@ namespace PScene {
             // APPLY VELOCITIES
 
             if (_worldObject.name == "worldCube_spin")
-                _worldObject.transform->Rotate({ 0.03f, 0.01f, 0.0f });
+                _worldObject.transform->rotation += { 0.03f, 0.01f, 0.0f };
+                // _worldObject.transform->Rotate({ 0.03f, 0.01f, 0.0f });
             if (_worldObject.name == "cube_3_gravity")
-                _worldObject.transform->Rotate(_worldObject.transform->angularVelocity);
+                _worldObject.transform->rotation += _worldObject.transform->angularVelocity;
+                // _worldObject.transform->Rotate(_worldObject.transform->angularVelocity);
             if (_worldObject.name == "transform_1")
-                _worldObject.transform->Rotate(_worldObject.transform->angularVelocity);
+                _worldObject.transform->rotation += _worldObject.transform->angularVelocity;
+                // _worldObject.transform->Rotate(_worldObject.transform->angularVelocity);
 
-            _worldObject.transform->position.x += _worldObject.transform->velocity.x * 0.0133;
-            _worldObject.transform->position.y += _worldObject.transform->velocity.y * 0.0133;
+            _worldObject.transform->position.data[0] += _worldObject.transform->velocity.data[0] * 0.0133;
+            _worldObject.transform->position.data[1] += _worldObject.transform->velocity.data[1] * 0.0133;
 
         }
     }
@@ -337,9 +340,10 @@ namespace PScene {
         scene1.pObjects.push_back(worldCube1);
         worldCube1->isActive = true;
 
-        // Will properly set the data-array thanks to initializer list constructor
+        // This will properly set the data-array thanks to initializer list constructor
         worldCube1->transform->scale = { 1.5, 0.5, 0.5 };
         worldCube1->transform->position = { -20.0f, 0.0f, 0.0f };
+        worldCube1->transform_0->position = { -20.0f, 0.0f, 0.0f };
 
 
 
@@ -353,7 +357,8 @@ namespace PScene {
 
         float cubeSpinScale = 1.0f;
         worldCube_spin->transform->scale = { cubeSpinScale, cubeSpinScale, cubeSpinScale };
-        worldCube_spin->transform->position = { 5.0f, 0.0f, 3.0f };
+        worldCube_spin->transform->position  = { 5.0f, 0.0f, 3.0f };
+        worldCube_spin->transform_0->position = { 5.0f, 0.0f, 3.0f };
 
 
 
@@ -380,8 +385,8 @@ namespace PScene {
         cube_3_gravity->transform->angularVelocity = { 0.01f, 0.01f, 0.0f };
         cube_3_gravity->transform->angularVelocity_0 = cube_3_gravity->transform->angularVelocity;
 
-        cube_3_gravity->transform->position_0 = { -5.0f, 0.0f, 15.0f };
-        cube_3_gravity->transform->position = cube_3_gravity->transform->position_0;
+        cube_3_gravity->transform_0->position = { -5.0f, 0.0f, 15.0f };
+        cube_3_gravity->transform->position = cube_3_gravity->transform_0->position;
         cube_3_gravity->transform->velocity_0 = { 0.0f, 0.0f, 0.0f };
         cube_3_gravity->transform->velocity = cube_3_gravity->transform->velocity_0;
         // worldCube1.printVertices();
@@ -413,7 +418,8 @@ namespace PScene {
         scene1.pObjects.push_back(worldCube4_obj);
         worldCube4_obj->isActive = true;
         worldCube4_obj->transform->scale = { 2.0, 2.0, 2.0 };
-        worldCube4_obj->transform->position = { 20.0f, -10.0f, 10.0f };
+        worldCube4_obj->transform->position  = { 20.0f, -10.0f, 10.0f };
+        worldCube4_obj->transform_0->position = { 20.0f, -10.0f, 10.0f };
         worldCube4_obj->gravityOn = true;
 
 
@@ -438,7 +444,8 @@ namespace PScene {
 
         house1_obj->transform->scale = { 1.0, 1.0, 1.0 };
         house1_obj->transform->position = { 10.0f, 20.0f, 3.0f };
-        house1_obj->transform->position_0 = house1_obj->position;
+        house1_obj->transform_0->position = house1_obj->transform->position;
+        
 
 
 
@@ -452,8 +459,8 @@ namespace PScene {
 
         float triBounceScale = 5.0f;
         worldTriangle2_bounce->transform->scale = { 1.0f, triBounceScale, triBounceScale };
-        worldTriangle2_bounce->transform->position_0 = { 45.0f, 25.0f, 10.0f };
-        worldTriangle2_bounce->transform->position = worldTriangle2_bounce->transform->position_0;
+        worldTriangle2_bounce->transform_0->position = { 45.0f, 25.0f, 10.0f };
+        worldTriangle2_bounce->transform->position = worldTriangle2_bounce->transform_0->position;
         worldTriangle2_bounce->transform->velocity = { 0.0f, 0.0f, 0.0f };
         worldTriangle2_bounce->transform->velocity_0 = { -1.0f, -0.5f, 25.0f };
 
@@ -564,7 +571,7 @@ namespace PScene {
         worldSim_1->simulatorWorldObjects.push_back(worldSim_1_obj_1);
         worldSim_1_obj_1->isActive = true;
         worldSim_1_obj_1->transform->scale = { 0.5, 0.5, 0.5 };
-        worldSim_1_obj_1->transform->position_0 = { 0.0f, 0.0f, 0.0f };
+        worldSim_1_obj_1->transform_0->position = { 0.0f, 0.0f, 0.0f };
         worldSim_1_obj_1->transform->position = { 0.0f, 0.0f, 0.0f };
 
 

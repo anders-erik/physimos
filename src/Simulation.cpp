@@ -64,7 +64,7 @@ void updateSimulation() {
 
 
         simWorldObject = &worldTriangle2_bounce;
-        simWorldObject->transform->translationPrevStep = simWorldObject->transform->position_0;
+        simWorldObject->transform->translationPrevStep = simWorldObject->transform_0->position;
         simWorldObject->transform->velocityPrevStep = simWorldObject->transform->velocity_0;
 
     }
@@ -74,7 +74,8 @@ void updateSimulation() {
         dtIndex = 0;
         // SetPositionSimObject(&tri1, tri1.position_0);
 
-        simWorldObject->transform->SetPosition(simWorldObject->transform->position_0);
+        // simWorldObject->transform->SetPosition(simWorldObject->transform->position_0);
+        simWorldObject->transform->position = simWorldObject->transform_0->position;
         printf("Simulation done. \n");
 
     }
@@ -94,9 +95,9 @@ void updateSimulation() {
 
 
 void sim_setPositionAtT(WorldObject* simObj, double t) {
-    simObj->transform->position.x = simObj->transform->position_0.x + simObj->transform->velocity_0.x * t;
-    simObj->transform->position.y = simObj->transform->position_0.y + simObj->transform->velocity_0.y * t + 0.5 * (-9.8) * t * t;
-    simObj->transform->position.z = simObj->transform->position_0.z + simObj->transform->velocity_0.z * t;
+    simObj->transform->position.data[0] = simObj->transform_0->position.data[0] + simObj->transform->velocity_0.data[0] * t;
+    simObj->transform->position.data[1] = simObj->transform_0->position.data[1] + simObj->transform->velocity_0.data[1] * t + 0.5 * (-9.8) * t * t;
+    simObj->transform->position.data[2] = simObj->transform_0->position.data[2] + simObj->transform->velocity_0.data[2] * t;
 }
 
 
@@ -105,25 +106,25 @@ void sim_updatePosAndVel(WorldObject* wo) {
 
 
     // GRAVITY
-    wo->transform->velocity.z = wo->transform->velocityPrevStep.z + (-9.8) * dt;
+    wo->transform->velocity.data[2] = wo->transform->velocityPrevStep.data[2] + (-9.8) * dt;
 
-    wo->transform->position.x = wo->transform->translationPrevStep.x + wo->transform->velocityPrevStep.x * dt;
-    wo->transform->position.y = wo->transform->translationPrevStep.y + wo->transform->velocityPrevStep.y * dt;
-    wo->transform->position.z = wo->transform->translationPrevStep.z + wo->transform->velocityPrevStep.z * dt;
+    wo->transform->position.data[0] = wo->transform->translationPrevStep.data[0] + wo->transform->velocityPrevStep.data[0] * dt;
+    wo->transform->position.data[1] = wo->transform->translationPrevStep.data[1] + wo->transform->velocityPrevStep.data[1] * dt;
+    wo->transform->position.data[2] = wo->transform->translationPrevStep.data[2] + wo->transform->velocityPrevStep.data[2] * dt;
 
     // BOUNCE
     // printf("%d\n", so->translation.y);
-    if (wo->transform->position.z < 0.0f) {
-        wo->transform->velocity.z = -wo->transform->velocity.z * 0.8;
-        wo->transform->position.z = 0.01f; // make sure the bounce condition is not met next 
+    if (wo->transform->position.data[2] < 0.0f) {
+        wo->transform->velocity.data[2] = -wo->transform->velocity.data[2] * 0.8;
+        wo->transform->position.data[2] = 0.01f; // make sure the bounce condition is not met next 
         // printf("BOUNCE! \n");
     }
 
     // update prev step values
-    wo->transform->velocityPrevStep.z = wo->transform->velocity.z;
-    wo->transform->translationPrevStep.x = wo->transform->position.x;
-    wo->transform->translationPrevStep.y = wo->transform->position.y;
-    wo->transform->translationPrevStep.z = wo->transform->position.z;
+    wo->transform->velocityPrevStep.data[2] = wo->transform->velocity.data[2];
+    wo->transform->translationPrevStep.data[0] = wo->transform->position.data[0];
+    wo->transform->translationPrevStep.data[1] = wo->transform->position.data[1];
+    wo->transform->translationPrevStep.data[2] = wo->transform->position.data[2];
 }
 
 

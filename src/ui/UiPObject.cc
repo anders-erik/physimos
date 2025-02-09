@@ -52,7 +52,7 @@ XPosition::XPosition(::WorldObject* _pObject) {
     vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
-    std::string x_pos_string = std::to_string(_pObject->transform->position.x);
+    std::string x_pos_string = std::to_string(_pObject->transform->position.data[0]);
     setString("x = " + x_pos_string.substr(0, 5));
     // setX(300);
     // setY(80);
@@ -60,14 +60,14 @@ XPosition::XPosition(::WorldObject* _pObject) {
     setY(80);
 }
 void XPosition::reload() {
-    std::string x_pos_string = std::to_string(pObject->transform->position.x);
+    std::string x_pos_string = std::to_string(pObject->transform->position.data[0]);
     setString("x = " + x_pos_string.substr(0, 5));
 }
 void XPosition::setPObject(::WorldObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_name_label";
 
-    std::string x_pos_string = std::to_string(_pObject->transform->position.x);
+    std::string x_pos_string = std::to_string(_pObject->transform->position.data[0]);
     setString("x = " + x_pos_string.substr(0, 5));
 }
 
@@ -86,7 +86,7 @@ void XPosIncrease::setPObject(::WorldObject* _pObject) {
     pObject = _pObject;
 }
 UI::Action XPosIncrease::click() {
-    pObject->transform->position.x += 2.0;
+    pObject->transform->position.data[0] += 2.0;
 
     return UI::Action::ReloadPObject;
 }
@@ -106,7 +106,7 @@ void XPosDecrease::setPObject(::WorldObject* _pObject) {
     pObject = _pObject;
 }
 UI::Action XPosDecrease::click() {
-    pObject->transform->position.x -= 2.0;
+    pObject->transform->position.data[0] -= 2.0;
 
     return UI::Action::ReloadPObject;
 }
@@ -241,7 +241,7 @@ YPosition::YPosition(::WorldObject* _pObject) {
     vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
-    std::string x_pos_string = std::to_string(_pObject->transform->position.y);
+    std::string x_pos_string = std::to_string(_pObject->transform->position.data[1]);
     setString("y = " + x_pos_string.substr(0, 5));
     setX(220);
     setY(60);
@@ -258,7 +258,7 @@ YPosIncrease::YPosIncrease(::WorldObject* _pObject) {
     setY(60);
 }
 UI::Action YPosIncrease::click() {
-    pObject->transform->position.y += 2.0;
+    pObject->transform->position.data[1] += 2.0;
 
     return UI::Action::None;
 }
@@ -274,7 +274,7 @@ YPosDecrease::YPosDecrease(::WorldObject* _pObject) {
     setY(60);
 }
 UI::Action YPosDecrease::click() {
-    pObject->transform->position.y -= 2.0;
+    pObject->transform->position.data[1] -= 2.0;
 
     return UI::Action::None;
 }
@@ -287,7 +287,7 @@ ZPosition::ZPosition(::WorldObject* _pObject) {
     vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
-    std::string x_pos_string = std::to_string(_pObject->transform->position.z);
+    std::string x_pos_string = std::to_string(_pObject->transform->position.data[2]);
     setString("z = " + x_pos_string.substr(0, 5));
     setX(220);
     setY(40);
@@ -304,7 +304,7 @@ ZPosIncrease::ZPosIncrease(::WorldObject* _pObject) {
     setY(40);
 }
 UI::Action ZPosIncrease::click() {
-    pObject->transform->position.z += 2.0;
+    pObject->transform->position.data[2] += 2.0;
 
     return UI::Action::None;
 }
@@ -320,7 +320,7 @@ ZPosDecrease::ZPosDecrease(::WorldObject* _pObject) {
     setY(40);
 }
 UI::Action ZPosDecrease::click() {
-    pObject->transform->position.z -= 2.0;
+    pObject->transform->position.data[2] -= 2.0;
 
     return UI::Action::None;
 }

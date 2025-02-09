@@ -76,8 +76,10 @@ typedef struct BoundingBox {
     float z_max;
 } BoundingBox;
 
-
-
+// Forward declare testing
+struct RigidBody;
+struct RigidBody;
+struct RigidBody;
 
 class WorldObject {
 public:
@@ -97,6 +99,7 @@ public:
     WorldObject* parent = nullptr;
     std::vector<WorldObject*> children;
 
+    Transform* transform_0 = nullptr; // initial transform (time = 0)
     Transform* transform = nullptr;
 
     Shader * shader;

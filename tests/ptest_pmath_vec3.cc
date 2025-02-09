@@ -49,11 +49,14 @@ int main(){
 
 
     /*
-        .copy()
+        =, .copy()
     */
+    std::cout << "=, .copy()" << std::endl;
     (a.copy(b) == Vec3(4.0, 5.0, 6.0)) ? passed("a.copy(b) == Vec3(4.0, 5.0, 6.0)") : failed("a.copy(b) == Vec3(4.0, 5.0, 6.0)");
-    (a.copy(a0) == a0) ? passed("a.copy(b) == Vec3(4.0, 5.0, 6.0)") : failed("a.copy(b) == Vec3(4.0, 5.0, 6.0)");
-
+    (a.copy(a0) == a0) ? passed("a.copy(a0) == a0") : failed("a.copy(a0) == a0");
+    (a = b) == Vec3(4.0, 5.0, 6.0) ? passed("(a = b) == Vec3(4.0, 5.0, 6.0)") : failed("(a = b) == Vec3(4.0, 5.0, 6.0)");
+    (a = a0) == a0 ? passed("(a = a0) == a0") : failed("(a = a0) == a0");
+    std::cout << std::endl;
 
 
     /* 
@@ -119,13 +122,19 @@ int main(){
 
 
     // Memory investigation
-    // std::cout << "" << &a << std::endl;    
+    // std::cout << "a  = " << &a << std::endl;
     // a = { 1.5, 0.5, 0.5 };
-    // std::cout << "" << &a << std::endl;
-    // a = Vec3(1.5, 0.5, 0.5);
-    // std::cout << "" << &a << std::endl;
-    // std::cout << "" << &a0 << std::endl;
-    // std::cout << "" << &an << std::endl;
+    // std::cout << "a  = " << &a << std::endl;
+    // a = *(new Vec3(1.5, 0.5, 0.5)); // old a-object is no longer accessible?
+    // std::cout << "a  = " << &a << std::endl; // memory location is still the same!?!?
+    // a = {1.5, 0.5, 0.5}; 
+    // std::cout << "a  = " << &a << std::endl;
+
+    // std::cout << "a0 = " << &a0 << std::endl;
+    // std::cout << "an = " << &an << std::endl;
+
+    // Vec3 vecvec = { 1.5, 0.5, 0.5 }; // convenient initialization!
+    // std::cout << "vecvec = " << &vecvec << std::endl;
 
     // std::cout << "a.data[0] = " << a.data[0] << std::endl;
     // std::cout << "a.fdata[0] = " << a.fdata[0] << std::endl;
