@@ -3,9 +3,9 @@
 
 # 2025
 
-## Goals:
+## Goals
+
 - simulations
-	- 
 - shaders
 	- lighting
 	- outline
@@ -22,10 +22,25 @@
 	- object files
 	- assembly
 
+---
+
+
+
+### 2025-02-10
+- model-mesh-loaders
+	- pmodel namespace
+		- mesh
+		- texture/color
+		- loaders
+- draw vector in scene
+	- x, y, z
+	- start with one at scene origin
+
+
 
 ### 2025-02-09
 - Vec3
-	- update transform
+	- |o| update transform
 	- rotation - euler angles
 	- methods
 		- distanceBetween(vec)

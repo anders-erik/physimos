@@ -1,8 +1,7 @@
 
 
 
-set(SCENE_OBJS 
-    test.cc
+set(SCENE_OBJS
     pscene.cc
     pobject.cc
     WorldSimulator.cc

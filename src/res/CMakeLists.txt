@@ -9,6 +9,7 @@ add_library(res
 )
 
 target_include_directories(res PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
+target_include_directories(res PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(res PUBLIC ${CMAKE_SOURCE_DIR}/src/logger)
 
 # for texture_gen access to gl api

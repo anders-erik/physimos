@@ -6,6 +6,7 @@ glad.zip
 
 tests/math-test
 tests/ptest_pmath_vec3
+tests/bin/
 
 logs*
 

@@ -6,7 +6,7 @@
 
 #include "bmp_loader.hpp"
 
-#include "logger.hh"
+#include "logger/logger.hh"
 
 
 // loaded file
