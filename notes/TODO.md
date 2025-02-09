@@ -33,8 +33,8 @@
 		- angleBetween(vec3)
 		- normalize()
 		- unitVectorPointingTowards(vec3)
-- transform:
-	- separate transform for initial, current, and previous steps
+- |o| transforms:
+	- |o| separate transform for initial, current, and previous steps
 - draw vector in scene
 	- x, y, z
 	- start with one at scene origin

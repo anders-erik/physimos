@@ -381,14 +381,14 @@ namespace PScene {
         float cube_3_scale = 2.0;
         cube_3_gravity->transform->scale = { cube_3_scale, cube_3_scale, cube_3_scale };
         cube_3_gravity->transform->rotation = { 40.0f, -10.0f, 185.0f };
-        cube_3_gravity->transform->rotation_0 = cube_3_gravity->transform->rotation;
+        cube_3_gravity->transform_0->rotation = cube_3_gravity->transform->rotation;
         cube_3_gravity->transform->angularVelocity = { 0.01f, 0.01f, 0.0f };
-        cube_3_gravity->transform->angularVelocity_0 = cube_3_gravity->transform->angularVelocity;
+        cube_3_gravity->transform_0->angularVelocity = cube_3_gravity->transform->angularVelocity;
 
         cube_3_gravity->transform_0->position = { -5.0f, 0.0f, 15.0f };
         cube_3_gravity->transform->position = cube_3_gravity->transform_0->position;
-        cube_3_gravity->transform->velocity_0 = { 0.0f, 0.0f, 0.0f };
-        cube_3_gravity->transform->velocity = cube_3_gravity->transform->velocity_0;
+        cube_3_gravity->transform_0->velocity = { 0.0f, 0.0f, 0.0f };
+        cube_3_gravity->transform->velocity = cube_3_gravity->transform_0->velocity;
         // worldCube1.printVertices();
         cube_3_gravity->gravityOn = true;
 
@@ -462,7 +462,7 @@ namespace PScene {
         worldTriangle2_bounce->transform_0->position = { 45.0f, 25.0f, 10.0f };
         worldTriangle2_bounce->transform->position = worldTriangle2_bounce->transform_0->position;
         worldTriangle2_bounce->transform->velocity = { 0.0f, 0.0f, 0.0f };
-        worldTriangle2_bounce->transform->velocity_0 = { -1.0f, -0.5f, 25.0f };
+        worldTriangle2_bounce->transform_0->velocity = { -1.0f, -0.5f, 25.0f };
 
 
 

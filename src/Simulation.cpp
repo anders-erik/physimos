@@ -64,8 +64,8 @@ void updateSimulation() {
 
 
         simWorldObject = &worldTriangle2_bounce;
-        simWorldObject->transform->translationPrevStep = simWorldObject->transform_0->position;
-        simWorldObject->transform->velocityPrevStep = simWorldObject->transform->velocity_0;
+        simWorldObject->transform_prev->position = simWorldObject->transform_0->position;
+        simWorldObject->transform_prev->velocity = simWorldObject->transform_0->velocity;
 
     }
     // stop and reset if stopping condition is met
@@ -95,9 +95,9 @@ void updateSimulation() {
 
 
 void sim_setPositionAtT(WorldObject* simObj, double t) {
-    simObj->transform->position.data[0] = simObj->transform_0->position.data[0] + simObj->transform->velocity_0.data[0] * t;
-    simObj->transform->position.data[1] = simObj->transform_0->position.data[1] + simObj->transform->velocity_0.data[1] * t + 0.5 * (-9.8) * t * t;
-    simObj->transform->position.data[2] = simObj->transform_0->position.data[2] + simObj->transform->velocity_0.data[2] * t;
+    simObj->transform->position.data[0] = simObj->transform_0->position.data[0] + simObj->transform_0->velocity.data[0] * t;
+    simObj->transform->position.data[1] = simObj->transform_0->position.data[1] + simObj->transform_0->velocity.data[1] * t + 0.5 * (-9.8) * t * t;
+    simObj->transform->position.data[2] = simObj->transform_0->position.data[2] + simObj->transform_0->velocity.data[2] * t;
 }
 
 
@@ -106,11 +106,11 @@ void sim_updatePosAndVel(WorldObject* wo) {
 
 
     // GRAVITY
-    wo->transform->velocity.data[2] = wo->transform->velocityPrevStep.data[2] + (-9.8) * dt;
+    wo->transform->velocity.data[2] = wo->transform_prev->velocity.data[2] + (-9.8) * dt;
 
-    wo->transform->position.data[0] = wo->transform->translationPrevStep.data[0] + wo->transform->velocityPrevStep.data[0] * dt;
-    wo->transform->position.data[1] = wo->transform->translationPrevStep.data[1] + wo->transform->velocityPrevStep.data[1] * dt;
-    wo->transform->position.data[2] = wo->transform->translationPrevStep.data[2] + wo->transform->velocityPrevStep.data[2] * dt;
+    wo->transform->position.data[0] = wo->transform_prev->position.data[0] + wo->transform_prev->velocity.data[0] * dt;
+    wo->transform->position.data[1] = wo->transform_prev->position.data[1] + wo->transform_prev->velocity.data[1] * dt;
+    wo->transform->position.data[2] = wo->transform_prev->position.data[2] + wo->transform_prev->velocity.data[2] * dt;
 
     // BOUNCE
     // printf("%d\n", so->translation.y);
@@ -121,10 +121,10 @@ void sim_updatePosAndVel(WorldObject* wo) {
     }
 
     // update prev step values
-    wo->transform->velocityPrevStep.data[2] = wo->transform->velocity.data[2];
-    wo->transform->translationPrevStep.data[0] = wo->transform->position.data[0];
-    wo->transform->translationPrevStep.data[1] = wo->transform->position.data[1];
-    wo->transform->translationPrevStep.data[2] = wo->transform->position.data[2];
+    wo->transform_prev->velocity.data[2] = wo->transform->velocity.data[2];
+    wo->transform_prev->position.data[0] = wo->transform->position.data[0];
+    wo->transform_prev->position.data[1] = wo->transform->position.data[1];
+    wo->transform_prev->position.data[2] = wo->transform->position.data[2];
 }
 
 

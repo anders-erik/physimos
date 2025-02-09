@@ -99,7 +99,11 @@ public:
     WorldObject* parent = nullptr;
     std::vector<WorldObject*> children;
 
-    Transform* transform_0 = nullptr; // initial transform (time = 0)
+    // initial timestep transform (time = 0)
+    Transform* transform_0 = nullptr;
+    // Previous timestep transform (time = n-1)
+    Transform* transform_prev = nullptr;
+    // Current timestep transform (time = n)
     Transform* transform = nullptr;
 
     Shader * shader;
