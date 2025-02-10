@@ -2,20 +2,18 @@
 #define OBJ_TYPES_HH
 
 #include <string>
-#include <vector>
 
 
 namespace pmodel {
-
 namespace pobj {
 
     extern float emptyTextureCoord;
 
-    // Mtl color
+    // Mtl colors, usually represented by 'Kx'
     typedef struct MtlColor {
-        float R;
-        float G;
-        float B;
+        float R = 0.0f;
+        float G = 0.0f;
+        float B = 0.0f;
     } MtlColor;
 
     typedef struct Mtl {
@@ -25,14 +23,15 @@ namespace pobj {
 
         MtlColor Ka;       // Ambient Color
         MtlColor Ks;       // Specular Color
-        MtlColor Ke;       // ??
         MtlColor Kd;       // Diffuse Color
+        MtlColor Ke;       // Emissive coeficient
 
         float Ns;   // Specular exponent
-        
         float Ni;   // optical density / index of refraction
 
         float d;    // Dissolve / transparancy : d = 1 - Tr
+
+        int illum; // illumination: 1-10
 
     } Mtl;
 
@@ -67,61 +66,23 @@ namespace pobj {
         unsigned int vn_i;
     } VertexI;
 
+
     // A face represented by three vertices, each vertes is represented by their respective obj-file index.
     typedef struct TriangleFaceI {
         VertexI v1;
         VertexI v2;
         VertexI v3;
+        Mtl* mtl;   // The active material when TriangleFaceI was parsed from obj file
     } TriangleFaceI;
 
 
+    // For the Physimos mesh type.
     // One Vertex storing the pointers of each coordinate type
-    // For Physimos mesh type
     // typedef struct VertexPointers {
     //     VertexCoord*        vc_i;
     //     VertexTextureCoord* vt_i;
     //     VertexNormal*       vn_i;
     // } VertexPointers;
-
-
-
-    // // One vertex - stored as integer indeces, identical to file
-    // typedef struct ObjFaceVertexIndex {
-    //     int v;
-    //     int vt;
-    //     int vn;
-    // } ObjFaceVertexIndex;
-    // // one 'f' row from obj-file
-    // typedef struct ObjFaceIndex {
-    //     ObjFaceVertexIndex vert1;
-    //     ObjFaceVertexIndex vert2;
-    //     ObjFaceVertexIndex vert3;
-    // } ObjFaceIndex;
-
-
-
-    // // Actual vertex values of face vertex
-    // typedef struct ObjFaceVertex {
-    //     VertexCoord v;
-    //     VertexTextureCoord vt;
-    //     VertexNormal vn;
-    // } ObjFaceVertex;
-    // // Actual vertex values of whole face
-    // typedef struct ObjFace {
-    //     ObjFaceVertex vert1;
-    //     ObjFaceVertex vert2;
-    //     ObjFaceVertex vert3;
-    // } ObjFace;
-
-
-
-    // typedef struct ObjMesh {
-    //     std::vector<VertexCoord> v;
-    //     std::vector<VertexTextureCoord> vt;
-    //     std::vector<VertexNormal> vn;
-    //     std::vector<ObjFaceIndex> fi;
-    //     std::vector<ObjFace> f;
-    // } ObjMesh;
 
 }
 }

@@ -27,9 +27,10 @@ std::vector<std::string> split_str(std::string str, char delimiter) {
 
 
 namespace pmodel {
-
 namespace pobj {
 
+
+// Represents value of texture coordinate that was not present in file
 float emptyTextureCoord = -2222.2;
 
 
@@ -50,7 +51,7 @@ ObjLoadStatus Obj::setModelPaths(std::filesystem::path _modelFilePath) {
     // std::filesystem::path filePath (_modelFilePath);
 
     if (!std::filesystem::exists(_modelFilePath)) {
-        return ObjLoadStatus::PathError;
+        return ObjLoadStatus::ObjPathError;
     }
 
     modelFilePath = _modelFilePath;
@@ -66,7 +67,64 @@ ObjLoadStatus Obj::setModelPaths(std::filesystem::path _modelFilePath) {
 
 ObjLoadStatus Obj::loadMtlFile(){
 
-    // TODO: LOAD FILE
+    // Load file content into stream
+    std::ifstream mtlFile;
+    std::stringstream mtlStream;
+    mtlFile.open(mtlFilePath);
+    mtlStream << mtlFile.rdbuf();
+    mtlFile.close();
+
+    std::vector<std::string> mtlFileLines = split_str(mtlStream.str(), '\n');
+    
+    for(std::string mtlFileLine : mtlFileLines){
+        // empty lines are immediately skipped
+        if (mtlFileLine.size() < 1)
+            continue;
+
+        std::vector<std::string> line_segments = split_str(mtlFileLine, ' ');
+
+        // this should always be encountered first, and triggers the creation of a new mtl-object.
+        if (line_segments[0] == "newmtl") {
+            currentMtl = objMtls.emplace_back(new Mtl());
+            currentMtl->name = line_segments[1];
+        }
+        else if (line_segments[0] == "map_Kd") {
+            currentMtl->map_Kd = line_segments[1];
+        }
+        else if (line_segments[0] == "Ka") {
+            currentMtl->Ka.R = (float)std::atof(line_segments[1].data());
+            currentMtl->Ka.G = (float)std::atof(line_segments[2].data());
+            currentMtl->Ka.B = (float)std::atof(line_segments[3].data());
+        }
+        else if (line_segments[0] == "Ks") {
+            currentMtl->Ks.R = (float)std::atof(line_segments[1].data());
+            currentMtl->Ks.G = (float)std::atof(line_segments[2].data());
+            currentMtl->Ks.B = (float)std::atof(line_segments[3].data());
+        }
+        else if (line_segments[0] == "Kd") {
+            currentMtl->Kd.R = (float)std::atof(line_segments[1].data());
+            currentMtl->Kd.G = (float)std::atof(line_segments[2].data());
+            currentMtl->Kd.B = (float)std::atof(line_segments[3].data());
+        }
+        else if (line_segments[0] == "Ke") {
+            currentMtl->Ke.R = (float)std::atof(line_segments[1].data());
+            currentMtl->Ke.G = (float)std::atof(line_segments[2].data());
+            currentMtl->Ke.B = (float)std::atof(line_segments[3].data());
+        }
+        else if (line_segments[0] == "Ns") {
+            currentMtl->Ns = (float)std::atof(line_segments[1].data());
+        }
+        else if (line_segments[0] == "Ni") {
+            currentMtl->Ni = (float)std::atof(line_segments[1].data());
+        }
+        else if (line_segments[0] == "d") {
+            currentMtl->d = (float)std::atof(line_segments[1].data());
+        }
+        else if (line_segments[0] == "illum") {
+            currentMtl->illum = (float)std::atof(line_segments[1].data());
+        }
+    }
+    
 
     return ObjLoadStatus::Ok;
 }
@@ -75,13 +133,12 @@ ObjLoadStatus Obj::loadObjFile() {
     if (!std::filesystem::exists(modelFilePath)){
         std::cout << "modelFilePath = " << modelFilePath << std::endl;
         
-        return ObjLoadStatus::PathError;
+        return ObjLoadStatus::ObjPathError;
     }
 
     // Read Whole Obj File
     std::ifstream modelFile;
     std::stringstream modelStream;
-    // std::string modelString;
 
     modelFile.open(modelFilePath);
     modelStream << modelFile.rdbuf();
@@ -113,19 +170,21 @@ ObjLoadStatus Obj::loadObjFile() {
             // std::cout << "f" << std::endl;
             processFaceLineDataSegments(line);
         }
-        else if (line_segments[0] == "usemtl") { // Should be run BEFORE any group of faces
+        else if (line_segments[0] == "usemtl") { // set the material that will be applied to the following faces
             std::string mtlName = line_segments[1];
             // Find and set the current material
-            for(Mtl mtl : objMtls){
-                if (mtl.name == mtlName){
+            for(Mtl* mtl : objMtls){
+                if (mtl->name == mtlName){
                     currentMtl = mtl;
                     break;
                 }
             }
         }
         else if (line_segments[0] == "mtllib") { // Should be run BEFORE any other lines!
-            // std::cout << "f" << std::endl;
             mtlFilePath = modelFileDir.append(line_segments[1]);
+            if (!std::filesystem::exists(mtlFilePath)) {
+                return ObjLoadStatus::MtlPathError;
+            }
             loadMtlFile();
         }
     }
@@ -215,226 +274,12 @@ ObjLoadStatus Obj::processFaceLineDataSegments(std::string line) {
     triangleFaceI.v2 = vertexi_2;
     triangleFaceI.v3 = vertexi_3;
 
+    triangleFaceI.mtl = currentMtl;
 
     triangleFacesI.push_back(triangleFaceI);
-    
-    // std::stringstream vertex_stream(lineDataSegments[0]);
-    // std::string index_string;
-    // int loop_index = 0;
-
-    // // Vertex #1
-    // VertexI vertex1_indices = {0, 0, 0};
-    // while (std::getline(vertex_stream, index_string, '/'))
-    // {
-    //     vertex1_indices. = std::atoi(index_string.data());
-    //     loop_index++;
-    //     // std::cout << index_string << " " << std::endl;
-    // }
-    // loop_index = 0;
-
 
     return ObjLoadStatus::Ok;
 }
-
-
-
-void obj_loadMtlFromFile(std::string modelName) {
-
-    obj_textureDataBuffer.clear();
-    hasTextureMap = false;
-
-    // grab the path to file with mtl-extension
-    std::string mtlPath = modelsDirectory + modelName + "/" + modelName + ".mtl";
-
-
-    // std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
-    // this->modelPath = objPath;
-
-    std::ifstream modelFile;
-    std::stringstream modelStream;
-    std::string modelString;
-
-    modelFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try
-    {
-        // std::cout << "000000000000" << std::endl;
-        modelFile.open(mtlPath);
-
-
-
-        modelStream << modelFile.rdbuf();
-
-        modelString = modelStream.str();
-
-        modelFile.close();
-
-        std::string line;
-        std::string item;
-        // float number;
-
-        // int vertexCounter = 0;
-        // Stepping through each comma-separated value
-
-
-        while (std::getline(modelStream, line)) {
-            // Remove any leading or trailing whitespace from the item
-            std::stringstream itemStream(line);
-            // itemStream >> number;
-
-
-            // Split line
-            std::vector<std::string> lineSegments;
-            std::string segment;
-
-
-            while (std::getline(itemStream, segment, ' '))
-            {
-                lineSegments.push_back(segment);
-                // std::cout << segment << " ";
-            }
-            // std::cout << std::endl;
-
-            // Make sure the line ins't empty
-            if (lineSegments.size() < 1)
-                continue;
-
-            if (lineSegments[0] == "Kd") {
-                // std::cout << "" << lineSegments[1] << std::endl;
-                Kd[0] = (float)std::atof(lineSegments[1].data());
-                Kd[1] = (float)std::atof(lineSegments[2].data());
-                Kd[2] = (float)std::atof(lineSegments[3].data());
-                // VertexCoord vertexCoord = {
-                //     (float)std::atof(lineSegments[1].data()),
-                //     (float)std::atof(lineSegments[2].data()),
-                //     (float)std::atof(lineSegments[3].data()),
-                //     1.0,
-                // };
-                // objMesh.v.push_back(vertexCoord);
-
-                hasTextureMap = false;
-            }
-            else if (lineSegments[0] == "map_Kd") {
-                // std::cout << "MAP_KD ------------------" << std::endl;
-
-                std::string modelDirectory;
-                const size_t last_slash_idx = mtlPath.rfind('/');
-                if (std::string::npos != last_slash_idx)
-                {
-                    modelDirectory = mtlPath.substr(0, last_slash_idx);
-                }
-
-                std::string texturePath = modelDirectory + "/" + lineSegments[1];
-
-                bmp_loader_loadBMPFile(texturePath);
-                obj_textureDataBuffer = bmp_getImageDataBuffer();
-                obj_imgWidth = bmp_getWidth();
-                obj_imgHeight = bmp_getHeight();
-
-                hasTextureMap = true;
-            }
-        }
-
-
-    }
-    catch (std::ifstream::failure& e)
-    {
-        // std::cout << " ERROR. [" << this->vertices.size() << " values]" << std::endl;
-        std::cout << "ERROR::READING_OBJ_FILE" << e.what() << std::endl;
-    }
-
-
-
-    // std::cout << modelString;
-    // std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
-
-    // std::cout << "" << std::endl;
-
-}
-
-
-
-
-
-
-float* obj_loadKdFromFile(std::string mtlPath) {
-    // std::cout << "Loading obj model: " << mtlPath << ". " << std::endl;
-    // this->modelPath = objPath;
-
-    std::ifstream modelFile;
-    std::stringstream modelStream;
-    std::string modelString;
-
-    modelFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try
-    {
-        // std::cout << "000000000000" << std::endl;
-        modelFile.open(mtlPath);
-
-
-
-        modelStream << modelFile.rdbuf();
-
-        modelString = modelStream.str();
-
-        modelFile.close();
-
-        std::string line;
-        std::string item;
-        // float number;
-
-        // int vertexCounter = 0;
-        // Stepping through each comma-separated value
-
-
-        while (std::getline(modelStream, line)) {
-            // Remove any leading or trailing whitespace from the item
-            std::stringstream itemStream(line);
-            // itemStream >> number;
-
-
-            // Split line
-            std::vector<std::string> lineSegments;
-            std::string segment;
-
-
-            while (std::getline(itemStream, segment, ' '))
-            {
-                lineSegments.push_back(segment);
-                // std::cout << segment << " ";
-            }
-            // std::cout << std::endl;
-
-            if (lineSegments.size() > 0 && lineSegments[0] == "Kd") {
-                std::cout << "" << lineSegments[1] << std::endl;
-                Kd[0] = (float)std::atof(lineSegments[1].data());
-                Kd[1] = (float)std::atof(lineSegments[2].data());
-                Kd[2] = (float)std::atof(lineSegments[3].data());
-                // VertexCoord vertexCoord = {
-                //     (float)std::atof(lineSegments[1].data()),
-                //     (float)std::atof(lineSegments[2].data()),
-                //     (float)std::atof(lineSegments[3].data()),
-                //     1.0,
-                // };
-                // objMesh.v.push_back(vertexCoord);
-            }
-        }
-    }
-    catch (std::ifstream::failure& e)
-    {
-        // std::cout << " ERROR. [" << this->vertices.size() << " values]" << std::endl;
-        std::cout << "ERROR::READING_OBJ_FILE" << e.what() << std::endl;
-    }
-
-
-
-    // std::cout << modelString;
-    // std::cout << "DONE READING MTL FILE " << mtlPath << std::endl;
-
-    // std::cout << "" << std::endl;
-
-    return Kd;
-}
-
 
 
 

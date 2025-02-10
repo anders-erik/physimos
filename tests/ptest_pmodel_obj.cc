@@ -12,7 +12,7 @@ using namespace pmodel::pobj;
 
 
 // Log all passed asserts
-bool PTEST_VERBOSE_LOG = false;
+bool PTEST_VERBOSE_LOG = true;
 bool PTEST_EXIT_ON_FAILED_ASSERT = true;
 
 
@@ -102,7 +102,7 @@ int main(){
     std::filesystem::path triangleModelFileName = "triangle.obj";
     std::string           triangleModelName = "triangle";
 
-    assertTrue(dummyObj.setModelPaths(dummyFilePath) == ObjLoadStatus::PathError, "dummyObj.setModelPaths(dummyFilePath) == ObjLoadStatus::PathError");
+    assertTrue(dummyObj.setModelPaths(dummyFilePath) == ObjLoadStatus::ObjPathError, "dummyObj.setModelPaths(dummyFilePath) == ObjLoadStatus::ObjPathError");
     assertTrue(triangle.setModelPaths(triangleModelFilePath) == ObjLoadStatus::Ok, "triangle.setModelPaths(triangleModelFilePath) == ObjLoadStatus::Ok");
     assertTrue(triangleModelFilePath.compare(triangle.modelFilePath) == 0, "triangleModelFilePath.compare(triangle.modelFilePath) == 0");
     assertTrue(triangleModelFileDir.compare(triangle.modelFileDir) == 0, "triangleModelFileDir.compare(triangle.modelFileDir) == 0");
@@ -172,6 +172,26 @@ int main(){
     assertTrue(triangle.vertTextureCoords.size() == 3, "triangle.vertTextureCoords.size() == 3");
     assertTrue(triangle.vertNormals.size() == 1, "triangle.vertNormals.size() == 1");
     assertTrue(triangle.triangleFacesI.size() == 1, "triangle.triangleFacesI.size() == 1");
+
+    assertTrue(triangle.objMtls.size() == 1, "triangle.objMtls.size() == 1");
+    assertTrue(triangle.objMtls[0]->name == "Material.001", "triangle.objMtls[0]->name == \"Material.001\"");
+    assertTrue(triangle.objMtls[0]->map_Kd == "triangle.bmp", "triangle.objMtls[0]->map_Kd == \"triangle.bmp\"");
+    assertTrue(triangle.objMtls[0]->Ka.R == 1.000000f, "triangle.objMtls[0]->Ka.R == 1.000000f");
+    assertTrue(triangle.objMtls[0]->Ka.G == 1.000000f, "triangle.objMtls[0]->Ka.G == 1.000000f");
+    assertTrue(triangle.objMtls[0]->Ka.B == 1.000000f, "triangle.objMtls[0]->Ka.B == 1.000000f");
+    assertTrue(triangle.objMtls[0]->Kd.R == 0.000000f, "triangle.objMtls[0]->Kd.R == 0.000000f");
+    assertTrue(triangle.objMtls[0]->Kd.G == 0.000000f, "triangle.objMtls[0]->Kd.G == 0.000000f");
+    assertTrue(triangle.objMtls[0]->Kd.B == 0.000000f, "triangle.objMtls[0]->Kd.B == 0.000000f");
+    assertTrue(triangle.objMtls[0]->Ks.R == 0.500000f, "triangle.objMtls[0]->Ks.R == 0.500000f");
+    assertTrue(triangle.objMtls[0]->Ks.G == 0.500000f, "triangle.objMtls[0]->Ks.G == 0.500000f");
+    assertTrue(triangle.objMtls[0]->Ks.B == 0.500000f, "triangle.objMtls[0]->Ks.B == 0.500000f");
+    assertTrue(triangle.objMtls[0]->Ke.R == 0.000000f, "triangle.objMtls[0]->Ke.R == 0.000000f");
+    assertTrue(triangle.objMtls[0]->Ke.G == 0.000000f, "triangle.objMtls[0]->Ke.G == 0.000000f");
+    assertTrue(triangle.objMtls[0]->Ke.B == 0.000000f, "triangle.objMtls[0]->Ke.B == 0.000000f");
+    assertTrue(triangle.objMtls[0]->Ns   == 250.000000f, "triangle.objMtls[0]->Ns == 250.000000f");
+    assertTrue(triangle.objMtls[0]->Ni   == 1.500000f, "triangle.objMtls[0]->Ni == 1.500000f");
+    assertTrue(triangle.objMtls[0]->d    == 1.000000f, "triangle.objMtls[0]->d == 1.000000f");
+    assertTrue(triangle.objMtls[0]->illum == 2, "triangle.objMtls[0]->illum == 2");
 
     std::filesystem::path triangleMtlFilePath = physimosRepoDir + "/resources/models/triangle/triangle.mtl";
     assertTrue(triangleMtlFilePath == triangle.mtlFilePath, "triangleMtlFilePath == triangle.mtlFilePath");

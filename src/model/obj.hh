@@ -2,7 +2,6 @@
 #define OBJ_HH
 
 #include <string>
-#include <sstream>
 #include <vector>
 #include <filesystem>
 
@@ -12,15 +11,15 @@ std::vector<std::string> split_str(std::string str, char delimiter);
 
 
 namespace pmodel {
-
 namespace pobj {
 
-    typedef enum ObjLoadStatus {
-        Ok = 0,
 
-        PathError = 20,
-        FileFormatError = 21,
-        ParsingError = 22,
+    typedef enum ObjLoadStatus {
+        Ok = 1,
+        ObjPathError = 20,
+        MtlPathError = 21,
+        FileFormatError = 23,
+        ParsingError = 24,
     } ObjLoadStatus;
 
 
@@ -37,47 +36,29 @@ namespace pobj {
         // Mtl file
         std::filesystem::path mtlFilePath = "";
         // List of defined materials in the mtl file
-        std::vector<Mtl> objMtls;
-        Mtl currentMtl;
+        std::vector<Mtl*> objMtls;
+        Mtl* currentMtl;
+        // populates
         ObjLoadStatus loadMtlFile();
 
-        // A vector containing all triangular faces of the mesh.
-        // Each face is represented by vertex indexes.
-        std::vector<TriangleFaceI> triangleFacesI;
-        
+        // Vertex Data
         std::vector<VertexCoord> vertCoords;
         std::vector<VertexNormal> vertNormals;
         std::vector<VertexTextureCoord> vertTextureCoords;
-        
-        ObjLoadStatus loadObjFile();
-
         ObjLoadStatus processVertexCoordinateLine(std::string line);
         ObjLoadStatus processVertexTextureLine(std::string line);
         ObjLoadStatus processVertexNormalLine(std::string line);
-
+        
+        // A vector containing all triangular faces of the mesh.
+        // Each face is represented by vertex indexes.
+        std::vector<TriangleFaceI> triangleFacesI;
         ObjLoadStatus processFaceLineDataSegments(std::string line);
 
+        // loads obj & mtl file into memory.
+        // Requires that a valid path to the .obj file has been set using 'setModelPaths()'.
+        ObjLoadStatus loadObjFile();
 
     } Obj;
-
-
-    /*
-        MTL
-    */
-
-
-    float* obj_loadKdFromFile(std::string mtlPath);
-
-    void obj_loadMtlFromFile(std::string mtlPath);
-
-
-
-    /*
-        OBJ
-    */
-
-    std::vector<float> obj_getVertexBuffer_v_vt_vn();
-    void obj_loadFromFile(std::string modelName);
 
 }
 }
