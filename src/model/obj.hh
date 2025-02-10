@@ -1,5 +1,5 @@
-#ifndef OBJ__HH
-#define OBJ__HH
+#ifndef OBJ_HH
+#define OBJ_HH
 
 #include <string>
 #include <sstream>
@@ -13,7 +13,7 @@ std::vector<std::string> split_str(std::string str, char delimiter);
 
 namespace pmodel {
 
-
+namespace pobj {
 
     typedef enum ObjLoadStatus {
         Ok = 0,
@@ -25,21 +25,29 @@ namespace pmodel {
 
 
 
-
     // Loaded obj-model. Only supports triangular faces. 
     typedef struct Obj {
+
         std::string modelName = "";
+        std::filesystem::path modelFileDir = "";
+        std::filesystem::path modelFileName = "";
         std::filesystem::path modelFilePath = "";
+        ObjLoadStatus setModelPaths(std::filesystem::path _modelFilePath);
 
-        std::string objFileContents;
+        // Mtl file
+        std::filesystem::path mtlFilePath = "";
+        // List of defined materials in the mtl file
+        std::vector<Mtl> objMtls;
+        Mtl currentMtl;
+        ObjLoadStatus loadMtlFile();
 
-        std::vector<VertexCoord> vertCoords;
-        std::vector<VertexNormal> vertNormals;
-        std::vector<VertexTextureCoord> vertTextureCoords;
-        
         // A vector containing all triangular faces of the mesh.
         // Each face is represented by vertex indexes.
         std::vector<TriangleFaceI> triangleFacesI;
+        
+        std::vector<VertexCoord> vertCoords;
+        std::vector<VertexNormal> vertNormals;
+        std::vector<VertexTextureCoord> vertTextureCoords;
         
         ObjLoadStatus loadObjFile();
 
@@ -49,10 +57,6 @@ namespace pmodel {
 
         ObjLoadStatus processFaceLineDataSegments(std::string line);
 
-        // ObjLoadStatus openFilestream();
-        // ObjLoadStatus closeFilestream();
-
-        // ObjLoadStatus closeFilestream();
 
     } Obj;
 
@@ -75,6 +79,7 @@ namespace pmodel {
     std::vector<float> obj_getVertexBuffer_v_vt_vn();
     void obj_loadFromFile(std::string modelName);
 
+}
 }
 
 

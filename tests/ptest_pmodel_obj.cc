@@ -8,7 +8,12 @@
 #include "obj_types.hh"
 
 using namespace pmodel;
+using namespace pmodel::pobj;
 
+
+// Log all passed asserts
+bool PTEST_VERBOSE_LOG = false;
+bool PTEST_EXIT_ON_FAILED_ASSERT = true;
 
 
 void passed(std::string msg){
@@ -26,9 +31,31 @@ void failed(std::string msg) {
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
 }
 
+// Primary ptest assert
+void assertTrue(bool expression, std::string message){
+
+    // on ok asserts we always return
+    if (expression) {
+        if (PTEST_VERBOSE_LOG)
+            passed(message);
+        return;
+    }
+
+    // Always log failed asserts
+    failed(message);
+
+    if (PTEST_EXIT_ON_FAILED_ASSERT){
+        std::cout << "Failed Assert with 'PTEST_EXIT_ON_FAILED_ASSERT = true'." << std::endl;
+        std::cout << "Exiting." << std::endl;
+        exit(0);
+    }
+    
+    return;
+}
+
 
 // has to be run from within the physimos project!
-std::string getGitRepoDir(){
+std::string getGitRepoRootDir(){
     char getRepoRootDirCommand[] = "git rev-parse --show-toplevel";
 
     // int returnCode = system(getRepoRootDirCommand);
@@ -56,93 +83,99 @@ int main(){
     std::cout << "-------------------------" << std::endl << std::endl;
 
 
+    // Two different ways of getting the physimos root directory
     char* PHYSIMOS_ROOT_DIR = std::getenv("PHYSIMOS_ROOT_DIR");
-    
-    std::string physimosRepoDir = getGitRepoDir();
+    std::string physimosRepoDir = getGitRepoRootDir();
 
+
+    // Test Objects
     Obj dummyObj = Obj();
-    dummyObj.modelName = "dummyObj";
-    dummyObj.modelFilePath = std::string("/dev/null/nonexistent");
-
-    Obj triangle = Obj();
-    triangle.modelName = "triangle";
-    triangle.modelFilePath = physimosRepoDir + std::string("/resources/models/triangle/triangle.obj");
+    pmodel::pobj::Obj triangle = Obj();
     
 
+    // triangle.
     // FILESYSTEM
-    std::cout << "Filesystem" << std::endl;
-    dummyObj.loadObjFile() == ObjLoadStatus::PathError ? passed("dummyObj.loadObjFile() == ObjLoadStatus::PathError") : failed("dummyObj.loadObjFile() == ObjLoadStatus::PathError");
-    std::cout << std::endl;
-    
+    std::cout << "Starting: filesystem" << std::endl;
+    std::filesystem::path dummyFilePath("/dev/null/nonexistent");
+    std::filesystem::path triangleModelFilePath = physimosRepoDir + "/resources/models/triangle/triangle.obj";
+    std::filesystem::path triangleModelFileDir = physimosRepoDir + "/resources/models/triangle";
+    std::filesystem::path triangleModelFileName = "triangle.obj";
+    std::string           triangleModelName = "triangle";
+
+    assertTrue(dummyObj.setModelPaths(dummyFilePath) == ObjLoadStatus::PathError, "dummyObj.setModelPaths(dummyFilePath) == ObjLoadStatus::PathError");
+    assertTrue(triangle.setModelPaths(triangleModelFilePath) == ObjLoadStatus::Ok, "triangle.setModelPaths(triangleModelFilePath) == ObjLoadStatus::Ok");
+    assertTrue(triangleModelFilePath.compare(triangle.modelFilePath) == 0, "triangleModelFilePath.compare(triangle.modelFilePath) == 0");
+    assertTrue(triangleModelFileDir.compare(triangle.modelFileDir) == 0, "triangleModelFileDir.compare(triangle.modelFileDir) == 0");
+    assertTrue(triangleModelFileName.compare(triangle.modelFileName) == 0, "triangleModelFileName.compare(triangle.modelFileName) == 0");
+    std::cout << "Done    : filesystem" << std::endl << std::endl;
 
 
-    // PROCESS OBJ LINE DATA
-    std::cout << "Vertex Lines" << std::endl;
 
-    std::cout << "v" << std::endl;
-    std::cout << "triangle.processVertexCoordinateLine(\"v - 1.000000 - 0.666667 0.000000\");" << std::endl;
+    // VERTEX VERTEX
+    std::cout << "Starting: Vertex Coordinate Line (v)" << std::endl;
     triangle.processVertexCoordinateLine("v -1.000000 -0.666667 0.000000");
-    // Make sure to explicitly define float, and not the implicit double precision!
-    triangle.vertCoords[0].x == -1.000000f ? passed("triangle.vertCoords[0].x == -1.000000") : failed("triangle.vertCoords[0].x == -1.000000");
-    triangle.vertCoords[0].y == -0.666667f ? passed("triangle.vertCoords[0].y == -0.666667") : failed("triangle.vertCoords[0].y == -0.666667");
-    triangle.vertCoords[0].z ==  0.000000f ? passed("triangle.vertCoords[0].z == 0.000000") : failed("triangle.vertCoords[0].z == 0.000000");
-    triangle.vertCoords.size() == 1 ? passed("vertCoords size check") : failed("vertCoords size check");
+    assertTrue(triangle.vertCoords[0].x == -1.000000f, "triangle.vertCoords[0].x == -1.000000f");
+    assertTrue(triangle.vertCoords[0].y == -0.666667f, "triangle.vertCoords[0].y == -0.666667f");
+    assertTrue(triangle.vertCoords[0].z == 0.000000f, "triangle.vertCoords[0].z ==  0.000000f");
+    assertTrue(triangle.vertCoords.size() == 1, "triangle.vertCoords.size() == 1");
     triangle.vertCoords.pop_back();
-    std::cout << std::endl;
+    std::cout << "Done    : Vertex Coordinate Line (v)" << std::endl << std::endl;
 
-    std::cout << "vt" << std::endl;
-    std::cout << "triangle.processVertexTextureLine(\"vt 0.511719 0.992188\");" << std::endl;
+
+
+    // VERTEX TEXTURE
+    std::cout << "Starting: Vertex Texture Line (vt)" << std::endl;
     triangle.processVertexTextureLine("vt 0.511719 0.992188");
-    // Make sure to explicitly define float, and not the implicit double precision!
-    triangle.vertTextureCoords[0].u == 0.511719f ? passed("triangle.vertTextureCoords[0].u == 0.511719f") : failed("triangle.vertTextureCoords[0].u == 0.511719f");
-    triangle.vertTextureCoords[0].v == 0.992188f ? passed("triangle.vertTextureCoords[0].v == 0.992188f") : failed("triangle.vertTextureCoords[0].v == 0.992188f");
-    // std::cout << "emptyTextureCoord = " << emptyTextureCoord << std::endl;
-    triangle.vertTextureCoords[0].w == emptyTextureCoord ? passed("triangle.vertTextureCoords[0].w == 0.0f") : failed("triangle.vertTextureCoords[0].w == 0.0f ");
-    triangle.vertTextureCoords.size() == 1 ? passed("vertTextureCoords size check") : failed("vertTextureCoords size check");
+    assertTrue(triangle.vertTextureCoords[0].u == 0.511719f, "triangle.vertTextureCoords[0].u == 0.511719f");
+    assertTrue(triangle.vertTextureCoords[0].v == 0.992188f, "triangle.vertTextureCoords[0].v == 0.992188f");
+    assertTrue(triangle.vertTextureCoords[0].w == emptyTextureCoord, "triangle.vertTextureCoords[0].w == emptyTextureCoord");
+    assertTrue(triangle.vertTextureCoords.size() == 1, "triangle.vertTextureCoords.size() == 1");
     triangle.vertTextureCoords.pop_back();
-    std::cout << std::endl;
+    std::cout << "Done    : Vertex Texture Line (vt)" << std::endl << std::endl;
 
-    std::cout << "vn" << std::endl;
-    std::cout << "triangle.processVertexNormalLine(\"vn - 0.0000 - 0.0000 1.0000\");" << std::endl;
+
+
+    // NORMAL NORMAL
+    std::cout << "Starting: Vertex Normal Line (vn)" << std::endl;
     triangle.processVertexNormalLine("vn -0.0000 -0.0000 1.0000");
-    // Make sure to explicitly define float, and not the implicit double precision!
-    triangle.vertNormals[0].x == -0.0000f ? passed("triangle.vertNormals[0].x == -0.0000f") : failed("triangle.vertNormals[0].x == -0.0000f");
-    triangle.vertNormals[0].y == -0.0000f ? passed("triangle.vertNormals[0].y == -0.0000f") : failed("triangle.vertNormals[0].y == -0.0000f");
-    triangle.vertNormals[0].z == 1.0000f ? passed("triangle.vertNormals[0].z == 1.0000f") : failed("triangle.vertNormals[0].z == 1.0000f");
-    triangle.vertNormals.size() == 1 ? passed("vertNormals size check") : failed("vertNormals size check");
+    assertTrue(triangle.vertNormals[0].x == -0.0000f, "triangle.vertNormals[0].x == -0.0000f");
+    assertTrue(triangle.vertNormals[0].y == -0.0000f, "triangle.vertNormals[0].y == -0.0000f");
+    assertTrue(triangle.vertNormals[0].z ==  1.0000f, "triangle.vertNormals[0].z ==  1.0000f");
+    assertTrue(triangle.vertNormals.size() == 1, "triangle.vertNormals.size() == 1");
     triangle.vertNormals.pop_back();
-    std::cout << std::endl;
+    std::cout << "Done    : Vertex Normal Line (vn)" << std::endl << std::endl;
 
 
-    std::cout << "f" << std::endl;
-    std::cout << "triangle.processFaceLineDataSegments(\"f 1/1/1 2/2/1 3/3/1\");" << std::endl;
+
+    // TRIANGLE FACE
+    std::cout << "Starting: Face Line (f)" << std::endl;
     // vertex_index/texture_index/normal_index
     triangle.processFaceLineDataSegments("f 1/1/1 2/2/1 3/3/1");
-    triangle.triangleFacesI[0].v1.vc_i == 1 ? passed("triangle.triangleFaceI[0].v1.vc_i == 1") : failed("triangle.triangleFaceI[0].v1.vc_i == 1");
-    triangle.triangleFacesI[0].v1.vt_i == 1 ? passed("triangle.triangleFaceI[0].v1.vt_i == 1") : failed("triangle.triangleFaceI[0].v1.vt_i == 1");
-    triangle.triangleFacesI[0].v1.vn_i == 1 ? passed("triangle.triangleFaceI[0].v1.vn_i == 1") : failed("triangle.triangleFaceI[0].v1.vn_i == 1");
-    triangle.triangleFacesI[0].v2.vc_i == 2 ? passed("triangle.triangleFaceI[0].v2.vc_i == 2") : failed("triangle.triangleFaceI[0].v2.vc_i == 2");
-    triangle.triangleFacesI[0].v2.vt_i == 2 ? passed("triangle.triangleFaceI[0].v2.vt_i == 2") : failed("triangle.triangleFaceI[0].v2.vt_i == 1");
-    triangle.triangleFacesI[0].v2.vn_i == 1 ? passed("triangle.triangleFaceI[0].v2.vn_i == 1") : failed("triangle.triangleFaceI[0].v2.vn_i == 2");
-    triangle.triangleFacesI[0].v3.vc_i == 3 ? passed("triangle.triangleFaceI[0].v3.vc_i == 3") : failed("triangle.triangleFaceI[0].v3.vc_i == 3");
-    triangle.triangleFacesI[0].v3.vt_i == 3 ? passed("triangle.triangleFaceI[0].v3.vt_i == 3") : failed("triangle.triangleFaceI[0].v3.vt_i == 1");
-    triangle.triangleFacesI[0].v3.vn_i == 1 ? passed("triangle.triangleFaceI[0].v3.vn_i == 1") : failed("triangle.triangleFaceI[0].v3.vn_i == 3");
+    assertTrue(triangle.triangleFacesI[0].v1.vc_i, "triangle.triangleFacesI[0].v1.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v1.vc_i, "triangle.triangleFacesI[0].v1.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v1.vc_i, "triangle.triangleFacesI[0].v1.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v2.vc_i, "triangle.triangleFacesI[0].v2.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v2.vc_i, "triangle.triangleFacesI[0].v2.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v2.vc_i, "triangle.triangleFacesI[0].v2.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v3.vc_i, "triangle.triangleFacesI[0].v3.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v3.vc_i, "triangle.triangleFacesI[0].v3.vc_i");
+    assertTrue(triangle.triangleFacesI[0].v3.vc_i, "triangle.triangleFacesI[0].v3.vc_i");
     triangle.triangleFacesI.pop_back();
-    std::cout << std::endl;
-    
-    std::cout << std::endl;
-
+    std::cout << "Done    : Face Line (f)" << std::endl << std::endl;
 
 
 
     // LOAD WHOLE OBJ FILE
-    std::cout << "Full Obj File" << std::endl;
-    triangle.loadObjFile() == ObjLoadStatus::Ok ? passed("triangle.loadObjFile() == ObjLoadStatus::Ok") : failed("triangle.loadObjFile() == ObjLoadStatus::Ok");
-    triangle.vertCoords.size() == 3 ? passed("triangle.vertCoords.size() == 3") : failed("triangle.vertCoords.size() == 3");
-    triangle.vertTextureCoords.size() == 3 ? passed("triangle.vertTextureCoords.size() == 3") : failed("triangle.vertTextureCoords.size() == 3");
-    triangle.vertNormals.size() == 1 ? passed("triangle.vertNormals.size() == 1") : failed("triangle.vertNormals.size() == 1");
-    triangle.triangleFacesI.size() == 1 ? passed("triangle.triangleFacesI.size() == 1") : failed("triangle.triangleFacesI.size() == 1");
-    std::cout << std::endl;
+    std::cout << "Starting: Full Obj File" << std::endl;
+    assertTrue(triangle.loadObjFile() == ObjLoadStatus::Ok, "triangle.loadObjFile() == ObjLoadStatus::Ok");
+    assertTrue(triangle.vertCoords.size() == 3, "triangle.vertCoords.size() == 3");
+    assertTrue(triangle.vertTextureCoords.size() == 3, "triangle.vertTextureCoords.size() == 3");
+    assertTrue(triangle.vertNormals.size() == 1, "triangle.vertNormals.size() == 1");
+    assertTrue(triangle.triangleFacesI.size() == 1, "triangle.triangleFacesI.size() == 1");
+
+    std::filesystem::path triangleMtlFilePath = physimosRepoDir + "/resources/models/triangle/triangle.mtl";
+    assertTrue(triangleMtlFilePath == triangle.mtlFilePath, "triangleMtlFilePath == triangle.mtlFilePath");
+    std::cout << "Done    : Full Obj File" << std::endl << std::endl;
 
 
     std::cout << std::endl << "-------------------------" << std::endl;

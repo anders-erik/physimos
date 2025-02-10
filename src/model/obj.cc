@@ -19,22 +19,16 @@ std::vector<std::string> split_str(std::string str, char delimiter) {
 
     std::vector<std::string> returnVector;
 
-    int loop_index = 0;
-
-    // Vertex #1
-    // VertexI vertex1_indices = {0, 0, 0};
     while (std::getline(str_stream, section, delimiter))
-    {
         returnVector.push_back(section);
-    }
-    loop_index = 0;
-
 
     return returnVector;
 }
 
 
 namespace pmodel {
+
+namespace pobj {
 
 float emptyTextureCoord = -2222.2;
 
@@ -51,15 +45,36 @@ std::vector<unsigned char> obj_textureDataBuffer;
 unsigned int obj_imgWidth = 0;
 unsigned int obj_imgHeight = 0;
 
-// OBJ
-ObjMesh objMesh;
 
-std::vector<float> vertexBuffer;
-std::vector<int> vertexIndices;
+ObjLoadStatus Obj::setModelPaths(std::filesystem::path _modelFilePath) {
+    // std::filesystem::path filePath (_modelFilePath);
 
+    if (!std::filesystem::exists(_modelFilePath)) {
+        return ObjLoadStatus::PathError;
+    }
+
+    modelFilePath = _modelFilePath;
+    modelFileDir = modelFilePath.parent_path();
+    modelFileName = modelFilePath.filename();
+    modelName = std::string( modelFileName.stem() );
+    // std::cout << "modelFilePath = " << modelFilePath << std::endl;
+    // std::cout << "modelFileName = " << modelFileName << std::endl;
+    // std::cout << "modelName = " << modelName << std::endl;
+
+    return ObjLoadStatus::Ok;
+}
+
+ObjLoadStatus Obj::loadMtlFile(){
+
+    // TODO: LOAD FILE
+
+    return ObjLoadStatus::Ok;
+}
 
 ObjLoadStatus Obj::loadObjFile() {
     if (!std::filesystem::exists(modelFilePath)){
+        std::cout << "modelFilePath = " << modelFilePath << std::endl;
+        
         return ObjLoadStatus::PathError;
     }
 
@@ -98,8 +113,23 @@ ObjLoadStatus Obj::loadObjFile() {
             // std::cout << "f" << std::endl;
             processFaceLineDataSegments(line);
         }
+        else if (line_segments[0] == "usemtl") { // Should be run BEFORE any group of faces
+            std::string mtlName = line_segments[1];
+            // Find and set the current material
+            for(Mtl mtl : objMtls){
+                if (mtl.name == mtlName){
+                    currentMtl = mtl;
+                    break;
+                }
+            }
+        }
+        else if (line_segments[0] == "mtllib") { // Should be run BEFORE any other lines!
+            // std::cout << "f" << std::endl;
+            mtlFilePath = modelFileDir.append(line_segments[1]);
+            loadMtlFile();
+        }
     }
-
+    
 
 
     return ObjLoadStatus::Ok;
@@ -406,297 +436,8 @@ float* obj_loadKdFromFile(std::string mtlPath) {
 }
 
 
-std::vector<float> obj_getVertexBuffer_v_vt_vn() {
-    return vertexBuffer;
-}
 
 
-void obj_loadFromFile(std::string modelName) {
 
-    // grab the path to file with obj-extension
-    std::string objPath = modelsDirectory + modelName + "/" + modelName + ".obj";
-
-    // std::cout << "Loading obj model: " << modelName << ". " << std::endl;
-    // this->modelPath = objPath;
-
-    vertexBuffer.clear();
-    // objMesh.clear();
-    objMesh.v.clear();
-    objMesh.vn.clear();
-    objMesh.vt.clear();
-    objMesh.fi.clear();
-    objMesh.f.clear();
-    // std::vector<VertexCoord> v;
-    // std::vector<VertexTextureCoord> vt;
-    // std::vector<VertexNormal> vn;
-    // std::vector<ObjFaceIndex> fi;
-    // std::vector<ObjFace> f;
-
-
-    std::ifstream modelFile;
-    std::stringstream modelStream;
-    std::string modelString;
-
-    modelFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try
-    {
-        // std::cout << "000000000000" << std::endl;
-        modelFile.open(objPath);
-
-
-
-        modelStream << modelFile.rdbuf();
-
-        modelString = modelStream.str();
-
-        modelFile.close();
-
-        std::string line;
-        std::string item;
-        // float number;
-
-        int vertexCounter = 0;
-        // Stepping through each comma-separated value
-        while (std::getline(modelStream, line)) {
-            // Remove any leading or trailing whitespace from the item
-            std::stringstream itemStream(line);
-            // itemStream >> number;
-
-
-            // Split line
-            std::vector<std::string> lineSegments;
-            std::string segment;
-
-
-            while (std::getline(itemStream, segment, ' '))
-            {
-                lineSegments.push_back(segment);
-
-            }
-
-            if (lineSegments[0] == "v") {
-                // std::cout << "" << lineSegments[0] << std::endl;
-                VertexCoord vertexCoord = {
-                    (float)std::atof(lineSegments[1].data()),
-                    (float)std::atof(lineSegments[2].data()),
-                    (float)std::atof(lineSegments[3].data()),
-                    1.0,
-                };
-                objMesh.v.push_back(vertexCoord);
-            }
-            if (lineSegments[0] == "vn") {
-                // std::cout << "" << lineSegments[0] << std::endl;
-                VertexNormal vertexNorm = {
-                    (float)std::atof(lineSegments[1].data()),
-                    (float)std::atof(lineSegments[2].data()),
-                    (float)std::atof(lineSegments[3].data()),
-                };
-                objMesh.vn.push_back(vertexNorm);
-            }
-            if (lineSegments[0] == "vt") {
-                // std::cout << "" << lineSegments[0] << std::endl;
-                VertexTextureCoord vertexTextCoord = {
-                    (float)std::atof(lineSegments[1].data()),
-                    (float)std::atof(lineSegments[2].data()),
-                    0.0,
-                };
-                objMesh.vt.push_back(vertexTextCoord);
-            }
-
-
-
-            // FACE INDECES
-            if (lineSegments[0] == "f") {
-                // std::cout << "" << lineSegments[0] << std::endl;
-                ObjFaceIndex objFaceIndex;
-
-                // Split FACE indices
-
-
-
-                // FACE INDEX 1
-                std::stringstream faceSegmentStream1(lineSegments[1]);
-
-                std::vector<std::string> faceIndexStrings;
-                std::string faceIndexString;
-
-                while (std::getline(faceSegmentStream1, faceIndexString, '/'))
-                {
-                    faceIndexStrings.push_back(faceIndexString);
-
-                }
-
-                ObjFaceVertexIndex objFaceVertexIndex1 = {
-                    std::atoi(faceIndexStrings[0].data()),
-                    std::atoi(faceIndexStrings[1].data()),
-                    std::atoi(faceIndexStrings[2].data()),
-                };
-                objFaceIndex.vert1 = objFaceVertexIndex1;
-
-
-
-                // FACE INDEX 2
-                std::stringstream faceSegmentStream2(lineSegments[2]);
-
-                faceIndexStrings.clear();
-
-                while (std::getline(faceSegmentStream2, faceIndexString, '/'))
-                {
-                    faceIndexStrings.push_back(faceIndexString);
-
-                }
-
-                ObjFaceVertexIndex objFaceVertexIndex2 = {
-                    std::atoi(faceIndexStrings[0].data()),
-                    std::atoi(faceIndexStrings[1].data()),
-                    std::atoi(faceIndexStrings[2].data()),
-                };
-                objFaceIndex.vert2 = objFaceVertexIndex2;
-
-
-
-                // FACE INDEX 3
-                std::stringstream faceSegmentStream3(lineSegments[3]);
-
-                faceIndexStrings.clear();
-
-                while (std::getline(faceSegmentStream3, faceIndexString, '/'))
-                {
-                    faceIndexStrings.push_back(faceIndexString);
-
-                }
-
-                ObjFaceVertexIndex objFaceVertexIndex3 = {
-                    std::atoi(faceIndexStrings[0].data()),
-                    std::atoi(faceIndexStrings[1].data()),
-                    std::atoi(faceIndexStrings[2].data()),
-                };
-                objFaceIndex.vert3 = objFaceVertexIndex3;
-
-                objMesh.fi.push_back(objFaceIndex);
-
-
-                vertexCounter += 3;
-            }
-
-            // std::cout << "segment = ";
-            // for(std::string lineSegment : lineSegments){
-            //     std::cout << lineSegment << " ";
-            //     if(lineSegment)
-            // }
-            // std::cout << std::endl;
-
-
-
-            // vertexCounter++;
-
-
-            // Add the parsed float to the vector
-            // this->vertices.push_back(number);
-
-        }
-
-        // this->vertexCount = vertexCounter;
-
-        // std::cout << "OK.  [" << objMesh.v.size() << " VERTEX COORD ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-        // std::cout << "OK.  [" << objMesh.vt.size() << " TEXTURE COORD ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-        // std::cout << "OK.  [" << objMesh.vn.size() << " VERTEX NORMAL ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-        // std::cout << "OK.  [" << objMesh.fi.size() << " FACE ROWS]" << " (" << __FILE__ << "::" << __LINE__ << ")" << std::endl;
-
-        // ADD ACTUAL FACE VERTEX DATA
-        ObjFace objFace;
-        for (ObjFaceIndex objFaceIndex : objMesh.fi) {
-            // std::cout << "fi ";
-            // std::cout << objFaceIndex.vert1.v << "/" << objFaceIndex.vert1.vt << "/" << objFaceIndex.vert1.vn << " ";
-            // std::cout << objFaceIndex.vert2.v << "/" << objFaceIndex.vert2.vt << "/" << objFaceIndex.vert2.vn << " ";
-            // std::cout << objFaceIndex.vert3.v << "/" << objFaceIndex.vert3.vt << "/" << objFaceIndex.vert3.vn << std::endl;
-
-            objFace.vert1.v = objMesh.v[objFaceIndex.vert1.v - 1];
-            objFace.vert1.vt = objMesh.vt[objFaceIndex.vert1.vt - 1];
-            objFace.vert1.vn = objMesh.vn[objFaceIndex.vert1.vn - 1];
-
-            objFace.vert2.v = objMesh.v[objFaceIndex.vert2.v - 1];
-            objFace.vert2.vt = objMesh.vt[objFaceIndex.vert2.vt - 1];
-            objFace.vert2.vn = objMesh.vn[objFaceIndex.vert2.vn - 1];
-
-            objFace.vert3.v = objMesh.v[objFaceIndex.vert3.v - 1];
-            objFace.vert3.vt = objMesh.vt[objFaceIndex.vert3.vt - 1];
-            objFace.vert3.vn = objMesh.vn[objFaceIndex.vert3.vn - 1];
-
-            objMesh.f.push_back(objFace);
-
-
-
-
-            // ADD ALL FACES TO THE VERTEX BUFFER
-            // for (ObjFace objFace : objMesh.f) {
-
-                // VERT 1
-            vertexBuffer.push_back(objFace.vert1.v.x);
-            vertexBuffer.push_back(objFace.vert1.v.y);
-            vertexBuffer.push_back(objFace.vert1.v.z);
-
-            vertexBuffer.push_back(objFace.vert1.vn.x);
-            vertexBuffer.push_back(objFace.vert1.vn.y);
-            vertexBuffer.push_back(objFace.vert1.vn.z);
-
-            vertexBuffer.push_back(objFace.vert1.vt.u);
-            vertexBuffer.push_back(objFace.vert1.vt.v);
-
-            // VERT 2
-            vertexBuffer.push_back(objFace.vert2.v.x);
-            vertexBuffer.push_back(objFace.vert2.v.y);
-            vertexBuffer.push_back(objFace.vert2.v.z);
-
-            vertexBuffer.push_back(objFace.vert2.vn.x);
-            vertexBuffer.push_back(objFace.vert2.vn.y);
-            vertexBuffer.push_back(objFace.vert2.vn.z);
-
-            vertexBuffer.push_back(objFace.vert2.vt.u);
-            vertexBuffer.push_back(objFace.vert2.vt.v);
-
-
-            // VERT 3
-            vertexBuffer.push_back(objFace.vert3.v.x);
-            vertexBuffer.push_back(objFace.vert3.v.y);
-            vertexBuffer.push_back(objFace.vert3.v.z);
-
-            vertexBuffer.push_back(objFace.vert3.vn.x);
-            vertexBuffer.push_back(objFace.vert3.vn.y);
-            vertexBuffer.push_back(objFace.vert3.vn.z);
-
-            vertexBuffer.push_back(objFace.vert3.vt.u);
-            vertexBuffer.push_back(objFace.vert3.vt.v);
-
-
-            // }
-
-            // std::cout << "f ";
-
-
-            // std::cout << objFace.vert1.v << "/" << objFace.vert1.vt << "/" << objFace.vert1.vn << " ";
-            // std::cout << objFace.vert2.v << "/" << objFace.vert2.vt << "/" << objFace.vert2.vn << " ";
-            // std::cout << objFace.vert3.v << "/" << objFace.vert3.vt << "/" << objFace.vert3.vn << std::endl;
-        }
-    }
-    catch (std::ifstream::failure& e)
-    {
-        // std::cout << " ERROR. [" << this->vertices.size() << " values]" << std::endl;
-        std::cout << "ERROR::READING_OBJ_FILE" << e.what() << std::endl;
-    }
-
-
-
-    // std::cout << modelString;
-    // std::cout << "DONE READING OBJ FILE " << objPath  << std::endl;
-
-    // std::cout << "vertexBuffer.size() = " << vertexBuffer.size() << std::endl;
-
-
-    // std::cout << ""<< std::endl;
-
-
-}
-
-
-}
+} // end obj namespace
+} // end pmodel namespace
