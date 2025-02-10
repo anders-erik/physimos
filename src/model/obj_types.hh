@@ -7,6 +7,8 @@
 
 namespace pmodel {
 
+    extern float emptyTextureCoord;
+
 
     // One Vertex Coordinate
     typedef struct VertexCoord {
@@ -17,37 +19,42 @@ namespace pmodel {
     } VertexCoord;
 
     // One Vertex texture coordinate
-    typedef struct VertexTextCoord {
+    typedef struct VertexTextureCoord {
         float u;
         float v; // opt ?
         float w; // opt ?
-    } VertexTextCoord;
+    } VertexTextureCoord;
 
     // One Vertex normal
-    typedef struct VertexNorm {
+    typedef struct VertexNormal {
         float x;
         float y;
         float z;
-    } VertexNorm;
+    } VertexNormal;
 
-    // One Vertex storing the index of each coordinate type
-    typedef struct VertexIndeces {
+    // One Vertex storing the obj index of each coordinate type
+    typedef struct VertexI {
         unsigned int vc_i;
         unsigned int vt_i;
         unsigned int vn_i;
-    } VertexIndeces;
+    } VertexI;
 
-    // One Vertex storing the pointers of each coordinate type
-    typedef struct VertexPointers {
-        VertexCoord* vc_i;
-        VertexTextCoord* vt_i;
-        VertexNorm* vn_i;
-    } VertexPointers;
     
+    // A face represented by three vertices, each vertes is represented by their respective obj-file index.
+    typedef struct TriangleFaceI {
+        VertexI v1;
+        VertexI v2;
+        VertexI v3;
+    } TriangleFaceI;
 
-    typedef struct TriangleFace {
-        
-    } TriangleFace;
+    
+    // One Vertex storing the pointers of each coordinate type
+    // Physimos mesh type
+    typedef struct VertexPointers {
+        VertexCoord*        vc_i;
+        VertexTextureCoord* vt_i;
+        VertexNormal*       vn_i;
+    } VertexPointers;
 
 
 
@@ -69,8 +76,8 @@ namespace pmodel {
     // Actual vertex values of face vertex
     typedef struct ObjFaceVertex {
         VertexCoord v;
-        VertexTextCoord vt;
-        VertexNorm vn;
+        VertexTextureCoord vt;
+        VertexNormal vn;
     } ObjFaceVertex;
     // Actual vertex values of whole face
     typedef struct ObjFace {
@@ -83,8 +90,8 @@ namespace pmodel {
 
     typedef struct ObjMesh {
         std::vector<VertexCoord> v;
-        std::vector<VertexTextCoord> vt;
-        std::vector<VertexNorm> vn;
+        std::vector<VertexTextureCoord> vt;
+        std::vector<VertexNormal> vn;
         std::vector<ObjFaceIndex> fi;
         std::vector<ObjFace> f;
     } ObjMesh;

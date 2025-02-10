@@ -232,7 +232,7 @@ float * obj_loadKdFromFile(std::string mtlPath){
 }
 
 
-std::vector<float> obj_getVertexBuffer_v_vt_vn(){
+std::vector<float> obj_getVertexBuffer_v_vt_vn() {
     return vertexBuffer;
 }
 

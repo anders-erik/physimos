@@ -10,8 +10,34 @@
 
 #include "res/bmp_loader.hpp"
 
+// returns a vector of the resulting string sections.
+// e.g. "hello there" -> {"hello", "there"} with delimiter " ".
+std::vector<std::string> split_str(std::string str, char delimiter) {
+
+    std::stringstream str_stream(str);
+    std::string section;
+
+    std::vector<std::string> returnVector;
+
+    int loop_index = 0;
+
+    // Vertex #1
+    // VertexI vertex1_indices = {0, 0, 0};
+    while (std::getline(str_stream, section, delimiter))
+    {
+        returnVector.push_back(section);
+    }
+    loop_index = 0;
+
+
+    return returnVector;
+}
+
 
 namespace pmodel {
+
+float emptyTextureCoord = -2222.2;
+
 
 // UTIL
 std::string modelsDirectory = "resources/models/";
@@ -25,14 +51,160 @@ std::vector<unsigned char> obj_textureDataBuffer;
 unsigned int obj_imgWidth = 0;
 unsigned int obj_imgHeight = 0;
 
-
-
-
 // OBJ
 ObjMesh objMesh;
 
 std::vector<float> vertexBuffer;
 std::vector<int> vertexIndices;
+
+
+ObjLoadStatus Obj::loadObjFile() {
+    if (!std::filesystem::exists(modelFilePath)){
+        return ObjLoadStatus::PathError;
+    }
+
+    // Read Whole Obj File
+    std::ifstream modelFile;
+    std::stringstream modelStream;
+    // std::string modelString;
+
+    modelFile.open(modelFilePath);
+    modelStream << modelFile.rdbuf();
+    modelFile.close();
+
+    // objFileContents = modelStream.str();
+
+
+    // Parse file
+    std::vector<std::string> objFileLines = split_str(modelStream.str(), '\n');
+
+    for(std::string line : objFileLines){
+        // std::cout << "" << line << std::endl;
+        std::vector<std::string> line_segments = split_str(line, ' ');
+
+        if (line_segments[0] == "v"){
+            // std::cout << "v" << std::endl;
+            processVertexCoordinateLine(line);
+        }   
+        else if (line_segments[0] == "vt") {
+            // std::cout << "vt" << std::endl;
+            processVertexTextureLine(line);
+        }
+        else if (line_segments[0] == "vn") {
+            // std::cout << "vn" << std::endl;
+            processVertexNormalLine(line);
+        }
+        else if (line_segments[0] == "f") {
+            // std::cout << "f" << std::endl;
+            processFaceLineDataSegments(line);
+        }
+    }
+
+
+
+    return ObjLoadStatus::Ok;
+}
+
+
+ObjLoadStatus Obj::processVertexCoordinateLine(std::string line) {
+    // std::cout << "" << (float)std::atof(lineDataSegments[1].data()) << std::endl;
+
+    std::vector<std::string> line_segments = split_str(line, ' ');
+
+    float x = (float)std::atof(line_segments[1].data());
+    float y = (float)std::atof(line_segments[2].data());
+    float z = (float)std::atof(line_segments[3].data());
+
+    VertexCoord vertexCoord = { x, y, z, 1.0,};
+
+    // The w value is optional
+    if (line_segments.size() > 4)
+        vertexCoord.w = (float)std::atof(line_segments[4].data());
+
+    vertCoords.push_back(vertexCoord);
+
+    return ObjLoadStatus::Ok;
+}
+
+
+ObjLoadStatus Obj::processVertexTextureLine(std::string line) {
+    std::vector<std::string> line_segments = split_str(line, ' ');
+
+    float u = (float)std::atof(line_segments[1].data());
+    float v = (float)std::atof(line_segments[2].data());
+
+    VertexTextureCoord vertexTexture = {u, v, emptyTextureCoord};
+
+    if (line_segments.size() > 3)
+        vertexTexture.w = (float)std::atof(line_segments[3].data());
+
+    vertTextureCoords.push_back(vertexTexture);
+    return ObjLoadStatus::Ok;
+}
+
+ObjLoadStatus Obj::processVertexNormalLine(std::string line) {
+    std::vector<std::string> line_segments = split_str(line, ' ');
+
+    float x = (float)std::atof(line_segments[1].data());
+    float y = (float)std::atof(line_segments[2].data());
+    float z = (float)std::atof(line_segments[3].data());
+
+    VertexNormal vertexNormal = {x, y, z};
+
+    vertNormals.push_back(vertexNormal);
+
+    return ObjLoadStatus::Ok;
+}
+
+ObjLoadStatus Obj::processFaceLineDataSegments(std::string line) {
+    std::vector<std::string> line_segments = split_str(line, ' ');
+    
+    std::vector <std::string> vert1_index_strings = split_str(line_segments[1], '/');
+    std::vector <std::string> vert2_index_strings = split_str(line_segments[2], '/');
+    std::vector <std::string> vert3_index_strings = split_str(line_segments[3], '/');
+
+    TriangleFaceI triangleFaceI;
+    
+    // vertex_index/texture_index/normal_index
+    VertexI vertexi_1;
+    vertexi_1.vc_i = std::atoi(vert1_index_strings[0].data());
+    vertexi_1.vt_i = std::atoi(vert1_index_strings[1].data());
+    vertexi_1.vn_i = std::atoi(vert1_index_strings[2].data());
+
+    VertexI vertexi_2;
+    vertexi_2.vc_i = std::atoi(vert2_index_strings[0].data());
+    vertexi_2.vt_i = std::atoi(vert2_index_strings[1].data());
+    vertexi_2.vn_i = std::atoi(vert2_index_strings[2].data());
+
+    VertexI vertexi_3;
+    vertexi_3.vc_i = std::atoi(vert3_index_strings[0].data());
+    vertexi_3.vt_i = std::atoi(vert3_index_strings[1].data());
+    vertexi_3.vn_i = std::atoi(vert3_index_strings[2].data());
+
+    triangleFaceI.v1 = vertexi_1;
+    triangleFaceI.v2 = vertexi_2;
+    triangleFaceI.v3 = vertexi_3;
+
+
+    triangleFacesI.push_back(triangleFaceI);
+    
+    // std::stringstream vertex_stream(lineDataSegments[0]);
+    // std::string index_string;
+    // int loop_index = 0;
+
+    // // Vertex #1
+    // VertexI vertex1_indices = {0, 0, 0};
+    // while (std::getline(vertex_stream, index_string, '/'))
+    // {
+    //     vertex1_indices. = std::atoi(index_string.data());
+    //     loop_index++;
+    //     // std::cout << index_string << " " << std::endl;
+    // }
+    // loop_index = 0;
+
+
+    return ObjLoadStatus::Ok;
+}
 
 
 
@@ -255,8 +427,8 @@ void obj_loadFromFile(std::string modelName) {
     objMesh.fi.clear();
     objMesh.f.clear();
     // std::vector<VertexCoord> v;
-    // std::vector<VertexTextCoord> vt;
-    // std::vector<VertexNorm> vn;
+    // std::vector<VertexTextureCoord> vt;
+    // std::vector<VertexNormal> vn;
     // std::vector<ObjFaceIndex> fi;
     // std::vector<ObjFace> f;
 
@@ -314,7 +486,7 @@ void obj_loadFromFile(std::string modelName) {
             }
             if (lineSegments[0] == "vn") {
                 // std::cout << "" << lineSegments[0] << std::endl;
-                VertexNorm vertexNorm = {
+                VertexNormal vertexNorm = {
                     (float)std::atof(lineSegments[1].data()),
                     (float)std::atof(lineSegments[2].data()),
                     (float)std::atof(lineSegments[3].data()),
@@ -323,7 +495,7 @@ void obj_loadFromFile(std::string modelName) {
             }
             if (lineSegments[0] == "vt") {
                 // std::cout << "" << lineSegments[0] << std::endl;
-                VertexTextCoord vertexTextCoord = {
+                VertexTextureCoord vertexTextCoord = {
                     (float)std::atof(lineSegments[1].data()),
                     (float)std::atof(lineSegments[2].data()),
                     0.0,

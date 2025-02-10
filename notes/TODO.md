@@ -25,13 +25,11 @@
 ---
 
 
-
 ### 2025-02-10
-- model-mesh-loaders
-	- pmodel namespace
-		- mesh
-		- texture/color
-		- loaders
+- pmodel
+	- Obj
+	- mesh
+- render using pmodel from obj-file
 - draw vector in scene
 	- x, y, z
 	- start with one at scene origin

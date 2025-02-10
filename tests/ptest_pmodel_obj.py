@@ -9,6 +9,7 @@ current_file_dir = pathlib.Path(__file__).parent.resolve()
 repo_root_dir_path = current_file_dir.parent
 repo_root_dir = str(repo_root_dir_path)
 
+os.environ['PHYSIMOS_ROOT_DIR'] = repo_root_dir
 
 # Ptest info
 ptest_name = "pmodel::obj"
