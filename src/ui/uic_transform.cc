@@ -14,8 +14,9 @@ Container::Container(TransformContext* _context) {
     setWidth(200);
     setHeight(150);
     initGraphics();
-    setX(500);
-    setY(10);
+    setDefaultColor({0,0,0,255});
+    setXrecursive(500);
+    setYrecursive(10);
 }
 
 
@@ -28,8 +29,8 @@ XPosition::XPosition(TransformContext* _context) {
     fontSize = UI::FontSize::f15;
     std::string x_pos_string = std::to_string(transform->position.data[0]);
     setString("x = " + x_pos_string.substr(0, 5));
-    setX(10);
-    setY(xpos_y_input);
+    setXrecursive(10);
+    setYrecursive(xpos_y_input);
 }
 void XPosition::reload() {
     ::Transform* transform = ((TransformContext*)componentContext)->boundObject;
@@ -47,13 +48,14 @@ XPosIncrease::XPosIncrease(TransformContext* _context) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("inc");
-    setX(120);
-    setY(xpos_y_input);
+    setXrecursive(120);
+    setYrecursive(xpos_y_input);
 }
 UI::Action XPosIncrease::click() {
     ::Transform* transform = ((TransformContext*)componentContext)->boundObject;
     transform->position.data[0] += 2.0;
 
+    ((TransformContext*)componentContext)->reloadComponent();
     return UI::Action::ReloadPObject;
 }
 
@@ -67,27 +69,21 @@ XPosDecrease::XPosDecrease(TransformContext* _context) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("dec");
-    setX(160);
-    setY(xpos_y_input);
+    setXrecursive(160);
+    setYrecursive(xpos_y_input);
 }
 UI::Action XPosDecrease::click() {
     ::Transform* transform = ((TransformContext*)componentContext)->boundObject;
 
     transform->position.data[0] -= 2.0;
 
+    ((TransformContext*)componentContext)->reloadComponent();
     return UI::Action::ReloadPObject;
 }
 
 
 
-void TransformContext::newTransform(::Transform* _transform) {
-    boundObject = _transform;
-}
 
-// Reloads components that track data
-void TransformContext::reloadComponent() {
-    xPosition->reload();
-}
 
 
 void TransformContext::populateContext(::Transform* _transform) {
@@ -109,6 +105,16 @@ void TransformContext::populateContext(::Transform* _transform) {
     container->appendChild(xPosDecrease);
 
 
+}
+
+
+void TransformContext::newTransform(::Transform* _transform) {
+    boundObject = _transform;
+}
+
+// Reloads components that track data
+void TransformContext::reloadComponent() {
+    xPosition->reload();
 }
 
 

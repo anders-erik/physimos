@@ -50,13 +50,12 @@ public:
     XPosIncrease* xPosIncrease = nullptr;
     XPosDecrease* xPosDecrease = nullptr;
 
-    TransformContext() {};
     
     void populateContext(::Transform* _transform);
     void newTransform(::Transform* _transform);
-
     void reloadComponent();
 
+    TransformContext() {};
 };
 
 

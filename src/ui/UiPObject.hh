@@ -4,6 +4,7 @@
 #include "scene/pobject.hh"
 
 #include "ui/ui_primitive.hh"
+#include "ui/uic_transform.hh"
 
 
 namespace UI::PObject {
@@ -94,6 +95,9 @@ namespace UI::PObject {
     public:
         Container* container = nullptr;
         NameLabel* nameLabel = nullptr;
+
+        ::UI::component::transform::TransformContext* transformContext = nullptr;
+
         XPosition* xPosition = nullptr;
         XPosIncrease* xPosIncrease = nullptr;
         XPosDecrease* xPosDecrease = nullptr;

@@ -26,10 +26,10 @@
 
 ### 2025-02-11
 - ui
-	- primitive
-		- transform
-		- void module pointer
-		- void boundObject pointer
+	- |o| primitive
+		- |o| transform
+		- |o| void component context pointer
+		- |o| boundObject pointer in component
 	- improve modules
 - ptest
 	- pbitmap

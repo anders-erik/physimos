@@ -1,5 +1,6 @@
 
 #include "ui/UiPObject.hh"
+#include "ui/uic_transform.hh"
 
 
 namespace UI::PObject {
@@ -17,8 +18,8 @@ Container::Container(::PObject* _pObject) {
     setWidth(400);
     setHeight(200);
     initGraphics();
-    setX(10);
-    setY(10);
+    setXrecursive(10);
+    setYrecursive(10);
 }
 void Container::setPObject(::PObject* _pObject) {
     pObject = _pObject;
@@ -35,8 +36,8 @@ NameLabel::NameLabel(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f24;
     setString(_pObject->name);
-    setX(10);
-    setY(10);
+    setXrecursive(10);
+    setYrecursive(10);
 }
 void NameLabel::setPObject(::PObject* _pObject) {
     pObject = _pObject;
@@ -56,8 +57,8 @@ XPosition::XPosition(::PObject* _pObject) {
     setString("x = " + x_pos_string.substr(0, 5));
     // setX(300);
     // setY(80);
-    setX(220);
-    setY(80);
+    setXrecursive(220);
+    setYrecursive(80);
 }
 void XPosition::reload() {
     std::string x_pos_string = std::to_string(pObject->transform->position.data[0]);
@@ -79,8 +80,8 @@ XPosIncrease::XPosIncrease(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("inc");
-    setX(320);
-    setY(80);
+    setXrecursive(320);
+    setYrecursive(80);
 }
 void XPosIncrease::setPObject(::PObject* _pObject) {
     pObject = _pObject;
@@ -99,8 +100,8 @@ XPosDecrease::XPosDecrease(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("dec");
-    setX(360);
-    setY(80);
+    setXrecursive(360);
+    setYrecursive(80);
 }
 void XPosDecrease::setPObject(::PObject* _pObject) {
     pObject = _pObject;
@@ -121,8 +122,8 @@ ToggleWireframe::ToggleWireframe(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("Toggle wireframe");
-    setX(10);
-    setY(10);
+    setXrecursive(10);
+    setYrecursive(10);
 }
 void ToggleWireframe::setPObject(::PObject* _pObject) {
     pObject = _pObject;
@@ -162,17 +163,23 @@ void Context::newPObject(::PObject* _pObject){
 
 void Context::reloadComponent() {
     xPosition->reload();
+    transformContext->reloadComponent();
 }
 
 
 void Context::populateContext(::PObject* _pObject) {
-    // std::cout << "POPOLATING CONTEXT" << std::endl;
     
     container = new UI::PObject::Container(_pObject);
 
     // Name Label
     nameLabel = new UI::PObject::NameLabel(_pObject);
     container->appendChild(nameLabel);
+
+
+    transformContext = new UI::component::transform::TransformContext();
+    transformContext->populateContext(_pObject->transform);
+    transformContext->container->setXrecursive(5);
+    container->appendChild(transformContext->container);
 
 
     // X position
@@ -243,8 +250,8 @@ YPosition::YPosition(::PObject* _pObject) {
     fontSize = UI::FontSize::f15;
     std::string x_pos_string = std::to_string(_pObject->transform->position.data[1]);
     setString("y = " + x_pos_string.substr(0, 5));
-    setX(220);
-    setY(60);
+    setXrecursive(220);
+    setYrecursive(60);
 }
 YPosIncrease::YPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
@@ -254,8 +261,8 @@ YPosIncrease::YPosIncrease(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("inc");
-    setX(320);
-    setY(60);
+    setXrecursive(320);
+    setYrecursive(60);
 }
 UI::Action YPosIncrease::click() {
     pObject->transform->position.data[1] += 2.0;
@@ -270,8 +277,8 @@ YPosDecrease::YPosDecrease(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("dec");
-    setX(360);
-    setY(60);
+    setXrecursive(360);
+    setYrecursive(60);
 }
 UI::Action YPosDecrease::click() {
     pObject->transform->position.data[1] -= 2.0;
@@ -289,8 +296,8 @@ ZPosition::ZPosition(::PObject* _pObject) {
     fontSize = UI::FontSize::f15;
     std::string x_pos_string = std::to_string(_pObject->transform->position.data[2]);
     setString("z = " + x_pos_string.substr(0, 5));
-    setX(220);
-    setY(40);
+    setXrecursive(220);
+    setYrecursive(40);
 }
 ZPosIncrease::ZPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
@@ -300,8 +307,8 @@ ZPosIncrease::ZPosIncrease(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("inc");
-    setX(320);
-    setY(40);
+    setXrecursive(320);
+    setYrecursive(40);
 }
 UI::Action ZPosIncrease::click() {
     pObject->transform->position.data[2] += 2.0;
@@ -316,8 +323,8 @@ ZPosDecrease::ZPosDecrease(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("dec");
-    setX(360);
-    setY(40);
+    setXrecursive(360);
+    setYrecursive(40);
 }
 UI::Action ZPosDecrease::click() {
     pObject->transform->position.data[2] -= 2.0;

@@ -16,8 +16,8 @@ Container::Container() {
     setWidth(300);
     setHeight(400);
     initGraphics();
-    setX(10);
-    setY(150);
+    setXrecursive(10);
+    setYrecursive(150);
 }
 
 
@@ -25,11 +25,12 @@ Container::Container() {
 NameLabel::NameLabel(std::string sceneName) {
     id = "UiPScenelNameLabel_1";
     uiTransform.vertRef = UI::VertRef::Top;
+    uiTransform.horiRef = UI::HoriRef::Right;
     initGraphics();
     fontSize = UI::FontSize::f24;
     setString(sceneName);
-    setX(10);
-    setY(10);
+    setXrecursive(12);
+    setYrecursive(10);
 }
 
 
@@ -42,7 +43,7 @@ PObjectListObject::PObjectListObject(::PObject* _pObject) {
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString(_pObject->name);
-    setX(10);
+    setXrecursive(10);
 }
 
 PObjectList::PObjectList(){
@@ -51,8 +52,8 @@ PObjectList::PObjectList(){
     initGraphics();
     fontSize = UI::FontSize::f24;
     setString("PObject List");
-    setX(10);
-    setY(50);
+    setXrecursive(10);
+    setYrecursive(50);
 }
 
 void PObjectList::addPObject(::PObject* _pObject) {
@@ -68,7 +69,7 @@ void PObjectList::reloadList() {
 
         ::UI::Primitive* _pObjectPrimtive = new ::UI::PScene::PObjectListObject(_pObject);
         
-        _pObjectPrimtive->setY(10 + 20*index);
+        _pObjectPrimtive->setYrecursive(10 + 20*index);
         
         appendChild(_pObjectPrimtive);
         

@@ -295,8 +295,8 @@ void primtiiveUiInitialTests(){
     _primitive_root->id = "root";
     _primitive_root->uiTransform.vertRef = UI::VertRef::Top;
     _primitive_root->initGraphics();
-    _primitive_root->setX(300);
-    _primitive_root->setY(100);
+    _primitive_root->setXrecursive(300);
+    _primitive_root->setYrecursive(100);
     _primitive_root->fontSize = UI::FontSize::f15;
     // _primitive_root->setString("I am root primitive!");
     primitiveTreeHeads.push_back(_primitive_root);
@@ -313,8 +313,8 @@ void primtiiveUiInitialTests(){
     _primitive_child->initGraphics();
     _primitive_child->fontSize = UI::FontSize::f15;
     _primitive_child->setString("I am child!");
-    _primitive_child->setX(10);
-    _primitive_child->setY(10);
+    _primitive_child->setXrecursive(10);
+    _primitive_child->setYrecursive(10);
 
     UI::Primitive* _primitive_grandchild = new UI::Primitive();
     primitiveList.push_back(_primitive_grandchild);
@@ -325,8 +325,8 @@ void primtiiveUiInitialTests(){
     _primitive_grandchild->initGraphics();
     _primitive_grandchild->fontSize = UI::FontSize::f15;
     _primitive_grandchild->setString("I am grandchild!");
-    _primitive_grandchild->setX(10);
-    _primitive_grandchild->setY(20);
+    _primitive_grandchild->setXrecursive(10);
+    _primitive_grandchild->setYrecursive(20);
 
     UI::Primitive* _primitive_child_2 = new UI::Primitive();
     primitiveList.push_back(_primitive_child_2);
@@ -336,8 +336,8 @@ void primtiiveUiInitialTests(){
     _primitive_child_2->initGraphics();
     _primitive_child_2->fontSize = UI::FontSize::f15;
     _primitive_child_2->setString("I am 2nd child!");
-    _primitive_child_2->setX(10);
-    _primitive_child_2->setY(60);
+    _primitive_child_2->setXrecursive(10);
+    _primitive_child_2->setYrecursive(60);
 
 }
 

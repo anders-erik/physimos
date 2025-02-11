@@ -12,6 +12,13 @@ namespace UI {
 
 class Primitive; // forward declare
 
+typedef struct Color {
+    unsigned char R;
+    unsigned char G;
+    unsigned char B;
+    unsigned char A;
+} Color;
+
 
 enum PrimitiveState {
     Default = 1,
@@ -92,15 +99,17 @@ class Primitive {
 
         // UI Transformation 
         UI::Transform uiTransform;
-        void setX(int _x);
-        void setY(int _y);
+        void setXrecursive(int x_input);
+        void setYrecursive(int y_input);
         void setHeight(int _height);
         void setWidth(int _width);
+        // void setUiTransform(::UI::Transform _uiTransform);
+
         // Set the transformation matrix for shading
-        void reloadHWXY();
+        void updateTransformationMatrix();
         bool containsPoint(double x, double y);
         bool childrenContainPoint(double _x, double _y);
-        // Set the shader materices using the ui transform object
+        // Set the shader matrices using the ui transform object
         void updateShaderMatrixesRecursively();
 
 
@@ -125,6 +134,7 @@ class Primitive {
         void initGraphics();
         void generateTextures();
         void renderRecursive();
+        void setDefaultColor(Color color);
 
 
         // STATE & BEHAVIOR

@@ -30,6 +30,33 @@ namespace UI {
 
     }
 
+
+    // void Primitive::setUiTransform(::UI::Transform _uiTransform) {
+    //     // uiTransform = _uiTransform;
+
+    // }
+
+    void Primitive::setDefaultColor(Color color){
+
+        int imageBufferWidth = 1;
+        int imageBufferHeight = 1;
+        unsigned char colorBuffer[4];
+
+
+        glBindTexture(GL_TEXTURE_2D, defaultTexture);
+
+
+        colorBuffer[0] = color.R;
+        colorBuffer[1] = color.G;
+        colorBuffer[2] = color.B;
+        colorBuffer[3] = color.A;
+
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+    }
+
     // Virtual click method.
     // Implmements behavior within current container scope and returns action(s) to be executed globally.
     UI::Action Primitive::click(){
@@ -62,7 +89,7 @@ namespace UI {
         loadStringIntoGlTexture(defaultTexture, _str);
         // loadStringIntoGlTexture(glTexture, _str);
 
-        reloadHWXY();
+        updateTransformationMatrix();
     }
 
     bool Primitive::isTextPrimitive(){
@@ -75,27 +102,23 @@ namespace UI {
     void Primitive::setHeight(int _height){
         uiTransform.height = _height;
 
-        reloadHWXY();
+        updateTransformationMatrix();
     }
     void Primitive::setWidth(int _width) {
         uiTransform.width = _width;
 
-        reloadHWXY();
+        updateTransformationMatrix();
     }
 
 
     // Store x_input and make appropriate conversions to update x_real.
     // x_input is relative to parent. If no parent then relative to ui origin.
-    void Primitive::setX(int _x){
-        uiTransform.x_input = _x;
-        // x_input = _x;
-        int _x_input_px = _x; // will change below if unit is set to percent
-
-        // real x coordinate offset. If a root ui primitive then this is viewport/ui coordinates
-        int _x_real_offset;
-
-
-
+    // Recursivity is performed to make sure all x_real values are correct for rendering.
+    void Primitive::setXrecursive(int x_input){
+        uiTransform.x_input = x_input;
+        
+        // x_input in pixel-units
+        int _x_input_px = x_input;
         // Make sure all calculations are made using pixel units
         if (uiTransform.x_unit == Unit::Percent) {
             // Multiply _first_ to reduce compounding error from integer division rounding 
@@ -103,36 +126,50 @@ namespace UI {
         }
 
 
-        if (uiTransform.horiRef == HoriRef::Right) {
-            // Subtract the input from the far right position
-            int zero_point_right = viewport_width - uiTransform.width;
-            _x_real_offset = zero_point_right - _x_input_px;
-        }
-        else {
-            _x_real_offset = _x_input_px;
-        }
+        if (uiTransform.horiRef == HoriRef::Left) {
+
+            if (parent == nullptr) {
+                uiTransform.x_real = _x_input_px;
+            }
+            else {
+                uiTransform.x_real = parent->uiTransform.x_real + _x_input_px;
+            }
 
 
-        if (parent == nullptr) {
-            uiTransform.x_real = _x_real_offset;
         }
-        else {
-            uiTransform.x_real = parent->uiTransform.x_real + _x_real_offset;
+        else if (uiTransform.horiRef == HoriRef::Right) {
+
+            // The x value when primitives right edge would be flush with parents right edge
+            int right_reference_x;
+
+            if (parent == nullptr) {
+                right_reference_x = viewport_width - uiTransform.width;
+                uiTransform.x_real = right_reference_x - _x_input_px;
+            }
+            else {
+                right_reference_x = parent->uiTransform.x_real + parent->uiTransform.width - uiTransform.width;
+                uiTransform.x_real = right_reference_x - _x_input_px;
+            }
         }
+        
 
+        // Reload real x locations
+        for(Primitive* child : children)
+            child->setXrecursive(child->uiTransform.x_input);
 
-        reloadHWXY();
+        updateTransformationMatrix();
     }
 
 
 
     // Store y_input and make appropriate conversions to update y_real
     // y_input is relative to parent. If no parent then relative to ui origin.
-    void Primitive::setY(int _y){
-        uiTransform.y_input = _y;
+    // Recursivity is performed to make sure all y_real values are correct for rendering.
+    void Primitive::setYrecursive(int y_input){
+        uiTransform.y_input = y_input;
        
         // y input in number of PIXELS
-        int _y_input_px = _y;
+        int _y_input_px = y_input;
         if (uiTransform.y_unit == Unit::Percent) {
             // Multiply _first_ to reduce compounding error from integer division rounding 
             _y_input_px = (viewport_height * uiTransform.y_input) / 100;
@@ -154,9 +191,6 @@ namespace UI {
                 uiTransform.y_real = parent->uiTransform.y_real + _y_input_px;
             }
 
-            reloadHWXY();
-            return;
-
         }
         else if (uiTransform.vertRef == VertRef::Top) {
 
@@ -173,15 +207,20 @@ namespace UI {
                 uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.height - this->uiTransform.height + _y_real_offset;
             }
 
-            reloadHWXY();
-            return;
-
         }
+
+
+        // Reload real y locations
+        for (Primitive* child : children)
+            child->setYrecursive(child->uiTransform.y_input);
+
+        updateTransformationMatrix();
+        return;
     }
 
 
     // make sure the transform matrix is updated to current height, width, x, and y
-    void Primitive::reloadHWXY(){
+    void Primitive::updateTransformationMatrix(){
 
         uiTransform.uiPrimitiveTransform16[0] = uiTransform.width;
         uiTransform.uiPrimitiveTransform16[5] = uiTransform.height;
@@ -197,7 +236,7 @@ namespace UI {
         shader = getShader(Shaders::ui_primitive);
 
 
-        reloadHWXY();
+        updateTransformationMatrix();
 
 
         shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
@@ -348,8 +387,8 @@ namespace UI {
         childPrimitive->parent = this;
 
         // TODO: better automatic detection on new parent?
-        childPrimitive->setX(childPrimitive->uiTransform.x_input);
-        childPrimitive->setY(childPrimitive->uiTransform.y_input);
+        childPrimitive->setXrecursive(childPrimitive->uiTransform.x_input);
+        childPrimitive->setYrecursive(childPrimitive->uiTransform.y_input);
     }
 
 
