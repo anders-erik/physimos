@@ -13,7 +13,7 @@ Container::Container(::PObject* _pObject) {
     pObject = _pObject;
 
     id = pObject->name + "_container";
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     setWidth(400);
     setHeight(200);
     initGraphics();
@@ -31,7 +31,7 @@ void Container::setPObject(::PObject* _pObject) {
 NameLabel::NameLabel(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_name_label";
-    vertRef = UI::VertRef::Top;
+    uiTransform.vertRef = UI::VertRef::Top;
     initGraphics();
     fontSize = UI::FontSize::f24;
     setString(_pObject->name);
@@ -49,7 +49,7 @@ void NameLabel::setPObject(::PObject* _pObject) {
 XPosition::XPosition(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_x_position";
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     std::string x_pos_string = std::to_string(_pObject->transform->position.data[0]);
@@ -75,7 +75,7 @@ XPosIncrease::XPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_x_pos_increase";
     isHoverable = true;
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("inc");
@@ -95,7 +95,7 @@ XPosDecrease::XPosDecrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_x_pos_decrease";
     isHoverable = true;
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("dec");
@@ -117,7 +117,7 @@ ToggleWireframe::ToggleWireframe(::PObject* _pObject) {
     pObject = _pObject;
     isHoverable = true;
     id = pObject->name + "_toggle_wireframe_";
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("Toggle wireframe");
@@ -238,7 +238,7 @@ void Context::populateContext(::PObject* _pObject) {
 YPosition::YPosition(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_y_position";
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     std::string x_pos_string = std::to_string(_pObject->transform->position.data[1]);
@@ -250,7 +250,7 @@ YPosIncrease::YPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_y_pos_increase";
     isHoverable = true;
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("inc");
@@ -266,7 +266,7 @@ YPosDecrease::YPosDecrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_y_pos_decrease";
     isHoverable = true;
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("dec");
@@ -284,7 +284,7 @@ UI::Action YPosDecrease::click() {
 ZPosition::ZPosition(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_z_position";
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     std::string x_pos_string = std::to_string(_pObject->transform->position.data[2]);
@@ -296,7 +296,7 @@ ZPosIncrease::ZPosIncrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_z_pos_increase";
     isHoverable = true;
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("inc");
@@ -312,7 +312,7 @@ ZPosDecrease::ZPosDecrease(::PObject* _pObject) {
     pObject = _pObject;
     id = pObject->name + "_z_pos_decrease";
     isHoverable = true;
-    vertRef = UI::VertRef::Bottom;
+    uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
     fontSize = UI::FontSize::f15;
     setString("dec");

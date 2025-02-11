@@ -103,8 +103,8 @@ void update(){
 
     for (UI::Primitive* primitiveTreeHead : UI::primitiveTreeHeads) {
         // Will remove transprancy during hover
-        primitiveTreeHead->updateTransformsRecursive();
-        primitiveTreeHead->render();
+        primitiveTreeHead->updateShaderMatrixesRecursively();
+        primitiveTreeHead->renderRecursive();
     }
 }
 
@@ -277,7 +277,7 @@ void primtiiveUiInitialTests(){
     // test-primitives
     UI::Primitive* _primitive_root = new UI::Primitive();
     _primitive_root->id = "root";
-    _primitive_root->vertRef = UI::VertRef::Top;
+    _primitive_root->uiTransform.vertRef = UI::VertRef::Top;
     _primitive_root->initGraphics();
     _primitive_root->setX(300);
     _primitive_root->setY(100);
@@ -293,7 +293,7 @@ void primtiiveUiInitialTests(){
     _primitive_child->id = "1st child";
     _primitive_root->appendChild(_primitive_child);
     _primitive_child->isHoverable = true;
-    _primitive_child->vertRef = UI::VertRef::Top;
+    _primitive_child->uiTransform.vertRef = UI::VertRef::Top;
     _primitive_child->initGraphics();
     _primitive_child->fontSize = UI::FontSize::f15;
     _primitive_child->setString("I am child!");
@@ -305,7 +305,7 @@ void primtiiveUiInitialTests(){
     _primitive_grandchild->id = "1st grandchild";
     _primitive_child->appendChild(_primitive_grandchild);
     _primitive_grandchild->isHoverable = true;
-    _primitive_grandchild->vertRef = UI::VertRef::Top;
+    _primitive_grandchild->uiTransform.vertRef = UI::VertRef::Top;
     _primitive_grandchild->initGraphics();
     _primitive_grandchild->fontSize = UI::FontSize::f15;
     _primitive_grandchild->setString("I am grandchild!");
@@ -316,7 +316,7 @@ void primtiiveUiInitialTests(){
     primitiveList.push_back(_primitive_child_2);
     _primitive_child_2->id = "2st child";
     _primitive_root->appendChild(_primitive_child_2);
-    _primitive_child_2->vertRef = UI::VertRef::Top;
+    _primitive_child_2->uiTransform.vertRef = UI::VertRef::Top;
     _primitive_child_2->initGraphics();
     _primitive_child_2->fontSize = UI::FontSize::f15;
     _primitive_child_2->setString("I am 2nd child!");

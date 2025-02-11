@@ -11,8 +11,8 @@ Context* uiPSceneContext = nullptr;
 
 Container::Container() {
     id = "UiPScenelContainer_1";
-    vertRef = UI::VertRef::Top;
-    horiRef = UI::HoriRef::Left;
+    uiTransform.vertRef = UI::VertRef::Top;
+    uiTransform.horiRef = UI::HoriRef::Left;
     setWidth(300);
     setHeight(400);
     initGraphics();
@@ -24,7 +24,7 @@ Container::Container() {
 
 NameLabel::NameLabel(std::string sceneName) {
     id = "UiPScenelNameLabel_1";
-    vertRef = UI::VertRef::Top;
+    uiTransform.vertRef = UI::VertRef::Top;
     initGraphics();
     fontSize = UI::FontSize::f24;
     setString(sceneName);
@@ -37,7 +37,7 @@ NameLabel::NameLabel(std::string sceneName) {
 PObjectListObject::PObjectListObject(::PObject* _pObject) {
     pObject = _pObject;
     id = _pObject->name;
-    vertRef = UI::VertRef::Top;
+    uiTransform.vertRef = UI::VertRef::Top;
     isHoverable = true;
     initGraphics();
     fontSize = UI::FontSize::f15;
@@ -47,7 +47,7 @@ PObjectListObject::PObjectListObject(::PObject* _pObject) {
 
 PObjectList::PObjectList(){
     id = "UiPScenelObjectList_1";
-    vertRef = UI::VertRef::Top;
+    uiTransform.vertRef = UI::VertRef::Top;
     initGraphics();
     fontSize = UI::FontSize::f24;
     setString("PObject List");

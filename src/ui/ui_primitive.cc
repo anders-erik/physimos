@@ -12,7 +12,7 @@
 
 namespace UI {
 
-    
+
 
 
     void Primitive::setState(PrimitiveState _newState){
@@ -51,11 +51,11 @@ namespace UI {
     // will load a texture contining the passed string into the default gl texture
     void Primitive::setString(std::string _str) {
 
-        this->height = this->fontSize;
+        this->uiTransform.height = this->fontSize;
 
         size_t charWidth = 2 * (this->fontSize / 3);
 
-        this->width = charWidth * _str.length();
+        this->uiTransform.width = charWidth * _str.length();
 
 
         // loadCharIntoGlTexture(defaultTexture, _str[0]);
@@ -73,12 +73,12 @@ namespace UI {
     }
 
     void Primitive::setHeight(int _height){
-        height = _height;
+        uiTransform.height = _height;
 
         reloadHWXY();
     }
     void Primitive::setWidth(int _width) {
-        width = _width;
+        uiTransform.width = _width;
 
         reloadHWXY();
     }
@@ -87,7 +87,8 @@ namespace UI {
     // Store x_input and make appropriate conversions to update x_real.
     // x_input is relative to parent. If no parent then relative to ui origin.
     void Primitive::setX(int _x){
-        x_input = _x;
+        uiTransform.x_input = _x;
+        // x_input = _x;
         int _x_input_px = _x; // will change below if unit is set to percent
 
         // real x coordinate offset. If a root ui primitive then this is viewport/ui coordinates
@@ -96,15 +97,15 @@ namespace UI {
 
 
         // Make sure all calculations are made using pixel units
-        if(x_unit == Unit::Percent){
+        if (uiTransform.x_unit == Unit::Percent) {
             // Multiply _first_ to reduce compounding error from integer division rounding 
-            _x_input_px = (viewport_width * x_input)/100;
+            _x_input_px = (viewport_width * uiTransform.x_input) / 100;
         }
 
 
-        if(horiRef == HoriRef::Right){
+        if (uiTransform.horiRef == HoriRef::Right) {
             // Subtract the input from the far right position
-            int zero_point_right = viewport_width - width;
+            int zero_point_right = viewport_width - uiTransform.width;
             _x_real_offset = zero_point_right - _x_input_px;
         }
         else {
@@ -113,10 +114,10 @@ namespace UI {
 
 
         if (parent == nullptr) {
-            x_real = _x_real_offset;
+            uiTransform.x_real = _x_real_offset;
         }
         else {
-            x_real = parent->x_real + _x_real_offset;
+            uiTransform.x_real = parent->uiTransform.x_real + _x_real_offset;
         }
 
 
@@ -128,13 +129,13 @@ namespace UI {
     // Store y_input and make appropriate conversions to update y_real
     // y_input is relative to parent. If no parent then relative to ui origin.
     void Primitive::setY(int _y){
-        y_input = _y;
+        uiTransform.y_input = _y;
        
         // y input in number of PIXELS
         int _y_input_px = _y;
-        if (y_unit == Unit::Percent) {
+        if (uiTransform.y_unit == Unit::Percent) {
             // Multiply _first_ to reduce compounding error from integer division rounding 
-            _y_input_px = (viewport_height * y_input) / 100;
+            _y_input_px = (viewport_height * uiTransform.y_input) / 100;
         }
 
         // real y coordinate offset from reference
@@ -142,34 +143,34 @@ namespace UI {
         int _y_real_offset;
 
         // Draw root primitives directly
-        if (vertRef == VertRef::Bottom) {
+        if (uiTransform.vertRef == VertRef::Bottom) {
 
             _y_real_offset = _y_input_px;
 
             if (parent == nullptr) {
-                y_real = _y_input_px;
+                uiTransform.y_real = _y_input_px;
             }
             else {
-                y_real = parent->y_real + _y_input_px;
+                uiTransform.y_real = parent->uiTransform.y_real + _y_input_px;
             }
 
             reloadHWXY();
             return;
 
         }
-        else if (vertRef == VertRef::Top) {
+        else if (uiTransform.vertRef == VertRef::Top) {
 
             // The real offset is in the negative direction when using top as vertical reference
             _y_real_offset = -_y_input_px;
 
             if (parent == nullptr) {
-                int zero_point_top = viewport_height - height;
+                int zero_point_top = viewport_height - uiTransform.height;
                 // _y_real_offset = zero_point_top - _y_input_px;
-                y_real = zero_point_top + _y_real_offset;
+                uiTransform.y_real = zero_point_top + _y_real_offset;
             }
             else {
                 // move child to align with parent top, the subtract top offset (_y_real_offset)
-                y_real = parent->y_real + parent->height - this->height + _y_real_offset;
+                uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.height - this->uiTransform.height + _y_real_offset;
             }
 
             reloadHWXY();
@@ -182,11 +183,11 @@ namespace UI {
     // make sure the transform matrix is updated to current height, width, x, and y
     void Primitive::reloadHWXY(){
 
-        uiPrimitiveTransform16[0] = width;
-        uiPrimitiveTransform16[5] = height;
+        uiTransform.uiPrimitiveTransform16[0] = uiTransform.width;
+        uiTransform.uiPrimitiveTransform16[5] = uiTransform.height;
 
-        uiPrimitiveTransform16[3] = x_real;
-        uiPrimitiveTransform16[7] = y_real;
+        uiTransform.uiPrimitiveTransform16[3] = uiTransform.x_real;
+        uiTransform.uiPrimitiveTransform16[7] = uiTransform.y_real;
 
     }
 
@@ -199,7 +200,7 @@ namespace UI {
         reloadHWXY();
 
 
-        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);
+        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
 
 
         // SET VAO, VBO
@@ -252,10 +253,10 @@ namespace UI {
 
         glBindTexture(GL_TEXTURE_2D, defaultTexture);
 
-        colorBuffer[0] = R;
-        colorBuffer[1] = G;
-        colorBuffer[2] = B;
-        colorBuffer[3] = A;
+        colorBuffer[0] = color_default[0];
+        colorBuffer[1] = color_default[1];
+        colorBuffer[2] = color_default[2];
+        colorBuffer[3] = color_default[3];
 
 
         // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
@@ -274,10 +275,10 @@ namespace UI {
 
         glBindTexture(GL_TEXTURE_2D, hoverTexture);
 
-        colorBuffer[0] = R + 30;
-        colorBuffer[1] = G + 30;
-        colorBuffer[2] = B + 30;
-        colorBuffer[3] = 255;
+        colorBuffer[0] = color_hover[0];
+        colorBuffer[1] = color_hover[1];
+        colorBuffer[2] = color_hover[2];
+        colorBuffer[3] = color_hover[3];
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color_hover);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -294,10 +295,10 @@ namespace UI {
 
         glBindTexture(GL_TEXTURE_2D, selectedTexture);
 
-        colorBuffer[0] = R;
-        colorBuffer[1] = G;
-        colorBuffer[2] = B;
-        colorBuffer[3] = A;
+        colorBuffer[0] = color_selected[0];
+        colorBuffer[1] = color_selected[1];
+        colorBuffer[2] = color_selected[2];
+        colorBuffer[3] = color_selected[3];
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, &colorBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -322,8 +323,8 @@ namespace UI {
     // 
     bool Primitive::containsPoint(double _x, double _y) {
         
-        bool x_between_min_and_max = (_x > (double)x_real) && (_x < (double)(x_real + width));
-        bool y_between_min_and_max = (_y > (double)y_real) && (_y < (double)(y_real + height));
+        bool x_between_min_and_max = (_x > (double)uiTransform.x_real) && (_x < (double)(uiTransform.x_real + uiTransform.width));
+        bool y_between_min_and_max = (_y > (double)uiTransform.y_real) && (_y < (double)(uiTransform.y_real + uiTransform.height));
 
         if (x_between_min_and_max && y_between_min_and_max) {
             // std::cout << "IN PRIMITIVE\n";
@@ -347,8 +348,8 @@ namespace UI {
         childPrimitive->parent = this;
 
         // TODO: better automatic detection on new parent?
-        childPrimitive->setX(childPrimitive->x_input);
-        childPrimitive->setY(childPrimitive->y_input);
+        childPrimitive->setX(childPrimitive->uiTransform.x_input);
+        childPrimitive->setY(childPrimitive->uiTransform.y_input);
     }
 
 
@@ -375,23 +376,23 @@ namespace UI {
     }
 
     // will set the shader transforms for the ui primitive
-    void Primitive::updateTransformsRecursive() {
+    void Primitive::updateShaderMatrixesRecursively() {
         // std::cout << "UPDATING UI PRIMITIVE" << std::endl;
         for (Primitive* child : children){
-            child->updateTransformsRecursive();
+            child->updateShaderMatrixesRecursively();
         }
 
-        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);
+        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
 
     }
 
 
-    void Primitive::render() {
+    void Primitive::renderRecursive() {
         // std::cout << "RENDERING UI PRIMITIVE" << std::endl;
         glUseProgram(shader->ID);
 
         // Transform
-        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiPrimitiveTransform16);
+        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
 
 
         glBindVertexArray(vao);
@@ -406,7 +407,7 @@ namespace UI {
 
         // Make sure that children are rendered after parent as depth test is turned of!
         for (Primitive* child : children) {
-            child->render();
+            child->renderRecursive();
         }
     }
 
