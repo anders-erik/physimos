@@ -8,7 +8,7 @@
 
 namespace UI::component::transform {
 
-class TransformContext;
+class TransformComponent;
 
 // Primitive with a WorldObject pointer. 
 struct Base : public ::UI::Primitive {
@@ -19,20 +19,20 @@ struct Base : public ::UI::Primitive {
 
 
 struct Container : public UI::component::transform::Base {
-    Container(TransformContext* _context);
+    Container(TransformComponent* _context);
 };
 
 
 struct XPosition : public UI::component::transform::Base {
-    XPosition(TransformContext* _context);
+    XPosition(TransformComponent* _context);
     void reload();
 };
 struct XPosIncrease : public UI::component::transform::Base {
-    XPosIncrease(TransformContext* _context);
+    XPosIncrease(TransformComponent* _context);
     UI::Action click();
 };
 struct XPosDecrease : public UI::component::transform::Base {
-    XPosDecrease(TransformContext* _context);
+    XPosDecrease(TransformComponent* _context);
     UI::Action click();
 };
 
@@ -40,7 +40,7 @@ struct XPosDecrease : public UI::component::transform::Base {
 
 
 // Full context ui component for Transforms (formerly WorldObject)
-class TransformContext {
+class TransformComponent {
 public:
     // 
     ::Transform* boundObject = nullptr;
@@ -55,7 +55,7 @@ public:
     void newTransform(::Transform* _transform);
     void reloadComponent();
 
-    TransformContext() {};
+    TransformComponent() {};
 };
 
 

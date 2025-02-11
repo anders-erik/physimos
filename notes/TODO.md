@@ -30,7 +30,7 @@
 		- |o| transform
 		- |o| void component context pointer
 		- |o| boundObject pointer in component
-	- improve modules
+	- |o| improve ~~modules~~ components
 - ptest
 	- pbitmap
 - pimage

@@ -6,8 +6,8 @@ add_library(ui
     font.cc
     # components
     uic_transform.cc
-    UiPObject.cc
-    UiPScene.cc
+    uic_pobject.cc
+    uic_scene.cc
 )
 
 target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/src/)

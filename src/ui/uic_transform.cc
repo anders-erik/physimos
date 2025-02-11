@@ -6,8 +6,8 @@ namespace UI::component::transform {
 
 int xpos_y_input = 120;
 
-Container::Container(TransformContext* _context) {
-    componentContext = _context;
+Container::Container(TransformComponent* _context) {
+    component = _context;
 
     id = "transform_container";
     uiTransform.vertRef = UI::VertRef::Bottom;
@@ -20,9 +20,9 @@ Container::Container(TransformContext* _context) {
 }
 
 
-XPosition::XPosition(TransformContext* _context) {
-    componentContext = _context;
-    ::Transform* transform = ((TransformContext*)componentContext)->boundObject;
+XPosition::XPosition(TransformComponent* _context) {
+    component = _context;
+    ::Transform* transform = ((TransformComponent*)component)->boundObject;
     id = "x_pos_label";
     uiTransform.vertRef = UI::VertRef::Bottom;
     initGraphics();
@@ -33,14 +33,14 @@ XPosition::XPosition(TransformContext* _context) {
     setYrecursive(xpos_y_input);
 }
 void XPosition::reload() {
-    ::Transform* transform = ((TransformContext*)componentContext)->boundObject;
+    ::Transform* transform = ((TransformComponent*)component)->boundObject;
     std::string x_pos_string = std::to_string(transform->position.data[0]);
     setString("x = " + x_pos_string.substr(0, 5));
 }
 
 
-XPosIncrease::XPosIncrease(TransformContext* _context) {
-    componentContext = _context;
+XPosIncrease::XPosIncrease(TransformComponent* _context) {
+    component = _context;
 
     id = "x_pos_increase";
     isHoverable = true;
@@ -52,16 +52,16 @@ XPosIncrease::XPosIncrease(TransformContext* _context) {
     setYrecursive(xpos_y_input);
 }
 UI::Action XPosIncrease::click() {
-    ::Transform* transform = ((TransformContext*)componentContext)->boundObject;
+    ::Transform* transform = ((TransformComponent*)component)->boundObject;
     transform->position.data[0] += 2.0;
 
-    ((TransformContext*)componentContext)->reloadComponent();
+    ((TransformComponent*)component)->reloadComponent();
     return UI::Action::ReloadPObject;
 }
 
 
-XPosDecrease::XPosDecrease(TransformContext* _context) {
-    componentContext = _context;
+XPosDecrease::XPosDecrease(TransformComponent* _context) {
+    component = _context;
 
     id = "x_pos_decrease";
     isHoverable = true;
@@ -73,11 +73,11 @@ XPosDecrease::XPosDecrease(TransformContext* _context) {
     setYrecursive(xpos_y_input);
 }
 UI::Action XPosDecrease::click() {
-    ::Transform* transform = ((TransformContext*)componentContext)->boundObject;
+    ::Transform* transform = ((TransformComponent*)component)->boundObject;
 
     transform->position.data[0] -= 2.0;
 
-    ((TransformContext*)componentContext)->reloadComponent();
+    ((TransformComponent*)component)->reloadComponent();
     return UI::Action::ReloadPObject;
 }
 
@@ -86,34 +86,35 @@ UI::Action XPosDecrease::click() {
 
 
 
-void TransformContext::populateContext(::Transform* _transform) {
+void TransformComponent::populateContext(::Transform* _transform) {
     boundObject = _transform;
     
+    // Root primitive
     container = new UI::component::transform::Container(this);
 
     // X position
     xPosition = new UI::component::transform::XPosition(this);
-    xPosition->componentContext = this;
+    xPosition->component = this;
     container->appendChild(xPosition);
     // X pos. increase
     xPosIncrease = new UI::component::transform::XPosIncrease(this);
-    xPosIncrease->componentContext = this;
+    xPosIncrease->component = this;
     container->appendChild(xPosIncrease);
     // X pos. decrease
     xPosDecrease = new UI::component::transform::XPosDecrease(this);
-    xPosDecrease->componentContext = this;
+    xPosDecrease->component = this;
     container->appendChild(xPosDecrease);
 
 
 }
 
 
-void TransformContext::newTransform(::Transform* _transform) {
+void TransformComponent::newTransform(::Transform* _transform) {
     boundObject = _transform;
 }
 
 // Reloads components that track data
-void TransformContext::reloadComponent() {
+void TransformComponent::reloadComponent() {
     xPosition->reload();
 }
 

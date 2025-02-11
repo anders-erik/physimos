@@ -4,8 +4,8 @@
 #include "ui/ui_globals.hh"
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
-#include "ui/UiPObject.hh"
-#include "ui/UiPScene.hh"
+#include "ui/uic_pobject.hh"
+#include "ui/uic_scene.hh"
 #include "ui/uic_transform.hh"
 
 
@@ -46,7 +46,7 @@ void init(){
 
 
 
-    // WORLD OBJECT COMPONENT 1
+    // INITIALLY SELECTED POBJECT
     ::PObject* house1_wo = ::PScene::getWorldObjectByName("house1_obj");
     if (house1_wo == nullptr) {
         std::cout << "Error init ui. Unable to find house 1 obj." << std::endl;
@@ -68,42 +68,40 @@ void init(){
 
 
     // PObject Context
-    UI::PObject::uiPObjectContext = new UI::PObject::Context();
-    UI::PObject::uiPObjectContext->populateContext(house1_wo);
+    UI::component::pobjectContext = new UI::component::PobjectComponent();
+    UI::component::pobjectContext->populateContext(house1_wo);
     // UI::PObject::uiPObjectContext->newPObject(ground_01);
     // add the uiPObject to the global ui lists
-    UI::primitiveTreeHeads.push_back(UI::PObject::uiPObjectContext->container);
-    std::vector<UI::Primitive*> flatComponent = UI::PObject::uiPObjectContext->container->flattenTree();
+    UI::primitiveTreeHeads.push_back(UI::component::pobjectContext->container);
+    std::vector<UI::Primitive*> flatComponent = UI::component::pobjectContext->container->flattenTree();
     for (UI::Primitive* _primitive : flatComponent) {
         // std::cout << "_primitive->id = " << _primitive->id << std::endl;
         UI::primitiveList.push_back(_primitive);
     }
 
     // UiPScene Context
-    UI::PScene::uiPSceneContext = new UI::PScene::Context();
-    UI::PScene::uiPSceneContext->populateContext(::PScene::getCurrentScene());
-    std::vector<UI::Primitive*> flatUiPScene = UI::PScene::uiPSceneContext->container->flattenTree();
-    UI::primitiveTreeHeads.push_back(UI::PScene::uiPSceneContext->container);
+    UI::component::psceneContext = new UI::component::PsceneComponent();
+    UI::component::psceneContext->populateContext(::PScene::getCurrentScene());
+    std::vector<UI::Primitive*> flatUiPScene = UI::component::psceneContext->container->flattenTree();
+    UI::primitiveTreeHeads.push_back(UI::component::psceneContext->container);
     for (UI::Primitive* _primitive : flatUiPScene) {
         // std::cout << "_primitive->id = " << _primitive->id << std::endl;
         UI::primitiveList.push_back(_primitive);
     }
 
 
-    // TRANSFORM COMPONENT
-    UI::component::transform::TransformContext* transformContext = new UI::component::transform::TransformContext();
-    transformContext->populateContext(house1_wo->transform);
-    UI::primitiveTreeHeads.push_back(transformContext->container);
+    // TRANSFORM COMPONENT TESTS
+    // UI::component::transform::TransformContext* transformContext = new UI::component::transform::TransformContext();
+    // transformContext->populateContext(house1_wo->transform);
+    // UI::primitiveTreeHeads.push_back(transformContext->container);
 
-    std::vector<UI::Primitive*> flatTransformContext = transformContext->container->flattenTree();
-    for (UI::Primitive* _primitive : flatTransformContext) {
-        // std::cout << "_primitive->id = " << _primitive->id << std::endl;
-        UI::primitiveList.push_back(_primitive);
-    }
+    // std::vector<UI::Primitive*> flatTransformContext = transformContext->container->flattenTree();
+    // for (UI::Primitive* _primitive : flatTransformContext) {
+    //     // std::cout << "_primitive->id = " << _primitive->id << std::endl;
+    //     UI::primitiveList.push_back(_primitive);
+    // }
 
 
-
-    // UI::listsInitialRefactoring();
     // UI::primtiiveUiInitialTests();
 
 
@@ -178,21 +176,21 @@ void leftClickCallback(double x, double y) {
     // }
 
     // cast the PObject primtiives in the PScene UI element
-    UI::PScene::PObjectListObject* uiPScenePObjectPrimitive = dynamic_cast<UI::PScene::PObjectListObject*>(targetedPrimitive);
+    UI::component::PscenePObjectListObject* uiPScenePObjectPrimitive = dynamic_cast<UI::component::PscenePObjectListObject*>(targetedPrimitive);
 
     // Post Click Actions!
     switch (postClickAction)
     {
     case Action::ReloadPObject :
         std::cout << "uiPObjectContext->reloadComponent()" << std::endl;
-        UI::PObject::uiPObjectContext->reloadComponent();
+        UI::component::pobjectContext->reloadModule();
         
         break;
 
     case Action::LoadPObject :
         std::cout << "newPObject(...)" << std::endl;
         
-        UI::PObject::uiPObjectContext->newPObject(uiPScenePObjectPrimitive->pObject);
+        UI::component::pobjectContext->newPObject(uiPScenePObjectPrimitive->pObject);
 
         break;
     

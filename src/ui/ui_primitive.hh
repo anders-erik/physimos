@@ -149,10 +149,9 @@ class Primitive {
 
         // UI COMPONENT
 
-        // Primitives are almost always part of a component. 
-        // Components usually bind a specific object and are then interacted with using its context.
-        // This enables primitive methods to access to the component which it belongs and its bound objects.
-        void* componentContext = nullptr;        
+        // Primitives are almost always part of a component: a collection of primitives and a tracked object bound to it.
+        // This pointer enables primitives to access the same scope and objects as the component to which it belongs. 
+        void* component = nullptr;        
 };
 
 
