@@ -12,27 +12,7 @@
 
 namespace UI {
 
-    // float uiPrimitiveTransform16[16] = {
-    //                             1, 0, 0, 100.0 / 1000.0,
-    //                             0, 1, 0, 100.0 / 750.0,
-    //                             0, 0, 1, 0,
-    //                             0, 0, 0, 1,
-    // };
-
-    // float squareVertices[] = {
-    //    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // bottom-left
-    //    1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right
-    //    0.0f, 1.0f, 0.0f, 0.0f, 1.0f,   // top-left
-    //    1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right
-    //    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // bottom-left
-    //    1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom-right
-    // };
-    // float identity16[] = {
-    //    1.0f, 0.0f, 0.0f, 0.0f,
-    //    0.0f, 1.0f, 0.0f, 0.0f,
-    //    0.0f, 0.0f, 1.0f, 0.0f,
-    //    0.0f, 0.0f, 0.0f, 1.0f,
-    // };
+    
 
 
     void Primitive::setState(PrimitiveState _newState){
@@ -198,30 +178,6 @@ namespace UI {
         }
     }
 
-    // Empty primitive 
-    // Primitive::Primitive() {
-    // }
-    
-    
-    // Create Primitive element using a pre-populated primitiveInfo data object. 
-    Primitive::Primitive(PrimitiveInfo * _primitiveInfo_ptr) {
-
-        std::cout << "new primitive!!  ! !" << std::endl;
-
-        x_real = _primitiveInfo_ptr->x;
-        y_real = _primitiveInfo_ptr->y;
-        width = _primitiveInfo_ptr->width;
-        height = _primitiveInfo_ptr->height;
-
-        R = _primitiveInfo_ptr->R;
-        G = _primitiveInfo_ptr->G;
-        B = _primitiveInfo_ptr->B;
-        A = _primitiveInfo_ptr->A;
-
-        parent = _primitiveInfo_ptr->parent;
-
-        initGraphics();
-    }
 
     // make sure the transform matrix is updated to current height, width, x, and y
     void Primitive::reloadHWXY(){
@@ -232,28 +188,12 @@ namespace UI {
         uiPrimitiveTransform16[3] = x_real;
         uiPrimitiveTransform16[7] = y_real;
 
-        // if (parent == nullptr) {
-        //     // set pure ui coordinates
-        //     uiPrimitiveTransform16[3] = x_real;
-        //     uiPrimitiveTransform16[7] = y_real;
-
-        // }
-        // else {
-        //     // 
-        //     uiPrimitiveTransform16[3] = x_real;
-        //     uiPrimitiveTransform16[7] = y_real;
-        // }
-
     }
 
     void Primitive::initGraphics(){
 
 
         shader = getShader(Shaders::ui_primitive);
-
-        // Transforms
-        // uiViewportTransform16[0] = 2.0f / 1000.0;
-        // uiViewportTransform16[5] = 2.0f / 750.0;
 
 
         reloadHWXY();
@@ -279,8 +219,6 @@ namespace UI {
         glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
 
 
 

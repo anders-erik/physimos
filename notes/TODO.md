@@ -24,10 +24,30 @@
 
 ---
 
+### 2025-02-11
+- ui
+	- primitive
+		- transform
+		- void module pointer
+		- void boundObject pointer
+	- improve modules
+- ptest
+	- pbitmap
+- pimage
+	- bitmap object
+		- loaders
+			- bmp
+	- texture object
+		- dynamic : dynamically bound to bitmap
+		- static  : explicit loading into gl texture
+- pmodel
+	- pmesh
+	- pmaterial
+
 
 ### 2025-02-10
 - pmodel
-	- Obj
+	- |o| Obj
 	- mesh
 - render using pmodel from obj-file
 - draw vector in scene

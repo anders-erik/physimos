@@ -6,7 +6,6 @@
 #include "ui/ui_primitive.hh"
 #include "ui/UiPObject.hh"
 #include "ui/UiPScene.hh"
-#include "ui_list.hh"
 
 
 #include "Input.hpp"
@@ -255,22 +254,22 @@ void setCurrentlyHoveredPrimitive(Primitive* newHoverPrimitive){
 }
 
 
-extern std::vector<UI::List*> uiLists;
-void listsInitialRefactoring(){
-    // REFACTOR - 2024-10-04
-    // REFACTOR - 2024-10-9
-    std::vector<UI::List*> listsLoadedFromFile = UI::loadListsFromFile();
-    // std::cout << "Yello";
-    for(UI::List* _list_ptr : listsLoadedFromFile)
-        uiLists.push_back(_list_ptr);
+// extern std::vector<UI::List*> uiLists;
+// void listsInitialRefactoring(){
+//     // REFACTOR - 2024-10-04
+//     // REFACTOR - 2024-10-9
+//     std::vector<UI::List*> listsLoadedFromFile = UI::loadListsFromFile();
+//     // std::cout << "Yello";
+//     for(UI::List* _list_ptr : listsLoadedFromFile)
+//         uiLists.push_back(_list_ptr);
 
 
-    // UI::List* _woList = new UI::List(UI::ListType::Stack, "woToggleList");
-    UI::List* _woList = new UI::List();
-    _woList->initWoListList();
+//     // UI::List* _woList = new UI::List(UI::ListType::Stack, "woToggleList");
+//     UI::List* _woList = new UI::List();
+//     _woList->initWoListList();
 
-    uiLists.push_back(_woList);
-}
+//     uiLists.push_back(_woList);
+// }
 
 void primtiiveUiInitialTests(){
 
