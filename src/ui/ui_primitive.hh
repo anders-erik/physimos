@@ -85,6 +85,7 @@ class Primitive {
         bool isLeaf();
         void appendChild(Primitive* childPrimitive);
         std::vector<Primitive*> flattenTree();
+        // TODO: move the tmp flat vector into primitive
         void appendtoFlatTreeNested(Primitive* _primitive);
 
         
@@ -133,7 +134,15 @@ class Primitive {
         bool isClickable = false;
         virtual UI::Action click();
         // void (*clickCallback)() = nullptr;
-        
+
+
+
+        // UI COMPONENT
+
+        // Primitives are almost always part of a component. 
+        // Components usually bind a specific object and are then interacted with using its context.
+        // This enables primitive methods to access to the component which it belongs and its bound objects.
+        void* componentContext = nullptr;        
 };
 
 

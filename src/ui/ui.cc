@@ -6,6 +6,7 @@
 #include "ui/ui_primitive.hh"
 #include "ui/UiPObject.hh"
 #include "ui/UiPScene.hh"
+#include "ui/uic_transform.hh"
 
 
 #include "Input.hpp"
@@ -40,6 +41,9 @@ void init(){
 
     // Load characters-2.bmp character map
     UI::loadFont();
+
+    
+
 
 
     // WORLD OBJECT COMPONENT 1
@@ -81,6 +85,18 @@ void init(){
     std::vector<UI::Primitive*> flatUiPScene = UI::PScene::uiPSceneContext->container->flattenTree();
     UI::primitiveTreeHeads.push_back(UI::PScene::uiPSceneContext->container);
     for (UI::Primitive* _primitive : flatUiPScene) {
+        // std::cout << "_primitive->id = " << _primitive->id << std::endl;
+        UI::primitiveList.push_back(_primitive);
+    }
+
+
+    // TRANSFORM COMPONENT
+    UI::component::transform::TransformContext* transformContext = new UI::component::transform::TransformContext();
+    transformContext->populateContext(house1_wo->transform);
+    UI::primitiveTreeHeads.push_back(transformContext->container);
+
+    std::vector<UI::Primitive*> flatTransformContext = transformContext->container->flattenTree();
+    for (UI::Primitive* _primitive : flatTransformContext) {
         // std::cout << "_primitive->id = " << _primitive->id << std::endl;
         UI::primitiveList.push_back(_primitive);
     }
@@ -168,13 +184,13 @@ void leftClickCallback(double x, double y) {
     switch (postClickAction)
     {
     case Action::ReloadPObject :
-        std::cout << "RELOAD" << std::endl;
+        std::cout << "uiPObjectContext->reloadComponent()" << std::endl;
         UI::PObject::uiPObjectContext->reloadComponent();
         
         break;
 
     case Action::LoadPObject :
-        std::cout << "RELOAD" << std::endl;
+        std::cout << "newPObject(...)" << std::endl;
         
         UI::PObject::uiPObjectContext->newPObject(uiPScenePObjectPrimitive->pObject);
 
