@@ -19,12 +19,15 @@ using namespace ptest;
 
 int main(){
     std::cout << "--------------------------------------------------------------" << std::endl << std::endl;
+    
+    std::string subcommand = "ls";
+    std::string subcommand_output = run_subcommand(subcommand);
+    if (subcommand_output.size() > 0){
+        // std::cout << "subcommand_output = " << subcommand_output << std::endl;
+        // std::cout << "subcommand_output.size() = " << subcommand_output.size() << std::endl;
+    }
 
-
-    // Two different ways of getting the physimos root directory
-    char* PHYSIMOS_ROOT_DIR = std::getenv("PHYSIMOS_ROOT_DIR");
-    // std::string physimosRepoDir = getGitRepoRootDir();
-
+    // Result test
     plib::Result physimosRepoDirResult = get_physimos_root_dir();
     std::string physimosRepoDir;
     if (physimosRepoDirResult.status)
@@ -32,6 +35,7 @@ int main(){
     else
         plib::handleResult((plib::ResultInfo*)physimosRepoDirResult.pointer);
     
+    std::cout << "physimosRepoDir = " << physimosRepoDir << std::endl;
     
     
 

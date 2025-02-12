@@ -7,8 +7,6 @@
 
 #include "obj_types.hh"
 
-std::vector<std::string> split_str(std::string str, char delimiter);
-
 
 namespace pmodel {
 namespace pobj {

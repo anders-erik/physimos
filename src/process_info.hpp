@@ -1,7 +1,9 @@
 #ifndef PROCESS_INFO_H
 #define PROCESS_INFO_H
 
-#include <lib/result.hh>
+#include <string>
+
+#include "lib/result.hh"
 
 typedef struct Process {
     int pid;
@@ -10,6 +12,9 @@ typedef struct Process {
 
 void process_info_init();
 
+std::string run_subcommand(std::string command_str);
+
+std::string getGitRepoRootDir();
 plib::Result get_physimos_root_dir();
 
 #endif

@@ -1,6 +1,9 @@
 
-add_library( lib
+add_library(lib
+
     string.cc
+    result.cc
+
 )
 
 

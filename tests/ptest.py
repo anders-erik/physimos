@@ -36,7 +36,7 @@ class Ptest:
         # Store root directory for later
         self.repo_root_dir = repo_root_dir
         # Make sure all subprocesses can using root dir
-        os.environ['PHYSIMOS_ROOT_DIR'] = repo_root_dir
+        # os.environ['PHYSIMOS_ROOT_DIR'] = repo_root_dir
 
         self.test_name = test_name
         self.ptest_bin_dir = self.repo_root_dir + "/tests/bin"

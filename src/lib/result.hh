@@ -1,5 +1,5 @@
-#ifndef RESULT_HH
-#define RESULT_HH
+#ifndef PLIB_RESULT_HH
+#define PLIB_RESULT_HH
 
 namespace plib {
 

@@ -1,5 +1,5 @@
-#ifndef STRING_HH
-#define STRING_HH
+#ifndef PLIB_STRING_HH
+#define PLIB_STRING_HH
 
 #include <string>
 #include <sstream>
@@ -7,11 +7,16 @@
 
 namespace plib {
 
-    std::vector<std::string> split_str(std::string str, char delimiter);
-
+bool cstr_is_empty_or_null(char* cstr);
 
 }
 
 
+
+namespace plib::std_string {
+
+std::vector<std::string> split(std::string str, char delimiter);
+
+}
 
 #endif

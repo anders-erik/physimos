@@ -13,8 +13,6 @@ void passed(std::string msg);
 void failed(std::string msg);
 void assertTrue(bool expression, std::string message);
 
-std::string getGitRepoRootDir();
-
 }
 
 #endif

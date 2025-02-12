@@ -4,15 +4,99 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <filesystem>
+
+#include <cstdio>
+#include <memory>
+#include <stdexcept>
 // #include "stdio.h"
 
 #include "process_info.hpp"
+#include "lib/string.hh"
 
+std::string physimos_root_dir = "";
+
+
+namespace fs = std::filesystem;
+std::string run_subcommand(std::string command_str){
+
+    std::string returnString = "";
+    
+    unsigned int BUFFER_SIZE = 1000;
+    char buffer[BUFFER_SIZE];
+
+    FILE* pipe = popen(command_str.data(), "r");
+
+    // int ch;
+    if (pipe) {
+
+        while (!feof(pipe)) {
+            if (fgets(buffer, BUFFER_SIZE, pipe) != nullptr) {
+                returnString += buffer;
+            }
+        }
+
+        pclose(pipe);
+        
+        return returnString;
+    }
+
+
+    return std::string("");
+    
+}
+
+
+
+// has to be run from within the physimos project!
+// TODO: if the git command fails my whole check breaks my program...
+std::string getGitRepoRootDir() {
+    // std::string cwdIsGitRepo_command = "git rev-parse --is-inside-work-tree $2> /dev/stdout";
+    std::string cwdIsGitRepo_command = "git rev-parse --is-inside-work-tree ";
+    std::string getGitRepoName_command = "basename `git rev-parse --show-toplevel`"; // 
+    std::string getRepoRootDirCommand  = "git rev-parse --show-toplevel";
+
+
+
+    // std::string cwdIsGitRepo_string = run_subcommand(cwdIsGitRepo_command);
+    // if (cwdIsGitRepo_string.size() == 0)
+    //     return std::string("");
+
+
+    std::string repoRootDir_output = run_subcommand(getRepoRootDirCommand);
+    if (repoRootDir_output.size() == 0)
+        return std::string("");
+
+    
+    return repoRootDir_output;
+}
 
 plib::Result get_physimos_root_dir(){
 
+    std::string tmp_physimos_root_dir = "";
+
+    // Cache
+    if (physimos_root_dir != "")
+        return plib::Result {plib::Ok, &physimos_root_dir};
+    
+
+    // Environment var
+    char* PHYSIMOS_ROOT_DIR = std::getenv("PHYSIMOS_ROOT_DIR");
+    if (!plib::cstr_is_empty_or_null(PHYSIMOS_ROOT_DIR))
+        return plib::Result{ plib::Ok, new std::string(PHYSIMOS_ROOT_DIR) };
+
+
+    // Try git repo
+    std::string git_repo_dir = getGitRepoRootDir();
+    if (git_repo_dir.size() > 0)
+        return plib::Result{ plib::Ok, new std::string(git_repo_dir) };
+
+
+
     return plib::Result {plib::Error, new plib::ResultInfo {plib::RootDirNotFound, "Unable to find the physimos root dir."}};
 }
+
+
 
 
 Process process;

@@ -5,25 +5,14 @@
 #include <fstream>
 #include <sstream>
 
+#include "lib/string.hh"
+
 #include "obj.hh"
 #include "obj_types.hh"
 
 #include "res/bmp_loader.hpp"
 
-// returns a vector of the resulting string sections.
-// e.g. "hello there" -> {"hello", "there"} with delimiter " ".
-std::vector<std::string> split_str(std::string str, char delimiter) {
-
-    std::stringstream str_stream(str);
-    std::string section;
-
-    std::vector<std::string> returnVector;
-
-    while (std::getline(str_stream, section, delimiter))
-        returnVector.push_back(section);
-
-    return returnVector;
-}
+// using namespace plib;
 
 
 namespace pmodel {
@@ -74,14 +63,14 @@ ObjLoadStatus Obj::loadMtlFile(){
     mtlStream << mtlFile.rdbuf();
     mtlFile.close();
 
-    std::vector<std::string> mtlFileLines = split_str(mtlStream.str(), '\n');
+    std::vector<std::string> mtlFileLines = plib::std_string::split(mtlStream.str(), '\n');
     
     for(std::string mtlFileLine : mtlFileLines){
         // empty lines are immediately skipped
         if (mtlFileLine.size() < 1)
             continue;
 
-        std::vector<std::string> line_segments = split_str(mtlFileLine, ' ');
+        std::vector<std::string> line_segments = plib::std_string::split(mtlFileLine, ' ');
 
         // this should always be encountered first, and triggers the creation of a new mtl-object.
         if (line_segments[0] == "newmtl") {
@@ -148,11 +137,11 @@ ObjLoadStatus Obj::loadObjFile() {
 
 
     // Parse file
-    std::vector<std::string> objFileLines = split_str(modelStream.str(), '\n');
+    std::vector<std::string> objFileLines = plib::std_string::split(modelStream.str(), '\n');
 
     for(std::string line : objFileLines){
         // std::cout << "" << line << std::endl;
-        std::vector<std::string> line_segments = split_str(line, ' ');
+        std::vector<std::string> line_segments = plib::std_string::split(line, ' ');
 
         if (line_segments[0] == "v"){
             // std::cout << "v" << std::endl;
@@ -198,7 +187,7 @@ ObjLoadStatus Obj::loadObjFile() {
 ObjLoadStatus Obj::processVertexCoordinateLine(std::string line) {
     // std::cout << "" << (float)std::atof(lineDataSegments[1].data()) << std::endl;
 
-    std::vector<std::string> line_segments = split_str(line, ' ');
+    std::vector<std::string> line_segments = plib::std_string::split(line, ' ');
 
     float x = (float)std::atof(line_segments[1].data());
     float y = (float)std::atof(line_segments[2].data());
@@ -217,7 +206,7 @@ ObjLoadStatus Obj::processVertexCoordinateLine(std::string line) {
 
 
 ObjLoadStatus Obj::processVertexTextureLine(std::string line) {
-    std::vector<std::string> line_segments = split_str(line, ' ');
+    std::vector<std::string> line_segments = plib::std_string::split(line, ' ');
 
     float u = (float)std::atof(line_segments[1].data());
     float v = (float)std::atof(line_segments[2].data());
@@ -232,7 +221,7 @@ ObjLoadStatus Obj::processVertexTextureLine(std::string line) {
 }
 
 ObjLoadStatus Obj::processVertexNormalLine(std::string line) {
-    std::vector<std::string> line_segments = split_str(line, ' ');
+    std::vector<std::string> line_segments = plib::std_string::split(line, ' ');
 
     float x = (float)std::atof(line_segments[1].data());
     float y = (float)std::atof(line_segments[2].data());
@@ -246,11 +235,11 @@ ObjLoadStatus Obj::processVertexNormalLine(std::string line) {
 }
 
 ObjLoadStatus Obj::processFaceLineDataSegments(std::string line) {
-    std::vector<std::string> line_segments = split_str(line, ' ');
+    std::vector<std::string> line_segments = plib::std_string::split(line, ' ');
     
-    std::vector <std::string> vert1_index_strings = split_str(line_segments[1], '/');
-    std::vector <std::string> vert2_index_strings = split_str(line_segments[2], '/');
-    std::vector <std::string> vert3_index_strings = split_str(line_segments[3], '/');
+    std::vector <std::string> vert1_index_strings = plib::std_string::split(line_segments[1], '/');
+    std::vector <std::string> vert2_index_strings = plib::std_string::split(line_segments[2], '/');
+    std::vector <std::string> vert3_index_strings = plib::std_string::split(line_segments[3], '/');
 
     TriangleFaceI triangleFaceI;
     

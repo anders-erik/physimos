@@ -49,28 +49,4 @@ namespace ptest {
     }
 
 
-    // has to be run from within the physimos project!
-    std::string getGitRepoRootDir() {
-        char getRepoRootDirCommand[] = "git rev-parse --show-toplevel";
-
-        // int returnCode = system(getRepoRootDirCommand);
-        // std::cout << "returnCode = " << returnCode << std::endl;
-
-        FILE* pipe = popen(getRepoRootDirCommand, "r");
-        char buffer[128];
-        if (pipe) {
-            while (!feof(pipe)) {
-                if (fgets(buffer, 128, pipe) != nullptr) {
-                    // printf("%s", buffer);
-                }
-            }
-            pclose(pipe);
-        }
-
-        std::string repoDir = std::string(buffer);
-        // Clear trailing whitespace
-        repoDir = repoDir.substr(0, repoDir.size() - 1);
-        return repoDir;
-    }
-
 }
