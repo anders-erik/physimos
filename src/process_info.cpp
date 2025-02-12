@@ -9,6 +9,12 @@
 #include "process_info.hpp"
 
 
+plib::Result get_physimos_root_dir(){
+
+    return plib::Result {plib::Error, new plib::ResultInfo {plib::RootDirNotFound, "Unable to find the physimos root dir."}};
+}
+
+
 Process process;
 long pageSize;
 

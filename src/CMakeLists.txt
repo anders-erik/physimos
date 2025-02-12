@@ -9,6 +9,7 @@ add_subdirectory(logger)
 add_subdirectory(ui)
 add_subdirectory(model)
 add_subdirectory(image)
+add_subdirectory(lib)
 
 
 
