@@ -8,6 +8,7 @@ add_subdirectory(render)
 add_subdirectory(logger)
 add_subdirectory(ui)
 add_subdirectory(model)
+add_subdirectory(image)
 
 
 

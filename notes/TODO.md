@@ -24,6 +24,21 @@
 
 ---
 
+
+### 2025-02-12
+- ptest
+	- pimage
+- pimage
+	- bitmap object
+	- texture object
+		- dynamic : dynamically bound to in memory bitmap
+		- static  : one time loading into gl texture - may discard bitmap from process memory
+	- font
+		- bitmap
+		- vector
+	- loaders
+		- bmp
+
 ### 2025-02-11
 - |o| ui
 	- |o| primitive
