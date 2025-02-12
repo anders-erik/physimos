@@ -13,7 +13,7 @@ tests/*.o
 logs*
 
 build/*
-build*
+build_cmake/*
 cmake-build*
 
 

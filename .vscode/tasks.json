@@ -3,15 +3,15 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "C++ : Makefile build & run",
-            "command": "make run",
+            "label": "Build",
+            "command": "${workspaceFolder}/scripts/build.sh",
             "args": [],
             "options": {},
             "problemMatcher": [
                 "$gcc"
             ],
             "group": "build",
-            "detail": "compiler: /usr/bin/g++",
+            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -20,32 +20,16 @@
         },
         {
             "type": "shell",
-            "label": "build",
-            "command": "make build",
+            "label": "Test",
+            "command": "${workspaceFolder}/scripts/ptest.sh",
             "args": [],
             "options": {},
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "compiler: /usr/bin/g++",
+            "icon": {"color": "terminal.ansiWhite"},
+            "problemMatcher": [],
+            "group": "test",
+            "detail": "",
             "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "type": "shell",
-            "label": "C++ : Run",
-            "command": "${workspaceFolder}/build/glthrowsim",
-            "options": {},
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "compiler: /usr/bin/g++",
-            "presentation": {
+                // "focus": true,
                 "echo": true,
                 "reveal": "always",
                 "panel": "shared"
@@ -57,29 +41,12 @@
             "command": "gdb ${workspaceFolder}/build_cmake/physimos",
             "options": {},
             "group": "build",
-            "detail": "debugger: /usr/bin/gdb",
+            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "panel": "shared",
                 "focus": true
-            }
-        },
-        {
-            "type": "shell",
-            "label": "Test : pmath::vec3",
-            "command": "python3 ${workspaceFolder}/tests/ptest_pmath_vec3.py",
-            "args": [],
-            "options": {},
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "compiler: /usr/bin/g++",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "panel": "shared"
             }
         },
         {
@@ -92,7 +59,7 @@
                 "$gcc"
             ],
             "group": "build",
-            "detail": "compiler: /usr/bin/g++",
+            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -109,7 +76,7 @@
                 "$gcc"
             ],
             "group": "build",
-            "detail": "compiler: /usr/bin/g++",
+            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -126,7 +93,7 @@
                 "$gcc"
             ],
             "group": "build",
-            "detail": "compiler: /usr/bin/g++",
+            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -143,7 +110,7 @@
                 "$gcc"
             ],
             "group": "build",
-            "detail": "compiler: /usr/bin/g++",
+            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -161,7 +128,7 @@
             ],
             "group": "build",
             "dependsOn": "gprof - build",
-            "detail": "compiler: /usr/bin/g++",
+            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
