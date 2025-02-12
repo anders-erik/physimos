@@ -12,4 +12,5 @@ add_library(ui
 
 target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/src/)
 target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include)
+target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include)
 
