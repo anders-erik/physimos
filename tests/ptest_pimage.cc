@@ -40,29 +40,45 @@ int main(){
     
 
     // Test Objects
-    Bitmap* dummyBMP;
+    BMP_Loader dummyBMPLoader = BMP_Loader();
+    Bitmap* dummyBitmap;
     std::filesystem::path dummyFilePath("/dev/null/nonexistent");
+
+    BMP_Loader _2x2BMPLoader = BMP_Loader();
+    Bitmap* _2x2bitmap;
+    std::filesystem::path BMP_2x2_path = physimosRepoDir + "/tests/testdata/pimage/2x2.bmp";
     
-    Bitmap* triangleBMP;
+    BMP_Loader triangleBMPLoader = BMP_Loader();
+    Bitmap* triangleBitmap;
     std::filesystem::path triangleFilePath = physimosRepoDir + "/resources/models/triangle/triangle.bmp";
 
 
     // 
     // FILESYSTEM
     std::cout << "Starting: filesystem" << std::endl;
-    dummyBMP = BMP_load(dummyFilePath);
-    assertTrue(dummyBMP == nullptr, "dummyBMP == nullptr");
+    dummyBitmap = dummyBMPLoader.load(dummyFilePath);
+    assertTrue(dummyBitmap == nullptr, "dummyBitmap == nullptr");
 
-    triangleBMP = BMP_load(triangleFilePath);
-    assertTrue(triangleBMP != nullptr, "triangleBMP != nullptr");
+    _2x2bitmap = _2x2BMPLoader.load(BMP_2x2_path);
+    assertTrue(_2x2bitmap != nullptr, "_2x2bitmap != nullptr");
+    std::cout << "_2x2bitmap->size = " << _2x2bitmap->size << std::endl;
+    _2x2BMPLoader.print_header();
+    
+    // std::cout << "_2x2bitmap->data = " << _2x2bitmap->data << std::endl;
+    // delete _2x2bitmap;
+    _2x2bitmap->~Bitmap();
+    // std::cout << "_2x2bitmap->data = " << _2x2bitmap->data << std::endl;
+
+    triangleBitmap = triangleBMPLoader.load(triangleFilePath);
+    assertTrue(triangleBitmap != nullptr, "triangleBitmap != nullptr");
     // unsigned char c;
     // int ci = 0;
-    // while (ci < triangleBMP->size ){
-    //     c = triangleBMP->data[ci++];
+    // while (ci < triangleBitmap->size ){
+    //     c = triangleBitmap->data[ci++];
     //     std::cout << "c = " << c << std::endl;
 
     // }
-    std::cout << "triangleBMP->size = " << triangleBMP->size << std::endl;
+    std::cout << "triangleBitmap->size = " << triangleBitmap->size << std::endl;
 
     std::cout << "Done    : filesystem" << std::endl << std::endl;
 
