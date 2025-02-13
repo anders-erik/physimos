@@ -39,7 +39,7 @@ typedef class Bitmap {
 
 }
 
-namespace pimage::loaders {
+namespace pimage::io {
 
 typedef enum LoadStatus {
     Ok = 0,
@@ -51,7 +51,10 @@ typedef enum LoadStatus {
     ErrorUnknown = 13,
 } LoadStatus;
 
+
 typedef struct BMP_Header {
+// sizeof() = 56
+// used size = 54
 
     unsigned short  BM;
     unsigned int    file_size;
@@ -59,6 +62,7 @@ typedef struct BMP_Header {
     unsigned short  reserved_2;
     unsigned int    first_pixel_location;
 
+    // BITMAPINFOHEADER
     unsigned int    header_size;
     unsigned int    width;
     unsigned int    height;
@@ -78,7 +82,7 @@ typedef struct BMP_Result {
     LoadStatus loadStatus;
 } BMP_Result;
 
-typedef struct BMP_Loader {
+typedef struct BMP {
     ::pimage::Bitmap* bitmap;
 
     BMP_Header* header;
@@ -90,13 +94,14 @@ typedef struct BMP_Loader {
     LoadStatus loadStatus;
 
     ::pimage::Bitmap* load(std::filesystem::path filePath);
+    bool save(std::filesystem::path filePath);
 
     void print_header();
     
-    BMP_Loader();
-} BMP_Loader;
+    BMP();
+} BMP;
 
-// ::pimage::loaders::BMP_Result BMP_load(std::filesystem::path filePath);
+// ::pimage::io::BMP_Result BMP_load(std::filesystem::path filePath);
 
 
 }

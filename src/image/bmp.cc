@@ -10,6 +10,7 @@
 
 namespace pimage {
 
+// NO LONGER UPDATED
 Bitmap::Bitmap(unsigned char* data, unsigned int dataSize, unsigned int height, unsigned int width, unsigned char bytesPerPixel) {
 
     // Data checks
@@ -34,6 +35,9 @@ Bitmap::Bitmap(unsigned int height, unsigned int width) {
     const unsigned int newBitmapSize = height * width * 4;
     this->size = newBitmapSize;
     this->data = (unsigned char*)malloc(newBitmapSize * sizeof(unsigned char));
+
+    this->height = height;
+    this->width = width;
     
     this->pixels = (Pixel*) this->data;
     this->pixelcount = height * width;
@@ -73,9 +77,9 @@ Pixel Bitmap::set_pixel(unsigned int x, unsigned int y) {
 
 
 
-namespace pimage::loaders {
+namespace pimage::io {
 
-BMP_Loader::BMP_Loader(){
+BMP::BMP(){
     header = new BMP_Header();
     header->first_pixel_location = 0;
     header->width = 0;
@@ -84,15 +88,14 @@ BMP_Loader::BMP_Loader(){
     header->bits_per_pixel = 0;
 }
 
-::pimage::Bitmap* BMP_Loader::load(std::filesystem::path filePath) {
 
-
-    header->first_pixel_location = 0;
-    header->width = 0;
-    header->height = 0;
-    header->imageSize = 0;
-    header->bits_per_pixel = 0;
+bool save(std::filesystem::path filePath){
     
+}
+
+
+::pimage::Bitmap* BMP::load(std::filesystem::path filePath) {
+
 
     // FILE OPERATIONS
     std::ifstream file(filePath, std::ios::binary);
@@ -107,7 +110,7 @@ BMP_Loader::BMP_Loader(){
     file.seekg(0, std::ios::end);
     std::streamsize fileStreamSize = file.tellg();
     file.seekg(0, std::ios::beg);
-    unsigned int file_size = (unsigned int)fileStreamSize;
+    // unsigned int file_size = (unsigned int)fileStreamSize;
 
     // Create a vector to hold the file data
     std::vector<unsigned char> fileData(fileStreamSize);
@@ -139,7 +142,8 @@ BMP_Loader::BMP_Loader(){
     // rawBmpFileData.clear();
     // imageDataBuffer.clear();
 
-
+    std::cout << "sizeof(BMP_Header) = " << sizeof(BMP_Header) << std::endl;
+    
 
     // BMP HEADER
     // https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header
@@ -272,7 +276,7 @@ BMP_Loader::BMP_Loader(){
 
 }
 
-void BMP_Loader::print_header(){
+void BMP::print_header(){
     std::cout << "-------------------------------------------" << std::endl;
     std::cout << "BMP HEADER PRINT:" << std::endl;
     std::cout << "" << std::endl;

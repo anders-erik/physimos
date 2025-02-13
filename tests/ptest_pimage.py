@@ -1,13 +1,22 @@
+import subprocess
+
 from ptest import Ptest
 
 
 ptest = Ptest("pimage")
+
+# Test data output directory
+testdata_output_dir = ptest.ptest_testdata_out_dir + "/pimage"
+subprocess.run(["mkdir", "-p", testdata_output_dir])
+ptest.set_data_output_dir_envvar(testdata_output_dir)
+
 
 # Files that will trigger test rerun
 ptest.add_file_to_watch("/tests/ptest_pimage.cc")
 ptest.add_file_to_watch("/tests/ptest.cc")
 ptest.add_file_to_watch("/tests/ptest.hh")
 ptest.add_file_to_watch("/src/process_info.cpp")
+ptest.add_file_to_watch("/src/lib/fs.cc")
 ptest.add_file_to_watch("/src/image/bmp.cc")
 ptest.add_file_to_watch("/src/image/bmp.hh")
 
@@ -25,6 +34,7 @@ ptest.add_source_file("/tests/ptest.cc")
 ptest.add_source_file("/src/process_info.cpp")
 ptest.add_source_file("/src/lib/result.cc")
 ptest.add_source_file("/src/lib/string.cc")
+ptest.add_source_file("/src/lib/fs.cc")
 
 ptest.add_source_file("/src/image/bmp.cc")
 

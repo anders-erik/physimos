@@ -1,24 +1,27 @@
+
+*~
+
+*.blend1
+
+build/*
+build_cmake/*
+cmake-build*
+
 GLFW/*
 glad/*
 glad.zip
 
-*.blend1
+gmon.out
+gprof.txt
+perf.data
+
+logs*
 
 tests/math-test
 tests/ptest_pmath_vec3
 tests/bin/
 tests/__pycache__
 tests/*.o
+tests/testdata.out/
 
-logs*
-
-build/*
-build_cmake/*
-cmake-build*
-
-
-*~
-
-
-gmon.out
-gprof.txt
+tmp/

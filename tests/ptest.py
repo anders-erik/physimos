@@ -13,6 +13,7 @@ class Ptest:
     test_name=''
     ptest_bin_dir=''
     ptest_bin_file=''
+    ptest_testdata_out_dir=''
 
 
     files_to_watch = []
@@ -35,6 +36,13 @@ class Ptest:
         repo_root_dir = str(repo_root_dir_path)
         # Store root directory for later
         self.repo_root_dir = repo_root_dir
+
+        # Make sure directories used for testing exists
+        self.ptest_testdata_out_dir = self.repo_root_dir + "/tests/testdata.out/"
+        self.set_data_output_dir_envvar(self.ptest_testdata_out_dir)
+        # tmp root dir
+        subprocess.run(["mkdir", "-p", self.repo_root_dir + "/tmp"])
+
         # Make sure all subprocesses can using root dir
         os.environ['PHYSIMOS_ROOT_DIR'] = repo_root_dir
         os.environ['PHYSIMOS_TEST'] = '1'
@@ -43,6 +51,14 @@ class Ptest:
         self.ptest_bin_dir = self.repo_root_dir + "/tests/bin"
         self.ptest_bin_file = self.ptest_bin_dir + "/ptest_" + test_name
     
+
+    def set_data_output_dir_envvar(self, dir_path_str):
+        """
+        Set environment variable "PHYSIMOS_TEST_DATA_OUT_DIR".
+        """
+        os.environ['PHYSIMOS_TEST_DATA_OUT_DIR'] = dir_path_str
+        subprocess.run(["mkdir", "-p", dir_path_str])
+
     
     def add_include_dir(self, dirPath_str):
         """

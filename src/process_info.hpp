@@ -12,9 +12,12 @@ typedef struct Process {
 
 void process_info_init();
 
-std::string run_subcommand(std::string command_str);
+std::string run_subcommand_redir_stderr_to_stdout(std::string command_str);
+
+std::string extern installed_root_dir_linux;
 
 std::string getGitRepoRootDir();
 plib::Result get_physimos_root_dir();
+std::string physimos_root_dir_or_die();
 
 #endif
