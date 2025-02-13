@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <vector>
 
 #include "ptest.hh"
 
@@ -49,13 +50,14 @@ int main(){
     // std::cout << "physimosRepoDir = " << physimosRepoDir << std::endl;
 
     std::string physimos_root_dir = physimos_root_dir_or_die();
-    // std::cout << "physimos_root_dir = " << physimos_root_dir << std::endl;
+    if (physimos_root_dir.size() == 0)
+        std::cout << "[ERROR] physimos_root_dir.size() = 0 after physimos_root_dir_or_die()" << std::endl;
     
 
     
-    char* PHYSIMOS_TEST_DATA_OUT_DIR = std::getenv("PHYSIMOS_TEST_DATA_OUT_DIR");
-    if (!plib::cstr_is_empty_or_null(PHYSIMOS_TEST_DATA_OUT_DIR))
-        std::cout << PHYSIMOS_TEST_DATA_OUT_DIR << std::endl;
+    // char* PHYSIMOS_TEST_DATA_OUT_DIR = std::getenv("PHYSIMOS_TEST_DATA_OUT_DIR");
+    // if (!plib::cstr_is_empty_or_null(PHYSIMOS_TEST_DATA_OUT_DIR))
+    //     std::cout << PHYSIMOS_TEST_DATA_OUT_DIR << std::endl;
         
     // if (PHYSIMOS_TEST_DATA_OUT_DIR.size() > 0)
     //     std::cout << "" << PHYSIMOS_TEST_DATA_OUT_DIR << std::endl;
@@ -78,43 +80,41 @@ int main(){
 
     BMP _2x2BMPLoader = BMP();
     Bitmap* _2x2bitmap;
-    std::filesystem::path BMP_2x2_path = physimosRepoDir + "/tests/testdata/2x2.bmp";
+    std::filesystem::path BMP_2x2_read_path = physimosRepoDir + "/tests/testdata/2x2.bmp";
+    std::filesystem::path BMP_2x2_write_path = physimosRepoDir + "/tmp/2x2.bmp";
     
     BMP triangleBMPLoader = BMP();
     Bitmap* triangleBitmap;
-    std::filesystem::path triangleFilePath = physimosRepoDir + "/resources/models/triangle/triangle.bmp";
+    std::filesystem::path triangle_read_path = physimosRepoDir + "/resources/models/triangle/triangle.bmp";
+    std::filesystem::path triangle_write_path = physimosRepoDir + "/tmp/triangle.bmp";
 
 
-    // 
-    // FILESYSTEM
-    std::cout << "Starting: filesystem" << std::endl;
+    std::cout << "Starting: BMP" << std::endl;
+
+    // DUMMY LOAD SHOULD FAIL
     dummyBitmap = dummyBMPLoader.load(dummyFilePath);
     assertTrue(dummyBitmap == nullptr, "dummyBitmap == nullptr");
 
-    _2x2bitmap = _2x2BMPLoader.load(BMP_2x2_path);
+    // 2 x 2 BMP
+    _2x2bitmap = _2x2BMPLoader.load(BMP_2x2_read_path);
     assertTrue(_2x2bitmap != nullptr, "_2x2bitmap != nullptr");
-    std::cout << "_2x2bitmap->size = " << _2x2bitmap->size << std::endl;
-    // _2x2BMPLoader.print_header();
     
-    // std::cout << "_2x2bitmap->data = " << _2x2bitmap->data << std::endl;
-    // delete _2x2bitmap;
-    _2x2bitmap->~Bitmap();
-    // std::cout << "_2x2bitmap->data = " << _2x2bitmap->data << std::endl;
+    bool save_ok_2x2 = _2x2BMPLoader.save(BMP_2x2_write_path);
+    assertTrue(save_ok_2x2, "_2x2BMPLoader.save(BMP_2x2_write_path)");
 
-    triangleBitmap = triangleBMPLoader.load(triangleFilePath);
+
+    // TRIANGLE
+    triangleBitmap = triangleBMPLoader.load(triangle_read_path);
     assertTrue(triangleBitmap != nullptr, "triangleBitmap != nullptr");
+
+    bool save_ok_triangle = triangleBMPLoader.save(triangle_write_path);
+    assertTrue(save_ok_triangle, "triangleBMPLoader.save(triangle_write_path)");
+    
+
+    // _2x2BMPLoader.print_header();
     // triangleBMPLoader.print_header();
 
-    // unsigned char c;
-    // int ci = 0;
-    // while (ci < triangleBitmap->size ){
-    //     c = triangleBitmap->data[ci++];
-    //     std::cout << "c = " << c << std::endl;
-
-    // }
-    std::cout << "triangleBitmap->size = " << triangleBitmap->size << std::endl;
-
-    std::cout << "Done    : filesystem" << std::endl << std::endl;
+    std::cout << "Done    : BMP" << std::endl << std::endl;
 
 
 

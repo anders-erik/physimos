@@ -35,13 +35,26 @@ std::vector<unsigned char> fs_cat_bin(std::string path_std_string){
     try
     {
         std::ifstream _ifstream(path_std_string, std::ios::binary);
+        if (!_ifstream.is_open()) {
+            // std::cerr << "Error: Could not open file " << filePath << std::endl;
+            return std::vector<unsigned char> {};
+        }
+
         std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(_ifstream), {});
+        
+        _ifstream.close();
         return buffer;
     }
     catch (const std::exception& e)
     {
         return std::vector<unsigned char> {};
     }
+
+    // Alternative read and check used by old BMP loader
+    // if (!file.read(reinterpret_cast<char*>(fileData.data()), fileStreamSize)) {
+    //     std::cerr << "Error: Could not read file data" << std::endl;
+    //     return nullptr;
+    // }
 
 }
 
