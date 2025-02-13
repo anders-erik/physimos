@@ -3,15 +3,32 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 namespace pimage {
 
-Bitmap::Bitmap(unsigned char data, unsigned int size){
+Bitmap::Bitmap(unsigned char* data, unsigned int dataSize, unsigned int height, unsigned int width, unsigned char bytesPerPixel) {
 
-}
-Bitmap::Bitmap(unsigned int size) {
+    // Data checks
+    if (dataSize % bytesPerPixel != 0) {
+        std::cout << "Bitmap data is not aligned to bytesPerPixel = " << bytesPerPixel << std::endl;
+    }
+    if (height * width * bytesPerPixel > dataSize) {
+        std::cout << "New bitmap data not consistent:  height * width * bytesPerPixel > dataSize "<< std::endl;
+        std::cout << "height * width * bytesPerPixel = " << height * width * bytesPerPixel << std::endl;
+        std::cout << "dataSize =                       " << dataSize << std::endl;
+    }
 
+    this->data = data;
+    this->size = dataSize;
+
+    
+    this->pixels = (pimage::RGBA*)data;
+    
 }
+
+Bitmap::Bitmap(unsigned int height, unsigned int width) {}
+
 
 }
 
@@ -21,23 +38,127 @@ Bitmap::Bitmap(unsigned int size) {
 namespace pimage::loaders {
 
 
-::pimage::loaders::BMP_Result BMP_load(std::filesystem::path filePath) {
+::pimage::Bitmap* BMP_load(std::filesystem::path filePath) {
 
-try {
+    // loaded file
+    std::vector<unsigned char> rawBmpFileData;
 
-    std::ifstream file(filePath, std::ios::binary);
-    char s[100];
-    std::streamsize ss = 100;
-    file.read(s, ss);
-    return BMP_Result{ nullptr, LoadStatus::Ok };
+    // std::string imagePath;
+    unsigned int firstPixelLocation;
+    unsigned int width;
+    unsigned int height;
+    unsigned int imageSize;
+    unsigned int bitsPerPixel;
+
+    // 24 bit rgb value buffer
+    std::vector<unsigned char> imageDataBuffer;
+
+
+    // imagePath = path;
+
+
+    rawBmpFileData.clear();
+    imageDataBuffer.clear();
+
+
+    const std::size_t nbytes = 40000;
+    std::vector<char> buff(nbytes); // allocate a buffer of nbytes characters
     
-}
-catch(const std::exception& e){
+    std::ifstream file(filePath, std::ios::binary);
 
-    std::cerr << e.what() << '\n';
+    // Check if the file was opened successfully
+    if (!file.is_open()) {
+        // std::cerr << "Error: Could not open file " << filePath << std::endl;
+        return nullptr;
+    }
 
-    return BMP_Result {nullptr, LoadStatus::ErrorOpeningFile };
-}
+    // Determine the size of the file
+    file.seekg(0, std::ios::end);
+    std::streamsize fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    imageSize = (unsigned int)fileSize;
+
+    // std::cout << "Filesize: " << fileSize << std::endl;
+
+    // Create a vector to hold the file data
+    std::vector<unsigned char> fileData(fileSize);
+
+    if (!file.read(reinterpret_cast<char*>(fileData.data()), fileSize)) {
+        std::cerr << "Error: Could not read file data" << std::endl;
+        return nullptr;
+    }
+
+
+    for (char byte : fileData) {
+        rawBmpFileData.push_back(byte);
+    }
+
+
+    firstPixelLocation = rawBmpFileData[10];
+    firstPixelLocation += rawBmpFileData[11] << 8;
+    firstPixelLocation += rawBmpFileData[12] << 8;
+    firstPixelLocation += rawBmpFileData[13] << 8;
+
+    width = rawBmpFileData[18];
+    width += rawBmpFileData[19] << 8;
+    width += rawBmpFileData[20] << 8;
+    width += rawBmpFileData[21] << 8;
+
+    height = rawBmpFileData[22];
+    height += rawBmpFileData[23] << 8;
+    height += rawBmpFileData[24] << 8;
+    height += rawBmpFileData[25] << 8;
+
+    bitsPerPixel = rawBmpFileData[28];
+    bitsPerPixel += rawBmpFileData[29] << 8;
+
+
+    // std::cout << "first pixel @ " << int(buff[10]) << std::endl;
+
+
+
+    // Move into imageDataBuffer
+    int byteCount = 0;
+    // forced to manually set image size
+    for (std::size_t i = firstPixelLocation; i < imageSize + firstPixelLocation; i += 3) {
+        byteCount++;
+        // BMP all pixel-'words' are stored in little endian format, so we reverse order here
+        imageDataBuffer.push_back(rawBmpFileData[i + 2]);
+        imageDataBuffer.push_back(rawBmpFileData[i + 1]);
+        imageDataBuffer.push_back(rawBmpFileData[i]);
+    }
+    // std::cout << "byteCount: " << byteCount << std::endl;
+
+    file.close();
+
+
+    // Converts the ssize_t of "std::streamsize" to string for logging
+    std::stringstream sizeStringStream;
+    sizeStringStream << fileSize;
+    std::string sizeString = sizeStringStream.str();
+
+
+    // logger::log(logger::Logtype::Textures, "BMP file: " + path + ". " + "Filesize: " + sizeString);
+
+// try {
+
+//     std::ifstream file(filePath, std::ios::binary);
+//     char s[100];
+//     std::streamsize ss = 100;
+//     file.read(s, ss);
+//     return BMP_Result{ nullptr, LoadStatus::Ok };
+    
+// }
+// catch(const std::exception& e){
+
+//     std::cerr << e.what() << '\n';
+
+//     return BMP_Result {nullptr, LoadStatus::ErrorOpeningFile };
+// }
+    // std::cout << "bitsPerPixel / 8 = " << bitsPerPixel / 8 << std::endl;
+    
+    return new Bitmap(imageDataBuffer.data(), imageDataBuffer.size(), height, width, bitsPerPixel / 8);
 
 }
 

@@ -36,7 +36,8 @@ class Ptest:
         # Store root directory for later
         self.repo_root_dir = repo_root_dir
         # Make sure all subprocesses can using root dir
-        # os.environ['PHYSIMOS_ROOT_DIR'] = repo_root_dir
+        os.environ['PHYSIMOS_ROOT_DIR'] = repo_root_dir
+        os.environ['PHYSIMOS_TEST'] = '1'
 
         self.test_name = test_name
         self.ptest_bin_dir = self.repo_root_dir + "/tests/bin"
@@ -137,7 +138,7 @@ class Ptest:
         # exit(0)
             
         # BUILD COMMAND
-        source_command_list = ["g++", "-c", source_path_absolute, "-o", object_path_absolute]
+        source_command_list = ["g++", "-g", "-c", source_path_absolute, "-o", object_path_absolute]
         for include_dir in self.include_dirs:
             source_command_list.append("-I" + include_dir)
 
@@ -159,7 +160,7 @@ class Ptest:
         """
         self.ptest_main_path = self.repo_root_dir + path_path_string
 
-        self.executable_command_list = ["g++", "-o", self.ptest_bin_file, self.ptest_main_path]
+        self.executable_command_list = ["g++", "-g", "-o", self.ptest_bin_file, self.ptest_main_path]
 
         # Source objects
         for source in self.source_files:

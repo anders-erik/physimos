@@ -15,7 +15,41 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
+            "environment": [{
+                "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}"
+            }],
+            // This could be set to true if you prefer an external console for debugging.
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "-enable-frame-filters",
+                    "description": "Enable GDB frame filters",
+                    "ignoreFailures": true
+                }
+            ],
+            "showDisplayString": true,
+            // Optional, you can use if you want it to build before launching.
+            // "preLaunchTask": "build"
+        },
+        {
+            "name": "(gdb) Launch Ptest",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/bin/ptest_pimage",
+            // You could place a .blend file path here to open it by default, or any other Blender args.
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            
+            "environment": [{
+                "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}"
+            }],
             // This could be set to true if you prefer an external console for debugging.
             "externalConsole": false,
             "MIMode": "gdb",

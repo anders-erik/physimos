@@ -13,16 +13,24 @@ typedef struct RGBA {
     unsigned char A;
 } RGBA;
 
+// In memory bitmap structure that provides raw data access to underlying buffer bytes or pixels.
+// Is always 4-byte RGBA structure.
 typedef class Bitmap {
     public:
-        RGBA* pixels;
+        unsigned char* data;
         unsigned int size;
 
-        unsigned char* data;
+        RGBA* pixels;
         unsigned int pixelcount;
 
-        Bitmap(unsigned char data, unsigned int size); // load an already existing bitmap
-        Bitmap(unsigned int size); // Allocate size
+        unsigned int height;
+        unsigned int width;
+
+        // Loads an already existing bitmap data into RGBA bitmap.
+        // If bytes per pixel is not 4, then a new char array will be allocated to match the RGBA structure.
+        Bitmap(unsigned char* data, unsigned int dataSize, unsigned int height, unsigned int width, unsigned char bytesPerPixel);
+        // New RGBA Bitmap of specified size.
+        Bitmap(unsigned int height, unsigned int width);
 } Bitmap;
 
 }
@@ -53,7 +61,8 @@ typedef struct BMP_Loader {
     LoadStatus loadStatus;
 } BMP_Loader;
 
-::pimage::loaders::BMP_Result BMP_load(std::filesystem::path filePath);
+// ::pimage::loaders::BMP_Result BMP_load(std::filesystem::path filePath);
+::pimage::Bitmap* BMP_load(std::filesystem::path filePath);
 
 
 }

@@ -27,7 +27,7 @@ int main(){
         // std::cout << "subcommand_output.size() = " << subcommand_output.size() << std::endl;
     }
 
-    // Result test
+    // Result testing
     plib::Result physimosRepoDirResult = get_physimos_root_dir();
     std::string physimosRepoDir;
     if (physimosRepoDirResult.status)
@@ -35,25 +35,34 @@ int main(){
     else
         plib::handleResult((plib::ResultInfo*)physimosRepoDirResult.pointer);
     
-    std::cout << "physimosRepoDir = " << physimosRepoDir << std::endl;
+    // std::cout << "physimosRepoDir = " << physimosRepoDir << std::endl;
     
     
 
     // Test Objects
-    BMP_Result dummyBMP;
-    BMP_Result triangleBMP;
+    Bitmap* dummyBMP;
     std::filesystem::path dummyFilePath("/dev/null/nonexistent");
-    std::filesystem::path triangleFilePath = physimosRepoDir + "/resources/models/triangle/triangle.obj";
     
+    Bitmap* triangleBMP;
+    std::filesystem::path triangleFilePath = physimosRepoDir + "/resources/models/triangle/triangle.bmp";
+
 
     // 
     // FILESYSTEM
     std::cout << "Starting: filesystem" << std::endl;
     dummyBMP = BMP_load(dummyFilePath);
-    triangleBMP = BMP_load(triangleFilePath);
+    assertTrue(dummyBMP == nullptr, "dummyBMP == nullptr");
 
-    assertTrue(dummyBMP.loadStatus == LoadStatus::ErrorOpeningFile, "dummyBMP.loadStatus == LoadStatus::ErrorOpeningFile");
-    assertTrue(triangleBMP.loadStatus == LoadStatus::Ok, "triangleBMP.loadStatus == LoadStatus::Ok");
+    triangleBMP = BMP_load(triangleFilePath);
+    assertTrue(triangleBMP != nullptr, "triangleBMP != nullptr");
+    // unsigned char c;
+    // int ci = 0;
+    // while (ci < triangleBMP->size ){
+    //     c = triangleBMP->data[ci++];
+    //     std::cout << "c = " << c << std::endl;
+
+    // }
+    std::cout << "triangleBMP->size = " << triangleBMP->size << std::endl;
 
     std::cout << "Done    : filesystem" << std::endl << std::endl;
 
