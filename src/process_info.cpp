@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
+#include <algorithm>
+
 
 #include <cstdio>
 #include <memory>
@@ -18,7 +20,34 @@ std::string physimos_root_dir = "";
 std::string installed_root_dir_linux = "~/.cache/physimos/";
 
 
-namespace fs = std::filesystem;
+bool argument_flag_exists(int argc, char** argv, std::string flag) {
+
+    for (int i = 0; i < argc; ++i) {
+        std::string arg_str = std::string(argv[i]);
+        if (flag == arg_str) {
+            return true;
+        }
+    }
+    return false;
+
+    // return std::find_if(argv, argv + argc, [&](const char* arg) {
+    //     return flag == arg; // Compare the string content
+    //     }) != argv + argc;
+
+
+    // auto exists = std::find(argv, argv + argc, flag) != argv + argc;
+
+    // FIND
+    // return exists;
+    // char** iter = std::find(argv, argv + argc, flag);
+    // if (iter != argv + argc && ++iter != argv + argc)
+    // {
+    //     return *iter;
+    // }
+    // return false;
+}
+
+// namespace fs = std::filesystem;
 // By redirecting to stdout all output is captured.
 std::string run_subcommand_redir_stderr_to_stdout(std::string command_str){
 
@@ -69,6 +98,9 @@ std::string getGitRepoRootDir() {
     return repoRootDir_output;
 }
 
+// Get the directory of the currently running physimos instance.
+// If none can reliably be retrieved we exit the program because all io is comprompised.
+// Does cache previously found directory.
 std::string physimos_root_dir_or_die(){
 
     // Cache
@@ -78,14 +110,18 @@ std::string physimos_root_dir_or_die(){
 
     // Environment var
     char* PHYSIMOS_ROOT_DIR = std::getenv("PHYSIMOS_ROOT_DIR");
-    if (!plib::cstr_is_empty_or_null(PHYSIMOS_ROOT_DIR))
+    if (!plib::cstr_is_empty_or_null(PHYSIMOS_ROOT_DIR)){
+        physimos_root_dir = PHYSIMOS_ROOT_DIR;
         return std::string(PHYSIMOS_ROOT_DIR);
+    }
 
 
     // Try git repo
     std::string git_repo_dir = getGitRepoRootDir();
-    if (git_repo_dir.size() > 0)
+    if (git_repo_dir.size() > 0){
+        physimos_root_dir = git_repo_dir;
         return git_repo_dir;
+    }
 
     std::cout << "UNABLE TO FIND physimos_root_dir. Exiting" << std::endl;
     

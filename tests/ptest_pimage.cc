@@ -20,13 +20,33 @@ using namespace pimage::io;
 
 using namespace ptest;
 
+void full_bpm_generation_test();
 
-int main(){
+
+void full_bpm_generation_test(){
+    std::string physimos_root_dir = physimos_root_dir_or_die();
+    std::string output;
+
+    // std::string generate_images_command = "python3 " + physimos_root_dir + "/tests/echo.py";
+    std::string generate_images_command = "python3 " + physimos_root_dir + "/tests/ptest_pil.py -g";
+    output = run_subcommand_redir_stderr_to_stdout(generate_images_command);
+    std::cout << "generate_images_command.output = " << output << std::endl;
+    
+    
+}
+
+int main(int argc, char** argv) {
     std::cout << "--------------------------------------------------------------" << std::endl << std::endl;
-
+        
 
     // ---------------------------------------------------------------------------------
     // START PLIB PROCESS TESTS
+
+
+
+    bool with_h_flag = argument_flag_exists(argc, argv, "-h");
+    if (with_h_flag)
+        std::cout << "H FLAG!" << std::endl;
 
     // test ls
     // std::string subcommand = "ls";
@@ -66,11 +86,18 @@ int main(){
     
 
 
-
-
     // ---------------------------------------------------------------------------------
     // START PIMAGE TESTS
-    
+
+        
+
+    bool g_flag_exists = argument_flag_exists(argc, argv, "-g");
+    if (g_flag_exists){
+        std::cout << "G FLAG!" << std::endl;
+        full_bpm_generation_test();
+        std::cout << "G FLAG IMAGE TESTS DONE. EXITING." << std::endl;
+        return 0;
+    }
 
 
     // Test Objects

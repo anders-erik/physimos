@@ -6,6 +6,6 @@ REPO_ROOT=$( cd $CURRENT_FILE_DIR && cd .. && pwd)
 
 echo "PTEST:"
 
-PTEST_MAIN_PYTHON_FILE=${REPO_ROOT}/tests/ptest_pimage.py
+PTEST_MAIN_PYTHON_FILE="${REPO_ROOT}/tests/curses_test.py"
 
 gnome-terminal -- python3 "$PTEST_MAIN_PYTHON_FILE"

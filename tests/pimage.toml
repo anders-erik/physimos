@@ -1,0 +1,33 @@
+
+watch_dirs = [
+
+]
+
+watch_files = [
+    "/tests/ptest_pimage.cc",
+    "/tests/ptest.cc",
+    "/tests/ptest.hh",
+    "/src/process_info.cpp",
+    "/src/lib/fs.cc",
+    "/src/image/bmp.cc",
+    "/src/image/bmp.hh",
+]
+
+include_dirs = [
+    "/tests",
+    "/src",
+    "/src/lib",
+    "/src/image",
+]
+
+source_files = [
+    "/tests/ptest.cc", 
+    "/src/process_info.cpp", 
+    "/src/lib/result.cc", 
+    "/src/lib/string.cc", 
+    "/src/lib/fs.cc", 
+    "/src/image/bmp.cc"
+]
+
+
+main = "/tests/ptest_pimage.cc"

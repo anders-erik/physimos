@@ -13,8 +13,11 @@ class Ptest:
     test_name=''
     ptest_bin_dir=''
     ptest_bin_file=''
-    ptest_testdata_out_dir=''
 
+    # Util dirs
+    tmp_physimos_dir=''
+    testdata_dir=''
+    testdata_out_dir=''
 
     files_to_watch = []
 
@@ -38,10 +41,14 @@ class Ptest:
         self.repo_root_dir = repo_root_dir
 
         # Make sure directories used for testing exists
-        self.ptest_testdata_out_dir = self.repo_root_dir + "/tests/testdata.out/"
-        self.set_data_output_dir_envvar(self.ptest_testdata_out_dir)
+        self.testdata_out_dir = self.repo_root_dir + "/tests/testdata.out/"
+        self.set_data_output_dir_envvar(self.testdata_out_dir)
+        # Test data dir
+        self.testdata_dir = self.repo_root_dir + "/tests/testdata"
+        subprocess.run(["mkdir", "-p", self.testdata_dir])
         # tmp root dir
-        subprocess.run(["mkdir", "-p", self.repo_root_dir + "/tmp"])
+        self.tmp_physimos_dir = self.repo_root_dir + "/tmp"
+        subprocess.run(["mkdir", "-p", self.tmp_physimos_dir])
 
         # Make sure all subprocesses can using root dir
         os.environ['PHYSIMOS_ROOT_DIR'] = repo_root_dir
@@ -205,12 +212,16 @@ class Ptest:
         return compile_process.returncode
     
     
-    def run_ptest(self):
+    def run_ptest(self, args):
         """
         Runs the test binary.
         """
         print("        Running ptest : " + self.test_name)
-        subprocess.run([self.ptest_bin_file])
+        subcommand_list = [self.ptest_bin_file]
+        for arg in args:
+            subcommand_list.append(arg)
+        print(subcommand_list)
+        subprocess.run(subcommand_list)
          
 
     def start_watch(self):

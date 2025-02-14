@@ -1,0 +1,8 @@
+
+[source_files]
+pimage = "ptest_pimage.cc"
+
+
+[pimage_gen]
+100x100_rand = ["_100x100_rand_generated.bmp", "_100x100_rand_test_output.bmp"]
+

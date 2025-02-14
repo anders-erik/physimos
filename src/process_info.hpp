@@ -12,6 +12,8 @@ typedef struct Process {
 
 void process_info_init();
 
+bool argument_flag_exists(int argc, char** argv, std::string flag);
+
 std::string run_subcommand_redir_stderr_to_stdout(std::string command_str);
 
 std::string extern installed_root_dir_linux;
