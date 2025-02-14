@@ -30,24 +30,28 @@ std::string fs_cat(std::string path_std_string){
     return string;
 }
 
-std::vector<unsigned char> fs_cat_bin(std::string path_std_string){
+// Creates a new char vector with contents equal to file contents. Empty vector on failed read.
+std::vector<unsigned char>& fs_cat_bin(std::string path_std_string){
+    std::vector<unsigned char>* returnVector;
 
     try
     {
         std::ifstream _ifstream(path_std_string, std::ios::binary);
         if (!_ifstream.is_open()) {
             // std::cerr << "Error: Could not open file " << filePath << std::endl;
-            return std::vector<unsigned char> {};
+            returnVector = new std::vector<unsigned char> {};
+            return *returnVector;
         }
 
-        std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(_ifstream), {});
+        returnVector = new std::vector<unsigned char>(std::istreambuf_iterator<char>(_ifstream), {});
         
         _ifstream.close();
-        return buffer;
+        return *returnVector;
     }
     catch (const std::exception& e)
     {
-        return std::vector<unsigned char> {};
+        returnVector = new std::vector<unsigned char> {};
+        return *returnVector;
     }
 
     // Alternative read and check used by old BMP loader
@@ -82,7 +86,7 @@ FS_STATUS fs_echo(std::string path_std_string, std::string contents){
 }
 
 
-FS_STATUS fs_echo_bin(std::string path_std_string, std::vector<unsigned char> bin_contents){
+FS_STATUS fs_echo_bin(std::string path_std_string, std::vector<unsigned char>& bin_contents){
 
     std::ofstream _ofstream;
 

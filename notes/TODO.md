@@ -25,6 +25,29 @@
 ---
 
 
+### 2025-02-14
+- pimage
+	- BMP tests (especially a few different bmp files : different souces, try large sizes, aspect ratios, etc.)
+	- glTexture
+	- bitmap
+- plib
+	- process
+		- envvar
+- pmodel
+	- OBJ
+		- loading!
+
+
+### 2025-02-13
+- ptest
+	- pimage
+- pimage
+	- bitmap
+	- BMP
+- plib
+	- fs !
+
+
 ### 2025-02-12
 - ptest
 	- pimage

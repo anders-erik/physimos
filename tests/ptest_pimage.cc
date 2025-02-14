@@ -99,16 +99,18 @@ int main(){
     _2x2bitmap = _2x2BMPLoader.load(BMP_2x2_read_path);
     assertTrue(_2x2bitmap != nullptr, "_2x2bitmap != nullptr");
     
-    bool save_ok_2x2 = _2x2BMPLoader.save(BMP_2x2_write_path);
-    assertTrue(save_ok_2x2, "_2x2BMPLoader.save(BMP_2x2_write_path)");
+    _2x2BMPLoader.from_bitmap(_2x2bitmap);
+    bool write_ok_2x2 = _2x2BMPLoader.write(BMP_2x2_write_path);
+    assertTrue(write_ok_2x2, "_2x2BMPLoader.write(BMP_2x2_write_path)");
 
 
     // TRIANGLE
     triangleBitmap = triangleBMPLoader.load(triangle_read_path);
     assertTrue(triangleBitmap != nullptr, "triangleBitmap != nullptr");
-
-    bool save_ok_triangle = triangleBMPLoader.save(triangle_write_path);
-    assertTrue(save_ok_triangle, "triangleBMPLoader.save(triangle_write_path)");
+    // Write the loaded bitmap object
+    triangleBMPLoader.from_bitmap(triangleBitmap); 
+    bool write_ok_triangle = triangleBMPLoader.write(triangle_write_path);
+    assertTrue(write_ok_triangle, "triangleBMPLoader.write(triangle_write_path)");
     
 
     // _2x2BMPLoader.print_header();

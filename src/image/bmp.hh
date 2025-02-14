@@ -52,27 +52,39 @@ typedef enum LoadStatus {
 } LoadStatus;
 
 
+extern unsigned int BMP_Header_BITMAPINFOHEADER_size;
+
+
 /// @brief Stores the loaded bmp-file header in BIG-endian byte order [opposite of file], except 'BM' which remains as is. \n
 /// Data size is 54 bytes and padded to 56 (usually).
-typedef struct BMP_Header_BITMAPINFOHEADER {
+typedef struct BMP_BITMAPINFOHEADER {
 // sizeof() = 56
 // used size = 54
 
     // Filetype identifier : 'BM' as the first two bytes.
     unsigned short  BM;
+    // Total file size in bytes
     unsigned int    file_size;
+    // Applicaiton specific
     unsigned short  reserved_1;
+    // Applicaiton specific
     unsigned short  reserved_2;
+    // Byte count from beginning of file
     unsigned int    first_pixel_location;
+
 
     // BITMAPINFOHEADER
 
     // Size of BITMAPINFOHEADER - usually measured from this location to the first pixel.
     unsigned int    header_size;
+    // Image pixel width
     unsigned int    width;
+    // Image pixel height
     unsigned int    height;
+    // Will always be one
     unsigned short  color_planes;
-    unsigned short  bits_per_pixel; // TODO: make sure it works. Was changed from int to short!
+    // Traditionally 24 - RGB, no alpha
+    unsigned short  bits_per_pixel;
     unsigned int    compression_method;
     /// Number of bytes that represent the actual image. Includes the padding bytes of 4-aligned rows.
     unsigned int    imageSize;
@@ -85,20 +97,18 @@ typedef struct BMP_Header_BITMAPINFOHEADER {
     // Value of 0 treats all colors equally
     unsigned int    important_color_count;
     
-} BMP_Header_BITMAPINFOHEADER;
+} BMP_BITMAPINFOHEADER;
 
-
-typedef struct BMP_Result {
-    ::pimage::Bitmap* bitmap;
-    LoadStatus loadStatus;
-} BMP_Result;
 
 
 typedef struct BMP {
-    ::pimage::Bitmap* bitmap;
+    ::pimage::Bitmap* bitmap = nullptr;
 
-    BMP_Header_BITMAPINFOHEADER* header;
-    LoadStatus loadStatus;
+    // BITMAPINFOHEADER header
+    BMP_BITMAPINFOHEADER* header;
+    // In memory buffer of file contents.
+    std::vector<unsigned char>* bmp_buffer = nullptr;
+
 
     // Usually 3.
     unsigned int bytesPerPixel;
@@ -107,15 +117,28 @@ typedef struct BMP {
     // Total number of bytes of one horizontal image row. Is padded to 4-byte alignment.
     unsigned int bytesPerImageRow_padded;
     
-    
+    // NOT CURRENTLY IN USE
+    LoadStatus loadStatus;
+
+    // Load a bmp file from file.
     ::pimage::Bitmap*   load(std::filesystem::path filePath);
-    BMP_Header_BITMAPINFOHEADER*         
-                        extract_header_BITMAPINFOHEADER(std::vector<unsigned char>& bmp_data);
-    void                load_header_BITMAPINFOHEADER();
-    bool                save(std::filesystem::path filePath);
+    // Internal. 
+    // Copies the header data from bmp_buffer to header struct.
+    // Currently 'BITMAPINFOHEADER' is the only header that I support
+    // Header formats : https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header
+    void                extract_header_BITMAPINFOHEADER();
+    // Set the internal BMP structure using a physimos bitmap, making it read for write calls.
+    bool                from_bitmap(::pimage::Bitmap* new_bitmap);
+    // Write the in-memory bmp_buffer to file. 
+    bool                write(std::filesystem::path filePath);
+    // Pretty print the contents of the struct. 
     void                print_header();
+
     
     BMP();
+    // Convenience constructor that is equivelent to 'bmp=BMP(); bmp.from_bitmap(...)'
+    BMP(::pimage::Bitmap* new_bitmap);
+    ~BMP();
 } BMP;
 
 
