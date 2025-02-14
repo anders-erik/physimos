@@ -17,6 +17,7 @@ perf.data
 
 logs*
 
+tests/.venv
 tests/math-test
 tests/ptest_pmath_vec3
 tests/bin/

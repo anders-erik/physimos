@@ -88,6 +88,14 @@ int main(){
     std::filesystem::path triangle_read_path = physimosRepoDir + "/resources/models/triangle/triangle.bmp";
     std::filesystem::path triangle_write_path = physimosRepoDir + "/tmp/triangle.bmp";
 
+    // LARGE FILE TEST
+    // BMP _10kx10kBMPLoader = BMP();
+    // Bitmap* _10kx10kBitmap;
+    // std::filesystem::path _10kx10kread_path = "/home/anders/Desktop/10kx10k.bmp";
+    // std::filesystem::path _10kx10kwrite_path = "/home/anders/Desktop/10kx10k_write.bmp";
+    // _10kx10kBitmap = _10kx10kBMPLoader.load(_10kx10kread_path);
+    // _10kx10kBMPLoader.from_bitmap(_10kx10kBitmap);
+    // _10kx10kBMPLoader.write(_10kx10kwrite_path);
 
     std::cout << "Starting: BMP" << std::endl;
 

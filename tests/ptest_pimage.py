@@ -1,6 +1,9 @@
 import subprocess
+import sys
+
 
 from ptest import Ptest
+
 
 
 ptest = Ptest("pimage")
@@ -42,5 +45,22 @@ ptest.add_source_file("/src/image/bmp.cc")
 # source file with main function for ptest binary build
 ptest.add_main_file("/tests/ptest_pimage.cc")
 
-
-ptest.start_watch()
+print("sys.argv.count =", len(sys.argv))
+if(len(sys.argv) == 1): # no arguments = watch mode
+    ptest.start_watch()
+elif(sys.argv[1] == '-w'):
+    ptest.start_watch()
+elif(sys.argv[1] == '-r'):
+    ptest.compile_ptest()
+    ptest.run_ptest()
+elif(sys.argv[1] == '-h'):
+    print("")
+    print(" Ptest:")
+    print("")
+    print(" -w = watch mode      [default]")
+    print(" -r = single run mode")
+    print("")
+else: 
+    print("")
+    print("Unknown Ptest CLI argument. Use '-h' for help. ")
+    print("")

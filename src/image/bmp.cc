@@ -311,8 +311,8 @@ void BMP::extract_header_BITMAPINFOHEADER() {
 
     header->file_size = bmp_data[2];
     header->file_size += bmp_data[3] << 8;
-    header->file_size += bmp_data[4] << 8;
-    header->file_size += bmp_data[5] << 8;
+    header->file_size += bmp_data[4] << 16;
+    header->file_size += bmp_data[5] << 24;
 
     header->reserved_1 = bmp_data[6];
     header->reserved_1 += bmp_data[7] << 8;
@@ -322,8 +322,8 @@ void BMP::extract_header_BITMAPINFOHEADER() {
 
     header->first_pixel_location = bmp_data[10];
     header->first_pixel_location += bmp_data[11] << 8;
-    header->first_pixel_location += bmp_data[12] << 8;
-    header->first_pixel_location += bmp_data[13] << 8;
+    header->first_pixel_location += bmp_data[12] << 16;
+    header->first_pixel_location += bmp_data[13] << 24;
 
 
 
@@ -331,18 +331,18 @@ void BMP::extract_header_BITMAPINFOHEADER() {
 
     header->header_size = bmp_data[14];
     header->header_size += bmp_data[15] << 8;
-    header->header_size += bmp_data[16] << 8;
-    header->header_size += bmp_data[17] << 8;
+    header->header_size += bmp_data[16] << 16;
+    header->header_size += bmp_data[17] << 24;
 
     header->width = bmp_data[18];
     header->width += bmp_data[19] << 8;
-    header->width += bmp_data[20] << 8;
-    header->width += bmp_data[21] << 8;
+    header->width += bmp_data[20] << 16;
+    header->width += bmp_data[21] << 24;
 
     header->height = bmp_data[22];
     header->height += bmp_data[23] << 8;
-    header->height += bmp_data[24] << 8;
-    header->height += bmp_data[25] << 8;
+    header->height += bmp_data[24] << 16;
+    header->height += bmp_data[25] << 24;
 
     header->color_planes = bmp_data[26];
     header->color_planes += bmp_data[27] << 8;
@@ -352,33 +352,33 @@ void BMP::extract_header_BITMAPINFOHEADER() {
 
     header->compression_method = bmp_data[30];
     header->compression_method += bmp_data[31] << 8;
-    header->compression_method += bmp_data[32] << 8;
-    header->compression_method += bmp_data[33] << 8;
+    header->compression_method += bmp_data[32] << 16;
+    header->compression_method += bmp_data[33] << 24;
 
     header->imageSize = bmp_data[34];
     header->imageSize += bmp_data[35] << 8;
-    header->imageSize += bmp_data[36] << 8;
-    header->imageSize += bmp_data[37] << 8;
+    header->imageSize += bmp_data[36] << 16;
+    header->imageSize += bmp_data[37] << 24;
 
     header->horizontal_resolution = bmp_data[38];
     header->horizontal_resolution += bmp_data[39] << 8;
-    header->horizontal_resolution += bmp_data[40] << 8;
-    header->horizontal_resolution += bmp_data[41] << 8;
+    header->horizontal_resolution += bmp_data[40] << 16;
+    header->horizontal_resolution += bmp_data[41] << 24;
 
     header->vertical_resolution = bmp_data[42];
     header->vertical_resolution += bmp_data[43] << 8;
-    header->vertical_resolution += bmp_data[44] << 8;
-    header->vertical_resolution += bmp_data[45] << 8;
+    header->vertical_resolution += bmp_data[44] << 16;
+    header->vertical_resolution += bmp_data[45] << 24;
 
     header->palette_color_count = bmp_data[46];
     header->palette_color_count += bmp_data[47] << 8;
-    header->palette_color_count += bmp_data[48] << 8;
-    header->palette_color_count += bmp_data[49] << 8;
+    header->palette_color_count += bmp_data[48] << 16;
+    header->palette_color_count += bmp_data[49] << 24;
 
     header->important_color_count = bmp_data[50];
     header->important_color_count += bmp_data[51] << 8;
-    header->important_color_count += bmp_data[52] << 8;
-    header->important_color_count += bmp_data[53] << 8;
+    header->important_color_count += bmp_data[52] << 16;
+    header->important_color_count += bmp_data[53] << 24;
 
 
     // Sanity check
