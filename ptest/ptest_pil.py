@@ -85,7 +85,7 @@ elif(sys.argv[1] == '-h'):
 elif(sys.argv[1] == '-g'):
     out_dir = ptest_util.get_physimos_root_dir() + "/tmp"
     generate_100x100_random_image(out_dir)
-else: 
-    print("")
-    print("Unknown Ptest CLI argument. Use '-h' for help. ")
-    print("")
+# else: 
+#     print("")
+#     print("Unknown Ptest CLI argument. Use '-h' for help. ")
+#     print("")

@@ -1,3 +1,3 @@
 # cd ..
-g++ -I./src/math -o ./tests/math-test ./tests/Math-test.cpp ./src/math/Math.cc
-./tests/math-test
+g++ -I./src/math -o ./ptest/math-test ./ptest/Math-test.cpp ./src/math/Math.cc
+./ptest/math-test

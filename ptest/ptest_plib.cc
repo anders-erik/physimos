@@ -46,7 +46,7 @@ int main(){
     // CAT_BIN & ECHO_BIN
     std::cout << "Starting: cat_bin & echo_bin" << std::endl;
 
-    std::string cat_bin_spath = physimos_root_dir + "//tests/testdata/2x2.bmp";
+    std::string cat_bin_spath = physimos_root_dir + "//ptest/testdata/2x2.bmp";
     std::vector<unsigned char>& cat_bin_contents = plib::fs_cat_bin(cat_bin_spath);
     assertTrue(cat_bin_contents.size() == 70, "cat_bin_contents.size() == 70");
 
@@ -60,7 +60,7 @@ int main(){
     // TOML PARSE
     std::cout << "Starting: toml parsing" << std::endl;
 
-    std::string toml_test_file_spath = physimos_root_dir + "/tests/testdata/plib_toml.toml";
+    std::string toml_test_file_spath = physimos_root_dir + "/ptest/testdata/plib_toml.toml";
 
     // First table
     plib::TOML toml;

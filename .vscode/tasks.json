@@ -21,7 +21,7 @@
         {
             "type": "shell",
             "label": "Test",
-            "command": "${workspaceFolder}/scripts/ptest.sh",
+            "command": "${workspaceFolder}/ptest/ptest.sh ui_curses",
             "args": [],
             "options": {},
             "icon": {"color": "terminal.ansiWhite"},

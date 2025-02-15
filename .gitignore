@@ -17,12 +17,12 @@ perf.data
 
 logs*
 
-tests/.venv
-tests/math-test
-tests/ptest_pmath_vec3
-tests/bin/
-tests/__pycache__
-tests/*.o
-tests/testdata.out/
+ptest/.venv
+ptest/math-test
+ptest/ptest_pmath_vec3
+ptest/bin/
+ptest/__pycache__
+ptest/*.o
+ptest/testdata.out/
 
 tmp/

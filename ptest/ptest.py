@@ -41,10 +41,10 @@ class Ptest:
         self.repo_root_dir = repo_root_dir
 
         # Make sure directories used for testing exists
-        self.testdata_out_dir = self.repo_root_dir + "/tests/testdata.out/"
+        self.testdata_out_dir = self.repo_root_dir + "/ptest/testdata.out/"
         self.set_data_output_dir_envvar(self.testdata_out_dir)
         # Test data dir
-        self.testdata_dir = self.repo_root_dir + "/tests/testdata"
+        self.testdata_dir = self.repo_root_dir + "/ptest/testdata"
         subprocess.run(["mkdir", "-p", self.testdata_dir])
         # tmp root dir
         self.tmp_physimos_dir = self.repo_root_dir + "/tmp"
@@ -55,7 +55,7 @@ class Ptest:
         os.environ['PHYSIMOS_TEST'] = '1'
 
         self.test_name = test_name
-        self.ptest_bin_dir = self.repo_root_dir + "/tests/bin"
+        self.ptest_bin_dir = self.repo_root_dir + "/ptest/bin"
         self.ptest_bin_file = self.ptest_bin_dir + "/ptest_" + test_name
     
 

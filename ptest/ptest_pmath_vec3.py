@@ -12,14 +12,14 @@ repo_root_dir = str(repo_root_dir_path)
 
 
 # Files to watch
-ptest_main_file = repo_root_dir + "/tests/ptest_pmath_vec3.cc"
+ptest_main_file = repo_root_dir + "/ptest/ptest_pmath_vec3.cc"
 vec3_source_file = repo_root_dir + "/src/math/vec3.cc"
 vec3_header_file = repo_root_dir + "/src/math/vec3.hh"
 
 vec3_include_dir = repo_root_dir + "/src/math"
 vec3_include_compile_flag = "-I" + vec3_include_dir
 
-ptest_bin_file = repo_root_dir + "/tests/ptest_pmath_vec3"
+ptest_bin_file = repo_root_dir + "/ptest/ptest_pmath_vec3"
 
 
 

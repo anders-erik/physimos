@@ -27,8 +27,8 @@ void full_bpm_generation_test(){
     std::string physimos_root_dir = physimos_root_dir_or_die();
     std::string output;
 
-    // std::string generate_images_command = "python3 " + physimos_root_dir + "/tests/echo.py";
-    std::string generate_images_command = "python3 " + physimos_root_dir + "/tests/ptest_pil.py -g";
+    // std::string generate_images_command = "python3 " + physimos_root_dir + "/ptest/echo.py";
+    std::string generate_images_command = "python3 " + physimos_root_dir + "/ptest/ptest_pil.py -g";
     output = run_subcommand_redir_stderr_to_stdout(generate_images_command);
     std::cout << "generate_images_command.output = " << output << std::endl;
     
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 
     BMP _2x2BMPLoader = BMP();
     Bitmap* _2x2bitmap;
-    std::filesystem::path BMP_2x2_read_path = physimosRepoDir + "/tests/testdata/2x2.bmp";
+    std::filesystem::path BMP_2x2_read_path = physimosRepoDir + "/ptest/testdata/2x2.bmp";
     std::filesystem::path BMP_2x2_write_path = physimosRepoDir + "/tmp/2x2.bmp";
     
     BMP triangleBMPLoader = BMP();

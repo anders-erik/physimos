@@ -4,7 +4,7 @@ import ptest_util
 
 physimos_root_dir = ptest_util.get_physimos_root_dir()
 
-config_file = physimos_root_dir + "/tests/ptest.toml"
+config_file = physimos_root_dir + "/ptest/ptest.toml"
 
 configDict={}
 

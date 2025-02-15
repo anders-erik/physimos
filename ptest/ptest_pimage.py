@@ -43,9 +43,9 @@ def set_pimage_ptest_config_toml():
 def set_pimage_ptest_config_manually():
 
     # Files that will trigger test rerun
-    ptest.add_file_to_watch("/tests/ptest_pimage.cc")
-    ptest.add_file_to_watch("/tests/ptest.cc")
-    ptest.add_file_to_watch("/tests/ptest.hh")
+    ptest.add_file_to_watch("/ptest/ptest_pimage.cc")
+    ptest.add_file_to_watch("/ptest/ptest.cc")
+    ptest.add_file_to_watch("/ptest/ptest.hh")
     ptest.add_file_to_watch("/src/process_info.cpp")
     ptest.add_file_to_watch("/src/lib/fs.cc")
     ptest.add_file_to_watch("/src/image/bmp.cc")
@@ -53,7 +53,7 @@ def set_pimage_ptest_config_manually():
 
 
     # include directories
-    ptest.add_include_dir("/tests")
+    ptest.add_include_dir("/ptest")
     ptest.add_include_dir("/src")
     ptest.add_include_dir("/src/lib")
 
@@ -61,7 +61,7 @@ def set_pimage_ptest_config_manually():
 
 
     # objet files to compile
-    ptest.add_source_file("/tests/ptest.cc")
+    ptest.add_source_file("/ptest/ptest.cc")
     ptest.add_source_file("/src/process_info.cpp")
     ptest.add_source_file("/src/lib/result.cc")
     ptest.add_source_file("/src/lib/string.cc")
@@ -71,22 +71,18 @@ def set_pimage_ptest_config_manually():
 
 
     # source file with main function for ptest binary build
-    ptest.add_main_file("/tests/ptest_pimage.cc")
+    ptest.add_main_file("/ptest/ptest_pimage.cc")
 
 
 
-
-
-print("sys.argv.count =", len(sys.argv))
+# print("sys.argv.count =", len(sys.argv))
 if(len(sys.argv) == 1): # no arguments = watch mode
     ptest.start_watch()
-
-
 
 elif(sys.argv[1] == '-w'):
     ptest.start_watch()
 
-elif(sys.argv[1] == '-r'):
+elif(sys.argv[1] == "-r"):
     set_pimage_ptest_config_manually()
     ptest.compile_ptest()
     ptest.run_ptest(["-h"])
