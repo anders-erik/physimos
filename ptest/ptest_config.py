@@ -20,7 +20,15 @@ def get_pimage_gen_paths_dict():
 def get_pimage_toml():
     """ Get all configs for pimage build as dict. """
 
-    with open("pimage.toml", "rb") as f:
+    with open("pimage/pimage.toml", "rb") as f:
+        data = tomllib.load(f)
+        # print(data)
+        return data
+    
+def get_ptest_build_config(spath):
+    """ Get all configs for pimage build as dict. """
+
+    with open(spath, "rb") as f:
         data = tomllib.load(f)
         # print(data)
         return data

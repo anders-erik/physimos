@@ -8,7 +8,7 @@ watch_dirs = [
 ]
 
 watch_files = [
-    "/ptest/ptest_pimage.cc",
+    "/ptest/pimage/main.cc",
     "/ptest/ptest.cc",
     "/ptest/ptest.hh",
     "/src/process_info.cpp",
@@ -34,4 +34,4 @@ source_files = [
 ]
 
 
-main = "/ptest/ptest_pimage.cc"
+main = "/ptest/pimage/main.cc"

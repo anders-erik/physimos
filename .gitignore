@@ -24,5 +24,6 @@ ptest/bin/
 ptest/__pycache__
 ptest/*.o
 ptest/testdata.out/
+__pycache__/
 
 tmp/

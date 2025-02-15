@@ -12,26 +12,27 @@ ptest = Ptest("pimage")
 
 
 
-def set_pimage_ptest_config_toml():
-    toml_config_dict = ptest_config.get_pimage_toml()
+def set_pimage_build_config():
+
+    toml_build_config = ptest_config.get_ptest_build_config("pimage/build.toml")
 
     # watch files
-    watch_files = toml_config_dict.get('watch_files')
+    watch_files = toml_build_config.get('watch_files')
     for watch_file in watch_files:
         ptest.add_file_to_watch(watch_file)
 
     # include_dirs
-    include_dirs = toml_config_dict.get('include_dirs')
+    include_dirs = toml_build_config.get('include_dirs')
     for include_dir in include_dirs:
         ptest.add_include_dir(include_dir)
 
      # source_files
-    source_files = toml_config_dict.get('source_files')
+    source_files = toml_build_config.get('source_files')
     for source_file in source_files:
          ptest.add_source_file(source_file)
     
     # Main Executable
-    main = toml_config_dict.get('main')
+    main = toml_build_config.get('main')
     ptest.add_main_file(main)
     
 
@@ -83,13 +84,14 @@ elif(sys.argv[1] == '-w'):
     ptest.start_watch()
 
 elif(sys.argv[1] == "-r"):
-    set_pimage_ptest_config_manually()
+    # set_pimage_ptest_config_manually()
+    set_pimage_build_config()
     ptest.compile_ptest()
     ptest.run_ptest(["-h"])
 
 elif(sys.argv[1] == '-g'):
     # set_pimage_ptest_config_manually()
-    set_pimage_ptest_config_toml()
+    set_pimage_build_config()
     ptest.compile_ptest()
     ptest.run_ptest(["-g"]) # png generation and verification test
 
