@@ -56,9 +56,6 @@ namespace plib {
         }
 
 
-
-        std::cout << "TOML LOADING DONE" << std::endl;
-
     }
 
 
@@ -72,6 +69,15 @@ namespace plib {
         return nullptr;
     }
 
+    TOML_Table& TOML::operator[](TOML_String table_name) {
+        for (TOML_Table* table : tables) {
+            if (table_name == table->name)
+                return *table;
+        }
+
+        return *(tables[0]);
+    }
+
 
     // END TOML
 
@@ -79,6 +85,7 @@ namespace plib {
 
     TOML_Table::TOML_Table(std::vector<std::string> lines) {
 
+        // Will be overwritten if label-line found
         name = "_";
 
         for (std::string line : lines) {
@@ -89,9 +96,16 @@ namespace plib {
     }
 
 
+    TOML_KV TOML_Table::operator[](TOML_String key_name) {
 
-    // Returns true if successfull parse. False on errors.
-    // Currently 3 types of lines : empty, table label, or KV containing a '='
+        for (TOML_KV& kv : kvs){
+            if (key_name == kv.key)
+                return kv;
+        }
+        return TOML_KV();
+    }
+
+
     bool     TOML_Table::parse_line_and_push_kv(std::string line) {
 
         // TOML_Value new_value;
@@ -148,6 +162,62 @@ namespace plib {
 
     // END TOML TABLE
 
+    
+    
+    // START TOML ARRAY
+
+    TOML_Array::TOML_Array(pstring array_str_single_line) {
+
+        // TOML_Array toml_array = {};
+
+        pstring array_str_no_brackets = array_str_single_line.substr(1, array_str_single_line.size() - 2);
+
+        std::vector<pstring> array_str_entries = plib::std_string::split(array_str_no_brackets, ',');
+
+        for (pstring string_entry : array_str_entries) {
+            plib::std_string::trim(string_entry);
+            TOML_Value parsed_value = TOML_Value(string_entry);
+            // toml_array.push_back(parsed_value);
+            vector.push_back(parsed_value);
+        }
+
+        // return toml_array;
+
+    }
+
+    TOML_Value  TOML_Array::operator[](pstring value_string){
+
+        for(TOML_Value vector_value : vector){
+            TOML_Value new_value = TOML_Value(value_string);
+            if (new_value == vector_value)
+                return new_value;
+        }
+
+        return TOML_Value();
+    }
+
+    
+    bool  TOML_Array::operator==(TOML_Array& rhs){
+
+        if(this->vector.size() != rhs.vector.size())
+            return false;
+        
+        for (size_t i = 0; i < this->vector.size(); i++)
+        {
+            if (!(this->vector[i] == rhs.vector[i]))
+                return false;
+        }
+        
+        return true;
+    }
+
+    std::vector<TOML_Value>& TOML_Array::get_vector() {
+        return vector;
+    }
+
+
+    // END TOML ARRAY
+
 
     // START TOML VALUE
 
@@ -168,7 +238,8 @@ namespace plib {
 
         case '[':
         {
-            array = parse_array_single_line(value_string);
+            // array = parse_array_single_line(value_string);
+            array = TOML_Array(value_string);
             type = TOML_ValueType::ARRAY;
         }
         break;
@@ -180,20 +251,27 @@ namespace plib {
     }
 
 
-    TOML_Array      TOML_Value::parse_array_single_line(pstring array_str) {
-        TOML_Array toml_array = {};
+    bool TOML_Value::operator==( TOML_Value& rhs) {
+        bool same_type;
+        bool same_value;
 
-        pstring array_str_no_brackets = array_str.substr(1, array_str.size() - 2);
+        switch (rhs.type){
 
-        std::vector<pstring> array_str_entries = plib::std_string::split(array_str_no_brackets, ',');
+            case TOML_ValueType::STRING :
+                same_type = this->type == TOML_ValueType::STRING;
+                same_value = this->string == rhs.string;
+                break;
 
-        for (pstring string_entry : array_str_entries) {
-            plib::std_string::trim(string_entry);
-            TOML_Value parsed_value = TOML_Value(string_entry);
-            toml_array.push_back(parsed_value);
+            case TOML_ValueType::ARRAY:
+                same_type = this->type == TOML_ValueType::ARRAY;
+                same_value = this->array == rhs.array;
+                break;
+            
+            default:
+                break;
         }
 
-        return toml_array;
+        return (same_type && same_value) ? true : false;
     }
 
 

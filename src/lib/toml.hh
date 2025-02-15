@@ -6,12 +6,28 @@
 
 namespace plib {
 
+    /**
+     * Specs: https://toml.io/en/v1.0.0
+     * 
+     * TODO:
+     *  - escape characters in strings
+     *  - int and float data types
+     *  - boolean
+     *  - multiline array
+     *  - comments
+     *  - better error handling when searching parsed structure
+     * 
+    ***/
+
+
     struct TOML_Table;
     struct TOML_KV;
+    struct TOML_Array;
     class TOML_Value;
 
-    typedef pstring                     TOML_String;
-    typedef std::vector<TOML_Value>     TOML_Array;
+    typedef pstring     TOML_String;
+    typedef long        TOML_Int;
+    typedef double      TOML_Float;
 
     /**
      * Supported TOML Types:
@@ -19,6 +35,7 @@ namespace plib {
      *  - ARRAY
      */
     typedef enum TOML_ValueType {
+        EMPTY,
         STRING,
         ARRAY,
     } TOML_ValueType;
@@ -55,6 +72,12 @@ namespace plib {
          */
         bool            is_table_label_line(std::string line);
 
+        /**
+         * Search loaded tables and returns table with matching toml table.
+         * If no match is found the returned table is the root table wchich always exists.
+         */
+        TOML_Table& operator[](TOML_String table_name);
+
         TOML() {};
     } TOML;
 
@@ -66,12 +89,39 @@ namespace plib {
         std::string name;
         std::vector<TOML_KV> kvs;
 
-        // Parse
-        bool     parse_line_and_push_kv(std::string line);
+        /**
+         * Returns true if successful parse. False on errors.
+         * Currently 3 types of lines : empty, table label, or KVs which are identified using a '='
+         */
+        bool        parse_line_and_push_kv(std::string line);
+
+        /**
+         * Search table for KV object with key matching argument.
+         */
+        TOML_KV     operator[](TOML_String key_name);
 
         TOML_Table(std::vector<std::string> lines);
     } TOML_Table;
 
+
+    typedef struct TOML_Array {
+        std::vector<TOML_Value> vector;
+
+        /**
+         * Search table for TOML_Values equal the parsed argument string.  
+         */
+        TOML_Value      operator[](pstring value_string);
+        /** Compares the type and value of each containing TOML_Value. WARN: probably unsafe iterating. */
+        bool      operator==(TOML_Array& rhs);
+
+        /**
+         * Get underlying std::vector of TOML_Values.
+         */
+        std::vector<TOML_Value>& get_vector();
+        
+        TOML_Array(pstring array_str);
+        TOML_Array() : vector({}) {};
+    } TOML_Array;
 
     /**
      *  A Generic toml data object that will hold any of the supported TOML types as specified in the 'TOML_ValueType' enum.
@@ -89,12 +139,12 @@ namespace plib {
             /** Might remove in favor of private & immutable primitive values */
             void set_value(TOML_Array array);
 
-            /** Only single line arrays currently supported. */
-            TOML_Array      parse_array_single_line(pstring array_str);
+            /** Compares the type and primitive value. */
+            bool      operator==(TOML_Value& rhs);
 
             // Trimmed string to be parsed as a toml value
             TOML_Value(pstring value_string);
-            TOML_Value() {};
+            TOML_Value() : type(TOML_ValueType::EMPTY) {};
     } TOML_Value;
 
 
@@ -106,7 +156,7 @@ namespace plib {
         TOML_Value  value;
 
         TOML_KV(TOML_String _key, TOML_Value _value);
-        TOML_KV() {};
+        TOML_KV() : key("_"), value() {};
     } TOML_KV;
 
 

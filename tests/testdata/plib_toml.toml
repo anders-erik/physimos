@@ -1,3 +1,6 @@
 [first_table]   
 array_1 = ["string_1", "string_2"]
 
+
+[pimage_gen]
+100x100_rand = ["_100x100_rand_generated.bmp", "_100x100_rand_test_output.bmp"]

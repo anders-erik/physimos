@@ -10,6 +10,11 @@ typedef std::string pstring;
 
 namespace plib {
 
+
+std::vector<pstring>    pstring_split(pstring str, char delimiter);
+std::vector<pstring>    pstring_split_and_trim(pstring str, char delimiter);
+void                    pstring_trim(pstring& str);
+
 bool cstr_is_empty_or_null(char* cstr);
 
 }
