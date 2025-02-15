@@ -221,7 +221,11 @@ class Ptest:
         for arg in args:
             subcommand_list.append(arg)
         print(subcommand_list)
-        subprocess.run(subcommand_list)
+        completed_ptest = subprocess.run(subcommand_list)
+        if (completed_ptest.returncode != 0):
+            print("")
+            print("\nRUNTIME ERROR.")
+            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
          
 
     def start_watch(self):

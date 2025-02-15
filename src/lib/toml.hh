@@ -5,47 +5,76 @@
 #include <vector>
 
 namespace plib {
-    typedef enum TOML_Type {
+
+    struct TOML_Value;
+    struct TOML_KV;
+    struct TOML_Table;
+
+
+    typedef pstring                     TOML_String;
+    typedef std::vector<TOML_Value>     TOML_Array;
+
+
+    typedef enum TOML_ValueType {
         EMPTY,
         TABLE,
         STRING,
         ARRAY,
-    } TOML_Type;
+    } TOML_ValueType;
 
-    typedef struct TOML_Property {
-        TOML_Type type;
+
+    typedef struct TOML_Value {
+        TOML_ValueType type = TOML_ValueType::EMPTY;
+
+        TOML_String string;
+        TOML_Array  array;
+
+        void set_value(TOML_String string);
+        void set_value(TOML_Array array);
+        
+
+        TOML_Value() {};
+    } TOML_Value;
+
+
+    typedef struct TOML_KV {
+        TOML_String key;
+        TOML_Value  value;
+    } TOML_KV;
+
+
+    typedef struct TOML_Table {
         std::string name;
-        bool is_table;
+        std::vector<TOML_KV> kvs;
+    } TOML_Table;
 
-        std::string string;
-        std::vector<TOML_Property> array;
-    } TOML_Property;
 
     // A parsed toml file
     // Format support notes:
     // Types: STRING, ARRAY
-    // Other: Only single line properties
+    // Other: Only single line KV pairs
     typedef class TOML {
         public:
-            std::vector<TOML_Property> root_properties;
+            TOML_Table*                 root_table = nullptr;
+            std::vector<TOML_Table*>    tables;
+
 
             // Load full TOML file from unverified string path
-            void load(std::string file_spath);
-            // return a root property from loaded file.
-            // Is an ARRAY if found, EMPTY if not found.
-            TOML_Property find_root_property(std::string property_key);
+            void            load(std::string file_spath);
 
-            // Internal
+            // returns a table object with name matching argument.
+            TOML_Table*     find_table(TOML_String table_name);
 
-            // Returns the
-            TOML_Property parse_line(std::string line);
-            TOML_Property parse_array(std::string array_str);
+            TOML_Table*     parse_table(std::vector<std::string> lines);
+            TOML_KV         parse_line(std::string line);
+
+            TOML_Array      parse_single_line_array(pstring array_str);
+
+            TOML_Value      parse_toml_value(std::string value_str);
 
             TOML() {};
     } TOML;
 
-    std::string fs_cat(std::string path_std_string);
-    std::vector<unsigned char>& fs_cat_bin(std::string path_std_string);
 
 }
 

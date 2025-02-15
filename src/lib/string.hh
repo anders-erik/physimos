@@ -5,6 +5,9 @@
 #include <sstream>
 #include <vector>
 
+typedef std::string pstring;
+
+
 namespace plib {
 
 bool cstr_is_empty_or_null(char* cstr);

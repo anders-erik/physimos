@@ -61,10 +61,17 @@ int main(){
     std::cout << "Starting: toml parsing" << std::endl;
 
     std::string toml_spath = physimos_root_dir + "/tests/testdata/plib_toml.toml";
+    std::cout << "toml_spath = " << toml_spath << std::endl;
+
     plib::TOML toml;
     toml.load(toml_spath);
+    
+    plib::TOML_Table* toml_table = toml.find_table("first_table");
+    pstring table_name;
+    if(toml_table != nullptr)
+        table_name = toml_table->name;
+        std::cout << "table_name = " << table_name << std::endl;
 
-    std::cout << "toml_spath = " << toml_spath << std::endl;
     
 
     std::cout << "Done    : toml parsing" << std::endl << std::endl;
