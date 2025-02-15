@@ -16,6 +16,8 @@ ptest.add_file_to_watch("/src/lib/string.cc")
 ptest.add_file_to_watch("/src/lib/string.hh")
 ptest.add_file_to_watch("/src/lib/result.cc")
 ptest.add_file_to_watch("/src/lib/result.hh")
+ptest.add_file_to_watch("/src/lib/toml.cc")
+ptest.add_file_to_watch("/src/lib/toml.hh")
 
 
 # include directories
@@ -25,11 +27,12 @@ ptest.add_include_dir("/src/lib")
 
 
 
-# objet files to compile
+# object files to compile
 ptest.add_source_file("/tests/ptest.cc")
 ptest.add_source_file("/src/lib/result.cc")
 ptest.add_source_file("/src/lib/string.cc")
 ptest.add_source_file("/src/lib/fs.cc")
+ptest.add_source_file("/src/lib/toml.cc")
 
 ptest.add_source_file("/src/process_info.cpp")
 

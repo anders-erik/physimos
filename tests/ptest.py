@@ -241,7 +241,7 @@ class Ptest:
                 compile_exit_code = self.compile_ptest()
                 if compile_exit_code == 0:
                     self.console_clear()
-                    self.run_ptest()
+                    self.run_ptest([])
 
                 # reset file change times
                 for file in self.files_to_watch:

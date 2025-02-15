@@ -4,7 +4,7 @@ add_library(lib
     string.cc
     fs.cc
     result.cc
-
+    toml.cc
 )
 
 

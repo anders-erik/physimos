@@ -12,6 +12,7 @@
 #include "lib/result.hh"
 #include "lib/string.hh"
 #include "lib/fs.hh"
+#include "lib/toml.hh"
 
 
 using namespace ptest;
@@ -56,7 +57,17 @@ int main(){
     std::cout << "Done    : cat_bin & echo_bin" << std::endl << std::endl;
 
 
+    // TOML PARSE
+    std::cout << "Starting: toml parsing" << std::endl;
 
+    std::string toml_spath = physimos_root_dir + "/tests/testdata/plib_toml.toml";
+    plib::TOML toml;
+    toml.load(toml_spath);
+
+    std::cout << "toml_spath = " << toml_spath << std::endl;
+    
+
+    std::cout << "Done    : toml parsing" << std::endl << std::endl;
 
 
     std::cout << std::endl << "-------------------------" << std::endl;
