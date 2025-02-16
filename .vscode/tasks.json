@@ -3,8 +3,61 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "Build",
+            "label": "Build & Run [debug]",
+            "command": "${workspaceFolder}/scripts/build.sh debug && ./build/debug/physimos",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "panel": "dedicated",
+                "close": true,
+                "showReuseMessage": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Build Release - Linux",
             "command": "${workspaceFolder}/scripts/build.sh",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Build Debug",
+            "command": "${workspaceFolder}/scripts/build.sh debug",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Build gprof",
+            "command": "${workspaceFolder}/scripts/build.sh gprof",
             "args": [],
             "options": {},
             "problemMatcher": [
@@ -68,23 +121,6 @@
         },
         {
             "type": "shell",
-            "label": "Cmake : make & run",
-            "command": "cd ${workspaceFolder}/build_cmake && make && cd .. && ./build_cmake/physimos",
-            "args": [],
-            "options": {},
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "type": "shell",
             "label": "Valgrind - run",
             "command": "valgrind --leak-check=yes ${workspaceFolder}/build_cmake/physimos",
             "args": [],
@@ -102,25 +138,8 @@
         },
         {
             "type": "shell",
-            "label": "gprof - build",
-            "command": "",
-            "args": [],
-            "options": {},
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "type": "shell",
             "label": "gprof - generate gprof.txt",
-            "command": "gprof ./build_cmake/physimos > gprof.txt",
+            "command": "gprof ${workspaceFolder}/build/gprof/physimos > gprof.txt",
             "args": [],
             "options": {},
             "problemMatcher": [

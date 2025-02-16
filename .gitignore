@@ -3,7 +3,9 @@
 
 *.blend1
 
+build/
 build/*
+build_cmake/
 build_cmake/*
 cmake-build*
 

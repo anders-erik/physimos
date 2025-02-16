@@ -23,8 +23,15 @@ int main(){
 
     std::string physimos_root_dir = physimos_root_dir_or_die();
 
+    // 
+    // std::cout << "Object Size Information" << std::endl;
+    // std::cout << "sizeof(plib::TOML) = " << sizeof(plib::TOML) << std::endl;
+    // std::cout << "sizeof(plib::TOML_KV) = " << sizeof(plib::TOML_KV) << std::endl;
+    // std::cout << "sizeof(plib::TOML_Value) = " << sizeof(plib::TOML_Value) << std::endl;
+    // std::cout << "sizeof(std::string) = " << sizeof(std::string) << std::endl;
+    // std::cout << "" << std::endl;
     
-
+    
 
     // CAT & ECHO
     std::cout << "Starting: cat & echo" << std::endl;
