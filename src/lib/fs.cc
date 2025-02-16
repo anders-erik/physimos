@@ -85,6 +85,31 @@ FS_STATUS fs_echo(std::string path_std_string, std::string contents){
     return FS_STATUS::FsOk;
 }
 
+FS_STATUS fs_echo_append(std::string path_std_string, std::string new_contents){
+    
+    std::ofstream _ofstream;
+
+    std::string current_contents = fs_cat(path_std_string);
+    try
+    {
+        _ofstream.open(path_std_string, std::ios_base::app);
+        _ofstream <<  new_contents << "\n";
+        _ofstream.close();
+    }
+    catch (const std::exception& e)
+    {
+
+
+        
+        return FS_STATUS::FsError;
+    }
+
+
+
+    return FS_STATUS::FsOk;
+
+}
+
 
 FS_STATUS fs_echo_bin(std::string path_std_string, std::vector<unsigned char>& bin_contents){
 

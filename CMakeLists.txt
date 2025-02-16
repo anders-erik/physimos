@@ -19,8 +19,8 @@ message([BUILD_TYPE_FROM_CLI] " = " "${BUILD_TYPE_FROM_CLI}")
 if(${BUILD_TYPE_FROM_CLI}==DEBUG)
 
     set(CMAKE_BUILD_TYPE Debug)
-    # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")             # 'regular' build
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra")   # Gave me warnings that I cannot prioritize 
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")             # 'regular' build
+    # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra")   # Gave me warnings that I cannot prioritize 
 
 elseif(BUILD_TYPE_FROM_CLI)
 

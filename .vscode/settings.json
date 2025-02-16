@@ -65,7 +65,8 @@
 		"map": "cpp",
 		"codecvt": "cpp",
 		"filesystem": "cpp",
-		"optional": "cpp"
+		"optional": "cpp",
+		"complex": "cpp"
 	},
 	"makefile.configureOnOpen": false
 }

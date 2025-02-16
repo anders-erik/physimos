@@ -4,7 +4,7 @@
         {
             "type": "shell",
             "label": "Build & Run [debug]",
-            "command": "${workspaceFolder}/scripts/build.sh debug && ./build/debug/physimos",
+            "command": "${workspaceFolder}/scripts/build.sh debug && PHYSIMOS_ROOT_DIR=${workspaceFolder} ./build/debug/physimos",
             "args": [],
             "options": {},
             "problemMatcher": [
@@ -16,7 +16,7 @@
                 "echo": true,
                 "reveal": "silent",
                 "panel": "dedicated",
-                "close": true,
+                "close": false,
                 "showReuseMessage": true
             }
         },

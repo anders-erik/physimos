@@ -24,6 +24,7 @@ set(SOURCES
     Model.cpp
     transform.cc
     uiElement.cc
+    log.cc
 )
 
 
