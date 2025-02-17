@@ -4,9 +4,12 @@
 #include "ui/ui_globals.hh"
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
+#include "ui/ui_component.hh"
+
 #include "ui/uic_pobject.hh"
 #include "ui/uic_scene.hh"
 #include "ui/uic_transform.hh"
+#include "ui/uic_primitive.hh"
 
 
 #include "Input.hpp"
@@ -33,7 +36,7 @@ double cursor_x = 0.0;
 double cursor_y = 0.0;
 Primitive* currentlyHoveredPrimitive = nullptr;
 
-
+UI::Primitive test_primitive;
 void init(){
     // Necessary to render the UI Scene Module
     // ::ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
@@ -43,7 +46,22 @@ void init(){
     UI::loadFont();
 
     
+    // PRIMITIVE COMPONENT
+    test_primitive = UI::Primitive();
+    test_primitive.initGraphics();
+    test_primitive.setXrecursive(400);
+    UI::primitiveList.push_back(&test_primitive);
+    UI::primitiveTreeHeads.push_back(&test_primitive);
 
+    // UI::component::PrimitiveComponent primitive_component = UI::component::PrimitiveComponent(test_primitive);
+
+    // add the uiPObject to the global ui lists
+    // UI::primitiveTreeHeads.push_back(UI::component::pobjectContext->container);
+    // std::vector<UI::Primitive*> flatComponent = UI::component::pobjectContext->container->flattenTree();
+    // for (UI::Primitive* _primitive : flatComponent) {
+    //     // std::cout << "_primitive->id = " << _primitive->id << std::endl;
+    //     UI::primitiveList.push_back(_primitive);
+    // }
 
 
     // INITIALLY SELECTED POBJECT

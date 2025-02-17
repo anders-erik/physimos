@@ -2,6 +2,8 @@
 #define PLIB_LOG_HH
 
 
+namespace plib {
+
 enum LogLevel {
     INFO,
     DEBUG,
@@ -14,6 +16,7 @@ enum LogScope {
     IMAGE,
     LIB,
     SCENE,
+    UI,
     TEST,
 };
 
@@ -39,6 +42,6 @@ void plog_info(LogScope logScope, LogEvent logEvent, std::string message);
 
 void plog_error(LogScope logScope, LogError logError, std::string message);
 
-
+}
 
 #endif

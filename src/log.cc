@@ -10,6 +10,9 @@
 
 extern std::string physimos_root_dir;
 
+namespace plib {
+
+
 #define LOGLEVEL_INFO_STR  "[INFO]  "
 #define LOGLEVEL_DEBUG_STR "[DEBUG] "
 #define LOGLEVEL_WARN_STR  "[WARN]  "
@@ -19,6 +22,7 @@ extern std::string physimos_root_dir;
 #define LOGSCOPE_IMAGE_STR "_IMAGE_ "
 #define LOGSCOPE_LIB_STR   "_LIB_   "
 #define LOGSCOPE_SCENE_STR "_SCENE_ "
+#define LOGSCOPE_UI_STR    "_UI_    "
 #define LOGSCOPE_TEST_STR  "_TEST_  "
 
 #define LOGEVENT_NONE_STR           "_               "
@@ -65,6 +69,9 @@ std::string get_plog_scope_string(LogScope logScope) {
 
         case LogScope::SCENE:
             return LOGSCOPE_SCENE_STR;      break;
+
+        case LogScope::UI:
+            return LOGSCOPE_UI_STR;         break;
 
         case LogScope::TEST:
             return LOGSCOPE_TEST_STR;       break;
@@ -153,3 +160,4 @@ void plog_info(LogScope logScope, LogEvent logEvent, std::string message) {
 }
 
 
+}

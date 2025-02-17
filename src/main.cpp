@@ -19,15 +19,17 @@
 
 
 
-#include "log.hh"
+#include "lib/lib.hh"
 extern std::string physimos_root_dir;
 
 int main()
 {
 	physimos_root_dir_or_die();
-	plog(MAIN, "Hello from main.cpp");
-	plog(MAIN, ENTERED_MAIN, "Another physimos start.");
-	plog_error(IMAGE, LogError::OBJ_PARSING, "Dummy error log message.");
+
+	// Plog
+	// plog(MAIN, "Hello from main.cpp");
+	// plog(MAIN, ENTERED_MAIN, "Another physimos start.");
+	// plog_error(IMAGE, LogError::OBJ_PARSING, "Dummy error log message.");
 
 	// std::cout << std::endl << "---------- MAIN() ----------" << std::endl << std::endl;
 	
