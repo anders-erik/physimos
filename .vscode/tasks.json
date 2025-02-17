@@ -23,7 +23,7 @@
         {
             "type": "shell",
             "label": "Build Release - Linux",
-            "command": "${workspaceFolder}/scripts/build.sh",
+            "command": "${workspaceFolder}/scripts/build.sh release-linux",
             "args": [],
             "options": {},
             "problemMatcher": [

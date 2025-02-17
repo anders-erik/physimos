@@ -24,6 +24,24 @@
 
 ---
 
+### 2025-02-17
+- UI primitive UI editor
+	- make a UI component with a bound ui primitive object
+	- live reload shaders, textures, dimensions, etc.
+- new shader interface [do what makes sense when making the editor above]
+- texture
+	- static
+		- icons
+	- vector 'texture'
+- 2D transform object
+	- might be used in A LOT of places
+		- sub-part of scene object
+		- ui
+		- drawing
+		- etc.
+	- LEARNING TOOL thats built into physimos and not in a python notebook!
+
+
 
 ### 2025-02-14
 - pimage

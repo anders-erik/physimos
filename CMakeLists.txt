@@ -16,21 +16,28 @@ message("generator is set to ${CMAKE_GENERATOR}")
 
 # write_file(tmp/test.txt "${BUILD_TYPE_FROM_CLI}")
 message([BUILD_TYPE_FROM_CLI] " = " "${BUILD_TYPE_FROM_CLI}")
+
 if(${BUILD_TYPE_FROM_CLI}==DEBUG)
 
     set(CMAKE_BUILD_TYPE Debug)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")             # 'regular' build
     # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra")   # Gave me warnings that I cannot prioritize 
 
-elseif(BUILD_TYPE_FROM_CLI)
+elseif(BUILD_TYPE_FROM_CLI==GPROF)
 
     set(CMAKE_BUILD_TYPE Gprof)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -pg")       # gprof compiler flag
 
-else()
-    set(CMAKE_BUILD_TYPE Release)
-endif()
+elseif(BUILD_TYPE_FROM_CLI==RELEASE_LINUX)
 
+    set(CMAKE_BUILD_TYPE Release)
+
+else() # Default build is debug
+
+    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")             # 'regular' build
+
+endif()
 
 
 

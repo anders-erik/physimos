@@ -17,10 +17,14 @@ set_build_dir(){
     elif [ "$1" == "gprof" ]; then
         BUILD_DIR="$REPO_ROOT/build/gprof"
 
-    else
+    elif [ "$1" == "release-linux" ]; then
         BUILD_DIR="$REPO_ROOT/build/release-linux"
 
+    else
+        BUILD_DIR="$REPO_ROOT/build/debug"
+
     fi
+
 }
 
 run_cmake(){
@@ -31,8 +35,11 @@ run_cmake(){
     elif [ "$1" == "gprof" ]; then
         cmake -B"$BUILD_DIR" -S"$SOURCE_DIR" -DBUILD_TYPE_FROM_CLI:STRING=GPROF
 
-    else
+    elif [ "$1" == "release-linux" ]; then
         cmake -B"$BUILD_DIR" -S"$SOURCE_DIR" -DBUILD_TYPE_FROM_CLI:STRING=RELEASE_LINUX
+
+    else
+        cmake -B"$BUILD_DIR" -S"$SOURCE_DIR" -DBUILD_TYPE_FROM_CLI:STRING=DEBUG
 
     fi
 }
