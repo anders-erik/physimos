@@ -14,10 +14,9 @@
             "detail": "",
             "presentation": {
                 "echo": true,
-                "reveal": "silent",
-                "panel": "dedicated",
+                "reveal": "always",
+                "panel": "shared",
                 "close": false,
-                "showReuseMessage": true
             }
         },
         {

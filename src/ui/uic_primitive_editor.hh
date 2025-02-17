@@ -8,32 +8,35 @@
 
 namespace UI::component {
 
-class PrimitiveComponent;
+class Component_PrimitiveEditor;
 
 
 struct BasePrimitive : public ::UI::Primitive {
-    PrimitiveComponent& primitiveComponent;
+    Component_PrimitiveEditor& primitiveComponent;
 
     virtual void reload() {};
     
-    BasePrimitive(PrimitiveComponent& _primitiveComponent) : 
+    BasePrimitive(Component_PrimitiveEditor& _primitiveComponent) : 
         primitiveComponent{ _primitiveComponent } 
         {}
 };
 
 
 
-struct ContainerPrimitive : public UI::component::BasePrimitive {
+struct PrimitiveEditor_Container : public UI::component::BasePrimitive {
+    PrimitiveEditor_Container(Component_PrimitiveEditor& _primitiveComponent);
+};
 
-    ContainerPrimitive(PrimitiveComponent& _primitiveComponent) : 
-        BasePrimitive(_primitiveComponent) 
-        {}
+struct PrimitiveEditor_Title : public UI::component::BasePrimitive {
+    std::string title_text = "Primitive Editor";
+    PrimitiveEditor_Title(Component_PrimitiveEditor& _primitiveComponent);
 };
 
 struct IdPrimitive : public UI::component::BasePrimitive {
-    IdPrimitive(PrimitiveComponent& _primitiveComponent) : 
-        BasePrimitive(_primitiveComponent) 
-        {}
+    std::string id;
+    void reload();
+
+    IdPrimitive(Component_PrimitiveEditor& _primitiveComponent);
 };
 
 // struct IdPrimitive : public UI::component::BasePrimitive {
@@ -44,26 +47,21 @@ struct IdPrimitive : public UI::component::BasePrimitive {
 
 
 
-class PrimitiveComponent {
+class Component_PrimitiveEditor {
 // Linking error when trying to derive from Component
 // class PrimitiveComponent : public ::UI::Component {
 
 public:
-    // 
     ::UI::Primitive& boundObject;
 
-    ContainerPrimitive container;
+    PrimitiveEditor_Container container;
+    PrimitiveEditor_Title title;
     IdPrimitive idPrimitive;
 
     
     void newPrimitive(::UI::Primitive& ui_primitive);
 
-    PrimitiveComponent(::UI::Primitive& ui_primitive) :     
-        boundObject { ui_primitive },
-        container   { *this },
-        idPrimitive { *this }
-        {};
-
+    Component_PrimitiveEditor(::UI::Primitive& ui_primitive);
 };
 
 

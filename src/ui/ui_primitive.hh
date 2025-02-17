@@ -46,6 +46,46 @@ enum HoriRef {
 };
 
 
+typedef struct PositionInput {
+    bool hasBeenChangedFlag = false;
+
+    // Raw input values to setX/y methods
+    int x_input = 0;
+    int y_input = 0;
+    // Units of the x/y input values
+    Unit x_unit = Unit::Pixel;
+    Unit y_unit = Unit::Pixel;
+    // x/y is measured from where?
+    HoriRef horiRef = HoriRef::Left;
+    VertRef vertRef = VertRef::Bottom;
+
+    // Setters that will set the 'hasBeenChangedFlag'. Flag will be read during update calls before (or from) render function
+    void setx(int x);
+    void sety(int y);
+    void setxunit(UI::Unit x_unit);
+    void setyunit(UI::Unit y_unit);
+    void setxref(UI::HoriRef horiRef);
+    void setyref(UI::VertRef vertiRef);
+
+} PositionInput;
+
+typedef struct PositionReal {
+    /// x window coordinate of primitive's bottom left corner, relative to bottom left of window.
+    int x_real = 0;
+    /// y window coordinate of primitive's bottom left corner, relative to bottom left of window.
+    int y_real = 0;
+
+} PositionReal;
+
+// typedef struct PositionUi {
+//     PositionInput posInput;
+//     PositionReal  posReal;
+
+//     void setx(std::string x_str);
+//     void sety(std::string x_str);
+// } PositionUi;
+
+
 typedef struct Transform {
     size_t height = 200;
     Unit h_unit = Unit::Pixel;
@@ -103,7 +143,14 @@ class Primitive {
         void setYrecursive(int y_input);
         void setHeight(int _height);
         void setWidth(int _width);
+
+        // Updates: 2025-02-17
+        UI::PositionReal posReal;
+        UI::PositionInput posInput;
+        void updateXrealRecursively();
+        void updateYrealRecursively();
         // void setUiTransform(::UI::Transform _uiTransform);
+
 
         // Set the transformation matrix for shading
         void updateTransformationMatrix();

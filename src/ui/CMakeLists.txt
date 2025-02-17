@@ -9,7 +9,7 @@ add_library(ui
     uic_transform.cc
     uic_pobject.cc
     uic_scene.cc
-    uic_primitive.cc
+    uic_primitive_editor.cc
 )
 
 target_include_directories(ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
