@@ -50,8 +50,11 @@ namespace UI {
         update_str(_double_str);
     }
 
-    bool Primitive::try_hover_component(double x, double y) {
-        return false;
+    UiResult Primitive::try_find_target_component(double x, double y) {
+        return UiResult();
+    }
+    UiResult Primitive::click_new() {
+        return UiResult();
     }
 
 

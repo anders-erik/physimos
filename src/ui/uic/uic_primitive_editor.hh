@@ -3,6 +3,7 @@
 
 
 #include "ui/ui_component.hh"
+#include "uic_primitive_color.hh"
 
 #include "ui/ui_primitive.hh"
 
@@ -19,11 +20,16 @@ struct UIC_PrimitiveEditor : public ::UI::Primitive {
     PrimitiveString title;
     PrimitiveString id_string;
 
+    UIC_PrimitiveColor uic_primitive_color;
+
 
     void update_component();
     void render_component();
 
-    bool try_hover_component(double x, double y);
+    /** Find primitive in component that match passed screen coordinates. Returns success if terget found within component. False otherwise. 
+     *  Will only match primitives/components within the bounds of the component itself. 
+     */
+    UiResult try_find_target_component(double x, double y);
     
     UIC_PrimitiveEditor(::UI::Primitive& _primitive);
 };

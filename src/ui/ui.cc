@@ -11,7 +11,7 @@
 #include "ui/uic_pobject.hh"
 #include "ui/uic_scene.hh"
 #include "ui/uic_transform.hh"
-#include "ui/uic_primitive_editor.hh"
+#include "ui/uic/uic_primitive_editor.hh"
 
 
 #include "Input.hpp"
@@ -170,14 +170,19 @@ void pointerPositionCallback(double x, double y) {
     double viewport_height_double = (double) viewport_height;
     cursor_y = -(y - viewport_height_double);
 
-
-    if (primitive_editor->try_hover_component(cursor_x, cursor_y))
-        plog_info(::plib::LogScope::UI, "HOVERING PRIMITIVE EDITOR");
-
     // clear currently hovering primitive
     if (currentlyHoveredPrimitive != nullptr) {
         currentlyHoveredPrimitive->setState(PrimitiveState::Default);
         currentlyHoveredPrimitive = nullptr;
+    }
+
+
+    UiResult targetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
+    if (targetResult.success) {
+        currentlyHoveredPrimitive = targetResult.primitive;
+        targetResult.primitive->setState(PrimitiveState::Hover);
+        // plog_info(::plib::LogScope::UI, "HOVERING PRIMITIVE EDITOR");
+        // hoverResult.primitive->setState(PrimitiveState::Hover);
     }
 
     // setCurrentlyHoveredPrimitive();
@@ -200,6 +205,12 @@ void pointerPositionCallback(double x, double y) {
 // Don't need cursor position update as it will stay current using pointer position callback
 void leftClickCallback(double x, double y) {
     
+    UiResult targetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
+    if (targetResult.success && targetResult.primitive->isClickable) {
+        targetResult.primitive->click_new();
+        // targetResult.primitive->setState(PrimitiveState::Selected);
+        // plog_info(::plib::LogScope::UI, "CLICLCICLK");
+    }
     
     // Grab current target
     Primitive* targetedPrimitive = getTargetingPrimitive();

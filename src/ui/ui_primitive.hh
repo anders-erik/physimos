@@ -12,13 +12,6 @@ namespace UI {
 
 class Primitive; // forward declare
 
-typedef struct Color {
-    unsigned char R;
-    unsigned char G;
-    unsigned char B;
-    unsigned char A;
-} Color;
-
 
 enum PrimitiveState {
     Default = 1,
@@ -208,7 +201,8 @@ class Primitive {
 
 
         // STATE & BEHAVIOR
-        virtual bool try_hover_component(double x, double y);
+        virtual UiResult try_find_target_component(double x, double y);
+        virtual UiResult click_new();
 
         PrimitiveState state = PrimitiveState::Default;
         void setState(PrimitiveState _newState);
