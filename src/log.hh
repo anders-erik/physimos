@@ -1,8 +1,13 @@
 #ifndef PLIB_LOG_HH
 #define PLIB_LOG_HH
 
+#include <string>
 
 namespace plib {
+
+std::string get_current_timestring();
+std::string getCurrentDate();
+std::string getCurrentTime();
 
 enum LogLevel {
     INFO,

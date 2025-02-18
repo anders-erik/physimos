@@ -1,4 +1,6 @@
 
+#include "log.hh"
+
 #include "ui.hh"
 
 #include "ui/ui_globals.hh"
@@ -32,7 +34,9 @@ std::vector<UI::Primitive*> primitiveTreeHeads;
 // a linear list of all Primitives. Used for some hover/click tests
 std::vector<UI::Primitive*> primitiveList;
 
+/** Current cursor position recieved in the input callback function. */
 double cursor_x = 0.0;
+/** Current cursor position recieved in the input callback function. y = 0 at the bottom of window.  */
 double cursor_y = 0.0;
 Primitive* currentlyHoveredPrimitive = nullptr;
 
@@ -160,11 +164,15 @@ void update(){
 
 // Callback for cursor position subscription
 void pointerPositionCallback(double x, double y) {
+    
     cursor_x = x;
-
+    // Invert Y direction
     double viewport_height_double = (double) viewport_height;
     cursor_y = -(y - viewport_height_double);
 
+
+    if (primitive_editor->try_hover_component(cursor_x, cursor_y))
+        plog_info(::plib::LogScope::UI, "HOVERING PRIMITIVE EDITOR");
 
     // clear currently hovering primitive
     if (currentlyHoveredPrimitive != nullptr) {

@@ -174,8 +174,7 @@ class Primitive {
         void updateShaderMatrixesRecursively();
 
 
-
-        // TEXT
+        // LEGACY - Moved to PrimitiveString
         std::string text = "";
         FontSize fontSize = FontSize::f24;
         void setString(std::string _str);
@@ -209,6 +208,8 @@ class Primitive {
 
 
         // STATE & BEHAVIOR
+        virtual bool try_hover_component(double x, double y);
+
         PrimitiveState state = PrimitiveState::Default;
         void setState(PrimitiveState _newState);
         bool isHoverable = false;
@@ -229,8 +230,18 @@ class Primitive {
 typedef class PrimitiveString : public Primitive {
     public:
         std::string str = "";
+
+        /** The font size used during generation of currently rendering string texture */
+        FontSize str_fontSize = FontSize::f24;
+        void str_setFontSize(FontSize _fontSize);
+        // will load a texture contining the passed string into the primitives default glTexture
+        void str_setString(std::string _str);
+
+        /** Regenerate string texture if passed string is different from currently rendered string. */
         void update_str(std::string _str);
+        /** Regenerate string texture if passed integers string representation is different from currently rendered string. */
         void update_str_int(int _int);
+        /** Regenerate string texture if passed floating point string-representation is different from currently rendered string. */
         void update_str_double(double _double);
         PrimitiveString(std::string _str);
 } PrimitiveString;

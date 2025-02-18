@@ -17,11 +17,13 @@ struct UIC_PrimitiveEditor : public ::UI::Primitive {
     ::UI::Primitive& boundObject;
 
     PrimitiveString title;
-    PrimitiveString idPrimitive;
+    PrimitiveString id_string;
 
 
     void update_component();
     void render_component();
+
+    bool try_hover_component(double x, double y);
     
     UIC_PrimitiveEditor(::UI::Primitive& _primitive);
 };

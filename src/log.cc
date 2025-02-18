@@ -1,6 +1,10 @@
 #include <string>
 #include <iostream>
 
+// #include <iostream>
+#include <chrono>
+#include <iomanip>
+
 // PLIB
 #include "lib/fs.hh"
 
@@ -11,6 +15,28 @@
 extern std::string physimos_root_dir;
 
 namespace plib {
+std::string get_current_timestring(){
+    return getCurrentDate() + "T" + getCurrentTime();
+}
+std::string getCurrentDate() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::tm localTime = *std::localtime(&now_c);
+
+    std::ostringstream oss;
+    oss << std::put_time(&localTime, "%Y-%m-%d");
+    return oss.str();
+}
+
+std::string getCurrentTime() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::tm localTime = *std::localtime(&now_c);
+
+    std::ostringstream oss;
+    oss << std::put_time(&localTime, "%H:%M:%S");
+    return oss.str();
+}
 
 
 #define LOGLEVEL_INFO_STR  "[INFO]  "
@@ -116,7 +142,7 @@ void plog_error(LogScope logScope, LogError logError, std::string message){
     std::string full_log_path = physimos_root_dir + "/" + main_log_spath;
 
     std::string level_string = get_plog_level_string(LogLevel::ERROR);
-    std::string time_string = "2025-02-16T23:02:55 ";
+    std::string time_string =  get_current_timestring();
     std::string scope_string = get_plog_scope_string(logScope);
     std::string error_string = get_plog_error_string(logError);
     std::string full_log_string = level_string + time_string + scope_string + error_string + "\"" + message + "\"";
@@ -134,7 +160,7 @@ void plog_info(LogScope logScope, std::string message) {
     std::string main_log_spath = "logs/main.log";
     
     std::string level_string = get_plog_level_string(LogLevel::INFO);
-    std::string time_string = "2025-02-16T23:02:55 ";
+    std::string time_string =  get_current_timestring();
     std::string scope_string = get_plog_scope_string(logScope);
     std::string event_string = get_plog_event_string(LogEvent::NONE);
     std::string full_log_string = level_string + time_string + scope_string + event_string + "\"" + message + "\"";
@@ -150,7 +176,7 @@ void plog_info(LogScope logScope, LogEvent logEvent, std::string message) {
     std::string full_log_path = physimos_root_dir + "/" + main_log_spath;
 
     std::string level_string = get_plog_level_string(LogLevel::INFO);
-    std::string time_string = "2025-02-16T23:02:55 ";
+    std::string time_string =  get_current_timestring();
     std::string scope_string = get_plog_scope_string(logScope);
     std::string event_string = get_plog_event_string(logEvent);
     std::string full_log_string = level_string + time_string + scope_string + event_string + "\"" + message + "\"";

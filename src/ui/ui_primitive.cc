@@ -13,13 +13,31 @@
 namespace UI {
     PrimitiveString::PrimitiveString(std::string _str) : str{ _str } {
         initGraphics();
-        setString(_str);
+        str_setString(_str);
     }
+    void PrimitiveString::str_setFontSize(FontSize _fontSize) {
+        str_fontSize = _fontSize;
+        str_setString(str);
+    }
+    void PrimitiveString::str_setString(std::string _str) {
+
+        uiTransform.height = str_fontSize;
+
+        size_t charWidth = 2 * (str_fontSize / 3);
+
+        uiTransform.width = charWidth * _str.length();
+
+        loadStringIntoGlTexture(defaultTexture, _str);
+
+        updateTransformationMatrix();
+    }
+
+
     void PrimitiveString::update_str(std::string _str){
 
         if (str != _str){
             str = _str;
-            setString(_str);
+            str_setString(_str);
         }
 
     }
@@ -30,6 +48,10 @@ namespace UI {
     void PrimitiveString::update_str_double(double _double) {
         std::string _double_str = std::to_string(_double);
         update_str(_double_str);
+    }
+
+    bool Primitive::try_hover_component(double x, double y) {
+        return false;
     }
 
 

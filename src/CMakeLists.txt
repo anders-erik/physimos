@@ -10,7 +10,7 @@ add_subdirectory(ui)
 add_subdirectory(model)
 add_subdirectory(image)
 add_subdirectory(lib)
-
+add_subdirectory(scene)
 
 
 set(SOURCES 
@@ -45,7 +45,6 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/lib)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include/)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)
 
-add_subdirectory(scene)
 
-target_link_libraries(source res simulator render ui scene lib)
+target_link_libraries(source res simulator render scene lib)
 
