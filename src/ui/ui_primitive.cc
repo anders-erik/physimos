@@ -519,6 +519,7 @@ namespace UI {
         children.push_back(childPrimitive);
 
         childPrimitive->parent = this;
+        childPrimitive->z = this->z + 1;
 
         // TODO: better automatic detection on new parent?
         childPrimitive->setXrecursive(childPrimitive->uiTransform.x_input);

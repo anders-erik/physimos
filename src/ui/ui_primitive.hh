@@ -184,6 +184,9 @@ class Primitive {
 
 
         // RENDERING
+        // Primitives without parents will have a z-value of 1. Each child will recieve a z value of parent.z + 1.
+        // A z value of 0 will not be rendered ?
+        int z = 1;
         Shader* shader = nullptr;
         unsigned int vao;
         unsigned int vbo; 
