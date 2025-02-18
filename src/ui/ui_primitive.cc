@@ -11,8 +11,26 @@
 
 
 namespace UI {
+    PrimitiveString::PrimitiveString(std::string _str) : str{ _str } {
+        initGraphics();
+        setString(_str);
+    }
+    void PrimitiveString::update_str(std::string _str){
 
+        if (str != _str){
+            str = _str;
+            setString(_str);
+        }
 
+    }
+    void PrimitiveString::update_str_int(int _int) {
+        std::string _int_str = std::to_string(_int);
+        update_str(_int_str);
+    }
+    void PrimitiveString::update_str_double(double _double) {
+        std::string _double_str = std::to_string(_double);
+        update_str(_double_str);
+    }
 
 
     void Primitive::setState(PrimitiveState _newState){
@@ -560,10 +578,18 @@ namespace UI {
 
     }
 
+    void Primitive::render_recursive() {
+        render();
+        // Make sure children are rendered after parent as currently no depth testing or sorting is being done!
+        for (Primitive* child : children) {
+            child->render_recursive();
+        }
+    }
 
-    void Primitive::renderRecursive() {
+    void Primitive::render(){
 
-        if(uiTransform.hasBeenChangedFlag){
+
+        if (uiTransform.hasBeenChangedFlag) {
             update_x_real_recursive();
             update_y_real_recursive();
         }
@@ -581,16 +607,10 @@ namespace UI {
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDrawArrays(GL_TRIANGLES,0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         glDisable(GL_BLEND);
-        
 
-        // Make sure that children are rendered after parent as depth test is turned of!
-        for (Primitive* child : children) {
-            child->renderRecursive();
-        }
     }
-
 
 
 

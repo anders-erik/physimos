@@ -184,9 +184,17 @@ class Primitive {
 
 
         // RENDERING
+        
+        /** Render current state of primitive */
+        void render();
+        /** Render current state of primitive and making this same call to all its children */
+        void render_recursive();
+        /** Render itself and all primitive children, then render_component() of all its child components. */
+        virtual void render_component() {};
         // Primitives without parents will have a z-value of 1. Each child will recieve a z value of parent.z + 1.
         // A z value of 0 will not be rendered ?
         int z = 1;
+
         Shader* shader = nullptr;
         unsigned int vao;
         unsigned int vbo; 
@@ -197,7 +205,6 @@ class Primitive {
         unsigned int selectedTexture;
         void initGraphics();
         void generateTextures();
-        void renderRecursive();
         void setDefaultColor(Color color);
 
 
@@ -217,6 +224,16 @@ class Primitive {
         // This pointer enables primitives to access the same scope and objects as the component to which it belongs. 
         void* component = nullptr;        
 };
+
+
+typedef class PrimitiveString : public Primitive {
+    public:
+        std::string str = "";
+        void update_str(std::string _str);
+        void update_str_int(int _int);
+        void update_str_double(double _double);
+        PrimitiveString(std::string _str);
+} PrimitiveString;
 
 
 

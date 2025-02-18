@@ -37,7 +37,8 @@ double cursor_y = 0.0;
 Primitive* currentlyHoveredPrimitive = nullptr;
 
 UI::Primitive primitive_to_edit;
-UI::component::Component_PrimitiveEditor* primitive_editor;
+// UI::component::Component_PrimitiveEditor* primitive_editor;
+UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
     // Necessary to render the UI Scene Module
     // ::ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
@@ -56,10 +57,16 @@ void init(){
     UI::primitiveList.push_back(&primitive_to_edit);
     UI::primitiveTreeHeads.push_back(&primitive_to_edit);
 
+    primitive_editor = new UI::component::UIC_PrimitiveEditor(primitive_to_edit);
+    primitive_editor->set_x("<800x");
+    primitive_editor->set_y("_200x");
+    // UI::primitiveList.push_back(primitive_editor);
+    // UI::primitiveTreeHeads.push_back(primitive_editor);
+    // primitive_editor = new UI::component::Component_PrimitiveEditor(primitive_to_edit);
+    // UI::primitiveList.push_back(&(primitive_editor->container));
+    // UI::primitiveTreeHeads.push_back(&(primitive_editor->container));
+
     // UI::component::ComponentPrimitiveEditor primitive_editor = UI::component::ComponentPrimitiveEditor(primitive_to_edit);
-    primitive_editor = new UI::component::Component_PrimitiveEditor(primitive_to_edit);
-    UI::primitiveList.push_back(&(primitive_editor->container));
-    UI::primitiveTreeHeads.push_back(&(primitive_editor->container));
 
     // add the uiPObject to the global ui lists
     // UI::primitiveTreeHeads.push_back(UI::component::pobjectContext->container);
@@ -139,10 +146,14 @@ void init(){
 void update(){
     glDisable(GL_DEPTH_TEST);
 
+    primitive_editor->update_component();
+    primitive_editor->render_component();
+
     for (UI::Primitive* primitiveTreeHead : UI::primitiveTreeHeads) {
         // Will remove transprancy during hover
         primitiveTreeHead->updateShaderMatrixesRecursively();
-        primitiveTreeHead->renderRecursive();
+        // primitiveTreeHead->renderRecursive();
+        primitiveTreeHead->render_recursive();
     }
 }
 

@@ -5,83 +5,35 @@
 
 namespace UI::component {
 
-
-
-PrimitiveEditor_Container::PrimitiveEditor_Container(Component_PrimitiveEditor& _primitiveComponent) :
-    BasePrimitive(_primitiveComponent)
-{
-
-    // TODO: BUG
-    // uiTransform.horiRef = HoriRef::Right;
-    // setXrecursive(100);
-    // setYrecursive(100);
-    set_x(">100x");
-    set_y("_100x");
-    setWidth(250);
-    setHeight(600);
-    initGraphics();
-
-}
-
-PrimitiveEditor_Title::PrimitiveEditor_Title(Component_PrimitiveEditor& _primitiveComponent)
-    : BasePrimitive(_primitiveComponent) 
+UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive) 
+    :   boundObject { _primitive },
+        title       { PrimitiveString("Primitive Editor") },
+        idPrimitive { PrimitiveString(_primitive.id) }
 {
     initGraphics();
-    setString(title_text);
-    uiTransform.vertRef = VertRef::Top;
+    appendChild(&title);
+    // TODO: BUG : setting font size after string has no effect!
+    title.fontSize = FontSize::f15;
+    title.set_y("^10x");
+    appendChild(&idPrimitive);
+    // TODO: BUG : setting font size after string has no effect!
+    idPrimitive.fontSize = FontSize::f15;
+    idPrimitive.set_y("^30x");
+}
+
+void UIC_PrimitiveEditor::update_component() {
+
+    // title.update(boundObject.);
+    idPrimitive.update_str(boundObject.id);
 }
 
 
+void UIC_PrimitiveEditor::render_component(){
+    render();
 
-IdPrimitive::IdPrimitive(Component_PrimitiveEditor& _primitiveComponent) 
-    : BasePrimitive(_primitiveComponent) {
-
-        // reload();
-        // initGraphics()
-
-    fontSize = FontSize::f15;
-    initGraphics();
-    setString(primitiveComponent.boundObject.id);
-    // uiTransform.vertRef = VertRef::Top;
-    // setYrecursive(30);
-    set_x(">0x");
-    set_y("^30x");
+    title.render();
+    idPrimitive.render();
 }
-
-void IdPrimitive::reload(){
-    id = primitiveComponent.boundObject.id;
-}
-
-
-// Reloads components that track data
-// void PrimitiveComponent::reloadComponent() {
-//     // idPrimitive.reload();
-// }
-void Component_PrimitiveEditor::newPrimitive(::UI::Primitive& ui_primitive) {
-    boundObject = ui_primitive;
-}
-
-// void PrimitiveComponent::init() {
-//     // container = UI::component::ContainerPrimitive(*this);
-// }
-
-// PrimitiveComponent::PrimitiveComponent(::UI::Primitive& ui_primitive) {
-//     // boundObject = ui_primitive;
-
-//     // container = ContainerPrimitive(*this);
-
-// };
-
-Component_PrimitiveEditor::Component_PrimitiveEditor(::UI::Primitive& ui_primitive) :
-    boundObject { ui_primitive },
-    container   { *this },
-    title       { *this },
-    idPrimitive { *this }
-{
-    container.appendChild(&title);
-    container.appendChild(&idPrimitive);
-
-};
 
 
 }
