@@ -92,9 +92,19 @@ typedef struct Transform {
     size_t width = 200;
     Unit w_unit = Unit::Pixel;
 
-    // Raw input values to setX/y methods
+    // Input string
+    std::string input_string = "";
+    // Raw input value parsed from string
     int x_input = 0;
     int y_input = 0;
+    // 2025-02-17/18
+    // input values converted to pixels
+    bool hasBeenChangedFlag = false;
+    int x_input_px = 0;
+    int y_input_px = 0;
+    // int x_input_percent_window = 0;
+    // int y_input_percent_window = 0;
+
     // Units of the x/y input values
     Unit x_unit = Unit::Pixel;
     Unit y_unit = Unit::Pixel;
@@ -145,10 +155,14 @@ class Primitive {
         void setWidth(int _width);
 
         // Updates: 2025-02-17
-        UI::PositionReal posReal;
-        UI::PositionInput posInput;
-        void updateXrealRecursively();
-        void updateYrealRecursively();
+        void set_x(std::string x_str);
+        void set_y(std::string y_str);
+        void update_x_real_recursive();
+        void update_y_real_recursive();
+        // UI::PositionReal posReal;
+        // UI::PositionInput posInput;
+        // void updateXrealRecursively();
+        // void updateYrealRecursively();
         // void setUiTransform(::UI::Transform _uiTransform);
 
 

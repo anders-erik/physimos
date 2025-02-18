@@ -111,6 +111,140 @@ namespace UI {
     }
 
 
+    void Primitive::update_x_real_recursive() {
+
+        if (uiTransform.horiRef == HoriRef::Left) {
+
+            if (parent == nullptr) {
+                uiTransform.x_real = uiTransform.x_input_px;
+            }
+            else {
+                uiTransform.x_real = parent->uiTransform.x_real + uiTransform.x_input_px;
+            }
+
+
+        }
+        else if (uiTransform.horiRef == HoriRef::Right) {
+
+            // The x value when primitives right edge would be flush with parents right edge
+            int right_reference_x;
+
+            if (parent == nullptr) {
+                right_reference_x = viewport_width - uiTransform.width;
+                uiTransform.x_real = right_reference_x - uiTransform.x_input_px;
+            }
+            else {
+                right_reference_x = parent->uiTransform.x_real + parent->uiTransform.width - uiTransform.width;
+                uiTransform.x_real = right_reference_x - uiTransform.x_input_px;
+            }
+        }
+
+
+        // Reload real x locations
+        for (Primitive* child : children)
+            child->update_x_real_recursive();
+        
+
+        updateTransformationMatrix();
+        uiTransform.hasBeenChangedFlag = false;
+    }
+
+    void Primitive::update_y_real_recursive() {
+
+
+        // real y coordinate offset from reference
+        // If primitive is a root element, then this is viewport/ui coordinates
+        int y_real_offset;
+
+        // Draw root primitives directly
+        if (uiTransform.vertRef == VertRef::Bottom) {
+
+            y_real_offset = uiTransform.y_input_px;
+
+            if (parent == nullptr) {
+                uiTransform.y_real = uiTransform.y_input_px;
+            }
+            else {
+                uiTransform.y_real = parent->uiTransform.y_real + uiTransform.y_input_px;
+            }
+
+        }
+        else if (uiTransform.vertRef == VertRef::Top) {
+
+            // The real offset is in the negative direction when using top as vertical reference
+            y_real_offset = -uiTransform.y_input_px;
+
+            if (parent == nullptr) {
+                int zero_point_top = viewport_height - uiTransform.height;
+                // _y_real_offset = zero_point_top - _y_input_px;
+                uiTransform.y_real = zero_point_top + y_real_offset;
+            }
+            else {
+                // move child to align with parent top, the subtract top offset (_y_real_offset)
+                uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.height - this->uiTransform.height + y_real_offset;
+            }
+
+        }
+
+        // Reload real y locations
+        for (Primitive* child : children)
+            child->update_y_real_recursive();
+
+        updateTransformationMatrix();
+        uiTransform.hasBeenChangedFlag = false;
+    }
+
+    void Primitive::set_x(std::string x_str) {
+
+        char hori_char = x_str[0];
+        char unit_char = x_str[x_str.size() - 1];
+        unsigned int num_value = atoi(x_str.substr(1, x_str.size() - 2).data());
+
+        uiTransform.x_input = num_value;
+        
+        if (hori_char == '<')
+            uiTransform.horiRef = HoriRef::Left;
+        else if (hori_char == '>')
+            uiTransform.horiRef = HoriRef::Right;
+
+        if (unit_char == 'x'){
+            uiTransform.x_unit = Unit::Pixel;
+            uiTransform.x_input_px = uiTransform.x_input;
+        }
+        else if (unit_char == '%'){
+            uiTransform.x_unit = Unit::Percent;
+            uiTransform.x_input_px = (viewport_width * uiTransform.x_input) / 100;  // Multiply _first_ to reduce compounding error from integer division rounding 
+        }
+        
+        uiTransform.hasBeenChangedFlag = true;
+    }
+
+    void Primitive::set_y(std::string y_str) {
+
+        char vert_char = y_str[0];
+        char unit_char = y_str[y_str.size() - 1];
+        unsigned int num_value = atoi(y_str.substr(1, y_str.size() - 2).data());
+
+        uiTransform.y_input = num_value;
+
+        if (vert_char == '^')
+            uiTransform.vertRef = VertRef::Top;
+        else if (vert_char == '_')
+            uiTransform.vertRef = VertRef::Bottom;
+
+        if (unit_char == 'x'){
+            uiTransform.y_unit = Unit::Pixel;
+            uiTransform.y_input_px = uiTransform.y_input;
+        }
+        else if (unit_char == '%'){
+            uiTransform.y_unit = Unit::Percent;
+            uiTransform.y_input_px = (viewport_height * uiTransform.y_input) / 100; // Multiply _first_ to reduce compounding error from integer division rounding 
+        }
+
+        uiTransform.hasBeenChangedFlag = true;
+    }
+
+
     // Store x_input and make appropriate conversions to update x_real.
     // x_input is relative to parent. If no parent then relative to ui origin.
     // Recursivity is performed to make sure all x_real values are correct for rendering.
@@ -427,6 +561,12 @@ namespace UI {
 
 
     void Primitive::renderRecursive() {
+
+        if(uiTransform.hasBeenChangedFlag){
+            update_x_real_recursive();
+            update_y_real_recursive();
+        }
+
         // std::cout << "RENDERING UI PRIMITIVE" << std::endl;
         glUseProgram(shader->ID);
 

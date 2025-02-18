@@ -12,9 +12,11 @@ PrimitiveEditor_Container::PrimitiveEditor_Container(Component_PrimitiveEditor& 
 {
 
     // TODO: BUG
-    uiTransform.horiRef = HoriRef::Right;
-    setXrecursive(100);
-    setYrecursive(100);
+    // uiTransform.horiRef = HoriRef::Right;
+    // setXrecursive(100);
+    // setYrecursive(100);
+    set_x(">100x");
+    set_y("_100x");
     setWidth(250);
     setHeight(600);
     initGraphics();
@@ -40,8 +42,10 @@ IdPrimitive::IdPrimitive(Component_PrimitiveEditor& _primitiveComponent)
     fontSize = FontSize::f15;
     initGraphics();
     setString(primitiveComponent.boundObject.id);
-    uiTransform.vertRef = VertRef::Top;
-    setYrecursive(30);
+    // uiTransform.vertRef = VertRef::Top;
+    // setYrecursive(30);
+    set_x(">0x");
+    set_y("^30x");
 }
 
 void IdPrimitive::reload(){
