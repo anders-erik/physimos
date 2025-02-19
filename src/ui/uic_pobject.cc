@@ -20,9 +20,9 @@ PobjectContainer::PobjectContainer(PobjectComponent* _componentContext) {
     uiTransform.vertRef = UI::VertRef::Bottom;
     setWidth(400);
     setHeight(200);
-    initGraphics();
-    setXrecursive(10);
-    setYrecursive(10);
+    // initGraphics();
+    // setXrecursive(10);
+    // setYrecursive(10);
 }
 
 
@@ -34,15 +34,15 @@ PobjectNameLabel::PobjectNameLabel(PobjectComponent* _componentContext) {
     
     id = pobject->name + "_name_label";
     uiTransform.vertRef = UI::VertRef::Top;
-    initGraphics();
-    fontSize = UI::FontSize::f24;
-    setString(pobject->name);
-    setXrecursive(10);
-    setYrecursive(10);
+    // initGraphics();
+    // fontSize = UI::FontSize::f24;
+    // setString(pobject->name);
+    // setXrecursive(10);
+    // setYrecursive(10);
 }
 void PobjectNameLabel::reload(){
     ::PObject* pobject = ((PobjectComponent*)component)->boundObject;
-    setString(pobject->name);
+    // setString(pobject->name);
 }
 
 
@@ -57,11 +57,11 @@ ToggleWireframe::ToggleWireframe(PobjectComponent* _componentContext) {
     isHoverable = true;
     id = pobject->name + "_toggle_wireframe_";
     uiTransform.vertRef = UI::VertRef::Bottom;
-    initGraphics();
-    fontSize = UI::FontSize::f15;
-    setString("Toggle wireframe");
-    setXrecursive(10);
-    setYrecursive(10);
+    // initGraphics();
+    // fontSize = UI::FontSize::f15;
+    // setString("Toggle wireframe");
+    // setXrecursive(10);
+    // setYrecursive(10);
 }
 UI::Action ToggleWireframe::click() {
     // std::cout << "Clicked ToggleWireframe" << std::endl;
@@ -111,8 +111,8 @@ void PobjectComponent::populateContext(::PObject* _pObject) {
     // Components
     transformContext = new UI::component::transform::TransformComponent();
     transformContext->populateContext(_pObject->transform);
-    transformContext->container->setXrecursive(190);
-    transformContext->container->setYrecursive(10);
+    // transformContext->container->setXrecursive(190);
+    // transformContext->container->setYrecursive(10);
     container->appendChild(transformContext->container);
 
 }

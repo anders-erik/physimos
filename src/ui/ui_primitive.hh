@@ -13,6 +13,11 @@ namespace UI {
 class Primitive; // forward declare
 
 
+typedef enum class PrimitiveType {
+    Base,
+    String,
+} PrimitiveType;
+
 enum PrimitiveState {
     Default = 1,
     Hover = 2,
@@ -122,11 +127,12 @@ typedef struct Transform {
 
 class Primitive {
     public:
-        Primitive() {};
+        /** Initializes a new primitive ui object. Appropriate shader must be initialized when called! */
+        Primitive();
 
         std::string id = "";
-        void printId();
 
+        PrimitiveType primitiveType = PrimitiveType::Base;
 
         // Primitive Tree
         Primitive* parent = nullptr;
@@ -142,8 +148,6 @@ class Primitive {
 
         // UI Transformation 
         UI::Transform uiTransform;
-        void setXrecursive(int x_input);
-        void setYrecursive(int y_input);
         void setHeight(int _height);
         void setWidth(int _width);
 
@@ -152,11 +156,6 @@ class Primitive {
         void set_y(std::string y_str);
         void update_x_real_recursive();
         void update_y_real_recursive();
-        // UI::PositionReal posReal;
-        // UI::PositionInput posInput;
-        // void updateXrealRecursively();
-        // void updateYrealRecursively();
-        // void setUiTransform(::UI::Transform _uiTransform);
 
 
         // Set the transformation matrix for shading
@@ -165,13 +164,6 @@ class Primitive {
         bool childrenContainPoint(double _x, double _y);
         // Set the shader matrices using the ui transform object
         void updateShaderMatrixesRecursively();
-
-
-        // LEGACY - Moved to PrimitiveString
-        std::string text = "";
-        FontSize fontSize = FontSize::f24;
-        void setString(std::string _str);
-        bool isTextPrimitive();
 
 
 
@@ -187,23 +179,32 @@ class Primitive {
         // A z value of 0 will not be rendered ?
         int z = 1;
 
-        void set_color(Colors color);
-        void set_color_hover(Colors color);
-        void set_color_active(Colors color);
+        
+        Colors color = Colors::LightGray;
+        Colors colorHover = Colors::Gray;
+        Colors colorActive = Colors::DarkGray;
+        void new_color(Colors color);
+        void new_color_hover(Colors color);
+        void new_color_active(Colors color);
         /** Will update the current texture (glTexture) to the texture set for the current primitive state. */
-        void reload_texture();
+        // void reload_texture();
 
         Shader* shader = nullptr;
         unsigned int vao;
         unsigned int vbo; 
         /** The currently rendered texture for UI::Primitive. */
-        unsigned int glTexture;
+        unsigned int renderedTexture;
+        /** Texture rendered when default state is set. */
         unsigned int defaultTexture;
+        /** Texture rendered when hover state is set. */
         unsigned int hoverTexture;
+        /** Texture rendered when selected state is set. */
         unsigned int selectedTexture;
-        void initGraphics();
-        void generateTextures();
-        void setDefaultColor(Color color);
+        /** Generated when setting a new primitive string in PrimitiveString. */
+        unsigned int privateStringTexture;
+        
+        // void setDefaultColor(Color color);
+
 
 
         // STATE & BEHAVIOR

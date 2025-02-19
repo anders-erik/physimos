@@ -107,7 +107,7 @@ std::vector<unsigned char> getCharBitmap(unsigned char ascii_char) {
 
 
 // will update a gl texture with specified character bitmap
-void loadStringIntoGlTexture(unsigned int glTexture, std::string stringToRender) {
+void loadStringIntoGlTexture(unsigned int& glTexture, std::string stringToRender) {
 
     unsigned int charCount = stringToRender.length();
 

@@ -6,7 +6,14 @@ namespace UI {
 
     class Primitive;
 
-    typedef enum Colors {
+    typedef enum class Colors {
+        Pink, // uninitialized texture
+        Red,  // Common default value
+
+        Gray,
+        LightGray,
+        DarkGray,
+
         Green,
         LightGreen,
         DarkGreen,

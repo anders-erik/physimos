@@ -33,7 +33,7 @@ void loadFont();
 void extractCharFromBitmap(unsigned char ascii_char);
 std::vector<unsigned char> getCharBitmap(unsigned char ascii_char);
 
-void loadStringIntoGlTexture(unsigned int glTexture, std::string stringToRender);
+void loadStringIntoGlTexture(unsigned int& glTexture, std::string stringToRender);
 std::vector<unsigned char> getStringBitmap(std::string stringToRender);
 std::vector<unsigned char> getCharBitmapRow(unsigned char character, unsigned int rowIndex);
 

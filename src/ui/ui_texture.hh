@@ -5,14 +5,8 @@
 
 namespace UI {
     namespace texture {
-
-        typedef enum StaticTexture {
-            Green,
-            LightGreen,
-            DarkGreen,
-        } StaticTexture;
-
-
+        
+        void new_texture(unsigned int& texture_to_init);
 
         unsigned int get_static_color_texture(UI::Colors color);
         void init_static_textures();

@@ -17,9 +17,9 @@ PsceneContainer::PsceneContainer(PsceneComponent* psceneContext) {
     uiTransform.horiRef = UI::HoriRef::Left;
     setWidth(300);
     setHeight(400);
-    initGraphics();
-    setXrecursive(10);
-    setYrecursive(150);
+    // initGraphics();
+    // setXrecursive(10);
+    // setYrecursive(150);
 }
 
 
@@ -33,11 +33,11 @@ PsceneNameLabel::PsceneNameLabel(PsceneComponent* psceneContext) {
     id = "UiPScenelNameLabel_1";
     uiTransform.vertRef = UI::VertRef::Top;
     uiTransform.horiRef = UI::HoriRef::Right;
-    initGraphics();
-    fontSize = UI::FontSize::f24;
-    setString(scene->name);
-    setXrecursive(12);
-    setYrecursive(10);
+    // initGraphics();
+    // fontSize = UI::FontSize::f24;
+    // setString(scene->name);
+    // setXrecursive(12);
+    // setYrecursive(10);
 }
 
 
@@ -47,10 +47,10 @@ PscenePObjectListObject::PscenePObjectListObject(::PObject* _pObject) {
     id = _pObject->name;
     uiTransform.vertRef = UI::VertRef::Top;
     isHoverable = true;
-    initGraphics();
-    fontSize = UI::FontSize::f15;
-    setString(_pObject->name);
-    setXrecursive(10);
+    // initGraphics();
+    // fontSize = UI::FontSize::f15;
+    // setString(_pObject->name);
+    // setXrecursive(10);
 }
 
 PscenePObjectList::PscenePObjectList(PsceneComponent* psceneContext) {
@@ -58,11 +58,11 @@ PscenePObjectList::PscenePObjectList(PsceneComponent* psceneContext) {
 
     id = "UiPScenelObjectList_1";
     uiTransform.vertRef = UI::VertRef::Top;
-    initGraphics();
-    fontSize = UI::FontSize::f24;
-    setString("PObject List");
-    setXrecursive(10);
-    setYrecursive(50);
+    // initGraphics();
+    // fontSize = UI::FontSize::f24;
+    // setString("PObject List");
+    // setXrecursive(10);
+    // setYrecursive(50);
 
     reloadList();
 }
@@ -79,7 +79,7 @@ void PscenePObjectList::reloadList() {
 
         ::UI::Primitive* _pObjectPrimtive = new ::UI::component::PscenePObjectListObject(_pObject);
         
-        _pObjectPrimtive->setYrecursive(10 + 20*index);
+        // _pObjectPrimtive->setYrecursive(10 + 20*index);
         
         appendChild(_pObjectPrimtive);
         

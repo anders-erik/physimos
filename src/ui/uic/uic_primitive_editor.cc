@@ -12,7 +12,7 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
         uic_primitive_color { UIC_PrimitiveColor(_primitive) }
 {
     isHoverable = true;
-    initGraphics();
+    // initGraphics();
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f15);

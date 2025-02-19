@@ -41,7 +41,7 @@ double cursor_x = 0.0;
 double cursor_y = 0.0;
 Primitive* currentlyHoveredPrimitive = nullptr;
 
-UI::Primitive primitive_to_edit;
+UI::Primitive* primitive_to_edit;
 // UI::component::Component_PrimitiveEditor* primitive_editor;
 UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
@@ -56,17 +56,19 @@ void init(){
 
     
     // PRIMITIVE EDITOR COMPONENT
-    primitive_to_edit = UI::Primitive();
-    primitive_to_edit.initGraphics();
-    primitive_to_edit.set_color(Colors::DarkGreen);
-    primitive_to_edit.setState(PrimitiveState::Default);
-    primitive_to_edit.id = "primitive_to_test";
-    primitive_to_edit.setXrecursive(500);
-    primitive_to_edit.setYrecursive(400);
-    UI::primitiveList.push_back(&primitive_to_edit);
-    UI::primitiveTreeHeads.push_back(&primitive_to_edit);
+    primitive_to_edit = new UI::Primitive();
+    // primitive_to_edit->initGraphics();
+    primitive_to_edit->new_color(Colors::DarkGreen);
+    primitive_to_edit->setState(PrimitiveState::Default);
+    primitive_to_edit->id = "primitive_to_test";
+    primitive_to_edit->set_x("<500x");
+    primitive_to_edit->set_y("_400x");
+    // primitive_to_edit.setXrecursive(500);
+    // primitive_to_edit.setYrecursive(400);
+    UI::primitiveList.push_back(primitive_to_edit);
+    UI::primitiveTreeHeads.push_back(primitive_to_edit);
 
-    primitive_editor = new UI::component::UIC_PrimitiveEditor(primitive_to_edit);
+    primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
     primitive_editor->set_x("<800x");
     primitive_editor->set_y("_200x");
     // UI::primitiveList.push_back(primitive_editor);
@@ -87,47 +89,47 @@ void init(){
 
 
     // INITIALLY SELECTED POBJECT
-    ::PObject* house1_wo = ::PScene::getWorldObjectByName("house1_obj");
-    if (house1_wo == nullptr) {
-        std::cout << "Error init ui. Unable to find house 1 obj." << std::endl;
-    }
-    // WORLD OBJECT COMPONENT 
-    // WorldObject* ground_01 = PScene::getWorldObjectByName("ground_01");
-    // if (ground_01 != nullptr) {
-    //     std::cout << "house1_wo->name = " << ground_01->name << std::endl;
+    // ::PObject* house1_wo = ::PScene::getWorldObjectByName("house1_obj");
+    // if (house1_wo == nullptr) {
+    //     std::cout << "Error init ui. Unable to find house 1 obj." << std::endl;
+    // }
+    // // WORLD OBJECT COMPONENT 
+    // // WorldObject* ground_01 = PScene::getWorldObjectByName("ground_01");
+    // // if (ground_01 != nullptr) {
+    // //     std::cout << "house1_wo->name = " << ground_01->name << std::endl;
+    // // }
+
+    // // UI::Primitive* worldObjectComponent_tree = UI::PObject::newComponent(house1_wo);
+    // // primitiveTreeHeads.push_back(worldObjectComponent_tree);
+    // // // Flatten component for easy traversal
+    // // std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
+    // // for (UI::Primitive* _primitive : flatComponent ){
+    // //     std::cout << "_primitive->id = " << _primitive->id << std::endl;
+    // //     primitiveList.push_back(_primitive);
+    // // }
+
+
+    // // PObject Context
+    // UI::component::pobjectContext = new UI::component::PobjectComponent();
+    // UI::component::pobjectContext->populateContext(house1_wo);
+    // // UI::PObject::uiPObjectContext->newPObject(ground_01);
+    // // add the uiPObject to the global ui lists
+    // UI::primitiveTreeHeads.push_back(UI::component::pobjectContext->container);
+    // std::vector<UI::Primitive*> flatComponent = UI::component::pobjectContext->container->flattenTree();
+    // for (UI::Primitive* _primitive : flatComponent) {
+    //     // std::cout << "_primitive->id = " << _primitive->id << std::endl;
+    //     UI::primitiveList.push_back(_primitive);
     // }
 
-    // UI::Primitive* worldObjectComponent_tree = UI::PObject::newComponent(house1_wo);
-    // primitiveTreeHeads.push_back(worldObjectComponent_tree);
-    // // Flatten component for easy traversal
-    // std::vector<UI::Primitive*> flatComponent = worldObjectComponent_tree->flattenTree();
-    // for (UI::Primitive* _primitive : flatComponent ){
-    //     std::cout << "_primitive->id = " << _primitive->id << std::endl;
-    //     primitiveList.push_back(_primitive);
+    // // UiPScene Context
+    // UI::component::psceneContext = new UI::component::PsceneComponent();
+    // UI::component::psceneContext->populateContext(::PScene::getCurrentScene());
+    // std::vector<UI::Primitive*> flatUiPScene = UI::component::psceneContext->container->flattenTree();
+    // UI::primitiveTreeHeads.push_back(UI::component::psceneContext->container);
+    // for (UI::Primitive* _primitive : flatUiPScene) {
+    //     // std::cout << "_primitive->id = " << _primitive->id << std::endl;
+    //     UI::primitiveList.push_back(_primitive);
     // }
-
-
-    // PObject Context
-    UI::component::pobjectContext = new UI::component::PobjectComponent();
-    UI::component::pobjectContext->populateContext(house1_wo);
-    // UI::PObject::uiPObjectContext->newPObject(ground_01);
-    // add the uiPObject to the global ui lists
-    UI::primitiveTreeHeads.push_back(UI::component::pobjectContext->container);
-    std::vector<UI::Primitive*> flatComponent = UI::component::pobjectContext->container->flattenTree();
-    for (UI::Primitive* _primitive : flatComponent) {
-        // std::cout << "_primitive->id = " << _primitive->id << std::endl;
-        UI::primitiveList.push_back(_primitive);
-    }
-
-    // UiPScene Context
-    UI::component::psceneContext = new UI::component::PsceneComponent();
-    UI::component::psceneContext->populateContext(::PScene::getCurrentScene());
-    std::vector<UI::Primitive*> flatUiPScene = UI::component::psceneContext->container->flattenTree();
-    UI::primitiveTreeHeads.push_back(UI::component::psceneContext->container);
-    for (UI::Primitive* _primitive : flatUiPScene) {
-        // std::cout << "_primitive->id = " << _primitive->id << std::endl;
-        UI::primitiveList.push_back(_primitive);
-    }
 
 
     // TRANSFORM COMPONENT TESTS
@@ -347,54 +349,54 @@ void setCurrentlyHoveredPrimitive(Primitive* newHoverPrimitive){
 void primtiiveUiInitialTests(){
 
 
-    // test-primitives
-    UI::Primitive* _primitive_root = new UI::Primitive();
-    _primitive_root->id = "root";
-    _primitive_root->uiTransform.vertRef = UI::VertRef::Top;
-    _primitive_root->initGraphics();
-    _primitive_root->setXrecursive(300);
-    _primitive_root->setYrecursive(100);
-    _primitive_root->fontSize = UI::FontSize::f15;
-    // _primitive_root->setString("I am root primitive!");
-    primitiveTreeHeads.push_back(_primitive_root);
-    primitiveList.push_back(_primitive_root);
+    // // test-primitives
+    // UI::Primitive* _primitive_root = new UI::Primitive();
+    // _primitive_root->id = "root";
+    // _primitive_root->uiTransform.vertRef = UI::VertRef::Top;
+    // _primitive_root->initGraphics();
+    // _primitive_root->setXrecursive(300);
+    // _primitive_root->setYrecursive(100);
+    // _primitive_root->fontSize = UI::FontSize::f15;
+    // // _primitive_root->setString("I am root primitive!");
+    // primitiveTreeHeads.push_back(_primitive_root);
+    // primitiveList.push_back(_primitive_root);
 
-    _primitive_root->printId();
+    // _primitive_root->printId();
 
-    UI::Primitive* _primitive_child = new UI::Primitive();
-    primitiveList.push_back(_primitive_child);
-    _primitive_child->id = "1st child";
-    _primitive_root->appendChild(_primitive_child);
-    _primitive_child->isHoverable = true;
-    _primitive_child->uiTransform.vertRef = UI::VertRef::Top;
-    _primitive_child->initGraphics();
-    _primitive_child->fontSize = UI::FontSize::f15;
-    _primitive_child->setString("I am child!");
-    _primitive_child->setXrecursive(10);
-    _primitive_child->setYrecursive(10);
+    // UI::Primitive* _primitive_child = new UI::Primitive();
+    // primitiveList.push_back(_primitive_child);
+    // _primitive_child->id = "1st child";
+    // _primitive_root->appendChild(_primitive_child);
+    // _primitive_child->isHoverable = true;
+    // _primitive_child->uiTransform.vertRef = UI::VertRef::Top;
+    // _primitive_child->initGraphics();
+    // _primitive_child->fontSize = UI::FontSize::f15;
+    // _primitive_child->setString("I am child!");
+    // _primitive_child->setXrecursive(10);
+    // _primitive_child->setYrecursive(10);
 
-    UI::Primitive* _primitive_grandchild = new UI::Primitive();
-    primitiveList.push_back(_primitive_grandchild);
-    _primitive_grandchild->id = "1st grandchild";
-    _primitive_child->appendChild(_primitive_grandchild);
-    _primitive_grandchild->isHoverable = true;
-    _primitive_grandchild->uiTransform.vertRef = UI::VertRef::Top;
-    _primitive_grandchild->initGraphics();
-    _primitive_grandchild->fontSize = UI::FontSize::f15;
-    _primitive_grandchild->setString("I am grandchild!");
-    _primitive_grandchild->setXrecursive(10);
-    _primitive_grandchild->setYrecursive(20);
+    // UI::Primitive* _primitive_grandchild = new UI::Primitive();
+    // primitiveList.push_back(_primitive_grandchild);
+    // _primitive_grandchild->id = "1st grandchild";
+    // _primitive_child->appendChild(_primitive_grandchild);
+    // _primitive_grandchild->isHoverable = true;
+    // _primitive_grandchild->uiTransform.vertRef = UI::VertRef::Top;
+    // _primitive_grandchild->initGraphics();
+    // _primitive_grandchild->fontSize = UI::FontSize::f15;
+    // _primitive_grandchild->setString("I am grandchild!");
+    // _primitive_grandchild->setXrecursive(10);
+    // _primitive_grandchild->setYrecursive(20);
 
-    UI::Primitive* _primitive_child_2 = new UI::Primitive();
-    primitiveList.push_back(_primitive_child_2);
-    _primitive_child_2->id = "2st child";
-    _primitive_root->appendChild(_primitive_child_2);
-    _primitive_child_2->uiTransform.vertRef = UI::VertRef::Top;
-    _primitive_child_2->initGraphics();
-    _primitive_child_2->fontSize = UI::FontSize::f15;
-    _primitive_child_2->setString("I am 2nd child!");
-    _primitive_child_2->setXrecursive(10);
-    _primitive_child_2->setYrecursive(60);
+    // UI::Primitive* _primitive_child_2 = new UI::Primitive();
+    // primitiveList.push_back(_primitive_child_2);
+    // _primitive_child_2->id = "2st child";
+    // _primitive_root->appendChild(_primitive_child_2);
+    // _primitive_child_2->uiTransform.vertRef = UI::VertRef::Top;
+    // _primitive_child_2->initGraphics();
+    // _primitive_child_2->fontSize = UI::FontSize::f15;
+    // _primitive_child_2->setString("I am 2nd child!");
+    // _primitive_child_2->setXrecursive(10);
+    // _primitive_child_2->setYrecursive(60);
 
 }
 

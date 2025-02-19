@@ -13,10 +13,10 @@ Container::Container(TransformComponent* _context) {
     uiTransform.vertRef = UI::VertRef::Bottom;
     setWidth(200);
     setHeight(150);
-    initGraphics();
-    setDefaultColor({0,0,0,255});
-    setXrecursive(500);
-    setYrecursive(10);
+    // initGraphics();
+    // setDefaultColor({0,0,0,255});
+    // setXrecursive(500);
+    // setYrecursive(10);
 }
 
 
@@ -25,17 +25,17 @@ XPosition::XPosition(TransformComponent* _context) {
     ::Transform* transform = ((TransformComponent*)component)->boundObject;
     id = "x_pos_label";
     uiTransform.vertRef = UI::VertRef::Bottom;
-    initGraphics();
-    fontSize = UI::FontSize::f15;
+    // initGraphics();
+    // fontSize = UI::FontSize::f15;
     std::string x_pos_string = std::to_string(transform->position.data[0]);
-    setString("x = " + x_pos_string.substr(0, 5));
-    setXrecursive(10);
-    setYrecursive(xpos_y_input);
+    // setString("x = " + x_pos_string.substr(0, 5));
+    // setXrecursive(10);
+    // setYrecursive(xpos_y_input);
 }
 void XPosition::reload() {
     ::Transform* transform = ((TransformComponent*)component)->boundObject;
     std::string x_pos_string = std::to_string(transform->position.data[0]);
-    setString("x = " + x_pos_string.substr(0, 5));
+    // setString("x = " + x_pos_string.substr(0, 5));
 }
 
 
@@ -45,11 +45,11 @@ XPosIncrease::XPosIncrease(TransformComponent* _context) {
     id = "x_pos_increase";
     isHoverable = true;
     uiTransform.vertRef = UI::VertRef::Bottom;
-    initGraphics();
-    fontSize = UI::FontSize::f15;
-    setString("inc");
-    setXrecursive(120);
-    setYrecursive(xpos_y_input);
+    // initGraphics();
+    // fontSize = UI::FontSize::f15;
+    // setString("inc");
+    // setXrecursive(120);
+    // setYrecursive(xpos_y_input);
 }
 UI::Action XPosIncrease::click() {
     ::Transform* transform = ((TransformComponent*)component)->boundObject;
@@ -66,11 +66,11 @@ XPosDecrease::XPosDecrease(TransformComponent* _context) {
     id = "x_pos_decrease";
     isHoverable = true;
     uiTransform.vertRef = UI::VertRef::Bottom;
-    initGraphics();
-    fontSize = UI::FontSize::f15;
-    setString("dec");
-    setXrecursive(160);
-    setYrecursive(xpos_y_input);
+    // initGraphics();
+    // fontSize = UI::FontSize::f15;
+    // setString("dec");
+    // setXrecursive(160);
+    // setYrecursive(xpos_y_input);
 }
 UI::Action XPosDecrease::click() {
     ::Transform* transform = ((TransformComponent*)component)->boundObject;
