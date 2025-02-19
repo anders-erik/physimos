@@ -71,23 +71,20 @@ namespace UI {
         
 
 
-        void TextureShader::set(float* primitiveTransform_mat) {
+        void TextureShader::set(float* primitiveTransform_mat, unsigned int texture) {
             glUseProgram(shader_id);
             // GL_TRUE : Transpose before loading into uniform!
             glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform16);
             glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitiveTransform_mat);
+
+            this->texture = texture;
         }
 
         void TextureShader::draw() {
             glUseProgram(shader_id);
 
-            // Transform
-            // shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
-
-
             glBindVertexArray(vao);
             glBindTexture(GL_TEXTURE_2D, texture);
-            // glDrawArrays(GL_TRIANGLES,0, 30);
 
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

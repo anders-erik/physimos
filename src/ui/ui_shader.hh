@@ -34,9 +34,9 @@ namespace UI {
                 void shader_error_check(unsigned int gl_shader, std::string shader_type);
                 void program_error_check(unsigned int gl_program);
 
-                /** Set value needed for render draw. Texture & ui transform.  */
-                void set(float* primitiveTransform_mat);
-                /** Makes rendering call with previously set values. */
+                /** Set values needed for render draw. UI transform and texture.  */
+                void set(float* primitiveTransform_mat, unsigned int texture);
+                /** Makes rendering call with values previously specified using a set()-call. */
                 void draw();
                 /**  */
                 void update_viewport_dimensions(float height, float width);

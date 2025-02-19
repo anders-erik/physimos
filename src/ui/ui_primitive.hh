@@ -5,6 +5,8 @@
 
 #include "render/shader.hpp"
 
+#include "ui/ui_shader.hh"
+
 #include "ui/ui_globals.hh"
 #include "ui/font.hh"
 
@@ -186,12 +188,11 @@ class Primitive {
         void new_color(Colors color);
         void new_color_hover(Colors color);
         void new_color_active(Colors color);
-        /** Will update the current texture (glTexture) to the texture set for the current primitive state. */
-        // void reload_texture();
 
-        Shader* shader = nullptr;
-        unsigned int vao;
-        unsigned int vbo; 
+
+        ::UI::shader::TextureShader* texture_shader;
+
+
         /** The currently rendered texture for UI::Primitive. */
         unsigned int renderedTexture;
         /** Texture rendered when default state is set. */
@@ -203,9 +204,6 @@ class Primitive {
         /** Generated when setting a new primitive string in PrimitiveString. */
         unsigned int privateStringTexture;
         
-        // void setDefaultColor(Color color);
-
-
 
         // STATE & BEHAVIOR
         virtual UiResult try_find_target_component(double x, double y);

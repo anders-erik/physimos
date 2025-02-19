@@ -92,32 +92,6 @@ namespace UI {
     }
 
 
-    // void Primitive::setUiTransform(::UI::Transform _uiTransform) {
-    //     // uiTransform = _uiTransform;
-
-    // }
-
-    // void Primitive::setDefaultColor(Color color) {
-
-    //     int imageBufferWidth = 1;
-    //     int imageBufferHeight = 1;
-    //     unsigned char colorBuffer[4];
-
-
-    //     glBindTexture(GL_TEXTURE_2D, defaultTexture);
-
-
-    //     colorBuffer[0] = color.R;
-    //     colorBuffer[1] = color.G;
-    //     colorBuffer[2] = color.B;
-    //     colorBuffer[3] = color.A;
-
-
-    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageBufferWidth, imageBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
-    //     glGenerateMipmap(GL_TEXTURE_2D);
-
-    // }
-
     // Virtual click method.
     // Implmements behavior within current container scope and returns action(s) to be executed globally.
     UI::Action Primitive::click() {
@@ -308,27 +282,8 @@ namespace UI {
 
     Primitive::Primitive() {
         
-        shader = getShader(Shaders::ui_primitive);
-        glUseProgram(shader->ID);
+        texture_shader = &shader::texture_shader;
 
-
-        // SET VAO, VBO
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-
-        // fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
-
-        glBindVertexArray(vao);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
         defaultTexture = texture::get_static_color_texture(color);
@@ -433,21 +388,11 @@ namespace UI {
             update_y_real_recursive();
         }
 
-        // std::cout << "RENDERING UI PRIMITIVE" << std::endl;
-        glUseProgram(shader->ID);
 
-        // Transform
-        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
+        texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
 
+        texture_shader->draw();
 
-        glBindVertexArray(vao);
-        glBindTexture(GL_TEXTURE_2D, renderedTexture);
-        // glDrawArrays(GL_TRIANGLES,0, 30);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDisable(GL_BLEND);
 
     }
 
