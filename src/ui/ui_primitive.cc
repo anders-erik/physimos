@@ -307,7 +307,7 @@ namespace UI {
 
 
     Primitive::Primitive() {
-
+        
         shader = getShader(Shaders::ui_primitive);
         glUseProgram(shader->ID);
 

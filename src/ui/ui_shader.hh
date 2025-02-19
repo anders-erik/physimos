@@ -14,11 +14,19 @@ namespace UI {
                 std::string frag_path = "src/ui/shaders/texture_frag.glsl";
 
                 unsigned int shader_id;
+                unsigned int vao;
+                unsigned int vbo;
 
-                //
+                unsigned int uiViewportTransformLoc;
+                unsigned int uiPrimitiveTransformLoc;
+                unsigned int texture;
+
+                /** Tranform matrix based on the current viewport dimensions */
                 float viewportTransform16[16];
-                void update_viewport_dimensions(float height, float width);
+                
 
+                /** Compiles, load locations, and set permanent vao. */
+                void init();
 
                 /** Reads shader files, compile, and returns 0 on failure. */
                 void compile_shader();
@@ -27,9 +35,11 @@ namespace UI {
                 void program_error_check(unsigned int gl_program);
 
                 /** Set value needed for render draw. Texture & ui transform.  */
-                void set();
+                void set(float* primitiveTransform_mat);
                 /** Makes rendering call with previously set values. */
                 void draw();
+                /**  */
+                void update_viewport_dimensions(float height, float width);
 
                 TextureShader();
         } TextureShader;

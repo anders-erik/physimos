@@ -48,6 +48,8 @@ UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
     // UI::shader::TextureShader();
     shader::texture_shader.compile_shader();
+    shader::texture_shader.init();
+
     UI::texture::init_static_textures();
 
     // Necessary to render the UI Scene Module
