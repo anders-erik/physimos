@@ -16,7 +16,7 @@ extern std::string physimos_root_dir;
 
 namespace plib {
 std::string get_current_timestring(){
-    return getCurrentDate() + "T" + getCurrentTime();
+    return getCurrentDate() + "T" + getCurrentTime() + " ";
 }
 std::string getCurrentDate() {
     auto now = std::chrono::system_clock::now();

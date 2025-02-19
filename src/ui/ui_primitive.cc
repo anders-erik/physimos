@@ -7,6 +7,7 @@
 
 #include "ui_primitive.hh"
 #include "ui_globals.hh"
+#include "ui/ui_texture.hh"
 #include "ui/font.hh"
 
 
@@ -407,16 +408,52 @@ namespace UI {
 
     }
 
+
+    void Primitive::set_color(Colors color) {
+        defaultTexture = UI::texture::get_static_color_texture(color);
+        reload_texture();
+    }
+    void Primitive::set_color_hover(Colors color) {
+        hoverTexture = UI::texture::get_static_color_texture(color);
+        reload_texture();
+    }
+    void Primitive::set_color_active(Colors color) {
+        selectedTexture = UI::texture::get_static_color_texture(color);
+        reload_texture();
+    }
+
+    
+    void Primitive::reload_texture() {
+        switch (state)
+        {
+        case PrimitiveState::Default :
+            glTexture = defaultTexture;
+            break;
+        
+        case PrimitiveState::Hover:
+            glTexture = hoverTexture;
+            break;
+        
+        case PrimitiveState::Selected:
+            glTexture = selectedTexture;
+            break;
+        
+        default:
+            break;
+        }
+    }
+
+
     void Primitive::initGraphics(){
 
 
         shader = getShader(Shaders::ui_primitive);
 
 
-        updateTransformationMatrix();
+        // updateTransformationMatrix();
 
 
-        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
+        // shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
 
 
         // SET VAO, VBO

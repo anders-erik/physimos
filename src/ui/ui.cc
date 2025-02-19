@@ -4,6 +4,7 @@
 #include "ui.hh"
 
 #include "ui/ui_globals.hh"
+#include "ui/ui_texture.hh"
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
 #include "ui/ui_component.hh"
@@ -44,6 +45,8 @@ UI::Primitive primitive_to_edit;
 // UI::component::Component_PrimitiveEditor* primitive_editor;
 UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
+    UI::texture::init_static_textures();
+
     // Necessary to render the UI Scene Module
     // ::ui_setWindowSize(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
     setViewportDimensions(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT);
@@ -55,6 +58,8 @@ void init(){
     // PRIMITIVE EDITOR COMPONENT
     primitive_to_edit = UI::Primitive();
     primitive_to_edit.initGraphics();
+    primitive_to_edit.set_color(Colors::DarkGreen);
+    primitive_to_edit.setState(PrimitiveState::Default);
     primitive_to_edit.id = "primitive_to_test";
     primitive_to_edit.setXrecursive(500);
     primitive_to_edit.setYrecursive(400);

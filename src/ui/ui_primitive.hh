@@ -187,6 +187,12 @@ class Primitive {
         // A z value of 0 will not be rendered ?
         int z = 1;
 
+        void set_color(Colors color);
+        void set_color_hover(Colors color);
+        void set_color_active(Colors color);
+        /** Will update the current texture (glTexture) to the texture set for the current primitive state. */
+        void reload_texture();
+
         Shader* shader = nullptr;
         unsigned int vao;
         unsigned int vbo; 

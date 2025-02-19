@@ -20,6 +20,8 @@ UiResult UIC_PrimitiveColor_SetBlack::click_new(){
     // uic_PrimitiveColor->boundObject.setDefaultColor({0,0,0,0});
     int rand_height = std::rand() % 300;
     uic_PrimitiveColor->boundObject.setHeight(rand_height);
+    // set_color(Colors::Green);
+    uic_PrimitiveColor->boundObject.set_color(Colors::LightGreen);
     // uic_PrimitiveColor->boundObject.set_x("<500x");
     return UiResult(true, Action::None, this);
 }

@@ -24,6 +24,18 @@
 
 ---
 
+### 2025-02-19
+- New UI shader class(es?)
+	- color, texture, string?
+- UI Texture class 
+	- load static textures on startup
+		- colors
+		- icon
+	- request static textures (simply return the texture id on passed enum)
+- UI Editor
+	- change textures
+
+
 ### 2025-02-17
 - UI primitive UI editor
 	- make a UI component with a bound ui primitive object

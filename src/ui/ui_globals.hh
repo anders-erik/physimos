@@ -6,6 +6,11 @@ namespace UI {
 
     class Primitive;
 
+    typedef enum Colors {
+        Green,
+        LightGreen,
+        DarkGreen,
+    } Colors;
 
     typedef struct Color {
         unsigned char R;
