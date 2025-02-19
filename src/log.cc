@@ -185,5 +185,14 @@ void plog_info(LogScope logScope, LogEvent logEvent, std::string message) {
     plib::fs_echo_append(full_log_path, full_log_string);
 }
 
+void plog_error(std::string scope, std::string error_type, std::string message){
+    std::string main_log_spath = "logs/main.log";
+    std::string full_log_path = physimos_root_dir + "/" + main_log_spath;
+
+    std::string time_string = get_current_timestring();
+    std::string full_log_string = "[ERROR] " + time_string + scope + error_type + "\"" + message + "\"";
+
+    plib::fs_echo_append(full_log_path, full_log_string);
+}
 
 }

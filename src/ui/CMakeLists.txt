@@ -6,6 +6,7 @@ add_library(ui
     ui_globals.cc
     ui_component.cc 
     ui_texture.cc
+    ui_shader.cc
     font.cc
     # components
     uic_transform.cc

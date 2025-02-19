@@ -46,6 +46,7 @@ void plog_info(LogScope logScope, std::string message);
 void plog_info(LogScope logScope, LogEvent logEvent, std::string message);
 
 void plog_error(LogScope logScope, LogError logError, std::string message);
+void plog_error(std::string scope, std::string error_type, std::string message);
 
 }
 

@@ -5,6 +5,7 @@
 
 #include "ui/ui_globals.hh"
 #include "ui/ui_texture.hh"
+#include "ui/ui_shader.hh"
 #include "ui/font.hh"
 #include "ui/ui_primitive.hh"
 #include "ui/ui_component.hh"
@@ -45,6 +46,8 @@ UI::Primitive* primitive_to_edit;
 // UI::component::Component_PrimitiveEditor* primitive_editor;
 UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
+    // UI::shader::TextureShader();
+    shader::texture_shader.compile_shader();
     UI::texture::init_static_textures();
 
     // Necessary to render the UI Scene Module
