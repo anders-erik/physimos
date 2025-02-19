@@ -6,42 +6,74 @@
 
 namespace UI::component {
 
-UIC_PrimitiveColor_SetBlack::UIC_PrimitiveColor_SetBlack() {
+UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
     setHeight(20);
+    setWidth(20);
+    new_color(Colors::Green);
     isClickable = true;
-
-    // initGraphics();
-    // setDefaultColor({ 0,0,0, 0 });
-    setState(PrimitiveState::Selected);
 }
-UiResult UIC_PrimitiveColor_SetBlack::click_new(){
-    plib::plog_info(plib::LogScope::UI, "AAAAAAAAAAAAA");
+UiResult UIC_PrimitiveColor_SetGreen::click_new(){
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
-    // uic_PrimitiveColor->boundObject.setDefaultColor({0,0,0,0});
+    
     int rand_height = std::rand() % 300;
     uic_PrimitiveColor->boundObject.setHeight(rand_height);
-    // set_color(Colors::Green);
-    uic_PrimitiveColor->boundObject.new_color(Colors::LightGreen);
-    // uic_PrimitiveColor->boundObject.set_x("<500x");
+
+    uic_PrimitiveColor->boundObject.new_color(Colors::Green);
+    return UiResult(true, Action::None, this);
+}
+
+
+UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
+    setHeight(20);
+    setWidth(20);
+    set_x("<20x");
+    new_color(Colors::Red);
+    isClickable = true;
+}
+UiResult UIC_PrimitiveColor_SetRed::click_new() {
+    UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
+
+    int rand_width = std::rand() % 300;
+    uic_PrimitiveColor->boundObject.setWidth(rand_width);
+
+    uic_PrimitiveColor->boundObject.new_color(Colors::Red);
     return UiResult(true, Action::None, this);
 }
 
 UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
     :   boundObject     { _primitive },
-        title           { PrimitiveString("Primitive Color") },
-        set_black_btn   { UIC_PrimitiveColor_SetBlack () }
+        title           { PrimitiveString("Color") },
+        set_green_btn   { UIC_PrimitiveColor_SetGreen   () },
+        set_red_btn     { UIC_PrimitiveColor_SetRed     () }
 {
-    setHeight(50);
+    // set_x("<10x");
+    // set_y("^10x");
+    // setHeight(30);
+    // setWidth(180);
+    set_w("180x");
+    set_h("30x");
 
     // initGraphics();
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f15);
-    title.set_y("^10x");
+    // title.set_w("50x");
+    // title.set_h("20x");
+    title.set_x("<10x");
+    title.set_y("^5x");
     // title.setDefaultColor();
 
-    appendChild(&set_black_btn);
-    set_black_btn.set_y("^30x");
+    appendChild(&set_green_btn);
+    set_green_btn.set_w("20x");
+    set_green_btn.set_h("20x");
+    set_green_btn.set_x("<120x");
+    set_green_btn.set_y("^5x");
+
+    appendChild(&set_red_btn);
+    set_red_btn.set_w("20x");
+    set_red_btn.set_h("20x");
+    set_red_btn.set_x("<150x");
+    set_red_btn.set_y("^5x");
     
 }
 
@@ -49,7 +81,8 @@ void UIC_PrimitiveColor::render_component() {
     render();
 
     title.render();
-    set_black_btn.render();
+    set_green_btn.render();
+    set_red_btn.render();
 }
 
 UiResult UIC_PrimitiveColor::try_find_target_component(double x, double y) {
@@ -60,8 +93,11 @@ UiResult UIC_PrimitiveColor::try_find_target_component(double x, double y) {
     if (title.containsPoint(x, y))
         return UiResult(true, Action::None, &title);
 
-    if (set_black_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &set_black_btn);
+    if (set_green_btn.containsPoint(x, y))
+        return UiResult(true, Action::None, &set_green_btn);
+
+    if (set_red_btn.containsPoint(x, y))
+        return UiResult(true, Action::None, &set_red_btn);
 
     return UiResult(true, Action::None, this);
 

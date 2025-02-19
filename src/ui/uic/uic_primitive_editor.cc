@@ -13,14 +13,17 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
 {
     isHoverable = true;
     // initGraphics();
+    
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f15);
     title.set_y("^10x");
+    // title.set_h("10x");
 
     appendChild(&id_string);
     id_string.str_setFontSize(FontSize::f15);
     id_string.set_y("^30x");
+    // id_string.set_h("10x");
 
     appendChild(&uic_primitive_color);
     uic_primitive_color.set_y("^50x");

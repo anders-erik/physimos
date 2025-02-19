@@ -63,11 +63,14 @@ void init(){
     // PRIMITIVE EDITOR COMPONENT
     primitive_to_edit = new UI::Primitive();
     // primitive_to_edit->initGraphics();
-    primitive_to_edit->new_color(Colors::DarkGreen);
+    primitive_to_edit->new_color(Colors::DarkGray);
     primitive_to_edit->setState(PrimitiveState::Default);
     primitive_to_edit->id = "primitive_to_test";
     primitive_to_edit->set_x("<500x");
     primitive_to_edit->set_y("_400x");
+    primitive_to_edit->set_h("200x");
+    primitive_to_edit->set_w("200x");
+
     // primitive_to_edit.setXrecursive(500);
     // primitive_to_edit.setYrecursive(400);
     UI::primitiveList.push_back(primitive_to_edit);
@@ -76,6 +79,9 @@ void init(){
     primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
     primitive_editor->set_x("<800x");
     primitive_editor->set_y("_200x");
+    primitive_editor->set_h("400x");
+    primitive_editor->set_w("200x");
+    
     // UI::primitiveList.push_back(primitive_editor);
     // UI::primitiveTreeHeads.push_back(primitive_editor);
     // primitive_editor = new UI::component::Component_PrimitiveEditor(primitive_to_edit);

@@ -25,11 +25,13 @@ namespace UI {
     }
     void PrimitiveString::str_setString(std::string _str) {
 
-        uiTransform.height = str_fontSize;
+        // uiTransform.h_real = str_fontSize;
+        set_h(std::to_string(str_fontSize) + "x");
 
         size_t charWidth = 2 * (str_fontSize / 3);
 
-        uiTransform.width = charWidth * _str.length();
+        // uiTransform.w_real = charWidth * _str.length();
+        set_w(std::to_string(charWidth * _str.length()) + "x");
 
         texture::new_texture(privateStringTexture);
         loadStringIntoGlTexture(privateStringTexture, _str);
@@ -107,14 +109,86 @@ namespace UI {
 
 
     void Primitive::setHeight(int _height) {
-        uiTransform.height = _height;
+        uiTransform.h_real = _height;
 
         updateTransformationMatrix();
     }
     void Primitive::setWidth(int _width) {
-        uiTransform.width = _width;
+        uiTransform.w_real = _width;
 
         updateTransformationMatrix();
+    }
+
+
+    void Primitive::set_h(std::string h_str) {
+        char unit_char = h_str[h_str.size() - 1];
+        unsigned int num_value = atoi(h_str.substr(0, h_str.size() - 1).data());
+
+        uiTransform.h_input = num_value;
+
+        if (unit_char == 'x')
+            uiTransform.h_unit = Unit::Pixel;
+        else if (unit_char == '%') 
+            uiTransform.h_unit = Unit::Percent;
+
+        uiTransform.size_has_been_changed = true;
+
+    }
+    void Primitive::set_w(std::string w_str) {
+
+        char unit_char = w_str[w_str.size() - 1];
+        unsigned int num_value = atoi(w_str.substr(0, w_str.size() - 1).data());
+
+        uiTransform.w_input = num_value;
+
+        if (unit_char == 'x')
+            uiTransform.w_unit = Unit::Pixel;
+        else if (unit_char == '%') 
+            uiTransform.w_unit = Unit::Percent;
+
+        uiTransform.size_has_been_changed = true;
+    }
+
+    void Primitive::update_h_real_recursive() {
+        if (parent == nullptr) {
+            uiTransform.h_real = uiTransform.h_input;
+        }
+        else if (uiTransform.h_unit == Unit::Pixel){
+            uiTransform.h_real = uiTransform.h_input;
+        }
+        else if (uiTransform.h_unit == Unit::Percent) {
+            uiTransform.h_real = (parent->uiTransform.h_real * uiTransform.h_input) / 100;
+        }
+
+        // Reload real x locations
+        for (Primitive* child : children)
+            child->update_h_real_recursive();
+
+
+        updateTransformationMatrix();
+        // Maybe move to caller of method to prevent every descendant trying to reset when only the triggering primitive should have its flag reset
+        uiTransform.size_has_been_changed = false;
+    }
+
+    void Primitive::update_w_real_recursive() {
+        if (parent == nullptr) {
+            uiTransform.w_real = uiTransform.w_input;
+        }
+        else if (uiTransform.h_unit == Unit::Pixel) {
+            uiTransform.w_real = uiTransform.w_input;
+        }
+        else if (uiTransform.h_unit == Unit::Percent) {
+            uiTransform.w_real = (parent->uiTransform.w_real * uiTransform.w_input) / 100;
+        }
+
+        // Reload real x locations
+        for (Primitive* child : children)
+            child->update_w_real_recursive();
+
+
+        updateTransformationMatrix();
+        // Maybe move to caller of method to prevent every descendant trying to reset when only the triggering primitive should have its flag reset
+        uiTransform.size_has_been_changed = false;
     }
 
 
@@ -137,11 +211,11 @@ namespace UI {
             int right_reference_x;
 
             if (parent == nullptr) {
-                right_reference_x = viewport_width - uiTransform.width;
+                right_reference_x = viewport_width - uiTransform.w_real;
                 uiTransform.x_real = right_reference_x - uiTransform.x_input_px;
             }
             else {
-                right_reference_x = parent->uiTransform.x_real + parent->uiTransform.width - uiTransform.width;
+                right_reference_x = parent->uiTransform.x_real + parent->uiTransform.w_real - uiTransform.w_real;
                 uiTransform.x_real = right_reference_x - uiTransform.x_input_px;
             }
         }
@@ -153,7 +227,7 @@ namespace UI {
 
 
         updateTransformationMatrix();
-        uiTransform.hasBeenChangedFlag = false;
+        uiTransform.x_has_been_changed = false;
     }
 
     void Primitive::update_y_real_recursive() {
@@ -182,13 +256,13 @@ namespace UI {
             y_real_offset = -uiTransform.y_input_px;
 
             if (parent == nullptr) {
-                int zero_point_top = viewport_height - uiTransform.height;
+                int zero_point_top = viewport_height - uiTransform.h_real;
                 // _y_real_offset = zero_point_top - _y_input_px;
                 uiTransform.y_real = zero_point_top + y_real_offset;
             }
             else {
                 // move child to align with parent top, the subtract top offset (_y_real_offset)
-                uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.height - this->uiTransform.height + y_real_offset;
+                uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.h_real - this->uiTransform.h_real + y_real_offset;
             }
 
         }
@@ -198,7 +272,7 @@ namespace UI {
             child->update_y_real_recursive();
 
         updateTransformationMatrix();
-        uiTransform.hasBeenChangedFlag = false;
+        uiTransform.x_has_been_changed = false;
     }
 
     void Primitive::set_x(std::string x_str) {
@@ -223,7 +297,7 @@ namespace UI {
             uiTransform.x_input_px = (viewport_width * uiTransform.x_input) / 100;  // Multiply _first_ to reduce compounding error from integer division rounding 
         }
 
-        uiTransform.hasBeenChangedFlag = true;
+        uiTransform.x_has_been_changed = true;
     }
 
     void Primitive::set_y(std::string y_str) {
@@ -248,7 +322,7 @@ namespace UI {
             uiTransform.y_input_px = (viewport_height * uiTransform.y_input) / 100; // Multiply _first_ to reduce compounding error from integer division rounding 
         }
 
-        uiTransform.hasBeenChangedFlag = true;
+        uiTransform.x_has_been_changed = true;
     }
 
 
@@ -256,8 +330,8 @@ namespace UI {
     // make sure the transform matrix is updated to current height, width, x, and y
     void Primitive::updateTransformationMatrix() {
 
-        uiTransform.uiPrimitiveTransform16[0] = uiTransform.width;
-        uiTransform.uiPrimitiveTransform16[5] = uiTransform.height;
+        uiTransform.uiPrimitiveTransform16[0] = uiTransform.w_real;
+        uiTransform.uiPrimitiveTransform16[5] = uiTransform.h_real;
 
         uiTransform.uiPrimitiveTransform16[3] = uiTransform.x_real;
         uiTransform.uiPrimitiveTransform16[7] = uiTransform.y_real;
@@ -266,16 +340,21 @@ namespace UI {
 
 
     void Primitive::new_color(Colors _color) {
-        color = _color;
-        defaultTexture = UI::texture::get_static_color_texture(color);
+        // color = _color;
+        defaultTexture = UI::texture::get_static_color_texture(_color);
+        if(state == PrimitiveState::Default)
+            renderedTexture = defaultTexture;
     }
-    void Primitive::new_color_hover(Colors _color) {
-        colorHover = _color;
-        hoverTexture = UI::texture::get_static_color_texture(colorHover);
+    void Primitive::new_color_hover(Colors _colorHover) {
+        // colorHover = _color;
+        hoverTexture = UI::texture::get_static_color_texture(_colorHover);
+        if (state == PrimitiveState::Hover)
+            renderedTexture = defaultTexture;
     }
-    void Primitive::new_color_active(Colors _color) {
-        colorActive = _color;
-        selectedTexture = UI::texture::get_static_color_texture(colorActive);
+    void Primitive::new_color_active(Colors _colorActive) {
+        selectedTexture = UI::texture::get_static_color_texture(_colorActive);
+        if (state == PrimitiveState::Selected)
+            renderedTexture = selectedTexture;
     }
 
 
@@ -285,15 +364,11 @@ namespace UI {
         texture_shader = &shader::texture_shader;
 
 
+        defaultTexture = texture::get_static_color_texture(Colors::LightGray);
+        hoverTexture = texture::get_static_color_texture(Colors::Gray);
+        selectedTexture = texture::get_static_color_texture(Colors::DarkGray);
 
-        defaultTexture = texture::get_static_color_texture(color);
-        hoverTexture = texture::get_static_color_texture(colorHover);
-        selectedTexture = texture::get_static_color_texture(colorActive);
-
-
-        // Set current texture
         renderedTexture = defaultTexture;
-
     }
 
 
@@ -312,8 +387,8 @@ namespace UI {
     // 
     bool Primitive::containsPoint(double _x, double _y) {
 
-        bool x_between_min_and_max = (_x > (double)uiTransform.x_real) && (_x < (double)(uiTransform.x_real + uiTransform.width));
-        bool y_between_min_and_max = (_y > (double)uiTransform.y_real) && (_y < (double)(uiTransform.y_real + uiTransform.height));
+        bool x_between_min_and_max = (_x > (double)uiTransform.x_real) && (_x < (double)(uiTransform.x_real + uiTransform.w_real));
+        bool y_between_min_and_max = (_y > (double)uiTransform.y_real) && (_y < (double)(uiTransform.y_real + uiTransform.h_real));
 
         if (x_between_min_and_max && y_between_min_and_max) {
             return true;
@@ -382,11 +457,19 @@ namespace UI {
 
     void Primitive::render() {
 
+        if (uiTransform.size_has_been_changed) {
+            update_h_real_recursive();
+            update_w_real_recursive();
+            uiTransform.size_has_been_changed = false;
 
-        if (uiTransform.hasBeenChangedFlag) {
+            // When changing size, all positions need to be updated
+            uiTransform.x_has_been_changed = true;
+        }
+        if (uiTransform.x_has_been_changed) {
             update_x_real_recursive();
             update_y_real_recursive();
         }
+
 
 
         texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);

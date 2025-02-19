@@ -46,60 +46,29 @@ enum HoriRef {
 };
 
 
-typedef struct PositionInput {
-    bool hasBeenChangedFlag = false;
-
-    // Raw input values to setX/y methods
-    int x_input = 0;
-    int y_input = 0;
-    // Units of the x/y input values
-    Unit x_unit = Unit::Pixel;
-    Unit y_unit = Unit::Pixel;
-    // x/y is measured from where?
-    HoriRef horiRef = HoriRef::Left;
-    VertRef vertRef = VertRef::Bottom;
-
-    // Setters that will set the 'hasBeenChangedFlag'. Flag will be read during update calls before (or from) render function
-    void setx(int x);
-    void sety(int y);
-    void setxunit(UI::Unit x_unit);
-    void setyunit(UI::Unit y_unit);
-    void setxref(UI::HoriRef horiRef);
-    void setyref(UI::VertRef vertiRef);
-
-} PositionInput;
-
-typedef struct PositionReal {
-    /// x window coordinate of primitive's bottom left corner, relative to bottom left of window.
-    int x_real = 0;
-    /// y window coordinate of primitive's bottom left corner, relative to bottom left of window.
-    int y_real = 0;
-
-} PositionReal;
-
-// typedef struct PositionUi {
-//     PositionInput posInput;
-//     PositionReal  posReal;
-
-//     void setx(std::string x_str);
-//     void sety(std::string x_str);
-// } PositionUi;
-
 
 typedef struct Transform {
-    size_t height = 200;
-    Unit h_unit = Unit::Pixel;
-    size_t width = 200;
-    Unit w_unit = Unit::Pixel;
+    /** Intially set to true for full update during first render. */
+    bool size_has_been_changed = true;
+    std::string h_input_string = "";
+    std::string w_input_string = "";
+    size_t h_input = 100;
+    size_t w_input = 100;
+    Unit h_unit = Unit::Percent;
+    Unit w_unit = Unit::Percent;
+    size_t h_real = 0;
+    size_t w_real = 0;
+
+
 
     // Input string
-    std::string input_string = "";
+    std::string x_input_string = "";
     // Raw input value parsed from string
     int x_input = 0;
     int y_input = 0;
     // 2025-02-17/18
     // input values converted to pixels
-    bool hasBeenChangedFlag = false;
+    bool x_has_been_changed = false;
     int x_input_px = 0;
     int y_input_px = 0;
     // int x_input_percent_window = 0;
@@ -148,9 +117,21 @@ class Primitive {
 
         
 
-        // UI Transformation 
+        /** Full transform object of UI primitive, including size, position, and rendering transform.  */
         UI::Transform uiTransform;
+
+        /** Update h_input, h_unit, and set changed flag */
+        void set_h(std::string h_str);
+        /** Update w_input, w_unit, and set changed flag */
+        void set_w(std::string w_str);
+        /** Update the real height of primitive and its descendants, then reaset the change detection flag. */
+        void update_h_real_recursive();
+        /** Update the real width of primitive and its descendants, then reaset the change detection flag. */
+        void update_w_real_recursive();
+
+        // LEGACY
         void setHeight(int _height);
+        // LEGACY
         void setWidth(int _width);
 
         // Updates: 2025-02-17
@@ -182,12 +163,12 @@ class Primitive {
         int z = 1;
 
         
-        Colors color = Colors::LightGray;
-        Colors colorHover = Colors::Gray;
-        Colors colorActive = Colors::DarkGray;
-        void new_color(Colors color);
-        void new_color_hover(Colors color);
-        void new_color_active(Colors color);
+        // Colors color = Colors::LightGray;
+        // Colors colorHover = Colors::Gray;
+        // Colors colorActive = Colors::DarkGray;
+        void new_color(Colors _color);
+        void new_color_hover(Colors _colorHover);
+        void new_color_active(Colors _colorActive);
 
 
         ::UI::shader::TextureShader* texture_shader;

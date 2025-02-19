@@ -9,18 +9,23 @@
 
 namespace UI::component {
 
-struct UIC_PrimitiveColor_SetBlack : public ::UI::Primitive {
+struct UIC_PrimitiveColor_SetGreen : public ::UI::Primitive {
     UiResult click_new();
-
-    UIC_PrimitiveColor_SetBlack();
+    UIC_PrimitiveColor_SetGreen();
 };
+struct UIC_PrimitiveColor_SetRed : public ::UI::Primitive {
+    UiResult click_new();
+    UIC_PrimitiveColor_SetRed();
+};
+
 
 struct UIC_PrimitiveColor : public ::UI::Primitive {
 
     ::UI::Primitive& boundObject;
 
     PrimitiveString title;
-    UIC_PrimitiveColor_SetBlack set_black_btn;
+    UIC_PrimitiveColor_SetGreen set_green_btn;
+    UIC_PrimitiveColor_SetRed set_red_btn;
 
 
     // void update_component();

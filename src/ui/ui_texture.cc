@@ -15,25 +15,26 @@ namespace UI {
 
 
         // GRAY
-        unsigned int grayTexture;
-        unsigned char grayColor[4] = { 0, 150, 0, 255 };
-
-        unsigned int lightGrayTexture = 0;
-        unsigned char lightGrayColor[4] = { 0, 200, 0, 255 };
-
         unsigned int darkGrayTexture;
-        unsigned char darkGrayColor[4] = { 0, 100, 0, 255 };
+        unsigned char darkGrayColor[4] = { 100, 100, 100, 255 };
+
+        unsigned int grayTexture;
+        unsigned char grayColor[4] = { 150, 150, 150, 255 };
+
+        unsigned int lightGrayTexture;
+        unsigned char lightGrayColor[4] = { 200, 200, 200, 255 };
 
 
         // GREEN
+        unsigned int darkGreenTexture;
+        unsigned char darkGreenColor[4] = { 0, 100, 0, 255 };
+
         unsigned int greenTexture;
         unsigned char greenColor[4] = { 0, 150, 0, 255 };
 
         unsigned int lightGreenTexture = 0;
         unsigned char lightGreenColor[4] = { 0, 200, 0, 255 };
-
-        unsigned int darkGreenTexture;
-        unsigned char darkGreenColor[4] = { 0, 100, 0, 255 };
+        
 
         // Returns a new 
         void new_texture(unsigned int& texture_to_init) {
