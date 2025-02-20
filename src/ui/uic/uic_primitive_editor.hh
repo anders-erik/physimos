@@ -2,7 +2,6 @@
 #define UIC_PRIMITIVE_EDITOR_HH
 
 
-#include "ui/ui_component.hh"
 #include "uic_primitive_color.hh"
 
 #include "ui/ui_primitive.hh"

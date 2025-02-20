@@ -10,7 +10,7 @@
 namespace UI::component {
 
 struct UIC_PrimitiveColor_SetGreen : public ::UI::Primitive {
-    UiResult click_new();
+    UiResult click();
     UiResult grabbed(double dx, double dy);
     UiResult scroll(double y_change);
     UiResult hover_enter();
@@ -18,7 +18,7 @@ struct UIC_PrimitiveColor_SetGreen : public ::UI::Primitive {
     UIC_PrimitiveColor_SetGreen();
 };
 struct UIC_PrimitiveColor_SetRed : public ::UI::Primitive {
-    UiResult click_new();
+    UiResult click();
     UIC_PrimitiveColor_SetRed();
 };
 

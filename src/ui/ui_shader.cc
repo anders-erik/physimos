@@ -26,6 +26,15 @@ namespace UI {
                                     0, 0, 0, 1,
         };
 
+        float squareVertices[30] = {
+               0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // bottom-left
+               1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right
+               0.0f, 1.0f, 0.0f, 0.0f, 1.0f,   // top-left
+               1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right
+               0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // bottom-left
+               1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom-right
+        };
+
         TextureShader::TextureShader() {
             for (size_t i = 0; i < 16; i++) {
                 viewportTransform16[i] = _viewportTransform16[i];

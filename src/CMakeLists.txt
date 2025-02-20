@@ -20,10 +20,8 @@ set(SOURCES
     Timing.cpp
     RigidBody.cpp
     process_info.cpp
-    uiRenderer.cpp
     Model.cpp
     transform.cc
-    uiElement.cc
     log.cc
 )
 

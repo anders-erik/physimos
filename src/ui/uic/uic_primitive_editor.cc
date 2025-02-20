@@ -11,9 +11,6 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
         id_string           { PrimitiveString(_primitive.id) },
         uic_primitive_color { UIC_PrimitiveColor(_primitive) }
 {
-    isHoverable = true;
-    // initGraphics();
-    
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f24);

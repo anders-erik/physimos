@@ -18,6 +18,7 @@ class Primitive; // forward declare
 typedef enum class PrimitiveType {
     Base,
     String,
+    Component
 } PrimitiveType;
 
 enum PrimitiveState {
@@ -98,7 +99,7 @@ typedef struct Transform {
 
 class Primitive {
     public:
-        /** Initializes a new primitive ui object. Appropriate shader must be initialized when called! */
+        /** Initializes a new primitive ui object. Sets shader and initial textures. */
         Primitive();
 
         std::string id = "";
@@ -108,14 +109,10 @@ class Primitive {
         // Primitive Tree
         Primitive* parent = nullptr;
         std::vector<Primitive*> children;
-
-        bool isLeaf();
-        void appendChild(Primitive* childPrimitive);
-        std::vector<Primitive*> flattenTree();
-        // TODO: move the tmp flat vector into primitive
-        void appendtoFlatTreeNested(Primitive* _primitive);
-
         
+
+
+        // SIZE & POSITION
 
         UI::Transform uiTransform;
 
@@ -123,52 +120,34 @@ class Primitive {
         void set_h(std::string h_str);
         /** Update w_input, w_unit, and set changed flag */
         void set_w(std::string w_str);
+        void set_x(std::string x_str);
+        void set_y(std::string y_str);
+
         /** Update the real height of primitive and its descendants, then reaset the change detection flag. */
         void update_h_real_recursive();
         /** Update the real width of primitive and its descendants, then reaset the change detection flag. */
         void update_w_real_recursive();
-
-        // LEGACY
-        void setHeight(int _height);
-        // LEGACY
-        void setWidth(int _width);
-
-        // Updates: 2025-02-17
-        void set_x(std::string x_str);
-        void set_y(std::string y_str);
         void update_x_real_recursive();
         void update_y_real_recursive();
 
-
-        // Set the transformation matrix for shading
-        void updateTransformationMatrix();
         bool containsPoint(double x, double y);
-        bool childrenContainPoint(double _x, double _y);
-        // Set the shader matrices using the ui transform object
-        void updateShaderMatrixesRecursively();
 
 
 
         // RENDERING
+
+        ::UI::shader::TextureShader* texture_shader;
+
+        /** Set the 4x4 transformation matrix that will be set as shader uniform */
+        void updateTransformationMatrix();
         
         /** Render current state of primitive */
         void render();
         /** Render current state of primitive and making this same call to all its children */
         void render_recursive();
-        /** Render itself and all primitive children, then render_component() of all its child components. */
-        virtual void render_component() {};
         // Primitives without parents will have a z-value of 1. Each child will recieve a z value of parent.z + 1.
         // A z value of 0 will not be rendered ?
         int z = 1;
-
-        
-        void set_color(Colors _color);
-        void set_color_hover(Colors _colorHover);
-        void set_color_active(Colors _colorActive);
-
-
-        ::UI::shader::TextureShader* texture_shader;
-
 
         /** The currently rendered texture for UI::Primitive. */
         unsigned int renderedTexture;
@@ -181,30 +160,45 @@ class Primitive {
         /** Generated when setting a new primitive string in PrimitiveString. */
         unsigned int privateStringTexture;
         
+        /** Set the deafult texture to new color. If currently default state when rendered texture updated. */
+        void set_color(Colors _color);
+        /** Set the deafult texture to new color. If currently hover state when rendered texture updated. */
+        void set_color_hover(Colors _colorHover);
+        /** Set the deafult texture to new color. If currently active state when rendered texture updated. */
+        void set_color_active(Colors _colorActive);
 
+
+
+        // TREE QUERY
+        bool isLeaf();
+        void appendChild(Primitive* childPrimitive);
+        std::vector<Primitive*> flattenTree();
+        // TODO: move the tmp flat vector into primitive
+        void appendtoFlatTreeNested(Primitive* _primitive);
+
+
+        
         // STATE & BEHAVIOR
-        virtual UiResult try_find_target_component(double x, double y);
-        virtual UiResult click_new();
+
+        PrimitiveState state = PrimitiveState::Default;
+        /** Sets the state AND the corresponding texture  */
+        void set_state(PrimitiveState _newState);
+
+        virtual UiResult click();
         virtual UiResult hover_enter();
         virtual UiResult hover_exit();
         virtual UiResult grabbed(double dx, double dy);
-        virtual UiResult release();
         virtual UiResult scroll(double y_change);
 
-        PrimitiveState state = PrimitiveState::Default;
-        void setState(PrimitiveState _newState);
-        bool isHoverable = false;
-        bool isClickable = false;
-        virtual UI::Action click();
-        // void (*clickCallback)() = nullptr;
 
 
+        // COMPONENT INTERFACE
 
-        // UI COMPONENT
+        /** Virtual method implemented by components. Will try to find tergeted primtiive in its primitive tree at the x/y screen coordinates. */
+        virtual UiResult try_find_target_component(double x, double y);
+        /** Renders itself, all primitive children, and then render_component() of all its child components. */
+        virtual void render_component() {};
 
-        // Primitives are almost always part of a component: a collection of primitives and a tracked object bound to it.
-        // This pointer enables primitives to access the same scope and objects as the component to which it belongs. 
-        void* component = nullptr;        
 };
 
 

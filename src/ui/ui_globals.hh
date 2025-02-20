@@ -45,14 +45,12 @@ namespace UI {
         UiResult(bool _success, Action _action, Primitive* _primitive) : success{ _success }, action{ _action }, primitive{_primitive} {};
     } UiResult;
 
+
     extern unsigned int viewport_width;
     extern unsigned int viewport_height;
 
     extern float viewportTransform16[16];
 
-    void setViewportDimensions(unsigned int _width, unsigned int _height);
-
-    extern float squareVertices[30];
 
     // Colors
     extern unsigned char color_default[4];

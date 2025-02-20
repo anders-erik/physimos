@@ -10,10 +10,9 @@ UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
     set_w("20x");
     set_h("20x");
     set_color(Colors::Green);
-    isClickable = true;
 }
 UiResult UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
-    UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
+    // UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
 
     std::cout << "DRAGGING GREEN COLOR"  << std::endl;
 
@@ -24,14 +23,14 @@ UiResult UIC_PrimitiveColor_SetGreen::scroll(double y_change){
     return UiResult(true, Action::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::hover_enter() {
-    setState(PrimitiveState::Hover);
+    set_state(PrimitiveState::Hover);
     return UiResult(true, Action::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::hover_exit() {
-    setState(PrimitiveState::Default);
+    set_state(PrimitiveState::Default);
     return UiResult(true, Action::None, this);
 }
-UiResult UIC_PrimitiveColor_SetGreen::click_new(){
+UiResult UIC_PrimitiveColor_SetGreen::click(){
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
     
     int rand_height = std::rand() % 300;
@@ -46,13 +45,12 @@ UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
     set_w("20x");
     set_h("20x");
     set_color(Colors::Red);
-    isClickable = true;
 }
-UiResult UIC_PrimitiveColor_SetRed::click_new() {
+UiResult UIC_PrimitiveColor_SetRed::click() {
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
 
     int rand_width = std::rand() % 300;
-    uic_PrimitiveColor->boundObject.setWidth(rand_width);
+    uic_PrimitiveColor->boundObject.set_w(std::to_string(rand_width) + "x");
 
     uic_PrimitiveColor->boundObject.set_color(Colors::Red);
     return UiResult(true, Action::None, this);

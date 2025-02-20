@@ -16,7 +16,6 @@ namespace UI {
     PrimitiveString::PrimitiveString(std::string _str) : str{ _str } {
         primitiveType = PrimitiveType::String;
 
-        // initGraphics();
         str_setString(_str);
     }
     void PrimitiveString::str_setFontSize(FontSize _fontSize) {
@@ -25,12 +24,10 @@ namespace UI {
     }
     void PrimitiveString::str_setString(std::string _str) {
 
-        // uiTransform.h_real = str_fontSize;
         set_h(std::to_string(str_fontSize) + "x");
 
         size_t charWidth = 2 * (str_fontSize / 3);
 
-        // uiTransform.w_real = charWidth * _str.length();
         set_w(std::to_string(charWidth * _str.length()) + "x");
 
         texture::new_texture(privateStringTexture);
@@ -64,7 +61,7 @@ namespace UI {
     UiResult Primitive::try_find_target_component(double x, double y) {
         return UiResult();
     }
-    UiResult Primitive::click_new() {
+    UiResult Primitive::click() {
         return UiResult();
     }
     UiResult Primitive::hover_enter() {
@@ -78,63 +75,23 @@ namespace UI {
     UiResult Primitive::grabbed(double dx, double dy) {
         return UiResult();
     }
-    UiResult Primitive::release() {
-        return UiResult();
-    }
     UiResult Primitive::scroll(double y_change) {
         return UiResult();
     }
 
 
-    void Primitive::setState(PrimitiveState _newState) {
+    void Primitive::set_state(PrimitiveState _newState) {
         state = _newState;
 
-
-
-        if (_newState == PrimitiveState::Default) {
+        if (_newState == PrimitiveState::Default)
             renderedTexture = defaultTexture;
-            // if (primitiveType == PrimitiveType::String)
-            //     renderedTexture = privateStringTexture;
-            // else
-            //     renderedTexture = texture::get_static_color_texture(color);
-        }
-        else if (_newState == PrimitiveState::Hover) {
+        else if (_newState == PrimitiveState::Hover)
             renderedTexture = hoverTexture;
-            // renderedTexture = texture::get_static_color_texture(colorHover);
-
-        }
-        else if (_newState == PrimitiveState::Selected) {
+        else if (_newState == PrimitiveState::Selected) 
             renderedTexture = selectedTexture;
-            // renderedTexture = texture::get_static_color_texture(colorActive);
-        }
 
     }
 
-
-    // Virtual click method.
-    // Implmements behavior within current container scope and returns action(s) to be executed globally.
-    UI::Action Primitive::click() {
-        std::cout << id << " clicked!" << std::endl;
-        return UI::Action::None;
-    }
-
-
-    // No children primitives
-    bool Primitive::isLeaf() {
-        return children.size() == 0 ? true : false;
-    }
-
-
-    void Primitive::setHeight(int _height) {
-        uiTransform.h_real = _height;
-
-        updateTransformationMatrix();
-    }
-    void Primitive::setWidth(int _width) {
-        uiTransform.w_real = _width;
-
-        updateTransformationMatrix();
-    }
 
 
     void Primitive::set_h(std::string h_str) {
@@ -380,7 +337,6 @@ namespace UI {
         
         texture_shader = &shader::texture_shader;
 
-
         defaultTexture = texture::get_static_color_texture(Colors::LightGray);
         hoverTexture = texture::get_static_color_texture(Colors::Gray);
         selectedTexture = texture::get_static_color_texture(Colors::DarkGray);
@@ -388,18 +344,6 @@ namespace UI {
         renderedTexture = defaultTexture;
     }
 
-
-    bool Primitive::childrenContainPoint(double _x, double _y) {
-
-        bool _childrenContainPoint = false;
-
-        for (Primitive* child : children) {
-            if (child->containsPoint(_x, _y))
-                _childrenContainPoint = true;
-        }
-
-        return _childrenContainPoint;
-    }
 
     // 
     bool Primitive::containsPoint(double _x, double _y) {
@@ -423,46 +367,11 @@ namespace UI {
         childPrimitive->parent = this;
         childPrimitive->z = this->z + 1;
 
-        // TODO: better automatic detection on new parent?
-        // childPrimitive->setXrecursive(childPrimitive->uiTransform.x_input);
-        // childPrimitive->setYrecursive(childPrimitive->uiTransform.y_input);
         childPrimitive->update_x_real_recursive();
         childPrimitive->update_y_real_recursive();
     }
 
 
-
-    std::vector<Primitive*> tempFlatTree = {};
-
-    std::vector<Primitive*> Primitive::flattenTree() {
-        // std::cout << "tempFlatTree.size() = " << tempFlatTree.size() << std::endl;
-
-        while (tempFlatTree.size() != 0)
-            tempFlatTree.pop_back();
-
-        appendtoFlatTreeNested(this);
-
-        return tempFlatTree;
-    }
-
-    void Primitive::appendtoFlatTreeNested(Primitive* _primitive) {
-        tempFlatTree.push_back(_primitive);
-        // appendChildrenNested()
-        for (Primitive* child : _primitive->children) {
-            appendtoFlatTreeNested(child);
-        }
-    }
-
-    // will set the shader transforms for the ui primitive
-    void Primitive::updateShaderMatrixesRecursively() {
-        // std::cout << "UPDATING UI PRIMITIVE" << std::endl;
-        for (Primitive* child : children) {
-            child->updateShaderMatrixesRecursively();
-        }
-
-        shader_setUiPrimitiveUniforms_uniforms(viewportTransform16, uiTransform.uiPrimitiveTransform16);
-
-    }
 
     void Primitive::render_recursive() {
         render();
@@ -488,15 +397,39 @@ namespace UI {
         }
 
 
-
         texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
 
         texture_shader->draw();
-
 
     }
 
 
 
+
+    std::vector<Primitive*> tempFlatTree = {};
+
+    std::vector<Primitive*> Primitive::flattenTree() {
+        // std::cout << "tempFlatTree.size() = " << tempFlatTree.size() << std::endl;
+
+        while (tempFlatTree.size() != 0)
+            tempFlatTree.pop_back();
+
+        appendtoFlatTreeNested(this);
+
+        return tempFlatTree;
+    }
+
+    void Primitive::appendtoFlatTreeNested(Primitive* _primitive) {
+        tempFlatTree.push_back(_primitive);
+        // appendChildrenNested()
+        for (Primitive* child : _primitive->children) {
+            appendtoFlatTreeNested(child);
+        }
+    }
+
+    // No children primitives
+    bool Primitive::isLeaf() {
+        return children.size() == 0 ? true : false;
+    }
 
 }
