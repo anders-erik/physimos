@@ -67,9 +67,14 @@ namespace UI {
     UiResult Primitive::click_new() {
         return UiResult();
     }
-    UiResult Primitive::hover() {
+    UiResult Primitive::hover_enter() {
         return UiResult();
     }
+    UiResult Primitive::hover_exit() {
+        return UiResult();
+    }
+    
+    /** Is called on pointer change when ui is tracking current primitive as grabbed. */
     UiResult Primitive::grabbed(double dx, double dy) {
         return UiResult();
     }

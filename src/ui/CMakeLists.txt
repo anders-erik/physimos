@@ -9,9 +9,9 @@ add_library(ui
     ui_shader.cc
     font.cc
     # components
-    uic_transform.cc
-    uic_pobject.cc
-    uic_scene.cc
+    # uic_transform.cc
+    # uic_pobject.cc
+    # uic_scene.cc
     # uic_primitive_editor.cc
 )
 

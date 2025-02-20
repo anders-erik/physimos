@@ -13,6 +13,8 @@ struct UIC_PrimitiveColor_SetGreen : public ::UI::Primitive {
     UiResult click_new();
     UiResult grabbed(double dx, double dy);
     UiResult scroll(double y_change);
+    UiResult hover_enter();
+    UiResult hover_exit();
     UIC_PrimitiveColor_SetGreen();
 };
 struct UIC_PrimitiveColor_SetRed : public ::UI::Primitive {

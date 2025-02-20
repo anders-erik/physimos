@@ -35,10 +35,10 @@ PointerChange pointer_change;
 
 
 // INPUT SUBSCRIBERS CALLBACK POINTERS
-void (*pointerSubscriberCallback_ui)(PointerPosition _pointer_pos, PointerChange _pointer_change) = nullptr;
-void (*leftClickSubscriberCallback_ui)(PointerPosition _pointer_pos) = nullptr;
-void (*leftReleaseSubscriberCallback_ui)(PointerPosition _pointer_pos) = nullptr;
-void (*callback_y_scroll_ui)(double x_change) = nullptr;
+void (*ui_callback_pointer_position)(PointerPosition _pointer_pos, PointerChange _pointer_change) = nullptr;
+void (*ui_callback_left_down)(PointerPosition _pointer_pos) = nullptr;
+void (*ui_callback_left_release)(PointerPosition _pointer_pos) = nullptr;
+void (*ui_callback_y_scroll)(double x_change) = nullptr;
 
 
 // EXTERNAL 
@@ -50,24 +50,24 @@ void init() {
 
 
 
-void subscribePointerPosition_ui(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change)) {
-	pointerSubscriberCallback_ui = subscriberCallback;
+void subscribe_pointer_position_ui(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change)) {
+	ui_callback_pointer_position = subscriberCallback;
+}
+void subscribe_mouse_left_down_ui(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
+	ui_callback_left_down = subscriberCallback;
+}
+void subscribe_mouse_left_release_ui(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
+	ui_callback_left_release = subscriberCallback;
+}
+void subscribe_mouse_scroll_y_ui(void (*subscriberCallback)(double y_change)) {
+	ui_callback_y_scroll = subscriberCallback;
 }
 
-void subscribeMouseLeftClick_ui(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
-	leftClickSubscriberCallback_ui = subscriberCallback;
-}
-void subscribeMouseLeftRelease_ui(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
-	leftReleaseSubscriberCallback_ui = subscriberCallback;
-}
-void subscribeMouseScrollY_ui(void (*subscriberCallback)(double y_change)) {
-	callback_y_scroll_ui = subscriberCallback;
-}
 
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
-	if(callback_y_scroll_ui != nullptr)
-		callback_y_scroll_ui(yoffset);
+	if(ui_callback_y_scroll != nullptr)
+		ui_callback_y_scroll(yoffset);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -77,10 +77,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 	// Callbacks
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		PInput::leftClickSubscriberCallback_ui(pointer_pos);
+		PInput::ui_callback_left_down(pointer_pos);
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-		leftReleaseSubscriberCallback_ui(pointer_pos);
+		ui_callback_left_release(pointer_pos);
 		inputState.mousePressActive = 0;
 	}
 	
@@ -142,7 +142,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 	inputState.pointerY = ypos;
 
 	// PInput::pointerSubscriberCallback_ui(xpos, ypos);
-	pointerSubscriberCallback_ui(pointer_pos, pointer_change);
+	ui_callback_pointer_position(pointer_pos, pointer_change);
 }
 
 void window_changed_callback(PhysWin _physimos_window) {

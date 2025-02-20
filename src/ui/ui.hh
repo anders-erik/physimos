@@ -2,49 +2,31 @@
 #ifndef UI_HPP
 #define UI_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
 
 #include "Windowing.hpp"
 #include "Input.hpp"
-
-#include "uiElement.hpp"
-#include "Types.hpp"
-
-#include "ui/ui_primitive.hh"
-#include "ui/ui_globals.hh"
-
-// #include "ui_old.hpp"
 
 
 
 namespace UI {
 
+    // PUBLIC 
+
     void init();
     void update();
-
-    
-
-    UI::Action updatePObjectPosition();
-
-    Primitive* getTargetingPrimitive();
-
-    void setCurrentlyHoveredPrimitive(Primitive* primitiveToHover);
 
 
     // INTERNAL CALLBACK METHODS
 
-    void pointerPositionCallback(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change);
-    void leftClickCallback(PInput::PointerPosition _pointer_pos);
-    void leftReleaseCallback(PInput::PointerPosition _pointer_pos);
-    void scrollyCallback(double y_change);
-    void windowSizeChangeCallback(double x, double y);
+    /** Pointer position change detected in window and called by Input. Position is viewport location and pointer_change is position delta since last call. */
+    void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change);
+    /** Left click detected and called by Input. Position is viewport location at the time of click.  */
+    void callback_left_down(PInput::PointerPosition _pointer_pos);
+    void callback_left_release(PInput::PointerPosition _pointer_pos);
+    void callback_scroll_y(double y_change);
 
-
-    // INTERNAL
-
-    void window_changed_callback(PhysWin physimos_window);
+    /** UIs callback method for window dimension/scale subscription */
+    void callback_window_change(PhysWin physimos_window);
 }
 
 

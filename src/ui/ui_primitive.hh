@@ -185,7 +185,8 @@ class Primitive {
         // STATE & BEHAVIOR
         virtual UiResult try_find_target_component(double x, double y);
         virtual UiResult click_new();
-        virtual UiResult hover();
+        virtual UiResult hover_enter();
+        virtual UiResult hover_exit();
         virtual UiResult grabbed(double dx, double dy);
         virtual UiResult release();
         virtual UiResult scroll(double y_change);
