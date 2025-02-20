@@ -27,6 +27,8 @@ InputState inputState;
 /** The physimos window object in the input namespace.  */
 PhysWin physimos_window;
 
+/** The raw pointer position object before sanity transformations.  */
+PointerPosition pointer_pos_raw;
 /** The authoritative pointer position object.  */
 PointerPosition pointer_pos;
 /** The authoritative pointer change object.  */
@@ -128,9 +130,8 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// New value measured from previous update value
 	pointer_change.dx = xpos - pointer_pos.x;
-	pointer_change.dy = ypos - pointer_pos.y;
-	// pointer_pos.dx = xpos - pointer_pos.x;
-	// pointer_pos.dy = ypos - pointer_pos.y;
+	// Compary raw value for easy difference calc. Measure from new position because inverted y axis
+	pointer_change.dy = pointer_pos_raw.y - ypos;
 
 	// Invert the read y value
 	pointer_pos.x = xpos;
@@ -143,6 +144,10 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 
 	// PInput::pointerSubscriberCallback_ui(xpos, ypos);
 	ui_callback_pointer_position(pointer_pos, pointer_change);
+
+	// save raw input
+	pointer_pos_raw.x = xpos;
+	pointer_pos_raw.y = ypos;
 }
 
 void window_changed_callback(PhysWin _physimos_window) {

@@ -69,7 +69,8 @@ typedef struct Transform {
     int y_input = 0;
     // 2025-02-17/18
     // input values converted to pixels
-    bool x_has_been_changed = false;
+    bool x_has_been_changed = true;
+    bool y_has_been_changed = true;
     int x_input_px = 0;
     int y_input_px = 0;
     // int x_input_percent_window = 0;
@@ -194,10 +195,19 @@ class Primitive {
 
         // COMPONENT INTERFACE
 
-        /** Virtual method implemented by components. Will try to find tergeted primtiive in its primitive tree at the x/y screen coordinates. */
+        /** Virtual method implemented by components. 
+         *  Will try to find targeted primitive in its primitive tree at the passed x/y screen coordinates.
+         *  Generally only matches primitives/components within the bounds of the component itself.
+         */
         virtual UiResult try_find_target_component(double x, double y);
-        /** Renders itself, all primitive children, and then render_component() of all its child components. */
+        /** Component specific rendering function. 
+         *  Usually renders itself, all primitive children, and then render_component() of all its child components. 
+         */
         virtual void render_component() {};
+        /** Component specific update function. 
+         *  Generally updates all constituent primitives using its bound object, and resursivly call update_component().
+         */
+        virtual void update_component() {};
 
 };
 

@@ -33,8 +33,8 @@ UiResult UIC_PrimitiveColor_SetGreen::hover_exit() {
 UiResult UIC_PrimitiveColor_SetGreen::click(){
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
     
-    int rand_height = std::rand() % 300;
-    uic_PrimitiveColor->boundObject.set_h(std::to_string(rand_height) + "x");
+    // int rand_height = std::rand() % 300;
+    // uic_PrimitiveColor->boundObject.set_h(std::to_string(rand_height) + "x");
 
     uic_PrimitiveColor->boundObject.set_color(Colors::Green);
     return UiResult(true, Action::None, this);
@@ -49,8 +49,8 @@ UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
 UiResult UIC_PrimitiveColor_SetRed::click() {
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
 
-    int rand_width = std::rand() % 300;
-    uic_PrimitiveColor->boundObject.set_w(std::to_string(rand_width) + "x");
+    // int rand_width = std::rand() % 300;
+    // uic_PrimitiveColor->boundObject.set_w(std::to_string(rand_width) + "x");
 
     uic_PrimitiveColor->boundObject.set_color(Colors::Red);
     return UiResult(true, Action::None, this);

@@ -3,13 +3,15 @@
 
 
 #include "uic_primitive_color.hh"
+#include "uic_primitive_position.hh"
+#include "uic_primitive_size.hh"
 
 #include "ui/ui_primitive.hh"
 
 
 namespace UI::component {
 
-class Component_PrimitiveEditor;
+// class Component_PrimitiveEditor;
 
 
 struct UIC_PrimitiveEditor : public ::UI::Primitive {
@@ -20,14 +22,13 @@ struct UIC_PrimitiveEditor : public ::UI::Primitive {
     PrimitiveString id_string;
 
     UIC_PrimitiveColor uic_primitive_color;
+    UIC_PrimitivePosition uic_primitive_position;
+    UIC_PrimitiveSize uic_primitive_size;
 
 
     void update_component();
     void render_component();
 
-    /** Find primitive in component that match passed screen coordinates. Returns success if terget found within component. False otherwise. 
-     *  Will only match primitives/components within the bounds of the component itself. 
-     */
     UiResult try_find_target_component(double x, double y);
     
     UIC_PrimitiveEditor(::UI::Primitive& _primitive);

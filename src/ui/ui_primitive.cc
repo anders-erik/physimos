@@ -201,7 +201,7 @@ namespace UI {
 
 
         updateTransformationMatrix();
-        uiTransform.x_has_been_changed = false;
+        // uiTransform.x_has_been_changed = false;
     }
 
     void Primitive::update_y_real_recursive() {
@@ -246,7 +246,7 @@ namespace UI {
             child->update_y_real_recursive();
 
         updateTransformationMatrix();
-        uiTransform.x_has_been_changed = false;
+        // uiTransform.y_has_been_changed = false;
     }
 
     void Primitive::set_x(std::string x_str) {
@@ -296,7 +296,7 @@ namespace UI {
             uiTransform.y_input_px = (viewport_height * uiTransform.y_input) / 100; // Multiply _first_ to reduce compounding error from integer division rounding 
         }
 
-        uiTransform.x_has_been_changed = true;
+        uiTransform.y_has_been_changed = true;
     }
 
 
@@ -390,10 +390,16 @@ namespace UI {
 
             // When changing size, all positions need to be updated
             uiTransform.x_has_been_changed = true;
+            uiTransform.y_has_been_changed = true;
         }
+
         if (uiTransform.x_has_been_changed) {
             update_x_real_recursive();
+            uiTransform.x_has_been_changed = false;
+        }
+        if (uiTransform.y_has_been_changed) {
             update_y_real_recursive();
+            uiTransform.y_has_been_changed = false;
         }
 
 

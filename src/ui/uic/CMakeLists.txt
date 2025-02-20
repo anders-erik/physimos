@@ -2,6 +2,8 @@
 add_library(uic
     uic_primitive_editor.cc
     uic_primitive_color.cc
+    uic_primitive_position.cc
+    uic_primitive_size.cc
 )
 
 

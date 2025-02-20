@@ -41,14 +41,14 @@
 	- size percentage != 100%
 	- vert/horiref : Centered
 	- shader
-		- need to recieve viewpost size changes
+		- |o| need to recieve viewpost size changes
 		- |o| set DPI value in transform
-	- events work as intended
-		- hover
-		- click
-		- release
-		- scroll
-		- grab
+	- |o| events work as intended
+		- |o| hover
+		- |o| click
+		- |o| release
+		- |o| scroll
+		- |o| grab
 	- static texture
 		- a few more colors for debugging
 		- icons
@@ -56,8 +56,8 @@
 	- Primitive editor
 		- set string
 		- set icons
-		- set size
-		- set position
+		- |o| set size
+		- |o| set position
 	- list component
 	- Primitive component binds itself!
 	- Split ui transform into pos / size structs with set_x/y/h/w
