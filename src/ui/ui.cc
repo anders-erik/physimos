@@ -80,7 +80,8 @@ void init(){
     primitive_editor->set_y("_200x");
     primitive_editor->set_h("400x");
     primitive_editor->set_w("200x");
-
+    std::cout << "sizeof(primitive_editor = " << sizeof(*primitive_editor) << std::endl;
+    
 }
 
 void update(){

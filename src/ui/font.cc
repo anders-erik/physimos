@@ -30,7 +30,7 @@ std::map<unsigned char, std::vector<unsigned char>> charToBitmap;
 // Read whole ascii bitmap from file and extract all characters as individual bitmaps
 void loadFont(){
 
-    bmp_loader_loadBMPFile("resources/textures/characters-2.bmp");
+    bmp_loader_loadBMPFile("resources/ui/font/characters-2.bmp");
 
     fontBitmapBuffer = bmp_getImageDataBuffer();
 
