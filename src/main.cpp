@@ -8,6 +8,7 @@
 #include "ui/ui.hh"
 #include "Timing.hpp"
 
+#include "Input.hpp"
 
 #include "Simulator.hpp"
 
@@ -63,7 +64,7 @@ int main()
 		return -1;
 	}
 
-
+	PInput::init();
 
 	// START SIMULATORS
 	// Make sure we initialize the simulator BEFORE grabbing it when setting up Simulator continer in the world scene

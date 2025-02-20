@@ -26,6 +26,7 @@
 
 ## 2025-02-20
 - UI
+	- |o| Update window scale
 	- text primitive
 		- move back to regular primitive?
 			- reduce complexity of inheritance
@@ -41,12 +42,13 @@
 	- vert/horiref : Centered
 	- shader
 		- need to recieve viewpost size changes
-		- set DPI value in transform
+		- |o| set DPI value in transform
 	- events work as intended
 		- hover
 		- click
 		- release
 		- scroll
+		- grab
 	- static texture
 		- a few more colors for debugging
 		- icons

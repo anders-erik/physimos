@@ -19,6 +19,7 @@ PhysWin physimos_window;
 
 void (*windowChangeCallback_ui)(PhysWin _physimos_window) = nullptr;
 void (*windowChangeCallback_scene)(PhysWin _physimos_window) = nullptr;
+void (*windowChangeCallback_input)(PhysWin _physimos_window) = nullptr;
 
 PhysWin get_initial_physimos_window(){
     return physimos_window;
@@ -40,6 +41,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
     if (windowChangeCallback_scene != nullptr)
         windowChangeCallback_scene(physimos_window);
+    
+    if (windowChangeCallback_input != nullptr)
+        windowChangeCallback_input(physimos_window);
 
 }
 void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
@@ -58,6 +62,10 @@ void subscribeWindowChange_ui(void (*subscriberCallback)(PhysWin physimos_window
 void subscribeWindowChange_scene(void (*subscriberCallback)(PhysWin physimos_window)) {
     windowChangeCallback_scene = subscriberCallback;
 }
+void subscribeWindowChange_input(void (*subscriberCallback)(PhysWin physimos_window)) {
+    windowChangeCallback_input = subscriberCallback;
+}
+
 
 
 void initPhysimosWindow() {
@@ -84,21 +92,22 @@ void initPhysimosWindow() {
     }
     glfwMakeContextCurrent(window__);
 
+
     // SET PYSIMOS WINDOW OBJECT
     glfwGetWindowContentScale(window__, &physimos_window.xscale, &physimos_window.yscale);
     physimos_window.height = SCREEN_INIT_HEIGHT;
     physimos_window.width = SCREEN_INIT_WIDTH;
 
-    // User input
-    // glfwSetFramebufferSizeCallback(window__, PInput::framebuffer_size_callback);
+    /// WINDOW CALLBACKS
     glfwSetFramebufferSizeCallback(window__, framebuffer_size_callback);
     glfwSetWindowContentScaleCallback(window__, window_content_scale_callback);
 
+    // INPUT DEVICE CALLBACKS
     glfwSetMouseButtonCallback(window__, PInput::mouse_button_callback);
     // glfwSetMouseButtonCallback(window__, mouse_button_callback_2); // this deactivates the first one!
     glfwSetCursorPosCallback(window__, PInput::cursor_position_callback);
     glfwSetKeyCallback(window__, PInput::key_callback);
-
+    glfwSetScrollCallback(window__, PInput::scroll_callback);
 
 
     // glad: load all OpenGL function pointers  

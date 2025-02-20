@@ -1,4 +1,4 @@
-
+#include "glad/glad.h"  // glDisable(GL_DEPTH_TEST)
 #include "log.hh"
 
 #include "ui.hh"
@@ -98,8 +98,11 @@ void init(){
     
 
     // Subscribe to cursor position from input library
-    ::PInput::subscribeCursorPosition(pointerPositionCallback);
-    ::PInput::subscribeLeftClickPosition(leftClickCallback);
+    ::PInput::subscribePointerPosition_ui(pointerPositionCallback);
+    ::PInput::subscribeMouseLeftClick_ui(leftClickCallback);
+    ::PInput::subscribeMouseLeftRelease_ui(leftReleaseCallback);
+    ::PInput::subscribeMouseScrollY_ui(scrollyCallback);
+    
     // ::PInput::subscribeFrameBufferUpdated(setViewportDimensions);
 
 
@@ -196,14 +199,13 @@ void update(){
     }
 }
 
+void pointerPositionCallback(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change) {
 
-// Callback for cursor position subscription
-void pointerPositionCallback(double x, double y) {
-    
-    cursor_x = x;
+    cursor_x = pointer_pos.x;
     // Invert Y direction
-    double viewport_height_double = (double) viewport_height;
-    cursor_y = -(y - viewport_height_double);
+    // double viewport_height_double = (double)viewport_height;
+    // cursor_y = -(pointer_pos.y - viewport_height_double);
+    cursor_y = pointer_pos.y;
 
     // clear currently hovering primitive
     if (currentlyHoveredPrimitive != nullptr) {
@@ -222,7 +224,7 @@ void pointerPositionCallback(double x, double y) {
 
     // setCurrentlyHoveredPrimitive();
     Primitive* targetedPrimitive = getTargetingPrimitive();
-    if(targetedPrimitive == nullptr){
+    if (targetedPrimitive == nullptr) {
         // std::cout << "No primitive targeted." << std::endl;
         return;
     }
@@ -236,9 +238,18 @@ void pointerPositionCallback(double x, double y) {
 }
 
 
+void scrollyCallback(double y_change) {
+    std::cout << "SCROLLED Y : " << y_change << std::endl;
+    
+}
+
+void leftReleaseCallback(PInput::PointerPosition _pointer_pos){
+    std::cout << "LEFT RELEASE"  << std::endl;
+    
+}
 
 // Don't need cursor position update as it will stay current using pointer position callback
-void leftClickCallback(double x, double y) {
+void leftClickCallback(PInput::PointerPosition _pointer_pos) {
     
     UiResult targetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
     if (targetResult.success && targetResult.primitive->isClickable) {

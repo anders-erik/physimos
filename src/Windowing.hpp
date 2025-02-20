@@ -27,6 +27,8 @@ PhysWin get_initial_physimos_window();
 void subscribeWindowChange_ui(void (*subscriberCallback)(PhysWin physimos_window));
 /** Pass a callback function for window changes updates during runtime.  NOTE: ONLY FOR ONE SCENE */
 void subscribeWindowChange_scene(void (*subscriberCallback)(PhysWin physimos_window));
+/** Pass a callback function for window changes updates during runtime.  NOTE: ONLY FOR ONE INPUT CALLBACK */
+void subscribeWindowChange_input(void (*subscriberCallback)(PhysWin physimos_window));
 
 
 /** Internal framebuffer callback */

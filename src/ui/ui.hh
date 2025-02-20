@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Windowing.hpp"
+#include "Input.hpp"
 
 #include "uiElement.hpp"
 #include "Types.hpp"
@@ -23,9 +24,7 @@ namespace UI {
     void init();
     void update();
 
-    void pointerPositionCallback(double x, double y);
-    void leftClickCallback(double x, double y);
-    void windowSizeChangeCallback(double x, double y);
+    
     
     void window_changed_callback(PhysWin physimos_window); 
 
@@ -35,6 +34,14 @@ namespace UI {
 
     void setCurrentlyHoveredPrimitive(Primitive* primitiveToHover);
 
+
+    // INTERNAL CALLBACK METHODS
+
+    void pointerPositionCallback(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change);
+    void leftClickCallback(PInput::PointerPosition _pointer_pos);
+    void leftReleaseCallback(PInput::PointerPosition _pointer_pos);
+    void scrollyCallback(double y_change);
+    void windowSizeChangeCallback(double x, double y);
 }
 
 
