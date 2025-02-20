@@ -16,8 +16,6 @@ typedef struct PointerPosition {
 	double y;
 } PointerPosition;
 typedef struct PointerChange {
-	double x;
-	double y;
 	double dx;
 	double dy;
 } PointerChange;

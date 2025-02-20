@@ -12,6 +12,17 @@ UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
     set_color(Colors::Green);
     isClickable = true;
 }
+UiResult UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
+    UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
+
+    std::cout << "DRAGGING GREEN COLOR"  << std::endl;
+
+    return UiResult(true, Action::None, this);
+}
+UiResult UIC_PrimitiveColor_SetGreen::scroll(double y_change){
+    std::cout << "SCROLL GREEN COLOR = : " << y_change << std::endl;
+    return UiResult(true, Action::None, this);
+}
 UiResult UIC_PrimitiveColor_SetGreen::click_new(){
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
     

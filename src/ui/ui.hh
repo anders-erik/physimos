@@ -25,8 +25,6 @@ namespace UI {
     void update();
 
     
-    
-    void window_changed_callback(PhysWin physimos_window); 
 
     UI::Action updatePObjectPosition();
 
@@ -42,6 +40,11 @@ namespace UI {
     void leftReleaseCallback(PInput::PointerPosition _pointer_pos);
     void scrollyCallback(double y_change);
     void windowSizeChangeCallback(double x, double y);
+
+
+    // INTERNAL
+
+    void window_changed_callback(PhysWin physimos_window);
 }
 
 

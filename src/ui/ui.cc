@@ -46,6 +46,9 @@ std::vector<UI::Primitive*> primitiveTreeHeads;
 // a linear list of all Primitives. Used for some hover/click tests
 std::vector<UI::Primitive*> primitiveList;
 
+/** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
+Primitive* grabbed_primitive = nullptr;
+
 /** Current cursor position recieved in the input callback function. */
 double cursor_x = 0.0;
 /** Current cursor position recieved in the input callback function. y = 0 at the bottom of window.  */
@@ -201,6 +204,12 @@ void update(){
 
 void pointerPositionCallback(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change) {
 
+    if(grabbed_primitive != nullptr){
+        // std::cout << "Dragging " << grabbed_primitive->uiTransform.h_input << std::endl;
+        grabbed_primitive->grabbed(_pointer_change.dx, _pointer_change.dy);
+    }
+        
+
     cursor_x = pointer_pos.x;
     // Invert Y direction
     // double viewport_height_double = (double)viewport_height;
@@ -239,23 +248,46 @@ void pointerPositionCallback(PInput::PointerPosition pointer_pos, PInput::Pointe
 
 
 void scrollyCallback(double y_change) {
-    std::cout << "SCROLLED Y : " << y_change << std::endl;
+
+    UiResult scrollTargetQuery = primitive_editor->try_find_target_component(cursor_x, cursor_y);
+
+    if (scrollTargetQuery.success) {
+        scrollTargetQuery.primitive->scroll(y_change);
+    }
     
 }
 
 void leftReleaseCallback(PInput::PointerPosition _pointer_pos){
     std::cout << "LEFT RELEASE"  << std::endl;
+    if (grabbed_primitive != nullptr)
+        std::cout << "Released " << grabbed_primitive->uiTransform.h_input << std::endl;
+
     
+    UiResult releaseTargetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
+
+    // We click if: 1) found primitive, 2) primitive is the same one as registered on left click
+    bool click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
+    if (click_confirmed) {
+        releaseTargetResult.primitive->click_new();
+    }
+    
+    grabbed_primitive = nullptr;
 }
 
 // Don't need cursor position update as it will stay current using pointer position callback
 void leftClickCallback(PInput::PointerPosition _pointer_pos) {
+
     
     UiResult targetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
-    if (targetResult.success && targetResult.primitive->isClickable) {
-        targetResult.primitive->click_new();
-        // targetResult.primitive->setState(PrimitiveState::Selected);
-        // plog_info(::plib::LogScope::UI, "CLICLCICLK");
+    // if (targetResult.success && targetResult.primitive->isClickable) {
+    //     targetResult.primitive->click_new();
+    //     // targetResult.primitive->setState(PrimitiveState::Selected);
+    //     // plog_info(::plib::LogScope::UI, "CLICLCICLK");
+    // }
+    if(targetResult.success){
+        grabbed_primitive = targetResult.primitive;
+        std::cout << "Grabbed " << grabbed_primitive->id << std::endl;
+        
     }
     
     // Grab current target

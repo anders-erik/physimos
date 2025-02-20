@@ -67,6 +67,18 @@ namespace UI {
     UiResult Primitive::click_new() {
         return UiResult();
     }
+    UiResult Primitive::hover() {
+        return UiResult();
+    }
+    UiResult Primitive::grabbed(double dx, double dy) {
+        return UiResult();
+    }
+    UiResult Primitive::release() {
+        return UiResult();
+    }
+    UiResult Primitive::scroll(double y_change) {
+        return UiResult();
+    }
 
 
     void Primitive::setState(PrimitiveState _newState) {
