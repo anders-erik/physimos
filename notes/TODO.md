@@ -24,16 +24,58 @@
 
 ---
 
+## 2025-02-20
+- UI
+	- text primitive
+		- move back to regular primitive?
+			- reduce complexity of inheritance
+			- instead 
+		- When update?
+			- trigger regeneration on render like size/pos changes?
+		- Set font size at same time as string?
+		- string shader?
+		- move font to texture namespace?
+		- font size in Point units!
+			- requires DPI readings!
+	- size percentage != 100%
+	- vert/horiref : Centered
+	- shader
+		- need to recieve viewpost size changes
+		- set DPI value in transform
+	- events work as intended
+		- hover
+		- click
+		- release
+		- scroll
+	- static texture
+		- a few more colors for debugging
+		- icons
+			- scale
+	- Primitive editor
+		- set string
+		- set icons
+		- set size
+		- set position
+	- list component
+	- Primitive component binds itself!
+	- Split ui transform into pos / size structs with set_x/y/h/w
+		- enables the binding of thise properties directly by a ui component
+		- BUT it also requires the tracking of more bound objects
+	- bound object store
+		- all bindable objects will be associated with an id
+		- on the deletion of a bound object the UI tree will not update until the whole tree has been traversed and all components with the deleted bound object attached to it will be deleasted, as well as all the descendants of the primitive
+	- IDEA: a component with a bound object can NEVER be contain a child or descendant with an object not present in the real objects hierarchy
+
 ### 2025-02-19
-- New UI shader class(es?)
-	- color, texture, string?
-- UI Texture class 
-	- load static textures on startup
-		- colors
+- |o| New UI shader class(es?)
+	- color, |o| texture, string?
+- |o| UI Texture class 
+	- |o| load static textures on startup
+		- |o| colors
 		- icon
-	- request static textures (simply return the texture id on passed enum)
-- UI Editor
-	- change textures
+	- |o| request static textures (simply return the texture id on passed enum)
+- |o| UI Editor
+	- |o| change textures
 
 
 ### 2025-02-17

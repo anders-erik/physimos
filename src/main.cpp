@@ -94,9 +94,9 @@ int main()
 	while (windowIsStillGood())
 	{
 		// process_info_init();
-
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		new_frame();
+		// glClear(GL_COLOR_BUFFER_BIT);
+		// glClear(GL_DEPTH_BUFFER_BIT);
 
 		//
 		// FPS INFO

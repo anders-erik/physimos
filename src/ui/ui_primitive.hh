@@ -46,7 +46,7 @@ enum HoriRef {
 };
 
 
-
+/** Specifies the full transform state of UI primitive: size, position, render transform, size change flags.  */
 typedef struct Transform {
     /** Intially set to true for full update during first render. */
     bool size_has_been_changed = true;
@@ -117,7 +117,6 @@ class Primitive {
 
         
 
-        /** Full transform object of UI primitive, including size, position, and rendering transform.  */
         UI::Transform uiTransform;
 
         /** Update h_input, h_unit, and set changed flag */
@@ -163,12 +162,9 @@ class Primitive {
         int z = 1;
 
         
-        // Colors color = Colors::LightGray;
-        // Colors colorHover = Colors::Gray;
-        // Colors colorActive = Colors::DarkGray;
-        void new_color(Colors _color);
-        void new_color_hover(Colors _colorHover);
-        void new_color_active(Colors _colorActive);
+        void set_color(Colors _color);
+        void set_color_hover(Colors _colorHover);
+        void set_color_active(Colors _colorActive);
 
 
         ::UI::shader::TextureShader* texture_shader;

@@ -339,19 +339,19 @@ namespace UI {
     }
 
 
-    void Primitive::new_color(Colors _color) {
+    void Primitive::set_color(Colors _color) {
         // color = _color;
         defaultTexture = UI::texture::get_static_color_texture(_color);
         if(state == PrimitiveState::Default)
             renderedTexture = defaultTexture;
     }
-    void Primitive::new_color_hover(Colors _colorHover) {
+    void Primitive::set_color_hover(Colors _colorHover) {
         // colorHover = _color;
         hoverTexture = UI::texture::get_static_color_texture(_colorHover);
         if (state == PrimitiveState::Hover)
             renderedTexture = defaultTexture;
     }
-    void Primitive::new_color_active(Colors _colorActive) {
+    void Primitive::set_color_active(Colors _colorActive) {
         selectedTexture = UI::texture::get_static_color_texture(_colorActive);
         if (state == PrimitiveState::Selected)
             renderedTexture = selectedTexture;

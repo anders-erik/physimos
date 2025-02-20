@@ -6,7 +6,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 #include "Input.hpp"
 
 #include "PSO_util.hpp"
@@ -16,7 +15,49 @@ GLFWwindow* window__;
 int physimosLoadedOk;
 
 
+PhysWin physimos_window;
 
+void (*windowChangeCallback_ui)(PhysWin _physimos_window) = nullptr;
+void (*windowChangeCallback_scene)(PhysWin _physimos_window) = nullptr;
+
+PhysWin get_initial_physimos_window(){
+    return physimos_window;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+
+    physimos_window.height = height;
+    physimos_window.width = width;
+    
+
+    // Window property dependants
+    if (windowChangeCallback_ui != nullptr)
+        windowChangeCallback_ui(physimos_window);
+
+    if (windowChangeCallback_scene != nullptr)
+        windowChangeCallback_scene(physimos_window);
+
+}
+void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
+{
+    physimos_window.xscale = xscale;
+    physimos_window.yscale = yscale;
+
+    if (windowChangeCallback_ui != nullptr)
+        windowChangeCallback_ui(physimos_window);
+}
+
+
+void subscribeWindowChange_ui(void (*subscriberCallback)(PhysWin physimos_window)) {
+    windowChangeCallback_ui = subscriberCallback;
+}
+void subscribeWindowChange_scene(void (*subscriberCallback)(PhysWin physimos_window)) {
+    windowChangeCallback_scene = subscriberCallback;
+}
 
 
 void initPhysimosWindow() {
@@ -43,8 +84,16 @@ void initPhysimosWindow() {
     }
     glfwMakeContextCurrent(window__);
 
+    // SET PYSIMOS WINDOW OBJECT
+    glfwGetWindowContentScale(window__, &physimos_window.xscale, &physimos_window.yscale);
+    physimos_window.height = SCREEN_INIT_HEIGHT;
+    physimos_window.width = SCREEN_INIT_WIDTH;
+
     // User input
-    glfwSetFramebufferSizeCallback(window__, PInput::framebuffer_size_callback);
+    // glfwSetFramebufferSizeCallback(window__, PInput::framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window__, framebuffer_size_callback);
+    glfwSetWindowContentScaleCallback(window__, window_content_scale_callback);
+
     glfwSetMouseButtonCallback(window__, PInput::mouse_button_callback);
     // glfwSetMouseButtonCallback(window__, mouse_button_callback_2); // this deactivates the first one!
     glfwSetCursorPosCallback(window__, PInput::cursor_position_callback);
@@ -86,6 +135,11 @@ int terminatePhysimosWindow() {
 // Runtime
 int windowIsStillGood(){
     return !glfwWindowShouldClose(window__);
+}
+
+void new_frame(){
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 // process all inputState: query GLFW whether relevant keys are pressed/released this frame and react accordingly

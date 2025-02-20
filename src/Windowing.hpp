@@ -1,9 +1,36 @@
 #ifndef WINDOWING_HPP
 #define WINDOWING_HPP
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+// #include <glad/glad.h>
+// #include <GLFW/glfw3.h>
 
+
+struct GLFWwindow;
+
+/** Holds the most up to date window information available for querying. */
+// extern PhysWin physimos_window;
+typedef struct PhysWin {
+    unsigned int height;
+    unsigned int width;
+    float xscale;
+    float yscale;
+} PhysWin;
+
+/** Used by several physimos components to perform inital scaling. 
+ *  Although continued querying will always return the most up to date window object, separate callbacks are used during runtime to dynamically notify dependants of changes.
+ */
+PhysWin get_initial_physimos_window();
+
+// void subscribeFrameBufferUpdate(void (*subscriberCallback)(unsigned int height, unsigned int width));
+
+/** Pass a callback function for window changes updates during runtime. NOTE: ONLY FOR ONE UI CALLBACK. */
+void subscribeWindowChange_ui(void (*subscriberCallback)(PhysWin physimos_window));
+/** Pass a callback function for window changes updates during runtime.  NOTE: ONLY FOR ONE SCENE */
+void subscribeWindowChange_scene(void (*subscriberCallback)(PhysWin physimos_window));
+
+
+/** Internal framebuffer callback */
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 
 // Init
@@ -16,6 +43,7 @@ int terminatePhysimosWindow();
 
 // Runtime
 int windowIsStillGood();
+void new_frame();
 void processInput();
 void endOfFrameGlfwCalls();
 

@@ -38,8 +38,9 @@ namespace UI {
                 void set(float* primitiveTransform_mat, unsigned int texture);
                 /** Makes rendering call with values previously specified using a set()-call. */
                 void draw();
-                /**  */
-                void update_viewport_dimensions(float height, float width);
+
+                /** Update the viewport transformation matrix using physimos window info */
+                void set_window_info(float width, float height, float _xscale, float _yscale);
 
                 TextureShader();
         } TextureShader;

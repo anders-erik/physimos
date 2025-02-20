@@ -45,7 +45,6 @@ namespace PInput {
 	// Only one subscriber implemented
 	void (*cursorSubscriberCallback)(double x, double y) = nullptr;
 	void (*leftClickSubscriberCallback)(double x, double y) = nullptr;
-	void (*frameBufferSubscriberCallback)(unsigned int height, unsigned int width) = nullptr;
 
 	void subscribeCursorPosition(void (*subscriberCallback)(double x, double y)) {
 		cursorSubscriberCallback = subscriberCallback;
@@ -55,32 +54,11 @@ namespace PInput {
 		leftClickSubscriberCallback = subscriberCallback;
 	}
 
-	void subscribeFrameBufferUpdated(void (*subscriberCallback)(unsigned int height, unsigned int width)){
-		frameBufferSubscriberCallback = subscriberCallback;
-	}
+	
 
 
 
 
-
-
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	// make sure the viewport matches the new window dimensions; note that width and
-	// height will be significantly larger than specified on retina displays.
-	glViewport(0, 0, width, height);
-
-
-	// Update viewpost size dependencies
-	// TODO: turn into subscription callbacks
-	::PScene::getCurrentScene()->camera->setPerspectiveMatrix(width, height);
-	::UI::setViewportDimensions(width, height);
-
-}
- 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	double xpos, ypos;

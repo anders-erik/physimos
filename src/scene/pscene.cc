@@ -1,6 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Windowing.hpp"
+
 #include "Simulation.hpp"
 #include "Camera.hpp"
 
@@ -59,6 +61,9 @@ namespace PScene {
         currentScene->pObjects.push_back(pObject);
     }
 
+    void windowChangeUpdate(PhysWin _physimos_window){
+        currentScene->camera->setPerspectiveMatrix(_physimos_window.width, _physimos_window.height);
+    }
 
     void init(){
 
@@ -73,7 +78,7 @@ namespace PScene {
         
         scene1.camera = new PCamera::Camera();
 
-
+        subscribeWindowChange_scene(windowChangeUpdate);
     }
 
     Scene* getCurrentScene(){

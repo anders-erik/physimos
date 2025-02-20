@@ -16,8 +16,8 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
     
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f15);
-    title.set_y("^10x");
+    title.str_setFontSize(FontSize::f24);
+    title.set_y("^0x");
     // title.set_h("10x");
 
     appendChild(&id_string);

@@ -17,6 +17,7 @@
 
 
 #include "Input.hpp"
+#include "Windowing.hpp"
 
 #include "scene/pscene.hh"
 #include "scene/pobject.hh"
@@ -30,6 +31,15 @@ struct PObject;
 
 
 namespace UI {
+
+void window_changed_callback(PhysWin physimos_window){
+    shader::texture_shader.set_window_info(
+        physimos_window.width,
+        physimos_window.height,
+        physimos_window.xscale,
+        physimos_window.yscale
+    );
+}
 
 // primitives with no parents, usually ui module containers
 std::vector<UI::Primitive*> primitiveTreeHeads;
@@ -46,7 +56,11 @@ UI::Primitive* primitive_to_edit;
 // UI::component::Component_PrimitiveEditor* primitive_editor;
 UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
+    PhysWin new_window = get_initial_physimos_window();
+    subscribeWindowChange_ui(window_changed_callback);
+
     // UI::shader::TextureShader();
+    shader::texture_shader.set_window_info(new_window.width, new_window.height, new_window.xscale, new_window.yscale);
     shader::texture_shader.compile_shader();
     shader::texture_shader.init();
 
@@ -63,7 +77,7 @@ void init(){
     // PRIMITIVE EDITOR COMPONENT
     primitive_to_edit = new UI::Primitive();
     // primitive_to_edit->initGraphics();
-    primitive_to_edit->new_color(Colors::DarkGray);
+    primitive_to_edit->set_color(Colors::DarkGray);
     primitive_to_edit->setState(PrimitiveState::Default);
     primitive_to_edit->id = "primitive_to_test";
     primitive_to_edit->set_x("<500x");
@@ -82,6 +96,13 @@ void init(){
     primitive_editor->set_h("400x");
     primitive_editor->set_w("200x");
     
+
+    // Subscribe to cursor position from input library
+    ::PInput::subscribeCursorPosition(pointerPositionCallback);
+    ::PInput::subscribeLeftClickPosition(leftClickCallback);
+    // ::PInput::subscribeFrameBufferUpdated(setViewportDimensions);
+
+
     // UI::primitiveList.push_back(primitive_editor);
     // UI::primitiveTreeHeads.push_back(primitive_editor);
     // primitive_editor = new UI::component::Component_PrimitiveEditor(primitive_to_edit);
@@ -158,10 +179,6 @@ void init(){
     // UI::primtiiveUiInitialTests();
 
 
-    // Subscribe to cursor position from input library
-    ::PInput::subscribeCursorPosition(pointerPositionCallback);
-    ::PInput::subscribeLeftClickPosition(leftClickCallback);
-    ::PInput::subscribeFrameBufferUpdated(setViewportDimensions);
 
 }
 

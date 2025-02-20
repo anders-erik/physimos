@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "Windowing.hpp"
 
 #include "uiElement.hpp"
 #include "Types.hpp"
@@ -25,6 +26,8 @@ namespace UI {
     void pointerPositionCallback(double x, double y);
     void leftClickCallback(double x, double y);
     void windowSizeChangeCallback(double x, double y);
+    
+    void window_changed_callback(PhysWin physimos_window); 
 
     UI::Action updatePObjectPosition();
 

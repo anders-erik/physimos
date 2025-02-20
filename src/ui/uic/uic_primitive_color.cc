@@ -7,27 +7,26 @@
 namespace UI::component {
 
 UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
-    setHeight(20);
-    setWidth(20);
-    new_color(Colors::Green);
+    set_w("20x");
+    set_h("20x");
+    set_color(Colors::Green);
     isClickable = true;
 }
 UiResult UIC_PrimitiveColor_SetGreen::click_new(){
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
     
     int rand_height = std::rand() % 300;
-    uic_PrimitiveColor->boundObject.setHeight(rand_height);
+    uic_PrimitiveColor->boundObject.set_h(std::to_string(rand_height) + "x");
 
-    uic_PrimitiveColor->boundObject.new_color(Colors::Green);
+    uic_PrimitiveColor->boundObject.set_color(Colors::Green);
     return UiResult(true, Action::None, this);
 }
 
 
 UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
-    setHeight(20);
-    setWidth(20);
-    set_x("<20x");
-    new_color(Colors::Red);
+    set_w("20x");
+    set_h("20x");
+    set_color(Colors::Red);
     isClickable = true;
 }
 UiResult UIC_PrimitiveColor_SetRed::click_new() {
@@ -36,7 +35,7 @@ UiResult UIC_PrimitiveColor_SetRed::click_new() {
     int rand_width = std::rand() % 300;
     uic_PrimitiveColor->boundObject.setWidth(rand_width);
 
-    uic_PrimitiveColor->boundObject.new_color(Colors::Red);
+    uic_PrimitiveColor->boundObject.set_color(Colors::Red);
     return UiResult(true, Action::None, this);
 }
 
@@ -46,32 +45,21 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
         set_green_btn   { UIC_PrimitiveColor_SetGreen   () },
         set_red_btn     { UIC_PrimitiveColor_SetRed     () }
 {
-    // set_x("<10x");
-    // set_y("^10x");
-    // setHeight(30);
-    // setWidth(180);
     set_w("180x");
     set_h("30x");
+    set_color(Colors::DarkGray);
 
-    // initGraphics();
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f15);
-    // title.set_w("50x");
-    // title.set_h("20x");
     title.set_x("<10x");
     title.set_y("^5x");
-    // title.setDefaultColor();
 
     appendChild(&set_green_btn);
-    set_green_btn.set_w("20x");
-    set_green_btn.set_h("20x");
     set_green_btn.set_x("<120x");
     set_green_btn.set_y("^5x");
 
     appendChild(&set_red_btn);
-    set_red_btn.set_w("20x");
-    set_red_btn.set_h("20x");
     set_red_btn.set_x("<150x");
     set_red_btn.set_y("^5x");
     

@@ -31,11 +31,10 @@ namespace UI {
                 viewportTransform16[i] = _viewportTransform16[i];
             }
         }
-        void TextureShader::update_viewport_dimensions(float height, float width) {
-            viewportTransform16[0] = 2.0f / width;
-            viewportTransform16[5] = 2.0f / height;
+        void TextureShader::set_window_info(float width, float height, float _xscale, float _yscale) {
+            viewportTransform16[0] = 2.0f * _xscale / width;
+            viewportTransform16[5] = 2.0f * _yscale / height;
         }
-
 
 
 
