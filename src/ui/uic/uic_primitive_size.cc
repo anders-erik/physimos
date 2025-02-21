@@ -1,5 +1,6 @@
 
 #include "uic_primitive_size.hh"
+#include "ui/ui_texture.hh"
 
 #include "lib/lib.hh"
 #include <random>
@@ -9,7 +10,8 @@ namespace UI::component {
 UIC_PrimitiveSize_drag::UIC_PrimitiveSize_drag() {
     set_w("20x");
     set_h("20x");
-    set_color(Colors::LightGray);
+    // set_color(Colors::LightGray);
+    renderedTexture = texture::get_icon(Icon::Resize);
 }
 UiResult UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
     UIC_PrimitiveSize* uic_PrimitiveSize = (UIC_PrimitiveSize*)this->parent;

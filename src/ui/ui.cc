@@ -47,7 +47,8 @@ void init(){
     PhysWin new_window = get_initial_physimos_window();
     subscribeWindowChange_ui(callback_window_change); // WINDOWING.CPP
     
-    UI::texture::init_static_textures();
+    UI::texture::init_static_color_textures();
+    UI::texture::init_static_icon_textures();
 
     shader::texture_shader.set_window_info(new_window.width, new_window.height, new_window.xscale, new_window.yscale);
     shader::texture_shader.compile_shader();

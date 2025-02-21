@@ -2,6 +2,7 @@
 #include "uic_primitive_position.hh"
 
 #include "lib/lib.hh"
+#include "ui/ui_texture.hh"
 #include <random>
 
 namespace UI::component {
@@ -9,7 +10,8 @@ namespace UI::component {
 UIC_PrimitivePosition_up::UIC_PrimitivePosition_up() {
     set_w("20x");
     set_h("20x");
-    set_color(Colors::LightGray);
+    // set_color(Colors::LightGray);
+    renderedTexture = texture::get_icon(Icon::Up);
 }
 UiResult UIC_PrimitivePosition_up::click() {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
@@ -27,7 +29,8 @@ UiResult UIC_PrimitivePosition_up::click() {
 UIC_PrimitivePosition_down::UIC_PrimitivePosition_down() {
     set_w("20x");
     set_h("20x");
-    set_color(Colors::LightGray);
+    // set_color(Colors::LightGray);
+    renderedTexture = texture::get_icon(Icon::Down);
 }
 
 UiResult UIC_PrimitivePosition_down::click() {
@@ -43,7 +46,8 @@ UiResult UIC_PrimitivePosition_down::click() {
 UIC_PrimitivePosition_scroll::UIC_PrimitivePosition_scroll() {
     set_w("20x");
     set_h("20x");
-    set_color(Colors::LightGray);
+    // set_color(Colors::LightGray);
+    renderedTexture = texture::get_icon(Icon::ScrollVert);
 }
 UiResult UIC_PrimitivePosition_scroll::scroll(double y_change) {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
@@ -63,7 +67,8 @@ UiResult UIC_PrimitivePosition_scroll::scroll(double y_change) {
 UIC_PrimitivePosition_drag::UIC_PrimitivePosition_drag() {
     set_w("20x");
     set_h("20x");
-    set_color(Colors::LightGray);
+    // set_color(Colors::LightGray);
+    renderedTexture = texture::get_icon(Icon::Pan);
 }
 UiResult UIC_PrimitivePosition_drag::grabbed(double dx, double dy) {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
@@ -127,6 +132,9 @@ UIC_PrimitivePosition::UIC_PrimitivePosition(::UI::Primitive& _primitive)
     appendChild(&up_btn);
     up_btn.set_x("<60x");
     up_btn.set_y("^5x");
+    // up_btn.renderedTexture = texture::get_icon_up();
+    // up_btn.defaultTexture = texture::get_icon_up();
+    // up_btn.hoverTexture = texture::get_icon_up();
 
     appendChild(&down_btn);
     down_btn.set_x("<85x");

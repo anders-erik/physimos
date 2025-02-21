@@ -9,8 +9,14 @@ out vec4 FragColor;
 void main()
 {
     vec4 texColor = texture(charTexture, TexCoord);
-    // if(texColor.a < 0.1)
+    // if(texColor.a < 0.1) 
     //     discard;
+
+    // Play around with texture coordinates
+    // FragColor = vec4(texColor.x, texColor.y, texColor.z, 1.0f);
+    // FragColor = vec4(texColor.x, texColor.y, texColor.z, 1.0f);
+    
+    // Render texture as is
     FragColor = texColor;
     
     

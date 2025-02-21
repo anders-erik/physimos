@@ -2,6 +2,7 @@
 *~
 
 *.blend1
+*.kra
 
 build/
 build/*

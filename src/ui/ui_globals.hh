@@ -6,6 +6,22 @@ namespace UI {
 
     class Primitive;
 
+    typedef enum class Icon {
+        Up,
+        Down,
+        Left,
+        Right,
+
+        ScrollVert,
+        ScrollHori,
+
+        Pan,
+
+        Resize,
+
+    } Icon;
+
+
     typedef enum class Colors {
         Pink, // uninitialized texture
         Red,  // Common default value

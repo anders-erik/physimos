@@ -110,7 +110,8 @@ bool BMP::write(std::filesystem::path filePath) {
     bytesPerImageRow = bytesPerPixel * header->width;
     bytesPerImageRow_padded = bytesPerImageRow;
 
-    if (bytesPerPixel != 4) { // Each row is padded to 4-byte alignment
+    // If row size is not a multiple of 4 bytes, the row is padded to 4-byte alignment
+    if (bytesPerImageRow % 4 != 0) { 
         unsigned int paddingSize = 4 - (bytesPerImageRow % 4);
         bytesPerImageRow_padded = bytesPerImageRow + paddingSize;
     }
