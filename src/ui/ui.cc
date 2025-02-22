@@ -195,6 +195,13 @@ void callback_window_change(PhysWin physimos_window) {
         physimos_window.xscale,
         physimos_window.yscale
     );
+
+    shader::color_shader.set_window_info(
+        physimos_window.width, 
+        physimos_window.height, 
+        physimos_window.xscale, 
+        physimos_window.yscale
+    );
 }
 
 

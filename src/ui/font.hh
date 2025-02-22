@@ -22,8 +22,10 @@ extern unsigned int a_texture;
 // Pixel height
 typedef enum FontSize {
     f15 = 15,
+    f18 = 18,
     // Default font size. 24 px height.
     f24 = 24,
+    f32 = 32,
 } FontSize;
 
 

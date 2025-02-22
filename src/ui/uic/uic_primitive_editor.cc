@@ -18,7 +18,8 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
     set_color(active_pallete.base1);
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f24);
+    // title.str_setFontSize(FontSize::f24);
+    title.str_setFontSize(FontSize::f32);
     title.set_y("^0x");
 
     appendChild(&id_string);

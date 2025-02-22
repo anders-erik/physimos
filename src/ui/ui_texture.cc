@@ -41,6 +41,55 @@ namespace UI {
         unsigned char lightGreenColor[4] = { 0, 200, 0, 255 };
 
 
+        unsigned int new_from_bitmap(pimage::Bitmap& bitmap){
+            
+            unsigned int newTexture = 0;
+
+            glGenTextures(1, &newTexture);
+            glBindTexture(GL_TEXTURE_2D, newTexture);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glBindTexture(GL_TEXTURE_2D, newTexture);
+
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width, bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap.pixels.data());
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            return newTexture;
+        }
+
+        void update_with_bitmap(unsigned int textureName, pimage::Bitmap& bitmap){
+            // glGenTextures(1, &textureName);
+            glBindTexture(GL_TEXTURE_2D, textureName);
+
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+
+
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+            glBindTexture(GL_TEXTURE_2D, textureName);
+
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width, bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap.pixels.data());
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+
+
         void new_texture(unsigned int& texture_to_init) {
 
             // unsigned int new_pink_texture;
@@ -152,9 +201,9 @@ namespace UI {
             pimage::Pixel* pixels_data_raw;
 
             //  UP
-            pimage::Bitmap* up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/up.bmp");
+            pimage::Bitmap up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/up.bmp");
             // Don't need to cast to char, nor invert image as opengl expects first pixel at lower left corner
-            pixels_data_raw =  up_bitmap->pixels.data();
+            pixels_data_raw =  up_bitmap.pixels.data();
             glGenTextures(1, &upTexture);
             glBindTexture(GL_TEXTURE_2D, upTexture);
             // RENDER TEXTURE BY GRABBING THE NEAREST COLOR VALUE. NO BLENDING.
@@ -165,8 +214,8 @@ namespace UI {
 
 
             //  DOWN
-            pimage::Bitmap* down_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/down.bmp");
-            pixels_data_raw =  down_bitmap->pixels.data();
+            pimage::Bitmap down_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/down.bmp");
+            pixels_data_raw =  down_bitmap.pixels.data();
             glGenTextures(1, &downTexture);
             glBindTexture(GL_TEXTURE_2D, downTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -175,8 +224,8 @@ namespace UI {
             glGenerateMipmap(GL_TEXTURE_2D);
 
             //  LEFT
-            pimage::Bitmap* left_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/left.bmp");
-            pixels_data_raw =  left_bitmap->pixels.data();
+            pimage::Bitmap left_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/left.bmp");
+            pixels_data_raw =  left_bitmap.pixels.data();
             glGenTextures(1, &leftTexture);
             glBindTexture(GL_TEXTURE_2D, leftTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -186,8 +235,8 @@ namespace UI {
 
 
             //  RIGHT
-            pimage::Bitmap* right_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/right.bmp");
-            pixels_data_raw =  right_bitmap->pixels.data();
+            pimage::Bitmap right_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/right.bmp");
+            pixels_data_raw =  right_bitmap.pixels.data();
             glGenTextures(1, &rightTexture);
             glBindTexture(GL_TEXTURE_2D, rightTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -199,8 +248,8 @@ namespace UI {
 
 
             //  SCROLL VERT
-            pimage::Bitmap* scroll_vert_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-vert.bmp");
-            pixels_data_raw =  scroll_vert_bitmap->pixels.data();
+            pimage::Bitmap scroll_vert_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-vert.bmp");
+            pixels_data_raw =  scroll_vert_bitmap.pixels.data();
             glGenTextures(1, &scrollVertTexture);
             glBindTexture(GL_TEXTURE_2D, scrollVertTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -210,8 +259,8 @@ namespace UI {
 
 
             //  SCROLL HORI
-            pimage::Bitmap* dscroll_hori_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-hori.bmp");
-            pixels_data_raw =  dscroll_hori_bitmap->pixels.data();
+            pimage::Bitmap dscroll_hori_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-hori.bmp");
+            pixels_data_raw =  dscroll_hori_bitmap.pixels.data();
             glGenTextures(1, &scrollHoriTexture);
             glBindTexture(GL_TEXTURE_2D, scrollHoriTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -222,8 +271,8 @@ namespace UI {
 
 
             //  PAN
-            pimage::Bitmap* pan_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/pan.bmp");
-            pixels_data_raw =  pan_bitmap->pixels.data();
+            pimage::Bitmap pan_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/pan.bmp");
+            pixels_data_raw =  pan_bitmap.pixels.data();
             glGenTextures(1, &panTexture);
             glBindTexture(GL_TEXTURE_2D, panTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -231,9 +280,9 @@ namespace UI {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, icon_width, icon_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels_data_raw);
             glGenerateMipmap(GL_TEXTURE_2D);
 
-            //  PAN
-            pimage::Bitmap* resize_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/resize.bmp");
-            pixels_data_raw =  resize_bitmap->pixels.data();
+            //  RESIZE
+            pimage::Bitmap resize_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/resize.bmp");
+            pixels_data_raw =  resize_bitmap.pixels.data();
             glGenTextures(1, &resizeTexture);
             glBindTexture(GL_TEXTURE_2D, resizeTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

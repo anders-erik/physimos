@@ -126,7 +126,7 @@ UIC_PrimitivePosition::UIC_PrimitivePosition(::UI::Primitive& _primitive)
 
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f15);
+    title.str_setFontSize(FontSize::f18);
     title.set_x("<10x");
     title.set_y("^5x");
 

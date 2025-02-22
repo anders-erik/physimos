@@ -63,7 +63,7 @@ UIC_PrimitiveSize::UIC_PrimitiveSize(::UI::Primitive& _primitive)
     set_color(active_pallete.base2);
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f15);
+    title.str_setFontSize(FontSize::f18);
     title.set_x("<10x");
     title.set_y("^5x");
 

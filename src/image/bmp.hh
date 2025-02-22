@@ -4,42 +4,13 @@
 #include <filesystem>
 #include <vector>
 
+#include "image/bitmap.hh"
 
-namespace pimage {
-
-typedef struct Pixel {
-    unsigned char R;
-    unsigned char G;
-    unsigned char B;
-    unsigned char A;
-} Pixel;
-
-// In memory bitmap structure that provides raw data access to underlying buffer bytes or pixels.
-// Is always 4-byte RGBA structure with x,y = 0 at bottom left corner.
-typedef class Bitmap {
-    public:
-        // TODO: turn into vector<unsigned char>
-        // unsigned char* data;
-        // unsigned int size;
-
-        // Pixel* pixels;
-        std::vector<Pixel> pixels;
-        unsigned int pixelcount;
-
-        unsigned int height;
-        unsigned int width;
-
-        void  set_pixel(unsigned int x, unsigned int y, Pixel pixel);
-        Pixel get_pixel(unsigned int x, unsigned int y);
-
-        // New RGBA Bitmap of specified size.
-        Bitmap(unsigned int width, unsigned int height);
-        ~Bitmap();
-} Bitmap;
-
-}
 
 namespace pimage::io {
+
+extern unsigned int BMP_Header_BITMAPINFOHEADER_size;
+
 
 typedef enum LoadStatus {
     Ok = 0,
@@ -51,8 +22,6 @@ typedef enum LoadStatus {
     ErrorUnknown = 13,
 } LoadStatus;
 
-
-extern unsigned int BMP_Header_BITMAPINFOHEADER_size;
 
 
 /// @brief Stores the loaded bmp-file header in BIG-endian byte order [opposite of file], except 'BM' which remains as is. \n
@@ -102,7 +71,7 @@ typedef struct BMP_BITMAPINFOHEADER {
 
 
 typedef struct BMP {
-    ::pimage::Bitmap* bitmap = nullptr;
+    // ::pimage::Bitmap* bitmap = nullptr;
 
     // BITMAPINFOHEADER header
     BMP_BITMAPINFOHEADER* header;
@@ -121,7 +90,7 @@ typedef struct BMP {
     LoadStatus loadStatus;
 
     // Load a bmp file from file.
-    ::pimage::Bitmap*   load(std::filesystem::path filePath);
+    ::pimage::Bitmap   load(std::filesystem::path filePath);
     // Internal. 
     // Copies the header data from bmp_buffer to header struct.
     // Currently 'BITMAPINFOHEADER' is the only header that I support

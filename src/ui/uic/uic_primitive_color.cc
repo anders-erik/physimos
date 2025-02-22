@@ -77,7 +77,7 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
 
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f15);
+    title.str_setFontSize(FontSize::f24);
     title.set_x("<10x");
     title.set_y("^5x");
 

@@ -9,54 +9,12 @@
 #include "bmp.hh"
 
 
-namespace pimage {
-
-Bitmap::Bitmap(unsigned int height, unsigned int width) {
-    // const unsigned int newBitmapSize = height * width * 4;
-    // this->size = newBitmapSize;
-    // this->data = (unsigned char*)malloc(newBitmapSize * sizeof(unsigned char));
-    
-
-    this->height = height;
-    this->width = width;
-    
-    // this->pixels = (Pixel*) this->data;
-    this->pixelcount = height * width;
-    this->pixels = std::vector<pimage::Pixel> (this->pixelcount);
-    // std::cout << "" << var << std::endl;
-
-    // this->size = newBitmapSize;
-    // this->data = pixels.data();
-    
-}
-Bitmap::~Bitmap(){
-    // std::cout << "      ~Bitmap()" << std::endl;
-}
-
-
-void Bitmap::set_pixel(unsigned int x, unsigned int y, Pixel pixel) {
-
-    unsigned int pixelIndex = this->width * y + x;
-
-    this->pixels[pixelIndex] = pixel;
-
-}
-
-Pixel Bitmap::get_pixel(unsigned int x, unsigned int y) {
-
-    unsigned int pixelIndex = this->width * y + x;
-
-    return this->pixels[pixelIndex];
-}
-
-
-}
-
-
 
 namespace pimage::io {
 
+
 unsigned int BMP_Header_BITMAPINFOHEADER_size = 54;
+
 
 BMP::BMP(){
     header = new BMP_BITMAPINFOHEADER();
@@ -89,7 +47,7 @@ bool BMP::write(std::filesystem::path filePath) {
 
 
 
-::pimage::Bitmap* BMP::load(std::filesystem::path filePath) {
+::pimage::Bitmap BMP::load(std::filesystem::path filePath) {
 
     // save file data in BMP struct
     bmp_buffer = &plib::fs_cat_bin(filePath.string());
@@ -97,7 +55,7 @@ bool BMP::write(std::filesystem::path filePath) {
     // Reference to BMP buffer for convenience
     std::vector<unsigned char>& bmp_data = *bmp_buffer;
     if (bmp_data.size() < 54) { // header size
-        return nullptr;
+        return Bitmap(0,0);
     }
 
 
@@ -119,7 +77,7 @@ bool BMP::write(std::filesystem::path filePath) {
 
 
     // Create Physimos RGBA Bitmap and copy bmp file data into it
-    bitmap = new Bitmap(header->width, header->height);
+    Bitmap bitmap = Bitmap(header->width, header->height);
 
     // NOTE: very much NOT optimized for performance
     // 
@@ -140,7 +98,7 @@ bool BMP::write(std::filesystem::path filePath) {
                 255, // No transparancy by default
             };
 
-            bitmap->set_pixel(x, y, newPixel);
+            bitmap.set_pixel(x, y, newPixel);
         }
 
     }

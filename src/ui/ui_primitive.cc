@@ -26,7 +26,7 @@ namespace UI {
 
         set_h(std::to_string(str_fontSize) + "x");
 
-        size_t charWidth = 2 * (str_fontSize / 3);
+        size_t charWidth = (8 * str_fontSize) / 15;
 
         set_w(std::to_string(charWidth * _str.length()) + "x");
 
