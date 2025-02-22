@@ -37,6 +37,7 @@ Primitive* currentlyHoveredPrimitive = nullptr;
 
 // TESTING PRIMITIVES
 
+UI::Primitive* color_primtiive;
 UI::Primitive* primitive_to_edit;
 UI::component::UIC_PrimitiveEditor* primitive_editor;
 
@@ -64,10 +65,22 @@ void init(){
     ::PInput::subscribe_mouse_left_release_ui(callback_left_release);
     ::PInput::subscribe_mouse_scroll_y_ui(callback_scroll_y);
 
+
+
+    // COLOR PRIMITIVE
+    color_primtiive = new UI::Primitive();
+    // color_primtiive->set_color(ColorTexture::Green);
+    color_primtiive->set_color_texture(ColorTexture::Green);
+    color_primtiive->id = "color_primitive";
+    color_primtiive->set_x("<300x");
+    color_primtiive->set_y("_300x");
+    color_primtiive->set_h("100x");
+    color_primtiive->set_w("100x");
+
     
     // PRIMITIVE EDITOR COMPONENT
     primitive_to_edit = new UI::Primitive();
-    primitive_to_edit->set_color(Colors::DarkGray);
+    primitive_to_edit->set_color_texture(ColorTexture::DarkGray);
     primitive_to_edit->id = "primitive_to_test";
     primitive_to_edit->set_x("<500x");
     primitive_to_edit->set_y("_400x");
@@ -76,7 +89,7 @@ void init(){
 
 
     primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
-    primitive_to_edit->id = "primitive_editor";
+    primitive_to_edit->id = "primitive_editor_id";
     primitive_editor->set_x("<800x");
     primitive_editor->set_y("_200x");
     primitive_editor->set_h("400x");
@@ -89,6 +102,7 @@ void update(){
     glDisable(GL_DEPTH_TEST);
 
     primitive_to_edit->render();
+    color_primtiive->render();
 
     primitive_editor->update_component();
     primitive_editor->render_component();

@@ -161,12 +161,20 @@ class Primitive {
         /** Generated when setting a new primitive string in PrimitiveString. */
         unsigned int privateStringTexture;
         
-        /** Set the deafult texture to new color. If currently default state when rendered texture updated. */
-        void set_color(Colors _color);
-        /** Set the deafult texture to new color. If currently hover state when rendered texture updated. */
-        void set_color_hover(Colors _colorHover);
-        /** Set the deafult texture to new color. If currently active state when rendered texture updated. */
-        void set_color_active(Colors _colorActive);
+        /** Set the default texture to new color texture. If currently default state when rendered texture updated. */
+        void set_color_texture(ColorTexture _color);
+        /** Set the default texture to new color texture. If currently hover state when rendered texture updated. */
+        void set_hover_color_texture(ColorTexture _color);
+        /** Set the default texture to new color texture. If currently active state when rendered texture updated. */
+        void set_active_color_texture(ColorTexture _color);
+        
+
+        /** Set the default texture to new color. If currently default state when rendered texture updated. */
+        // void set_color(ColorTexture _color);
+        /** Set the default texture to new color. If currently hover state when rendered texture updated. */
+        // void set_color_hover(ColorTexture _colorHover);
+        /** Set the default texture to new color. If currently active state when rendered texture updated. */
+        // void set_color_active(ColorTexture _colorActive);
 
 
 

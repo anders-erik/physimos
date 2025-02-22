@@ -9,7 +9,7 @@ namespace UI::component {
 UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
     set_w("20x");
     set_h("20x");
-    set_color(Colors::Green);
+    set_color_texture(ColorTexture::Green);
 }
 UiResult UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
     // UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
@@ -36,7 +36,7 @@ UiResult UIC_PrimitiveColor_SetGreen::click(){
     // int rand_height = std::rand() % 300;
     // uic_PrimitiveColor->boundObject.set_h(std::to_string(rand_height) + "x");
 
-    uic_PrimitiveColor->boundObject.set_color(Colors::Green);
+    uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Green);
     return UiResult(true, Action::None, this);
 }
 
@@ -44,7 +44,7 @@ UiResult UIC_PrimitiveColor_SetGreen::click(){
 UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
     set_w("20x");
     set_h("20x");
-    set_color(Colors::Red);
+    set_color_texture(ColorTexture::Red);
 }
 UiResult UIC_PrimitiveColor_SetRed::click() {
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
@@ -52,7 +52,7 @@ UiResult UIC_PrimitiveColor_SetRed::click() {
     // int rand_width = std::rand() % 300;
     // uic_PrimitiveColor->boundObject.set_w(std::to_string(rand_width) + "x");
 
-    uic_PrimitiveColor->boundObject.set_color(Colors::Red);
+    uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Red);
     return UiResult(true, Action::None, this);
 }
 
@@ -64,7 +64,7 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
 {
     set_w("180x");
     set_h("30x");
-    set_color(Colors::DarkGray);
+    set_color_texture(ColorTexture::DarkGray);
 
 
     appendChild(&title);

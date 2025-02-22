@@ -66,18 +66,18 @@ namespace UI {
 
         }
 
-        unsigned int get_static_color_texture(UI::Colors color) {
+        unsigned int get_static_color_texture(UI::ColorTexture color) {
             switch (color) {
 
-            case Colors::Red:   return redTexture;        break;
+            case ColorTexture::Red:   return redTexture;        break;
             
-            case Colors::Gray:   return grayTexture;        break;
-            case Colors::LightGray:   return lightGrayTexture;   break;
-            case Colors::DarkGray:   return darkGrayTexture;    break;
+            case ColorTexture::Gray:   return grayTexture;        break;
+            case ColorTexture::LightGray:   return lightGrayTexture;   break;
+            case ColorTexture::DarkGray:   return darkGrayTexture;    break;
 
-            case Colors::Green:   return greenTexture;        break;
-            case Colors::LightGreen:   return lightGreenTexture;   break;
-            case Colors::DarkGreen:   return darkGreenTexture;    break;
+            case ColorTexture::Green:   return greenTexture;        break;
+            case ColorTexture::LightGreen:   return lightGreenTexture;   break;
+            case ColorTexture::DarkGreen:   return darkGreenTexture;    break;
 
             default:
                 return 0;

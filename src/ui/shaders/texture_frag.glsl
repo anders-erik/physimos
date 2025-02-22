@@ -14,10 +14,15 @@ void main()
 
     // Play around with texture coordinates
     // FragColor = vec4(texColor.x, texColor.y, texColor.z, 1.0f);
-    // FragColor = vec4(texColor.x, texColor.y, texColor.z, 1.0f);
+    // FragColor = vec4(texColor.x, texColor.y, texColor.z, texColor.w);
+    // FragColor = vec4(texColor.x, texColor.y, texColor.z, 0.5);
+
+    float darken = 0.0;
+    // Darken
+    FragColor = vec4(texColor.x - darken, texColor.y - darken, texColor.z - darken, texColor.w);
     
     // Render texture as is
-    FragColor = texColor;
+    // FragColor = texColor;
     
     
     // FragColor = texture(charTexture, TexCoord);

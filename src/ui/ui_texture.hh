@@ -14,7 +14,7 @@ namespace UI {
         /** Loads all ui icon textures from filesystem into vram */
         void init_static_icon_textures();
 
-        unsigned int get_static_color_texture(UI::Colors color);
+        unsigned int get_static_color_texture(UI::ColorTexture color);
         unsigned int get_icon(UI::Icon icon);
     }
 }

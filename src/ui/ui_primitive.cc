@@ -312,24 +312,39 @@ namespace UI {
 
     }
 
-
-    void Primitive::set_color(Colors _color) {
-        // color = _color;
+    void Primitive::set_color_texture(ColorTexture _color){
         defaultTexture = UI::texture::get_static_color_texture(_color);
         if(state == PrimitiveState::Default)
             renderedTexture = defaultTexture;
     }
-    void Primitive::set_color_hover(Colors _colorHover) {
-        // colorHover = _color;
-        hoverTexture = UI::texture::get_static_color_texture(_colorHover);
-        if (state == PrimitiveState::Hover)
+    void Primitive::set_hover_color_texture(ColorTexture _color){
+        defaultTexture = UI::texture::get_static_color_texture(_color);
+        if(state == PrimitiveState::Default)
             renderedTexture = defaultTexture;
     }
-    void Primitive::set_color_active(Colors _colorActive) {
-        selectedTexture = UI::texture::get_static_color_texture(_colorActive);
-        if (state == PrimitiveState::Selected)
-            renderedTexture = selectedTexture;
+    void Primitive::set_active_color_texture(ColorTexture _color){
+        defaultTexture = UI::texture::get_static_color_texture(_color);
+        if(state == PrimitiveState::Default)
+            renderedTexture = defaultTexture;
     }
+
+    // void Primitive::set_color(ColorTexture _color) {
+    //     // color = _color;
+    //     defaultTexture = UI::texture::get_static_color_texture(_color);
+    //     if(state == PrimitiveState::Default)
+    //         renderedTexture = defaultTexture;
+    // }
+    // void Primitive::set_color_hover(ColorTexture _colorHover) {
+    //     // colorHover = _color;
+    //     hoverTexture = UI::texture::get_static_color_texture(_colorHover);
+    //     if (state == PrimitiveState::Hover)
+    //         renderedTexture = defaultTexture;
+    // }
+    // void Primitive::set_color_active(ColorTexture _colorActive) {
+    //     selectedTexture = UI::texture::get_static_color_texture(_colorActive);
+    //     if (state == PrimitiveState::Selected)
+    //         renderedTexture = selectedTexture;
+    // }
 
 
 
@@ -337,9 +352,9 @@ namespace UI {
         
         texture_shader = &shader::texture_shader;
 
-        defaultTexture = texture::get_static_color_texture(Colors::LightGray);
-        hoverTexture = texture::get_static_color_texture(Colors::Gray);
-        selectedTexture = texture::get_static_color_texture(Colors::DarkGray);
+        defaultTexture = texture::get_static_color_texture(ColorTexture::LightGray);
+        hoverTexture = texture::get_static_color_texture(ColorTexture::Gray);
+        selectedTexture = texture::get_static_color_texture(ColorTexture::DarkGray);
 
         renderedTexture = defaultTexture;
     }

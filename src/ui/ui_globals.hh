@@ -22,7 +22,7 @@ namespace UI {
     } Icon;
 
 
-    typedef enum class Colors {
+    typedef enum class ColorTexture {
         Pink, // uninitialized texture
         Red,  // Common default value
 
@@ -33,7 +33,7 @@ namespace UI {
         Green,
         LightGreen,
         DarkGreen,
-    } Colors;
+    } ColorTexture;
 
     typedef struct Color {
         unsigned char R;
