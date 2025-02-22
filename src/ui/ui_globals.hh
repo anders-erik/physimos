@@ -6,6 +6,12 @@ namespace UI {
 
     class Primitive;
 
+
+    extern unsigned int viewport_width;
+    extern unsigned int viewport_height;
+
+
+
     typedef enum class Icon {
         Up,
         Down,
@@ -88,17 +94,6 @@ namespace UI {
         UiResult(bool _success, Action _action, Primitive* _primitive) : success{ _success }, action{ _action }, primitive{_primitive} {};
     } UiResult;
 
-
-    extern unsigned int viewport_width;
-    extern unsigned int viewport_height;
-
-    extern float viewportTransform16[16];
-
-
-    // Colors
-    extern unsigned char color_default[4];
-    extern unsigned char color_hover[4];
-    extern unsigned char color_selected[4];
     
 }
 

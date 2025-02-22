@@ -72,8 +72,8 @@ typedef struct Transform {
     // input values converted to pixels
     bool x_has_been_changed = true;
     bool y_has_been_changed = true;
-    int x_input_px = 0;
-    int y_input_px = 0;
+    // int x_input_px = 0;
+    // int y_input_px = 0;
     // int x_input_percent_window = 0;
     // int y_input_percent_window = 0;
 

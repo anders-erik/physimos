@@ -147,14 +147,19 @@ namespace UI {
     }
 
     void Primitive::update_h_real_recursive() {
-        if (parent == nullptr) {
+
+        if (uiTransform.h_unit == Unit::Pixel){
+
             uiTransform.h_real = uiTransform.h_input;
-        }
-        else if (uiTransform.h_unit == Unit::Pixel){
-            uiTransform.h_real = uiTransform.h_input;
+
         }
         else if (uiTransform.h_unit == Unit::Percent) {
-            uiTransform.h_real = (parent->uiTransform.h_real * uiTransform.h_input) / 100;
+
+            if (parent == nullptr)
+                uiTransform.h_real = (viewport_height * uiTransform.h_input) / 100;
+            else 
+                uiTransform.h_real = (parent->uiTransform.h_real * uiTransform.h_input) / 100;
+
         }
 
         // Reload real x locations
@@ -168,14 +173,21 @@ namespace UI {
     }
 
     void Primitive::update_w_real_recursive() {
-        if (parent == nullptr) {
-            uiTransform.w_real = uiTransform.w_input;
+        
+        if (uiTransform.w_unit == Unit::Pixel) {
+            
+                uiTransform.w_real = uiTransform.w_input;
+            
         }
-        else if (uiTransform.h_unit == Unit::Pixel) {
-            uiTransform.w_real = uiTransform.w_input;
-        }
-        else if (uiTransform.h_unit == Unit::Percent) {
-            uiTransform.w_real = (parent->uiTransform.w_real * uiTransform.w_input) / 100;
+        else if (uiTransform.w_unit == Unit::Percent) {
+
+            if (parent == nullptr) {
+                uiTransform.w_real = (viewport_width * uiTransform.w_input) / 100;
+            }
+            else {
+                uiTransform.w_real = (parent->uiTransform.w_real * uiTransform.w_input) / 100;
+            }
+            
         }
 
         // Reload real x locations
@@ -193,11 +205,19 @@ namespace UI {
 
         if (uiTransform.horiRef == HoriRef::Left) {
 
-            if (parent == nullptr) {
-                uiTransform.x_real = uiTransform.x_input_px;
+            if(uiTransform.x_unit == Unit::Pixel){
+
+                if(parent == nullptr)
+                    uiTransform.x_real = uiTransform.x_input;
+                else 
+                    uiTransform.x_real = parent->uiTransform.x_real + uiTransform.x_input;
             }
-            else {
-                uiTransform.x_real = parent->uiTransform.x_real + uiTransform.x_input_px;
+            else if(uiTransform.x_unit == Unit::Percent){
+
+                if (parent == nullptr) 
+                    uiTransform.x_real = viewport_width * uiTransform.x_input / 100;
+                else
+                    uiTransform.x_real = parent->uiTransform.x_real + parent->uiTransform.w_real * uiTransform.x_input / 100;
             }
 
 
@@ -205,15 +225,34 @@ namespace UI {
         else if (uiTransform.horiRef == HoriRef::Right) {
 
             // The x value when primitives right edge would be flush with parents right edge
+            // If no parent then the viewport is taken as parent
             int right_reference_x;
 
-            if (parent == nullptr) {
-                right_reference_x = viewport_width - uiTransform.w_real;
-                uiTransform.x_real = right_reference_x - uiTransform.x_input_px;
+            
+
+            if(uiTransform.x_unit == Unit::Pixel){
+
+                if (parent == nullptr) {
+                    right_reference_x = viewport_width - uiTransform.w_real;
+                    uiTransform.x_real = right_reference_x - uiTransform.x_input;
+                }
+                else {
+                    right_reference_x = parent->uiTransform.x_real + parent->uiTransform.w_real - uiTransform.w_real;
+                    uiTransform.x_real = right_reference_x - uiTransform.x_input;
+                }
+
             }
-            else {
-                right_reference_x = parent->uiTransform.x_real + parent->uiTransform.w_real - uiTransform.w_real;
-                uiTransform.x_real = right_reference_x - uiTransform.x_input_px;
+            else if(uiTransform.x_unit == Unit::Percent){
+
+                if (parent == nullptr) {
+                    right_reference_x = viewport_width - uiTransform.w_real;
+                    uiTransform.x_real = right_reference_x - viewport_width * uiTransform.x_input / 100;
+                }
+                else {
+                    right_reference_x = parent->uiTransform.x_real + parent->uiTransform.w_real - uiTransform.w_real;
+                    uiTransform.x_real = right_reference_x - parent->uiTransform.w_real * uiTransform.x_input / 100;
+                }
+
             }
         }
 
@@ -224,7 +263,6 @@ namespace UI {
 
 
         updateTransformationMatrix();
-        // uiTransform.x_has_been_changed = false;
     }
 
     void Primitive::update_y_real_recursive() {
@@ -237,29 +275,61 @@ namespace UI {
         // Draw root primitives directly
         if (uiTransform.vertRef == VertRef::Bottom) {
 
-            y_real_offset = uiTransform.y_input_px;
+            y_real_offset = uiTransform.y_input;
 
-            if (parent == nullptr) {
-                uiTransform.y_real = uiTransform.y_input_px;
+            if(uiTransform.y_unit == Unit::Pixel){
+
+                if (parent == nullptr) {
+                    uiTransform.y_real = uiTransform.y_input;
+                }
+                else {
+                    uiTransform.y_real = parent->uiTransform.y_real + uiTransform.y_input;
+                }
+
             }
-            else {
-                uiTransform.y_real = parent->uiTransform.y_real + uiTransform.y_input_px;
+            else if(uiTransform.y_unit == Unit::Percent){
+
+                if (parent == nullptr) {
+                    uiTransform.y_real = viewport_height * uiTransform.y_input / 100;
+                }
+                else {
+                    uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.h_real * uiTransform.y_input / 100;
+                }
+
             }
 
         }
         else if (uiTransform.vertRef == VertRef::Top) {
 
             // The real offset is in the negative direction when using top as vertical reference
-            y_real_offset = -uiTransform.y_input_px;
+            // y_real_offset = -uiTransform.y_input;
 
-            if (parent == nullptr) {
-                int zero_point_top = viewport_height - uiTransform.h_real;
-                // _y_real_offset = zero_point_top - _y_input_px;
-                uiTransform.y_real = zero_point_top + y_real_offset;
+            if(uiTransform.y_unit == Unit::Pixel){
+
+                if (parent == nullptr) {
+                    int zero_point_top = viewport_height - uiTransform.h_real;
+                    // _y_real_offset = zero_point_top - _y_input_px;
+                    uiTransform.y_real = zero_point_top - uiTransform.y_input;
+                }
+                else {
+                    // move child to align with parent top, the subtract top offset (_y_real_offset)
+                    uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.h_real - this->uiTransform.h_real - uiTransform.y_input;
+                }
+
             }
-            else {
-                // move child to align with parent top, the subtract top offset (_y_real_offset)
-                uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.h_real - this->uiTransform.h_real + y_real_offset;
+            else if(uiTransform.y_unit == Unit::Percent){
+
+                if (parent == nullptr) {
+                    int zero_point_top = viewport_height - uiTransform.h_real;
+                    // _y_real_offset = zero_point_top - _y_input_px;
+                    uiTransform.y_real = zero_point_top - viewport_height * uiTransform.y_input / 100;
+                }
+                else {
+                    int zero_point_top = parent->uiTransform.y_real + parent->uiTransform.h_real - uiTransform.h_real;
+                    // move child to align with parent top, the subtract top offset (_y_real_offset)
+                    uiTransform.y_real = zero_point_top - parent->uiTransform.h_real * uiTransform.y_input / 100;
+                }
+
             }
 
         }
@@ -287,11 +357,15 @@ namespace UI {
 
         if (unit_char == 'x') {
             uiTransform.x_unit = Unit::Pixel;
-            uiTransform.x_input_px = uiTransform.x_input;
+            // uiTransform.x_input_px = uiTransform.x_input;
         }
         else if (unit_char == '%') {
             uiTransform.x_unit = Unit::Percent;
-            uiTransform.x_input_px = (viewport_width * uiTransform.x_input) / 100;  // Multiply _first_ to reduce compounding error from integer division rounding 
+
+            // if(parent != nullptr)
+            //     uiTransform.x_input_px = (parent->uiTransform.w_real * uiTransform.x_input) / 100;  
+            // else
+            //     uiTransform.x_input_px = (viewport_width * uiTransform.x_input) / 100;
         }
 
         uiTransform.x_has_been_changed = true;
@@ -310,14 +384,10 @@ namespace UI {
         else if (vert_char == '_')
             uiTransform.vertRef = VertRef::Bottom;
 
-        if (unit_char == 'x') {
+        if (unit_char == 'x')
             uiTransform.y_unit = Unit::Pixel;
-            uiTransform.y_input_px = uiTransform.y_input;
-        }
-        else if (unit_char == '%') {
+        else if (unit_char == '%') 
             uiTransform.y_unit = Unit::Percent;
-            uiTransform.y_input_px = (viewport_height * uiTransform.y_input) / 100; // Multiply _first_ to reduce compounding error from integer division rounding 
-        }
 
         uiTransform.y_has_been_changed = true;
     }

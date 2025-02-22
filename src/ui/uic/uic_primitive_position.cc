@@ -119,7 +119,9 @@ UIC_PrimitivePosition::UIC_PrimitivePosition(::UI::Primitive& _primitive)
         scroll          { UIC_PrimitivePosition_scroll() },
         drag            { UIC_PrimitivePosition_drag() }
 {
-    set_w("180x");
+    // set_w("180x");
+    set_w("96%");
+    set_x("<2%");
     set_h("30x");
     // set_color_texture(ColorTexture::DarkGray);
     set_color(active_pallete.base2);

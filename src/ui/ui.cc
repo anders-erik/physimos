@@ -47,6 +47,9 @@ UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
 
     PhysWin new_window = get_initial_physimos_window();
+    viewport_height = new_window.height;
+    viewport_width = new_window.width;
+
     subscribeWindowChange_ui(callback_window_change); // WINDOWING.CPP
     
     UI::texture::init_static_color_textures();
@@ -85,8 +88,8 @@ void init(){
     
     // PRIMITIVE EDITOR COMPONENT
     primitive_to_edit = new UI::Primitive();
+    primitive_to_edit->id = "primitive_to_edit";
     // primitive_to_edit->set_color(active_pallete.base1);
-    primitive_to_edit->id = "primitive_to_test";
     primitive_to_edit->set_x("<500x");
     primitive_to_edit->set_y("_400x");
     primitive_to_edit->set_h("200x");
@@ -94,11 +97,12 @@ void init(){
 
 
     primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
-    primitive_to_edit->id = "primitive_editor_id";
-    primitive_editor->set_x("<800x");
-    primitive_editor->set_y("_200x");
-    primitive_editor->set_h("400x");
-    primitive_editor->set_w("200x");
+    primitive_editor->id = "editor_id";
+    primitive_editor->set_x("<74%");
+    primitive_editor->set_y("^1%");
+    primitive_editor->set_h("50%");
+    primitive_editor->set_w("25%");
+
     std::cout << "sizeof(primitive_editor = " << sizeof(*primitive_editor) << std::endl;
     
 }
@@ -183,6 +187,9 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
 }
 
 void callback_window_change(PhysWin physimos_window) {
+
+    viewport_height = physimos_window.height;
+    viewport_width = physimos_window.width;
     
     // SHADER TRANSFORM
     shader::texture_shader.set_window_info(
@@ -198,6 +205,13 @@ void callback_window_change(PhysWin physimos_window) {
         physimos_window.xscale, 
         physimos_window.yscale
     );
+
+    // RELOAD ALL PRIMITIVES TO GET CORRECT DIMENSIONS
+    primitive_editor->update_w_real_recursive();
+    primitive_editor->update_x_real_recursive();
+
+    primitive_editor->update_h_real_recursive();
+    primitive_editor->update_y_real_recursive();
 }
 
 
