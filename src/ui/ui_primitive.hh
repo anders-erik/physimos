@@ -9,7 +9,7 @@
 #include "ui/ui_shader_color.hh"
 
 #include "ui/ui_globals.hh"
-#include "ui/font.hh"
+#include "ui/ui_texture_string.hh"
 
 namespace UI {
 
@@ -238,6 +238,8 @@ typedef class PrimitiveString : public Primitive {
         void update_str_int(int _int);
         /** Regenerate string texture if passed floating point string-representation is different from currently rendered string. */
         void update_str_double(double _double);
+
+        /** Note: strings are initialized with transparent color! */
         PrimitiveString(std::string _str);
 } PrimitiveString;
 

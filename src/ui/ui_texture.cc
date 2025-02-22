@@ -202,6 +202,7 @@ namespace UI {
 
             //  UP
             pimage::Bitmap up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/up.bmp");
+            up_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
             // Don't need to cast to char, nor invert image as opengl expects first pixel at lower left corner
             pixels_data_raw =  up_bitmap.pixels.data();
             glGenTextures(1, &upTexture);
@@ -215,6 +216,7 @@ namespace UI {
 
             //  DOWN
             pimage::Bitmap down_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/down.bmp");
+            down_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
             pixels_data_raw =  down_bitmap.pixels.data();
             glGenTextures(1, &downTexture);
             glBindTexture(GL_TEXTURE_2D, downTexture);
@@ -225,6 +227,7 @@ namespace UI {
 
             //  LEFT
             pimage::Bitmap left_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/left.bmp");
+            left_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
             pixels_data_raw =  left_bitmap.pixels.data();
             glGenTextures(1, &leftTexture);
             glBindTexture(GL_TEXTURE_2D, leftTexture);
@@ -236,6 +239,7 @@ namespace UI {
 
             //  RIGHT
             pimage::Bitmap right_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/right.bmp");
+            right_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
             pixels_data_raw =  right_bitmap.pixels.data();
             glGenTextures(1, &rightTexture);
             glBindTexture(GL_TEXTURE_2D, rightTexture);
@@ -249,6 +253,7 @@ namespace UI {
 
             //  SCROLL VERT
             pimage::Bitmap scroll_vert_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-vert.bmp");
+            scroll_vert_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
             pixels_data_raw =  scroll_vert_bitmap.pixels.data();
             glGenTextures(1, &scrollVertTexture);
             glBindTexture(GL_TEXTURE_2D, scrollVertTexture);
@@ -259,8 +264,9 @@ namespace UI {
 
 
             //  SCROLL HORI
-            pimage::Bitmap dscroll_hori_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-hori.bmp");
-            pixels_data_raw =  dscroll_hori_bitmap.pixels.data();
+            pimage::Bitmap scroll_hori_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-hori.bmp");
+            scroll_hori_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
+            pixels_data_raw =  scroll_hori_bitmap.pixels.data();
             glGenTextures(1, &scrollHoriTexture);
             glBindTexture(GL_TEXTURE_2D, scrollHoriTexture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -272,6 +278,7 @@ namespace UI {
 
             //  PAN
             pimage::Bitmap pan_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/pan.bmp");
+            pan_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
             pixels_data_raw =  pan_bitmap.pixels.data();
             glGenTextures(1, &panTexture);
             glBindTexture(GL_TEXTURE_2D, panTexture);
@@ -282,6 +289,7 @@ namespace UI {
 
             //  RESIZE
             pimage::Bitmap resize_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/resize.bmp");
+            resize_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
             pixels_data_raw =  resize_bitmap.pixels.data();
             glGenTextures(1, &resizeTexture);
             glBindTexture(GL_TEXTURE_2D, resizeTexture);

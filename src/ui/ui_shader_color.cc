@@ -90,14 +90,13 @@ namespace UI {
         void ColorShader::draw() {
             glUseProgram(shader_id);
 
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            
             glBindVertexArray(vao);
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
-            // glBindTexture(GL_TEXTURE_2D, texture);
-
-            // glEnable(GL_BLEND);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            // glDisable(GL_BLEND);
+            glDisable(GL_BLEND);
         }
 
 

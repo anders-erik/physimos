@@ -10,7 +10,7 @@ namespace UI::component {
 UIC_PrimitivePosition_up::UIC_PrimitivePosition_up() {
     set_w("20x");
     set_h("20x");
-    // set_color(Colors::LightGray);
+    
     set_texture(texture::get_icon(Icon::Up));
 }
 UiResult UIC_PrimitivePosition_up::click() {
@@ -126,7 +126,7 @@ UIC_PrimitivePosition::UIC_PrimitivePosition(::UI::Primitive& _primitive)
 
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f18);
+    title.str_setFontSize(FontSize::f15);
     title.set_x("<10x");
     title.set_y("^5x");
 

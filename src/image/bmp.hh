@@ -69,7 +69,7 @@ typedef struct BMP_BITMAPINFOHEADER {
 } BMP_BITMAPINFOHEADER;
 
 
-
+/** BMP loader and writer. Uses pimage::bitmap for internal image representation.  */
 typedef struct BMP {
     // ::pimage::Bitmap* bitmap = nullptr;
 

@@ -7,7 +7,7 @@ add_library(ui
     ui_texture.cc
     ui_shader_texture.cc
     ui_shader_color.cc
-    font.cc
+    ui_texture_string.cc
 )
 
 target_include_directories(ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

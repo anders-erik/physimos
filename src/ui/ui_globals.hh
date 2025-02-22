@@ -35,12 +35,6 @@ namespace UI {
         DarkGreen,
     } ColorTexture;
 
-    // typedef struct Color {
-    //     unsigned char R;
-    //     unsigned char G;
-    //     unsigned char B;
-    //     unsigned char A;
-    // } Color;
 
     /** Colors accepted by the ui color shader. Values are floats in range 0.0-1.0. */
     typedef struct Color {
@@ -49,6 +43,8 @@ namespace UI {
         float B;
         float A;
     } Color;
+
+    extern Color transparent;
 
     /** Collection of three colors. Base, contrast, and detail.  */
     typedef struct ColorPallete {

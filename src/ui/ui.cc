@@ -7,7 +7,7 @@
 #include "ui/ui_texture.hh"
 #include "ui/ui_shader_texture.hh"
 #include "ui/ui_shader_color.hh"
-#include "ui/font.hh"
+#include "ui/ui_texture_string.hh"
 #include "ui/ui_primitive.hh"
 
 #include "ui/uic/uic_primitive_editor.hh"
@@ -61,7 +61,7 @@ void init(){
     shader::color_shader.init();
 
     // characters-2.bmp character map
-    UI::loadFont();
+    UI::init_font();
 
 
     // Subscribe to cursor position from input library
@@ -74,12 +74,8 @@ void init(){
 
     // COLOR PRIMITIVE
     color_primtiive = new UI::Primitive();
-    // color_primtiive->set_color(ColorTexture::Green);
-    // color_primtiive->set_color_texture(ColorTexture::Green);
     color_primtiive->has_texture = false;
-    // color_primtiive->has_color = true;
-    // color_primtiive->set_color({150,150,150,255});
-    // color_primtiive->set_color({0.5,0.5,0.5,1.0});
+    color_primtiive->set_color({0.5,0.5,1.0,1.0});
     color_primtiive->id = "color_primitive";
     color_primtiive->set_x("<300x");
     color_primtiive->set_y("_300x");

@@ -8,15 +8,17 @@
 #include "ui_primitive.hh"
 #include "ui_globals.hh"
 #include "ui/ui_texture.hh"
-#include "ui/font.hh"
+#include "ui/ui_texture_string.hh"
 
 
 namespace UI {
 
     PrimitiveString::PrimitiveString(std::string _str) : str{ _str } {
         primitiveType = PrimitiveType::String;
-
+        
         str_setString(_str);
+        
+        set_color(transparent);
     }
     void PrimitiveString::str_setFontSize(FontSize _fontSize) {
         str_fontSize = _fontSize;
@@ -31,7 +33,7 @@ namespace UI {
         set_w(std::to_string(charWidth * _str.length()) + "x");
 
         texture::new_texture(privateStringTexture);
-        loadStringIntoGlTexture(privateStringTexture, _str);
+        update_texture_with_string_row(privateStringTexture, _str);
         // renderedTexture = privateStringTexture;
         // defaultTexture = privateStringTexture;
         // hoverTexture = privateStringTexture;
@@ -59,6 +61,24 @@ namespace UI {
         std::string _double_str = std::to_string(_double);
         update_str(_double_str);
     }
+
+
+
+
+
+
+
+
+    Primitive::Primitive() {
+        
+        texture_shader = &shader::texture_shader;
+        color_shader = &shader::color_shader;
+
+        color = active_pallete.base1;
+
+        // renderedTexture = defaultTexture;
+    }
+
 
     UiResult Primitive::try_find_target_component(double x, double y) {
         return UiResult();
@@ -336,18 +356,6 @@ namespace UI {
     }
 
 
-
-    Primitive::Primitive() {
-        
-        texture_shader = &shader::texture_shader;
-        color_shader = &shader::color_shader;
-
-        color = active_pallete.base2;
-
-        // renderedTexture = defaultTexture;
-    }
-
-
     // 
     bool Primitive::containsPoint(double _x, double _y) {
 
@@ -405,11 +413,10 @@ namespace UI {
             uiTransform.y_has_been_changed = false;
         }
 
-        // TODO: Render base color
-        // if(has_color){
-            color_shader->set(uiTransform.uiPrimitiveTransform16, darkness_shift, color);
-            color_shader->draw();
-        // }
+        // RENDER BASE COLOR
+        color_shader->set(uiTransform.uiPrimitiveTransform16, darkness_shift, color);
+        color_shader->draw();
+
 
         if(has_texture){
             texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
