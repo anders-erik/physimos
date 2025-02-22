@@ -153,41 +153,30 @@ class Primitive {
         int z = 1;
 
 
-
+        /** Render flag */
         bool has_texture = false;
-        /** Set the rendered texture. */
+        /** Set the has_texture render falg and sets the rendered texture. */
         void set_texture(unsigned int glTextureName);
-
+        /** Set the rendered texture to color texture. */
+        void set_color_texture(ColorTexture _colorTexture);
         /** The currently rendered texture for UI::Primitive. */
         unsigned int renderedTexture;
-        /** Texture rendered when default state is set. */
-        unsigned int defaultTexture;
-        /** Texture rendered when hover state is set. */
-        unsigned int hoverTexture;
-        /** Texture rendered when selected state is set. */
-        unsigned int selectedTexture;
         /** Generated when setting a new primitive string in PrimitiveString. */
         unsigned int privateStringTexture;
         
-        // bool has_color = false;
-        ColorPallete color_palette = dark_pallete;
-        Color color = dark_pallete.base;
-        float darkness_shift = 0.0f;
 
-        /** Set the default texture to new color texture. If currently default state when rendered texture updated. */
-        void set_color_texture(ColorTexture _colorTexture);
-        /** Set the default texture to new color texture. If currently hover state when rendered texture updated. */
-        void set_hover_color_texture(ColorTexture _colorTexture);
-        /** Set the default texture to new color texture. If currently active state when rendered texture updated. */
-        void set_active_color_texture(ColorTexture _colorTexture);
-        
-
+        /** The color used when rendering a primitive. This will always render, even when a texture os string has been set. */
+        Color color = active_pallete.base1;
         /** Set the default texture to new color. If currently default state when rendered texture updated. */
         void set_color(Color _color);
-        /** Set the default texture to new color. If currently hover state when rendered texture updated. */
-        // void set_color_hover(ColorTexture _colorHover);
-        /** Set the default texture to new color. If currently active state when rendered texture updated. */
-        // void set_color_active(ColorTexture _colorActive);
+
+        /** Value between 1.0 and -1.0 used to  darken the rendered color. Positive values darken. */
+        float darkness_shift = 0.0f;
+        /** Set color darkness shift. Value between 1.0 and -1.0. Positive values darken. */
+        void set_darkness_shift(float shift_value);
+        /** Resets color darkness shift, usually to 0.0f. */
+        void reset_darkness_shift();
+
 
 
 
@@ -202,9 +191,9 @@ class Primitive {
         
         // STATE & BEHAVIOR
 
-        PrimitiveState state = PrimitiveState::Default;
+        // PrimitiveState state = PrimitiveState::Default;
         /** Sets the state AND the corresponding texture  */
-        void set_state(PrimitiveState _newState);
+        // void set_state(PrimitiveState _newState);
 
         virtual UiResult click();
         virtual UiResult hover_enter();

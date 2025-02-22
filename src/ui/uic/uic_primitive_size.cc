@@ -10,7 +10,6 @@ namespace UI::component {
 UIC_PrimitiveSize_drag::UIC_PrimitiveSize_drag() {
     set_w("20x");
     set_h("20x");
-    // set_color(Colors::LightGray);
     set_texture(texture::get_icon(Icon::Resize));
 }
 UiResult UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
@@ -61,7 +60,7 @@ UIC_PrimitiveSize::UIC_PrimitiveSize(::UI::Primitive& _primitive)
 {
     set_w("180x");
     set_h("30x");
-    set_color_texture(ColorTexture::DarkGray);
+    set_color(active_pallete.base2);
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f15);

@@ -52,12 +52,26 @@ namespace UI {
 
     /** Collection of three colors. Base, contrast, and detail.  */
     typedef struct ColorPallete {
-        Color base;
-        Color contrast;
-        Color detail;
+        /** Primary base color */
+        Color base1;
+        /** Complementary base color for contrast between primitives */
+        Color base2;
+        /** Primary contrasting color for text and icons for base1 color */
+        Color contrast1;
+        /** Contrasting color for text and icons for base2 color */
+        Color contrast2;
+        /** Additional detail color for highlighting */
+        Color detail1;
+        Color detail2; /** Maybe delete */
     } ColorPallete;
 
-    extern ColorPallete dark_pallete;
+    extern ColorPallete active_pallete;
+
+    enum class ColorPalletes {
+        Dark_1,
+    };
+
+    void set_active_pallete(ColorPalletes color_pallete);
     
 
     enum Action {

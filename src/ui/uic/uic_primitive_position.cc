@@ -121,7 +121,8 @@ UIC_PrimitivePosition::UIC_PrimitivePosition(::UI::Primitive& _primitive)
 {
     set_w("180x");
     set_h("30x");
-    set_color_texture(ColorTexture::DarkGray);
+    // set_color_texture(ColorTexture::DarkGray);
+    set_color(active_pallete.base2);
 
 
     appendChild(&title);

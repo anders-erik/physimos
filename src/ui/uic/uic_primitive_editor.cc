@@ -1,6 +1,8 @@
 
 #include "uic_primitive_editor.hh"
 
+#include "ui/ui_globals.hh"
+
 #include "lib/lib.hh"
 
 namespace UI::component {
@@ -13,6 +15,7 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
         uic_primitive_position  { UIC_PrimitivePosition(_primitive)},
         uic_primitive_size  { UIC_PrimitiveSize(_primitive)}
 {
+    set_color(active_pallete.base1);
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f24);

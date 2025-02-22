@@ -9,7 +9,8 @@ namespace UI::component {
 UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
     set_w("20x");
     set_h("20x");
-    set_color_texture(ColorTexture::Green);
+    // set_color_texture(ColorTexture::Green);
+    set_color({0.0, 1.0, 0.0, 1.0});
 }
 UiResult UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
     // UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
@@ -23,11 +24,15 @@ UiResult UIC_PrimitiveColor_SetGreen::scroll(double y_change){
     return UiResult(true, Action::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::hover_enter() {
-    set_state(PrimitiveState::Hover);
+    // set_state(PrimitiveState::Hover);
+    // darkness_shift = 0.2f;
+    set_darkness_shift(0.2f);
     return UiResult(true, Action::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::hover_exit() {
-    set_state(PrimitiveState::Default);
+    // set_state(PrimitiveState::Default);
+    // darkness_shift = 0.0f;
+    reset_darkness_shift();
     return UiResult(true, Action::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::click(){
@@ -36,7 +41,8 @@ UiResult UIC_PrimitiveColor_SetGreen::click(){
     // int rand_height = std::rand() % 300;
     // uic_PrimitiveColor->boundObject.set_h(std::to_string(rand_height) + "x");
 
-    uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Green);
+    // uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Green);
+    uic_PrimitiveColor->boundObject.set_color({0.0, 1.0, 0.0, 1.0});
     return UiResult(true, Action::None, this);
 }
 
@@ -44,7 +50,8 @@ UiResult UIC_PrimitiveColor_SetGreen::click(){
 UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
     set_w("20x");
     set_h("20x");
-    set_color_texture(ColorTexture::Red);
+    // set_color_texture(ColorTexture::Red);
+    set_color({1.0, 0.0, 0.0, 1.0});
 }
 UiResult UIC_PrimitiveColor_SetRed::click() {
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
@@ -52,7 +59,8 @@ UiResult UIC_PrimitiveColor_SetRed::click() {
     // int rand_width = std::rand() % 300;
     // uic_PrimitiveColor->boundObject.set_w(std::to_string(rand_width) + "x");
 
-    uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Red);
+    // uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Red);
+    uic_PrimitiveColor->boundObject.set_color({1.0, 0.0, 0.0, 1.0});
     return UiResult(true, Action::None, this);
 }
 
@@ -64,7 +72,8 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
 {
     set_w("180x");
     set_h("30x");
-    set_color_texture(ColorTexture::DarkGray);
+    // set_color_texture(ColorTexture::DarkGray);
+    set_color(active_pallete.base2);
 
 
     appendChild(&title);

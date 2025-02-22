@@ -12,8 +12,8 @@ out vec4 FragColor;
 
 void main()
 {
-    // FragColor = vec4(color4.x - darknessShift, color4.y - darknessShift, color4.z - darknessShift, color4.w - darknessShift);
-    FragColor = color4;
+    FragColor = vec4(color4.x - darknessShift, color4.y - darknessShift, color4.z - darknessShift, color4.w - darknessShift);
+    // FragColor = color4;
 
 
 

@@ -89,7 +89,7 @@ void init(){
     
     // PRIMITIVE EDITOR COMPONENT
     primitive_to_edit = new UI::Primitive();
-    primitive_to_edit->set_color_texture(ColorTexture::DarkGray);
+    // primitive_to_edit->set_color(active_pallete.base1);
     primitive_to_edit->id = "primitive_to_test";
     primitive_to_edit->set_x("<500x");
     primitive_to_edit->set_y("_400x");

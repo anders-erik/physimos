@@ -82,17 +82,18 @@ namespace UI {
     }
 
 
-    void Primitive::set_state(PrimitiveState _newState) {
-        state = _newState;
+    // void Primitive::set_state(PrimitiveState _newState) {
+    //     state = _newState;
 
-        if (_newState == PrimitiveState::Default)
-            renderedTexture = defaultTexture;
-        else if (_newState == PrimitiveState::Hover)
-            renderedTexture = hoverTexture;
-        else if (_newState == PrimitiveState::Selected) 
-            renderedTexture = selectedTexture;
 
-    }
+    //     if (_newState == PrimitiveState::Default)
+    //         darkness_shift = 0.0f;
+    //     else if (_newState == PrimitiveState::Hover)
+    //         darkness_shift = 0.1f;
+    //     else if (_newState == PrimitiveState::Selected) 
+    //         darkness_shift = 0.2f;
+
+    // }
 
 
 
@@ -320,40 +321,19 @@ namespace UI {
     }
 
     void Primitive::set_color_texture(ColorTexture _colorTexture){
-        has_texture = true;
-        defaultTexture = UI::texture::get_static_color_texture(_colorTexture);
-        if(state == PrimitiveState::Default)
-            renderedTexture = defaultTexture;
+        renderedTexture = UI::texture::get_static_color_texture(_colorTexture);
     }
-    void Primitive::set_hover_color_texture(ColorTexture _colorTexture){
-        defaultTexture = UI::texture::get_static_color_texture(_colorTexture);
-        if(state == PrimitiveState::Default)
-            renderedTexture = defaultTexture;
+
+    void Primitive::set_darkness_shift(float shift_value){
+        darkness_shift = shift_value;
     }
-    void Primitive::set_active_color_texture(ColorTexture _colorTexture){
-        defaultTexture = UI::texture::get_static_color_texture(_colorTexture);
-        if(state == PrimitiveState::Default)
-            renderedTexture = defaultTexture;
+    void Primitive::reset_darkness_shift(){
+        darkness_shift = 0.0f;
     }
 
     void Primitive::set_color(Color _color) {
-        // has_color = true;
         color = _color;
-        // defaultTexture = UI::texture::get_static_color_texture(_color);
-        // if(state == PrimitiveState::Default)
-        //     renderedTexture = defaultTexture;
     }
-    // void Primitive::set_color_hover(ColorTexture _colorHover) {
-    //     // colorHover = _color;
-    //     hoverTexture = UI::texture::get_static_color_texture(_colorHover);
-    //     if (state == PrimitiveState::Hover)
-    //         renderedTexture = defaultTexture;
-    // }
-    // void Primitive::set_color_active(ColorTexture _colorActive) {
-    //     selectedTexture = UI::texture::get_static_color_texture(_colorActive);
-    //     if (state == PrimitiveState::Selected)
-    //         renderedTexture = selectedTexture;
-    // }
 
 
 
@@ -362,16 +342,9 @@ namespace UI {
         texture_shader = &shader::texture_shader;
         color_shader = &shader::color_shader;
 
-        defaultTexture = texture::get_static_color_texture(ColorTexture::LightGray);
-        hoverTexture = texture::get_static_color_texture(ColorTexture::Gray);
-        selectedTexture = texture::get_static_color_texture(ColorTexture::DarkGray);
+        color = active_pallete.base2;
 
-        // color = Color({255, 0, 100, 255});
-        // color = dark_pallete.detail;
-        color = dark_pallete.base;
-        // has_color = true;
-
-        renderedTexture = defaultTexture;
+        // renderedTexture = defaultTexture;
     }
 
 
