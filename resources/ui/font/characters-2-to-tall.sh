@@ -6,8 +6,8 @@
 #  DEPS:    Imagemagick (v6?)
 
 
-ORIG_BITMAP="characters-2-orig-order-centered.bmp"
-OUTPUT_BITMAP="characters-2-tall.bmp"
+ORIG_BITMAP="characters-2-thick-thick.bmp"
+OUTPUT_BITMAP="characters-2-thick-thick-tall.bmp"
 
 # -----------------------------------
 
