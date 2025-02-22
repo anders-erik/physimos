@@ -32,10 +32,12 @@ namespace UI {
 
         texture::new_texture(privateStringTexture);
         loadStringIntoGlTexture(privateStringTexture, _str);
-        renderedTexture = privateStringTexture;
-        defaultTexture = privateStringTexture;
-        hoverTexture = privateStringTexture;
-        selectedTexture = privateStringTexture;
+        // renderedTexture = privateStringTexture;
+        // defaultTexture = privateStringTexture;
+        // hoverTexture = privateStringTexture;
+        // selectedTexture = privateStringTexture;
+
+        set_texture(privateStringTexture);
 
         updateTransformationMatrix();
     }
@@ -312,28 +314,35 @@ namespace UI {
 
     }
 
-    void Primitive::set_color_texture(ColorTexture _color){
-        defaultTexture = UI::texture::get_static_color_texture(_color);
+    void Primitive::set_texture(unsigned int glTextureName){
+        has_texture = true;
+        renderedTexture = glTextureName;
+    }
+
+    void Primitive::set_color_texture(ColorTexture _colorTexture){
+        has_texture = true;
+        defaultTexture = UI::texture::get_static_color_texture(_colorTexture);
         if(state == PrimitiveState::Default)
             renderedTexture = defaultTexture;
     }
-    void Primitive::set_hover_color_texture(ColorTexture _color){
-        defaultTexture = UI::texture::get_static_color_texture(_color);
+    void Primitive::set_hover_color_texture(ColorTexture _colorTexture){
+        defaultTexture = UI::texture::get_static_color_texture(_colorTexture);
         if(state == PrimitiveState::Default)
             renderedTexture = defaultTexture;
     }
-    void Primitive::set_active_color_texture(ColorTexture _color){
-        defaultTexture = UI::texture::get_static_color_texture(_color);
+    void Primitive::set_active_color_texture(ColorTexture _colorTexture){
+        defaultTexture = UI::texture::get_static_color_texture(_colorTexture);
         if(state == PrimitiveState::Default)
             renderedTexture = defaultTexture;
     }
 
-    // void Primitive::set_color(ColorTexture _color) {
-    //     // color = _color;
-    //     defaultTexture = UI::texture::get_static_color_texture(_color);
-    //     if(state == PrimitiveState::Default)
-    //         renderedTexture = defaultTexture;
-    // }
+    void Primitive::set_color(Color _color) {
+        // has_color = true;
+        color = _color;
+        // defaultTexture = UI::texture::get_static_color_texture(_color);
+        // if(state == PrimitiveState::Default)
+        //     renderedTexture = defaultTexture;
+    }
     // void Primitive::set_color_hover(ColorTexture _colorHover) {
     //     // colorHover = _color;
     //     hoverTexture = UI::texture::get_static_color_texture(_colorHover);
@@ -351,10 +360,16 @@ namespace UI {
     Primitive::Primitive() {
         
         texture_shader = &shader::texture_shader;
+        color_shader = &shader::color_shader;
 
         defaultTexture = texture::get_static_color_texture(ColorTexture::LightGray);
         hoverTexture = texture::get_static_color_texture(ColorTexture::Gray);
         selectedTexture = texture::get_static_color_texture(ColorTexture::DarkGray);
+
+        // color = Color({255, 0, 100, 255});
+        // color = dark_pallete.detail;
+        color = dark_pallete.base;
+        // has_color = true;
 
         renderedTexture = defaultTexture;
     }
@@ -417,10 +432,16 @@ namespace UI {
             uiTransform.y_has_been_changed = false;
         }
 
+        // TODO: Render base color
+        // if(has_color){
+            color_shader->set(uiTransform.uiPrimitiveTransform16, darkness_shift, color);
+            color_shader->draw();
+        // }
 
-        texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
-
-        texture_shader->draw();
+        if(has_texture){
+            texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
+            texture_shader->draw();
+        }
 
     }
 

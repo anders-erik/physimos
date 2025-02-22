@@ -5,7 +5,8 @@
 
 #include "render/shader.hpp"
 
-#include "ui/ui_shader.hh"
+#include "ui/ui_shader_texture.hh"
+#include "ui/ui_shader_color.hh"
 
 #include "ui/ui_globals.hh"
 #include "ui/font.hh"
@@ -137,7 +138,8 @@ class Primitive {
 
         // RENDERING
 
-        ::UI::shader::TextureShader* texture_shader;
+        ::UI::shader::TextureShader*    texture_shader;
+        ::UI::shader::ColorShader*      color_shader;
 
         /** Set the 4x4 transformation matrix that will be set as shader uniform */
         void updateTransformationMatrix();
@@ -150,6 +152,12 @@ class Primitive {
         // A z value of 0 will not be rendered ?
         int z = 1;
 
+
+
+        bool has_texture = false;
+        /** Set the rendered texture. */
+        void set_texture(unsigned int glTextureName);
+
         /** The currently rendered texture for UI::Primitive. */
         unsigned int renderedTexture;
         /** Texture rendered when default state is set. */
@@ -161,16 +169,21 @@ class Primitive {
         /** Generated when setting a new primitive string in PrimitiveString. */
         unsigned int privateStringTexture;
         
+        // bool has_color = false;
+        ColorPallete color_palette = dark_pallete;
+        Color color = dark_pallete.base;
+        float darkness_shift = 0.0f;
+
         /** Set the default texture to new color texture. If currently default state when rendered texture updated. */
-        void set_color_texture(ColorTexture _color);
+        void set_color_texture(ColorTexture _colorTexture);
         /** Set the default texture to new color texture. If currently hover state when rendered texture updated. */
-        void set_hover_color_texture(ColorTexture _color);
+        void set_hover_color_texture(ColorTexture _colorTexture);
         /** Set the default texture to new color texture. If currently active state when rendered texture updated. */
-        void set_active_color_texture(ColorTexture _color);
+        void set_active_color_texture(ColorTexture _colorTexture);
         
 
         /** Set the default texture to new color. If currently default state when rendered texture updated. */
-        // void set_color(ColorTexture _color);
+        void set_color(Color _color);
         /** Set the default texture to new color. If currently hover state when rendered texture updated. */
         // void set_color_hover(ColorTexture _colorHover);
         /** Set the default texture to new color. If currently active state when rendered texture updated. */

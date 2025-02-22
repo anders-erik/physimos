@@ -11,7 +11,7 @@ UIC_PrimitiveSize_drag::UIC_PrimitiveSize_drag() {
     set_w("20x");
     set_h("20x");
     // set_color(Colors::LightGray);
-    renderedTexture = texture::get_icon(Icon::Resize);
+    set_texture(texture::get_icon(Icon::Resize));
 }
 UiResult UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
     UIC_PrimitiveSize* uic_PrimitiveSize = (UIC_PrimitiveSize*)this->parent;

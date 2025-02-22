@@ -11,7 +11,7 @@ UIC_PrimitivePosition_up::UIC_PrimitivePosition_up() {
     set_w("20x");
     set_h("20x");
     // set_color(Colors::LightGray);
-    renderedTexture = texture::get_icon(Icon::Up);
+    set_texture(texture::get_icon(Icon::Up));
 }
 UiResult UIC_PrimitivePosition_up::click() {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
@@ -30,7 +30,7 @@ UIC_PrimitivePosition_down::UIC_PrimitivePosition_down() {
     set_w("20x");
     set_h("20x");
     // set_color(Colors::LightGray);
-    renderedTexture = texture::get_icon(Icon::Down);
+    set_texture(texture::get_icon(Icon::Down));
 }
 
 UiResult UIC_PrimitivePosition_down::click() {
@@ -47,7 +47,7 @@ UIC_PrimitivePosition_scroll::UIC_PrimitivePosition_scroll() {
     set_w("20x");
     set_h("20x");
     // set_color(Colors::LightGray);
-    renderedTexture = texture::get_icon(Icon::ScrollVert);
+    set_texture(texture::get_icon(Icon::ScrollVert));
 }
 UiResult UIC_PrimitivePosition_scroll::scroll(double y_change) {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
@@ -68,7 +68,7 @@ UIC_PrimitivePosition_drag::UIC_PrimitivePosition_drag() {
     set_w("20x");
     set_h("20x");
     // set_color(Colors::LightGray);
-    renderedTexture = texture::get_icon(Icon::Pan);
+    set_texture(texture::get_icon(Icon::Pan));
 }
 UiResult UIC_PrimitivePosition_drag::grabbed(double dx, double dy) {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;

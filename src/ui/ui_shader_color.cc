@@ -6,48 +6,48 @@
 #include "log.hh"
 
 #include "ui/ui_globals.hh"
-#include "ui/ui_shader.hh"
+#include "ui/ui_shader_color.hh"
 
 // Read initial screen dimensions
 #include "PSO_util.hpp"
-#include "ui_shader.hh"
+// #include "ui_shader.hh"
 
 
 namespace UI {
     namespace shader {
 
-        TextureShader texture_shader;
+        ColorShader color_shader;
 
         // ONLY FOR INITIAL COPYING INTO SHADER
-        float _viewportTransform16[16] = {
+        float _ColorViewportTransform16[16] = {
                                     2.0f / (float)SCREEN_INIT_WIDTH, 0, 0, -1.0f,
                                     0, 2.0f / (float)SCREEN_INIT_HEIGHT, 0, -1.0f,
                                     0, 0, 1, 0,
                                     0, 0, 0, 1,
         };
 
-        float squareVertices[30] = {
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // bottom-left
-               1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right
-               0.0f, 1.0f, 0.0f, 0.0f, 1.0f,   // top-left
-               1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // bottom-left
-               1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom-right
+        float colorSquareVertices[30] = {
+               0.0f, 0.0f, 0.0f,   // bottom-left
+               1.0f, 1.0f, 0.0f,   // top-right
+               0.0f, 1.0f, 0.0f,   // top-left
+               1.0f, 1.0f, 0.0f,   // top-right
+               0.0f, 0.0f, 0.0f,   // bottom-left
+               1.0f, 0.0f, 0.0f,   // bottom-right
         };
 
-        TextureShader::TextureShader() {
+        ColorShader::ColorShader() {
             for (size_t i = 0; i < 16; i++) {
-                viewportTransform16[i] = _viewportTransform16[i];
+                viewportTransform16[i] = _ColorViewportTransform16[i];
             }
         }
-        void TextureShader::set_window_info(float width, float height, float _xscale, float _yscale) {
+        void ColorShader::set_window_info(float width, float height, float _xscale, float _yscale) {
             viewportTransform16[0] = 2.0f * _xscale / width;
             viewportTransform16[5] = 2.0f * _yscale / height;
         }
 
 
 
-        void TextureShader::init() {
+        void ColorShader::init() {
             compile_shader();
             
 
@@ -57,6 +57,8 @@ namespace UI {
             // GET UNIFORM LOCATIONS
             uiViewportTransformLoc = glGetUniformLocation(shader_id, "viewportTransform");
             uiPrimitiveTransformLoc = glGetUniformLocation(shader_id, "primitiveTransform");
+            darknessShiftLoc = glGetUniformLocation(shader_id, "darknessShift");
+            color4Loc = glGetUniformLocation(shader_id, "color4");
 
 
             // VAO, VBO
@@ -64,46 +66,44 @@ namespace UI {
             glGenBuffers(1, &vbo);
 
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(colorSquareVertices), colorSquareVertices, GL_STATIC_DRAW);
 
             glBindVertexArray(vao);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
-
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
         
 
 
-        void TextureShader::set(float* primitiveTransform_mat, unsigned int texture) {
+        void ColorShader::set(float* primitiveTransform_mat, float _darkness_shift, Color color4) {
             glUseProgram(shader_id);
             // GL_TRUE : Transpose before loading into uniform!
             glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform16);
             glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitiveTransform_mat);
-
-            this->texture = texture;
+            glUniform1f(darknessShiftLoc, _darkness_shift);
+            glUniform4f(color4Loc, color4.R, color4.G, color4.B, color4.A);
         }
 
-        void TextureShader::draw() {
+        void ColorShader::draw() {
             glUseProgram(shader_id);
 
             glBindVertexArray(vao);
-            glBindTexture(GL_TEXTURE_2D, texture);
-
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glDrawArrays(GL_TRIANGLES, 0, 6);
-            glDisable(GL_BLEND);
+
+            // glBindTexture(GL_TEXTURE_2D, texture);
+
+            // glEnable(GL_BLEND);
+            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            // glDisable(GL_BLEND);
         }
 
 
 
 
-        void TextureShader::compile_shader() {
+        void ColorShader::compile_shader() {
 
 
             // READ FILE
@@ -142,7 +142,7 @@ namespace UI {
             glDeleteShader(frag_shader);
         }
 
-        void TextureShader::shader_error_check(unsigned int gl_shader, std::string shader_type) {
+        void ColorShader::shader_error_check(unsigned int gl_shader, std::string shader_type) {
 
             int success;
             char infoLog[1024];
@@ -154,7 +154,7 @@ namespace UI {
             }
 
         }
-        void TextureShader::program_error_check(unsigned int gl_program) {
+        void ColorShader::program_error_check(unsigned int gl_program) {
 
             int success;
             char infoLog[1024];

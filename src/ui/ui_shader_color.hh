@@ -1,5 +1,5 @@
-#ifndef UI_SHADER_HH
-#define UI_SHADER_HH
+#ifndef UI_SHADER_COLOR_HH
+#define UI_SHADER_COLOR_HH
 
 #include <string>
 
@@ -8,10 +8,10 @@
 namespace UI {
     namespace shader {
         
-        typedef class TextureShader {
+        typedef class ColorShader {
             public:
-                std::string vert_path = "src/ui/shaders/texture_vert.glsl";
-                std::string frag_path = "src/ui/shaders/texture_frag.glsl";
+                std::string vert_path = "src/ui/shaders/color_vert.glsl";
+                std::string frag_path = "src/ui/shaders/color_frag.glsl";
 
                 unsigned int shader_id;
                 unsigned int vao;
@@ -19,7 +19,9 @@ namespace UI {
 
                 unsigned int uiViewportTransformLoc;
                 unsigned int uiPrimitiveTransformLoc;
-                unsigned int texture;
+
+                unsigned char color4Loc;
+                unsigned char darknessShiftLoc;
 
                 /** Tranform matrix based on the current viewport dimensions */
                 float viewportTransform16[16];
@@ -35,18 +37,18 @@ namespace UI {
                 void program_error_check(unsigned int gl_program);
 
                 /** Set values needed for render draw. UI transform and texture.  */
-                void set(float* primitiveTransform_mat, unsigned int texture);
+                void set(float* primitiveTransform_mat, float _darkness_shift, Color color4);
                 /** Makes rendering call with values previously specified using a set()-call. */
                 void draw();
 
                 /** Update the viewport transformation matrix using physimos window info */
                 void set_window_info(float width, float height, float _xscale, float _yscale);
 
-                TextureShader();
-        } TextureShader;
+                ColorShader();
+        } ColorShader;
 
         /** UI shader rendering a rectangle with texture. */
-        extern TextureShader texture_shader;
+        extern ColorShader color_shader;
     }
 }
 
