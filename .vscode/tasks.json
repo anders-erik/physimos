@@ -137,6 +137,23 @@
         },
         {
             "type": "shell",
+            "label": "Valgrind - profiler",
+            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes  ${workspaceFolder}/build/debug/physimos",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "type": "shell",
             "label": "gprof - generate gprof.txt",
             "command": "gprof ${workspaceFolder}/build/gprof/physimos > gprof.txt",
             "args": [],

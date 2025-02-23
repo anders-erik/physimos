@@ -49,8 +49,8 @@ UI::component::UIC_PrimitiveEditor* primitive_editor;
 void init(){
 
     PhysWin new_window = get_initial_physimos_window();
-    viewport_height = new_window.height;
-    viewport_width = new_window.width;
+    viewport_width = new_window.width / new_window.xscale;
+    viewport_height = new_window.height / new_window.yscale;
 
     subscribeWindowChange_ui(callback_window_change); // WINDOWING.CPP
     
@@ -89,7 +89,7 @@ void init(){
     color_primtiive->set_w("100x");
 
     
-    // PRIMITIVE EDITOR COMPONENT
+    // PRIMITIVE TO EDIT
     primitive_to_edit = new UI::Primitive();
     primitive_to_edit->id = "primitive_to_edit";
     // primitive_to_edit->set_color(active_pallete.base1);
@@ -105,6 +105,8 @@ void init(){
     primitive_editor->set_y("^1%");
     primitive_editor->set_h("50%");
     primitive_editor->set_w("25%");
+    primitive_editor->uiTransform.w_min = 100;
+    primitive_editor->uiTransform.h_min = 100;
     primitive_editor->stencil_test = true;
 
     std::cout << "sizeof(primitive_editor = " << sizeof(*primitive_editor) << std::endl;
@@ -192,8 +194,8 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
 void callback_window_change(PhysWin physimos_window) {
 
-    viewport_height = physimos_window.height;
-    viewport_width = physimos_window.width;
+    viewport_width = physimos_window.width / physimos_window.xscale;
+    viewport_height = physimos_window.height / physimos_window.yscale;
     
     // SHADER TRANSFORM
     shader::texture_shader.set_window_info(

@@ -135,7 +135,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 
 	// Invert the read y value
 	pointer_pos.x = xpos;
-	pointer_pos.y = physimos_window.height - ypos;
+	pointer_pos.y = physimos_window.height / physimos_window.yscale - ypos;
 	
 
 	// printf("%f , %f \n", xpos, ypos);

@@ -19,7 +19,7 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f32);
-    title.set_y("_94%");
+    title.set_y("^0x");
 
     appendChild(&id_string);
     id_string.str_setFontSize(FontSize::f15);

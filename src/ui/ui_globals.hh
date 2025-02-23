@@ -6,8 +6,11 @@ namespace UI {
 
     class Primitive;
 
-
+    /** Scaled viewport width using window content scale. 
+     *  Example: framebuffer_width==1000, xscale==2 --> viewport_width==500  */
     extern unsigned int viewport_width;
+    /** Scaled viewport height using window content scale. 
+     *  Example: framebuffer_height==2000, xscale==2 --> viewport_width==1000 */
     extern unsigned int viewport_height;
 
 

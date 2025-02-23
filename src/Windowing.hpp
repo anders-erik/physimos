@@ -7,8 +7,12 @@
 
 struct GLFWwindow;
 
-/** Holds the most up to date window information available for querying. */
-// extern PhysWin physimos_window;
+/** Holds window information. 
+ *  Height & width are framebuffer size of window. 
+ *  Scale value are OS configured values for scaling content on small, high resolution monitors, forcing me to scale certain content accordingly.
+ * 
+ *  NOTE: remember that the height and width represents actual framebuffer size which is passed to the shader -- viewport_height = height / yscale !
+ */
 typedef struct PhysWin {
     unsigned int height;
     unsigned int width;

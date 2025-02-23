@@ -51,7 +51,6 @@ UiResult UIC_PrimitiveColor_SetGreen::click(){
 UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
     set_w("20x");
     set_h("20x");
-    // set_color_texture(ColorTexture::Red);
     set_color({1.0, 0.0, 0.0, 1.0});
 }
 UiResult UIC_PrimitiveColor_SetRed::click() {

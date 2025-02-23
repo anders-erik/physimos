@@ -242,6 +242,12 @@ namespace UI {
 
         uiTransform.h_real += uiTransform.h_offset_input;
 
+        if(uiTransform.h_real > uiTransform.h_max)
+            uiTransform.h_real = uiTransform.h_max;
+
+        if(uiTransform.h_real < uiTransform.h_min)
+            uiTransform.h_real = uiTransform.h_min;
+
         // Reload real x locations
         for (Primitive* child : children)
             child->update_h_real_recursive();
@@ -272,6 +278,13 @@ namespace UI {
 
 
         uiTransform.w_real += uiTransform.w_offset_input;
+
+        if(uiTransform.w_real > uiTransform.w_max)
+            uiTransform.w_real = uiTransform.w_max;
+
+        if(uiTransform.w_real < uiTransform.w_min)
+            uiTransform.w_real = uiTransform.w_min;
+
 
         // Reload real x locations
         for (Primitive* child : children)

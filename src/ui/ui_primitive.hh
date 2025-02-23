@@ -64,6 +64,10 @@ typedef struct Transform {
     int w_offset_input = 0;
     Unit h_unit = Unit::Percent;
     Unit w_unit = Unit::Percent;
+    size_t w_min = 0;
+    size_t h_min = 0;
+    size_t w_max = INT64_MAX;
+    size_t h_max = INT64_MAX;
     size_t h_real = 0;
     size_t w_real = 0;
 

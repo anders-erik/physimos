@@ -90,8 +90,26 @@ void initPhysimosWindow() {
         physimosLoadedOk = 0;
         return;
     }
+    // NO EFFECT??
+    // glfwSetWindowPos(window__, 330, 500);
+    // glfwSetCursorPos(window__, 500, 10);
+
     glfwMakeContextCurrent(window__);
 
+
+    // Monitor investigation
+    int monitor_count;
+    GLFWmonitor** monitors = glfwGetMonitors(&monitor_count);
+    GLFWmonitor* monitor_primary = *monitors;
+    // GLFWmonitor* monitor_second = *(monitors+1);
+    // GLFWmonitor* monitor_third = *(monitors+2);
+
+    int w;
+    int h;
+    glfwGetMonitorPhysicalSize(monitor_primary, &w, &h);
+    
+    
+    
 
     // SET PYSIMOS WINDOW OBJECT
     glfwGetWindowContentScale(window__, &physimos_window.xscale, &physimos_window.yscale);
