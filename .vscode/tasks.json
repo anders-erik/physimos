@@ -121,7 +121,7 @@
         {
             "type": "shell",
             "label": "Valgrind - run",
-            "command": "valgrind --leak-check=yes ${workspaceFolder}/build_cmake/physimos",
+            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} valgrind --leak-check=yes ${workspaceFolder}/build/debug/physimos",
             "args": [],
             "options": {},
             "problemMatcher": [

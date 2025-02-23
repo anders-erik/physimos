@@ -27,13 +27,14 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
     id_string.set_y("^30x");
 
     appendChild(&uic_primitive_color);
-    uic_primitive_color.set_y("^50x");
+    uic_primitive_color.set_y("^80x");
 
     appendChild(&uic_primitive_position);
-    uic_primitive_position.set_y("^90x");
+    uic_primitive_position.set_y("^120x");
 
     appendChild(&uic_primitive_size);
-    uic_primitive_size.set_y("^130x");
+    uic_primitive_size.set_y("^190x");
+    uic_primitive_size.set_x("|");
 }
 
 void UIC_PrimitiveEditor::update_component() {

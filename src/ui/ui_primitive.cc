@@ -201,6 +201,57 @@ namespace UI {
     }
 
 
+
+
+
+    void Primitive::set_x(std::string x_str) {
+
+        char hori_char = x_str[0];
+        char unit_char = x_str[x_str.size() - 1];
+        unsigned int num_value = atoi(x_str.substr(1, x_str.size() - 2).data());
+
+        uiTransform.x_input = num_value;
+
+        if (hori_char == '<')
+            uiTransform.horiRef = HoriRef::Left;
+        else if (hori_char == '>')
+            uiTransform.horiRef = HoriRef::Right;
+        else if (hori_char == '|')
+            uiTransform.horiRef = HoriRef::Center;
+
+        if (unit_char == 'x')
+            uiTransform.x_unit = Unit::Pixel;
+        else if (unit_char == '%')
+            uiTransform.x_unit = Unit::Percent;
+
+
+        uiTransform.x_has_been_changed = true;
+    }
+
+    void Primitive::set_y(std::string y_str) {
+
+        char vert_char = y_str[0];
+        char unit_char = y_str[y_str.size() - 1];
+        unsigned int num_value = atoi(y_str.substr(1, y_str.size() - 2).data());
+
+        uiTransform.y_input = num_value;
+
+        if (vert_char == '^')
+            uiTransform.vertRef = VertRef::Top;
+        else if (vert_char == '_')
+            uiTransform.vertRef = VertRef::Bottom;
+        else if (vert_char == '~')
+            uiTransform.vertRef = VertRef::Center;
+
+
+        if (unit_char == 'x')
+            uiTransform.y_unit = Unit::Pixel;
+        else if (unit_char == '%') 
+            uiTransform.y_unit = Unit::Percent;
+
+        uiTransform.y_has_been_changed = true;
+    }
+
     void Primitive::update_x_real_recursive() {
 
         if (uiTransform.horiRef == HoriRef::Left) {
@@ -255,6 +306,16 @@ namespace UI {
 
             }
         }
+        else if (uiTransform.horiRef == HoriRef::Center) {
+
+            if (parent == nullptr) {
+                uiTransform.x_real = viewport_width / 2 - uiTransform.w_real / 2;
+            }
+            else {
+                uiTransform.x_real = parent->uiTransform.x_real + parent->uiTransform.w_real / 2 - uiTransform.w_real / 2;
+            }
+
+        }
 
 
         // Reload real x locations
@@ -268,14 +329,9 @@ namespace UI {
     void Primitive::update_y_real_recursive() {
 
 
-        // real y coordinate offset from reference
-        // If primitive is a root element, then this is viewport/ui coordinates
-        int y_real_offset;
-
         // Draw root primitives directly
         if (uiTransform.vertRef == VertRef::Bottom) {
 
-            y_real_offset = uiTransform.y_input;
 
             if(uiTransform.y_unit == Unit::Pixel){
 
@@ -300,9 +356,6 @@ namespace UI {
 
         }
         else if (uiTransform.vertRef == VertRef::Top) {
-
-            // The real offset is in the negative direction when using top as vertical reference
-            // y_real_offset = -uiTransform.y_input;
 
             if(uiTransform.y_unit == Unit::Pixel){
 
@@ -329,7 +382,16 @@ namespace UI {
                     // move child to align with parent top, the subtract top offset (_y_real_offset)
                     uiTransform.y_real = zero_point_top - parent->uiTransform.h_real * uiTransform.y_input / 100;
                 }
+            }
 
+        }
+        else if (uiTransform.vertRef == VertRef::Center) {
+
+            if (parent == nullptr) {
+                uiTransform.y_real = viewport_height / 2 - uiTransform.h_real / 2;
+            }
+            else {
+                uiTransform.y_real = parent->uiTransform.y_real + parent->uiTransform.h_real / 2 - this->uiTransform.h_real / 2;
             }
 
         }
@@ -341,57 +403,6 @@ namespace UI {
         updateTransformationMatrix();
         // uiTransform.y_has_been_changed = false;
     }
-
-    void Primitive::set_x(std::string x_str) {
-
-        char hori_char = x_str[0];
-        char unit_char = x_str[x_str.size() - 1];
-        unsigned int num_value = atoi(x_str.substr(1, x_str.size() - 2).data());
-
-        uiTransform.x_input = num_value;
-
-        if (hori_char == '<')
-            uiTransform.horiRef = HoriRef::Left;
-        else if (hori_char == '>')
-            uiTransform.horiRef = HoriRef::Right;
-
-        if (unit_char == 'x') {
-            uiTransform.x_unit = Unit::Pixel;
-            // uiTransform.x_input_px = uiTransform.x_input;
-        }
-        else if (unit_char == '%') {
-            uiTransform.x_unit = Unit::Percent;
-
-            // if(parent != nullptr)
-            //     uiTransform.x_input_px = (parent->uiTransform.w_real * uiTransform.x_input) / 100;  
-            // else
-            //     uiTransform.x_input_px = (viewport_width * uiTransform.x_input) / 100;
-        }
-
-        uiTransform.x_has_been_changed = true;
-    }
-
-    void Primitive::set_y(std::string y_str) {
-
-        char vert_char = y_str[0];
-        char unit_char = y_str[y_str.size() - 1];
-        unsigned int num_value = atoi(y_str.substr(1, y_str.size() - 2).data());
-
-        uiTransform.y_input = num_value;
-
-        if (vert_char == '^')
-            uiTransform.vertRef = VertRef::Top;
-        else if (vert_char == '_')
-            uiTransform.vertRef = VertRef::Bottom;
-
-        if (unit_char == 'x')
-            uiTransform.y_unit = Unit::Pixel;
-        else if (unit_char == '%') 
-            uiTransform.y_unit = Unit::Percent;
-
-        uiTransform.y_has_been_changed = true;
-    }
-
 
 
     // make sure the transform matrix is updated to current height, width, x, and y
@@ -486,6 +497,7 @@ namespace UI {
         // RENDER BASE COLOR
         color_shader->set(uiTransform.uiPrimitiveTransform16, darkness_shift, color);
         color_shader->draw();
+    
 
 
         if(has_texture){

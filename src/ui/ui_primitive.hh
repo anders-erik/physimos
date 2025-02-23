@@ -33,18 +33,22 @@ enum Unit {
     Percent = 1
 };
 
-enum VertRef {
-    // Distance will be measured from parent top to primitive top
+enum class VertRef {
+    /** Distance will be measured from parent top to primitive top */
     Top = 0,
-    // Distance will be measured from parent bottom to primitive bottom
-    Bottom = 1
+    /** Distance from primitive top to parent top will be equal to the distance from primitive bottom to parent bottom. */
+    Center = 1,
+    /** Distance will be measured from parent bottom to primitive bottom */
+    Bottom = 2,
 };
 
-enum HoriRef {
-    // Distance will be measured from parent left edge to primitive left edge
+enum class HoriRef {
+    /** Distance will be measured from parent left edge to primitive left edge */
     Left = 0,
-    // Distance will be measured from parent right edge to primitive right edge
-    Right = 1
+    /** Distance from primitive left to parent left will be equal to the distance from primitive right to parent right. */
+    Center = 1,
+    /** Distance will be measured from parent right edge to primitive right edge */
+    Right = 2,
 };
 
 

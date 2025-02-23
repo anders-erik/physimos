@@ -76,14 +76,14 @@ void init(){
 
 
     // COLOR PRIMITIVE
-    color_primtiive = new UI::Primitive();
-    color_primtiive->has_texture = false;
-    color_primtiive->set_color({0.5,0.5,1.0,1.0});
-    color_primtiive->id = "color_primitive";
-    color_primtiive->set_x("<300x");
-    color_primtiive->set_y("_300x");
-    color_primtiive->set_h("100x");
-    color_primtiive->set_w("100x");
+    // color_primtiive = new UI::Primitive();
+    // color_primtiive->has_texture = false;
+    // color_primtiive->set_color({0.5,0.5,1.0,1.0});
+    // color_primtiive->id = "color_primitive";
+    // color_primtiive->set_x("<300x");
+    // color_primtiive->set_y("_1%");
+    // color_primtiive->set_h("98%");
+    // color_primtiive->set_w("100x");
 
     
     // PRIMITIVE EDITOR COMPONENT
@@ -91,7 +91,7 @@ void init(){
     primitive_to_edit->id = "primitive_to_edit";
     // primitive_to_edit->set_color(active_pallete.base1);
     primitive_to_edit->set_x("<500x");
-    primitive_to_edit->set_y("_400x");
+    primitive_to_edit->set_y("_300x");
     primitive_to_edit->set_h("200x");
     primitive_to_edit->set_w("200x");
 
@@ -111,7 +111,7 @@ void update(){
     glDisable(GL_DEPTH_TEST);
 
     primitive_to_edit->render();
-    color_primtiive->render();
+    // color_primtiive->render();
 
     primitive_editor->update_component();
     primitive_editor->render_component();
