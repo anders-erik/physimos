@@ -91,9 +91,9 @@ void init(){
     primitive_to_edit->id = "primitive_to_edit";
     // primitive_to_edit->set_color(active_pallete.base1);
     primitive_to_edit->set_x("<500x");
-    primitive_to_edit->set_y("_300x");
-    primitive_to_edit->set_h("200x");
-    primitive_to_edit->set_w("200x");
+    primitive_to_edit->set_y("_50%");
+    primitive_to_edit->set_h("200xo-10");
+    primitive_to_edit->set_w("10%o9");
 
 
     primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);

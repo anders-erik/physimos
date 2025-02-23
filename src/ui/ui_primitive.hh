@@ -59,7 +59,9 @@ typedef struct Transform {
     std::string h_input_string = "";
     std::string w_input_string = "";
     size_t h_input = 100;
+    int h_offset_input = 0;
     size_t w_input = 100;
+    int w_offset_input = 0;
     Unit h_unit = Unit::Percent;
     Unit w_unit = Unit::Percent;
     size_t h_real = 0;
@@ -167,7 +169,7 @@ class Primitive {
         unsigned int renderedTexture;
         /** Generated when setting a new primitive string in PrimitiveString. */
         unsigned int privateStringTexture;
-        
+
 
         /** The color used when rendering a primitive. This will always render, even when a texture os string has been set. */
         Color color = active_pallete.base1;

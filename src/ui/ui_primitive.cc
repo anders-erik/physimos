@@ -1,6 +1,9 @@
+#include <iostream>
+#include <vector>
 
 #include <glad/glad.h>
-#include <iostream>
+
+#include "lib/string.hh"
 
 #include "render/shader.hpp"
 #include "res/bmp_loader.hpp"
@@ -118,8 +121,14 @@ namespace UI {
 
 
     void Primitive::set_h(std::string h_str) {
-        char unit_char = h_str[h_str.size() - 1];
-        unsigned int num_value = atoi(h_str.substr(0, h_str.size() - 1).data());
+        std::vector<std::string> h_str_offset_split = plib::std_string::split(h_str, 'o');
+        std::string h_base = h_str_offset_split[0];
+        
+        if(h_str_offset_split.size() > 1)
+            uiTransform.h_offset_input = std::stoi(h_str_offset_split[1]);
+
+        char unit_char = h_base[h_base.size() - 1];
+        unsigned int num_value = atoi(h_base.substr(0, h_base.size() - 1).data());
 
         uiTransform.h_input = num_value;
 
@@ -132,9 +141,14 @@ namespace UI {
 
     }
     void Primitive::set_w(std::string w_str) {
+        std::vector<std::string> w_str_offset_split = plib::std_string::split(w_str, 'o');
+        std::string w_base = w_str_offset_split[0];
 
-        char unit_char = w_str[w_str.size() - 1];
-        unsigned int num_value = atoi(w_str.substr(0, w_str.size() - 1).data());
+        if(w_str_offset_split.size() > 1)
+            uiTransform.w_offset_input = std::stoi(w_str_offset_split[1]);
+
+        char unit_char = w_base[w_base.size() - 1];
+        unsigned int num_value = atoi(w_base.substr(0, w_base.size() - 1).data());
 
         uiTransform.w_input = num_value;
 
@@ -161,6 +175,8 @@ namespace UI {
                 uiTransform.h_real = (parent->uiTransform.h_real * uiTransform.h_input) / 100;
 
         }
+
+        uiTransform.h_real += uiTransform.h_offset_input;
 
         // Reload real x locations
         for (Primitive* child : children)
@@ -189,6 +205,9 @@ namespace UI {
             }
             
         }
+
+
+        uiTransform.w_real += uiTransform.w_offset_input;
 
         // Reload real x locations
         for (Primitive* child : children)
