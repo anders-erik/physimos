@@ -1,3 +1,4 @@
+#include <iostream>
 
 #include "uic_primitive_color.hh"
 
@@ -66,7 +67,7 @@ UiResult UIC_PrimitiveColor_SetRed::click() {
 
 UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
     :   boundObject     { _primitive },
-        title           { PrimitiveString("Color") },
+        title           { Primitive("Color") },
         set_green_btn   { UIC_PrimitiveColor_SetGreen   () },
         set_red_btn     { UIC_PrimitiveColor_SetRed     () }
 {

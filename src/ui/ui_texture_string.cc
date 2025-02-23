@@ -1,16 +1,13 @@
 #include <string>
-#include <map>
+#include <filesystem>
 #include <vector>
-#include <iostream>
 
-#include "glad/glad.h"
-
-#include "res/bmp_loader.hpp"
 #include "image/bitmap.hh"
 #include "image/bmp.hh"
 
-#include "ui/ui_texture.hh"
+#include "ui/ui_globals.hh"
 
+#include "ui/ui_texture.hh"
 #include "ui/ui_texture_string.hh"
 
 

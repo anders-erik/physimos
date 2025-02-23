@@ -95,7 +95,7 @@ UiResult UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
 
 UIC_PrimitiveSize::UIC_PrimitiveSize(::UI::Primitive& _primitive)
     :   boundObject     { _primitive },
-        title           { PrimitiveString("Size") },
+        title           { Primitive("Size") },
         dec_width       { UIC_PrimitiveSize_dec_width() },
         inc_width       { UIC_PrimitiveSize_inc_width() },
         dec_height      { UIC_PrimitiveSize_dec_height() },

@@ -18,8 +18,8 @@ struct UIC_PrimitiveEditor : public ::UI::Primitive {
 
     ::UI::Primitive& boundObject;
 
-    PrimitiveString title;
-    PrimitiveString id_string;
+    Primitive title;
+    Primitive id_string;
 
     UIC_PrimitiveColor uic_primitive_color;
     UIC_PrimitivePosition uic_primitive_position;

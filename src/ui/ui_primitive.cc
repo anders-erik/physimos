@@ -16,18 +16,21 @@
 
 namespace UI {
 
-    PrimitiveString::PrimitiveString(std::string _str) : str{ _str } {
+    Primitive::Primitive(std::string _str) : str{ _str } {
+        texture_shader = &shader::texture_shader;
+        color_shader = &shader::color_shader;
+
         primitiveType = PrimitiveType::String;
         
         str_setString(_str);
         
         set_color(transparent);
     }
-    void PrimitiveString::str_setFontSize(FontSize _fontSize) {
+    void Primitive::str_setFontSize(FontSize _fontSize) {
         str_fontSize = _fontSize;
         str_setString(str);
     }
-    void PrimitiveString::str_setString(std::string _str) {
+    void Primitive::str_setString(std::string _str) {
 
         set_h(std::to_string(str_fontSize) + "x");
 
@@ -37,10 +40,6 @@ namespace UI {
 
         texture::new_texture(privateStringTexture);
         update_texture_with_string_row(privateStringTexture, _str);
-        // renderedTexture = privateStringTexture;
-        // defaultTexture = privateStringTexture;
-        // hoverTexture = privateStringTexture;
-        // selectedTexture = privateStringTexture;
 
         set_texture(privateStringTexture);
 
@@ -48,7 +47,7 @@ namespace UI {
     }
 
 
-    void PrimitiveString::update_str(std::string _str) {
+    void Primitive::update_str(std::string _str) {
 
         if (str != _str) {
             str = _str;
@@ -56,11 +55,11 @@ namespace UI {
         }
 
     }
-    void PrimitiveString::update_str_int(int _int) {
+    void Primitive::update_str_int(int _int) {
         std::string _int_str = std::to_string(_int);
         update_str(_int_str);
     }
-    void PrimitiveString::update_str_double(double _double) {
+    void Primitive::update_str_double(double _double) {
         std::string _double_str = std::to_string(_double);
         update_str(_double_str);
     }

@@ -28,7 +28,7 @@ struct UIC_PrimitiveColor : public ::UI::Primitive {
 
     ::UI::Primitive& boundObject;
 
-    PrimitiveString title;
+    Primitive title;
 
     UIC_PrimitiveColor_SetGreen set_green_btn;
     UIC_PrimitiveColor_SetRed set_red_btn;

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "glad/glad.h"  // glDisable(GL_DEPTH_TEST)
 #include "log.hh"
 

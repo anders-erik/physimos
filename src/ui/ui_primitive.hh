@@ -2,8 +2,8 @@
 #define UI_PRIMITIVE_HH
 
 #include <string>
+#include <vector>
 
-#include "render/shader.hpp"
 
 #include "ui/ui_shader_texture.hh"
 #include "ui/ui_shader_color.hh"
@@ -107,8 +107,11 @@ typedef struct Transform {
 
 class Primitive {
     public:
-        /** Initializes a new primitive ui object. Sets shader and initial textures. */
+        /** Initializes a new primitive ui object. Sets shaders and iinital colors. */
         Primitive();
+        /** Initializes a new primitive ui object. Sets shader and initial string texture. Background color is set to transparent! */
+        Primitive(std::string _str);
+
 
         std::string id = "";
 
@@ -195,7 +198,31 @@ class Primitive {
 
 
 
+        // STRING
+
+        /** String that is currently being rendered. No string rendered if size = 0.  */
+        std::string str = "";
+
+        /** The font size used during generation of currently rendering string texture */
+        FontSize str_fontSize = FontSize::f24;
+        /** Set the font size and reloads the string texture */
+        void str_setFontSize(FontSize _fontSize);
+        // will load a texture contining the passed string into the primitives default glTexture
+        void str_setString(std::string _str);
+
+        /** Regenerate string texture if passed string is different from currently rendered string. */
+        void update_str(std::string _str);
+        /** Regenerate string texture if passed integers string representation is different from currently rendered string. */
+        void update_str_int(int _int);
+        /** Regenerate string texture if passed floating point string-representation is different from currently rendered string. */
+        void update_str_double(double _double);
+
+
+
+
+
         // TREE QUERY
+
         bool isLeaf();
         void appendChild(Primitive* childPrimitive);
         std::vector<Primitive*> flattenTree();
@@ -235,30 +262,6 @@ class Primitive {
         virtual void update_component() {};
 
 };
-
-
-typedef class PrimitiveString : public Primitive {
-    public:
-        std::string str = "";
-
-        /** The font size used during generation of currently rendering string texture */
-        FontSize str_fontSize = FontSize::f24;
-        void str_setFontSize(FontSize _fontSize);
-        // will load a texture contining the passed string into the primitives default glTexture
-        void str_setString(std::string _str);
-
-        /** Regenerate string texture if passed string is different from currently rendered string. */
-        void update_str(std::string _str);
-        /** Regenerate string texture if passed integers string representation is different from currently rendered string. */
-        void update_str_int(int _int);
-        /** Regenerate string texture if passed floating point string-representation is different from currently rendered string. */
-        void update_str_double(double _double);
-
-        /** Note: strings are initialized with transparent color! */
-        PrimitiveString(std::string _str);
-} PrimitiveString;
-
-
 
 
 }

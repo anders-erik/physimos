@@ -11,6 +11,13 @@ namespace UI {
     extern unsigned int viewport_height;
 
 
+    /** Pixel hieght of full char bitmap */
+    typedef enum FontSize {
+        f15 = 15,
+        f18 = 18,
+        f24 = 24,
+        f32 = 32,
+    } FontSize;
 
     typedef enum class Icon {
         Up,

@@ -9,8 +9,8 @@ namespace UI::component {
 
 UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive) 
     :   boundObject         { _primitive },
-        title               { PrimitiveString("Primitive Editor") },
-        id_string           { PrimitiveString(_primitive.id) },
+        title               { Primitive("Primitive Editor") },
+        id_string           { Primitive(_primitive.id) },
         uic_primitive_color { UIC_PrimitiveColor(_primitive) },
         uic_primitive_position  { UIC_PrimitivePosition(_primitive)},
         uic_primitive_size  { UIC_PrimitiveSize(_primitive)}

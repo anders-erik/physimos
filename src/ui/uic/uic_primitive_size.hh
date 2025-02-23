@@ -42,7 +42,7 @@ struct UIC_PrimitiveSize : public ::UI::Primitive {
 
     ::UI::Primitive& boundObject;
 
-    PrimitiveString title;
+    Primitive title;
 
     UIC_PrimitiveSize_dec_width dec_width;
     UIC_PrimitiveSize_inc_width inc_width;

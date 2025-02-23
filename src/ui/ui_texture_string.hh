@@ -9,14 +9,6 @@
 
 namespace UI {
 
-/** Pixel hieght of full char bitmap */
-typedef enum FontSize {
-    f15 = 15,
-    f18 = 18,
-    f24 = 24,
-    f32 = 32,
-} FontSize;
-
 
 /** Init function */
 void init_font();

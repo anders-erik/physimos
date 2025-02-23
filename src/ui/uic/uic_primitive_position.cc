@@ -108,7 +108,7 @@ UiResult UIC_PrimitivePosition_drag::grabbed(double dx, double dy) {
 
 UIC_PrimitivePosition::UIC_PrimitivePosition(::UI::Primitive& _primitive)
     :   boundObject     { _primitive },
-        title           { PrimitiveString("Pos") },
+        title           { Primitive("Pos") },
         up_btn          { UIC_PrimitivePosition_up() },
         down_btn        { UIC_PrimitivePosition_down() },
         left_btn        { UIC_PrimitivePosition_left() },

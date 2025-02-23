@@ -42,7 +42,7 @@ struct UIC_PrimitivePosition : public ::UI::Primitive {
 
     ::UI::Primitive& boundObject;
 
-    PrimitiveString title;
+    Primitive title;
 
     UIC_PrimitivePosition_up        up_btn;
     UIC_PrimitivePosition_down      down_btn;
