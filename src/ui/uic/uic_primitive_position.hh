@@ -18,6 +18,14 @@ struct UIC_PrimitivePosition_down : public ::UI::Primitive {
     UiResult click();
     UIC_PrimitivePosition_down();
 };
+struct UIC_PrimitivePosition_left : public ::UI::Primitive {
+    UiResult click();
+    UIC_PrimitivePosition_left();
+};
+struct UIC_PrimitivePosition_right : public ::UI::Primitive {
+    UiResult click();
+    UIC_PrimitivePosition_right();
+};
 struct UIC_PrimitivePosition_scroll : public ::UI::Primitive {
     UiResult scroll(double y_change);
     UIC_PrimitivePosition_scroll();
@@ -38,6 +46,9 @@ struct UIC_PrimitivePosition : public ::UI::Primitive {
 
     UIC_PrimitivePosition_up        up_btn;
     UIC_PrimitivePosition_down      down_btn;
+    UIC_PrimitivePosition_left      left_btn;
+    UIC_PrimitivePosition_right     right_btn;
+
     UIC_PrimitivePosition_scroll    scroll;
     UIC_PrimitivePosition_drag      drag;
 

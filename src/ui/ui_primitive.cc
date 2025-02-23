@@ -123,7 +123,7 @@ namespace UI {
     void Primitive::set_h(std::string h_str) {
         std::vector<std::string> h_str_offset_split = plib::std_string::split(h_str, 'o');
         std::string h_base = h_str_offset_split[0];
-        
+
         if(h_str_offset_split.size() > 1)
             uiTransform.h_offset_input = std::stoi(h_str_offset_split[1]);
 
@@ -158,6 +158,71 @@ namespace UI {
             uiTransform.w_unit = Unit::Percent;
 
         uiTransform.size_has_been_changed = true;
+    }
+    void Primitive::dec_w(){
+
+        if(uiTransform.w_unit == Unit::Pixel)
+            uiTransform.w_input -= 10;
+        if(uiTransform.w_unit == Unit::Percent)
+            uiTransform.w_input -= 1;
+        
+        uiTransform.size_has_been_changed = true;
+    }
+    void Primitive::inc_w(){
+        if(uiTransform.w_unit == Unit::Pixel)
+            uiTransform.w_input += 10;
+        if(uiTransform.w_unit == Unit::Percent)
+            uiTransform.w_input += 1;
+        
+        uiTransform.size_has_been_changed = true;
+    }
+    void Primitive::dec_h(){
+        if(uiTransform.h_unit == Unit::Pixel)
+            uiTransform.h_input -= 10;
+        if(uiTransform.h_unit == Unit::Percent)
+            uiTransform.h_input -= 1;
+        
+        uiTransform.size_has_been_changed = true;
+    }
+    void Primitive::inc_h(){
+        if(uiTransform.h_unit == Unit::Pixel)
+            uiTransform.h_input += 10;
+        if(uiTransform.h_unit == Unit::Percent)
+            uiTransform.h_input += 1;
+        
+        uiTransform.size_has_been_changed = true;
+    }
+    void Primitive::dec_x(){
+        if(uiTransform.x_unit == Unit::Pixel)
+            uiTransform.x_input -= 10;
+        if(uiTransform.x_unit == Unit::Percent)
+            uiTransform.x_input -= 1;
+        
+        uiTransform.x_has_been_changed = true;
+    }
+    void Primitive::inc_x(){
+        if(uiTransform.x_unit == Unit::Pixel)
+            uiTransform.x_input += 10;
+        if(uiTransform.x_unit == Unit::Percent)
+            uiTransform.x_input += 1;
+        
+        uiTransform.x_has_been_changed = true;
+    }
+    void Primitive::dec_y(){
+        if(uiTransform.y_unit == Unit::Pixel)
+            uiTransform.y_input -= 10;
+        if(uiTransform.y_unit == Unit::Percent)
+            uiTransform.y_input -= 1;
+        
+        uiTransform.y_has_been_changed = true;
+    }
+    void Primitive::inc_y(){
+        if(uiTransform.y_unit == Unit::Pixel)
+            uiTransform.y_input += 10;
+        if(uiTransform.y_unit == Unit::Percent)
+            uiTransform.y_input += 1;
+        
+        uiTransform.y_has_been_changed = true;
     }
 
     void Primitive::update_h_real_recursive() {

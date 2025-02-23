@@ -19,7 +19,6 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f24);
-    // title.str_setFontSize(FontSize::f32);
     title.set_y("^0x");
 
     appendChild(&id_string);
@@ -30,10 +29,10 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
     uic_primitive_color.set_y("^80x");
 
     appendChild(&uic_primitive_position);
-    uic_primitive_position.set_y("^120x");
+    uic_primitive_position.set_y("^130x");
 
     appendChild(&uic_primitive_size);
-    uic_primitive_size.set_y("^190x");
+    uic_primitive_size.set_y("^230x");
     uic_primitive_size.set_x("|");
 }
 

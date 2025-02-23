@@ -10,6 +10,26 @@
 namespace UI::component {
 
 
+
+struct UIC_PrimitiveSize_dec_width : public ::UI::Primitive {
+    UiResult click();
+    UIC_PrimitiveSize_dec_width();
+};
+struct UIC_PrimitiveSize_inc_width : public ::UI::Primitive {
+    UiResult click();
+    UIC_PrimitiveSize_inc_width();
+};
+struct UIC_PrimitiveSize_dec_height : public ::UI::Primitive {
+    UiResult click();
+    UIC_PrimitiveSize_dec_height();
+};
+struct UIC_PrimitiveSize_inc_height : public ::UI::Primitive {
+    UiResult click();
+    UIC_PrimitiveSize_inc_height();
+};
+
+
+
 struct UIC_PrimitiveSize_drag : public ::UI::Primitive {
     double x_accum = 0.0;
     double y_accum = 0.0;
@@ -23,6 +43,11 @@ struct UIC_PrimitiveSize : public ::UI::Primitive {
     ::UI::Primitive& boundObject;
 
     PrimitiveString title;
+
+    UIC_PrimitiveSize_dec_width dec_width;
+    UIC_PrimitiveSize_inc_width inc_width;
+    UIC_PrimitiveSize_dec_height dec_height;
+    UIC_PrimitiveSize_inc_height inc_height;
 
     UIC_PrimitiveSize_drag      drag;
 

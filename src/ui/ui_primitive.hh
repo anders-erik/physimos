@@ -131,6 +131,15 @@ class Primitive {
         void set_x(std::string x_str);
         void set_y(std::string y_str);
 
+        void dec_w();
+        void inc_w();
+        void dec_h();
+        void inc_h();
+        void dec_x();
+        void inc_x();
+        void dec_y();
+        void inc_y();
+
         /** Update the real height of primitive and its descendants, then reaset the change detection flag. */
         void update_h_real_recursive();
         /** Update the real width of primitive and its descendants, then reaset the change detection flag. */
