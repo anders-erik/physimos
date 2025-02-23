@@ -159,6 +159,8 @@ class Primitive {
         ::UI::shader::TextureShader*    texture_shader;
         ::UI::shader::ColorShader*      color_shader;
 
+        bool render_disabled = false;
+
         /** Set the 4x4 transformation matrix that will be set as shader uniform */
         void updateTransformationMatrix();
         
@@ -246,6 +248,14 @@ class Primitive {
 
 
         // COMPONENT INTERFACE
+
+
+        /** May be used to enable stencil testing during render of descendants. 
+         *  If set to true any pixel rendered by a descendant beyond the root component will be discarded.
+         *  Primarily used to hide scrollable lists. 
+         *  NOTE: Must be explicity enabled in the 'render_component' implementation of the specific component. 
+         */
+        bool stencil_test = false;
 
         /** Virtual method implemented by components. 
          *  Will try to find targeted primitive in its primitive tree at the passed x/y screen coordinates.

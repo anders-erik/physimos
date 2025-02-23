@@ -78,14 +78,15 @@ void init(){
 
 
     // COLOR PRIMITIVE
-    // color_primtiive = new UI::Primitive();
-    // color_primtiive->has_texture = false;
-    // color_primtiive->set_color({0.5,0.5,1.0,1.0});
-    // color_primtiive->id = "color_primitive";
-    // color_primtiive->set_x("<300x");
-    // color_primtiive->set_y("_1%");
-    // color_primtiive->set_h("98%");
-    // color_primtiive->set_w("100x");
+    color_primtiive = new UI::Primitive();
+    color_primtiive->render_disabled = true;
+    color_primtiive->has_texture = false;
+    color_primtiive->set_color({0.5,0.5,1.0,1.0});
+    color_primtiive->id = "color_primitive";
+    color_primtiive->set_x("<300x");
+    color_primtiive->set_y("_1%");
+    color_primtiive->set_h("98%");
+    color_primtiive->set_w("100x");
 
     
     // PRIMITIVE EDITOR COMPONENT
@@ -104,6 +105,7 @@ void init(){
     primitive_editor->set_y("^1%");
     primitive_editor->set_h("50%");
     primitive_editor->set_w("25%");
+    primitive_editor->stencil_test = true;
 
     std::cout << "sizeof(primitive_editor = " << sizeof(*primitive_editor) << std::endl;
     
@@ -113,7 +115,7 @@ void update(){
     glDisable(GL_DEPTH_TEST);
 
     primitive_to_edit->render();
-    // color_primtiive->render();
+    color_primtiive->render();
 
     primitive_editor->update_component();
     primitive_editor->render_component();

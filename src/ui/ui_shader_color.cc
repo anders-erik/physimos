@@ -75,6 +75,26 @@ namespace UI {
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
+
+        void ColorShader::stencil_start_new_capture(){
+
+            glEnable(GL_STENCIL_TEST);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+            glClear(GL_STENCIL_BUFFER_BIT); 
+
+            glStencilFunc(GL_ALWAYS, 1, 0xFF); 
+            glStencilMask(0xFF); // each bit is written to the stencil buffer as is
+
+        }
+        void ColorShader::stencil_apply(){
+
+            glStencilFunc(GL_EQUAL, 1, 0xFF);
+            glStencilMask(0x00); // each bit ends up as 0 in the stencil buffer (disabling writes)
+
+        }
+        void ColorShader::stencil_disable(){
+            glDisable(GL_STENCIL_TEST);
+        }
         
 
 

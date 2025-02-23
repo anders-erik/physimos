@@ -11,5 +11,6 @@ target_include_directories( uic PUBLIC
     ${CMAKE_SOURCE_DIR}/src/
     ${CMAKE_SOURCE_DIR}/src/ui
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/extern/glad/include
 )
 

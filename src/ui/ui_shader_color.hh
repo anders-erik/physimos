@@ -41,6 +41,10 @@ namespace UI {
                 /** Makes rendering call with values previously specified using a set()-call. */
                 void draw();
 
+                void stencil_start_new_capture();
+                void stencil_apply();
+                void stencil_disable();
+
                 /** Update the viewport transformation matrix using physimos window info */
                 void set_window_info(float width, float height, float _xscale, float _yscale);
 

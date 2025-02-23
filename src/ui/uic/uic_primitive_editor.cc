@@ -1,4 +1,4 @@
-
+#include "glad/glad.h"
 #include "uic_primitive_editor.hh"
 
 #include "ui/ui_globals.hh"
@@ -18,8 +18,8 @@ UIC_PrimitiveEditor::UIC_PrimitiveEditor(::UI::Primitive& _primitive)
     set_color(active_pallete.base1);
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f24);
-    title.set_y("^0x");
+    title.str_setFontSize(FontSize::f32);
+    title.set_y("_94%");
 
     appendChild(&id_string);
     id_string.str_setFontSize(FontSize::f15);
@@ -45,13 +45,27 @@ void UIC_PrimitiveEditor::update_component() {
 
 
 void UIC_PrimitiveEditor::render_component(){
+
+    // STENCIL TEST TESTING
+    if(stencil_test)
+        color_shader->stencil_start_new_capture();
+
     render();
+
+    // STENCIL TEST TESTING
+    if(stencil_test)
+        color_shader->stencil_apply();
+
 
     title.render();
     id_string.render();
     uic_primitive_color.render_component();
     uic_primitive_position.render_component();
     uic_primitive_size.render_component();
+
+    // STENCIL TEST TESTING
+    if(stencil_test)
+        color_shader->stencil_disable();
 }
 
 

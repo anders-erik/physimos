@@ -549,6 +549,9 @@ namespace UI {
 
 
     void Primitive::render_recursive() {
+        if(render_disabled)
+            return;
+        
         render();
         // Make sure children are rendered after parent as currently no depth testing or sorting is being done!
         for (Primitive* child : children) {
@@ -557,6 +560,9 @@ namespace UI {
     }
 
     void Primitive::render() {
+
+        if(render_disabled) 
+            return;
 
         if (uiTransform.size_has_been_changed) {
             update_h_real_recursive();
