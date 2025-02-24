@@ -249,9 +249,11 @@ namespace UI {
             uiTransform.h_real = uiTransform.h_min;
 
         // Reload real x locations
-        for (Primitive* child : children)
+        int i = 0;
+        for (Primitive* child : children){
+            i++;
             child->update_h_real_recursive();
-
+        }
 
         updateTransformationMatrix();
         // Maybe move to caller of method to prevent every descendant trying to reset when only the triggering primitive should have its flag reset

@@ -8,6 +8,7 @@
 namespace UI::component {
 
 UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
+    id = "prim_color_set_green";
     set_w("20x");
     set_h("20x");
     // set_color_texture(ColorTexture::Green);
@@ -49,6 +50,7 @@ UiResult UIC_PrimitiveColor_SetGreen::click(){
 
 
 UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
+    id = "prim_color_set_red";
     set_w("20x");
     set_h("20x");
     set_color({1.0, 0.0, 0.0, 1.0});
@@ -70,6 +72,7 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
         set_green_btn   { UIC_PrimitiveColor_SetGreen   () },
         set_red_btn     { UIC_PrimitiveColor_SetRed     () }
 {
+    id = "prim_color";
     set_w("180x");
     set_h("30x");
     // set_color_texture(ColorTexture::DarkGray);

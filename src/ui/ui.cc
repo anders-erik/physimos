@@ -13,6 +13,8 @@
 #include "ui/ui_primitive.hh"
 
 #include "ui/uic/uic_primitive_editor.hh"
+#include "ui/uic/uic_primitive_list.hh"
+#include "ui/uic/uic_primitive_list_editor.hh"
 
 
 #include "Input.hpp"
@@ -42,8 +44,11 @@ Primitive* currentlyHoveredPrimitive = nullptr;
 
 UI::Primitive* color_primtiive;
 UI::Primitive* primitive_to_edit;
+
 UI::component::UIC_PrimitiveEditor* primitive_editor;
 
+UI::component::UIC_PrimitiveList* primitive_list;
+UI::component::UIC_PrimitiveListEditor* primitive_list_editor;
 
 
 void init(){
@@ -98,7 +103,6 @@ void init(){
     primitive_to_edit->set_h("200xo-10");
     primitive_to_edit->set_w("10%o9");
 
-
     primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
     primitive_editor->id = "editor_id";
     primitive_editor->set_x("<74%");
@@ -110,6 +114,26 @@ void init(){
     primitive_editor->stencil_test = true;
 
     std::cout << "sizeof(primitive_editor = " << sizeof(*primitive_editor) << std::endl;
+
+
+
+    // PRIMITIVE LIST
+    primitive_list = new UI::component::UIC_PrimitiveList(*primitive_to_edit);
+    primitive_list->id = "primitive_list";
+    primitive_list->set_x("<50x");
+    primitive_list->set_y("10x");
+    primitive_list->set_h("200x");
+    primitive_list->set_w("200x");
+
+    // PRIMITIVE LIST EDITOR
+    primitive_list_editor = new UI::component::UIC_PrimitiveListEditor(*primitive_list, *primitive_to_edit);
+    primitive_list_editor->id = "primitive_list_editor";
+    primitive_list_editor->set_x("<300x");
+    primitive_list_editor->set_y("_20%");
+    primitive_list_editor->set_h("100xo-10");
+    primitive_list_editor->set_w("20%o9");
+
+
     
 }
 
@@ -119,8 +143,12 @@ void update(){
     primitive_to_edit->render();
     color_primtiive->render();
 
+
     primitive_editor->update_component();
     primitive_editor->render_component();
+
+    primitive_list->render_component();
+    primitive_list_editor->render_component();
 
 }
 
@@ -167,27 +195,60 @@ void callback_left_release(PInput::PointerPosition _pointer_pos){
     if (grabbed_primitive == nullptr)
         return;
     
+    UiResult releaseTargetResult;
+    bool click_confirmed;
 
-    // TRIGGER CLICK
-    UiResult releaseTargetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
+    // TRIGGER CLICK ON PRIMITIVE EDITOR
+    releaseTargetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
     // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
-    bool click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
+    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
     if (click_confirmed) {
-        plog_info(::plib::LogScope::UI, "Released on " + releaseTargetResult.primitive->id);
+        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
         releaseTargetResult.primitive->click();
+
+        // NEVER PERSIST GRAB ON RELEASE
+        grabbed_primitive = nullptr;
+        return;
+    }
+
+    // TRIGGER CLICK ON PRIMITIVE LIST EDITOR
+    releaseTargetResult = primitive_list_editor->try_find_target_component(cursor_x, cursor_y);
+    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
+    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
+    if (click_confirmed) {
+        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
+        releaseTargetResult.primitive->click();
+
+        // NEVER PERSIST GRAB ON RELEASE
+        grabbed_primitive = nullptr;
+        return;
     }
     
     // NEVER PERSIST GRAB ON RELEASE
     grabbed_primitive = nullptr;
+    return;
+    
 }
 
 void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
+    UiResult clickTargetResult;
+
+
     // REGISTER FOR CLICK ON RELEASE
-    UiResult clickTargetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
+    clickTargetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
     if(clickTargetResult.success){
         grabbed_primitive = clickTargetResult.primitive;
-        plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+        return;
+    }
+
+    // REGISTER FOR CLICK ON RELEASE
+    clickTargetResult = primitive_list_editor->try_find_target_component(cursor_x, cursor_y);
+    if(clickTargetResult.success){
+        grabbed_primitive = clickTargetResult.primitive;
+        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+        return;
     }
 
 }
