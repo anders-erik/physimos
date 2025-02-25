@@ -14,6 +14,13 @@ UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen() {
     // set_color_texture(ColorTexture::Green);
     set_color({0.0, 1.0, 0.0, 1.0});
 }
+UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen(Primitive *_parent) : Primitive(_parent) {
+    id = "prim_color_set_green";
+    set_w("20x");
+    set_h("20x");
+    // set_color_texture(ColorTexture::Green);
+    set_color({0.0, 1.0, 0.0, 1.0});
+}
 UiResult UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
     // UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
 
@@ -55,6 +62,12 @@ UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed() {
     set_h("20x");
     set_color({1.0, 0.0, 0.0, 1.0});
 }
+UIC_PrimitiveColor_SetRed::UIC_PrimitiveColor_SetRed(Primitive *_parent) : Primitive(_parent)  {
+    id = "prim_color_set_red";
+    set_w("20x");
+    set_h("20x");
+    set_color({1.0, 0.0, 0.0, 1.0});
+}
 UiResult UIC_PrimitiveColor_SetRed::click() {
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
 
@@ -68,9 +81,9 @@ UiResult UIC_PrimitiveColor_SetRed::click() {
 
 UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
     :   boundObject     { _primitive },
-        title           { Primitive("Color") },
-        set_green_btn   { UIC_PrimitiveColor_SetGreen   () },
-        set_red_btn     { UIC_PrimitiveColor_SetRed     () }
+        title           { Primitive(this, "Color") },
+        set_green_btn   { UIC_PrimitiveColor_SetGreen   (this) },
+        set_red_btn     { UIC_PrimitiveColor_SetRed     (this) }
 {
     id = "prim_color";
     set_w("180x");
@@ -79,16 +92,46 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
     set_color(active_pallete.base2);
 
 
-    appendChild(&title);
+    // appendChild(&title);
     title.str_setFontSize(FontSize::f18);
     title.set_x("<10x");
     title.set_y("^5x");
 
-    appendChild(&set_green_btn);
+    // appendChild(&set_green_btn);
     set_green_btn.set_x("<120x");
     set_green_btn.set_y("^5x");
 
-    appendChild(&set_red_btn);
+    // appendChild(&set_red_btn);
+    set_red_btn.set_x("<150x");
+    set_red_btn.set_y("^5x");
+    
+}
+
+
+UIC_PrimitiveColor::UIC_PrimitiveColor(Primitive *_parent, ::UI::Primitive& _primitive)
+    :   Primitive(_parent)  ,
+        boundObject     { _primitive },
+        title           { Primitive(this, "Color") },
+        set_green_btn   { UIC_PrimitiveColor_SetGreen   (this) },
+        set_red_btn     { UIC_PrimitiveColor_SetRed     (this) }
+{
+    id = "prim_color";
+    set_w("180x");
+    set_h("30x");
+    // set_color_texture(ColorTexture::DarkGray);
+    set_color(active_pallete.base2);
+
+
+    // appendChild(&title);
+    title.str_setFontSize(FontSize::f18);
+    title.set_x("<10x");
+    title.set_y("^5x");
+
+    // appendChild(&set_green_btn);
+    set_green_btn.set_x("<120x");
+    set_green_btn.set_y("^5x");
+
+    // appendChild(&set_red_btn);
     set_red_btn.set_x("<150x");
     set_red_btn.set_y("^5x");
     

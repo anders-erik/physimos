@@ -17,10 +17,12 @@ struct UIC_PrimitiveColor_SetGreen : public ::UI::Primitive {
     UiResult hover_enter();
     UiResult hover_exit();
     UIC_PrimitiveColor_SetGreen();
+    UIC_PrimitiveColor_SetGreen(Primitive *_parent);
 };
 struct UIC_PrimitiveColor_SetRed : public ::UI::Primitive {
     UiResult click();
     UIC_PrimitiveColor_SetRed();
+    UIC_PrimitiveColor_SetRed(Primitive *_parent);
 };
 
 
@@ -31,12 +33,13 @@ struct UIC_PrimitiveColor : public ::UI::Primitive {
     Primitive title;
 
     UIC_PrimitiveColor_SetGreen set_green_btn;
-    UIC_PrimitiveColor_SetRed set_red_btn;
+    UIC_PrimitiveColor_SetRed   set_red_btn;
 
     UiResult try_find_target_component(double x, double y);
     void render_component();
     
     UIC_PrimitiveColor(::UI::Primitive& _primitive);
+    UIC_PrimitiveColor(Primitive *_parent, ::UI::Primitive& _primitive);
 };
 
 

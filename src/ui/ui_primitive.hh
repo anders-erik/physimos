@@ -113,8 +113,12 @@ class Primitive {
     public:
         /** Initializes a new primitive ui object. Sets shaders and iinital colors. */
         Primitive();
+        /** Initializes a new primitive ui object with a specified parent. Sets shaders and iinital colors. */
+        Primitive(Primitive* _parent);
         /** Initializes a new primitive ui object. Sets shader and initial string texture. Background color is set to transparent! */
         Primitive(std::string _str);
+        /** Initializes a new primitive ui object with a specified parent. Sets shader and initial string texture. Background color is set to transparent! */
+        Primitive(Primitive* _parent, std::string _str);
 
 
         std::string id = "";

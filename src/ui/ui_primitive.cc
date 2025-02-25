@@ -16,7 +16,33 @@
 
 namespace UI {
 
-    Primitive::Primitive(std::string _str) : str{ _str } {
+    Primitive::Primitive() {
+        
+        texture_shader = &shader::texture_shader;
+        color_shader = &shader::color_shader;
+
+        color = active_pallete.base1;
+
+        // renderedTexture = defaultTexture;
+    }
+    Primitive::Primitive(Primitive* _parent)
+        : parent {_parent} 
+    {
+        _parent->children.push_back(this);
+        z = _parent->z + 1;
+
+        update_x_real_recursive();
+        update_y_real_recursive();
+
+        texture_shader = &shader::texture_shader;
+        color_shader = &shader::color_shader;
+
+        color = active_pallete.base1;
+    }
+
+    Primitive::Primitive(std::string _str) 
+        :   str{ _str } 
+    {
         texture_shader = &shader::texture_shader;
         color_shader = &shader::color_shader;
 
@@ -26,6 +52,31 @@ namespace UI {
         
         set_color(transparent);
     }
+
+    Primitive::Primitive(Primitive* _parent, std::string _str) 
+        :   parent  { _parent },
+            str     { _str }
+    {
+        z = _parent->z + 1;
+        _parent->children.push_back(this);
+
+        update_x_real_recursive();
+        update_y_real_recursive();
+
+
+        texture_shader = &shader::texture_shader;
+        color_shader = &shader::color_shader;
+
+        primitiveType = PrimitiveType::String;
+        
+        str_setString(_str);
+        
+        set_color(transparent);
+    }
+
+
+
+
     void Primitive::str_setFontSize(FontSize _fontSize) {
         str_fontSize = _fontSize;
         str_setString(str);
@@ -70,16 +121,6 @@ namespace UI {
 
 
 
-
-    Primitive::Primitive() {
-        
-        texture_shader = &shader::texture_shader;
-        color_shader = &shader::color_shader;
-
-        color = active_pallete.base1;
-
-        // renderedTexture = defaultTexture;
-    }
 
 
     UiResult Primitive::try_find_target_component(double x, double y) {
