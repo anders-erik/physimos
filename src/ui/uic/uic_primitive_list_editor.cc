@@ -18,24 +18,28 @@ UIC_PrimitiveListEditor_add::UIC_PrimitiveListEditor_add() {
 }
 UiResult UIC_PrimitiveListEditor_add::click() {
     UIC_PrimitiveListEditor* uic_PrimitiveListEditor = (UIC_PrimitiveListEditor*)this->parent;
-
-    // std::cout << "ADD CLICKED" << std::endl;
     uic_PrimitiveListEditor->boundObject.new_list_object();
-    
-    // int rand_width = std::rand() % 300;
-    // uic_PrimitiveColor->boundObject.set_w(std::to_string(rand_width) + "x");
-
-    // uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Red);
-    // uic_PrimitiveListEditor->boundObject.set_color({1.0, 0.0, 0.0, 1.0});
     return UiResult(true, Action::None, this);
 }
 
+UIC_PrimitiveListEditor_del::UIC_PrimitiveListEditor_del() {
+    id = "prim_list_editor_del";
+    set_w("20x");
+    set_h("20x");
+    set_color({1.0, 0.0, 0.5, 1.0});
+}
+UiResult UIC_PrimitiveListEditor_del::click() {
+    UIC_PrimitiveListEditor* uic_PrimitiveListEditor = (UIC_PrimitiveListEditor*)this->parent;
+    uic_PrimitiveListEditor->boundObject.del_list_object();
+    return UiResult(true, Action::None, this);
+}
 
 
 UIC_PrimitiveListEditor::UIC_PrimitiveListEditor(::UI::component::UIC_PrimitiveList& _primitive_list, ::UI::Primitive& _primitive_for_list_to_bind) 
     :   boundObject         { _primitive_list },
         title               { "Primitive List Editor" },
-        add_btn             { UIC_PrimitiveListEditor_add( ) }
+        add_btn             { UIC_PrimitiveListEditor_add( ) },
+        del_btn             { UIC_PrimitiveListEditor_del( ) }
         // add_btn             { UIC_Button( ) }
         // uic_primitive_list  { UIC_PrimitiveList(_primitive) }
 {
@@ -49,6 +53,10 @@ UIC_PrimitiveListEditor::UIC_PrimitiveListEditor(::UI::component::UIC_PrimitiveL
     appendChild(&add_btn);
     add_btn.set_y("^40x");
     add_btn.set_x("<40x");
+
+    appendChild(&del_btn);
+    del_btn.set_y("^40x");
+    del_btn.set_x("<70x");
 
 
     // UNABLE TO BIND THE NON STATIC METHOD!
@@ -87,6 +95,7 @@ void UIC_PrimitiveListEditor::render_component(){
     title.render();
 
     add_btn.render();
+    del_btn.render();
 
     // STENCIL TEST TESTING
     if(stencil_test)
@@ -101,6 +110,9 @@ UiResult UIC_PrimitiveListEditor::try_find_target_component(double x, double y) 
 
     if (add_btn.containsPoint(x, y))
         return UiResult(true, Action::None, &add_btn);
+
+    if (del_btn.containsPoint(x, y))
+        return UiResult(true, Action::None, &del_btn);
 
     
     return UiResult(true, Action::None, this);

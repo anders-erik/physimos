@@ -26,13 +26,19 @@ struct UIC_PrimitiveList : public ::UI::Primitive {
 
     int list_item_stride_px = 40;
     
-    std::vector<::UI::component::UIC_PrimitiveColor> listObjects; // owns these list omponents
-
-    // std::list<::UI::component::UIC_PrimitiveColor> listObjects; // owns these list omponents
+    /** 
+     *  Owns the components.
+     *  In order to prevent a change in the loaction of the objects, thus breaking the internal pointer structure of the components, a linked list is used. Lists never invalidate or move the stored object unless explicitly told to do so. 
+     *  Obviously this solution is slow at a large number of components, but does not pose a realistic threat here. The static nature of the list is very much important. 
+     */
+    std::list<::UI::component::UIC_PrimitiveColor> listObjects;
+    
+    // std::vector<::UI::component::UIC_PrimitiveColor> listObjects;
 
     // std::list<::UI::component::UIC_PrimitiveColor*> listObjectPtnrs;
     
     void new_list_object();
+    void del_list_object();
 
     UiResult try_find_target_component(double x, double y);
     void render_component();

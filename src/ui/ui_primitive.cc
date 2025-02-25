@@ -617,6 +617,8 @@ namespace UI {
 
     void Primitive::render() {
 
+        // WARN: Does update happen when rendereding turned on?
+        // YES? sinze the change flags will remain untouched and then all updates will take place prior to next render!
         if(render_disabled) 
             return;
 

@@ -35,6 +35,13 @@ struct UIC_PrimitiveColor : public ::UI::Primitive {
     UIC_PrimitiveColor_SetGreen set_green_btn;
     UIC_PrimitiveColor_SetRed   set_red_btn;
 
+    /** NOTE: Antipattern during dynamically created components!
+     *  Makes sure that the parent and children pointers are pointing to the actual object within the component.
+     *  I called immediately after object creation.
+     *  Used in cases where I believe the vector is copied during the component creation process, resulting in the original vector going out of scope and the pointers are overwritten.
+     */
+    void reload_pointers(Primitive* _parent);
+
     UiResult try_find_target_component(double x, double y);
     void render_component();
     

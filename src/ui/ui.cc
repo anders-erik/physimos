@@ -223,6 +223,21 @@ void callback_left_release(PInput::PointerPosition _pointer_pos){
         grabbed_primitive = nullptr;
         return;
     }
+
+    // TRIGGER CLICK ON PRIMITIVE LIST EDITOR
+    releaseTargetResult = primitive_list->try_find_target_component(cursor_x, cursor_y);
+    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
+    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
+    if (click_confirmed) {
+        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
+        releaseTargetResult.primitive->click();
+
+        // NEVER PERSIST GRAB ON RELEASE
+        grabbed_primitive = nullptr;
+        return;
+    }
+
+    
     
     // NEVER PERSIST GRAB ON RELEASE
     grabbed_primitive = nullptr;
@@ -245,6 +260,14 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
     // REGISTER FOR CLICK ON RELEASE
     clickTargetResult = primitive_list_editor->try_find_target_component(cursor_x, cursor_y);
+    if(clickTargetResult.success){
+        grabbed_primitive = clickTargetResult.primitive;
+        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+        return;
+    }
+
+    // REGISTER FOR CLICK ON RELEASE
+    clickTargetResult = primitive_list->try_find_target_component(cursor_x, cursor_y);
     if(clickTargetResult.success){
         grabbed_primitive = clickTargetResult.primitive;
         // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);

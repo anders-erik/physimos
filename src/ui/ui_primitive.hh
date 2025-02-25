@@ -188,9 +188,9 @@ class Primitive {
         /** Set the rendered texture to color texture. */
         void set_color_texture(ColorTexture _colorTexture);
         /** The currently rendered texture for UI::Primitive. */
-        unsigned int renderedTexture;
+        unsigned int renderedTexture = 22222222;
         /** Generated when setting a new primitive string in PrimitiveString. */
-        unsigned int privateStringTexture;
+        unsigned int privateStringTexture = 22222222;
 
 
         /** The color used when rendering a primitive. This will always render, even when a texture os string has been set. */

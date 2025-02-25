@@ -51,91 +51,49 @@ UIC_PrimitiveList::UIC_PrimitiveList(::UI::Primitive& _primitive)
     title.set_x("<10x");
     title.set_y("^5x");
 
-    listObjects.reserve(10);
+    // WHEN THE NUBMER OF OBJECT EXCEED THIS, ALL POINTERS NEED TO BE RELOADED!
+    // Unsure of when
+    // listObjects.reserve(4);
 }
 
 void UIC_PrimitiveList::new_list_object(){
-    // std::cout << "::::::::::::::"  << std::endl;
-    
-    // UIC_PrimitiveColor new_color_editor = listObjects.emplace_back(UIC_PrimitiveColor(this, boundObject));
-    
 
-    // Scope creation to destroy children pointers, and then reloads the pointers after temporary scope ends.
-    {
-        UIC_PrimitiveColor new_color_editor = listObjects.emplace_back(UIC_PrimitiveColor(this, boundObject));
-    }
+    // {
+    UIC_PrimitiveColor& new_color_editor = listObjects.emplace_back(UIC_PrimitiveColor(this, boundObject));
+    // }
+    // UIC_PrimitiveColor& new_color_editor = listObjects[listObjects.size()-1];
 
+    new_color_editor.set_color(active_pallete.base1);
 
-    listObjects[listObjects.size() -1].set_color(active_pallete.base1);
-    listObjects[listObjects.size() -1].parent = this;
+    // Make sure all pointers are up to date after 
+    new_color_editor.reload_pointers(this);
 
-    listObjects[listObjects.size() -1].children.pop_back();
-    listObjects[listObjects.size() -1].children.pop_back();
-    listObjects[listObjects.size() -1].children.pop_back();
-    listObjects[listObjects.size() -1].children.push_back(&listObjects[listObjects.size() -1].title);
-    listObjects[listObjects.size() -1].children.push_back(&listObjects[listObjects.size() -1].set_green_btn);
-    listObjects[listObjects.size() -1].children.push_back(&listObjects[listObjects.size() -1].set_red_btn);
-
-    listObjects[listObjects.size() -1].title.parent = &listObjects[listObjects.size() -1];
-    listObjects[listObjects.size() -1].set_red_btn.parent = &listObjects[listObjects.size() - 1];
-    listObjects[listObjects.size() -1].set_green_btn.parent = &listObjects[listObjects.size() - 1];
-
-    // listObjects[listObjects.size() -1].set_w("500x");
-    // listObjects[listObjects.size() -1].set_x("<100x");
-
+    // Place
     int new_y_from_top = list_item_stride_px * listObjects.size();
+    new_color_editor.set_y("^" + std::to_string(new_y_from_top) + "x");
 
-    listObjects[listObjects.size() -1].set_y("^" + std::to_string(new_y_from_top) + "x");
-    // listObjects[listObjects.size() -1].uiTransform.size_has_been_changed = true;
-
-
+    // this->children.push_back(&new_color_editor);
     this->uiTransform.size_has_been_changed = true;
 
-    // listObjects[listObjects.size() -1].title.set_x("<10x");
-    // listObjects[listObjects.size() -1].title.set_y("_100x");
-    // listObjects[listObjects.size() -1].set_red_btn.set_x("<10x");
-    // listObjects[listObjects.size() -1].set_red_btn.set_y("_100x");
-    // listObjects[listObjects.size() -1].set_y("_100x");
+}
+
+void UIC_PrimitiveList::del_list_object(){
+
+    if(listObjects.size() > 0)
+        listObjects.pop_back();
     
-    // UIC_PrimitiveColor* new_color =  uic_store(this, boundObject);
-    // listObjectPtnrs.push_back(uic_store(this, boundObject));
-
-    // appendChild(&new_color_editor);
-
-    // new_color_editor.children.pop_back();
-    // new_color_editor.children.pop_back();
-    // new_color_editor.children.pop_back();
-    // new_color_editor.children.push_back(&new_color_editor.title);
-    // new_color_editor.children.push_back(&new_color_editor.set_green_btn);
-    // new_color_editor.children.push_back(&new_color_editor.set_red_btn);
-    // new_color_editor.appendChild(&new_color_editor.title);
-    // new_color_editor.appendChild(&new_color_editor.set_green_btn);
-    // new_color_editor.appendChild(&new_color_editor.set_red_btn);
-
-    
-    // new_color_editor.parent = this;
 }
 
 void UIC_PrimitiveList::render_component() {
     render();
+
     title.render();
 
-
-    // color_editor_1.render_component();
-
     for(UIC_PrimitiveColor& color_editor : listObjects){
+
         // color_editor.render_component();
-
-        // color_editor.children.pop_back();
-        // color_editor.children.pop_back();
-        // color_editor.children.pop_back();
-        // color_editor.appendChild(&color_editor.title);
-        // color_editor.appendChild(&color_editor.set_green_btn);
-        // color_editor.appendChild(&color_editor.set_red_btn);
-
         color_editor.render_component();
-        // color_editor.render();
-        int x = 0;
+
     }
 
 }
@@ -147,6 +105,13 @@ UiResult UIC_PrimitiveList::try_find_target_component(double x, double y) {
 
     if (title.containsPoint(x, y))
         return UiResult(true, Action::None, &title);
+
+    for(UIC_PrimitiveColor& color_editor : listObjects){
+
+        if (color_editor.containsPoint(x, y))
+            return color_editor.try_find_target_component(x, y);
+
+    }
 
 
     return UiResult(true, Action::None, this);

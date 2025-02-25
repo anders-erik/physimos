@@ -22,6 +22,11 @@ struct UIC_PrimitiveListEditor_add: public ::UI::Primitive {
     UIC_PrimitiveListEditor_add();
 };
 
+struct UIC_PrimitiveListEditor_del: public ::UI::Primitive {
+    UiResult click();
+    UIC_PrimitiveListEditor_del();
+};
+
 
 struct UIC_PrimitiveListEditor : public ::UI::Primitive {
 
@@ -32,6 +37,7 @@ struct UIC_PrimitiveListEditor : public ::UI::Primitive {
     Primitive title;
 
     UIC_PrimitiveListEditor_add add_btn;
+    UIC_PrimitiveListEditor_del del_btn;
     // UIC_Button del_btn;
 
     // UIC_PrimitiveList uic_primitive_list;

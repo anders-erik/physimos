@@ -116,7 +116,10 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(Primitive *_parent, ::UI::Primitive& _pri
         set_red_btn     { UIC_PrimitiveColor_SetRed     (this) }
 {
     id = "prim_color";
-    set_w("180x");
+    // set_w("180x");
+    set_w("96%");
+    set_x("<2%");
+    
     set_h("30x");
     // set_color_texture(ColorTexture::DarkGray);
     set_color(active_pallete.base2);
@@ -135,6 +138,21 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(Primitive *_parent, ::UI::Primitive& _pri
     set_red_btn.set_x("<150x");
     set_red_btn.set_y("^5x");
     
+}
+
+void UIC_PrimitiveColor::reload_pointers(Primitive* _parent){
+    parent = _parent;
+
+    children.pop_back();
+    children.pop_back();
+    children.pop_back();
+    children.push_back(&(this->title));
+    children.push_back(&(this->set_green_btn));
+    children.push_back(&(this->set_red_btn));
+
+    title.parent = this;
+    set_red_btn.parent = this;
+    set_green_btn.parent = this;
 }
 
 void UIC_PrimitiveColor::render_component() {
