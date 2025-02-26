@@ -13,6 +13,12 @@
 #include "ui/ui_texture_string.hh"
 #include "ui/ui_primitive.hh"
 
+#include "ui/uic/uic_root_topbar.hh"
+#include "ui/uic/uic_root_main_view.hh"
+#include "ui/uic/uic_root_left_panel.hh"
+#include "ui/uic/uic_root_right_panel.hh"
+#include "ui/uic/uic_root_workbench.hh"
+
 #include "ui/uic/uic_primitive_editor.hh"
 #include "ui/uic/uic_primitive_list.hh"
 #include "ui/uic/uic_primitive_list_editor.hh"
@@ -51,6 +57,15 @@ UI::component::UIC_PrimitiveEditor* primitive_editor;
 UI::component::UIC_PrimitiveList* primitive_list;
 UI::component::UIC_PrimitiveListEditor* primitive_list_editor;
 
+// ROOT PRIMITIVES
+
+UI::component::UIC_Root_Topbar      topbar;
+UI::component::UIC_Root_MainView    main_view;
+UI::component::UIC_Root_LeftPanel   left_panel;
+UI::component::UIC_Root_RightPanel  right_panel;
+UI::component::UIC_Root_Workbench   workbench;
+
+
 
 void init(){
 
@@ -58,7 +73,7 @@ void init(){
     viewport_width = new_window.width / new_window.xscale;
     viewport_height = new_window.height / new_window.yscale;
 
-    subscribeWindowChange_ui(callback_window_change); // WINDOWING.CPP
+    // subscribeWindowChange_ui(callback_window_change); // WINDOWING.CPP
     
     UI::texture::init_static_color_textures();
     UI::texture::init_static_icon_textures();
@@ -134,12 +149,24 @@ void init(){
     primitive_list_editor->set_h("100xo-10");
     primitive_list_editor->set_w("20%o9");
 
-
+    topbar    = UI::component::UIC_Root_Topbar();
+    main_view = UI::component::UIC_Root_MainView();
+    left_panel    = UI::component::UIC_Root_LeftPanel();
+    right_panel = UI::component::UIC_Root_RightPanel();
+    workbench    = UI::component::UIC_Root_Workbench();
+    
     
 }
 
 void update(){
     glDisable(GL_DEPTH_TEST);
+
+    topbar.render_component();
+    main_view.render_component();
+    left_panel.render_component();
+    right_panel.render_component();
+    workbench.render_component();
+    
 
     primitive_to_edit->render();
     color_primtiive->render();
@@ -305,7 +332,7 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
 }
 
-void callback_window_change(PhysWin physimos_window) {
+void update_window(PhysWin physimos_window) {
 
     viewport_width = physimos_window.width / physimos_window.xscale;
     viewport_height = physimos_window.height / physimos_window.yscale;
@@ -331,6 +358,13 @@ void callback_window_change(PhysWin physimos_window) {
 
     primitive_editor->update_h_real_recursive();
     primitive_editor->update_y_real_recursive();
+
+    // RELOAD ROOT COMPONENTS
+    topbar.uiTransform.size_has_been_changed = true;
+    main_view.uiTransform.size_has_been_changed = true;
+    left_panel.uiTransform.size_has_been_changed = true;
+    right_panel.uiTransform.size_has_been_changed = true;
+    workbench.uiTransform.size_has_been_changed = true;
 }
 
 

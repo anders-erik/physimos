@@ -25,8 +25,8 @@ namespace UI {
     void callback_left_release(PInput::PointerPosition _pointer_pos);
     void callback_scroll_y(double y_change);
 
-    /** UIs callback method for window dimension/scale subscription */
-    void callback_window_change(PhysWin physimos_window);
+    /** Set new window dimension/scale for ui.  */
+    void update_window(PhysWin physimos_window);
 }
 
 

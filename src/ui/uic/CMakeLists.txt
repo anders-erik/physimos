@@ -1,5 +1,11 @@
 
 add_library(uic
+    uic_root_topbar.cc
+    uic_root_main_view.cc
+    uic_root_left_panel.cc
+    uic_root_right_panel.cc
+    uic_root_workbench.cc
+
     uic_primitive_editor.cc
     uic_primitive_color.cc
     uic_primitive_position.cc

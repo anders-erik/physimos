@@ -31,6 +31,7 @@ int conductor_rouse()
 	}
 
 	PInput::init();
+	subscribeWindowChange_conductor(callback_window_change); // WINDOWING.CPP
 
 	// SIMULATORS
 	// Make sure we initialize the simulator BEFORE grabbing it when setting up Simulator continer in the world scene
@@ -90,6 +91,36 @@ void conductor_main(){
 }
 
 
+
+void callback_window_change(PhysWin physimos_window) {
+
+    // viewport_width = physimos_window.width / physimos_window.xscale;
+    // viewport_height = physimos_window.height / physimos_window.yscale;
+
+	UI::update_window(physimos_window);
+    
+    // // SHADER TRANSFORM
+    // shader::texture_shader.set_window_info(
+    //     physimos_window.width,
+    //     physimos_window.height,
+    //     physimos_window.xscale,
+    //     physimos_window.yscale
+    // );
+
+    // shader::color_shader.set_window_info(
+    //     physimos_window.width, 
+    //     physimos_window.height, 
+    //     physimos_window.xscale, 
+    //     physimos_window.yscale
+    // );
+
+    // RELOAD ALL PRIMITIVES TO GET CORRECT DIMENSIONS
+    // primitive_editor->update_w_real_recursive();
+    // primitive_editor->update_x_real_recursive();
+
+    // primitive_editor->update_h_real_recursive();
+    // primitive_editor->update_y_real_recursive();
+}
 
 
 

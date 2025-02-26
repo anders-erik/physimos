@@ -17,7 +17,7 @@ int physimosLoadedOk;
 
 PhysWin physimos_window;
 
-void (*windowChangeCallback_ui)(PhysWin _physimos_window) = nullptr;
+void (*windowChangeCallback_conductor)(PhysWin _physimos_window) = nullptr;
 void (*windowChangeCallback_scene)(PhysWin _physimos_window) = nullptr;
 void (*windowChangeCallback_input)(PhysWin _physimos_window) = nullptr;
 
@@ -36,8 +36,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     
 
     // Window property dependants
-    if (windowChangeCallback_ui != nullptr)
-        windowChangeCallback_ui(physimos_window);
+    if (windowChangeCallback_conductor != nullptr)
+        windowChangeCallback_conductor(physimos_window);
 
     if (windowChangeCallback_scene != nullptr)
         windowChangeCallback_scene(physimos_window);
@@ -51,13 +51,13 @@ void window_content_scale_callback(GLFWwindow* window, float xscale, float yscal
     physimos_window.xscale = xscale;
     physimos_window.yscale = yscale;
 
-    if (windowChangeCallback_ui != nullptr)
-        windowChangeCallback_ui(physimos_window);
+    if (windowChangeCallback_conductor != nullptr)
+        windowChangeCallback_conductor(physimos_window);
 }
 
 
-void subscribeWindowChange_ui(void (*subscriberCallback)(PhysWin physimos_window)) {
-    windowChangeCallback_ui = subscriberCallback;
+void subscribeWindowChange_conductor(void (*subscriberCallback)(PhysWin physimos_window)) {
+    windowChangeCallback_conductor = subscriberCallback;
 }
 void subscribeWindowChange_scene(void (*subscriberCallback)(PhysWin physimos_window)) {
     windowChangeCallback_scene = subscriberCallback;
