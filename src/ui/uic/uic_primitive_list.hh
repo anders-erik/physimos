@@ -36,6 +36,8 @@ struct UIC_PrimitiveList : public ::UI::Primitive {
     // std::vector<::UI::component::UIC_PrimitiveColor> listObjects;
 
     // std::list<::UI::component::UIC_PrimitiveColor*> listObjectPtnrs;
+
+    UiResult scroll(double y_change);
     
     void new_list_object();
     void del_list_object();

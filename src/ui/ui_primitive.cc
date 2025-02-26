@@ -596,13 +596,21 @@ namespace UI {
         children.push_back(childPrimitive);
 
         childPrimitive->parent = this;
-        childPrimitive->z = this->z + 1;
+        update_z_recursive();
+        // childPrimitive->z = this->z + 1;
 
         childPrimitive->update_x_real_recursive();
         childPrimitive->update_y_real_recursive();
     }
 
+    void Primitive::update_z_recursive(){
+        // Root primitives are identified by nullptr parent
+        if(parent != nullptr)
+            z = parent->z + 1;
 
+        for(Primitive* primitive : children)
+            primitive->update_z_recursive();
+    }
 
     void Primitive::render_recursive() {
         if(render_disabled)

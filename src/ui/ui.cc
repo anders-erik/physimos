@@ -180,11 +180,39 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
 
 
 void callback_scroll_y(double y_change) {
+    
+    UiResult scrollTargetQuery;
 
     // TRY SCROLL PRIMITIVE
-    UiResult scrollTargetQuery = primitive_editor->try_find_target_component(cursor_x, cursor_y);
+    scrollTargetQuery = primitive_editor->try_find_target_component(cursor_x, cursor_y);
     if (scrollTargetQuery.success) {
-        scrollTargetQuery.primitive->scroll(y_change);
+
+        if(scrollTargetQuery.primitive->scrollable)
+            scrollTargetQuery.primitive->scroll(y_change);
+    }
+
+    // PRIMITIVE LIST
+    scrollTargetQuery = primitive_list->try_find_target_component(cursor_x, cursor_y);
+    if (scrollTargetQuery.success) {
+
+        // Simply scroll if target is scrollable
+        if(scrollTargetQuery.primitive->scrollable){
+            scrollTargetQuery.primitive->scroll(y_change);
+            return;
+        }
+
+        // If not scrollable, bubble ui tree until root primitive is found.
+        // If at any point a scrollable primtiive is encountered, the scroll method is called
+        Primitive* currentPrimitive = scrollTargetQuery.primitive;
+        while(currentPrimitive->parent != nullptr){
+            currentPrimitive = currentPrimitive->parent;
+            
+            if(currentPrimitive->scrollable){
+                currentPrimitive->scroll(y_change);
+                break;
+            }
+        }       
+        
     }
     
 }

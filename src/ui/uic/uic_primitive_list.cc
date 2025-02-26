@@ -44,6 +44,7 @@ UIC_PrimitiveList::UIC_PrimitiveList(::UI::Primitive& _primitive)
     set_w("180x");
     set_h("30x");
     set_color(active_pallete.base2);
+    scrollable = true;
 
 
     appendChild(&title);
@@ -56,10 +57,29 @@ UIC_PrimitiveList::UIC_PrimitiveList(::UI::Primitive& _primitive)
     // listObjects.reserve(4);
 }
 
+UiResult UIC_PrimitiveList::scroll(double y_change){
+    std::cout << "SCROLL LIST"  << std::endl;
+
+    // Only enable scroll if necessary
+    if(listObjects.size()*list_item_stride_px < uiTransform.h_real)
+        return UiResult();
+
+    for(UIC_PrimitiveColor& color_editor : listObjects){
+
+        // I should probably implmement scroll up/down methods for logic!
+        if(y_change > 0.0)
+            color_editor.dec_y();
+        else
+            color_editor.inc_y();
+    }
+    
+    return UiResult();
+}
+
 void UIC_PrimitiveList::new_list_object(){
 
     // {
-    UIC_PrimitiveColor& new_color_editor = listObjects.emplace_back(UIC_PrimitiveColor(this, boundObject));
+    UIC_PrimitiveColor& new_color_editor = listObjects.emplace_back(UIC_PrimitiveColor(boundObject));
     // }
     // UIC_PrimitiveColor& new_color_editor = listObjects[listObjects.size()-1];
 
@@ -85,7 +105,12 @@ void UIC_PrimitiveList::del_list_object(){
 }
 
 void UIC_PrimitiveList::render_component() {
+
+    color_shader->stencil_start_new_capture();
     render();
+    color_shader->stencil_apply();
+
+
 
     title.render();
 
@@ -96,6 +121,7 @@ void UIC_PrimitiveList::render_component() {
 
     }
 
+    color_shader->stencil_disable();
 }
 
 UiResult UIC_PrimitiveList::try_find_target_component(double x, double y) {

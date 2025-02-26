@@ -60,6 +60,7 @@ UIC_PrimitivePosition_scroll::UIC_PrimitivePosition_scroll() {
     set_w("20x");
     set_h("20x");
     set_texture(texture::get_icon(Icon::ScrollVert));
+    scrollable = true;
 }
 UiResult UIC_PrimitivePosition_scroll::scroll(double y_change) {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;

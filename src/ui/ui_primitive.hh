@@ -179,7 +179,8 @@ class Primitive {
         // Primitives without parents will have a z-value of 1. Each child will recieve a z value of parent.z + 1.
         // A z value of 0 will not be rendered ?
         int z = 1;
-
+        /** Increments the z values recursively. Use when a new parent is set and thus the z value of each descendant needs to reflect this.  */
+        void update_z_recursive();
 
         /** Render flag */
         bool has_texture = false;
@@ -247,6 +248,8 @@ class Primitive {
         /** Sets the state AND the corresponding texture  */
         // void set_state(PrimitiveState _newState);
 
+        /** This flag has to be set for scroll to work. Used during UI bubbling to find scroll primitive.  */
+        bool scrollable = false;
         virtual UiResult click();
         virtual UiResult hover_enter();
         virtual UiResult hover_exit();
