@@ -5,6 +5,8 @@
 #include "ui/ui_primitive.hh"
 
 #include "ui/uic/topbar/uic_grid_toggle.hh"
+#include "ui/uic/topbar/uic_main_states.hh"
+
 
 namespace UI::component {
 
@@ -14,6 +16,7 @@ namespace UI::component {
 struct UIC_Root_Topbar : public ::UI::Primitive {
 
     UIC_Topbar_GridToggle grid_toggle;
+    UIC_Topbar_MainStates main_states;
 
     void update_component();
     void render_component();

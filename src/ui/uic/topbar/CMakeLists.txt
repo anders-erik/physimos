@@ -3,6 +3,7 @@ add_library(uic_topbar
     uic_topbar.cc
 
     uic_grid_toggle.cc
+    uic_main_states.cc
 )
 
 

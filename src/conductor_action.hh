@@ -6,6 +6,9 @@ typedef enum class CAction {
     UI_ToggleWorkbench,
     UI_ToggleLeftPanel,
     UI_ToggleRightPanel,
+    State_ToggleScene3D,
+    State_ToggleCanvas,
+    State_ToggleUIEditor,
 } CAction;
 
 #endif

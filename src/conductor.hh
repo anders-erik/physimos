@@ -5,6 +5,12 @@
 
 #include "conductor_action.hh"
 
+typedef enum class StateMain {
+    Scene3D,
+    Canvas,
+    UIEditor,
+} StateMain;
+
 
 /** Inits all modules necessary for regular physimos start. */
 int conductor_rouse();

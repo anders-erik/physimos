@@ -10,7 +10,8 @@
 namespace UI::component {
 
 UIC_Root_Topbar::UIC_Root_Topbar() 
-    : grid_toggle { UIC_Topbar_GridToggle() }
+    :   grid_toggle { UIC_Topbar_GridToggle() },
+        main_states { UIC_Topbar_MainStates() }
 {
     set_color({0.0, 0.0, 0.0, 0.3});
 
@@ -21,6 +22,7 @@ UIC_Root_Topbar::UIC_Root_Topbar()
     set_y("^0x");
 
     appendChild(&grid_toggle);
+    appendChild(&main_states);
 
 }
 
@@ -37,6 +39,7 @@ void UIC_Root_Topbar::render_component(){
 
     // Contents
     grid_toggle.render_component();
+    main_states.render_component();
 
     color_shader->stencil_disable();
 }
@@ -49,6 +52,9 @@ UiResult UIC_Root_Topbar::try_find_target_component(double x, double y) {
 
     if (grid_toggle.containsPoint(x, y))
         return grid_toggle.try_find_target_component(x, y);
+    
+    if (main_states.containsPoint(x, y))
+        return main_states.try_find_target_component(x, y);
     
     return UiResult(true, CAction::None, this);
 }

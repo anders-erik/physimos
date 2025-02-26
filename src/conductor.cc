@@ -25,6 +25,8 @@
 /** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
 UI::Grid current_grid;
 
+StateMain state_main;
+
 
 /** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
 UI::Primitive* grabbed_primitive = nullptr;
@@ -124,8 +126,8 @@ void conductor_main(){
 
 void conductor_perform_action(CAction action){
 
-	switch (action)
-	{
+	switch (action){
+
 	case CAction::UI_ToggleLeftPanel :
 		current_grid.left_panel_visible = current_grid.left_panel_visible ? false : true;
 		UI::set_ui_grid(current_grid);
@@ -139,6 +141,18 @@ void conductor_perform_action(CAction action){
 	case CAction::UI_ToggleRightPanel :
 		current_grid.right_panel_visible = current_grid.right_panel_visible ? false : true;
 		UI::set_ui_grid(current_grid);
+		break;
+
+	case CAction::State_ToggleScene3D :
+		state_main = StateMain::Scene3D;
+		break;
+	
+	case CAction::State_ToggleCanvas :
+		state_main = StateMain::Canvas;
+		break;
+	
+	case CAction::State_ToggleUIEditor :
+		state_main = StateMain::UIEditor;
 		break;
 	
 	default:
