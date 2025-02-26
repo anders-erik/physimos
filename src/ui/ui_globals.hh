@@ -1,7 +1,7 @@
 #ifndef UI_GLOBALS_HH
 #define UI_GLOBALS_HH
 
-#include "conductor_action.hh"
+#include "conductor_common.hh"
 
 namespace UI {
 

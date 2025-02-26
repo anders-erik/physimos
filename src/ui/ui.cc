@@ -138,7 +138,7 @@ void init(){
     primitive_to_edit = new UI::Primitive();
     primitive_to_edit->id = "primitive_to_edit";
     // primitive_to_edit->set_color(active_pallete.base1);
-    primitive_to_edit->set_x("<500x");
+    primitive_to_edit->set_x("<50%");
     primitive_to_edit->set_y("_50%");
     primitive_to_edit->set_h("200xo-10");
     primitive_to_edit->set_w("10%o9");
@@ -260,15 +260,7 @@ void set_ui_grid(Grid _new_grid){
     return;
 }
 
-void update(){
-    glDisable(GL_DEPTH_TEST);
-
-    topbar->render_component();
-    main_view->render_component();
-    left_panel->render_component();
-    right_panel->render_component();
-    workbench->render_component();
-    
+void render_main_view_components(){
 
     primitive_to_edit->render();
     color_primtiive->render();
@@ -280,6 +272,18 @@ void update(){
     primitive_list->render_component();
     primitive_list_editor->render_component();
 
+}
+
+
+void update(){
+    glDisable(GL_DEPTH_TEST);
+
+    topbar->render_component();
+    main_view->render_component();
+    left_panel->render_component();
+    right_panel->render_component();
+    workbench->render_component();
+    
 }
 
 

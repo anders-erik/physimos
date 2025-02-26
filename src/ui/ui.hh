@@ -6,7 +6,7 @@
 #include "Windowing.hpp"
 #include "Input.hpp"
 
-#include "conductor_action.hh"
+#include "conductor_common.hh"
 
 #include "ui/ui_globals.hh"
 
@@ -30,6 +30,9 @@ namespace UI {
 
     void init();
     void update();
+
+    /** Render main view UI. Currently only for the UI Editor */
+    void render_main_view_components();
 
     /** Queries all UI component and returns the matched primitive with the smallest z-value. */
     UiResult try_find_target(double x, double y);

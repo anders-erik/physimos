@@ -4,9 +4,8 @@
 #include "Windowing.hpp"
 #include "Input.hpp"
 
-#include "conductor_action.hh"
+#include "conductor_common.hh"
 
-#include "ui/ui_globals.hh"
 
 /** Pointer position change detected in window and called by Input. Position is viewport location and pointer_change is position delta since last call. */
 void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change);
@@ -14,6 +13,10 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
 void callback_left_down(PInput::PointerPosition _pointer_pos);
 void callback_left_release(PInput::PointerPosition _pointer_pos);
 void callback_scroll_y(double y_change);
+void callback_key_down(PInput::KeyEvent key_event);
+void callback_key_up(PInput::KeyEvent key_event);
 
+/** Conductors callback method for window dimension/scale subscription */
+void callback_window_change(PhysWin physimos_window);
 
 #endif

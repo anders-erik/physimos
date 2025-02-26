@@ -34,18 +34,17 @@ PointerPosition pointer_pos;
 /** The authoritative pointer change object.  */
 PointerChange pointer_change;
 
+/** Authoritative key input modifier state.  */
+ModifierState modifier_state;
 
 
 // INPUT SUBSCRIBERS CALLBACK POINTERS
-// void (*ui_callback_pointer_position)(PointerPosition _pointer_pos, PointerChange _pointer_change) = nullptr;
-// void (*ui_callback_left_down)(PointerPosition _pointer_pos) = nullptr;
-// void (*ui_callback_left_release)(PointerPosition _pointer_pos) = nullptr;
-// void (*ui_callback_y_scroll)(double x_change) = nullptr;
-
 void (*conductor_callback_pointer_position)(PointerPosition _pointer_pos, PointerChange _pointer_change) = nullptr;
 void (*conductor_callback_left_down)(PointerPosition _pointer_pos) = nullptr;
 void (*conductor_callback_left_release)(PointerPosition _pointer_pos) = nullptr;
 void (*conductor_callback_y_scroll)(double x_change) = nullptr;
+void (*conductor_callback_key_up)(KeyEvent key_event) = nullptr;
+void (*conductor_callback_key_down)(KeyEvent key_event) = nullptr;
 
 
 // EXTERNAL 
@@ -57,18 +56,6 @@ void init() {
 
 
 
-// void subscribe_pointer_position_ui(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change)) {
-// 	ui_callback_pointer_position = subscriberCallback;
-// }
-// void subscribe_mouse_left_down_ui(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
-// 	ui_callback_left_down = subscriberCallback;
-// }
-// void subscribe_mouse_left_release_ui(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
-// 	ui_callback_left_release = subscriberCallback;
-// }
-// void subscribe_mouse_scroll_y_ui(void (*subscriberCallback)(double y_change)) {
-// 	ui_callback_y_scroll = subscriberCallback;
-// }
 
 void subscribe_pointer_position_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change)) {
 	conductor_callback_pointer_position = subscriberCallback;
@@ -81,6 +68,12 @@ void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(PointerPo
 }
 void subscribe_mouse_scroll_y_conductor(void (*subscriberCallback)(double y_change)) {
 	conductor_callback_y_scroll = subscriberCallback;
+}
+void subscribe_key_down_conductor(void (*subscriberCallback)(KeyEvent key_event)) {
+	conductor_callback_key_down = subscriberCallback;
+}
+void subscribe_key_up_conductor(void (*subscriberCallback)(KeyEvent key_event)) {
+	conductor_callback_key_up = subscriberCallback;
 }
 
 
@@ -137,7 +130,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
 		inputState.middleMouse = 0;
 	
-
+		// GLFW_KEY_PAGE_UP
 	// NOTIFY UI OF BUTTON CLICK
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 		glfwGetCursorPos(window, &xpos, &ypos);
@@ -182,12 +175,53 @@ void window_changed_callback(PhysWin _physimos_window) {
 }
 
 
+PKey get_pkey(int key){
+	switch (key)
+	{
+	case GLFW_KEY_B:
+		return PKey::B;
+		break;
+
+	case GLFW_KEY_PAGE_UP:
+		return PKey::PageUp;
+		break;
+
+	case GLFW_KEY_PAGE_DOWN:
+		return PKey::PageDown;
+		break;
+	
+	default:
+		break;
+	}
+
+	return PKey::Unknown;
+}
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     // printf("%d\n", key);
 	// input.s = key;
+
+	modifier_state.shift 	= mods & 1 ? true : false;
+	modifier_state.ctrl 	= mods & 2 ? true : false;
+	modifier_state.alt 		= mods & 4 ? true : false;
 	
+	// std::cout << "a"  << std::endl;
+
+	if(action == GLFW_PRESS)
+		conductor_callback_key_down({
+			get_pkey(key),
+			modifier_state,
+			KeyDir::Down
+		});
+
+	if(action == GLFW_RELEASE)
+		conductor_callback_key_up({
+			get_pkey(key),
+			modifier_state,
+			KeyDir::Up
+		});
 	
 
 	if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL ) && action == GLFW_PRESS)

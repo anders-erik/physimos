@@ -15,7 +15,7 @@
 #include "lib/log.hh"
 
 #include "conductor.hh"
-
+#include "conductor_common.hh"
 #include "conductor_internal.hh"
 
 #include "ui/ui_primitive.hh"
@@ -25,7 +25,7 @@
 /** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
 UI::Grid current_grid;
 
-StateMain state_main;
+StateMain state_main = StateMain::Scene3D;
 
 
 /** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
@@ -62,6 +62,8 @@ int conductor_rouse()
     ::PInput::subscribe_mouse_left_down_conductor(callback_left_down);
     ::PInput::subscribe_mouse_left_release_conductor(callback_left_release);
     ::PInput::subscribe_mouse_scroll_y_conductor(callback_scroll_y);
+	::PInput::subscribe_key_down_conductor(callback_key_down);
+	::PInput::subscribe_key_up_conductor(callback_key_up);
 
 
 
@@ -101,11 +103,14 @@ void conductor_main(){
 
 
 		PScene::updateCurrentScene();
-		PScene::renderCurrentScene();
+		if(state_main == StateMain::Scene3D)
+			PScene::renderCurrentScene();
 
 
 		// update and render ui
 		UI::update();
+		if(state_main == StateMain::UIEditor)
+			UI::render_main_view_components();
 		
 
 
@@ -155,9 +160,28 @@ void conductor_perform_action(CAction action){
 		state_main = StateMain::UIEditor;
 		break;
 	
+	case CAction::State_SwitchRight :
+		if(state_main == StateMain::Scene3D)
+			state_main = StateMain::Canvas;
+		else if(state_main == StateMain::Canvas)
+			state_main = StateMain::UIEditor;
+		else if(state_main == StateMain::UIEditor)
+			state_main = StateMain::Scene3D;
+		break;
+	
+	case CAction::State_SwitchLeft:
+		if(state_main == StateMain::Scene3D)
+			state_main = StateMain::UIEditor;
+		else if(state_main == StateMain::Canvas)
+			state_main = StateMain::Scene3D;
+		else if(state_main == StateMain::UIEditor)
+			state_main = StateMain::Canvas;
+		break;
+
 	default:
 		break;
 	}
+
 }
 
 
@@ -378,5 +402,31 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
         // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
         return;
     }
+
+}
+
+void callback_key_down(PInput::KeyEvent key_event){
+	// std::cout << "DOWN"  << std::endl;
+
+	if	    (key_event.pkey == PInput::PKey::PageUp && key_event.modifier.ctrl){
+		conductor_perform_action(CAction::State_SwitchLeft);
+	}
+	else if (key_event.pkey == PInput::PKey::PageDown && key_event.modifier.ctrl){
+		conductor_perform_action(CAction::State_SwitchRight);
+	}
+	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && key_event.modifier.alt){
+		conductor_perform_action(CAction::UI_ToggleWorkbench);
+	}
+	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && !key_event.modifier.alt){
+		conductor_perform_action(CAction::UI_ToggleLeftPanel);
+	}
+	else if (key_event.pkey == PInput::PKey::B && !key_event.modifier.ctrl && key_event.modifier.alt){
+		conductor_perform_action(CAction::UI_ToggleRightPanel);
+	}
+
+
+}
+void callback_key_up(PInput::KeyEvent key_event){
+	// std::cout << "UP"  << std::endl;
 
 }
