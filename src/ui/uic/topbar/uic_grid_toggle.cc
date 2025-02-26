@@ -14,10 +14,17 @@ UIC_Topbar_GridToggle_LeftPanel::UIC_Topbar_GridToggle_LeftPanel() {
     id = "GridToggle_LeftPanel";
     set_w("20x");
     set_h("20x");
-    set_color({1.0, 0.0, 0.0, 1.0});
+    set_color({0.0, 1.0, 0.0, 1.0});
+
+    // TMP
+    scrollable = true;
 }
 UiResult UIC_Topbar_GridToggle_LeftPanel::click() {
     std::cout << "LEFT PANEL TOGGLE" << std::endl;
+    return UiResult(true, CAction::UI_ToggleLeftPanel, this);
+}
+UiResult UIC_Topbar_GridToggle_LeftPanel::scroll(double dy) {
+    std::cout << "LEFT PANEL SCROLL" << std::endl;
     return UiResult(true, CAction::UI_ToggleLeftPanel, this);
 }
 
@@ -26,7 +33,7 @@ UIC_Topbar_GridToggle_Workbench::UIC_Topbar_GridToggle_Workbench() {
     id = "GridToggle_Workbench";
     set_w("20x");
     set_h("20x");
-    set_color({0.0, 1.0, 0.0, 1.0});
+    set_color({0.0, 0.0, 1.0, 1.0});
 }
 UiResult UIC_Topbar_GridToggle_Workbench::click() {
     std::cout << "WORKBENCH TOGGLE" << std::endl;
@@ -38,7 +45,7 @@ UIC_Topbar_GridToggle_RightPanel::UIC_Topbar_GridToggle_RightPanel() {
     id = "GridToggle_RightPanel";
     set_w("20x");
     set_h("20x");
-    set_color({0.0, 0.0, 1.0, 1.0});
+    set_color({0.0, 1.0, 0.0, 1.0});
 }
 UiResult UIC_Topbar_GridToggle_RightPanel::click() {
     std::cout << "RIGHT PANEL TOGGLE" << std::endl;

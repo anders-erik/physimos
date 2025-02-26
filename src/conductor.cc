@@ -207,6 +207,15 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
     if (targetResult.success) {
         currentlyHoveredPrimitive = targetResult.primitive;
         targetResult.primitive->hover_enter();
+		return;
+    }
+
+	// TRY NEW HOVER
+    targetResult = UI::try_find_target_old(cursor_x, cursor_y);
+    if (targetResult.success) {
+        currentlyHoveredPrimitive = targetResult.primitive;
+        targetResult.primitive->hover_enter();
+		return;
     }
 
 }
@@ -220,12 +229,45 @@ void callback_scroll_y(double y_change) {
     scrollTargetQuery = UI::try_find_target(cursor_x, cursor_y);
     if (scrollTargetQuery.success) {
 
+        if(scrollTargetQuery.primitive->scrollable){
+            scrollTargetQuery.primitive->scroll(y_change);
+
+		}
+    }
+    // BUBBLE TARGET
+    if (scrollTargetQuery.success) {
+
+        // Simply scroll if target is scrollable
+        if(scrollTargetQuery.primitive->scrollable){
+            scrollTargetQuery.primitive->scroll(y_change);
+            return;
+        }
+
+        // If not scrollable, bubble ui tree until root primitive is found.
+        // If at any point a scrollable primtiive is encountered, the scroll method is called
+        UI::Primitive* currentPrimitive = scrollTargetQuery.primitive;
+        while(currentPrimitive->parent != nullptr){
+            currentPrimitive = currentPrimitive->parent;
+
+            if(currentPrimitive->scrollable){
+                currentPrimitive->scroll(y_change);
+                // break;
+				return;
+            }
+        }       
+        
+    }
+
+
+
+	// EDITORS
+    scrollTargetQuery = UI::try_find_target_old(cursor_x, cursor_y);
+    if (scrollTargetQuery.success) {
+
         if(scrollTargetQuery.primitive->scrollable)
             scrollTargetQuery.primitive->scroll(y_change);
     }
-
-    // BUBBLE TARGET
-    // scrollTargetQuery = UI::try_find_target(cursor_x, cursor_y);
+    // BUBBLE TARGET (EDITORS)
     if (scrollTargetQuery.success) {
 
         // Simply scroll if target is scrollable
@@ -259,8 +301,28 @@ void callback_left_release(PInput::PointerPosition _pointer_pos){
     UI::UiResult releaseTargetResult;
     bool click_confirmed;
 
-    // TRIGGER CLICK ON PRIMITIVE EDITOR
+
+    // TRIGGER CLICK
     releaseTargetResult = UI::try_find_target(cursor_x, cursor_y);
+	
+    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
+    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
+    if (click_confirmed) {
+        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
+        UI::UiResult click_result = releaseTargetResult.primitive->click();
+
+		if(click_result.action != CAction::None)
+			conductor_perform_action(click_result.action);
+
+        // NEVER PERSIST GRAB ON RELEASE
+        grabbed_primitive = nullptr;
+        return;
+    }
+
+
+	// PRIMITIVE EDITOR STUFF
+	releaseTargetResult = UI::try_find_target_old(cursor_x, cursor_y);
+	
     // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
     click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
     if (click_confirmed) {
@@ -290,6 +352,13 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
     // REGISTER FOR CLICK ON RELEASE
     clickTargetResult = UI::try_find_target(cursor_x, cursor_y);
+    if(clickTargetResult.success){
+        grabbed_primitive = clickTargetResult.primitive;
+        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+        return;
+    }
+
+	clickTargetResult = UI::try_find_target_old(cursor_x, cursor_y);
     if(clickTargetResult.success){
         grabbed_primitive = clickTargetResult.primitive;
         // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);

@@ -10,6 +10,7 @@ namespace UI::component {
 
 struct UIC_Topbar_GridToggle_LeftPanel : public ::UI::Primitive {
     UiResult click();
+    UiResult scroll(double dy);
     UIC_Topbar_GridToggle_LeftPanel();
 };
 struct UIC_Topbar_GridToggle_RightPanel : public ::UI::Primitive {

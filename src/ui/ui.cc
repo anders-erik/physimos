@@ -72,7 +72,27 @@ UiResult try_find_target(double x, double y){
     result = topbar->try_find_target_component(x, y);
     if (result.success)
         return result;
-        
+
+
+    return UiResult();
+}
+
+UiResult try_find_target_old(double x, double y){
+
+    UiResult result;
+
+    result = primitive_editor->try_find_target_component(x, y);
+    if(result.success)
+        return result;
+
+    result = primitive_list_editor->try_find_target_component(x, y);
+    if(result.success)
+        return result;
+
+    result = primitive_list->try_find_target_component(x, y);
+    if(result.success)
+        return result;
+
 
     return UiResult();
 }
@@ -99,13 +119,6 @@ void init(){
 
     // characters-2.bmp character map
     UI::init_font();
-
-
-    // Subscribe to cursor position from input library
-    ::PInput::subscribe_pointer_position_ui(callback_pointer_position);
-    ::PInput::subscribe_mouse_left_down_ui(callback_left_down);
-    ::PInput::subscribe_mouse_left_release_ui(callback_left_release);
-    ::PInput::subscribe_mouse_scroll_y_ui(callback_scroll_y);
 
 
 
@@ -269,157 +282,7 @@ void update(){
 
 }
 
-void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change) {
 
-    // UI STATE
-    cursor_x = pointer_pos.x;
-    cursor_y = pointer_pos.y;
-
-    // DRAG
-    if(grabbed_primitive != nullptr){
-        grabbed_primitive->grabbed(_pointer_change.dx, _pointer_change.dy);
-    }
-        
-    // RESET HOVER
-    if (currentlyHoveredPrimitive != nullptr) {
-        currentlyHoveredPrimitive->hover_exit();
-        currentlyHoveredPrimitive = nullptr;
-    }
-
-    // TRY NEW HOVER
-    UiResult targetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
-    if (targetResult.success) {
-        currentlyHoveredPrimitive = targetResult.primitive;
-        targetResult.primitive->hover_enter();
-    }
-
-}
-
-
-void callback_scroll_y(double y_change) {
-    
-    UiResult scrollTargetQuery;
-
-    // TRY SCROLL PRIMITIVE
-    scrollTargetQuery = primitive_editor->try_find_target_component(cursor_x, cursor_y);
-    if (scrollTargetQuery.success) {
-
-        if(scrollTargetQuery.primitive->scrollable)
-            scrollTargetQuery.primitive->scroll(y_change);
-    }
-
-    // PRIMITIVE LIST
-    scrollTargetQuery = primitive_list->try_find_target_component(cursor_x, cursor_y);
-    if (scrollTargetQuery.success) {
-
-        // Simply scroll if target is scrollable
-        if(scrollTargetQuery.primitive->scrollable){
-            scrollTargetQuery.primitive->scroll(y_change);
-            return;
-        }
-
-        // If not scrollable, bubble ui tree until root primitive is found.
-        // If at any point a scrollable primtiive is encountered, the scroll method is called
-        Primitive* currentPrimitive = scrollTargetQuery.primitive;
-        while(currentPrimitive->parent != nullptr){
-            currentPrimitive = currentPrimitive->parent;
-
-            if(currentPrimitive->scrollable){
-                currentPrimitive->scroll(y_change);
-                break;
-            }
-        }       
-        
-    }
-    
-}
-
-void callback_left_release(PInput::PointerPosition _pointer_pos){
-
-    // We are only interested in release behavior if we targeted a primitive on left click
-    if (grabbed_primitive == nullptr)
-        return;
-    
-    UiResult releaseTargetResult;
-    bool click_confirmed;
-
-    // TRIGGER CLICK ON PRIMITIVE EDITOR
-    releaseTargetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
-    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
-    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
-    if (click_confirmed) {
-        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
-        releaseTargetResult.primitive->click();
-
-        // NEVER PERSIST GRAB ON RELEASE
-        grabbed_primitive = nullptr;
-        return;
-    }
-
-    // TRIGGER CLICK ON PRIMITIVE LIST EDITOR
-    releaseTargetResult = primitive_list_editor->try_find_target_component(cursor_x, cursor_y);
-    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
-    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
-    if (click_confirmed) {
-        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
-        releaseTargetResult.primitive->click();
-
-        // NEVER PERSIST GRAB ON RELEASE
-        grabbed_primitive = nullptr;
-        return;
-    }
-
-    // TRIGGER CLICK ON PRIMITIVE LIST EDITOR
-    releaseTargetResult = primitive_list->try_find_target_component(cursor_x, cursor_y);
-    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
-    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
-    if (click_confirmed) {
-        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
-        releaseTargetResult.primitive->click();
-
-        // NEVER PERSIST GRAB ON RELEASE
-        grabbed_primitive = nullptr;
-        return;
-    }
-
-    
-    
-    // NEVER PERSIST GRAB ON RELEASE
-    grabbed_primitive = nullptr;
-    return;
-    
-}
-
-void callback_left_down(PInput::PointerPosition _pointer_pos) {
-
-    UiResult clickTargetResult;
-
-
-    // REGISTER FOR CLICK ON RELEASE
-    clickTargetResult = primitive_editor->try_find_target_component(cursor_x, cursor_y);
-    if(clickTargetResult.success){
-        grabbed_primitive = clickTargetResult.primitive;
-        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
-        return;
-    }
-
-    // REGISTER FOR CLICK ON RELEASE
-    clickTargetResult = primitive_list_editor->try_find_target_component(cursor_x, cursor_y);
-    if(clickTargetResult.success){
-        grabbed_primitive = clickTargetResult.primitive;
-        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
-        return;
-    }
-
-    // REGISTER FOR CLICK ON RELEASE
-    clickTargetResult = primitive_list->try_find_target_component(cursor_x, cursor_y);
-    if(clickTargetResult.success){
-        grabbed_primitive = clickTargetResult.primitive;
-        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
-        return;
-    }
-
-}
 
 void update_window(PhysWin physimos_window) {
 

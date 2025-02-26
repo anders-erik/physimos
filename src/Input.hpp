@@ -27,13 +27,13 @@ void init();
 // SUBSCRIBERS
 
 /** Called by external module to subscribe to any change in the pointer position within physimos window. */
-void subscribe_pointer_position_ui(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change));
-/** Called by external module to subscribe to any change in the pointer position within physimos window. */
-void subscribe_mouse_left_release_ui(void (*subscriberCallback)(PointerPosition _pointer_pos));
-/** Called by external module to subscribe to any left click detected within physimos window. */
-void subscribe_mouse_left_down_ui(void (*subscriberCallback)(PointerPosition _pointer_pos));
-/** Called by external module to subscribe to any left click detected within physimos window. */
-void subscribe_mouse_scroll_y_ui(void (*subscriberCallback)(double y_change));
+// void subscribe_pointer_position_ui(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change));
+// /** Called by external module to subscribe to any change in the pointer position within physimos window. */
+// void subscribe_mouse_left_release_ui(void (*subscriberCallback)(PointerPosition _pointer_pos));
+// /** Called by external module to subscribe to any left click detected within physimos window. */
+// void subscribe_mouse_left_down_ui(void (*subscriberCallback)(PointerPosition _pointer_pos));
+// /** Called by external module to subscribe to any left click detected within physimos window. */
+// void subscribe_mouse_scroll_y_ui(void (*subscriberCallback)(double y_change));
 
 /** Called by external module to subscribe to any change in the pointer position within physimos window. */
 void subscribe_pointer_position_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change));
