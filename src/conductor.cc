@@ -16,6 +16,8 @@
 #include "conductor.hh"
 
 
+
+/** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
 UI::Grid current_grid;
 
 

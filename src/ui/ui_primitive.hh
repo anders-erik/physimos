@@ -167,7 +167,7 @@ class Primitive {
         ::UI::shader::TextureShader*    texture_shader;
         ::UI::shader::ColorShader*      color_shader;
 
-        bool render_disabled = false;
+        bool render_enabled = true;
 
         /** Set the 4x4 transformation matrix that will be set as shader uniform */
         void updateTransformationMatrix();

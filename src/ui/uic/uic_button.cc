@@ -18,7 +18,7 @@ void UIC_Button::set_click_callback(void (*new_callback_click)()){
 
 UiResult UIC_Button::click() {
     callback_click();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 }

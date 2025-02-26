@@ -1,9 +1,10 @@
-#ifndef UIC_ROOT_TOPBAR_HH
-#define UIC_ROOT_TOPBAR_HH
+#ifndef UIC_TOPBAR_HH
+#define UIC_TOPBAR_HH
 
 
 #include "ui/ui_primitive.hh"
 
+#include "ui/uic/topbar/uic_grid_toggle.hh"
 
 namespace UI::component {
 
@@ -11,6 +12,8 @@ namespace UI::component {
 
 
 struct UIC_Root_Topbar : public ::UI::Primitive {
+
+    UIC_Topbar_GridToggle grid_toggle;
 
     void update_component();
     void render_component();

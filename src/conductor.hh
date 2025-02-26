@@ -3,6 +3,9 @@
 
 #include "Windowing.hpp"
 
+#include "conductor_action.hh"
+
+
 /** Inits all modules necessary for regular physimos start. */
 int conductor_rouse();
 /** Physimos main loop. */

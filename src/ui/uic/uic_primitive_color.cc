@@ -27,23 +27,23 @@ UiResult UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
 
     std::cout << "DRAGGING GREEN COLOR"  << std::endl;
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::scroll(double y_change){
     std::cout << "SCROLL GREEN COLOR = : " << y_change << std::endl;
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::hover_enter() {
     // set_state(PrimitiveState::Hover);
     // darkness_shift = 0.2f;
     set_darkness_shift(0.2f);
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::hover_exit() {
     // set_state(PrimitiveState::Default);
     // darkness_shift = 0.0f;
     reset_darkness_shift();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::click(){
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
@@ -53,7 +53,7 @@ UiResult UIC_PrimitiveColor_SetGreen::click(){
 
     // uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Green);
     uic_PrimitiveColor->boundObject.set_color({0.0, 1.0, 0.0, 1.0});
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -77,7 +77,7 @@ UiResult UIC_PrimitiveColor_SetRed::click() {
 
     // uic_PrimitiveColor->boundObject.set_color_texture(ColorTexture::Red);
     uic_PrimitiveColor->boundObject.set_color({1.0, 0.0, 0.0, 1.0});
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
@@ -89,7 +89,7 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
     id = "prim_color";
     set_w("96%");
     set_x("<2%");
-    
+
     set_h("30x");
     // set_color_texture(ColorTexture::DarkGray);
     set_color(active_pallete.base2);
@@ -172,15 +172,15 @@ UiResult UIC_PrimitiveColor::try_find_target_component(double x, double y) {
         return UiResult();
 
     if (title.containsPoint(x, y))
-        return UiResult(true, Action::None, &title);
+        return UiResult(true, CAction::None, &title);
 
     if (set_green_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &set_green_btn);
+        return UiResult(true, CAction::None, &set_green_btn);
 
     if (set_red_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &set_red_btn);
+        return UiResult(true, CAction::None, &set_red_btn);
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 
 }
 

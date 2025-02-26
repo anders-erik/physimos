@@ -1,6 +1,7 @@
 #ifndef UI_GLOBALS_HH
 #define UI_GLOBALS_HH
 
+#include "conductor_action.hh"
 
 namespace UI {
 
@@ -86,22 +87,22 @@ namespace UI {
     void set_active_pallete(ColorPalletes color_pallete);
     
 
-    enum Action {
-        None = 0,
-        TogglePObjectContainer = 10,
-        LoadPObject = 11,
-        ReloadPObject = 12,
-    };
+    // enum Action {
+    //     None = 0,
+    //     TogglePObjectContainer = 10,
+    //     LoadPObject = 11,
+    //     ReloadPObject = 12,
+    // };
 
     typedef struct UiResult {
         bool success = false;
-        Action action = Action::None;
+        CAction action = CAction::None;
         Primitive* primitive = nullptr;
         
         UiResult() {};
         UiResult(bool _success) : success {_success} {};
-        UiResult(bool _success, Action _action) : success{ _success }, action{_action} {};
-        UiResult(bool _success, Action _action, Primitive* _primitive) : success{ _success }, action{ _action }, primitive{_primitive} {};
+        UiResult(bool _success, CAction _action) : success{ _success }, action{_action} {};
+        UiResult(bool _success, CAction _action, Primitive* _primitive) : success{ _success }, action{ _action }, primitive{_primitive} {};
     } UiResult;
 
     

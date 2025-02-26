@@ -613,7 +613,7 @@ namespace UI {
     }
 
     void Primitive::render_recursive() {
-        if(render_disabled)
+        if(!render_enabled)
             return;
         
         render();
@@ -627,7 +627,7 @@ namespace UI {
 
         // WARN: Does update happen when rendereding turned on?
         // YES? sinze the change flags will remain untouched and then all updates will take place prior to next render!
-        if(render_disabled) 
+        if(!render_enabled) 
             return;
 
         if (uiTransform.size_has_been_changed) {

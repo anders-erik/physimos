@@ -4,26 +4,26 @@
 
 #include "ui/ui_globals.hh"
 
-#include "uic_root_workbench.hh"
+#include "ui/uic/topbar/uic_grid_toggle.hh"
 
 
 namespace UI::component {
 
-UIC_Root_Workbench::UIC_Root_Workbench() {
-    set_color({0.0, 0.0, 1.0, 0.1});
+UIC_Topbar_GridToggle::UIC_Topbar_GridToggle() {
+    set_color({0.0, 0.0, 0.0, 0.8});
 
-    set_w("60%");
-    set_h("20%");
+    set_w("100x");
+    set_h("30x");
 
-    set_x("<20%");
-    set_y("_0x");
+    set_x(">0x");
+    set_y("^0x");
 
 }
 
-void UIC_Root_Workbench::update_component() {}
+void UIC_Topbar_GridToggle::update_component() {}
 
 
-void UIC_Root_Workbench::render_component(){
+void UIC_Topbar_GridToggle::render_component(){
 
     color_shader->stencil_start_new_capture();
 
@@ -37,7 +37,7 @@ void UIC_Root_Workbench::render_component(){
 }
 
 
-UiResult UIC_Root_Workbench::try_find_target_component(double x, double y) {
+UiResult UIC_Topbar_GridToggle::try_find_target_component(double x, double y) {
 
     if (!containsPoint(x, y))
         return UiResult();

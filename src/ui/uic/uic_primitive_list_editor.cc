@@ -19,7 +19,7 @@ UIC_PrimitiveListEditor_add::UIC_PrimitiveListEditor_add() {
 UiResult UIC_PrimitiveListEditor_add::click() {
     UIC_PrimitiveListEditor* uic_PrimitiveListEditor = (UIC_PrimitiveListEditor*)this->parent;
     uic_PrimitiveListEditor->boundObject.new_list_object();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 UIC_PrimitiveListEditor_del::UIC_PrimitiveListEditor_del() {
@@ -31,7 +31,7 @@ UIC_PrimitiveListEditor_del::UIC_PrimitiveListEditor_del() {
 UiResult UIC_PrimitiveListEditor_del::click() {
     UIC_PrimitiveListEditor* uic_PrimitiveListEditor = (UIC_PrimitiveListEditor*)this->parent;
     uic_PrimitiveListEditor->boundObject.del_list_object();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -109,13 +109,13 @@ UiResult UIC_PrimitiveListEditor::try_find_target_component(double x, double y) 
         return UiResult();
 
     if (add_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &add_btn);
+        return UiResult(true, CAction::None, &add_btn);
 
     if (del_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &del_btn);
+        return UiResult(true, CAction::None, &del_btn);
 
     
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
     
 }
 

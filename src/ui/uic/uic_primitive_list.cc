@@ -130,7 +130,7 @@ UiResult UIC_PrimitiveList::try_find_target_component(double x, double y) {
         return UiResult();
 
     if (title.containsPoint(x, y))
-        return UiResult(true, Action::None, &title);
+        return UiResult(true, CAction::None, &title);
 
     for(UIC_PrimitiveColor& color_editor : listObjects){
 
@@ -140,7 +140,7 @@ UiResult UIC_PrimitiveList::try_find_target_component(double x, double y) {
     }
 
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 
 }
 

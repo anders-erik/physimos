@@ -6,7 +6,7 @@
 #include "Windowing.hpp"
 #include "Input.hpp"
 
-
+#include "conductor_action.hh"
 
 namespace UI {
 
@@ -20,7 +20,7 @@ namespace UI {
         size_t workbench_h_pct = 25;
         bool left_panel_visible = true;
         bool right_panel_visible = true;
-        bool workbench_visible = false;
+        bool workbench_visible = true;
     } Grid;
 
 

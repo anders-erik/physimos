@@ -13,7 +13,7 @@
 #include "ui/ui_texture_string.hh"
 #include "ui/ui_primitive.hh"
 
-#include "ui/uic/uic_root_topbar.hh"
+#include "ui/uic/topbar/uic_topbar.hh"
 #include "ui/uic/uic_root_main_view.hh"
 #include "ui/uic/uic_root_left_panel.hh"
 #include "ui/uic/uic_root_right_panel.hh"
@@ -59,11 +59,11 @@ UI::component::UIC_PrimitiveListEditor* primitive_list_editor;
 
 // ROOT PRIMITIVES
 
-UI::component::UIC_Root_Topbar      topbar;
-UI::component::UIC_Root_MainView    main_view;
-UI::component::UIC_Root_LeftPanel   left_panel;
-UI::component::UIC_Root_RightPanel  right_panel;
-UI::component::UIC_Root_Workbench   workbench;
+UI::component::UIC_Root_Topbar*      topbar;
+UI::component::UIC_Root_MainView*    main_view;
+UI::component::UIC_Root_LeftPanel*   left_panel;
+UI::component::UIC_Root_RightPanel*  right_panel;
+UI::component::UIC_Root_Workbench*   workbench;
 
 
 
@@ -100,7 +100,7 @@ void init(){
 
     // COLOR PRIMITIVE
     color_primtiive = new UI::Primitive();
-    color_primtiive->render_disabled = true;
+    color_primtiive->render_enabled = false;
     color_primtiive->has_texture = false;
     color_primtiive->set_color({0.5,0.5,1.0,1.0});
     color_primtiive->id = "color_primitive";
@@ -122,7 +122,7 @@ void init(){
     primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
     primitive_editor->id = "editor_id";
     primitive_editor->set_x("<74%");
-    primitive_editor->set_y("^1%");
+    primitive_editor->set_y("^10%");
     primitive_editor->set_h("50%");
     primitive_editor->set_w("25%");
     primitive_editor->uiTransform.w_min = 100;
@@ -149,78 +149,88 @@ void init(){
     primitive_list_editor->set_h("100xo-10");
     primitive_list_editor->set_w("20%o9");
 
-    topbar    = UI::component::UIC_Root_Topbar();
-    main_view = UI::component::UIC_Root_MainView();
-    left_panel    = UI::component::UIC_Root_LeftPanel();
-    right_panel = UI::component::UIC_Root_RightPanel();
-    workbench    = UI::component::UIC_Root_Workbench();
+    topbar      = new UI::component::UIC_Root_Topbar();
+    main_view   = new UI::component::UIC_Root_MainView();
+    left_panel  = new UI::component::UIC_Root_LeftPanel();
+    right_panel = new UI::component::UIC_Root_RightPanel();
+    workbench   = new UI::component::UIC_Root_Workbench();
     
     
 }
 
 void set_ui_grid(Grid _new_grid){
 
-    topbar.set_h(std::to_string(_new_grid.topbar_h_px) +  "x");
+    topbar->set_h(std::to_string(_new_grid.topbar_h_px) +  "x");
 
     // Workbench & MainView height : 2 OPTIONS
     if(_new_grid.workbench_visible){
-        workbench.set_h(std::to_string(_new_grid.workbench_h_pct) + "%");
-        workbench.set_y("_0%");
+        workbench->render_enabled = true;
+        workbench->set_h(std::to_string(_new_grid.workbench_h_pct) + "%");
+        workbench->set_y("_0%");
 
-        main_view.set_h(std::to_string(100 - _new_grid.workbench_h_pct) + "%o-" + std::to_string(_new_grid.topbar_h_px));
-        main_view.set_y("_" + std::to_string(_new_grid.workbench_h_pct) + "%");
+        main_view->set_h(std::to_string(100 - _new_grid.workbench_h_pct) + "%o-" + std::to_string(_new_grid.topbar_h_px));
+        main_view->set_y("_" + std::to_string(_new_grid.workbench_h_pct) + "%");
     }
     else {
-        workbench.set_h("0%");
-        workbench.set_y("_0%");
+        // workbench->set_h("0%");
+        workbench->render_enabled = false;
+        workbench->set_y("_0%");
 
-        main_view.set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
-        main_view.set_y("_0%");
+        main_view->set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
+        main_view->set_y("_0%");
     }
 
     // Only affected by toolbar height
-    left_panel.set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
-    right_panel.set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
+    left_panel->set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
+    right_panel->set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
 
 
     // Panels & MainView Width: 4 options
     // left & right visible, only left, only right, both hidden
     if      (_new_grid.left_panel_visible && _new_grid.right_panel_visible){
-        left_panel.set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
-        right_panel.set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
+        left_panel->render_enabled = true;
+        left_panel->set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
+        right_panel->render_enabled = true;
+        right_panel->set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
 
-        workbench.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
-        workbench.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
-        main_view.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
-        main_view.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+        workbench->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
+        workbench->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+        main_view->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
+        main_view->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
     }
     else if (_new_grid.left_panel_visible && !_new_grid.right_panel_visible){
-        left_panel.set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
-        right_panel.set_w(std::to_string(0) + "%");
+        left_panel->render_enabled = true;
+        left_panel->set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
+        right_panel->render_enabled = false;
+        right_panel->set_w(std::to_string(0) + "%");
 
-        main_view.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
-        main_view.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
-        workbench.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
-        workbench.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+        main_view->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
+        main_view->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+        workbench->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
+        workbench->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
 
     }
     else if (!_new_grid.left_panel_visible && _new_grid.right_panel_visible){
-        left_panel.set_w (std::to_string(0) + "%");
-        right_panel.set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
+        // left_panel->set_w (std::to_string(0) + "%");
+        left_panel->render_enabled = false;
+        right_panel->render_enabled = true;
+        right_panel->set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
 
-        workbench.set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
-        workbench.set_x("<0%");
-        main_view.set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
-        main_view.set_x("<0%");
+        workbench->set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
+        workbench->set_x("<0%");
+        main_view->set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
+        main_view->set_x("<0%");
     }
     else {
-        left_panel.set_w (std::to_string(0) + "%");
-        right_panel.set_w(std::to_string(0) + "%");
+        // left_panel->set_w (std::to_string(0) + "%");
+        // right_panel->set_w(std::to_string(0) + "%");
+        left_panel->render_enabled = false;
+        right_panel->render_enabled = false;
 
-        workbench.set_w  (std::to_string(100) + "%");
-        workbench.set_x("<0%");
-        main_view.set_w  (std::to_string(100) + "%");
-        main_view.set_x("<0%");
+        workbench->set_w  (std::to_string(100) + "%");
+        workbench->set_x("<0%");
+        main_view->set_w  (std::to_string(100) + "%");
+        main_view->set_x("<0%");
     }
 
     return;
@@ -229,11 +239,11 @@ void set_ui_grid(Grid _new_grid){
 void update(){
     glDisable(GL_DEPTH_TEST);
 
-    topbar.render_component();
-    main_view.render_component();
-    left_panel.render_component();
-    right_panel.render_component();
-    workbench.render_component();
+    topbar->render_component();
+    main_view->render_component();
+    left_panel->render_component();
+    right_panel->render_component();
+    workbench->render_component();
     
 
     primitive_to_edit->render();
@@ -428,11 +438,11 @@ void update_window(PhysWin physimos_window) {
     primitive_editor->update_y_real_recursive();
 
     // RELOAD ROOT COMPONENTS
-    topbar.uiTransform.size_has_been_changed = true;
-    main_view.uiTransform.size_has_been_changed = true;
-    left_panel.uiTransform.size_has_been_changed = true;
-    right_panel.uiTransform.size_has_been_changed = true;
-    workbench.uiTransform.size_has_been_changed = true;
+    topbar->uiTransform.size_has_been_changed = true;
+    main_view->uiTransform.size_has_been_changed = true;
+    left_panel->uiTransform.size_has_been_changed = true;
+    right_panel->uiTransform.size_has_been_changed = true;
+    workbench->uiTransform.size_has_been_changed = true;
 }
 
 

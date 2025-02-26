@@ -15,7 +15,7 @@ UIC_PrimitivePosition_up::UIC_PrimitivePosition_up() {
 UiResult UIC_PrimitivePosition_up::click() {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
     uic_PrimitivePosition->boundObject.inc_y();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -27,7 +27,7 @@ UIC_PrimitivePosition_down::UIC_PrimitivePosition_down() {
 UiResult UIC_PrimitivePosition_down::click() {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
     uic_PrimitivePosition->boundObject.dec_y();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 UIC_PrimitivePosition_left::UIC_PrimitivePosition_left() {
@@ -38,7 +38,7 @@ UIC_PrimitivePosition_left::UIC_PrimitivePosition_left() {
 UiResult UIC_PrimitivePosition_left::click() {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
     uic_PrimitivePosition->boundObject.dec_x();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 UIC_PrimitivePosition_right::UIC_PrimitivePosition_right() {
@@ -49,7 +49,7 @@ UIC_PrimitivePosition_right::UIC_PrimitivePosition_right() {
 UiResult UIC_PrimitivePosition_right::click() {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
     uic_PrimitivePosition->boundObject.inc_x();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -70,7 +70,7 @@ UiResult UIC_PrimitivePosition_scroll::scroll(double y_change) {
     else
         uic_PrimitivePosition->boundObject.dec_y();
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 UIC_PrimitivePosition_drag::UIC_PrimitivePosition_drag() {
@@ -102,7 +102,7 @@ UiResult UIC_PrimitivePosition_drag::grabbed(double dx, double dy) {
         uic_PrimitivePosition->boundObject.dec_x();
     }
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -177,29 +177,29 @@ UiResult UIC_PrimitivePosition::try_find_target_component(double x, double y) {
         return UiResult();
 
     if (title.containsPoint(x, y))
-        return UiResult(true, Action::None, &title);
+        return UiResult(true, CAction::None, &title);
 
 
     if (up_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &up_btn);
+        return UiResult(true, CAction::None, &up_btn);
 
     if (down_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &down_btn);
+        return UiResult(true, CAction::None, &down_btn);
 
     if (left_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &left_btn);
+        return UiResult(true, CAction::None, &left_btn);
 
     if (right_btn.containsPoint(x, y))
-        return UiResult(true, Action::None, &right_btn);
+        return UiResult(true, CAction::None, &right_btn);
 
 
     if (scroll.containsPoint(x, y))
-        return UiResult(true, Action::None, &scroll);
+        return UiResult(true, CAction::None, &scroll);
 
     if (drag.containsPoint(x, y))
-        return UiResult(true, Action::None, &drag);
+        return UiResult(true, CAction::None, &drag);
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 
 }
 

@@ -75,10 +75,10 @@ UiResult UIC_PrimitiveEditor::try_find_target_component(double x, double y) {
         return UiResult();
 
     if (title.containsPoint(x, y))
-        return UiResult(true, Action::None, &title);
+        return UiResult(true, CAction::None, &title);
 
     if (id_string.containsPoint(x, y))
-        return UiResult(true, Action::None, &id_string);
+        return UiResult(true, CAction::None, &id_string);
     
     UiResult uiResult = uic_primitive_color.try_find_target_component(x, y);
     if (uiResult.success)
@@ -92,7 +92,7 @@ UiResult UIC_PrimitiveEditor::try_find_target_component(double x, double y) {
     if (prim_size_query.success)
         return prim_size_query;
     
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
     
 }
 

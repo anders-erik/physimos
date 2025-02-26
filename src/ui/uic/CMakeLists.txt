@@ -1,6 +1,7 @@
 
+add_subdirectory(topbar)
+
 add_library(uic
-    uic_root_topbar.cc
     uic_root_main_view.cc
     uic_root_left_panel.cc
     uic_root_right_panel.cc

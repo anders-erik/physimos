@@ -15,7 +15,7 @@ UIC_PrimitiveSize_dec_width::UIC_PrimitiveSize_dec_width() {
 UiResult UIC_PrimitiveSize_dec_width::click() {
     UIC_PrimitiveSize* uic_PrimitiveSize = (UIC_PrimitiveSize*)this->parent;
     uic_PrimitiveSize->boundObject.dec_w();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -27,7 +27,7 @@ UIC_PrimitiveSize_inc_width::UIC_PrimitiveSize_inc_width() {
 UiResult UIC_PrimitiveSize_inc_width::click() {
     UIC_PrimitiveSize* uic_PrimitiveSize = (UIC_PrimitiveSize*)this->parent;
     uic_PrimitiveSize->boundObject.inc_w();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 UIC_PrimitiveSize_dec_height::UIC_PrimitiveSize_dec_height() {
@@ -38,7 +38,7 @@ UIC_PrimitiveSize_dec_height::UIC_PrimitiveSize_dec_height() {
 UiResult UIC_PrimitiveSize_dec_height::click() {
     UIC_PrimitiveSize* uic_PrimitiveSize = (UIC_PrimitiveSize*)this->parent;
     uic_PrimitiveSize->boundObject.dec_h();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 UIC_PrimitiveSize_inc_height::UIC_PrimitiveSize_inc_height() {
@@ -49,7 +49,7 @@ UIC_PrimitiveSize_inc_height::UIC_PrimitiveSize_inc_height() {
 UiResult UIC_PrimitiveSize_inc_height::click() {
     UIC_PrimitiveSize* uic_PrimitiveSize = (UIC_PrimitiveSize*)this->parent;
     uic_PrimitiveSize->boundObject.inc_h();
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -88,7 +88,7 @@ UiResult UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
     }
 
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
@@ -152,21 +152,21 @@ UiResult UIC_PrimitiveSize::try_find_target_component(double x, double y) {
         return UiResult();
 
     if (dec_width.containsPoint(x, y))
-        return UiResult(true, Action::None, &dec_width);
+        return UiResult(true, CAction::None, &dec_width);
 
     if (inc_width.containsPoint(x, y))
-        return UiResult(true, Action::None, &inc_width);
+        return UiResult(true, CAction::None, &inc_width);
 
     if (dec_height.containsPoint(x, y))
-        return UiResult(true, Action::None, &dec_height);
+        return UiResult(true, CAction::None, &dec_height);
 
     if (inc_height.containsPoint(x, y))
-        return UiResult(true, Action::None, &inc_height);
+        return UiResult(true, CAction::None, &inc_height);
     
     if (drag.containsPoint(x, y))
-        return UiResult(true, Action::None, &drag);
+        return UiResult(true, CAction::None, &drag);
 
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 
 }
 

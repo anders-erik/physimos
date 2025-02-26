@@ -42,7 +42,7 @@ UiResult UIC_Root_RightPanel::try_find_target_component(double x, double y) {
     if (!containsPoint(x, y))
         return UiResult();
     
-    return UiResult(true, Action::None, this);
+    return UiResult(true, CAction::None, this);
 }
 
 
