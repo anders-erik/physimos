@@ -158,6 +158,74 @@ void init(){
     
 }
 
+void set_ui_grid(Grid _new_grid){
+
+    topbar.set_h(std::to_string(_new_grid.topbar_h_px) +  "x");
+
+    // Workbench & MainView height : 2 OPTIONS
+    if(_new_grid.workbench_visible){
+        workbench.set_h(std::to_string(_new_grid.workbench_h_pct) + "%");
+        workbench.set_y("_0%");
+
+        main_view.set_h(std::to_string(100 - _new_grid.workbench_h_pct) + "%o-" + std::to_string(_new_grid.topbar_h_px));
+        main_view.set_y("_" + std::to_string(_new_grid.workbench_h_pct) + "%");
+    }
+    else {
+        workbench.set_h("0%");
+        workbench.set_y("_0%");
+
+        main_view.set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
+        main_view.set_y("_0%");
+    }
+
+    // Only affected by toolbar height
+    left_panel.set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
+    right_panel.set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
+
+
+    // Panels & MainView Width: 4 options
+    // left & right visible, only left, only right, both hidden
+    if      (_new_grid.left_panel_visible && _new_grid.right_panel_visible){
+        left_panel.set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
+        right_panel.set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
+
+        workbench.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
+        workbench.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+        main_view.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
+        main_view.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+    }
+    else if (_new_grid.left_panel_visible && !_new_grid.right_panel_visible){
+        left_panel.set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
+        right_panel.set_w(std::to_string(0) + "%");
+
+        main_view.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
+        main_view.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+        workbench.set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
+        workbench.set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
+
+    }
+    else if (!_new_grid.left_panel_visible && _new_grid.right_panel_visible){
+        left_panel.set_w (std::to_string(0) + "%");
+        right_panel.set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
+
+        workbench.set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
+        workbench.set_x("<0%");
+        main_view.set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
+        main_view.set_x("<0%");
+    }
+    else {
+        left_panel.set_w (std::to_string(0) + "%");
+        right_panel.set_w(std::to_string(0) + "%");
+
+        workbench.set_w  (std::to_string(100) + "%");
+        workbench.set_x("<0%");
+        main_view.set_w  (std::to_string(100) + "%");
+        main_view.set_x("<0%");
+    }
+
+    return;
+}
+
 void update(){
     glDisable(GL_DEPTH_TEST);
 

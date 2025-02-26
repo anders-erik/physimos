@@ -15,7 +15,7 @@ UIC_Root_RightPanel::UIC_Root_RightPanel() {
     set_w("20%");
     set_h("100%o-30");
 
-    set_x("<80%");
+    set_x(">0x");
     set_y("_0x");
 
 }

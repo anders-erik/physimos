@@ -16,6 +16,10 @@
 #include "conductor.hh"
 
 
+UI::Grid current_grid;
+
+
+
 
 int conductor_rouse()
 {
@@ -44,7 +48,7 @@ int conductor_rouse()
 	PScene::init();
 
 	UI::init();
-
+	UI::set_ui_grid(current_grid);
 	
 
 	return 0;
