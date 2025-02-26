@@ -14,6 +14,7 @@ add_subdirectory(scene)
 
 
 set(SOURCES 
+    conductor.cc
     Input.cpp
     Simulation.cpp
     Windowing.cpp
