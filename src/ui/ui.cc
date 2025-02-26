@@ -65,6 +65,17 @@ UI::component::UIC_Root_LeftPanel*   left_panel;
 UI::component::UIC_Root_RightPanel*  right_panel;
 UI::component::UIC_Root_Workbench*   workbench;
 
+UiResult try_find_target(double x, double y){
+
+    UiResult result;
+
+    result = topbar->try_find_target_component(x, y);
+    if (result.success)
+        return result;
+        
+
+    return UiResult();
+}
 
 
 void init(){

@@ -8,6 +8,8 @@
 
 #include "conductor_action.hh"
 
+#include "ui/ui_globals.hh"
+
 namespace UI {
 
     /** Structure that defines the main grid of the UI.
@@ -28,6 +30,8 @@ namespace UI {
 
     void init();
     void update();
+
+    UiResult try_find_target(double x, double y);
 
     /** The only way to change the layout of the main UI grid. Provides all dimensions and placing logic of the grid. */
     void set_ui_grid(Grid _new_grid);

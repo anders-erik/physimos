@@ -11,6 +11,9 @@ int conductor_rouse();
 /** Physimos main loop. */
 void conductor_main();
 
+/** Physimos actions. */
+void conductor_perform_action(CAction action);
+
 
 /** Conductors callback method for window dimension/scale subscription */
 void callback_window_change(PhysWin physimos_window);
