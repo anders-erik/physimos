@@ -11,7 +11,7 @@ watch_files = [
     "/ptest/pimage/main.cc",
     "/ptest/ptest.cc",
     "/ptest/ptest.hh",
-    "/src/process_info.cpp",
+    "/src/lib/process.hh",
     "/src/lib/fs.cc",
     "/src/image/bmp.cc",
     "/src/image/bmp.hh",
@@ -26,7 +26,7 @@ include_dirs = [
 
 source_files = [
     "/ptest/ptest.cc", 
-    "/src/process_info.cpp", 
+    "/src/lib/process.hh", 
     "/src/lib/result.cc", 
     "/src/lib/string.cc", 
     "/src/lib/fs.cc", 

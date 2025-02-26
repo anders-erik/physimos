@@ -13,8 +13,8 @@
 #include <stdexcept>
 // #include "stdio.h"
 
-#include "process_info.hpp"
-#include "lib/string.hh"
+#include "process.hh"
+#include "string.hh"
 
 std::string physimos_root_dir = "";
 std::string installed_root_dir_linux = "~/.cache/physimos/";

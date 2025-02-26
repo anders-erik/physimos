@@ -47,7 +47,7 @@ def set_pimage_ptest_config_manually():
     ptest.add_file_to_watch("/ptest/ptest_pimage.cc")
     ptest.add_file_to_watch("/ptest/ptest.cc")
     ptest.add_file_to_watch("/ptest/ptest.hh")
-    ptest.add_file_to_watch("/src/process_info.cpp")
+    ptest.add_file_to_watch("/src/lib/process.hh")
     ptest.add_file_to_watch("/src/lib/fs.cc")
     ptest.add_file_to_watch("/src/image/bmp.cc")
     ptest.add_file_to_watch("/src/image/bmp.hh")
@@ -63,7 +63,7 @@ def set_pimage_ptest_config_manually():
 
     # objet files to compile
     ptest.add_source_file("/ptest/ptest.cc")
-    ptest.add_source_file("/src/process_info.cpp")
+    ptest.add_source_file("/src/lib/process.hh")
     ptest.add_source_file("/src/lib/result.cc")
     ptest.add_source_file("/src/lib/string.cc")
     ptest.add_source_file("/src/lib/fs.cc")

@@ -3,7 +3,8 @@
 #include <glad/glad.h>
 
 #include "lib/fs.hh"
-#include "log.hh"
+#include "lib/process.hh"
+#include "lib/log.hh"
 
 #include "ui/ui_globals.hh"
 #include "ui/ui_shader_color.hh"

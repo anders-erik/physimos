@@ -5,6 +5,9 @@ add_library(lib
     fs.cc
     result.cc
     toml.cc
+
+    log.cc
+    process.cc
 )
 
 

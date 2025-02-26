@@ -1,7 +1,8 @@
 #include <iostream>
 
 #include "glad/glad.h"  // glDisable(GL_DEPTH_TEST)
-#include "log.hh"
+#include "lib/process.hh"
+#include "lib/log.hh"
 
 #include "ui.hh"
 
@@ -206,7 +207,7 @@ void callback_scroll_y(double y_change) {
         Primitive* currentPrimitive = scrollTargetQuery.primitive;
         while(currentPrimitive->parent != nullptr){
             currentPrimitive = currentPrimitive->parent;
-            
+
             if(currentPrimitive->scrollable){
                 currentPrimitive->scroll(y_change);
                 break;

@@ -6,7 +6,7 @@
 
 #include "lib/fs.hh"
 
-#include "log.hh"
+#include "lib/process.hh"
 
 #include "bitmap.hh"
 

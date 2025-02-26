@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "lib/result.hh"
+#include "result.hh"
 
 typedef struct Process {
     int pid;

@@ -34,7 +34,7 @@ ptest.add_source_file("/src/lib/string.cc")
 ptest.add_source_file("/src/lib/fs.cc")
 ptest.add_source_file("/src/lib/toml.cc")
 
-ptest.add_source_file("/src/process_info.cpp")
+ptest.add_source_file("/src/lib/process.hh")
 
 
 # source file with main function for ptest binary build

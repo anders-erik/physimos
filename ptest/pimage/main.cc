@@ -13,7 +13,7 @@
 #include "lib/string.hh"
 #include "lib/fs.hh"
 
-#include "process_info.hpp"
+#include "lib/process.hh"
 
 using namespace pimage;
 using namespace pimage::io;

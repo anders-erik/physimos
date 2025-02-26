@@ -4,7 +4,7 @@
 #include <iostream>
 #include <filesystem>
 
-#include "process_info.hpp"
+#include "lib/process.hh"
 
 
 #include "ptest.hh"

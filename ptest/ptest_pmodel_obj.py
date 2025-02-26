@@ -7,7 +7,7 @@ ptest = Ptest("pmodel_obj")
 ptest.add_file_to_watch("/ptest/ptest_pmodel_obj.cc")
 ptest.add_file_to_watch("/ptest/ptest.cc")
 ptest.add_file_to_watch("/ptest/ptest.hh")
-ptest.add_file_to_watch("/src/process_info.cpp")
+ptest.add_file_to_watch("/src/lib/process.hh")
 
 ptest.add_file_to_watch("/src/model/obj.cc")
 ptest.add_file_to_watch("/src/model/obj.hh")
@@ -27,7 +27,7 @@ ptest.add_include_dir("/src/model")
 
 # object files to compile
 ptest.add_source_file("/ptest/ptest.cc")
-ptest.add_source_file("/src/process_info.cpp")
+ptest.add_source_file("/src/lib/process.hh")
 ptest.add_source_file("/src/res/bmp_loader.cpp")
 ptest.add_source_file("/src/logger/logger.cc")
 ptest.add_source_file("/src/lib/string.cc")

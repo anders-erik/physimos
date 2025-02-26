@@ -6,10 +6,10 @@
 #include <iomanip>
 
 // PLIB
-#include "lib/fs.hh"
+#include "fs.hh"
 
+#include "process.hh"
 #include "log.hh"
-#include "process_info.hpp"
 
 
 extern std::string physimos_root_dir;
