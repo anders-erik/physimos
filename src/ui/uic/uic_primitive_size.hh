@@ -33,7 +33,8 @@ struct UIC_PrimitiveSize_inc_height : public ::UI::Primitive {
 struct UIC_PrimitiveSize_drag : public ::UI::Primitive {
     double x_accum = 0.0;
     double y_accum = 0.0;
-    UiResult grabbed(double dx, double dy);
+    GrabState grab();
+    GrabState grabbed(double dx, double dy);
     UIC_PrimitiveSize_drag();
 };
 

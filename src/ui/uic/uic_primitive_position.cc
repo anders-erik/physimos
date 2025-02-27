@@ -78,7 +78,10 @@ UIC_PrimitivePosition_drag::UIC_PrimitivePosition_drag() {
     set_h("20x");
     set_texture(texture::get_icon(Icon::Pan));
 }
-UiResult UIC_PrimitivePosition_drag::grabbed(double dx, double dy) {
+GrabState UIC_PrimitivePosition_drag::grab(){
+    return GrabState(true, PCursor::Pan, this);
+}
+GrabState UIC_PrimitivePosition_drag::grabbed(double dx, double dy) {
     UIC_PrimitivePosition* uic_PrimitivePosition = (UIC_PrimitivePosition*)this->parent;
 
     y_accum += dy;
@@ -102,7 +105,7 @@ UiResult UIC_PrimitivePosition_drag::grabbed(double dx, double dy) {
         uic_PrimitivePosition->boundObject.dec_x();
     }
 
-    return UiResult(true, CAction::None, this);
+    return GrabState(true, PCursor::Pan, this);
 }
 
 

@@ -1,6 +1,7 @@
 #ifndef UI_GLOBALS_HH
 #define UI_GLOBALS_HH
 
+#include "window_cursors.hh"
 #include "conductor_common.hh"
 
 namespace UI {
@@ -105,6 +106,15 @@ namespace UI {
         UiResult(bool _success, CAction _action, Primitive* _primitive) : success{ _success }, action{ _action }, primitive{_primitive} {};
     } UiResult;
 
+    /** The state returned from Grab methods, indicating what the Conductor should do. */
+    typedef struct GrabState {
+        bool grabbed = false;
+        PCursor cursor = PCursor::Default;
+        Primitive* primitive = nullptr;
+
+        GrabState() {};
+        GrabState(bool _grabbed, PCursor _cursor, Primitive* _primitive) : grabbed{ _grabbed }, cursor{ _cursor }, primitive{_primitive} {};
+    } GrabState;
     
 }
 

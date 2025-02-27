@@ -73,6 +73,10 @@ UiResult try_find_target(double x, double y){
     if (result.success)
         return result;
 
+    result = workbench->try_find_target_component(x, y);
+    if (result.success)
+        return result;
+
 
     return UiResult();
 }

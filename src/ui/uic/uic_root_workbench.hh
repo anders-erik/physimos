@@ -9,8 +9,19 @@ namespace UI::component {
 
 // class Component_PrimitiveEditor;
 
+struct UIC_Root_Workbench_Resizer : public ::UI::Primitive {
+    virtual UiResult hover_enter();
+    virtual UiResult hover_exit();
+    virtual UiResult click();
+    virtual GrabState grab();
+    
+    UIC_Root_Workbench_Resizer();
+};
+
 
 struct UIC_Root_Workbench : public ::UI::Primitive {
+
+    UIC_Root_Workbench_Resizer uic_Root_Workbench_Resizer;
 
     void update_component();
     void render_component();

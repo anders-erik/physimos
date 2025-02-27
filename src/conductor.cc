@@ -1,5 +1,7 @@
 
 #include "Windowing.hpp"
+#include "window_cursors.hh"
+
 #include "shader.hpp"
 #include "scene/pscene.hh"
 #include "ui/ui.hh"
@@ -121,6 +123,9 @@ void conductor_main(){
 		// Check is escape is pressed
 		processInput();
 
+		if(viewport_context.viewport_changed)
+			reload_viewport();
+
 
 		PScene::updateCurrentScene();
 		if(state_main == StateMain::Scene3D)
@@ -226,6 +231,17 @@ void conductor_perform_action(CAction action){
 }
 
 
+void reload_viewport(){
+
+	viewport_context.update_heights();
+	viewport_context.update_widths();
+
+	UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
+
+
+	viewport_context.viewport_changed = false;
+}
+
 void callback_window_change(PhysWin new_window) {
 
     // viewport_width = physimos_window.width / physimos_window.xscale;
@@ -238,10 +254,11 @@ void callback_window_change(PhysWin new_window) {
 	viewport_context.size.xscale = new_window.xscale;
 	viewport_context.size.yscale = new_window.yscale;
 
-	viewport_context.update_heights();
-	viewport_context.update_widths();
-	
-	UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
+	reload_viewport();
+	// viewport_context.update_heights();
+	// viewport_context.update_widths();
+
+	// UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 	
 
 	UI::update_window(new_window);
@@ -285,12 +302,20 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
 
 	viewport_context.set_cursor(pointer_pos.x, pointer_pos.y);
 
+
     // DRAG
     if(grabbed_primitive != nullptr){
+
+		if(grabbed_primitive->id == "UIC_Root_Workbench_Resizer"){
+			viewport_context.accumulate_workbench(_pointer_change.dy);
+			// No other initiated ui events during grab!
+			return;
+		}
+
         grabbed_primitive->grabbed(_pointer_change.dx, _pointer_change.dy);
     }
-        
-    // RESET HOVER
+
+	// RESET HOVER
     if (currentlyHoveredPrimitive != nullptr) {
         currentlyHoveredPrimitive->hover_exit();
         currentlyHoveredPrimitive = nullptr;
@@ -391,6 +416,10 @@ void callback_left_release(PInput::PointerPosition _pointer_pos){
     // We are only interested in release behavior if we targeted a primitive on left click
     if (grabbed_primitive == nullptr)
         return;
+
+	// RELEASE
+	set_cursor(PCursor::Default);
+
     
     UI::UiResult releaseTargetResult;
     bool click_confirmed;
@@ -447,16 +476,56 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
     // REGISTER FOR CLICK ON RELEASE
     clickTargetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if(clickTargetResult.success){
-        grabbed_primitive = clickTargetResult.primitive;
+
+		UI::GrabState try_grab = clickTargetResult.primitive->grab();
+		if(try_grab.grabbed){
+			// SET CURSOR
+			set_cursor(try_grab.cursor);
+			// SET GRABBED PRIMITIVE
+			grabbed_primitive = try_grab.primitive;
+			
+			// If we grabbed a primitive, no other changes should take place
+			return;
+		}
+
+        // grabbed_primitive = clickTargetResult.primitive;
+		clickTargetResult.primitive->click();
+		plog_info(::plib::LogScope::UI, "Click registered on " + clickTargetResult.primitive->id);
+		
+        UI::UiResult click_result = clickTargetResult.primitive->click();
+		if(click_result.action != CAction::None)
+			conductor_perform_action(click_result.action);
+			
         // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
         return;
     }
 
 	clickTargetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if(clickTargetResult.success){
-        grabbed_primitive = clickTargetResult.primitive;
-        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
-        return;
+
+		UI::GrabState try_grab = clickTargetResult.primitive->grab();
+		if(try_grab.grabbed){
+			// SET CURSOR
+			set_cursor(try_grab.cursor);
+			// SET GRABBED PRIMITIVE
+			grabbed_primitive = try_grab.primitive;
+			
+			// If we grabbed a primitive, no other changes should take place
+			return;
+		}
+
+		// If we didn't grab, then we trigger click
+		clickTargetResult.primitive->click();
+
+		plog_info(::plib::LogScope::UI, "Click registered on " + clickTargetResult.primitive->id);
+
+        UI::UiResult click_result = clickTargetResult.primitive->click();
+		if(click_result.action != CAction::None)
+			conductor_perform_action(click_result.action);
+
+        // grabbed_primitive = clickTargetResult.primitive;
+        // // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+        // return;
     }
 
 }

@@ -4,6 +4,9 @@
 // #include <glad/glad.h>
 // #include <GLFW/glfw3.h>
 
+#include "window_cursors.hh"
+
+void set_cursor(PCursor cursor);
 
 struct GLFWwindow;
 

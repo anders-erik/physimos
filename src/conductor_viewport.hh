@@ -59,14 +59,16 @@ typedef struct ViewportViewSizes {
 } ViewportViewSizes;
 
 typedef struct ViewportViewResizeAccumulator {
-    int left_panel  = 0;
-    int right_panel = 0;
-    int workbench   = 0;
+    double left_panel  = 0;
+    double right_panel = 0;
+    double workbench   = 0;
 } ViewportViewResizeAccumulator;
 
 
 typedef struct ViewportContext {
     ViewportContext() {};
+
+    bool viewport_changed = true;
 
     ViewportSize        size;
 
@@ -90,6 +92,10 @@ typedef struct ViewportContext {
 
     void update_heights();
     void update_widths();
+
+    void accumulate_workbench(double dy);
+    void accumulate_left_panel(double dx);
+    void accumulate_right_panel(double dx);
 
 
     void set_cursor(double x_real, double y_real);

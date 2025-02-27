@@ -61,7 +61,10 @@ UIC_PrimitiveSize_drag::UIC_PrimitiveSize_drag() {
     set_h("20x");
     set_texture(texture::get_icon(Icon::Resize));
 }
-UiResult UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
+GrabState UIC_PrimitiveSize_drag::grab(){
+    return GrabState(true, PCursor::Pan, this);
+}
+GrabState UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
     UIC_PrimitiveSize* uic_PrimitiveSize = (UIC_PrimitiveSize*)this->parent;
 
     y_accum += dy;
@@ -88,7 +91,7 @@ UiResult UIC_PrimitiveSize_drag::grabbed(double dx, double dy) {
     }
 
 
-    return UiResult(true, CAction::None, this);
+    return GrabState(true, PCursor::Pan, this);
 }
 
 

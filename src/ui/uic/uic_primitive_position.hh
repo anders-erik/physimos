@@ -33,7 +33,8 @@ struct UIC_PrimitivePosition_scroll : public ::UI::Primitive {
 struct UIC_PrimitivePosition_drag : public ::UI::Primitive {
     double x_accum = 0.0;
     double y_accum = 0.0;
-    UiResult grabbed(double dx, double dy);
+    GrabState grab();
+    GrabState grabbed(double dx, double dy);
     UIC_PrimitivePosition_drag();
 };
 

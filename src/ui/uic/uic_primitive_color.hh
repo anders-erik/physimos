@@ -12,7 +12,7 @@ namespace UI::component {
 
 struct UIC_PrimitiveColor_SetGreen : public ::UI::Primitive {
     UiResult click();
-    UiResult grabbed(double dx, double dy);
+    GrabState grabbed(double dx, double dy);
     UiResult scroll(double y_change);
     UiResult hover_enter();
     UiResult hover_exit();

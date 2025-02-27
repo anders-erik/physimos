@@ -104,6 +104,47 @@ void ViewportContext::update_widths(){
 }
 
 
+void ViewportContext::accumulate_left_panel(double dx){
+    accumulator.left_panel += dx;
+    if(accumulator.left_panel > 5.0){
+        accumulator.left_panel -= 5.0;
+        set_left_panel_w(view_sizes.left_panel_w + 5);
+        viewport_changed = true;
+    }
+    else if(accumulator.left_panel < -5.0){
+        accumulator.left_panel += 5.0;
+        set_left_panel_w(view_sizes.left_panel_w - 5);
+        viewport_changed = true;
+    }
+}
+void ViewportContext::accumulate_right_panel(double dx){
+    accumulator.right_panel += dx;
+    if(accumulator.right_panel > 5.0){
+        accumulator.right_panel -= 5.0;
+        set_right_panel_w(view_sizes.right_panel_w + 5);
+        viewport_changed = true;
+    }
+    else if(accumulator.right_panel < -5.0){
+        accumulator.right_panel += 5.0;
+        set_right_panel_w(view_sizes.right_panel_w - 5);
+        viewport_changed = true;
+    }
+}
+
+void ViewportContext::accumulate_workbench(double dy){
+    accumulator.workbench += dy;
+    if(accumulator.workbench > 5.0){
+        accumulator.workbench -= 5.0;
+        set_workbench_h(view_sizes.workbench.h + 5);
+        viewport_changed = true;
+    }
+    else if(accumulator.workbench < -5.0){
+        accumulator.workbench += 5.0;
+        set_workbench_h(view_sizes.workbench.h - 5);
+        viewport_changed = true;
+    }
+}
+
 void ViewportContext::set_cursor(double x_real, double y_real){
 
     cursor_real.x = x_real;

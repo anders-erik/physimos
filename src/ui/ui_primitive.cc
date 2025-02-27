@@ -136,9 +136,13 @@ namespace UI {
         return UiResult();
     }
     
+    GrabState Primitive::grab() { 
+        return GrabState(); 
+    }
+
     /** Is called on pointer change when ui is tracking current primitive as grabbed. */
-    UiResult Primitive::grabbed(double dx, double dy) {
-        return UiResult();
+    GrabState Primitive::grabbed(double dx, double dy) {
+        return GrabState();
     }
     UiResult Primitive::scroll(double y_change) {
         return UiResult();

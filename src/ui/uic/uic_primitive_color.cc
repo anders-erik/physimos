@@ -22,12 +22,12 @@ UIC_PrimitiveColor_SetGreen::UIC_PrimitiveColor_SetGreen(Primitive *_parent) : P
     // set_color_texture(ColorTexture::Green);
     set_color({0.0, 1.0, 0.0, 1.0});
 }
-UiResult UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
+GrabState UIC_PrimitiveColor_SetGreen::grabbed(double dx, double dy) {
     // UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;
 
     std::cout << "DRAGGING GREEN COLOR"  << std::endl;
 
-    return UiResult(true, CAction::None, this);
+    return GrabState(true, PCursor::Pan, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::scroll(double y_change){
     std::cout << "SCROLL GREEN COLOR = : " << y_change << std::endl;

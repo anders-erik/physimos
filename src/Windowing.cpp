@@ -15,6 +15,37 @@ GLFWwindow* window__;
 int physimosLoadedOk;
 
 
+// CURSORS
+GLFWcursor* cursor_default;
+GLFWcursor* cursor_hori;
+GLFWcursor* cursor_vert;
+GLFWcursor* cursor_pan;
+
+void set_cursor(PCursor cursor){
+    switch (cursor){
+
+        case PCursor::Default :
+            glfwSetCursor(window__, cursor_default);
+            break;
+
+        case PCursor::Pan:
+        glfwSetCursor(window__, cursor_pan);
+        break;
+
+        case PCursor::Hori:
+        glfwSetCursor(window__, cursor_hori);
+        break;
+
+        case PCursor::Vert:
+        glfwSetCursor(window__, cursor_vert);
+        break;
+        
+    default:
+        break;
+    }
+}
+
+
 PhysWin physimos_window;
 
 void (*windowChangeCallback_conductor)(PhysWin _physimos_window) = nullptr;
@@ -108,6 +139,13 @@ void initPhysimosWindow(int _init_width, int _init_height) {
     int h;
     glfwGetMonitorPhysicalSize(monitor_primary, &w, &h);
     
+
+    // CURSORS
+
+    cursor_default  = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+    cursor_hori     = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+    cursor_vert     = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+    cursor_pan      = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
     
     
 

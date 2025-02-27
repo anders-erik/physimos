@@ -253,7 +253,8 @@ class Primitive {
         virtual UiResult click();
         virtual UiResult hover_enter();
         virtual UiResult hover_exit();
-        virtual UiResult grabbed(double dx, double dy);
+        virtual GrabState grab();
+        virtual GrabState grabbed(double dx, double dy);
         virtual UiResult scroll(double y_change);
 
 
