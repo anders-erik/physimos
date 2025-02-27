@@ -6,6 +6,19 @@
 
 #include "conductor_common.hh"
 
+#define VIEWPORT_WIDTH_INIT             1200
+#define VIEWPORT_HEIGHT_INIT            800
+
+#define topbar_default_visibilty        true
+#define left_panel_default_visibilty    true
+#define workbench_default_visibilty     true
+#define right_panel_default_visibilty   true
+
+#define topbar_height                   30
+#define left_panel_default_width        300
+#define workbench_default_height        100
+#define right_panel_default_width       300
+
 
 
 typedef enum class ViewportViews {
@@ -16,24 +29,12 @@ typedef enum class ViewportViews {
     Workbench,
 } ViewportViews;
 
-typedef struct Size_2D {
-    uint w;
-    uint h;
-} Size2D;
-
-typedef struct AABB_2D {
-    int x;
-    int y;
-    int w;
-    int h;
-
-    bool contains(double x, double y);
-} AABB_2D;
 
 typedef struct ViewportSize {
-    Size2D raw;
-    Size2D logical;
-    Size2D scale;
+    Size_UINT_2D raw;
+    Size_UINT_2D logical;
+    float xscale;
+    float yscale;
 } ViewportSize;
 
 typedef struct ViewportCursor {
@@ -43,39 +44,53 @@ typedef struct ViewportCursor {
 
 
 typedef struct ViewportViewVisibility {
-    bool topbar = true;
-    bool main_view = true;
-    bool left_panel = true;
-    bool right_panel = true;
-    bool workbench = true;
+    bool topbar         = topbar_default_visibilty;
+    bool left_panel     = left_panel_default_visibilty;
+    bool right_panel    = right_panel_default_visibilty;
+    bool workbench      = workbench_default_visibilty;
 } ViewportViewVisibility;
 
-typedef struct ViewportViewAABB {
-    AABB_2D topbar;
-    AABB_2D main_view;
-    AABB_2D left_panel;
-    AABB_2D right_panel;
-    AABB_2D workbench;
-} ViewportViewAABB;
+typedef struct ViewportViewSizes {
+    AABB_INT_2D main_view;
+    AABB_INT_2D workbench;
+    int topbar_h        = topbar_height;
+    int left_panel_w;
+    int right_panel_w;
+} ViewportViewSizes;
 
-typedef struct ViewportViewSizeAccumulator {
-    int topbar      = 0;
-    int main_view   = 0;
+typedef struct ViewportViewResizeAccumulator {
     int left_panel  = 0;
     int right_panel = 0;
     int workbench   = 0;
-} ViewportViewSizeAccumulator;
+} ViewportViewResizeAccumulator;
 
 
 typedef struct ViewportContext {
-    ViewportViewAABB            aabbs;
-    ViewportSize                size;
-    ViewportViewVisibility      visibility;
-    ViewportViewSizeAccumulator accumulator;
+    ViewportContext() {};
+
+    ViewportSize        size;
+
+    ViewportViewSizes               view_sizes;
+    ViewportViewVisibility          visibility;
+    ViewportViewResizeAccumulator   accumulator;
+
     /** Location of the cursor in the viewport, measure in logical pixels from the bottom left. */
     ViewportCursor              cursor_real;
     /** Location of the cursor in the main_view, measured in logical pixels from the bottom left of main_view. */
     ViewportCursor              cursor_main_view;
+
+
+    void set_workbench_h(int h_px);
+    void toggle_workbench();
+
+    void set_left_panel_w(int w_px);
+    void set_right_panel_w(int w_px);
+    void toggle_left_panel();
+    void toggle_right_panel();
+
+    void update_heights();
+    void update_widths();
+
 
     void set_cursor(double x_real, double y_real);
 } ViewportContext;

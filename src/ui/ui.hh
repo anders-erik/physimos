@@ -7,23 +7,11 @@
 #include "Input.hpp"
 
 #include "conductor_common.hh"
+#include "conductor_viewport.hh"
 
 #include "ui/ui_globals.hh"
 
 namespace UI {
-
-    /** Structure that defines the main grid of the UI.
-     *  Default values as defined in this struct will be loaded at program start.  
-     */
-    typedef struct Grid {
-        size_t topbar_h_px = 30;
-        size_t left_panel_w_pct = 20;
-        size_t right_panel_w_pct = 20;
-        size_t workbench_h_pct = 25;
-        bool left_panel_visible = true;
-        bool right_panel_visible = true;
-        bool workbench_visible = true;
-    } Grid;
 
 
     // PUBLIC 
@@ -42,7 +30,10 @@ namespace UI {
     UiResult try_find_target_old(double x, double y);
 
     /** The only way to change the layout of the main UI grid. Provides all dimensions and placing logic of the grid. */
-    void set_ui_grid(Grid _new_grid);
+    void set_ui_views(ViewportViewSizes view_sizes, ViewportViewVisibility visibility);
+    /** NOTE: LEGACY 
+     * The only way to change the layout of the main UI grid. Provides all dimensions and placing logic of the grid. */
+    // void set_ui_grid(Grid _new_grid);
 
     /** Set new window dimension/scale for ui.  */
     void update_window(PhysWin physimos_window);

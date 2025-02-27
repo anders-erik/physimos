@@ -5,6 +5,21 @@
 
 typedef unsigned int uint;
 
+typedef struct Size_UINT_2D {
+    int w;
+    int h;
+} Size_UINT_2D;
+
+/** Holds the real dimensions in Pixels */
+typedef struct AABB_INT_2D {
+    int w;
+    int h;
+    int x;
+    int y;
+
+    bool contains(double x, double y);
+} AABB_INT_2D;
+
 // OLD BELOW
 
 #define pso_white   { 1.0f, 1.0f, 1.0f }

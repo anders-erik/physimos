@@ -39,8 +39,8 @@ void subscribeWindowChange_input(void (*subscriberCallback)(PhysWin physimos_win
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 
-// Init
-void initPhysimosWindow();
+/** Create main physimos window. Specify logical size (pixel-dimensions / scale). */
+void initPhysimosWindow(int _init_width, int _init_height);
 int physimosWindowOK();
 GLFWwindow* physimosReturnWindowPointer();
 

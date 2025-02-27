@@ -12,8 +12,8 @@ namespace UI::component {
 UIC_Root_MainView::UIC_Root_MainView() {
     set_color({1.0, 0.0, 0.0, 0.1});
 
-    set_w("60%");
-    set_h("80%o-30");
+    // set_w("60%");
+    // set_h("80%o-30");
 
     set_x("<20%");
     set_y("_20%");

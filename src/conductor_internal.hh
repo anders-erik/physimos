@@ -20,6 +20,6 @@ void callback_key_down(PInput::KeyEvent key_event);
 void callback_key_up(PInput::KeyEvent key_event);
 
 /** Conductors callback method for window dimension/scale subscription */
-void callback_window_change(PhysWin physimos_window);
+void callback_window_change(PhysWin new_window);
 
 #endif

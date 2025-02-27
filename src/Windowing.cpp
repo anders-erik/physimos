@@ -68,7 +68,7 @@ void subscribeWindowChange_input(void (*subscriberCallback)(PhysWin physimos_win
 
 
 
-void initPhysimosWindow() {
+void initPhysimosWindow(int _init_width, int _init_height) {
     glfwInit();
     // glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -80,7 +80,7 @@ void initPhysimosWindow() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    window__ = glfwCreateWindow(SCREEN_INIT_WIDTH, SCREEN_INIT_HEIGHT, "Physimos", NULL, NULL);
+    window__ = glfwCreateWindow(_init_width, _init_height, "Physimos", NULL, NULL);
 
     if (window__ == NULL)
     {
@@ -113,8 +113,8 @@ void initPhysimosWindow() {
 
     // SET PYSIMOS WINDOW OBJECT
     glfwGetWindowContentScale(window__, &physimos_window.xscale, &physimos_window.yscale);
-    physimos_window.height = SCREEN_INIT_HEIGHT;
-    physimos_window.width = SCREEN_INIT_WIDTH;
+    physimos_window.width = _init_width * physimos_window.xscale;
+    physimos_window.height = _init_height * physimos_window.yscale;
 
     /// WINDOW CALLBACKS
     glfwSetFramebufferSizeCallback(window__, framebuffer_size_callback);

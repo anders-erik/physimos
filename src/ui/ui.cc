@@ -99,21 +99,23 @@ UiResult try_find_target_old(double x, double y){
 
 void state_main_set(StateMain new_state_main){
 
+    // Reset topbar buttons highlight
     topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Default);
     topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Default);
     topbar->main_states.uic_Topbar_MainStates_UIEditor.set_state(PrimitiveState::Default);
-
+    
+    // Set new topbar button highlight
     switch (new_state_main){
 
-    case StateMain::Scene3D :
-        topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Selected);
-        break;
-    case StateMain::Canvas :
-        topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Selected);
-        break;
-    case StateMain::UIEditor :
-        topbar->main_states.uic_Topbar_MainStates_UIEditor.set_state(PrimitiveState::Selected);
-        break;
+        case StateMain::Scene3D :
+            topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Selected);
+            break;
+        case StateMain::Canvas :
+            topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Selected);
+            break;
+        case StateMain::UIEditor :
+            topbar->main_states.uic_Topbar_MainStates_UIEditor.set_state(PrimitiveState::Selected);
+            break;
     
     default:
         break;
@@ -204,83 +206,52 @@ void init(){
     
 }
 
-void set_ui_grid(Grid _new_grid){
+void set_ui_views(ViewportViewSizes view_sizes, ViewportViewVisibility visibility){
 
-    topbar->set_h(std::to_string(_new_grid.topbar_h_px) +  "x");
+    if(visibility.left_panel)
+        left_panel->render_enabled = true;
+    else 
+        left_panel->render_enabled = false;
 
-    // Workbench & MainView height : 2 OPTIONS
-    if(_new_grid.workbench_visible){
+    if(visibility.workbench)
         workbench->render_enabled = true;
-        workbench->set_h(std::to_string(_new_grid.workbench_h_pct) + "%");
-        workbench->set_y("_0%");
-
-        main_view->set_h(std::to_string(100 - _new_grid.workbench_h_pct) + "%o-" + std::to_string(_new_grid.topbar_h_px));
-        main_view->set_y("_" + std::to_string(_new_grid.workbench_h_pct) + "%");
-    }
-    else {
-        // workbench->set_h("0%");
+    else 
         workbench->render_enabled = false;
-        workbench->set_y("_0%");
 
-        main_view->set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
-        main_view->set_y("_0%");
-    }
-
-    // Only affected by toolbar height
-    left_panel->set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
-    right_panel->set_h("100%o-" + std::to_string(_new_grid.topbar_h_px));
-
-
-    // Panels & MainView Width: 4 options
-    // left & right visible, only left, only right, both hidden
-    if      (_new_grid.left_panel_visible && _new_grid.right_panel_visible){
-        left_panel->render_enabled = true;
-        left_panel->set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
+    if(visibility.right_panel)
         right_panel->render_enabled = true;
-        right_panel->set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
-
-        workbench->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
-        workbench->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
-        main_view->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct - _new_grid.right_panel_w_pct) + "%");
-        main_view->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
-    }
-    else if (_new_grid.left_panel_visible && !_new_grid.right_panel_visible){
-        left_panel->render_enabled = true;
-        left_panel->set_w (std::to_string(_new_grid.left_panel_w_pct) + "%");
-        right_panel->render_enabled = false;
-        right_panel->set_w(std::to_string(0) + "%");
-
-        main_view->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
-        main_view->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
-        workbench->set_w  (std::to_string(100 - _new_grid.left_panel_w_pct) + "%");
-        workbench->set_x("<" + std::to_string(_new_grid.left_panel_w_pct) + "%");
-
-    }
-    else if (!_new_grid.left_panel_visible && _new_grid.right_panel_visible){
-        // left_panel->set_w (std::to_string(0) + "%");
-        left_panel->render_enabled = false;
-        right_panel->render_enabled = true;
-        right_panel->set_w(std::to_string(_new_grid.right_panel_w_pct) + "%");
-
-        workbench->set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
-        workbench->set_x("<0%");
-        main_view->set_w  (std::to_string(100 - _new_grid.right_panel_w_pct) + "%");
-        main_view->set_x("<0%");
-    }
-    else {
-        // left_panel->set_w (std::to_string(0) + "%");
-        // right_panel->set_w(std::to_string(0) + "%");
-        left_panel->render_enabled = false;
+    else 
         right_panel->render_enabled = false;
 
-        workbench->set_w  (std::to_string(100) + "%");
-        workbench->set_x("<0%");
-        main_view->set_w  (std::to_string(100) + "%");
-        main_view->set_x("<0%");
-    }
 
-    return;
+    topbar->set_w("100%");
+    topbar->set_h(std::to_string(view_sizes.topbar_h) + "x");
+    topbar->set_x("<0x");
+    topbar->set_y("^0x");
+
+    left_panel->set_w(std::to_string(view_sizes.left_panel_w) + "x");
+    left_panel->set_h("100%o-" + std::to_string(view_sizes.topbar_h));
+    left_panel->set_x("<0x");
+    left_panel->set_y("_0x");
+
+    right_panel->set_w(std::to_string(view_sizes.right_panel_w) + "x");
+    right_panel->set_h("100%o-" + std::to_string(view_sizes.topbar_h));
+    right_panel->set_x(">0x");
+    right_panel->set_y("_0x");
+
+    workbench->set_w(std::to_string(view_sizes.workbench.w) + "x");
+    workbench->set_h(std::to_string(view_sizes.workbench.h) + "x");
+    workbench->set_x("<" + std::to_string(view_sizes.workbench.x) + "x");
+    workbench->set_y("_0x");
+
+    main_view->set_w(std::to_string(view_sizes.main_view.w) + "x");
+    main_view->set_h(std::to_string(view_sizes.main_view.h) + "x");
+    main_view->set_x("<" + std::to_string(view_sizes.main_view.x) + "x");
+    main_view->set_y("_" + std::to_string(view_sizes.main_view.y) + "x");
+
+    
 }
+
 
 void render_main_view_components(){
 

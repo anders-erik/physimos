@@ -24,7 +24,7 @@
 
 
 /** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
-UI::Grid current_grid;
+// UI::Grid current_grid;
 
 StateMain state_main = StateMain::Scene3D;
 
@@ -52,11 +52,24 @@ int conductor_rouse()
 	res::createInventory();
 
 	// GLFW
-	initPhysimosWindow();
+	initPhysimosWindow(VIEWPORT_WIDTH_INIT, VIEWPORT_HEIGHT_INIT);
 	physimosReturnWindowPointer();
 	if (physimosWindowOK() == 0) {
 		return -1;
 	}
+
+	PhysWin new_window = get_initial_physimos_window();
+    viewport_context.size.raw.w = new_window.width;
+	viewport_context.size.raw.h = new_window.height;
+	viewport_context.size.logical.w = new_window.width / new_window.xscale;
+	viewport_context.size.logical.h = new_window.height / new_window.xscale;
+	viewport_context.size.xscale = new_window.xscale;
+	viewport_context.size.yscale = new_window.yscale;
+
+	viewport_context.set_left_panel_w(left_panel_default_width);
+    viewport_context.set_right_panel_w(right_panel_default_width);
+    viewport_context.set_workbench_h(workbench_default_height);
+
 
 	PInput::init();
 	subscribeWindowChange_conductor(callback_window_change); // WINDOWING.CPP
@@ -83,7 +96,8 @@ int conductor_rouse()
 
 	UI::init();
 	UI::state_main_set(state_main);
-	UI::set_ui_grid(current_grid);
+	// UI::set_ui_grid(current_grid);
+	UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 	
 	
 
@@ -164,18 +178,25 @@ void conductor_perform_action(CAction action){
 	switch (action){
 
 	case CAction::UI_ToggleLeftPanel :
-		current_grid.left_panel_visible = current_grid.left_panel_visible ? false : true;
-		UI::set_ui_grid(current_grid);
+		// current_grid.left_panel_visible = current_grid.left_panel_visible ? false : true;
+		// UI::set_ui_grid(current_grid);
+		viewport_context.toggle_left_panel();
+		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
+		
 		break;
 	
 	case CAction::UI_ToggleWorkbench :
-		current_grid.workbench_visible = current_grid.workbench_visible ? false : true;
-		UI::set_ui_grid(current_grid);
+		// current_grid.workbench_visible = current_grid.workbench_visible ? false : true;
+		// UI::set_ui_grid(current_grid);
+		viewport_context.toggle_workbench();
+		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 		break;
 	
 	case CAction::UI_ToggleRightPanel :
-		current_grid.right_panel_visible = current_grid.right_panel_visible ? false : true;
-		UI::set_ui_grid(current_grid);
+		// current_grid.right_panel_visible = current_grid.right_panel_visible ? false : true;
+		// UI::set_ui_grid(current_grid);
+		viewport_context.toggle_right_panel();
+		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 		break;
 
 	case CAction::State_ToggleScene3D :
@@ -205,12 +226,25 @@ void conductor_perform_action(CAction action){
 }
 
 
-void callback_window_change(PhysWin physimos_window) {
+void callback_window_change(PhysWin new_window) {
 
     // viewport_width = physimos_window.width / physimos_window.xscale;
     // viewport_height = physimos_window.height / physimos_window.yscale;
 
-	UI::update_window(physimos_window);
+	viewport_context.size.raw.w = new_window.width;
+	viewport_context.size.raw.h = new_window.height;
+	viewport_context.size.logical.w = new_window.width / new_window.xscale;
+	viewport_context.size.logical.h = new_window.height / new_window.xscale;
+	viewport_context.size.xscale = new_window.xscale;
+	viewport_context.size.yscale = new_window.yscale;
+
+	viewport_context.update_heights();
+	viewport_context.update_widths();
+	
+	UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
+	
+
+	UI::update_window(new_window);
     
     // // SHADER TRANSFORM
     // shader::texture_shader.set_window_info(
