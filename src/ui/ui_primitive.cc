@@ -145,18 +145,18 @@ namespace UI {
     }
 
 
-    // void Primitive::set_state(PrimitiveState _newState) {
-    //     state = _newState;
+    void Primitive::set_state(PrimitiveState _newState) {
+        state = _newState;
 
 
-    //     if (_newState == PrimitiveState::Default)
-    //         darkness_shift = 0.0f;
-    //     else if (_newState == PrimitiveState::Hover)
-    //         darkness_shift = 0.1f;
-    //     else if (_newState == PrimitiveState::Selected) 
-    //         darkness_shift = 0.2f;
+        if (_newState == PrimitiveState::Default)
+            darkness_shift = 0.0f;
+        else if (_newState == PrimitiveState::Hover)
+            darkness_shift = 0.1f;
+        else if (_newState == PrimitiveState::Selected) 
+            darkness_shift = 0.2f;
 
-    // }
+    }
 
 
 

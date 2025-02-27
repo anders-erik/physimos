@@ -244,9 +244,9 @@ class Primitive {
         
         // STATE & BEHAVIOR
 
-        // PrimitiveState state = PrimitiveState::Default;
+        PrimitiveState state = PrimitiveState::Default;
         /** Sets the state AND the corresponding texture  */
-        // void set_state(PrimitiveState _newState);
+        void set_state(PrimitiveState _newState);
 
         /** This flag has to be set for scroll to work. Used during UI bubbling to find scroll primitive.  */
         bool scrollable = false;

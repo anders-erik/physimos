@@ -78,7 +78,9 @@ int conductor_rouse()
 	PScene::init();
 
 	UI::init();
+	UI::state_main_set(state_main);
 	UI::set_ui_grid(current_grid);
+	
 	
 
 	return 0;
@@ -127,6 +129,30 @@ void conductor_main(){
 
 }
 
+void state_main_set(StateMain new_state_main){
+	state_main = new_state_main;
+
+	UI::state_main_set(new_state_main);
+}
+
+void state_main_switch_left(){
+	if(state_main == StateMain::Scene3D)
+		state_main_set(StateMain::UIEditor);
+	else if(state_main == StateMain::Canvas)
+		state_main_set(StateMain::Scene3D);
+	else if(state_main == StateMain::UIEditor)
+		state_main_set(StateMain::Canvas);
+
+}
+
+void state_main_switch_right(){
+	if(state_main == StateMain::Scene3D)
+		state_main_set(StateMain::Canvas);
+	else if(state_main == StateMain::Canvas)
+		state_main_set(StateMain::UIEditor);
+	else if(state_main == StateMain::UIEditor)
+		state_main_set(StateMain::Scene3D);
+}
 
 
 void conductor_perform_action(CAction action){
@@ -149,33 +175,23 @@ void conductor_perform_action(CAction action){
 		break;
 
 	case CAction::State_ToggleScene3D :
-		state_main = StateMain::Scene3D;
+		state_main_set(StateMain::Scene3D);
 		break;
 	
 	case CAction::State_ToggleCanvas :
-		state_main = StateMain::Canvas;
+		state_main_set(StateMain::Canvas);
 		break;
 	
 	case CAction::State_ToggleUIEditor :
-		state_main = StateMain::UIEditor;
+		state_main_set(StateMain::UIEditor);
 		break;
 	
 	case CAction::State_SwitchRight :
-		if(state_main == StateMain::Scene3D)
-			state_main = StateMain::Canvas;
-		else if(state_main == StateMain::Canvas)
-			state_main = StateMain::UIEditor;
-		else if(state_main == StateMain::UIEditor)
-			state_main = StateMain::Scene3D;
+		state_main_switch_right();
 		break;
 	
 	case CAction::State_SwitchLeft:
-		if(state_main == StateMain::Scene3D)
-			state_main = StateMain::UIEditor;
-		else if(state_main == StateMain::Canvas)
-			state_main = StateMain::Scene3D;
-		else if(state_main == StateMain::UIEditor)
-			state_main = StateMain::Canvas;
+		state_main_switch_left();
 		break;
 
 	default:

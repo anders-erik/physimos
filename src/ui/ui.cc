@@ -97,6 +97,28 @@ UiResult try_find_target_old(double x, double y){
     return UiResult();
 }
 
+void state_main_set(StateMain new_state_main){
+
+    topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Default);
+    topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Default);
+    topbar->main_states.uic_Topbar_MainStates_UIEditor.set_state(PrimitiveState::Default);
+
+    switch (new_state_main){
+
+    case StateMain::Scene3D :
+        topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Selected);
+        break;
+    case StateMain::Canvas :
+        topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Selected);
+        break;
+    case StateMain::UIEditor :
+        topbar->main_states.uic_Topbar_MainStates_UIEditor.set_state(PrimitiveState::Selected);
+        break;
+    
+    default:
+        break;
+    }
+}
 
 void init(){
 

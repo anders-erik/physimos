@@ -34,6 +34,8 @@ namespace UI {
     /** Render main view UI. Currently only for the UI Editor */
     void render_main_view_components();
 
+    void state_main_set(StateMain new_state_main);
+
     /** Queries all UI component and returns the matched primitive with the smallest z-value. */
     UiResult try_find_target(double x, double y);
     /** Returns match primitive from UI editors/list. */
