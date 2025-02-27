@@ -129,11 +129,11 @@ namespace UI {
     UiResult Primitive::click() {
         return UiResult();
     }
-    UiResult Primitive::hover_enter() {
-        return UiResult();
+    HoverEvent Primitive::hover_enter() {
+        return HoverEvent();
     }
-    UiResult Primitive::hover_exit() {
-        return UiResult();
+    HoverEvent Primitive::hover_exit() {
+        return HoverEvent();
     }
     
     GrabState Primitive::grab() { 

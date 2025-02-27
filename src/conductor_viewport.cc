@@ -104,46 +104,93 @@ void ViewportContext::update_widths(){
 }
 
 
-void ViewportContext::accumulate_left_panel(double dx){
-    accumulator.left_panel += dx;
-    if(accumulator.left_panel > 5.0){
-        accumulator.left_panel -= 5.0;
-        set_left_panel_w(view_sizes.left_panel_w + 5);
+void ViewportContext::accumulate_workbench(double dy){
+    accumulator.workbench += dy;
+
+    if(accumulator.workbench > 5.0){
+        accumulator.workbench -= 5.0;
+
+        // MAKE SURE HEIGHT IS NEVER SET Above available height
+        if((view_sizes.workbench.h + 5) > size.logical.h - view_sizes.topbar_h)
+            set_workbench_h(size.logical.h - view_sizes.topbar_h);
+        else
+            set_workbench_h(view_sizes.workbench.h + 5);
+
         viewport_changed = true;
     }
-    else if(accumulator.left_panel < -5.0){
-        accumulator.left_panel += 5.0;
-        set_left_panel_w(view_sizes.left_panel_w - 5);
+    else if(accumulator.workbench < -5.0){
+        accumulator.workbench += 5.0;
+
+        // MAKE SURE HEIGHT IS NEVER SET BELOW 0 
+        if((view_sizes.workbench.h - 5) < 0)
+            set_workbench_h(0);
+        else
+            set_workbench_h(view_sizes.workbench.h - 5);
+
+        viewport_changed = true;
+    }
+
+}
+
+void ViewportContext::accumulate_left_panel(double dx){
+    accumulator.left_panel += dx;
+
+    if(accumulator.left_panel > 5.0){
+
+        if((view_sizes.left_panel_w + 5) > size.logical.w - view_sizes.right_panel_w){
+            set_left_panel_w(size.logical.w - view_sizes.right_panel_w);
+        }
+        else {
+            accumulator.left_panel -= 5.0;
+            set_left_panel_w(view_sizes.left_panel_w + 5);
+        }
+
+        viewport_changed = true;
+    }
+    else if(accumulator.left_panel < -5.0 ){
+        // accumulator.left_panel += 5.0;
+
+        if((view_sizes.left_panel_w - 5) < 0){
+            set_left_panel_w(0);
+        }
+        else {
+            accumulator.left_panel += 5.0;
+            set_left_panel_w(view_sizes.left_panel_w - 5);
+        }
+
         viewport_changed = true;
     }
 }
 void ViewportContext::accumulate_right_panel(double dx){
     accumulator.right_panel += dx;
+
     if(accumulator.right_panel > 5.0){
-        accumulator.right_panel -= 5.0;
-        set_right_panel_w(view_sizes.right_panel_w + 5);
+
+        if((view_sizes.right_panel_w - 5) < 0){
+            set_right_panel_w(0);
+        }
+        else {
+            accumulator.right_panel -= 5.0;
+            set_right_panel_w(view_sizes.right_panel_w - 5);
+        }
+
         viewport_changed = true;
     }
-    else if(accumulator.right_panel < -5.0){
-        accumulator.right_panel += 5.0;
-        set_right_panel_w(view_sizes.right_panel_w - 5);
+    else if(accumulator.right_panel < -5.0 ){
+        // accumulator.left_panel += 5.0;
+
+        if((view_sizes.right_panel_w + 5) < size.logical.w - view_sizes.left_panel_w){
+            set_right_panel_w(view_sizes.right_panel_w + 5);
+            accumulator.right_panel += 5.0;
+        }
+        else {
+            set_right_panel_w(size.logical.w - view_sizes.left_panel_w);
+        }
+
         viewport_changed = true;
     }
 }
 
-void ViewportContext::accumulate_workbench(double dy){
-    accumulator.workbench += dy;
-    if(accumulator.workbench > 5.0){
-        accumulator.workbench -= 5.0;
-        set_workbench_h(view_sizes.workbench.h + 5);
-        viewport_changed = true;
-    }
-    else if(accumulator.workbench < -5.0){
-        accumulator.workbench += 5.0;
-        set_workbench_h(view_sizes.workbench.h - 5);
-        viewport_changed = true;
-    }
-}
 
 void ViewportContext::set_cursor(double x_real, double y_real){
 

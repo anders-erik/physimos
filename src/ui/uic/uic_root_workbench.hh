@@ -10,8 +10,8 @@ namespace UI::component {
 // class Component_PrimitiveEditor;
 
 struct UIC_Root_Workbench_Resizer : public ::UI::Primitive {
-    virtual UiResult hover_enter();
-    virtual UiResult hover_exit();
+    virtual HoverEvent hover_enter();
+    virtual HoverEvent hover_exit();
     virtual UiResult click();
     virtual GrabState grab();
     

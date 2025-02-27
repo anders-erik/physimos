@@ -7,10 +7,22 @@
 
 namespace UI::component {
 
-// class Component_PrimitiveEditor;
+
+
+struct UIC_Root_RightPanel_Resizer : public ::UI::Primitive {
+    virtual HoverEvent hover_enter();
+    virtual HoverEvent hover_exit();
+    virtual UiResult click();
+    virtual GrabState grab();
+    
+    UIC_Root_RightPanel_Resizer();
+};
+
 
 
 struct UIC_Root_RightPanel : public ::UI::Primitive {
+
+    UIC_Root_RightPanel_Resizer uic_Root_RightPanel_Resizer;
 
     void update_component();
     void render_component();

@@ -33,17 +33,17 @@ UiResult UIC_PrimitiveColor_SetGreen::scroll(double y_change){
     std::cout << "SCROLL GREEN COLOR = : " << y_change << std::endl;
     return UiResult(true, CAction::None, this);
 }
-UiResult UIC_PrimitiveColor_SetGreen::hover_enter() {
+HoverEvent UIC_PrimitiveColor_SetGreen::hover_enter() {
     // set_state(PrimitiveState::Hover);
     // darkness_shift = 0.2f;
     set_darkness_shift(0.2f);
-    return UiResult(true, CAction::None, this);
+    return HoverEvent(true, PCursor::Point, this);
 }
-UiResult UIC_PrimitiveColor_SetGreen::hover_exit() {
+HoverEvent UIC_PrimitiveColor_SetGreen::hover_exit() {
     // set_state(PrimitiveState::Default);
     // darkness_shift = 0.0f;
     reset_darkness_shift();
-    return UiResult(true, CAction::None, this);
+    return HoverEvent(true, PCursor::Default, this);
 }
 UiResult UIC_PrimitiveColor_SetGreen::click(){
     UIC_PrimitiveColor* uic_PrimitiveColor = (UIC_PrimitiveColor*)this->parent;

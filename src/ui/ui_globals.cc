@@ -14,6 +14,7 @@ namespace UI {
     unsigned int viewport_height = 0;
 
     Color transparent = {0.0, 0.0, 0.0, 0.0};
+    Color black = {0.0, 0.0, 0.0, 1.0};
 
 
     Color dark_light = {0.3, 0.3, 0.3, 1.0};

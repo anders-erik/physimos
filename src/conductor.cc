@@ -33,6 +33,7 @@ StateMain state_main = StateMain::Scene3D;
 
 /** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
 UI::Primitive* grabbed_primitive = nullptr;
+UI::Primitive* hovered_primitive = nullptr;
 
 /** Singleton viewport context */
 static ViewportContext viewport_context;
@@ -42,14 +43,13 @@ static ViewportContext viewport_context;
 /** Current cursor position recieved in the input callback function. y = 0 at the bottom of window.  */
 // double cursor_y = 0.0;
 
-UI::Primitive* currentlyHoveredPrimitive = nullptr;
 
 
 
 int conductor_rouse()
 {
-	
-	
+
+
 	// START LOADING RESOURCES - ATM ONLY GETS MODEL TYPES
 	res::createInventory();
 
@@ -61,7 +61,7 @@ int conductor_rouse()
 	}
 
 	PhysWin new_window = get_initial_physimos_window();
-    viewport_context.size.raw.w = new_window.width;
+	viewport_context.size.raw.w = new_window.width;
 	viewport_context.size.raw.h = new_window.height;
 	viewport_context.size.logical.w = new_window.width / new_window.xscale;
 	viewport_context.size.logical.h = new_window.height / new_window.xscale;
@@ -69,18 +69,18 @@ int conductor_rouse()
 	viewport_context.size.yscale = new_window.yscale;
 
 	viewport_context.set_left_panel_w(left_panel_default_width);
-    viewport_context.set_right_panel_w(right_panel_default_width);
-    viewport_context.set_workbench_h(workbench_default_height);
+	viewport_context.set_right_panel_w(right_panel_default_width);
+	viewport_context.set_workbench_h(workbench_default_height);
 
 
 	PInput::init();
 	subscribeWindowChange_conductor(callback_window_change); // WINDOWING.CPP
 
 	// Subscribe to cursor position from input library
-    ::PInput::subscribe_pointer_position_conductor(callback_pointer_position);
-    ::PInput::subscribe_mouse_left_down_conductor(callback_left_down);
-    ::PInput::subscribe_mouse_left_release_conductor(callback_left_release);
-    ::PInput::subscribe_mouse_scroll_y_conductor(callback_scroll_y);
+	::PInput::subscribe_pointer_position_conductor(callback_pointer_position);
+	::PInput::subscribe_mouse_left_down_conductor(callback_left_down);
+	::PInput::subscribe_mouse_left_release_conductor(callback_left_release);
+	::PInput::subscribe_mouse_scroll_y_conductor(callback_scroll_y);
 	::PInput::subscribe_key_down_conductor(callback_key_down);
 	::PInput::subscribe_key_up_conductor(callback_key_up);
 
@@ -100,17 +100,17 @@ int conductor_rouse()
 	UI::state_main_set(state_main);
 	// UI::set_ui_grid(current_grid);
 	UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-	
-	
+
+
 
 	return 0;
 }
 
-void conductor_main(){
+void conductor_main() {
 
 	while (windowIsStillGood())
 	{
-		
+
 		new_frame();
 		// glClear(GL_COLOR_BUFFER_BIT);
 		// glClear(GL_DEPTH_BUFFER_BIT);
@@ -123,20 +123,20 @@ void conductor_main(){
 		// Check is escape is pressed
 		processInput();
 
-		if(viewport_context.viewport_changed)
+		if (viewport_context.viewport_changed)
 			reload_viewport();
 
 
 		PScene::updateCurrentScene();
-		if(state_main == StateMain::Scene3D)
+		if (state_main == StateMain::Scene3D)
 			PScene::renderCurrentScene();
 
 
 		// update and render ui
 		UI::update();
-		if(state_main == StateMain::UIEditor)
+		if (state_main == StateMain::UIEditor)
 			UI::render_main_view_components();
-		
+
 
 
 		// Swap buffers
@@ -152,74 +152,74 @@ void conductor_main(){
 
 }
 
-void state_main_set(StateMain new_state_main){
+void state_main_set(StateMain new_state_main) {
 	state_main = new_state_main;
 
 	UI::state_main_set(new_state_main);
 }
 
-void state_main_switch_left(){
-	if(state_main == StateMain::Scene3D)
+void state_main_switch_left() {
+	if (state_main == StateMain::Scene3D)
 		state_main_set(StateMain::UIEditor);
-	else if(state_main == StateMain::Canvas)
+	else if (state_main == StateMain::Canvas)
 		state_main_set(StateMain::Scene3D);
-	else if(state_main == StateMain::UIEditor)
+	else if (state_main == StateMain::UIEditor)
 		state_main_set(StateMain::Canvas);
 
 }
 
-void state_main_switch_right(){
-	if(state_main == StateMain::Scene3D)
+void state_main_switch_right() {
+	if (state_main == StateMain::Scene3D)
 		state_main_set(StateMain::Canvas);
-	else if(state_main == StateMain::Canvas)
+	else if (state_main == StateMain::Canvas)
 		state_main_set(StateMain::UIEditor);
-	else if(state_main == StateMain::UIEditor)
+	else if (state_main == StateMain::UIEditor)
 		state_main_set(StateMain::Scene3D);
 }
 
 
-void conductor_perform_action(CAction action){
+void conductor_perform_action(CAction action) {
 
-	switch (action){
+	switch (action) {
 
-	case CAction::UI_ToggleLeftPanel :
+	case CAction::UI_ToggleLeftPanel:
 		// current_grid.left_panel_visible = current_grid.left_panel_visible ? false : true;
 		// UI::set_ui_grid(current_grid);
 		viewport_context.toggle_left_panel();
 		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-		
+
 		break;
-	
-	case CAction::UI_ToggleWorkbench :
+
+	case CAction::UI_ToggleWorkbench:
 		// current_grid.workbench_visible = current_grid.workbench_visible ? false : true;
 		// UI::set_ui_grid(current_grid);
 		viewport_context.toggle_workbench();
 		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 		break;
-	
-	case CAction::UI_ToggleRightPanel :
+
+	case CAction::UI_ToggleRightPanel:
 		// current_grid.right_panel_visible = current_grid.right_panel_visible ? false : true;
 		// UI::set_ui_grid(current_grid);
 		viewport_context.toggle_right_panel();
 		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 		break;
 
-	case CAction::State_ToggleScene3D :
+	case CAction::State_ToggleScene3D:
 		state_main_set(StateMain::Scene3D);
 		break;
-	
-	case CAction::State_ToggleCanvas :
+
+	case CAction::State_ToggleCanvas:
 		state_main_set(StateMain::Canvas);
 		break;
-	
-	case CAction::State_ToggleUIEditor :
+
+	case CAction::State_ToggleUIEditor:
 		state_main_set(StateMain::UIEditor);
 		break;
-	
-	case CAction::State_SwitchRight :
+
+	case CAction::State_SwitchRight:
 		state_main_switch_right();
 		break;
-	
+
 	case CAction::State_SwitchLeft:
 		state_main_switch_left();
 		break;
@@ -231,7 +231,7 @@ void conductor_perform_action(CAction action){
 }
 
 
-void reload_viewport(){
+void reload_viewport() {
 
 	viewport_context.update_heights();
 	viewport_context.update_widths();
@@ -244,8 +244,8 @@ void reload_viewport(){
 
 void callback_window_change(PhysWin new_window) {
 
-    // viewport_width = physimos_window.width / physimos_window.xscale;
-    // viewport_height = physimos_window.height / physimos_window.yscale;
+	// viewport_width = physimos_window.width / physimos_window.xscale;
+	// viewport_height = physimos_window.height / physimos_window.yscale;
 
 	viewport_context.size.raw.w = new_window.width;
 	viewport_context.size.raw.h = new_window.height;
@@ -259,31 +259,31 @@ void callback_window_change(PhysWin new_window) {
 	// viewport_context.update_widths();
 
 	// UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-	
+
 
 	UI::update_window(new_window);
-    
-    // // SHADER TRANSFORM
-    // shader::texture_shader.set_window_info(
-    //     physimos_window.width,
-    //     physimos_window.height,
-    //     physimos_window.xscale,
-    //     physimos_window.yscale
-    // );
 
-    // shader::color_shader.set_window_info(
-    //     physimos_window.width, 
-    //     physimos_window.height, 
-    //     physimos_window.xscale, 
-    //     physimos_window.yscale
-    // );
+	// // SHADER TRANSFORM
+	// shader::texture_shader.set_window_info(
+	//     physimos_window.width,
+	//     physimos_window.height,
+	//     physimos_window.xscale,
+	//     physimos_window.yscale
+	// );
 
-    // RELOAD ALL PRIMITIVES TO GET CORRECT DIMENSIONS
-    // primitive_editor->update_w_real_recursive();
-    // primitive_editor->update_x_real_recursive();
+	// shader::color_shader.set_window_info(
+	//     physimos_window.width, 
+	//     physimos_window.height, 
+	//     physimos_window.xscale, 
+	//     physimos_window.yscale
+	// );
 
-    // primitive_editor->update_h_real_recursive();
-    // primitive_editor->update_y_real_recursive();
+	// RELOAD ALL PRIMITIVES TO GET CORRECT DIMENSIONS
+	// primitive_editor->update_w_real_recursive();
+	// primitive_editor->update_x_real_recursive();
+
+	// primitive_editor->update_h_real_recursive();
+	// primitive_editor->update_y_real_recursive();
 }
 
 
@@ -295,221 +295,246 @@ void callback_window_change(PhysWin new_window) {
 
 void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change) {
 	// std::cout << "CBC POSITION" << std::endl;
-	
-    // UI STATE
-    // cursor_x = pointer_pos.x;
-    // cursor_y = pointer_pos.y;
+
+	// UI STATE
+	// cursor_x = pointer_pos.x;
+	// cursor_y = pointer_pos.y;
 
 	viewport_context.set_cursor(pointer_pos.x, pointer_pos.y);
 
 
-    // DRAG
-    if(grabbed_primitive != nullptr){
+	// DRAG
+	if (grabbed_primitive != nullptr) {
 
-		if(grabbed_primitive->id == "UIC_Root_Workbench_Resizer"){
+		if (grabbed_primitive->id == "UIC_Root_Workbench_Resizer") {
 			viewport_context.accumulate_workbench(_pointer_change.dy);
 			// No other initiated ui events during grab!
 			return;
 		}
+		else if (grabbed_primitive->id == "UIC_Root_LeftPanel_Resizer") {
+			viewport_context.accumulate_left_panel(_pointer_change.dx);
+			// No other initiated ui events during grab!
+			return;
+		}
+		else if (grabbed_primitive->id == "UIC_Root_RightPanel_Resizer") {
+			viewport_context.accumulate_right_panel(_pointer_change.dx);
+			// No other initiated ui events during grab!
+			return;
+		}
 
-        grabbed_primitive->grabbed(_pointer_change.dx, _pointer_change.dy);
-    }
+		grabbed_primitive->grabbed(_pointer_change.dx, _pointer_change.dy);
+	}
 
 	// RESET HOVER
-    if (currentlyHoveredPrimitive != nullptr) {
-        currentlyHoveredPrimitive->hover_exit();
-        currentlyHoveredPrimitive = nullptr;
-    }
+	if (hovered_primitive != nullptr) {
+		UI::HoverEvent hover_event = hovered_primitive->hover_exit();
 
-    // TRY NEW HOVER
-    UI::UiResult targetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-    if (targetResult.success) {
-        currentlyHoveredPrimitive = targetResult.primitive;
-        targetResult.primitive->hover_enter();
-		return;
-    }
+		set_cursor(hover_event.cursor);
+		hovered_primitive = nullptr;
+
+	}
 
 	// TRY NEW HOVER
-    targetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-    if (targetResult.success) {
-        currentlyHoveredPrimitive = targetResult.primitive;
-        targetResult.primitive->hover_enter();
+	UI::UiResult targetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
+	if (targetResult.success) {
+		// hovered_primitive = targetResult.primitive;
+		UI::HoverEvent hover_event = targetResult.primitive->hover_enter();
+
+		if (hover_event.new_hover) {
+			set_cursor(hover_event.cursor);
+			hovered_primitive = hover_event.primitive;
+		}
+
 		return;
-    }
+	}
+
+	// TRY NEW HOVER
+	targetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
+	if (targetResult.success) {
+		// hovered_primitive = targetResult.primitive;
+
+		UI::HoverEvent hover_event = targetResult.primitive->hover_enter();
+
+		if (hover_event.new_hover) {
+			set_cursor(hover_event.cursor);
+			hovered_primitive = hover_event.primitive;
+		}
+		return;
+	}
 
 }
 
 
 void callback_scroll_y(double y_change) {
-    
-    UI::UiResult scrollTargetQuery;
 
-    // SCROLL FOUND TARGET DIRECTLY
-    scrollTargetQuery = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-    if (scrollTargetQuery.success) {
+	UI::UiResult scrollTargetQuery;
 
-        if(scrollTargetQuery.primitive->scrollable){
-            scrollTargetQuery.primitive->scroll(y_change);
+	// SCROLL FOUND TARGET DIRECTLY
+	scrollTargetQuery = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
+	if (scrollTargetQuery.success) {
+
+		if (scrollTargetQuery.primitive->scrollable) {
+			scrollTargetQuery.primitive->scroll(y_change);
 
 		}
-    }
-    // BUBBLE TARGET
-    if (scrollTargetQuery.success) {
+	}
+	// BUBBLE TARGET
+	if (scrollTargetQuery.success) {
 
-        // Simply scroll if target is scrollable
-        if(scrollTargetQuery.primitive->scrollable){
-            scrollTargetQuery.primitive->scroll(y_change);
-            return;
-        }
+		// Simply scroll if target is scrollable
+		if (scrollTargetQuery.primitive->scrollable) {
+			scrollTargetQuery.primitive->scroll(y_change);
+			return;
+		}
 
-        // If not scrollable, bubble ui tree until root primitive is found.
-        // If at any point a scrollable primtiive is encountered, the scroll method is called
-        UI::Primitive* currentPrimitive = scrollTargetQuery.primitive;
-        while(currentPrimitive->parent != nullptr){
-            currentPrimitive = currentPrimitive->parent;
+		// If not scrollable, bubble ui tree until root primitive is found.
+		// If at any point a scrollable primtiive is encountered, the scroll method is called
+		UI::Primitive* currentPrimitive = scrollTargetQuery.primitive;
+		while (currentPrimitive->parent != nullptr) {
+			currentPrimitive = currentPrimitive->parent;
 
-            if(currentPrimitive->scrollable){
-                currentPrimitive->scroll(y_change);
-                // break;
+			if (currentPrimitive->scrollable) {
+				currentPrimitive->scroll(y_change);
+				// break;
 				return;
-            }
-        }       
-        
-    }
+			}
+		}
+
+	}
 
 
 
 	// EDITORS
-    scrollTargetQuery = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-    if (scrollTargetQuery.success) {
+	scrollTargetQuery = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
+	if (scrollTargetQuery.success) {
 
-        if(scrollTargetQuery.primitive->scrollable)
-            scrollTargetQuery.primitive->scroll(y_change);
-    }
-    // BUBBLE TARGET (EDITORS)
-    if (scrollTargetQuery.success) {
+		if (scrollTargetQuery.primitive->scrollable)
+			scrollTargetQuery.primitive->scroll(y_change);
+	}
+	// BUBBLE TARGET (EDITORS)
+	if (scrollTargetQuery.success) {
 
-        // Simply scroll if target is scrollable
-        if(scrollTargetQuery.primitive->scrollable){
-            scrollTargetQuery.primitive->scroll(y_change);
-            return;
-        }
+		// Simply scroll if target is scrollable
+		if (scrollTargetQuery.primitive->scrollable) {
+			scrollTargetQuery.primitive->scroll(y_change);
+			return;
+		}
 
-        // If not scrollable, bubble ui tree until root primitive is found.
-        // If at any point a scrollable primtiive is encountered, the scroll method is called
-        UI::Primitive* currentPrimitive = scrollTargetQuery.primitive;
-        while(currentPrimitive->parent != nullptr){
-            currentPrimitive = currentPrimitive->parent;
+		// If not scrollable, bubble ui tree until root primitive is found.
+		// If at any point a scrollable primtiive is encountered, the scroll method is called
+		UI::Primitive* currentPrimitive = scrollTargetQuery.primitive;
+		while (currentPrimitive->parent != nullptr) {
+			currentPrimitive = currentPrimitive->parent;
 
-            if(currentPrimitive->scrollable){
-                currentPrimitive->scroll(y_change);
-                break;
-            }
-        }       
-        
-    }
-    
+			if (currentPrimitive->scrollable) {
+				currentPrimitive->scroll(y_change);
+				break;
+			}
+		}
+
+	}
+
 }
 
-void callback_left_release(PInput::PointerPosition _pointer_pos){
+void callback_left_release(PInput::PointerPosition _pointer_pos) {
 
-    // We are only interested in release behavior if we targeted a primitive on left click
-    if (grabbed_primitive == nullptr)
-        return;
+	// We are only interested in release behavior if we targeted a primitive on left click
+	if (grabbed_primitive == nullptr)
+		return;
 
 	// RELEASE
 	set_cursor(PCursor::Default);
 
-    
-    UI::UiResult releaseTargetResult;
-    bool click_confirmed;
+
+	UI::UiResult releaseTargetResult;
+	bool click_confirmed;
 
 
-    // TRIGGER CLICK
-    releaseTargetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-	
-    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
-    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
-    if (click_confirmed) {
-        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
-        UI::UiResult click_result = releaseTargetResult.primitive->click();
+	// TRIGGER CLICK
+	releaseTargetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
 
-		if(click_result.action != CAction::None)
+	// We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
+	click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
+	if (click_confirmed) {
+		plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
+		UI::UiResult click_result = releaseTargetResult.primitive->click();
+
+		if (click_result.action != CAction::None)
 			conductor_perform_action(click_result.action);
 
-        // NEVER PERSIST GRAB ON RELEASE
-        grabbed_primitive = nullptr;
-        return;
-    }
+		// NEVER PERSIST GRAB ON RELEASE
+		grabbed_primitive = nullptr;
+		return;
+	}
 
 
 	// PRIMITIVE EDITOR STUFF
 	releaseTargetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-	
-    // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
-    click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
-    if (click_confirmed) {
-        plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
-        UI::UiResult click_result = releaseTargetResult.primitive->click();
 
-		if(click_result.action != CAction::None)
+	// We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
+	click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
+	if (click_confirmed) {
+		plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
+		UI::UiResult click_result = releaseTargetResult.primitive->click();
+
+		if (click_result.action != CAction::None)
 			conductor_perform_action(click_result.action);
 
-        // NEVER PERSIST GRAB ON RELEASE
-        grabbed_primitive = nullptr;
-        return;
-    }
+		// NEVER PERSIST GRAB ON RELEASE
+		grabbed_primitive = nullptr;
+		return;
+	}
 
-    
-    
-    // NEVER PERSIST GRAB ON RELEASE
-    grabbed_primitive = nullptr;
-    return;
-    
+
+
+	// NEVER PERSIST GRAB ON RELEASE
+	grabbed_primitive = nullptr;
+	return;
+
 }
 
 void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
-    UI::UiResult clickTargetResult;
+	UI::UiResult clickTargetResult;
 
 
-    // REGISTER FOR CLICK ON RELEASE
-    clickTargetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-    if(clickTargetResult.success){
+	// REGISTER FOR CLICK ON RELEASE
+	clickTargetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
+	if (clickTargetResult.success) {
 
 		UI::GrabState try_grab = clickTargetResult.primitive->grab();
-		if(try_grab.grabbed){
+		if (try_grab.grabbed) {
 			// SET CURSOR
 			set_cursor(try_grab.cursor);
 			// SET GRABBED PRIMITIVE
 			grabbed_primitive = try_grab.primitive;
-			
+
 			// If we grabbed a primitive, no other changes should take place
 			return;
 		}
 
-        // grabbed_primitive = clickTargetResult.primitive;
+		// grabbed_primitive = clickTargetResult.primitive;
 		clickTargetResult.primitive->click();
 		plog_info(::plib::LogScope::UI, "Click registered on " + clickTargetResult.primitive->id);
-		
-        UI::UiResult click_result = clickTargetResult.primitive->click();
-		if(click_result.action != CAction::None)
+
+		UI::UiResult click_result = clickTargetResult.primitive->click();
+		if (click_result.action != CAction::None)
 			conductor_perform_action(click_result.action);
-			
-        // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
-        return;
-    }
+
+		// plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+		return;
+	}
 
 	clickTargetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-    if(clickTargetResult.success){
+	if (clickTargetResult.success) {
 
 		UI::GrabState try_grab = clickTargetResult.primitive->grab();
-		if(try_grab.grabbed){
+		if (try_grab.grabbed) {
 			// SET CURSOR
 			set_cursor(try_grab.cursor);
 			// SET GRABBED PRIMITIVE
 			grabbed_primitive = try_grab.primitive;
-			
+
 			// If we grabbed a primitive, no other changes should take place
 			return;
 		}
@@ -519,39 +544,39 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
 		plog_info(::plib::LogScope::UI, "Click registered on " + clickTargetResult.primitive->id);
 
-        UI::UiResult click_result = clickTargetResult.primitive->click();
-		if(click_result.action != CAction::None)
+		UI::UiResult click_result = clickTargetResult.primitive->click();
+		if (click_result.action != CAction::None)
 			conductor_perform_action(click_result.action);
 
-        // grabbed_primitive = clickTargetResult.primitive;
-        // // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
-        // return;
-    }
+		// grabbed_primitive = clickTargetResult.primitive;
+		// // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
+		// return;
+	}
 
 }
 
-void callback_key_down(PInput::KeyEvent key_event){
+void callback_key_down(PInput::KeyEvent key_event) {
 	// std::cout << "DOWN"  << std::endl;
 
-	if	    (key_event.pkey == PInput::PKey::PageUp && key_event.modifier.ctrl){
+	if (key_event.pkey == PInput::PKey::PageUp && key_event.modifier.ctrl) {
 		conductor_perform_action(CAction::State_SwitchLeft);
 	}
-	else if (key_event.pkey == PInput::PKey::PageDown && key_event.modifier.ctrl){
+	else if (key_event.pkey == PInput::PKey::PageDown && key_event.modifier.ctrl) {
 		conductor_perform_action(CAction::State_SwitchRight);
 	}
-	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && key_event.modifier.alt){
+	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && key_event.modifier.alt) {
 		conductor_perform_action(CAction::UI_ToggleWorkbench);
 	}
-	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && !key_event.modifier.alt){
+	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && !key_event.modifier.alt) {
 		conductor_perform_action(CAction::UI_ToggleLeftPanel);
 	}
-	else if (key_event.pkey == PInput::PKey::B && !key_event.modifier.ctrl && key_event.modifier.alt){
+	else if (key_event.pkey == PInput::PKey::B && !key_event.modifier.ctrl && key_event.modifier.alt) {
 		conductor_perform_action(CAction::UI_ToggleRightPanel);
 	}
 
 
 }
-void callback_key_up(PInput::KeyEvent key_event){
+void callback_key_up(PInput::KeyEvent key_event) {
 	// std::cout << "UP"  << std::endl;
 
 }

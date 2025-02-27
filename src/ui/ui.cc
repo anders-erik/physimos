@@ -69,10 +69,22 @@ UiResult try_find_target(double x, double y){
 
     UiResult result;
 
+    result = main_view->try_find_target_component(x, y);
+    if (result.success)
+        return result;
+
     result = topbar->try_find_target_component(x, y);
     if (result.success)
         return result;
 
+    result = left_panel->try_find_target_component(x, y);
+    if (result.success)
+        return result;
+    
+    result = right_panel->try_find_target_component(x, y);
+    if (result.success)
+        return result;
+    
     result = workbench->try_find_target_component(x, y);
     if (result.success)
         return result;

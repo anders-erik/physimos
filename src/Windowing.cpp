@@ -20,6 +20,7 @@ GLFWcursor* cursor_default;
 GLFWcursor* cursor_hori;
 GLFWcursor* cursor_vert;
 GLFWcursor* cursor_pan;
+GLFWcursor* cursor_point;
 
 void set_cursor(PCursor cursor){
     switch (cursor){
@@ -32,6 +33,10 @@ void set_cursor(PCursor cursor){
         glfwSetCursor(window__, cursor_pan);
         break;
 
+        case PCursor::Point:
+        glfwSetCursor(window__, cursor_point);
+        break;
+
         case PCursor::Hori:
         glfwSetCursor(window__, cursor_hori);
         break;
@@ -39,7 +44,7 @@ void set_cursor(PCursor cursor){
         case PCursor::Vert:
         glfwSetCursor(window__, cursor_vert);
         break;
-        
+
     default:
         break;
     }
@@ -146,6 +151,7 @@ void initPhysimosWindow(int _init_width, int _init_height) {
     cursor_hori     = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
     cursor_vert     = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
     cursor_pan      = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+    cursor_point      = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
     
     
 

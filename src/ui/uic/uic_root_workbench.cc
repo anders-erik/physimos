@@ -15,12 +15,12 @@ UIC_Root_Workbench_Resizer::UIC_Root_Workbench_Resizer(){
     id = "UIC_Root_Workbench_Resizer";
 
     set_w("100%");
-    set_h("10x");
+    set_h("5x");
 
     set_x("<0x");
     set_y("^0x");
 
-    set_color(active_pallete.base2);
+    set_color(black);
 }
 UiResult UIC_Root_Workbench_Resizer::click(){
     std::cout << "CLICK RESIZE WORKBENCH" << std::endl;
@@ -32,13 +32,13 @@ GrabState UIC_Root_Workbench_Resizer::grab(){
 
     return GrabState(true, PCursor::Vert, this);
 }
-UiResult UIC_Root_Workbench_Resizer::hover_enter(){
+HoverEvent UIC_Root_Workbench_Resizer::hover_enter(){
     set_state(PrimitiveState::Hover);
-    return UiResult(true, CAction::None, this);
+    return HoverEvent(true, PCursor::Vert, this);
 }
-UiResult UIC_Root_Workbench_Resizer::hover_exit(){
+HoverEvent UIC_Root_Workbench_Resizer::hover_exit(){
     set_state(PrimitiveState::Default);
-    return UiResult(true, CAction::None, this);
+    return HoverEvent(true, PCursor::Default, this);
 }
 
 UIC_Root_Workbench::UIC_Root_Workbench() 
@@ -61,6 +61,9 @@ void UIC_Root_Workbench::update_component() {}
 
 
 void UIC_Root_Workbench::render_component(){
+
+    if(!render_enabled)
+        return;
 
     color_shader->stencil_start_new_capture();
 

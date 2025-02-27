@@ -5,6 +5,7 @@
 typedef enum class PCursor {
     None,
     Default,
+    Point,
     Pan,
     Hori,
     Vert,

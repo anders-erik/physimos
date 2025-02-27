@@ -251,8 +251,8 @@ class Primitive {
         /** This flag has to be set for scroll to work. Used during UI bubbling to find scroll primitive.  */
         bool scrollable = false;
         virtual UiResult click();
-        virtual UiResult hover_enter();
-        virtual UiResult hover_exit();
+        virtual HoverEvent hover_enter();
+        virtual HoverEvent hover_exit();
         virtual GrabState grab();
         virtual GrabState grabbed(double dx, double dy);
         virtual UiResult scroll(double y_change);

@@ -63,6 +63,7 @@ namespace UI {
     } Color;
 
     extern Color transparent;
+    extern Color black;
 
     /** Collection of three colors. Base, contrast, and detail.  */
     typedef struct ColorPallete {
@@ -115,6 +116,16 @@ namespace UI {
         GrabState() {};
         GrabState(bool _grabbed, PCursor _cursor, Primitive* _primitive) : grabbed{ _grabbed }, cursor{ _cursor }, primitive{_primitive} {};
     } GrabState;
+
+    /** The state returned from Grab methods, indicating what the Conductor should do. */
+    typedef struct HoverEvent {
+        bool new_hover = false;
+        PCursor cursor = PCursor::Default;
+        Primitive* primitive = nullptr;
+
+        HoverEvent() {};
+        HoverEvent(bool _new_hover, PCursor _cursor, Primitive* _primitive) : new_hover{ _new_hover }, cursor{ _cursor }, primitive{_primitive} {};
+    } HoverEvent;
     
 }
 

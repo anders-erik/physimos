@@ -14,8 +14,8 @@ struct UIC_PrimitiveColor_SetGreen : public ::UI::Primitive {
     UiResult click();
     GrabState grabbed(double dx, double dy);
     UiResult scroll(double y_change);
-    UiResult hover_enter();
-    UiResult hover_exit();
+    HoverEvent hover_enter();
+    HoverEvent hover_exit();
     UIC_PrimitiveColor_SetGreen();
     UIC_PrimitiveColor_SetGreen(Primitive *_parent);
 };
