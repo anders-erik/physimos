@@ -13,6 +13,8 @@ add_subdirectory(scene)
 
 set(SOURCES 
     conductor.cc
+    conductor_viewport.cc
+    
     Input.cpp
     Simulation.cpp
     Windowing.cpp

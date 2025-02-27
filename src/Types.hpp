@@ -3,6 +3,10 @@
 #define TYPES_H
 
 
+typedef unsigned int uint;
+
+// OLD BELOW
+
 #define pso_white   { 1.0f, 1.0f, 1.0f }
 #define pso_black   { 0.0f, 0.0f, 0.0f }
 #define pso_red     { 1.0f, 0.0f, 0.0f }

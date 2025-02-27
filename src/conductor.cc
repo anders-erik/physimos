@@ -17,6 +17,7 @@
 #include "conductor.hh"
 #include "conductor_common.hh"
 #include "conductor_internal.hh"
+#include "conductor_viewport.hh"
 
 #include "ui/ui_primitive.hh"
 #include "ui/ui_globals.hh"
@@ -31,10 +32,13 @@ StateMain state_main = StateMain::Scene3D;
 /** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
 UI::Primitive* grabbed_primitive = nullptr;
 
+/** Singleton viewport context */
+static ViewportContext viewport_context;
+
 /** Current cursor position recieved in the input callback function. */
-double cursor_x = 0.0;
+// double cursor_x = 0.0;
 /** Current cursor position recieved in the input callback function. y = 0 at the bottom of window.  */
-double cursor_y = 0.0;
+// double cursor_y = 0.0;
 
 UI::Primitive* currentlyHoveredPrimitive = nullptr;
 
@@ -242,8 +246,10 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
 	// std::cout << "CBC POSITION" << std::endl;
 	
     // UI STATE
-    cursor_x = pointer_pos.x;
-    cursor_y = pointer_pos.y;
+    // cursor_x = pointer_pos.x;
+    // cursor_y = pointer_pos.y;
+
+	viewport_context.set_cursor(pointer_pos.x, pointer_pos.y);
 
     // DRAG
     if(grabbed_primitive != nullptr){
@@ -257,7 +263,7 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
     }
 
     // TRY NEW HOVER
-    UI::UiResult targetResult = UI::try_find_target(cursor_x, cursor_y);
+    UI::UiResult targetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if (targetResult.success) {
         currentlyHoveredPrimitive = targetResult.primitive;
         targetResult.primitive->hover_enter();
@@ -265,7 +271,7 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
     }
 
 	// TRY NEW HOVER
-    targetResult = UI::try_find_target_old(cursor_x, cursor_y);
+    targetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if (targetResult.success) {
         currentlyHoveredPrimitive = targetResult.primitive;
         targetResult.primitive->hover_enter();
@@ -280,7 +286,7 @@ void callback_scroll_y(double y_change) {
     UI::UiResult scrollTargetQuery;
 
     // SCROLL FOUND TARGET DIRECTLY
-    scrollTargetQuery = UI::try_find_target(cursor_x, cursor_y);
+    scrollTargetQuery = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if (scrollTargetQuery.success) {
 
         if(scrollTargetQuery.primitive->scrollable){
@@ -315,7 +321,7 @@ void callback_scroll_y(double y_change) {
 
 
 	// EDITORS
-    scrollTargetQuery = UI::try_find_target_old(cursor_x, cursor_y);
+    scrollTargetQuery = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if (scrollTargetQuery.success) {
 
         if(scrollTargetQuery.primitive->scrollable)
@@ -357,7 +363,7 @@ void callback_left_release(PInput::PointerPosition _pointer_pos){
 
 
     // TRIGGER CLICK
-    releaseTargetResult = UI::try_find_target(cursor_x, cursor_y);
+    releaseTargetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
 	
     // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
     click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
@@ -375,7 +381,7 @@ void callback_left_release(PInput::PointerPosition _pointer_pos){
 
 
 	// PRIMITIVE EDITOR STUFF
-	releaseTargetResult = UI::try_find_target_old(cursor_x, cursor_y);
+	releaseTargetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
 	
     // We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
     click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
@@ -405,14 +411,14 @@ void callback_left_down(PInput::PointerPosition _pointer_pos) {
 
 
     // REGISTER FOR CLICK ON RELEASE
-    clickTargetResult = UI::try_find_target(cursor_x, cursor_y);
+    clickTargetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if(clickTargetResult.success){
         grabbed_primitive = clickTargetResult.primitive;
         // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
         return;
     }
 
-	clickTargetResult = UI::try_find_target_old(cursor_x, cursor_y);
+	clickTargetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
     if(clickTargetResult.success){
         grabbed_primitive = clickTargetResult.primitive;
         // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
