@@ -69,9 +69,10 @@ UiResult try_find_target(double x, double y){
 
     UiResult result;
 
-    result = main_view->try_find_target_component(x, y);
-    if (result.success)
-        return result;
+    //
+    // result = main_view->try_find_target_component(x, y);
+    // if (result.success)
+    //     return result;
 
     result = topbar->try_find_target_component(x, y);
     if (result.success)
@@ -299,20 +300,20 @@ void update(){
 
 void update_window(PhysWin physimos_window) {
 
-    viewport_width = physimos_window.width / physimos_window.xscale;
-    viewport_height = physimos_window.height / physimos_window.yscale;
+    viewport_width = physimos_window.logical.w;
+    viewport_height = physimos_window.logical.h;
     
     // SHADER TRANSFORM
     shader::texture_shader.set_window_info(
-        physimos_window.width,
-        physimos_window.height,
+        physimos_window.raw.w,
+        physimos_window.raw.h,
         physimos_window.xscale,
         physimos_window.yscale
     );
 
     shader::color_shader.set_window_info(
-        physimos_window.width, 
-        physimos_window.height, 
+        physimos_window.raw.w, 
+        physimos_window.raw.h, 
         physimos_window.xscale, 
         physimos_window.yscale
     );

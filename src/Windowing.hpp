@@ -4,6 +4,8 @@
 // #include <glad/glad.h>
 // #include <GLFW/glfw3.h>
 
+#include "Types.hpp"
+
 #include "window_cursors.hh"
 
 void set_cursor(PCursor cursor);
@@ -17,6 +19,8 @@ struct GLFWwindow;
  *  NOTE: remember that the height and width represents actual framebuffer size which is passed to the shader -- viewport_height = height / yscale !
  */
 typedef struct PhysWin {
+    Size_UINT_2D raw;
+    Size_UINT_2D logical;
     unsigned int height;
     unsigned int width;
     float xscale;

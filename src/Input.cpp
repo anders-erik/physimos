@@ -28,20 +28,20 @@ InputState inputState;
 PhysWin physimos_window;
 
 /** The raw pointer position object before sanity transformations.  */
-PointerPosition pointer_pos_raw;
+ViewportCursor pointer_pos_raw;
 /** The authoritative pointer position object.  */
-PointerPosition pointer_pos;
+ViewportCursor pointer_pos;
 /** The authoritative pointer change object.  */
-PointerChange pointer_change;
+ViewportCursor pointer_change;
 
 /** Authoritative key input modifier state.  */
 ModifierState modifier_state;
 
 
 // INPUT SUBSCRIBERS CALLBACK POINTERS
-void (*conductor_callback_pointer_position)(PointerPosition _pointer_pos, PointerChange _pointer_change) = nullptr;
-void (*conductor_callback_left_down)(PointerPosition _pointer_pos) = nullptr;
-void (*conductor_callback_left_release)(PointerPosition _pointer_pos) = nullptr;
+void (*conductor_callback_pointer_position)(ViewportCursor _pointer_pos, ViewportCursor _pointer_change) = nullptr;
+void (*conductor_callback_left_down)(ViewportCursor _pointer_pos) = nullptr;
+void (*conductor_callback_left_release)(ViewportCursor _pointer_pos) = nullptr;
 void (*conductor_callback_y_scroll)(double x_change) = nullptr;
 void (*conductor_callback_key_up)(KeyEvent key_event) = nullptr;
 void (*conductor_callback_key_down)(KeyEvent key_event) = nullptr;
@@ -57,13 +57,13 @@ void init() {
 
 
 
-void subscribe_pointer_position_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change)) {
+void subscribe_pointer_position_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos, ViewportCursor _pointer_change)) {
 	conductor_callback_pointer_position = subscriberCallback;
 }
-void subscribe_mouse_left_down_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
+void subscribe_mouse_left_down_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos)) {
 	conductor_callback_left_down = subscriberCallback;
 }
-void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos)) {
+void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos)) {
 	conductor_callback_left_release = subscriberCallback;
 }
 void subscribe_mouse_scroll_y_conductor(void (*subscriberCallback)(double y_change)) {
@@ -145,9 +145,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// New value measured from previous update value
-	pointer_change.dx = xpos - pointer_pos.x;
+	pointer_change.x = xpos - pointer_pos.x;
 	// Compary raw value for easy difference calc. Measure from new position because inverted y axis
-	pointer_change.dy = pointer_pos_raw.y - ypos;
+	pointer_change.y = pointer_pos_raw.y - ypos;
 
 	// Invert the read y value
 	pointer_pos.x = xpos;

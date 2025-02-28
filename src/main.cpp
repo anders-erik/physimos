@@ -28,7 +28,7 @@ int main()
 
 
 	conductor_rouse();
-	conductor_main();
+	conductor_conduct();
 	
 
 	return 0;

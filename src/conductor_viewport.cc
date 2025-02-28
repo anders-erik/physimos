@@ -17,8 +17,9 @@ bool AABB_INT_2D::contains(double _x, double _y){
 void ViewportContext::set_workbench_h(int h_px){
     view_sizes.workbench.h = h_px;
 
-    view_sizes.main_view.h = size.logical.h - view_sizes.topbar_h - view_sizes.workbench.h;
-    view_sizes.main_view.y = view_sizes.workbench.h;
+    // view_sizes.main_view.h = size.logical.h - view_sizes.topbar_h - view_sizes.workbench.h;
+    // view_sizes.main_view.y = view_sizes.workbench.h;
+    update_heights();
 }
 void ViewportContext::toggle_workbench(){
     visibility.workbench = visibility.workbench ? false : true;
@@ -68,6 +69,7 @@ void ViewportContext::update_heights(){
         view_sizes.main_view.h = size.logical.h - view_sizes.topbar_h;
         view_sizes.main_view.y = 0;
     }
+    viewport_changed = true;
 }
 
 void ViewportContext::update_widths(){
@@ -101,6 +103,8 @@ void ViewportContext::update_widths(){
         view_sizes.workbench.w = size.logical.w;
         view_sizes.workbench.x = 0;
     }
+
+    viewport_changed = true;
 }
 
 
@@ -108,24 +112,29 @@ void ViewportContext::accumulate_workbench(double dy){
     accumulator.workbench += dy;
 
     if(accumulator.workbench > 5.0){
-        accumulator.workbench -= 5.0;
-
-        // MAKE SURE HEIGHT IS NEVER SET Above available height
-        if((view_sizes.workbench.h + 5) > size.logical.h - view_sizes.topbar_h)
+        
+        // make sure height is never set above available height
+        if((view_sizes.workbench.h + 5) > size.logical.h - view_sizes.topbar_h){
             set_workbench_h(size.logical.h - view_sizes.topbar_h);
-        else
+        }
+        else{
             set_workbench_h(view_sizes.workbench.h + 5);
+            accumulator.workbench -= 5.0;
+        }
 
         viewport_changed = true;
     }
     else if(accumulator.workbench < -5.0){
-        accumulator.workbench += 5.0;
+        
 
-        // MAKE SURE HEIGHT IS NEVER SET BELOW 0 
-        if((view_sizes.workbench.h - 5) < 0)
+        // make sure height is never set below 0 
+        if((view_sizes.workbench.h - 5) < 0){
             set_workbench_h(0);
-        else
+        }
+        else{
             set_workbench_h(view_sizes.workbench.h - 5);
+            accumulator.workbench += 5.0;
+        }
 
         viewport_changed = true;
     }
@@ -148,7 +157,6 @@ void ViewportContext::accumulate_left_panel(double dx){
         viewport_changed = true;
     }
     else if(accumulator.left_panel < -5.0 ){
-        // accumulator.left_panel += 5.0;
 
         if((view_sizes.left_panel_w - 5) < 0){
             set_left_panel_w(0);
@@ -177,7 +185,6 @@ void ViewportContext::accumulate_right_panel(double dx){
         viewport_changed = true;
     }
     else if(accumulator.right_panel < -5.0 ){
-        // accumulator.left_panel += 5.0;
 
         if((view_sizes.right_panel_w + 5) < size.logical.w - view_sizes.left_panel_w){
             set_right_panel_w(view_sizes.right_panel_w + 5);

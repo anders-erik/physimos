@@ -28,7 +28,8 @@
 /** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
 // UI::Grid current_grid;
 
-StateMain state_main = StateMain::Scene3D;
+StateMain state_main_default = StateMain::Scene3D;
+StateMain state_main_current;
 
 
 /** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
@@ -61,12 +62,9 @@ int conductor_rouse()
 	}
 
 	PhysWin new_window = get_initial_physimos_window();
-	viewport_context.size.raw.w = new_window.width;
-	viewport_context.size.raw.h = new_window.height;
-	viewport_context.size.logical.w = new_window.width / new_window.xscale;
-	viewport_context.size.logical.h = new_window.height / new_window.xscale;
-	viewport_context.size.xscale = new_window.xscale;
-	viewport_context.size.yscale = new_window.yscale;
+	viewport_context.size = new_window;
+
+	state_main_current = state_main_default;
 
 	viewport_context.set_left_panel_w(left_panel_default_width);
 	viewport_context.set_right_panel_w(right_panel_default_width);
@@ -97,7 +95,7 @@ int conductor_rouse()
 	PScene::init();
 
 	UI::init();
-	UI::state_main_set(state_main);
+	UI::state_main_set(state_main_current);
 	// UI::set_ui_grid(current_grid);
 	UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 
@@ -106,7 +104,7 @@ int conductor_rouse()
 	return 0;
 }
 
-void conductor_main() {
+void conductor_conduct() {
 
 	while (windowIsStillGood())
 	{
@@ -128,13 +126,13 @@ void conductor_main() {
 
 
 		PScene::updateCurrentScene();
-		if (state_main == StateMain::Scene3D)
+		if (state_main_current == StateMain::Scene3D)
 			PScene::renderCurrentScene();
 
 
 		// update and render ui
 		UI::update();
-		if (state_main == StateMain::UIEditor)
+		if (state_main_current == StateMain::UIEditor)
 			UI::render_main_view_components();
 
 
@@ -153,28 +151,31 @@ void conductor_main() {
 }
 
 void state_main_set(StateMain new_state_main) {
-	state_main = new_state_main;
+	state_main_current = new_state_main;
 
 	UI::state_main_set(new_state_main);
 }
 
-void state_main_switch_left() {
-	if (state_main == StateMain::Scene3D)
-		state_main_set(StateMain::UIEditor);
-	else if (state_main == StateMain::Canvas)
-		state_main_set(StateMain::Scene3D);
-	else if (state_main == StateMain::UIEditor)
-		state_main_set(StateMain::Canvas);
+StateMain get_left_state() {
+	if (state_main_current == StateMain::Scene3D)
+		return StateMain::UIEditor;
+	else if (state_main_current == StateMain::Canvas)
+		return StateMain::Scene3D;
+	else if (state_main_current == StateMain::UIEditor)
+		return StateMain::Canvas;
 
+	return state_main_default;
 }
 
-void state_main_switch_right() {
-	if (state_main == StateMain::Scene3D)
-		state_main_set(StateMain::Canvas);
-	else if (state_main == StateMain::Canvas)
-		state_main_set(StateMain::UIEditor);
-	else if (state_main == StateMain::UIEditor)
-		state_main_set(StateMain::Scene3D);
+StateMain get_right_state() {
+	if (state_main_current == StateMain::Scene3D)
+		return StateMain::Canvas;
+	else if (state_main_current == StateMain::Canvas)
+		return StateMain::UIEditor;
+	else if (state_main_current == StateMain::UIEditor)
+		return StateMain::Scene3D;
+
+	return state_main_default;
 }
 
 
@@ -183,23 +184,16 @@ void conductor_perform_action(CAction action) {
 	switch (action) {
 
 	case CAction::UI_ToggleLeftPanel:
-		// current_grid.left_panel_visible = current_grid.left_panel_visible ? false : true;
-		// UI::set_ui_grid(current_grid);
 		viewport_context.toggle_left_panel();
 		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-
 		break;
 
 	case CAction::UI_ToggleWorkbench:
-		// current_grid.workbench_visible = current_grid.workbench_visible ? false : true;
-		// UI::set_ui_grid(current_grid);
 		viewport_context.toggle_workbench();
 		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 		break;
 
 	case CAction::UI_ToggleRightPanel:
-		// current_grid.right_panel_visible = current_grid.right_panel_visible ? false : true;
-		// UI::set_ui_grid(current_grid);
 		viewport_context.toggle_right_panel();
 		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 		break;
@@ -217,11 +211,11 @@ void conductor_perform_action(CAction action) {
 		break;
 
 	case CAction::State_SwitchRight:
-		state_main_switch_right();
+		state_main_set(get_right_state());
 		break;
 
 	case CAction::State_SwitchLeft:
-		state_main_switch_left();
+		state_main_set(get_left_state());
 		break;
 
 	default:
@@ -244,15 +238,7 @@ void reload_viewport() {
 
 void callback_window_change(PhysWin new_window) {
 
-	// viewport_width = physimos_window.width / physimos_window.xscale;
-	// viewport_height = physimos_window.height / physimos_window.yscale;
-
-	viewport_context.size.raw.w = new_window.width;
-	viewport_context.size.raw.h = new_window.height;
-	viewport_context.size.logical.w = new_window.width / new_window.xscale;
-	viewport_context.size.logical.h = new_window.height / new_window.xscale;
-	viewport_context.size.xscale = new_window.xscale;
-	viewport_context.size.yscale = new_window.yscale;
+	viewport_context.size = new_window;
 
 	reload_viewport();
 	// viewport_context.update_heights();
@@ -293,7 +279,7 @@ void callback_window_change(PhysWin new_window) {
 
 
 
-void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::PointerChange _pointer_change) {
+void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _pointer_change) {
 	// std::cout << "CBC POSITION" << std::endl;
 
 	// UI STATE
@@ -307,22 +293,22 @@ void callback_pointer_position(PInput::PointerPosition pointer_pos, PInput::Poin
 	if (grabbed_primitive != nullptr) {
 
 		if (grabbed_primitive->id == "UIC_Root_Workbench_Resizer") {
-			viewport_context.accumulate_workbench(_pointer_change.dy);
+			viewport_context.accumulate_workbench(_pointer_change.y);
 			// No other initiated ui events during grab!
 			return;
 		}
 		else if (grabbed_primitive->id == "UIC_Root_LeftPanel_Resizer") {
-			viewport_context.accumulate_left_panel(_pointer_change.dx);
+			viewport_context.accumulate_left_panel(_pointer_change.x);
 			// No other initiated ui events during grab!
 			return;
 		}
 		else if (grabbed_primitive->id == "UIC_Root_RightPanel_Resizer") {
-			viewport_context.accumulate_right_panel(_pointer_change.dx);
+			viewport_context.accumulate_right_panel(_pointer_change.x);
 			// No other initiated ui events during grab!
 			return;
 		}
 
-		grabbed_primitive->grabbed(_pointer_change.dx, _pointer_change.dy);
+		grabbed_primitive->grabbed(_pointer_change.x, _pointer_change.y);
 	}
 
 	// RESET HOVER
@@ -436,7 +422,7 @@ void callback_scroll_y(double y_change) {
 
 }
 
-void callback_left_release(PInput::PointerPosition _pointer_pos) {
+void callback_left_release(ViewportCursor _pointer_pos) {
 
 	// We are only interested in release behavior if we targeted a primitive on left click
 	if (grabbed_primitive == nullptr)
@@ -493,7 +479,7 @@ void callback_left_release(PInput::PointerPosition _pointer_pos) {
 
 }
 
-void callback_left_down(PInput::PointerPosition _pointer_pos) {
+void callback_left_down(ViewportCursor _pointer_pos) {
 
 	UI::UiResult clickTargetResult;
 

@@ -72,6 +72,9 @@ void UIC_Root_RightPanel::render_component(){
 
 UiResult UIC_Root_RightPanel::try_find_target_component(double x, double y) {
 
+    if(!render_enabled)
+        return UiResult();
+
     if (!containsPoint(x, y))
         return UiResult();
 

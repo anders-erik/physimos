@@ -50,7 +50,7 @@ void set_cursor(PCursor cursor){
     }
 }
 
-
+/** Authoritative physiomos window object that gets updated immeditaely in GLWF resize callbacks. */
 PhysWin physimos_window;
 
 void (*windowChangeCallback_conductor)(PhysWin _physimos_window) = nullptr;
@@ -67,8 +67,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 
-    physimos_window.height = height;
     physimos_window.width = width;
+    physimos_window.height = height;
+
+    physimos_window.raw.w = width;
+    physimos_window.raw.h = height;
+
+    physimos_window.logical.w = width / physimos_window.xscale;
+    physimos_window.logical.h = height / physimos_window.yscale;
     
 
     // Window property dependants
@@ -157,6 +163,11 @@ void initPhysimosWindow(int _init_width, int _init_height) {
 
     // SET PYSIMOS WINDOW OBJECT
     glfwGetWindowContentScale(window__, &physimos_window.xscale, &physimos_window.yscale);
+    physimos_window.logical.w = _init_width;
+    physimos_window.logical.h = _init_height;
+    physimos_window.raw.w = _init_width * physimos_window.xscale;
+    physimos_window.raw.h = _init_height * physimos_window.yscale;
+    
     physimos_window.width = _init_width * physimos_window.xscale;
     physimos_window.height = _init_height * physimos_window.yscale;
 

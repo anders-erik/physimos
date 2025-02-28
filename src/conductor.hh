@@ -9,7 +9,7 @@
 /** Inits all modules necessary for regular physimos start. */
 int conductor_rouse();
 /** Physimos main loop. */
-void conductor_main();
+void conductor_conduct();
 
 /** Physimos actions. */
 void conductor_perform_action(CAction action);

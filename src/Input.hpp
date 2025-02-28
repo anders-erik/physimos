@@ -2,6 +2,7 @@
 #define INPUT_HPP
 
 #include "Windowing.hpp"
+#include "window_cursors.hh"
 
 
 struct GLFWwindow;
@@ -9,16 +10,6 @@ struct GLFWwindow;
 
 namespace PInput {
 
-
-/** Current Pointer position and change since previous position. y axis is inverted from screen coordinates (y=0 is bottom edge) */
-typedef struct PointerPosition {
-	double x;
-	double y;
-} PointerPosition;
-typedef struct PointerChange {
-	double dx;
-	double dy;
-} PointerChange;
 
 /** 
  * 	Convenience struct for later clarity of usage.
@@ -62,11 +53,11 @@ void init();
 // SUBSCRIBERS
 
 /** Called by external module to subscribe to any change in the pointer position within physimos window. */
-void subscribe_pointer_position_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos, PointerChange _pointer_change));
+void subscribe_pointer_position_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos, ViewportCursor _pointer_change));
 /** Called by external module to subscribe to any change in the pointer position within physimos window. */
-void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos));
+void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
 /** Called by external module to subscribe to any left click detected within physimos window. */
-void subscribe_mouse_left_down_conductor(void (*subscriberCallback)(PointerPosition _pointer_pos));
+void subscribe_mouse_left_down_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
 /** Called by external module to subscribe to any left click detected within physimos window. */
 void subscribe_mouse_scroll_y_conductor(void (*subscriberCallback)(double y_change));
 
