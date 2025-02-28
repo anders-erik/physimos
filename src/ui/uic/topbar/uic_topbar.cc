@@ -13,7 +13,7 @@ UIC_Root_Topbar::UIC_Root_Topbar()
     :   grid_toggle { UIC_Topbar_GridToggle() },
         main_states { UIC_Topbar_MainStates() }
 {
-    set_color({0.0, 0.0, 0.0, 0.3});
+    set_color({0.0, 0.0, 0.0, 0.2});
 
     set_w("100%");
     set_h("30x");

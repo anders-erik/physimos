@@ -156,9 +156,9 @@ namespace UI {
         if (_newState == PrimitiveState::Default)
             darkness_shift = 0.0f;
         else if (_newState == PrimitiveState::Hover)
-            darkness_shift = 0.1f;
+            darkness_shift = -0.2f;
         else if (_newState == PrimitiveState::Selected) 
-            darkness_shift = 0.2f;
+            darkness_shift = -0.4f;
 
     }
 

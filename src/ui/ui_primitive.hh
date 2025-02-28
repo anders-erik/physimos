@@ -174,7 +174,9 @@ class Primitive {
         
         /** Render current state of primitive */
         void render();
-        /** Render current state of primitive and making this same call to all its children */
+        /** Render current state of primitive and making this same call to all its children
+         *  Very useful for ui branches that does not need updating or component behavior, such as the string primitives of the fixed sized buttons in the topbar.
+         */
         void render_recursive();
         // Primitives without parents will have a z-value of 1. Each child will recieve a z value of parent.z + 1.
         // A z value of 0 will not be rendered ?
