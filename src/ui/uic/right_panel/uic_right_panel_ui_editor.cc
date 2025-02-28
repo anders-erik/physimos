@@ -6,6 +6,7 @@
 
 #include "uic_right_panel_ui_editor.hh"
 
+#include "ui/uic/main_view/uic_main_view_ui_editor.hh"
 
 namespace UI::component {
 
@@ -20,7 +21,7 @@ UIC_RightPanel_UiEditor::UIC_RightPanel_UiEditor()
 {
     id = "UIC_RightPanel_UiEditor";
     // set_color({0.0, 1.0, 0.0, 1.0});
-    set_color(active_pallete.detail2);
+    set_color(active_pallete.base2);
 
     set_w("100%o-5");
     set_h("100%");
@@ -30,8 +31,7 @@ UIC_RightPanel_UiEditor::UIC_RightPanel_UiEditor()
 
     // appendChild(&uic_Root_RightPanel_Resizer);
     appendChild(&uic_PrimitiveEditor);
-    uic_PrimitiveEditor.set_h("50%");
-    uic_PrimitiveEditor.set_y("^0x");
+    uic_PrimitiveEditor.set_y("^5x");
 
     appendChild(&uic_PrimitiveListEditor);
     uic_PrimitiveListEditor.set_h("20%");

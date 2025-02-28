@@ -28,7 +28,7 @@
 /** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
 // UI::Grid current_grid;
 
-StateMain state_main_default = StateMain::UIEditor;
+StateMain state_main_default = StateMain::Scene3D;
 StateMain state_main_current;
 
 
@@ -132,9 +132,6 @@ void conductor_conduct() {
 
 		// update and render ui
 		UI::update();
-		if (state_main_current == StateMain::UIEditor)
-			UI::render_main_view_components();
-
 
 
 		// Swap buffers
@@ -241,35 +238,9 @@ void callback_window_change(PhysWin new_window) {
 	viewport_context.size = new_window;
 
 	reload_viewport();
-	// viewport_context.update_heights();
-	// viewport_context.update_widths();
-
-	// UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-
 
 	UI::update_window(new_window);
 
-	// // SHADER TRANSFORM
-	// shader::texture_shader.set_window_info(
-	//     physimos_window.width,
-	//     physimos_window.height,
-	//     physimos_window.xscale,
-	//     physimos_window.yscale
-	// );
-
-	// shader::color_shader.set_window_info(
-	//     physimos_window.width, 
-	//     physimos_window.height, 
-	//     physimos_window.xscale, 
-	//     physimos_window.yscale
-	// );
-
-	// RELOAD ALL PRIMITIVES TO GET CORRECT DIMENSIONS
-	// primitive_editor->update_w_real_recursive();
-	// primitive_editor->update_x_real_recursive();
-
-	// primitive_editor->update_h_real_recursive();
-	// primitive_editor->update_y_real_recursive();
 }
 
 
@@ -280,11 +251,6 @@ void callback_window_change(PhysWin new_window) {
 
 
 void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _pointer_change) {
-	// std::cout << "CBC POSITION" << std::endl;
-
-	// UI STATE
-	// cursor_x = pointer_pos.x;
-	// cursor_y = pointer_pos.y;
 
 	viewport_context.set_cursor(pointer_pos.x, pointer_pos.y);
 
@@ -334,19 +300,6 @@ void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _point
 		return;
 	}
 
-	// TRY NEW HOVER
-	targetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-	if (targetResult.success) {
-		// hovered_primitive = targetResult.primitive;
-
-		UI::HoverEvent hover_event = targetResult.primitive->hover_enter();
-
-		if (hover_event.new_hover) {
-			set_cursor(hover_event.cursor);
-			hovered_primitive = hover_event.primitive;
-		}
-		return;
-	}
 
 }
 
@@ -388,38 +341,6 @@ void callback_scroll_y(double y_change) {
 
 	}
 
-
-
-	// EDITORS
-	scrollTargetQuery = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-	if (scrollTargetQuery.success) {
-
-		if (scrollTargetQuery.primitive->scrollable)
-			scrollTargetQuery.primitive->scroll(y_change);
-	}
-	// BUBBLE TARGET (EDITORS)
-	if (scrollTargetQuery.success) {
-
-		// Simply scroll if target is scrollable
-		if (scrollTargetQuery.primitive->scrollable) {
-			scrollTargetQuery.primitive->scroll(y_change);
-			return;
-		}
-
-		// If not scrollable, bubble ui tree until root primitive is found.
-		// If at any point a scrollable primtiive is encountered, the scroll method is called
-		UI::Primitive* currentPrimitive = scrollTargetQuery.primitive;
-		while (currentPrimitive->parent != nullptr) {
-			currentPrimitive = currentPrimitive->parent;
-
-			if (currentPrimitive->scrollable) {
-				currentPrimitive->scroll(y_change);
-				break;
-			}
-		}
-
-	}
-
 }
 
 void callback_left_release(ViewportCursor _pointer_pos) {
@@ -452,25 +373,6 @@ void callback_left_release(ViewportCursor _pointer_pos) {
 		grabbed_primitive = nullptr;
 		return;
 	}
-
-
-	// PRIMITIVE EDITOR STUFF
-	releaseTargetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-
-	// We click if: 1) released on primitive, 2) primitive is the same one as registered on left down
-	click_confirmed = releaseTargetResult.success && releaseTargetResult.primitive == grabbed_primitive;
-	if (click_confirmed) {
-		plog_info(::plib::LogScope::UI, "Click registered on " + releaseTargetResult.primitive->id);
-		UI::UiResult click_result = releaseTargetResult.primitive->click();
-
-		if (click_result.action != CAction::None)
-			conductor_perform_action(click_result.action);
-
-		// NEVER PERSIST GRAB ON RELEASE
-		grabbed_primitive = nullptr;
-		return;
-	}
-
 
 
 	// NEVER PERSIST GRAB ON RELEASE
@@ -511,33 +413,6 @@ void callback_left_down(ViewportCursor _pointer_pos) {
 		return;
 	}
 
-	clickTargetResult = UI::try_find_target_old(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-	if (clickTargetResult.success) {
-
-		UI::GrabState try_grab = clickTargetResult.primitive->grab();
-		if (try_grab.grabbed) {
-			// SET CURSOR
-			set_cursor(try_grab.cursor);
-			// SET GRABBED PRIMITIVE
-			grabbed_primitive = try_grab.primitive;
-
-			// If we grabbed a primitive, no other changes should take place
-			return;
-		}
-
-		// If we didn't grab, then we trigger click
-		clickTargetResult.primitive->click();
-
-		plog_info(::plib::LogScope::UI, "Click registered on " + clickTargetResult.primitive->id);
-
-		UI::UiResult click_result = clickTargetResult.primitive->click();
-		if (click_result.action != CAction::None)
-			conductor_perform_action(click_result.action);
-
-		// grabbed_primitive = clickTargetResult.primitive;
-		// // plog_info(::plib::LogScope::UI, "Grabbed : " + grabbed_primitive->id);
-		// return;
-	}
 
 }
 

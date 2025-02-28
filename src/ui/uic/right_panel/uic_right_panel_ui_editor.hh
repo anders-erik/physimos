@@ -1,10 +1,10 @@
-#ifndef UIC_ROOT_RIGHT_PANEL_HH
-#define UIC_ROOT_RIGHT_PANEL_HH
+#ifndef UIC_RIGHT_PANEL_UI_EDITOR_HH
+#define UIC_RIGHT_PANEL_UI_EDITOR_HH
 
 
 #include "ui/ui_primitive.hh"
 
-#include "ui/uic/main_view/uic_main_view_ui_editor.hh"
+
 
 #include "ui/uic/uic_primitive_editor.hh"
 #include "ui/uic/uic_primitive_list_editor.hh"

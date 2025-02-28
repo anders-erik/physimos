@@ -52,6 +52,10 @@ UIC_Root_RightPanel::UIC_Root_RightPanel()
     appendChild(&uic_RightPanel_UiEditor);
 }
 
+void UIC_Root_RightPanel::set_current_state(StateMain new_state){
+    current_state_main = new_state;
+}
+
 void UIC_Root_RightPanel::update_component() {}
 
 
@@ -68,7 +72,17 @@ void UIC_Root_RightPanel::render_component(){
 
     // Contents
     uic_Root_RightPanel_Resizer.render();
-    uic_RightPanel_UiEditor.render_component();
+
+    switch (current_state_main){
+        
+    case StateMain::UIEditor :
+        uic_RightPanel_UiEditor.render_component();
+        break;
+    
+    default:
+        break;
+    }
+    
 
     color_shader->stencil_disable();
 }

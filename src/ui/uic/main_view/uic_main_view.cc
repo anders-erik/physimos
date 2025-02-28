@@ -12,16 +12,20 @@ namespace UI::component {
 UIC_Root_MainView::UIC_Root_MainView()
     : uic_MainView_UiEditor { UIC_MainView_UiEditor() }
 {
-    id = "UIC_Root_RightPanel";
-    set_color({0.0, 1.0, 0.0, 0.1});
+    id = "UIC_Root_MainView";
+    set_color({1.0, 0.0, 0.0, 0.3});
 
-    set_w("20%");
-    set_h("100%o-30");
+    // set_w("20%");
+    // set_h("100%o-30");
 
     set_x(">0x");
     set_y("_0x");
 
     appendChild(&uic_MainView_UiEditor);
+}
+
+void UIC_Root_MainView::set_current_state(StateMain new_state){
+    current_state_main = new_state;
 }
 
 void UIC_Root_MainView::update_component() {}
@@ -39,7 +43,16 @@ void UIC_Root_MainView::render_component(){
     color_shader->stencil_apply();
 
     // Contents
-    uic_MainView_UiEditor.render_component();
+    switch (current_state_main){
+
+    case StateMain::UIEditor :
+        uic_MainView_UiEditor.render_component();
+        break;
+    
+    default:
+        break;
+    }
+    
 
     color_shader->stencil_disable();
 }

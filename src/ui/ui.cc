@@ -15,8 +15,8 @@
 
 #include "ui/uic/topbar/uic_topbar.hh"
 #include "ui/uic/main_view/uic_main_view.hh"
-#include "ui/uic/uic_root_left_panel.hh"
 #include "ui/uic/right_panel/uic_right_panel.hh"
+#include "ui/uic/uic_root_left_panel.hh"
 #include "ui/uic/uic_root_workbench.hh"
 
 #include "ui/uic/uic_primitive_editor.hh"
@@ -47,15 +47,6 @@ double cursor_y = 0.0;
 Primitive* currentlyHoveredPrimitive = nullptr;
 
 
-// TESTING PRIMITIVES
-
-UI::Primitive* color_primtiive;
-UI::Primitive* primitive_to_edit;
-
-UI::component::UIC_PrimitiveEditor* primitive_editor;
-
-UI::component::UIC_PrimitiveList* primitive_list;
-UI::component::UIC_PrimitiveListEditor* primitive_list_editor;
 
 // ROOT PRIMITIVES
 
@@ -94,27 +85,13 @@ UiResult try_find_target(double x, double y){
     return UiResult();
 }
 
-UiResult try_find_target_old(double x, double y){
-
-    UiResult result;
-
-    result = primitive_editor->try_find_target_component(x, y);
-    if(result.success)
-        return result;
-
-    result = primitive_list_editor->try_find_target_component(x, y);
-    if(result.success)
-        return result;
-
-    result = primitive_list->try_find_target_component(x, y);
-    if(result.success)
-        return result;
-
-
-    return UiResult();
-}
 
 void state_main_set(StateMain new_state_main){
+
+    main_view->set_current_state(new_state_main);
+    right_panel->set_current_state(new_state_main);
+
+    // TOPBAR BUTTONS
 
     // Reset topbar buttons highlight
     topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Default);
@@ -162,65 +139,20 @@ void init(){
     UI::init_font();
 
 
-
-    // COLOR PRIMITIVE
-    color_primtiive = new UI::Primitive();
-    color_primtiive->render_enabled = false;
-    color_primtiive->has_texture = false;
-    color_primtiive->set_color({0.5,0.5,1.0,1.0});
-    color_primtiive->id = "color_primitive";
-    color_primtiive->set_x("<300x");
-    color_primtiive->set_y("_1%");
-    color_primtiive->set_h("98%");
-    color_primtiive->set_w("100x");
-
-    
-    // PRIMITIVE TO EDIT
-    primitive_to_edit = new UI::Primitive();
-    primitive_to_edit->id = "primitive_to_edit";
-    // primitive_to_edit->set_color(active_pallete.base1);
-    primitive_to_edit->set_x("<50%");
-    primitive_to_edit->set_y("_50%");
-    primitive_to_edit->set_h("200xo-10");
-    primitive_to_edit->set_w("10%o9");
-
-    primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
-    primitive_editor->id = "editor_id";
-    primitive_editor->set_x("<0%");
-    primitive_editor->set_y("^10%");
-    primitive_editor->set_h("50%");
-    primitive_editor->set_w("25%");
-    primitive_editor->uiTransform.w_min = 100;
-    primitive_editor->uiTransform.h_min = 100;
-    primitive_editor->stencil_test = true;
-
-    std::cout << "sizeof(primitive_editor = " << sizeof(*primitive_editor) << std::endl;
-
-
-
-    // PRIMITIVE LIST
-    primitive_list = new UI::component::UIC_PrimitiveList(*primitive_to_edit);
-    primitive_list->id = "primitive_list";
-    primitive_list->set_x("<50x");
-    primitive_list->set_y("10x");
-    primitive_list->set_h("200x");
-    primitive_list->set_w("200x");
-
-    // PRIMITIVE LIST EDITOR
-    primitive_list_editor = new UI::component::UIC_PrimitiveListEditor(*primitive_list, *primitive_to_edit);
-    primitive_list_editor->id = "primitive_list_editor";
-    primitive_list_editor->set_x("<300x");
-    primitive_list_editor->set_y("_20%");
-    primitive_list_editor->set_h("100xo-10");
-    primitive_list_editor->set_w("20%o9");
-
     topbar      = new UI::component::UIC_Root_Topbar();
     main_view   = new UI::component::UIC_Root_MainView();
     left_panel  = new UI::component::UIC_Root_LeftPanel();
     right_panel = new UI::component::UIC_Root_RightPanel();
     workbench   = new UI::component::UIC_Root_Workbench();
     
-    
+
+
+    // REMOVING THESE CAUSES A LINKING ERROR I"VE NOT BEEN ABLE TO RESOLVE...!!
+    // OLD PRIMITIVES FOR DEV
+    component::UIC_PrimitiveList* primitive_list;
+    Primitive* primitive_to_edit = new Primitive();
+    component::UIC_PrimitiveEditor* primitive_editor = new component::UIC_PrimitiveEditor(*primitive_to_edit);
+    component::UIC_PrimitiveListEditor* primitive_list_editor = new component::UIC_PrimitiveListEditor(*primitive_list, *primitive_to_edit);
 }
 
 void set_ui_views(ViewportViewSizes view_sizes, ViewportViewVisibility visibility){
@@ -270,20 +202,6 @@ void set_ui_views(ViewportViewSizes view_sizes, ViewportViewVisibility visibilit
 }
 
 
-void render_main_view_components(){
-
-    primitive_to_edit->render();
-    color_primtiive->render();
-
-
-    primitive_editor->update_component();
-    primitive_editor->render_component();
-
-    primitive_list->render_component();
-    primitive_list_editor->render_component();
-
-}
-
 
 void update(){
     glDisable(GL_DEPTH_TEST);
@@ -317,13 +235,6 @@ void update_window(PhysWin physimos_window) {
         physimos_window.xscale, 
         physimos_window.yscale
     );
-
-    // RELOAD ALL PRIMITIVES TO GET CORRECT DIMENSIONS
-    primitive_editor->update_w_real_recursive();
-    primitive_editor->update_x_real_recursive();
-
-    primitive_editor->update_h_real_recursive();
-    primitive_editor->update_y_real_recursive();
 
     // RELOAD ROOT COMPONENTS
     topbar->uiTransform.size_has_been_changed = true;

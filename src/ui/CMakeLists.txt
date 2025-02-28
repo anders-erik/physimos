@@ -14,4 +14,4 @@ target_include_directories(ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/src/)
 target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include)
 
-target_link_libraries(ui uic)
+# target_link_libraries(ui uic )

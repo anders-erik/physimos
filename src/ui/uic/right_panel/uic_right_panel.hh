@@ -1,5 +1,5 @@
-#ifndef UIC_RIGHT_PANEL_UI_EDITOR_HH
-#define UIC_RIGHT_PANEL_UI_EDITOR_HH
+#ifndef UIC_RIGHT_PANEL_HH
+#define UIC_RIGHT_PANEL_HH
 
 
 #include "ui/ui_primitive.hh"
@@ -27,6 +27,9 @@ struct UIC_Root_RightPanel : public ::UI::Primitive {
     UIC_Root_RightPanel_Resizer uic_Root_RightPanel_Resizer;
 
     UIC_RightPanel_UiEditor uic_RightPanel_UiEditor;
+
+    StateMain current_state_main;
+    void set_current_state(StateMain new_state);
 
     void update_component();
     void render_component();

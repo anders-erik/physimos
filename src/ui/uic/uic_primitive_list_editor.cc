@@ -47,7 +47,7 @@ UIC_PrimitiveListEditor::UIC_PrimitiveListEditor(::UI::component::UIC_PrimitiveL
     set_w("96%");
     set_h("100x");
     set_x("|");
-    set_color(active_pallete.base2);
+    set_color(active_pallete.base1);
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f24);
