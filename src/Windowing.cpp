@@ -167,7 +167,7 @@ void initPhysimosWindow(int _init_width, int _init_height) {
     physimos_window.logical.h = _init_height;
     physimos_window.raw.w = _init_width * physimos_window.xscale;
     physimos_window.raw.h = _init_height * physimos_window.yscale;
-    
+
     physimos_window.width = _init_width * physimos_window.xscale;
     physimos_window.height = _init_height * physimos_window.yscale;
 

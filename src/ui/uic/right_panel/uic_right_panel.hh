@@ -1,8 +1,10 @@
-#ifndef UIC_ROOT_RIGHT_PANEL_HH
-#define UIC_ROOT_RIGHT_PANEL_HH
+#ifndef UIC_RIGHT_PANEL_UI_EDITOR_HH
+#define UIC_RIGHT_PANEL_UI_EDITOR_HH
 
 
 #include "ui/ui_primitive.hh"
+
+#include "ui/uic/right_panel/uic_right_panel_ui_editor.hh"
 
 
 namespace UI::component {
@@ -23,6 +25,8 @@ struct UIC_Root_RightPanel_Resizer : public ::UI::Primitive {
 struct UIC_Root_RightPanel : public ::UI::Primitive {
 
     UIC_Root_RightPanel_Resizer uic_Root_RightPanel_Resizer;
+
+    UIC_RightPanel_UiEditor uic_RightPanel_UiEditor;
 
     void update_component();
     void render_component();

@@ -4,7 +4,7 @@
 
 #include "ui/ui_globals.hh"
 
-#include "uic_root_right_panel.hh"
+#include "uic_right_panel.hh"
 
 
 namespace UI::component {
@@ -38,6 +38,7 @@ GrabState UIC_Root_RightPanel_Resizer::grab(){
 UIC_Root_RightPanel::UIC_Root_RightPanel()
     : uic_Root_RightPanel_Resizer { UIC_Root_RightPanel_Resizer() }
 {
+    id = "UIC_Root_RightPanel";
     set_color({0.0, 1.0, 0.0, 0.1});
 
     set_w("20%");
@@ -47,6 +48,8 @@ UIC_Root_RightPanel::UIC_Root_RightPanel()
     set_y("_0x");
 
     appendChild(&uic_Root_RightPanel_Resizer);
+
+    appendChild(&uic_RightPanel_UiEditor);
 }
 
 void UIC_Root_RightPanel::update_component() {}
@@ -65,6 +68,7 @@ void UIC_Root_RightPanel::render_component(){
 
     // Contents
     uic_Root_RightPanel_Resizer.render();
+    uic_RightPanel_UiEditor.render_component();
 
     color_shader->stencil_disable();
 }
@@ -81,6 +85,9 @@ UiResult UIC_Root_RightPanel::try_find_target_component(double x, double y) {
     
     if (uic_Root_RightPanel_Resizer.containsPoint(x, y))
         return UiResult(true, CAction::None, &uic_Root_RightPanel_Resizer);
+
+    if (uic_RightPanel_UiEditor.containsPoint(x, y))
+        return uic_RightPanel_UiEditor.try_find_target_component(x, y);
     
     return UiResult(true, CAction::None, this);
 }

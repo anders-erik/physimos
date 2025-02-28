@@ -3,9 +3,9 @@
 
 
 typedef enum class StateMain {
-    Scene3D,
-    Canvas,
-    UIEditor, 
+    Scene3D = 0,
+    Canvas = 1,
+    UIEditor = 2, 
 } StateMain;
 
 typedef enum class CAction {

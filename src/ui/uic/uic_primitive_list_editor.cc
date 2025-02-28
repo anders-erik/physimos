@@ -44,7 +44,10 @@ UIC_PrimitiveListEditor::UIC_PrimitiveListEditor(::UI::component::UIC_PrimitiveL
         // uic_primitive_list  { UIC_PrimitiveList(_primitive) }
 {
     id = "prim_list_editor";
-    set_color(active_pallete.base1);
+    set_w("96%");
+    set_h("100x");
+    set_x("|");
+    set_color(active_pallete.base2);
 
     appendChild(&title);
     title.str_setFontSize(FontSize::f24);

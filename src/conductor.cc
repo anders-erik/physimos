@@ -28,7 +28,7 @@
 /** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
 // UI::Grid current_grid;
 
-StateMain state_main_default = StateMain::Scene3D;
+StateMain state_main_default = StateMain::UIEditor;
 StateMain state_main_current;
 
 

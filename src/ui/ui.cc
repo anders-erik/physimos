@@ -14,9 +14,9 @@
 #include "ui/ui_primitive.hh"
 
 #include "ui/uic/topbar/uic_topbar.hh"
-#include "ui/uic/uic_root_main_view.hh"
+#include "ui/uic/main_view/uic_main_view.hh"
 #include "ui/uic/uic_root_left_panel.hh"
-#include "ui/uic/uic_root_right_panel.hh"
+#include "ui/uic/right_panel/uic_right_panel.hh"
 #include "ui/uic/uic_root_workbench.hh"
 
 #include "ui/uic/uic_primitive_editor.hh"
@@ -69,10 +69,10 @@ UiResult try_find_target(double x, double y){
 
     UiResult result;
 
-    //
-    // result = main_view->try_find_target_component(x, y);
-    // if (result.success)
-    //     return result;
+    
+    result = main_view->try_find_target_component(x, y);
+    if (result.success)
+        return result;
 
     result = topbar->try_find_target_component(x, y);
     if (result.success)
@@ -186,7 +186,7 @@ void init(){
 
     primitive_editor = new UI::component::UIC_PrimitiveEditor(*primitive_to_edit);
     primitive_editor->id = "editor_id";
-    primitive_editor->set_x("<74%");
+    primitive_editor->set_x("<0%");
     primitive_editor->set_y("^10%");
     primitive_editor->set_h("50%");
     primitive_editor->set_w("25%");
