@@ -9,6 +9,7 @@ add_subdirectory(model)
 add_subdirectory(image)
 add_subdirectory(lib)
 add_subdirectory(scene)
+add_subdirectory(draw)
 
 
 set(SOURCES 
@@ -36,6 +37,7 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/render)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/logger)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/model)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/lib)
+target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/draw)
 
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include/)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)

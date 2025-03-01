@@ -13,6 +13,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_GENERATOR "Ninja")
 message("generator is set to ${CMAKE_GENERATOR}")
 
+# set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
+
 
 # write_file(tmp/test.txt "${BUILD_TYPE_FROM_CLI}")
 message([BUILD_TYPE_FROM_CLI] " = " "${BUILD_TYPE_FROM_CLI}")
@@ -64,7 +66,7 @@ add_executable(physimos src/main.cpp ${glad_header} )
 
 
 # Link : needs to be after add_exectuable()!
-target_link_libraries(physimos source ui uic uic_topbar uic_main_view uic_right_panel image scene logger res simulator math render lib  glad ${GLFW_LIB})
+target_link_libraries(physimos source ui uic uic_topbar uic_main_view uic_right_panel image scene draw logger res simulator math render lib  glad ${GLFW_LIB})
 # target_link_libraries(physimos source glad ${GLFW_LIB})
 
 # GPT

@@ -7,6 +7,8 @@
 #include "ui/ui.hh"
 #include "Timing.hpp"
 
+#include "draw/draw.hh"
+
 #include "Input.hpp"
 
 #include "Simulator.hpp"
@@ -94,6 +96,8 @@ int conductor_rouse()
 
 	PScene::init();
 
+	draw::init(new_window);
+
 	UI::init();
 	UI::state_main_set(state_main_current);
 	// UI::set_ui_grid(current_grid);
@@ -129,9 +133,12 @@ void conductor_conduct() {
 		if (state_main_current == StateMain::Scene3D)
 			PScene::renderCurrentScene();
 
-
 		// update and render ui
 		UI::update();
+
+
+		// if (state_main_current == StateMain::Canvas)
+			draw::draw();
 
 
 		// Swap buffers
