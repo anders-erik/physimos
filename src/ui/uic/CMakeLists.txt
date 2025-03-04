@@ -2,6 +2,7 @@
 add_subdirectory(topbar)
 add_subdirectory(right_panel)
 add_subdirectory(main_view)
+add_subdirectory(draw)
 
 add_library(uic
     uic_root_left_panel.cc

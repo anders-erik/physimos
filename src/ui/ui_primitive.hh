@@ -217,7 +217,7 @@ class Primitive {
         std::string str = "";
 
         /** The font size used during generation of currently rendering string texture */
-        FontSize str_fontSize = FontSize::f24;
+        FontSize str_fontSize = FontSize::f18;
         /** Set the font size and reloads the string texture */
         void str_setFontSize(FontSize _fontSize);
         // will load a texture contining the passed string into the primitives default glTexture
@@ -228,7 +228,7 @@ class Primitive {
         /** Regenerate string texture if passed integers string representation is different from currently rendered string. */
         void update_str_int(int _int);
         /** Regenerate string texture if passed floating point string-representation is different from currently rendered string. */
-        void update_str_double(double _double);
+        void update_str_double(double _double, int chars);
 
 
 

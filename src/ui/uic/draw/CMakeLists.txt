@@ -1,13 +1,11 @@
 
-add_library(uic_main_view
-    uic_main_view.cc
+add_library(uic_draw
+    uic_draw_transform.cc
 
-    uic_main_view_ui_editor.cc
-    uic_main_view_draw.cc
 )
 
 
-target_include_directories( uic_main_view PUBLIC 
+target_include_directories( uic_draw PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/src/
     ${CMAKE_SOURCE_DIR}/src/ui/

@@ -110,9 +110,9 @@ namespace UI {
         std::string _int_str = std::to_string(_int);
         update_str(_int_str);
     }
-    void Primitive::update_str_double(double _double) {
+    void Primitive::update_str_double(double _double, int chars) {
         std::string _double_str = std::to_string(_double);
-        update_str(_double_str);
+        update_str(_double_str.substr(0, chars));
     }
 
 

@@ -36,7 +36,8 @@ GrabState UIC_Root_RightPanel_Resizer::grab(){
 }
 
 UIC_Root_RightPanel::UIC_Root_RightPanel()
-    : uic_Root_RightPanel_Resizer { UIC_Root_RightPanel_Resizer() }
+    :   uic_Root_RightPanel_Resizer { UIC_Root_RightPanel_Resizer() },
+        uic_RightPanel_Draw { UIC_RightPanel_Draw() }
 {
     id = "UIC_Root_RightPanel";
     set_color({0.0, 1.0, 0.0, 0.1});
@@ -50,6 +51,7 @@ UIC_Root_RightPanel::UIC_Root_RightPanel()
     appendChild(&uic_Root_RightPanel_Resizer);
 
     appendChild(&uic_RightPanel_UiEditor);
+    appendChild(&uic_RightPanel_Draw);
 }
 
 void UIC_Root_RightPanel::set_current_state(StateMain new_state){
@@ -74,7 +76,11 @@ void UIC_Root_RightPanel::render_component(){
     uic_Root_RightPanel_Resizer.render();
 
     switch (current_state_main){
-        
+    
+    case StateMain::Draw :
+        uic_RightPanel_Draw.render_component();
+        break;
+
     case StateMain::UIEditor :
         uic_RightPanel_UiEditor.render_component();
         break;
@@ -102,6 +108,11 @@ UiResult UIC_Root_RightPanel::try_find_target_component(double x, double y) {
 
     if (uic_RightPanel_UiEditor.containsPoint(x, y))
         return uic_RightPanel_UiEditor.try_find_target_component(x, y);
+
+    if (uic_RightPanel_Draw.containsPoint(x, y))
+        return uic_RightPanel_Draw.try_find_target_component(x, y);
+
+        
     
     return UiResult(true, CAction::None, this);
 }

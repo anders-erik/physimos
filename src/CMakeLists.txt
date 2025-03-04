@@ -44,5 +44,5 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)
 
 
-target_link_libraries(source opengl res simulator render scene lib)
+target_link_libraries(source opengl uic_draw res simulator render scene lib)
 

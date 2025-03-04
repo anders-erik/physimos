@@ -275,7 +275,7 @@ void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _point
 
 		switch (state_main_current){
 		case StateMain::Draw :
-			draw::cursor_move(_pointer_change);
+			draw::cursor_move(viewport_context.cursor_main_view, _pointer_change);
 			return;
 
 			break;

@@ -40,7 +40,8 @@ namespace draw {
     }
 
     void click(ViewportCursor cursor_main_view){
-
+        transform_context.main_view_x = cursor_main_view.x;
+        transform_context.main_view_y = cursor_main_view.y;
     }
 
     bool middle_btn_down(ViewportCursor cursor_main_view){
@@ -55,12 +56,19 @@ namespace draw {
         draw_shader.set_transform_context(transform_context);
         draw_shader.update_main_view();
     }
-    void cursor_move(ViewportCursor cursor_delta){
+    void cursor_move(ViewportCursor main_view_cursor_pos, ViewportCursor cursor_delta){
+        transform_context.main_view_x = main_view_cursor_pos.x;
+        transform_context.main_view_y = main_view_cursor_pos.y;
+
         if(draw_state.grabbed_canvas){
             transform_context.pan_texture_coords_x += cursor_delta.x;
             transform_context.pan_texture_coords_y += cursor_delta.y;
             draw_shader.set_transform_context(transform_context);
         }
+    }
+
+    TransformContext& ui_get_transform_context(){
+        return transform_context;
     }
 
 

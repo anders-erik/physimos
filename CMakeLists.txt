@@ -66,7 +66,7 @@ add_executable(physimos src/main.cpp ${glad_header} )
 
 
 # Link : needs to be after add_exectuable()!
-target_link_libraries(physimos source ui uic uic_topbar uic_main_view uic_right_panel image scene draw logger res simulator math render lib  glad ${GLFW_LIB})
+target_link_libraries(physimos source ui uic uic_draw uic_topbar uic_main_view uic_right_panel image scene draw logger res simulator math render lib  glad ${GLFW_LIB})
 # target_link_libraries(physimos source glad ${GLFW_LIB})
 
 # GPT

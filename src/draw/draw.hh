@@ -17,6 +17,10 @@ typedef struct TransformContext {
     float zoom = 1.0f;
     float pan_texture_coords_x = 0.0f;
     float pan_texture_coords_y = 0.0f;
+    float main_view_x = 0.0f;
+    float main_view_y = 0.0f;
+    float texture_x = 0.0f;
+    float texture_y = 0.0f;
 } TransformContext;
 
 /** Draw information for transforming texture into main_view */
@@ -43,11 +47,11 @@ void click(ViewportCursor cursor_main_view);
 bool middle_btn_down(ViewportCursor cursor_main_view);
 void middle_btn_up(ViewportCursor cursor_main_view);
 void scroll(double dy);
-void cursor_move(ViewportCursor cursor_delta);
+void cursor_move(ViewportCursor main_view_cursor_pos, ViewportCursor cursor_delta);
 
 void draw();
 
-
+TransformContext& ui_get_transform_context();
 
 /** A bitmap that automatically reloads a bound glTexture when updated. */
 typedef struct BitmapTexture_Dynamic {

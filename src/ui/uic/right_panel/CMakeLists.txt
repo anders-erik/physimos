@@ -3,6 +3,7 @@ add_library(uic_right_panel
     uic_right_panel.cc
 
     uic_right_panel_ui_editor.cc
+    uic_right_panel_draw.cc
 )
 
 

@@ -10,7 +10,8 @@
 namespace UI::component {
 
 UIC_Root_MainView::UIC_Root_MainView()
-    : uic_MainView_UiEditor { UIC_MainView_UiEditor() }
+    :   uic_MainView_UiEditor { UIC_MainView_UiEditor() },
+        uic_MainView_Draw { UIC_MainView_Draw() }
 {
     id = "UIC_Root_MainView";
     // set_color({1.0, 0.0, 0.0, 0.3});
@@ -23,6 +24,7 @@ UIC_Root_MainView::UIC_Root_MainView()
     set_y("_0x");
 
     appendChild(&uic_MainView_UiEditor);
+    appendChild(&uic_MainView_Draw);
 }
 
 void UIC_Root_MainView::set_current_state(StateMain new_state){
@@ -46,6 +48,10 @@ void UIC_Root_MainView::render_component(){
     // Contents
     switch (current_state_main){
 
+    case StateMain::Draw :
+        uic_MainView_Draw.render_component();
+        break;
+
     case StateMain::UIEditor :
         uic_MainView_UiEditor.render_component();
         break;
@@ -68,7 +74,8 @@ UiResult UIC_Root_MainView::try_find_target_component(double x, double y) {
     // if (uic_Root_RightPanel_Resizer.containsPoint(x, y))
     //     return UiResult(true, CAction::None, &uic_Root_RightPanel_Resizer);
 
-    
+    if (current_state_main == StateMain::Draw)
+        return uic_MainView_Draw.try_find_target_component(x, y);
     if (current_state_main == StateMain::UIEditor)
         return uic_MainView_UiEditor.try_find_target_component(x, y);
     
