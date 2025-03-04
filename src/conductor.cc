@@ -38,6 +38,8 @@ StateMain state_main_current;
 UI::Primitive* grabbed_primitive = nullptr;
 UI::Primitive* hovered_primitive = nullptr;
 
+bool middle_mouse_main_view_grab = false;
+
 /** Singleton viewport context */
 static ViewportContext viewport_context;
 
@@ -80,9 +82,15 @@ int conductor_rouse()
 
 	// Subscribe to cursor position from input library
 	::PInput::subscribe_pointer_position_conductor(callback_pointer_position);
+
 	::PInput::subscribe_mouse_left_down_conductor(callback_left_down);
 	::PInput::subscribe_mouse_left_release_conductor(callback_left_release);
+
+	::PInput::subscribe_mouse_middle_down_conductor(callback_middle_down);
+	::PInput::subscribe_mouse_middle_release_conductor(callback_middle_release);
+
 	::PInput::subscribe_mouse_scroll_y_conductor(callback_scroll_y);
+
 	::PInput::subscribe_key_down_conductor(callback_key_down);
 	::PInput::subscribe_key_up_conductor(callback_key_up);
 
@@ -133,13 +141,13 @@ void conductor_conduct() {
 		PScene::updateCurrentScene();
 		if (state_main_current == StateMain::Scene3D)
 			PScene::renderCurrentScene();
+		else if (state_main_current == StateMain::Draw)
+			draw::draw();
 
 		// update and render ui
 		UI::update();
 
 
-		if (state_main_current == StateMain::Draw)
-			draw::draw();
 
 
 		// Swap buffers
@@ -263,6 +271,21 @@ void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _point
 
 	viewport_context.set_cursor(pointer_pos.x, pointer_pos.y);
 
+	if(middle_mouse_main_view_grab){
+
+		switch (state_main_current){
+		case StateMain::Draw :
+			draw::cursor_move(_pointer_change);
+			return;
+
+			break;
+		
+		default:
+			plog_error("CONDUCTOR ", "MIDDLE_MOUSE_GRAB_STATE ", "A registered grab-state is present, but no matching state-case.");
+			break;
+		}
+}
+
 
 	// DRAG
 	if (grabbed_primitive != nullptr) {
@@ -350,6 +373,19 @@ void callback_scroll_y(double y_change) {
 
 	}
 
+
+	std::cout << "SCROLL MAIN"  << std::endl;
+	switch (state_main_current)
+	{
+	case StateMain::Draw :
+		draw::scroll(y_change);
+		break;
+	
+	default:
+		break;
+	}
+	
+
 }
 
 void callback_left_release(ViewportCursor _pointer_pos) {
@@ -392,6 +428,8 @@ void callback_left_release(ViewportCursor _pointer_pos) {
 
 void callback_left_down(ViewportCursor _pointer_pos) {
 
+	viewport_context.set_cursor(_pointer_pos.x, _pointer_pos.y);
+
 	UI::UiResult clickTargetResult;
 
 
@@ -422,7 +460,37 @@ void callback_left_down(ViewportCursor _pointer_pos) {
 		return;
 	}
 
+	std::cout << "MAIN VIEW"  << std::endl;
+	switch (state_main_current){
 
+	case StateMain::Draw :
+		draw::click(viewport_context.cursor_main_view);
+		break;
+	
+	default:
+		break;
+	}
+
+}
+
+
+void callback_middle_down(ViewportCursor _pointer_pos){
+
+	switch (state_main_current){
+	case StateMain::Draw :
+		middle_mouse_main_view_grab = draw::middle_btn_down(_pointer_pos);
+		break;
+	
+	default:
+		break;
+	}
+
+	std::cout << "MIDDLE DOWN"  << std::endl;
+}
+void callback_middle_release(ViewportCursor _pointer_pos){
+	middle_mouse_main_view_grab = false;
+
+	std::cout << "MIDDLE RELEASE"  << std::endl;
 }
 
 void callback_key_down(PInput::KeyEvent key_event) {

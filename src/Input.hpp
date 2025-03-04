@@ -54,10 +54,17 @@ void init();
 
 /** Called by external module to subscribe to any change in the pointer position within physimos window. */
 void subscribe_pointer_position_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos, ViewportCursor _pointer_change));
-/** Called by external module to subscribe to any change in the pointer position within physimos window. */
-void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
+
 /** Called by external module to subscribe to any left click detected within physimos window. */
 void subscribe_mouse_left_down_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
+/** Called by external module to subscribe to any change in the pointer position within physimos window. */
+void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
+
+/** Called by external module to subscribe to any left click detected within physimos window. */
+void subscribe_mouse_middle_down_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
+/** Called by external module to subscribe to any change in the pointer position within physimos window. */
+void subscribe_mouse_middle_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
+
 /** Called by external module to subscribe to any left click detected within physimos window. */
 void subscribe_mouse_scroll_y_conductor(void (*subscriberCallback)(double y_change));
 

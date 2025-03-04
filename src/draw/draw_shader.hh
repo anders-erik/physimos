@@ -7,6 +7,8 @@
 
 #include "conductor_viewport.hh"
 
+#include "draw/draw.hh"
+
 // #include "ui/ui_globals.hh"
 
 namespace draw {
@@ -25,11 +27,14 @@ namespace draw {
                 unsigned int uiPrimitiveTransformLoc;
                 unsigned int texture;
 
-                /** Tranform matrix based on the current viewport dimensions */
-                // float viewportTransform16[16];
+                /** Transform matrix based on the current viewport dimensions */
                 pmath::Mat4f_base viewportTransformMat4f;
 
-                
+                ViewportContext viewport_context;
+                void set_viewport_context(const ViewportContext& _viewport_context);
+
+                TransformContext transform_context;
+                void set_transform_context(const TransformContext& _transform_context);
 
                 /** Compiles, load locations, and set permanent vao. */
                 void init();
@@ -41,6 +46,7 @@ namespace draw {
 
                 /** Update the viewport transformation matrix using physimos window info */
                 void set_window_info(const ViewportContext& viewport_context);
+                void update_main_view();
 
                 DrawShader();
         } DrawShader;

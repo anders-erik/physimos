@@ -41,20 +41,49 @@ namespace draw {
 
         void DrawShader::set_window_info(const ViewportContext& viewport_context) {
 
-            float draw_zoom = 1.0f;
-            float pan_x = 0.0f;
-            float pan_y = 0.0f;
+            float draw_zoom = 3.0f;
+            float pan_image_pixels_x = transform_context.pan_texture_coords_x;
+            float pan_image_pixels_y = transform_context.pan_texture_coords_y;
+
+            float pan_ndc_x = pan_image_pixels_x * 2.0f * draw_zoom / viewport_context.phys_win.logical.w;
+            float pan_ndc_y = pan_image_pixels_y * 2.0f * draw_zoom / viewport_context.phys_win.logical.h;
 
             // With zero zoom, one pixel in texture is one logical texture
-            viewportTransformMat4f.x.x = 2.0f / (viewport_context.phys_win.logical.w * draw_zoom);
-            viewportTransformMat4f.y.y = 2.0f / (viewport_context.phys_win.logical.h * draw_zoom);
+            viewportTransformMat4f.x.x = 2.0f * draw_zoom / viewport_context.phys_win.logical.w;
+            viewportTransformMat4f.y.y = 2.0f * draw_zoom / viewport_context.phys_win.logical.h;
 
             // Shift from NDC center to bottom left, then shift according to main_view percent location
-            viewportTransformMat4f.x.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.x + pan_x;
-            viewportTransformMat4f.y.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.y + pan_y;
+            viewportTransformMat4f.x.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.x + pan_ndc_x;
+            viewportTransformMat4f.y.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.y + pan_ndc_y;
+
+        }
+        void DrawShader::update_main_view() {
+
+            float draw_zoom = transform_context.zoom;
+            float pan_image_pixels_x = transform_context.pan_texture_coords_x;
+            float pan_image_pixels_y = transform_context.pan_texture_coords_y;
+
+            float pan_ndc_x = pan_image_pixels_x * 2.0f * draw_zoom / viewport_context.phys_win.logical.w;
+            float pan_ndc_y = pan_image_pixels_y * 2.0f * draw_zoom / viewport_context.phys_win.logical.h;
+
+            // With zero zoom, one pixel in texture is one logical texture
+            viewportTransformMat4f.x.x = 2.0f * draw_zoom / viewport_context.phys_win.logical.w;
+            viewportTransformMat4f.y.y = 2.0f * draw_zoom / viewport_context.phys_win.logical.h;
+
+            // Shift from NDC center to bottom left, then shift according to main_view percent location
+            viewportTransformMat4f.x.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.x + pan_ndc_x;
+            viewportTransformMat4f.y.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.y + pan_ndc_y;
 
         }
 
+        void DrawShader::set_transform_context(const TransformContext& _transform_context){
+            transform_context = _transform_context;
+            update_main_view();
+        }
+        void DrawShader::set_viewport_context(const ViewportContext& _viewport_context){
+            viewport_context = _viewport_context;
+            update_main_view();
+        }
 
 
         void DrawShader::init() {
@@ -85,7 +114,13 @@ namespace draw {
 
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
-            set_window_info primitiveTransform_mat, unsigned int texture) {
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+        
+
+
+        void DrawShader::set(float* primitiveTransform_mat, unsigned int texture) {
             glUseProgram(shader_id);
             // GL_TRUE : Transpose before loading into uniform!
             // glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform16);

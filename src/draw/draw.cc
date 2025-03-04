@@ -9,11 +9,16 @@
 
 namespace draw {
 
+    TransformContext transform_context;
+
+    DrawState draw_state;
+
     BitmapTexture_Dynamic* bitmap_texture_dynamic;
 
     void init(const ViewportContext& viewport_context){
 
-        draw_shader.set_window_info(viewport_context);
+        // draw_shader.set_window_info(viewport_context);
+        draw_shader.set_viewport_context(viewport_context);
         draw_shader.init();
         // draw_shader.compile_shader();
 
@@ -22,13 +27,40 @@ namespace draw {
     }
 
     void update_window(const ViewportContext& viewport_context){
-        draw_shader.set_window_info(viewport_context);
+        // draw_shader.set_window_info(viewport_context);
+        draw_shader.set_viewport_context(viewport_context);
     }
 
     void draw(){
+        // glClear(255);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         bitmap_texture_dynamic->updateTransformationMatrix();
         draw_shader.set(bitmap_texture_dynamic->squareTransform, bitmap_texture_dynamic->texture);
         draw_shader.draw();
+    }
+
+    void click(ViewportCursor cursor_main_view){
+
+    }
+
+    bool middle_btn_down(ViewportCursor cursor_main_view){
+        draw_state.grabbed_canvas = true;
+        return true;
+    }
+    void middle_btn_up(ViewportCursor cursor_main_view){
+        draw_state.grabbed_canvas = false;
+    }
+    void scroll(double dy){
+        transform_context.zoom += (float) dy * 0.1;
+        draw_shader.set_transform_context(transform_context);
+        draw_shader.update_main_view();
+    }
+    void cursor_move(ViewportCursor cursor_delta){
+        if(draw_state.grabbed_canvas){
+            transform_context.pan_texture_coords_x += cursor_delta.x;
+            transform_context.pan_texture_coords_y += cursor_delta.y;
+            draw_shader.set_transform_context(transform_context);
+        }
     }
 
 

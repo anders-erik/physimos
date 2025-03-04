@@ -42,6 +42,8 @@ ModifierState modifier_state;
 void (*conductor_callback_pointer_position)(ViewportCursor _pointer_pos, ViewportCursor _pointer_change) = nullptr;
 void (*conductor_callback_left_down)(ViewportCursor _pointer_pos) = nullptr;
 void (*conductor_callback_left_release)(ViewportCursor _pointer_pos) = nullptr;
+void (*conductor_callback_middle_down)(ViewportCursor _pointer_pos) = nullptr;
+void (*conductor_callback_middle_release)(ViewportCursor _pointer_pos) = nullptr;
 void (*conductor_callback_y_scroll)(double x_change) = nullptr;
 void (*conductor_callback_key_up)(KeyEvent key_event) = nullptr;
 void (*conductor_callback_key_down)(KeyEvent key_event) = nullptr;
@@ -75,6 +77,12 @@ void subscribe_key_down_conductor(void (*subscriberCallback)(KeyEvent key_event)
 void subscribe_key_up_conductor(void (*subscriberCallback)(KeyEvent key_event)) {
 	conductor_callback_key_up = subscriberCallback;
 }
+void subscribe_mouse_middle_down_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos)){
+	conductor_callback_middle_down = subscriberCallback;
+}
+void subscribe_mouse_middle_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos)){
+	conductor_callback_middle_release = subscriberCallback;
+}
 
 
 
@@ -100,6 +108,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		PInput::conductor_callback_left_release(pointer_pos);
 
 		inputState.mousePressActive = 0;
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+		PInput::conductor_callback_middle_down(pointer_pos);
+	}
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE) {
+		PInput::conductor_callback_middle_release(pointer_pos);
 	}
 	
 	// printf("MOUSE BUTTON CALLBACK!\n");

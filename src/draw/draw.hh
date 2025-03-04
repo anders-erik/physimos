@@ -12,18 +12,42 @@
 
 namespace draw {
 
-    typedef struct AABB_FLOAT_2D {
-        float w;
-        float h;
-        float x; 
-        float y;
-    } AABB_FLOAT_2D;
+/** Draw information for transforming texture into main_view */
+typedef struct TransformContext {
+    float zoom = 1.0f;
+    float pan_texture_coords_x = 0.0f;
+    float pan_texture_coords_y = 0.0f;
+} TransformContext;
 
-    void init(const ViewportContext& viewport_context);
+/** Draw information for transforming texture into main_view */
+typedef struct DrawState {
+    bool grabbed_canvas = false;
+} DrawState;
 
-    void update_window(const ViewportContext& viewport_context);
 
-    void draw();
+
+typedef struct AABB_FLOAT_2D {
+    float w;
+    float h;
+    float x; 
+    float y;
+} AABB_FLOAT_2D;
+
+void init(const ViewportContext& viewport_context);
+
+void update_window(const ViewportContext& viewport_context);
+
+void click(ViewportCursor cursor_main_view);
+
+/** Returns true if cursor is grabbed */
+bool middle_btn_down(ViewportCursor cursor_main_view);
+void middle_btn_up(ViewportCursor cursor_main_view);
+void scroll(double dy);
+void cursor_move(ViewportCursor cursor_delta);
+
+void draw();
+
+
 
 /** A bitmap that automatically reloads a bound glTexture when updated. */
 typedef struct BitmapTexture_Dynamic {
@@ -41,15 +65,13 @@ typedef struct BitmapTexture_Dynamic {
     /** Set the 4x4 transformation matrix that will be set as shader uniform */
     void updateTransformationMatrix();
 
-    float squareTransform[16] = {  1, 0, 0, 0,
-                                            0, 1, 0, 0,
-                                            0, 0, 1, 0,
-                                            0, 0, 0, 1, };
+    float squareTransform[16] = {   1, 0, 0, 0,
+                                    0, 1, 0, 0,
+                                    0, 0, 1, 0,
+                                    0, 0, 0, 1, };
 
     BitmapTexture_Dynamic(uint width, uint height);
 } BitmapTexture_Dynamic;
-
-
 
 
 
