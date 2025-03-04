@@ -126,10 +126,10 @@ void PObject::printTransformMatrix() {
 
 void PObject::SetModelMatrixRowMajor() {
     // this->transformMatrixRowMajor
-    float* scaleVecData = transform->scale.get_fdata();
-    float Sx = scaleVecData[0];
-    float Sy = scaleVecData[1];
-    float Sz = scaleVecData[2];
+    pmath::Vec3f_base scaleVecData = transform->scale.get_f_base();
+    float Sx = scaleVecData.x;
+    float Sy = scaleVecData.y;
+    float Sz = scaleVecData.z;
 
     float Tx = transform->position.data[0];
     float Ty = transform->position.data[1];
@@ -218,10 +218,10 @@ void PObject::SetModelMatrixRowMajor() {
 
 void PObject::SetModelMatrixRowMajor_withParent() {
     // this->transformMatrixRowMajor
-    float* scaleVecData = transform->scale.get_fdata();
-    float Sx = scaleVecData[0];
-    float Sy = scaleVecData[1];
-    float Sz = scaleVecData[2];
+    pmath::Vec3f_base scaleVecData = transform->scale.get_f_base();
+    float Sx = scaleVecData.x;
+    float Sy = scaleVecData.y;
+    float Sz = scaleVecData.z;
 
     float Tx = transform->position.data[0] + parent->transform->position.data[0];
     float Ty = transform->position.data[1] + parent->transform->position.data[1];

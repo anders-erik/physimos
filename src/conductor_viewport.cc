@@ -31,8 +31,8 @@ void ViewportContext::toggle_workbench(){
 void ViewportContext::set_left_panel_w(int w_px){
     view_sizes.left_panel_w = w_px;
 
-    view_sizes.main_view.w = size.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
-    view_sizes.workbench.w = size.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
+    view_sizes.main_view.w = phys_win.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
+    view_sizes.workbench.w = phys_win.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
 
     view_sizes.main_view.x = view_sizes.left_panel_w;
     view_sizes.workbench.x = view_sizes.left_panel_w;
@@ -40,8 +40,8 @@ void ViewportContext::set_left_panel_w(int w_px){
 void ViewportContext::set_right_panel_w(int w_px){
     view_sizes.right_panel_w = w_px;
     
-    view_sizes.main_view.w = size.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
-    view_sizes.workbench.w = size.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
+    view_sizes.main_view.w = phys_win.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
+    view_sizes.workbench.w = phys_win.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
 
     // view_sizes.main_view.x = view_sizes.left_panel_w;
     // view_sizes.workbench.x = view_sizes.left_panel_w;
@@ -62,13 +62,17 @@ void ViewportContext::toggle_right_panel(){
 
 void ViewportContext::update_heights(){
     if(visibility.workbench){
-        view_sizes.main_view.h = size.logical.h - view_sizes.workbench.h - view_sizes.topbar_h;
+        view_sizes.main_view.h = phys_win.logical.h - view_sizes.workbench.h - view_sizes.topbar_h;
         view_sizes.main_view.y = view_sizes.workbench.h;
     }
     else{
-        view_sizes.main_view.h = size.logical.h - view_sizes.topbar_h;
+        view_sizes.main_view.h = phys_win.logical.h - view_sizes.topbar_h;
         view_sizes.main_view.y = 0;
     }
+
+    view_sizes.main_view_percent.h = (float) view_sizes.main_view.h / (float)phys_win.logical.h;
+    view_sizes.main_view_percent.y = (float) view_sizes.main_view.y / (float)phys_win.logical.h;
+
     viewport_changed = true;
 }
 
@@ -76,33 +80,38 @@ void ViewportContext::update_widths(){
 
     // 4 cases
     if      (visibility.left_panel && visibility.right_panel){
-        view_sizes.main_view.w = size.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
+        view_sizes.main_view.w = phys_win.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
         view_sizes.main_view.x = view_sizes.left_panel_w;
 
-        view_sizes.workbench.w = size.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
+        view_sizes.workbench.w = phys_win.logical.w - view_sizes.left_panel_w - view_sizes.right_panel_w;
         view_sizes.workbench.x = view_sizes.left_panel_w;
     }
     else if (visibility.left_panel && !visibility.right_panel){
-        view_sizes.main_view.w = size.logical.w - view_sizes.left_panel_w;
+        view_sizes.main_view.w = phys_win.logical.w - view_sizes.left_panel_w;
         view_sizes.main_view.x = view_sizes.left_panel_w;
 
-        view_sizes.workbench.w = size.logical.w - view_sizes.left_panel_w;
+        view_sizes.workbench.w = phys_win.logical.w - view_sizes.left_panel_w;
         view_sizes.workbench.x = view_sizes.left_panel_w;
     }
     else if (!visibility.left_panel && visibility.right_panel){
-        view_sizes.main_view.w = size.logical.w - view_sizes.right_panel_w;
+        view_sizes.main_view.w = phys_win.logical.w - view_sizes.right_panel_w;
         view_sizes.main_view.x = 0;
 
-        view_sizes.workbench.w = size.logical.w - view_sizes.right_panel_w;
+        view_sizes.workbench.w = phys_win.logical.w - view_sizes.right_panel_w;
         view_sizes.workbench.x = 0;
     }
     else    {
-        view_sizes.main_view.w = size.logical.w;
+        view_sizes.main_view.w = phys_win.logical.w;
         view_sizes.main_view.x = 0;
 
-        view_sizes.workbench.w = size.logical.w;
+        view_sizes.workbench.w = phys_win.logical.w;
         view_sizes.workbench.x = 0;
     }
+
+    // Update percentage values
+    view_sizes.main_view_percent.w = (float) view_sizes.main_view.w / (float)phys_win.logical.w;
+    view_sizes.main_view_percent.x = (float) view_sizes.main_view.x / (float)phys_win.logical.w;
+
 
     viewport_changed = true;
 }
@@ -114,8 +123,8 @@ void ViewportContext::accumulate_workbench(double dy){
     if(accumulator.workbench > 5.0){
         
         // make sure height is never set above available height
-        if((view_sizes.workbench.h + 5) > size.logical.h - view_sizes.topbar_h){
-            set_workbench_h(size.logical.h - view_sizes.topbar_h);
+        if((view_sizes.workbench.h + 5) > phys_win.logical.h - view_sizes.topbar_h){
+            set_workbench_h(phys_win.logical.h - view_sizes.topbar_h);
         }
         else{
             set_workbench_h(view_sizes.workbench.h + 5);
@@ -146,8 +155,8 @@ void ViewportContext::accumulate_left_panel(double dx){
 
     if(accumulator.left_panel > 5.0){
 
-        if((view_sizes.left_panel_w + 5) > size.logical.w - view_sizes.right_panel_w){
-            set_left_panel_w(size.logical.w - view_sizes.right_panel_w);
+        if((view_sizes.left_panel_w + 5) > phys_win.logical.w - view_sizes.right_panel_w){
+            set_left_panel_w(phys_win.logical.w - view_sizes.right_panel_w);
         }
         else {
             accumulator.left_panel -= 5.0;
@@ -186,12 +195,12 @@ void ViewportContext::accumulate_right_panel(double dx){
     }
     else if(accumulator.right_panel < -5.0 ){
 
-        if((view_sizes.right_panel_w + 5) < size.logical.w - view_sizes.left_panel_w){
+        if((view_sizes.right_panel_w + 5) < phys_win.logical.w - view_sizes.left_panel_w){
             set_right_panel_w(view_sizes.right_panel_w + 5);
             accumulator.right_panel += 5.0;
         }
         else {
-            set_right_panel_w(size.logical.w - view_sizes.left_panel_w);
+            set_right_panel_w(phys_win.logical.w - view_sizes.left_panel_w);
         }
 
         viewport_changed = true;

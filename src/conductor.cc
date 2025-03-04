@@ -30,7 +30,7 @@
 /** The only valid grid object holding the current UI grid state and is also used for updating the ui. */
 // UI::Grid current_grid;
 
-StateMain state_main_default = StateMain::Scene3D;
+StateMain state_main_default = StateMain::Draw;
 StateMain state_main_current;
 
 
@@ -64,13 +64,15 @@ int conductor_rouse()
 	}
 
 	PhysWin new_window = get_initial_physimos_window();
-	viewport_context.size = new_window;
+	viewport_context.phys_win = new_window;
 
 	state_main_current = state_main_default;
 
 	viewport_context.set_left_panel_w(left_panel_default_width);
 	viewport_context.set_right_panel_w(right_panel_default_width);
 	viewport_context.set_workbench_h(workbench_default_height);
+	viewport_context.update_heights();
+	viewport_context.update_widths();
 
 
 	PInput::init();
@@ -96,14 +98,13 @@ int conductor_rouse()
 
 	PScene::init();
 
-	draw::init(new_window);
-
 	UI::init();
 	UI::state_main_set(state_main_current);
 	// UI::set_ui_grid(current_grid);
 	UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
 
 
+	draw::init(viewport_context);
 
 	return 0;
 }
@@ -137,7 +138,7 @@ void conductor_conduct() {
 		UI::update();
 
 
-		// if (state_main_current == StateMain::Canvas)
+		if (state_main_current == StateMain::Draw)
 			draw::draw();
 
 
@@ -163,18 +164,18 @@ void state_main_set(StateMain new_state_main) {
 StateMain get_left_state() {
 	if (state_main_current == StateMain::Scene3D)
 		return StateMain::UIEditor;
-	else if (state_main_current == StateMain::Canvas)
+	else if (state_main_current == StateMain::Draw)
 		return StateMain::Scene3D;
 	else if (state_main_current == StateMain::UIEditor)
-		return StateMain::Canvas;
+		return StateMain::Draw;
 
 	return state_main_default;
 }
 
 StateMain get_right_state() {
 	if (state_main_current == StateMain::Scene3D)
-		return StateMain::Canvas;
-	else if (state_main_current == StateMain::Canvas)
+		return StateMain::Draw;
+	else if (state_main_current == StateMain::Draw)
 		return StateMain::UIEditor;
 	else if (state_main_current == StateMain::UIEditor)
 		return StateMain::Scene3D;
@@ -207,7 +208,7 @@ void conductor_perform_action(CAction action) {
 		break;
 
 	case CAction::State_ToggleCanvas:
-		state_main_set(StateMain::Canvas);
+		state_main_set(StateMain::Draw);
 		break;
 
 	case CAction::State_ToggleUIEditor:
@@ -242,11 +243,12 @@ void reload_viewport() {
 
 void callback_window_change(PhysWin new_window) {
 
-	viewport_context.size = new_window;
+	viewport_context.phys_win = new_window;
 
 	reload_viewport();
 
 	UI::update_window(new_window);
+	draw::update_window(viewport_context);
 
 }
 

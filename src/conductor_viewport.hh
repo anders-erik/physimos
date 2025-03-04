@@ -22,24 +22,14 @@
 
 
 /** The 5 available view regions of the viewport. */
-typedef enum class ViewportViews {
-    Topbar,
-    MainView,
-    LeftPanel,
-    RightPanel,
-    Workbench,
-} ViewportViews;
+// typedef enum class ViewportViews {
+//     Topbar,
+//     MainView,
+//     LeftPanel,
+//     RightPanel,
+//     Workbench,
+// } ViewportViews;
 
-/** The window size of the primary window.
- *  Raw value is in physical pixel unit.
- *  Logical size is the physical pixel count divided by scale.
- */
-typedef struct ViewportSize {
-    Size_UINT_2D raw;
-    Size_UINT_2D logical;
-    float xscale;
-    float yscale;
-} ViewportSize;
 
 /** Visilibility of the 4 viewport view whole visilibility is toggleable. (Main view is always visible?) */
 typedef struct ViewportViewVisibility {
@@ -49,11 +39,22 @@ typedef struct ViewportViewVisibility {
     bool workbench      = workbench_default_visibilty;
 } ViewportViewVisibility;
 
+
+/** Specifies the size and location of a rectangle as percentage of another rectangle. */
+typedef struct SubRectanglePercent {
+    float w;
+    float h;
+    float x;
+    float y;
+} SubRectanglePercent;
+
 /** Stores the minimal information to perfectly specify the ui layout of the viewport views. 
  *  (workbench does track a superflous y-value, but is placed in a AABB for convencience. )
  */
 typedef struct ViewportViewSizes {
     AABB_INT_2D main_view;
+    /** Location of the main_view in window, expressed as a fractional percentage.  */
+    SubRectanglePercent main_view_percent;
     AABB_INT_2D workbench;
     int topbar_h        = topbar_height;
     int left_panel_w;
@@ -83,7 +84,7 @@ typedef struct ViewportContext {
      *  Raw value is in physical pixel unit.
      *  Logical size is the physical pixel count divided by scale.
      */
-    PhysWin        size;
+    PhysWin        phys_win;
 
     /** Stores the minimal information to perfectly specify the ui layout of the viewport views. 
      *  (workbench does track a superflous y-value, but is placed in a AABB for convencience. )

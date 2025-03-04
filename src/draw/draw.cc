@@ -11,14 +11,9 @@ namespace draw {
 
     BitmapTexture_Dynamic* bitmap_texture_dynamic;
 
-    void init(PhysWin new_window){
+    void init(const ViewportContext& viewport_context){
 
-        draw_shader.set_window_info(
-            new_window.raw.w,
-            new_window.raw.w,
-            new_window.xscale,
-            new_window.yscale
-        );
+        draw_shader.set_window_info(viewport_context);
         draw_shader.init();
         // draw_shader.compile_shader();
 
@@ -26,9 +21,13 @@ namespace draw {
         // bitmap_texture_dynamic
     }
 
+    void update_window(const ViewportContext& viewport_context){
+        draw_shader.set_window_info(viewport_context);
+    }
+
     void draw(){
         bitmap_texture_dynamic->updateTransformationMatrix();
-        draw_shader.set(bitmap_texture_dynamic->drawRectangleTransform16, bitmap_texture_dynamic->glTexture);
+        draw_shader.set(bitmap_texture_dynamic->squareTransform, bitmap_texture_dynamic->texture);
         draw_shader.draw();
     }
 
@@ -36,27 +35,28 @@ namespace draw {
 BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height) 
     :   bitmap { pimage::Bitmap(width , height) }
 {
+    // SET BITMAP COLOR TO ALL-BLACK
+    bitmap.replace_color({0,0,0,0}, {0,0,0, 255});
 
     aabb.w = width;
     aabb.h = height;
     aabb.x = 0;
     aabb.y = 0;
 
-    // pimage::Bitmap bitmap = pimage::Bitmap(width, height);/.
 
     id = "bitmap_texture_dynamic";
 
-    glTexture = 0;
+    texture = 0;
 
-    glGenTextures(1, &glTexture);
-    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width, bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap.pixels.data());
@@ -70,11 +70,11 @@ BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height)
 // make sure the transform matrix is updated to current height, width, x, and y
 void BitmapTexture_Dynamic::updateTransformationMatrix() {
 
-    drawRectangleTransform16[0] = aabb.w;
-    drawRectangleTransform16[5] = aabb.h;
+    squareTransform[0] = aabb.w;
+    squareTransform[5] = aabb.h;
 
-    drawRectangleTransform16[3] = aabb.x;
-    drawRectangleTransform16[7] = aabb.y;
+    squareTransform[3] = aabb.x;
+    squareTransform[7] = aabb.y;
 
 }
 

@@ -6,7 +6,7 @@
 
 #include "Windowing.hpp"
 
-
+#include "conductor_viewport.hh"
 
 #include "image/bitmap.hh"
 
@@ -19,7 +19,9 @@ namespace draw {
         float y;
     } AABB_FLOAT_2D;
 
-    void init(PhysWin new_window);
+    void init(const ViewportContext& viewport_context);
+
+    void update_window(const ViewportContext& viewport_context);
 
     void draw();
 
@@ -27,16 +29,19 @@ namespace draw {
 typedef struct BitmapTexture_Dynamic {
     std::string id;
 
+    /** Bitmap storage in ram */
     ::pimage::Bitmap bitmap;
     
-    uint glTexture;
+    /** Bitmap storage in VRAM as texture */
+    uint texture;
 
+    /**  */
     AABB_FLOAT_2D aabb;
 
     /** Set the 4x4 transformation matrix that will be set as shader uniform */
     void updateTransformationMatrix();
 
-    float drawRectangleTransform16[16] = {  1, 0, 0, 0,
+    float squareTransform[16] = {  1, 0, 0, 0,
                                             0, 1, 0, 0,
                                             0, 0, 1, 0,
                                             0, 0, 0, 1, };

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <glad/glad.h>
+#include "opengl/shader.hh"
 
 #include "lib/fs.hh"
 #include "lib/process.hh"
@@ -18,14 +19,6 @@ namespace draw {
 
     DrawShader draw_shader;
 
-        // ONLY FOR INITIAL COPYING INTO SHADER
-        float _viewportTransform16[16] = {
-                                    2.0f / (float)SCREEN_INIT_WIDTH, 0, 0, -1.0f,
-                                    0, 2.0f / (float)SCREEN_INIT_HEIGHT, 0, -1.0f,
-                                    0, 0, 1, 0,
-                                    0, 0, 0, 1,
-        };
-
         float squareVertices[30] = {
                0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // bottom-left
                1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right
@@ -36,19 +29,38 @@ namespace draw {
         };
 
         DrawShader::DrawShader() {
-            for (size_t i = 0; i < 16; i++) {
-                viewportTransform16[i] = _viewportTransform16[i];
-            }
+
+            viewportTransformMat4f.x.x = 1.0f;
+            viewportTransformMat4f.y.y = 1.0f;
+            viewportTransformMat4f.z.z = 1.0f;
+            viewportTransformMat4f.w.w = 1.0f;
+
+            viewportTransformMat4f.x.w = -1.0f;
+            viewportTransformMat4f.y.w = -1.0f;
         }
-        void DrawShader::set_window_info(float width, float height, float _xscale, float _yscale) {
-            viewportTransform16[0] = 2.0f * _xscale / width;
-            viewportTransform16[5] = 2.0f * _yscale / height;
+
+        void DrawShader::set_window_info(const ViewportContext& viewport_context) {
+
+            float draw_zoom = 1.0f;
+            float pan_x = 0.0f;
+            float pan_y = 0.0f;
+
+            // With zero zoom, one pixel in texture is one logical texture
+            viewportTransformMat4f.x.x = 2.0f / (viewport_context.phys_win.logical.w * draw_zoom);
+            viewportTransformMat4f.y.y = 2.0f / (viewport_context.phys_win.logical.h * draw_zoom);
+
+            // Shift from NDC center to bottom left, then shift according to main_view percent location
+            viewportTransformMat4f.x.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.x + pan_x;
+            viewportTransformMat4f.y.w = -1.0f + 2.0f * viewport_context.view_sizes.main_view_percent.y + pan_y;
+
         }
 
 
 
         void DrawShader::init() {
-            compile_shader();
+            // compile_shader();
+
+            shader_id = opengl::build_program_vert_frag(vert_path, frag_path);
             
 
             glUseProgram(shader_id);
@@ -73,16 +85,11 @@ namespace draw {
 
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-        }
-        
-
-
-        void DrawShader::set(float* primitiveTransform_mat, unsigned int texture) {
+            set_window_info primitiveTransform_mat, unsigned int texture) {
             glUseProgram(shader_id);
             // GL_TRUE : Transpose before loading into uniform!
-            glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform16);
+            // glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform16);
+            glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, (float *)&viewportTransformMat4f);
             glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitiveTransform_mat);
 
             this->texture = texture;
@@ -104,72 +111,6 @@ namespace draw {
             // glEnable(GL_DEPTH_TEST);
         }
 
-
-
-
-        void DrawShader::compile_shader() {
-
-
-            // READ FILE
-            std::string vertFileString = plib::fs_cat(vert_path);
-            std::string fragFileString = plib::fs_cat(frag_path);
-
-            const char* vertFile_cstr = vertFileString.c_str();
-            const char* fragFile_cstr = fragFileString.c_str();
-
-
-
-            // COMPILE 
-            unsigned int vert_shader, frag_shader;
-
-            // Vertex shader
-            vert_shader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vert_shader, 1, &vertFile_cstr, NULL);
-            glCompileShader(vert_shader);
-            shader_error_check(vert_shader, "VERTEX");
-
-            // Fragment Shader
-            frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(frag_shader, 1, &fragFile_cstr, NULL);
-            glCompileShader(frag_shader);
-            shader_error_check(frag_shader, "FRAGMENT");
-
-            // shader Program
-            shader_id = glCreateProgram(); //Creates a program object
-            glAttachShader(shader_id, vert_shader);
-            glAttachShader(shader_id, frag_shader);
-            glLinkProgram(shader_id);
-            program_error_check(shader_id);
-
-            // Individual shaders are built and linked.
-            glDeleteShader(vert_shader);
-            glDeleteShader(frag_shader);
-        }
-
-        void DrawShader::shader_error_check(unsigned int gl_shader, std::string shader_type) {
-
-            int success;
-            char infoLog[1024];
-
-            glGetShaderiv(gl_shader, GL_COMPILE_STATUS, &success);
-            if (!success) {
-                glGetShaderInfoLog(gl_shader, 1024, NULL, infoLog);
-                plib::plog_error("DRAW ", "SHADER_" + shader_type + " ", "Failed to build DrawShader shader. : InfoLog = " + std::string(infoLog));
-            }
-
-        }
-        void DrawShader::program_error_check(unsigned int gl_program) {
-
-            int success;
-            char infoLog[1024];
-
-            glGetProgramiv(gl_program, GL_LINK_STATUS, &success);
-            if (!success) {
-                glGetProgramInfoLog(gl_program, 1024, NULL, infoLog);
-                plib::plog_error("DRAW ", "SHADER_PROGRAM ", "Failed to link DrawShader program. : InfoLog = " + std::string(infoLog));
-            }
-
-        }
 
 
 }

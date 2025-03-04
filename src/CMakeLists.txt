@@ -10,6 +10,7 @@ add_subdirectory(image)
 add_subdirectory(lib)
 add_subdirectory(scene)
 add_subdirectory(draw)
+add_subdirectory(opengl)
 
 
 set(SOURCES 
@@ -43,5 +44,5 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)
 
 
-target_link_libraries(source res simulator render scene lib)
+target_link_libraries(source opengl res simulator render scene lib)
 

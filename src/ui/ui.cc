@@ -104,7 +104,7 @@ void state_main_set(StateMain new_state_main){
         case StateMain::Scene3D :
             topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Selected);
             break;
-        case StateMain::Canvas :
+        case StateMain::Draw :
             topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Selected);
             break;
         case StateMain::UIEditor :

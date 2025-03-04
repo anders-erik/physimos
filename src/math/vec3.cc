@@ -7,11 +7,12 @@
 namespace pmath {
 
 
-    float* Vec3::get_fdata() {
-        fdata[0] = (float)data[0];
-        fdata[1] = (float)data[1];
-        fdata[2] = (float)data[2];
-        return fdata;
+    Vec3f_base Vec3::get_f_base() {
+        return Vec3f_base({
+            (float)data[0],
+            (float)data[1],
+            (float)data[2]
+        });
     }
 
     void Vec3::setData(double data0, double data1, double data2) {

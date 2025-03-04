@@ -3,6 +3,10 @@
 
 #include <string>
 
+#include "math/vec3.hh"
+
+#include "conductor_viewport.hh"
+
 // #include "ui/ui_globals.hh"
 
 namespace draw {
@@ -22,17 +26,13 @@ namespace draw {
                 unsigned int texture;
 
                 /** Tranform matrix based on the current viewport dimensions */
-                float viewportTransform16[16];
+                // float viewportTransform16[16];
+                pmath::Mat4f_base viewportTransformMat4f;
+
                 
 
                 /** Compiles, load locations, and set permanent vao. */
                 void init();
-
-                /** Reads shader files, compile, and returns 0 on failure. */
-                void compile_shader();
-
-                void shader_error_check(unsigned int gl_shader, std::string shader_type);
-                void program_error_check(unsigned int gl_program);
 
                 /** Set values needed for render draw. UI transform and texture.  */
                 void set(float* primitiveTransform_mat, unsigned int texture);
@@ -40,7 +40,7 @@ namespace draw {
                 void draw();
 
                 /** Update the viewport transformation matrix using physimos window info */
-                void set_window_info(float width, float height, float _xscale, float _yscale);
+                void set_window_info(const ViewportContext& viewport_context);
 
                 DrawShader();
         } DrawShader;
