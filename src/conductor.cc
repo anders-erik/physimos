@@ -38,7 +38,7 @@ StateMain state_main_current;
 UI::Primitive* grabbed_primitive = nullptr;
 UI::Primitive* hovered_primitive = nullptr;
 
-bool middle_mouse_main_view_grab = false;
+bool main_state_cursor_grab = false;
 
 /** Singleton viewport context */
 static ViewportContext viewport_context;
@@ -295,7 +295,7 @@ void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _point
 	}
 
 	// If cursor not grabbed, then we can look for ui elements to interact with
-	if(!middle_mouse_main_view_grab){
+	if(!main_state_cursor_grab){
 
 
 		// RESET UI HOVER
@@ -330,13 +330,14 @@ void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _point
 	switch (state_main_current){
 		case StateMain::Draw :
 			// if(middle_mouse_main_view_grab)
-				draw::cursor_move(viewport_context.cursor_main_view, _pointer_change);
+			draw::set_cursor_main_view(viewport_context.cursor_main_view);
+			draw::cursor_move(_pointer_change);
 			return;
 
 			break;
 		
 		default:
-			plog_error("CONDUCTOR ", "MIDDLE_MOUSE_GRAB_STATE ", "A registered grab-state is present, but no matching state-case.");
+			// plog_error("CONDUCTOR ", "MIDDLE_MOUSE_GRAB_STATE ", "A registered grab-state is present, but no matching state-case.");
 			break;
 		}
 
@@ -396,6 +397,18 @@ void callback_scroll_y(double y_change) {
 }
 
 void callback_left_release(ViewportCursor _pointer_pos) {
+
+	// Any grabbing should be released
+	main_state_cursor_grab = false;
+	switch (state_main_current){
+
+	case StateMain::Draw :
+		draw::left_btn_up();
+		break;
+	
+	default:
+		break;
+	}
 
 	// We are only interested in release behavior if we targeted a primitive on left click
 	if (grabbed_primitive == nullptr)
@@ -471,7 +484,8 @@ void callback_left_down(ViewportCursor _pointer_pos) {
 	switch (state_main_current){
 
 	case StateMain::Draw :
-		draw::click(viewport_context.cursor_main_view);
+		draw::set_cursor_main_view(viewport_context.cursor_main_view);
+		main_state_cursor_grab = draw::left_btn_down();
 		break;
 	
 	default:
@@ -485,7 +499,8 @@ void callback_middle_down(ViewportCursor _pointer_pos){
 
 	switch (state_main_current){
 	case StateMain::Draw :
-		middle_mouse_main_view_grab = draw::middle_btn_down(_pointer_pos);
+		draw::set_cursor_main_view(viewport_context.cursor_main_view);
+		main_state_cursor_grab = draw::middle_btn_down();
 		break;
 	
 	default:
@@ -495,11 +510,12 @@ void callback_middle_down(ViewportCursor _pointer_pos){
 	std::cout << "MIDDLE DOWN"  << std::endl;
 }
 void callback_middle_release(ViewportCursor _pointer_pos){
-	middle_mouse_main_view_grab = false;
+	main_state_cursor_grab = false;
 
 	switch (state_main_current){
 		case StateMain::Draw :
-			draw::middle_btn_up(_pointer_pos);
+			draw::set_cursor_main_view(viewport_context.cursor_main_view);
+			draw::middle_btn_up();
 			break;
 		
 		default:

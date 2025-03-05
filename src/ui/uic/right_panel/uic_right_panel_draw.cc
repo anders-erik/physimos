@@ -15,12 +15,12 @@ namespace UI::component {
 UIC_RightPanel_Draw::UIC_RightPanel_Draw()
     :   transform { UIC_Draw_Transform() }
 {
-    id = "UIC_RightPanel_UiEditor";
-    set_color({0.0, 1.0, 0.0, 0.2});
+    id = "UIC_RightPanel_Draw";
+    // set_color({0.5, 0.5, 0.5, 0.5});
     // set_color(active_pallete.base2);
 
     set_w("100%o-5");
-    set_h("100%");
+    set_h("500x");
 
     set_x(">0x");
     set_y("_0x");
@@ -32,7 +32,7 @@ UIC_RightPanel_Draw::UIC_RightPanel_Draw()
 }
 
 void UIC_RightPanel_Draw::update_component() {
-    transform.update_component();
+    // transform.update_component();
 }
 
 

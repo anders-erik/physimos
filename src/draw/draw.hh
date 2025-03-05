@@ -19,13 +19,18 @@ typedef struct TransformContext {
     float pan_texture_coords_y = 0.0f;
     float main_view_x = 0.0f;
     float main_view_y = 0.0f;
-    float texture_x = 0.0f;
-    float texture_y = 0.0f;
+    float texture_x = 0.0f; /** texture coord - exact */
+    float texture_y = 0.0f; /** texture coord - exact */
+    int texture_px_x = 0; /** texture coord rounded - actual pixel we draw to */
+    int texture_px_y = 0; /** texture coord rounded - actual pixel we draw to */
 } TransformContext;
 
 /** Draw information for transforming texture into main_view */
 typedef struct DrawState {
-    bool grabbed_canvas = false;
+    /** Is set if canvas panning is currently enabled, usually when middle mouse button is held down */
+    bool pan_canvas = false;
+    /** Flag that is set if currently drawing. Usually enabled when left mouse button held down triggering bitmap draw call on mouse movement. */
+    bool drawing = false;
 } DrawState;
 
 
@@ -41,13 +46,16 @@ void init(const ViewportContext& viewport_context);
 
 void update_window(const ViewportContext& viewport_context);
 
-void click(ViewportCursor cursor_main_view);
+void set_cursor_main_view(ViewportCursor cursor_main_view);
 
 /** Returns true if cursor is grabbed */
-bool middle_btn_down(ViewportCursor cursor_main_view);
-void middle_btn_up(ViewportCursor cursor_main_view);
+bool left_btn_down();
+void left_btn_up();
+/** Returns true if cursor is grabbed */
+bool middle_btn_down();
+void middle_btn_up();
 void scroll(double dy);
-void cursor_move(ViewportCursor main_view_cursor_pos, ViewportCursor cursor_delta);
+void cursor_move(ViewportCursor cursor_delta);
 
 void draw();
 
