@@ -15,7 +15,12 @@ namespace UI::component {
 
 UIC_Draw_Transform_MainViewPos::UIC_Draw_Transform_MainViewPos()
     :   main_view_x { Primitive("x")},
-        main_view_y { Primitive("y")}
+        main_view_y { Primitive("y")},
+        texture_x   { Primitive("text x")},
+        texture_y   { Primitive("text y")},
+        pan_x       { Primitive("pan x")},
+        pan_y       { Primitive("pan y")},
+        zoom        { Primitive("zoom")}
 {
     id = "prim_color_set_red";
     set_w("20x");
@@ -24,13 +29,39 @@ UIC_Draw_Transform_MainViewPos::UIC_Draw_Transform_MainViewPos()
 
     appendChild(&main_view_x);
     main_view_x.str_fontSize = FontSize::f18;
-    main_view_x.set_x("<100x");
-    main_view_x.set_y("_50x");
+    main_view_x.set_x("<50x");
+    main_view_x.set_y("_30x");
 
     appendChild(&main_view_y);
     main_view_x.str_fontSize = FontSize::f18;
-    main_view_y.set_x("<100x");
-    main_view_y.set_y("_80x");
+    main_view_y.set_x("<150x");
+    main_view_y.set_y("_30x");
+
+    appendChild(&texture_x);
+    texture_x.str_fontSize = FontSize::f18;
+    texture_x.set_x("<50x");
+    texture_x.set_y("_70x");
+
+    appendChild(&texture_y);
+    texture_y.str_fontSize = FontSize::f18;
+    texture_y.set_x("<150x");
+    texture_y.set_y("_70x");
+
+    appendChild(&pan_x);
+    pan_x.str_fontSize = FontSize::f18;
+    pan_x.set_x("<50x");
+    pan_x.set_y("_110x");
+
+    appendChild(&pan_y);
+    pan_y.str_fontSize = FontSize::f18;
+    pan_y.set_x("<150x");
+    pan_y.set_y("_110x");
+
+
+    appendChild(&zoom);
+    zoom.str_fontSize = FontSize::f18;
+    zoom.set_x("<100x");
+    zoom.set_y("_140x");
 }
 
 void UIC_Draw_Transform_MainViewPos::render_component(){
@@ -38,6 +69,14 @@ void UIC_Draw_Transform_MainViewPos::render_component(){
 
     main_view_x.render();
     main_view_y.render();
+
+    texture_x.render();
+    texture_y.render();
+
+    pan_x.render();
+    pan_y.render();
+
+    zoom.render();
 }
 
 void UIC_Draw_Transform_MainViewPos::update_component(){
@@ -45,13 +84,26 @@ void UIC_Draw_Transform_MainViewPos::update_component(){
     UIC_Draw_Transform* transform_component = (UIC_Draw_Transform*) parent;
     draw::TransformContext transform_context = transform_component->boundObject;
 
-    if(transform_context.main_view_x != transform_context_cache.main_view_x || transform_context.main_view_y != transform_context_cache.main_view_y ){
+    // Trigger rerender on main_view position change
+    if( transform_context.main_view_x != transform_context_cache.main_view_x 
+        || transform_context.main_view_y != transform_context_cache.main_view_y 
+        || transform_context.zoom != transform_context_cache.zoom 
+    ){
         // std::cout << "new draw tranform" << std::endl;
         transform_context_cache.main_view_x = transform_context.main_view_x;
         transform_context_cache.main_view_y = transform_context.main_view_y;
+        transform_context_cache.zoom = transform_context.zoom;
 
-        main_view_x.update_str_double(transform_context_cache.main_view_x, 7);
-        main_view_y.update_str_double(transform_context_cache.main_view_y, 7);
+        main_view_x.update_str_double(transform_context.main_view_x, 7);
+        main_view_y.update_str_double(transform_context.main_view_y, 7);
+
+        texture_x.update_str_double(transform_context.texture_x, 7);
+        texture_y.update_str_double(transform_context.texture_y, 7);
+
+        pan_x.update_str_double(transform_context.pan_texture_coords_x, 7);
+        pan_y.update_str_double(transform_context.pan_texture_coords_y, 7);
+
+        zoom.update_str_double(transform_context.zoom, 7);
     }
 }
 

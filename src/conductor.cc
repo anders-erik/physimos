@@ -271,23 +271,8 @@ void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _point
 
 	viewport_context.set_cursor(pointer_pos.x, pointer_pos.y);
 
-	if(middle_mouse_main_view_grab){
 
-		switch (state_main_current){
-		case StateMain::Draw :
-			draw::cursor_move(viewport_context.cursor_main_view, _pointer_change);
-			return;
-
-			break;
-		
-		default:
-			plog_error("CONDUCTOR ", "MIDDLE_MOUSE_GRAB_STATE ", "A registered grab-state is present, but no matching state-case.");
-			break;
-		}
-}
-
-
-	// DRAG
+	// Ui Dragging takes precedence over main view interactivity
 	if (grabbed_primitive != nullptr) {
 
 		if (grabbed_primitive->id == "UIC_Root_Workbench_Resizer") {
@@ -309,29 +294,51 @@ void callback_pointer_position(ViewportCursor pointer_pos, ViewportCursor _point
 		grabbed_primitive->grabbed(_pointer_change.x, _pointer_change.y);
 	}
 
-	// RESET HOVER
-	if (hovered_primitive != nullptr) {
-		UI::HoverEvent hover_event = hovered_primitive->hover_exit();
+	// If cursor not grabbed, then we can look for ui elements to interact with
+	if(!middle_mouse_main_view_grab){
 
-		set_cursor(hover_event.cursor);
-		hovered_primitive = nullptr;
 
-	}
+		// RESET UI HOVER
+		if (hovered_primitive != nullptr) {
+			UI::HoverEvent hover_event = hovered_primitive->hover_exit();
 
-	// TRY NEW HOVER
-	UI::UiResult targetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
-	if (targetResult.success) {
-		// hovered_primitive = targetResult.primitive;
-		UI::HoverEvent hover_event = targetResult.primitive->hover_enter();
-
-		if (hover_event.new_hover) {
 			set_cursor(hover_event.cursor);
-			hovered_primitive = hover_event.primitive;
+			hovered_primitive = nullptr;
+
 		}
 
-		return;
+		// TRY NEW UI HOVER
+		UI::UiResult targetResult = UI::try_find_target(viewport_context.cursor_real.x, viewport_context.cursor_real.y);
+		if (targetResult.success) {
+			// hovered_primitive = targetResult.primitive;
+			UI::HoverEvent hover_event = targetResult.primitive->hover_enter();
+
+			if (hover_event.new_hover) {
+				set_cursor(hover_event.cursor);
+				hovered_primitive = hover_event.primitive;
+			}
+
+			return;
+		}
+
+		
 	}
 
+
+	
+	// 
+	switch (state_main_current){
+		case StateMain::Draw :
+			// if(middle_mouse_main_view_grab)
+				draw::cursor_move(viewport_context.cursor_main_view, _pointer_change);
+			return;
+
+			break;
+		
+		default:
+			plog_error("CONDUCTOR ", "MIDDLE_MOUSE_GRAB_STATE ", "A registered grab-state is present, but no matching state-case.");
+			break;
+		}
 
 }
 
@@ -489,6 +496,15 @@ void callback_middle_down(ViewportCursor _pointer_pos){
 }
 void callback_middle_release(ViewportCursor _pointer_pos){
 	middle_mouse_main_view_grab = false;
+
+	switch (state_main_current){
+		case StateMain::Draw :
+			draw::middle_btn_up(_pointer_pos);
+			break;
+		
+		default:
+			break;
+		}
 
 	std::cout << "MIDDLE RELEASE"  << std::endl;
 }

@@ -56,13 +56,23 @@ namespace draw {
         draw_shader.set_transform_context(transform_context);
         draw_shader.update_main_view();
     }
+
+
     void cursor_move(ViewportCursor main_view_cursor_pos, ViewportCursor cursor_delta){
-        transform_context.main_view_x = main_view_cursor_pos.x;
-        transform_context.main_view_y = main_view_cursor_pos.y;
+
+        // Use absolute value change to not update any every tiny cursor change
+        if(abs(main_view_cursor_pos.x - transform_context.main_view_x) > 2.0){
+            transform_context.main_view_x = main_view_cursor_pos.x;
+            transform_context.texture_x = transform_context.main_view_x / transform_context.zoom - transform_context.pan_texture_coords_x;
+        }
+        if(abs(main_view_cursor_pos.y - transform_context.main_view_y) > 2.0){
+            transform_context.main_view_y = main_view_cursor_pos.y;
+            transform_context.texture_y = transform_context.main_view_y / transform_context.zoom - transform_context.pan_texture_coords_y;
+        }
 
         if(draw_state.grabbed_canvas){
-            transform_context.pan_texture_coords_x += cursor_delta.x;
-            transform_context.pan_texture_coords_y += cursor_delta.y;
+            transform_context.pan_texture_coords_x += cursor_delta.x / transform_context.zoom;
+            transform_context.pan_texture_coords_y += cursor_delta.y / transform_context.zoom;
             draw_shader.set_transform_context(transform_context);
         }
     }

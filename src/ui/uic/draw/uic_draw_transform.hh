@@ -18,6 +18,11 @@ struct UIC_Draw_Transform_MainViewPos : public ::UI::Primitive {
 
     Primitive main_view_x;
     Primitive main_view_y;
+    Primitive texture_x;
+    Primitive texture_y;
+    Primitive pan_x;
+    Primitive pan_y;
+    Primitive zoom;
 
     void update_component();
     void render_component();
