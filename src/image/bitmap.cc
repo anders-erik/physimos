@@ -13,6 +13,13 @@
 
 namespace pimage {
 
+Pixel pixel_color_white = {255, 255, 255, 255};
+Pixel pixel_color_black = {0, 0, 0, 255};
+
+Pixel pixel_color_red   = {255, 0, 0, 255};
+Pixel pixel_color_green = {0, 255, 0, 255};
+Pixel pixel_color_blue  = {0, 0, 255, 255};
+
 Bitmap::Bitmap(unsigned int width, unsigned int height) {
 
     this->height = height;
@@ -32,6 +39,24 @@ void Bitmap::set_pixel(unsigned int x, unsigned int y, Pixel pixel) {
 
 }
 
+void  Bitmap::set_square(unsigned int x, unsigned int y, Pixel pixel, int size){
+    
+    // trying to draw outside bitmap bounds not valid
+    if(x > width || y > height)
+        return;
+
+    // Cut pixels beyond bitmap bounds
+    unsigned int x_max = x+size > width ? width : x+size;
+    unsigned int y_max = y+size > height ? height : y+size;
+
+
+    for(unsigned int r = y; r < y_max ; r++){
+        for(unsigned int c = x; c < x_max ; c++){
+            set_pixel(c, r, pixel);
+        }
+    }
+}
+
 Pixel Bitmap::get_pixel(unsigned int x, unsigned int y) {
 
     unsigned int pixelIndex = this->width * y + x;
@@ -39,7 +64,7 @@ Pixel Bitmap::get_pixel(unsigned int x, unsigned int y) {
     return this->pixels[pixelIndex];
 }
 
-Bitmap Bitmap::get_rectangle(unsigned int x, unsigned int y, unsigned int w, unsigned int h){
+Bitmap Bitmap::get_sub_bitmap(unsigned int x, unsigned int y, unsigned int w, unsigned int h){
     Bitmap rectangle = Bitmap(w, h);
 
     // Loop through rectangle dimensions and copy into rectangle
@@ -52,7 +77,7 @@ Bitmap Bitmap::get_rectangle(unsigned int x, unsigned int y, unsigned int w, uns
     return rectangle;
 }
 
-void   Bitmap::set_rectangle(unsigned int x, unsigned int y, Bitmap& bitmap_to_write){
+void   Bitmap::set_sub_bitmap(unsigned int x, unsigned int y, Bitmap& bitmap_to_write){
     unsigned int h = bitmap_to_write.height;
     unsigned int w = bitmap_to_write.width;
 

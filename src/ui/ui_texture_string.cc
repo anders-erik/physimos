@@ -38,7 +38,7 @@ void init_font(){
 pimage::Bitmap get_char_bitmap(char ch){
     unsigned int index_offset = ch - 30;
     unsigned int y_pixel_offset = index_offset * char_height;
-    return font_bitmap.get_rectangle(0, y_pixel_offset, char_width, char_height);
+    return font_bitmap.get_sub_bitmap(0, y_pixel_offset, char_width, char_height);
 }
 
 
@@ -53,7 +53,7 @@ void update_texture_with_string_row(unsigned int& texture_id_to_update, std::str
     for(size_t i = 0; i < stringToRender.size(); i++){
         char ch = stringToRender[i];
         pimage::Bitmap char_bitmap = get_char_bitmap(ch);
-        char_row.set_rectangle(char_width*i, 0, char_bitmap);
+        char_row.set_sub_bitmap(char_width*i, 0, char_bitmap);
 
     }
     

@@ -15,6 +15,8 @@ namespace draw {
 
     BitmapTexture_Dynamic* bitmap_texture_dynamic;
 
+    Brush brush_current;
+
     void init(const ViewportContext& viewport_context){
 
         // draw_shader.set_window_info(viewport_context);
@@ -40,7 +42,7 @@ namespace draw {
     }
 
     bool left_btn_down(){
-
+        bitmap_texture_dynamic->draw(transform_context.texture_px_x, transform_context.texture_px_y);
         draw_state.drawing = true;
         return true;
     }
@@ -120,6 +122,10 @@ namespace draw {
             transform_context.pan_texture_coords_y += cursor_delta.y / transform_context.zoom;
             draw_shader.set_transform_context(transform_context);
         }
+
+        if(draw_state.drawing){
+            bitmap_texture_dynamic->draw(transform_context.texture_px_x, transform_context.texture_px_y);
+        }
     }
 
     TransformContext& ui_get_transform_context(){
@@ -146,10 +152,12 @@ BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height)
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -157,8 +165,37 @@ BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width, bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap.pixels.data());
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    // return newTexture;
 
+    // bitmap.set_pixel(0, 0, {255, 255, 255, 255});
+
+    reload_texture();
+
+}
+
+void BitmapTexture_Dynamic::draw(int x_pointer, int y_pointer){
+
+    // NEVER DRAW WHEN NOT CLICKING ON IMAGE
+    if(x_pointer < 0 || y_pointer < 0){
+        return;
+    }
+    // OK to compare to unsigned for now as we clear negative cases previously
+    if(x_pointer > bitmap.width-1 || y_pointer > bitmap.height-1){
+        return;
+    }
+
+    
+    bitmap.set_square(x_pointer, y_pointer, brush_current.color, brush_current.size);
+
+    reload_texture();
+}
+
+void BitmapTexture_Dynamic::reload_texture(){
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexSubImage2D(    GL_TEXTURE_2D, 0 , // identical to glTexImage2D
+                        0, 0, // x, y
+                        bitmap.width, bitmap.height, 
+                        GL_RGBA, GL_UNSIGNED_BYTE, bitmap.pixels.data()); // identical to glTexImage2D
 
 }
 

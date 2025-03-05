@@ -25,6 +25,11 @@ typedef struct TransformContext {
     int texture_px_y = 0; /** texture coord rounded - actual pixel we draw to */
 } TransformContext;
 
+typedef struct Brush {
+    int size = 3;
+    pimage::Pixel color = pimage::pixel_color_green;
+} Brush;
+
 /** Draw information for transforming texture into main_view */
 typedef struct DrawState {
     /** Is set if canvas panning is currently enabled, usually when middle mouse button is held down */
@@ -73,6 +78,11 @@ typedef struct BitmapTexture_Dynamic {
 
     /**  */
     AABB_FLOAT_2D aabb;
+
+    void draw(int x, int y);
+
+    /** Reload the texture with current bitmap data. */
+    void reload_texture();
 
     /** Set the 4x4 transformation matrix that will be set as shader uniform */
     void updateTransformationMatrix();
