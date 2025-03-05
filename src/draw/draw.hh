@@ -26,7 +26,7 @@ typedef struct TransformContext {
 } TransformContext;
 
 typedef struct Brush {
-    int size = 3;
+    int size = 2;
     pimage::Pixel color = pimage::pixel_color_green;
 } Brush;
 
@@ -65,6 +65,7 @@ void cursor_move(ViewportCursor cursor_delta);
 void draw();
 
 TransformContext& ui_get_transform_context();
+Brush& ui_get_brush();
 
 /** A bitmap that automatically reloads a bound glTexture when updated. */
 typedef struct BitmapTexture_Dynamic {

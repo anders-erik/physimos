@@ -106,11 +106,22 @@ UiResult UIC_Root_RightPanel::try_find_target_component(double x, double y) {
     if (uic_Root_RightPanel_Resizer.containsPoint(x, y))
         return UiResult(true, CAction::None, &uic_Root_RightPanel_Resizer);
 
-    if (uic_RightPanel_UiEditor.containsPoint(x, y))
-        return uic_RightPanel_UiEditor.try_find_target_component(x, y);
+    switch (current_state_main){
 
-    if (uic_RightPanel_Draw.containsPoint(x, y))
-        return uic_RightPanel_Draw.try_find_target_component(x, y);
+        case StateMain::UIEditor :
+            if (uic_RightPanel_UiEditor.containsPoint(x, y))
+                return uic_RightPanel_UiEditor.try_find_target_component(x, y);
+            break;
+
+        case StateMain::Draw :
+        if (uic_RightPanel_Draw.containsPoint(x, y))
+            return uic_RightPanel_Draw.try_find_target_component(x, y);
+            break;
+        
+        default:
+            break;
+    }
+    
 
         
     

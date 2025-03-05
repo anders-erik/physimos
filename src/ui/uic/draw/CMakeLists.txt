@@ -1,7 +1,7 @@
 
 add_library(uic_draw
     uic_draw_transform.cc
-
+    uic_draw_brush.cc
 )
 
 

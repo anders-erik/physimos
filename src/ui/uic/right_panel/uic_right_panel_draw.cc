@@ -13,7 +13,8 @@ namespace UI::component {
 
 
 UIC_RightPanel_Draw::UIC_RightPanel_Draw()
-    :   transform { UIC_Draw_Transform() }
+    :   transform   { UIC_Draw_Transform() },
+        brush       { UIC_Draw_Brush() }
 {
     id = "UIC_RightPanel_Draw";
     // set_color({0.5, 0.5, 0.5, 0.5});
@@ -27,6 +28,7 @@ UIC_RightPanel_Draw::UIC_RightPanel_Draw()
 
     // appendChild(&uic_Root_RightPanel_Resizer);
     appendChild(&transform);
+    appendChild(&brush);
     // uic_PrimitiveEditor.set_y("^5x");
 
 }
@@ -51,6 +53,8 @@ void UIC_RightPanel_Draw::render_component(){
     // uic_Root_RightPanel_Resizer.render();
     transform.update_component();
     transform.render_component();
+    brush.update_component();
+    brush.render_component();
 
     color_shader->stencil_disable();
 }
@@ -66,6 +70,9 @@ UiResult UIC_RightPanel_Draw::try_find_target_component(double x, double y) {
 
     if (transform.containsPoint(x, y))
         return transform.try_find_target_component(x, y);
+
+    if (brush.containsPoint(x, y))
+        return brush.try_find_target_component(x, y);
 
     // if (uic_PrimitiveListEditor.containsPoint(x, y))
     //     return uic_PrimitiveListEditor.try_find_target_component(x, y);

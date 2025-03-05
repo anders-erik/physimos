@@ -132,6 +132,10 @@ namespace draw {
         return transform_context;
     }
 
+    Brush& ui_get_brush(){
+        return brush_current;
+    }
+
 
 BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height) 
     :   bitmap { pimage::Bitmap(width , height) }
