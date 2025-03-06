@@ -88,8 +88,10 @@ int conductor_rouse()
 
 	::PInput::subscribe_mouse_middle_down_conductor(callback_middle_down);
 	::PInput::subscribe_mouse_middle_release_conductor(callback_middle_release);
-
 	::PInput::subscribe_mouse_scroll_y_conductor(callback_scroll_y);
+
+	::PInput::subscribe_mouse_backward_conductor(callback_mouse_backward);
+	::PInput::subscribe_mouse_forward_conductor(callback_mouse_forward);
 
 	::PInput::subscribe_key_down_conductor(callback_key_down);
 	::PInput::subscribe_key_up_conductor(callback_key_up);
@@ -535,23 +537,43 @@ void callback_middle_release(ViewportCursor _pointer_pos){
 	std::cout << "MIDDLE RELEASE"  << std::endl;
 }
 
+
+void callback_mouse_backward(ViewportCursor _pointer_pos){
+	std::cout << "backward"  << std::endl;
+	
+}
+void callback_mouse_forward(ViewportCursor _pointer_pos){
+	std::cout << "forward"  << std::endl;
+}
+
 void callback_key_down(PInput::KeyEvent key_event) {
 	// std::cout << "DOWN"  << std::endl;
 
-	if (key_event.pkey == PInput::PKey::PageUp && key_event.modifier.ctrl) {
+	using namespace PInput;
+
+	if (key_event.pkey == PKey::PageUp && key_event.modifier == KeyMod::CTRL ) {
 		conductor_perform_action(CAction::State_SwitchLeft);
 	}
-	else if (key_event.pkey == PInput::PKey::PageDown && key_event.modifier.ctrl) {
+	else if (key_event.pkey == PKey::PageDown && key_event.modifier == KeyMod::CTRL) {
 		conductor_perform_action(CAction::State_SwitchRight);
 	}
-	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && key_event.modifier.alt) {
+	else if (key_event.pkey == PKey::B && key_event.modifier == KeyMod::CTRL_ALT) {
 		conductor_perform_action(CAction::UI_ToggleWorkbench);
 	}
-	else if (key_event.pkey == PInput::PKey::B && key_event.modifier.ctrl && !key_event.modifier.alt) {
+	else if (key_event.pkey == PKey::B && key_event.modifier == KeyMod::CTRL) {
 		conductor_perform_action(CAction::UI_ToggleLeftPanel);
 	}
-	else if (key_event.pkey == PInput::PKey::B && !key_event.modifier.ctrl && key_event.modifier.alt) {
+	else if (key_event.pkey == PKey::B && key_event.modifier == KeyMod::ALT) {
 		conductor_perform_action(CAction::UI_ToggleRightPanel);
+	}
+	else if (key_event.pkey == PKey::Z && key_event.modifier == KeyMod::CTRL) {
+		// conductor_perform_action(CAction::UI_ToggleLeftPanel);
+		std::cout << "undo"  << std::endl;
+		
+	}
+	else if (key_event.pkey == PKey::Z && key_event.modifier == KeyMod::CTRL_SHIFT) {
+		// conductor_perform_action(CAction::UI_ToggleRightPanel);
+		std::cout << "redo"  << std::endl;
 	}
 
 

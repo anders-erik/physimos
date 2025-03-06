@@ -35,16 +35,20 @@ ViewportCursor pointer_pos;
 ViewportCursor pointer_change;
 
 /** Authoritative key input modifier state.  */
-ModifierState modifier_state;
+KeyMod key_mod;
 
 
 // INPUT SUBSCRIBERS CALLBACK POINTERS
 void (*conductor_callback_pointer_position)(ViewportCursor _pointer_pos, ViewportCursor _pointer_change) = nullptr;
+
 void (*conductor_callback_left_down)(ViewportCursor _pointer_pos) = nullptr;
 void (*conductor_callback_left_release)(ViewportCursor _pointer_pos) = nullptr;
 void (*conductor_callback_middle_down)(ViewportCursor _pointer_pos) = nullptr;
 void (*conductor_callback_middle_release)(ViewportCursor _pointer_pos) = nullptr;
 void (*conductor_callback_y_scroll)(double x_change) = nullptr;
+void (*conductor_callback_mouse_backward)(ViewportCursor _pointer_pos) = nullptr;
+void (*conductor_callback_mouse_forward)(ViewportCursor _pointer_pos) = nullptr;
+
 void (*conductor_callback_key_up)(KeyEvent key_event) = nullptr;
 void (*conductor_callback_key_down)(KeyEvent key_event) = nullptr;
 
@@ -83,7 +87,12 @@ void subscribe_mouse_middle_down_conductor(void (*subscriberCallback)(ViewportCu
 void subscribe_mouse_middle_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos)){
 	conductor_callback_middle_release = subscriberCallback;
 }
-
+void subscribe_mouse_backward_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos)){
+	conductor_callback_mouse_backward = subscriberCallback;
+}
+void subscribe_mouse_forward_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos)){
+	conductor_callback_mouse_forward = subscriberCallback;
+}
 
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
@@ -115,6 +124,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE) {
 		PInput::conductor_callback_middle_release(pointer_pos);
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_4 && action == GLFW_PRESS) {
+		PInput::conductor_callback_mouse_backward(pointer_pos);
+	}
+	if (button == GLFW_MOUSE_BUTTON_5 && action == GLFW_PRESS) {
+		PInput::conductor_callback_mouse_forward(pointer_pos);
 	}
 	
 	// printf("MOUSE BUTTON CALLBACK!\n");
@@ -191,22 +207,26 @@ void window_changed_callback(PhysWin _physimos_window) {
 
 
 PKey get_pkey(int key){
-	switch (key)
-	{
-	case GLFW_KEY_B:
-		return PKey::B;
-		break;
-
-	case GLFW_KEY_PAGE_UP:
-		return PKey::PageUp;
-		break;
-
-	case GLFW_KEY_PAGE_DOWN:
-		return PKey::PageDown;
-		break;
 	
-	default:
-		break;
+	switch (key){
+
+		case GLFW_KEY_B:	return PKey::B;	break;
+
+		case GLFW_KEY_Z:	return PKey::Z;	break;
+
+		
+		case GLFW_KEY_LEFT_CONTROL:
+		case GLFW_KEY_RIGHT_CONTROL:	return PKey::Ctrl;		break;
+		case GLFW_KEY_LEFT_SHIFT:	
+		case GLFW_KEY_RIGHT_SHIFT:		return PKey::Shift;		break;
+		case GLFW_KEY_LEFT_ALT:	
+		case GLFW_KEY_RIGHT_ALT:		return PKey::Alt;		break;
+		
+		case GLFW_KEY_PAGE_UP:			return PKey::PageUp;	break;
+		case GLFW_KEY_PAGE_DOWN:		return PKey::PageDown;	break;
+		
+		default:
+			break;
 	}
 
 	return PKey::Unknown;
@@ -218,23 +238,55 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     // printf("%d\n", key);
 	// input.s = key;
 
-	modifier_state.shift 	= mods & 1 ? true : false;
-	modifier_state.ctrl 	= mods & 2 ? true : false;
-	modifier_state.alt 		= mods & 4 ? true : false;
-	
-	// std::cout << "a"  << std::endl;
+	// INPUT MODIFIERS
+	switch (mods) {
+		
+		case 1:
+			key_mod = KeyMod::SHIFT;
+			break;
+
+		case 2:
+			key_mod = KeyMod::CTRL;
+			break;
+
+		case 3:
+			key_mod = KeyMod::CTRL_SHIFT;
+			break;
+
+		case 4:
+			key_mod = KeyMod::ALT;
+			break;
+
+		case 5:
+			key_mod = KeyMod::SHIFT_ALT;
+			break;
+
+		case 6:
+			key_mod = KeyMod::CTRL_ALT;
+			break;
+
+		case 7:
+			key_mod = KeyMod::CTRL_SHIFT_ALT;
+			break;
+
+		default:
+			key_mod = KeyMod::NONE;
+			break;
+	}
+
+
 
 	if(action == GLFW_PRESS)
 		conductor_callback_key_down({
 			get_pkey(key),
-			modifier_state,
+			key_mod,
 			KeyDir::Down
 		});
 
 	if(action == GLFW_RELEASE)
 		conductor_callback_key_up({
 			get_pkey(key),
-			modifier_state,
+			key_mod,
 			KeyDir::Up
 		});
 	

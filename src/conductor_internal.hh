@@ -28,6 +28,12 @@ void callback_middle_down(ViewportCursor _pointer_pos);
 /** Middle mouse release detected and called by Input. Position is viewport location at the time of click.  */
 void callback_middle_release(ViewportCursor _pointer_pos);
 
+/** Middle mouse click detected and called by Input. Position is viewport location at the time of click.  */
+void callback_mouse_backward(ViewportCursor _pointer_pos);
+/** Middle mouse release detected and called by Input. Position is viewport location at the time of click.  */
+void callback_mouse_forward(ViewportCursor _pointer_pos);
+
+
 /**  */
 void callback_scroll_y(double y_change);
 void callback_key_down(PInput::KeyEvent key_event);

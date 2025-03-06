@@ -10,17 +10,18 @@ struct GLFWwindow;
 
 namespace PInput {
 
+/** Convenience enum to idnetify modifier key state. */
+typedef enum class KeyMod {
+	NONE,
+	CTRL,
+	CTRL_SHIFT,
+	CTRL_SHIFT_ALT,
+	CTRL_ALT,
+	SHIFT,
+	SHIFT_ALT,
+	ALT,
+} KeyMod;
 
-/** 
- * 	Convenience struct for later clarity of usage.
- * 	Extracted from GLFW mods: 1=shift, 2=ctrl, 4=alt 
-*/
-typedef struct ModifierState {
-	bool ctrl;
-	bool alt;
-	bool shift;
-} ModifierState;
-// extern ModifierState modifier_state;
 
 /** Store key direction state: Up or Down */
 typedef enum class KeyDir {
@@ -31,10 +32,16 @@ typedef enum class KeyDir {
 /** Physimos Key values */
 typedef enum class PKey {
 
-	B = 10,
+	// ASCII
+	B = 66,
+	Z = 91,
 	
-	PageUp = 100,
-	PageDown = 101,
+	// non-ascii chars
+	Shift = 128,
+	Ctrl = 129,
+	Alt = 130,
+	PageUp = 140,
+	PageDown = 141,
 
 	Unknown = 255,
 
@@ -42,7 +49,7 @@ typedef enum class PKey {
 
 typedef struct KeyEvent {
 	PKey pkey;
-	ModifierState modifier;
+	KeyMod modifier;
 	KeyDir direction;
 } KeyEvent;
 
@@ -64,9 +71,13 @@ void subscribe_mouse_left_release_conductor(void (*subscriberCallback)(ViewportC
 void subscribe_mouse_middle_down_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
 /** Called by external module to subscribe to any change in the pointer position within physimos window. */
 void subscribe_mouse_middle_release_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
-
 /** Called by external module to subscribe to any left click detected within physimos window. */
 void subscribe_mouse_scroll_y_conductor(void (*subscriberCallback)(double y_change));
+
+/** Called by external module to subscribe to any left click detected within physimos window. */
+void subscribe_mouse_backward_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
+/** Called by external module to subscribe to any change in the pointer position within physimos window. */
+void subscribe_mouse_forward_conductor(void (*subscriberCallback)(ViewportCursor _pointer_pos));
 
 /** Called by external module to subscribe to any change in the pointer position within physimos window. */
 void subscribe_key_up_conductor(void (*subscriberCallback)(KeyEvent key_event));

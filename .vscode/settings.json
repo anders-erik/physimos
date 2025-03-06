@@ -4,7 +4,7 @@
     "workspaceKeybindings.physimos.enabled": true, 
 
 	// make sure the clang-formatter doesn't destroy my array-format..
-	"C_Cpp.formatting": "vcFormat",
+	"C_Cpp.formatting": "disabled",
 	// "C_Cpp.vcFormat.indent.braces": false,
 
 	"files.associations": {
