@@ -8,18 +8,21 @@ typedef enum class StateMain {
     UIEditor = 2, 
 } StateMain;
 
-typedef enum class CAction {
-    None,
+typedef enum class CAction : unsigned int {
 
-    UI_ToggleWorkbench,
-    UI_ToggleLeftPanel,
-    UI_ToggleRightPanel,
+    UI_MIN = 0,
+    UI_ToggleWorkbench = 1,
+    UI_ToggleLeftPanel = 2,
+    UI_ToggleRightPanel = 3,
+    UI_MAX = 63,
 
     State_ToggleScene3D,
     State_ToggleCanvas,
     State_ToggleUIEditor,
     State_SwitchRight,
     State_SwitchLeft,
+
+    None,
 } CAction;
 
 

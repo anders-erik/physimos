@@ -86,9 +86,9 @@ UIC_Draw_Brush::UIC_Draw_Brush()
         title           { Primitive("Color") },
         set_green_btn   { UIC_Draw_Brush_SetGreen   () },
         set_red_btn     { UIC_Draw_Brush_SetRed     () },
-        dec_size        { UIC_Draw_Brush_DecSize   () },
-        inc_size        { UIC_Draw_Brush_IncSize     () },
-        size_label      { UIC_Draw_Brush_SizeLabel     () }
+        dec_size        { UIC_Draw_Brush_DecSize    () },
+        inc_size        { UIC_Draw_Brush_IncSize    () },
+        size_label      { UIC_Draw_Brush_SizeLabel  () }
 {
     id = "UIC_Draw_Brush";
     set_w("96%");

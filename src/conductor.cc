@@ -194,45 +194,55 @@ StateMain get_right_state() {
 
 void conductor_perform_action(CAction action) {
 
+
 	switch (action) {
 
-	case CAction::UI_ToggleLeftPanel:
-		viewport_context.toggle_left_panel();
-		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-		break;
+		case CAction::UI_ToggleLeftPanel:
+			viewport_context.toggle_left_panel();
+			UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
+			break;
 
-	case CAction::UI_ToggleWorkbench:
-		viewport_context.toggle_workbench();
-		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-		break;
+		case CAction::UI_ToggleWorkbench:
+			viewport_context.toggle_workbench();
+			UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
+			break;
 
-	case CAction::UI_ToggleRightPanel:
-		viewport_context.toggle_right_panel();
-		UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
-		break;
+		case CAction::UI_ToggleRightPanel:
+			viewport_context.toggle_right_panel();
+			UI::set_ui_views(viewport_context.view_sizes, viewport_context.visibility);
+			break;
 
-	case CAction::State_ToggleScene3D:
-		state_main_set(StateMain::Scene3D);
-		break;
+		case CAction::State_ToggleScene3D:
+			state_main_set(StateMain::Scene3D);
+			break;
 
-	case CAction::State_ToggleCanvas:
-		state_main_set(StateMain::Draw);
-		break;
+		case CAction::State_ToggleCanvas:
+			state_main_set(StateMain::Draw);
+			break;
 
-	case CAction::State_ToggleUIEditor:
-		state_main_set(StateMain::UIEditor);
-		break;
+		case CAction::State_ToggleUIEditor:
+			state_main_set(StateMain::UIEditor);
+			break;
 
-	case CAction::State_SwitchRight:
-		state_main_set(get_right_state());
-		break;
+		case CAction::State_SwitchRight:
+			state_main_set(get_right_state());
+			break;
 
-	case CAction::State_SwitchLeft:
-		state_main_set(get_left_state());
-		break;
+		case CAction::State_SwitchLeft:
+			state_main_set(get_left_state());
+			break;
 
 	default:
 		break;
+	}
+
+
+	// if UI action
+	if(action > CAction::UI_MIN && action < CAction::UI_MAX){
+		
+		draw::update_window(viewport_context);
+		UI::update_window(viewport_context.phys_win);
+
 	}
 
 }

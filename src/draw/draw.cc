@@ -31,6 +31,7 @@ namespace draw {
     void update_window(const ViewportContext& viewport_context){
         // draw_shader.set_window_info(viewport_context);
         draw_shader.set_viewport_context(viewport_context);
+        draw_shader.update_main_view();
     }
 
     void draw(){
@@ -60,7 +61,10 @@ namespace draw {
     void scroll(double dy){
         // transform_context.zoom += (float) dy * 0.3;
 
-        // Adjust the pan to keep the same part of texture in view
+        float text_coord_x_before_zoom = transform_context.texture_x;
+        float text_coord_y_before_zoom = transform_context.texture_y;
+
+        // Adjust the pan to keep the same texture coordinate cursor target
         if(dy > 0){
 
             if(transform_context.zoom > 80)
@@ -68,13 +72,10 @@ namespace draw {
 
             transform_context.zoom *= 1.25;
 
-            // transform_context.pan_texture_coords_x += 
+            // Pan to match the text coord target with old zoom value
+            transform_context.pan_texture_coords_x = transform_context.main_view_x / transform_context.zoom - text_coord_x_before_zoom;
+            transform_context.pan_texture_coords_y = transform_context.main_view_y / transform_context.zoom - text_coord_y_before_zoom;
 
-            transform_context.pan_texture_coords_x *= 0.8;
-            transform_context.pan_texture_coords_x -= bitmap_texture_dynamic->bitmap.width / (transform_context.zoom * 2);
-
-            transform_context.pan_texture_coords_y *= 0.8;
-            transform_context.pan_texture_coords_y -= bitmap_texture_dynamic->bitmap.height / (transform_context.zoom * 2);
         }
         else {
 
@@ -82,12 +83,11 @@ namespace draw {
                 return;
 
             transform_context.zoom *= 0.8;
-            // transform_context.pan_texture_coords_x += transform_context.pan_texture_coords_x*0.3;
-            transform_context.pan_texture_coords_x *= 1.25;
-            transform_context.pan_texture_coords_x += bitmap_texture_dynamic->bitmap.width / (transform_context.zoom * 2);
 
-            transform_context.pan_texture_coords_y *= 1.25;
-            transform_context.pan_texture_coords_y += bitmap_texture_dynamic->bitmap.height / (transform_context.zoom * 2);
+            // Pan to match the text coord target with old zoom value
+            transform_context.pan_texture_coords_x = transform_context.main_view_x / transform_context.zoom - text_coord_x_before_zoom;
+            transform_context.pan_texture_coords_y = transform_context.main_view_y / transform_context.zoom - text_coord_y_before_zoom;
+
         }
 
         draw_shader.set_transform_context(transform_context);
