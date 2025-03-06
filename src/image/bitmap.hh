@@ -50,9 +50,9 @@ typedef class Bitmap {
         Bitmap(unsigned int width, unsigned int height);
 } Bitmap;
 
+bool pixels_equal(Pixel a, Pixel b);
 
-
-}
+} // pimage
 
 
 #endif

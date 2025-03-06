@@ -45,7 +45,7 @@ void  Bitmap::set_square(unsigned int x, unsigned int y, Pixel pixel, int size){
     if(x > width || y > height)
         return;
 
-    // Cut pixels beyond bitmap bounds
+    // Cut pixels beyond bitmap bounds+
     unsigned int x_max = x+size > width ? width : x+size;
     unsigned int y_max = y+size > height ? height : y+size;
 
@@ -113,5 +113,14 @@ void Bitmap::replace_color(Pixel old_pixel, Pixel new_pixel){
     }
 }
 
+
+bool pixels_equal(Pixel a, Pixel b){
+    return  a.R == b.R &&
+            a.G == b.G &&
+            a.B == b.B &&
+            a.A == b.A;
 }
+
+
+} // pimage
 

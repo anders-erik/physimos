@@ -540,10 +540,27 @@ void callback_middle_release(ViewportCursor _pointer_pos){
 
 void callback_mouse_backward(ViewportCursor _pointer_pos){
 	std::cout << "backward"  << std::endl;
+	switch (state_main_current) {
+		case StateMain::Draw :
+			draw::mouse_backward();
+			break;
+		
+		default:
+			break;
+	}
 	
 }
 void callback_mouse_forward(ViewportCursor _pointer_pos){
 	std::cout << "forward"  << std::endl;
+
+	switch (state_main_current) {
+		case StateMain::Draw :
+			draw::mouse_forward();
+			break;
+		
+		default:
+			break;
+	}
 }
 
 void callback_key_down(PInput::KeyEvent key_event) {

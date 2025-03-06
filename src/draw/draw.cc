@@ -48,7 +48,16 @@ namespace draw {
         return true;
     }
     void left_btn_up(){
-        draw_state.drawing = false;
+        if(draw_state.drawing){
+            draw_state.drawing = false;
+            bitmap_texture_dynamic->transaction_new();
+        }
+    }
+    void mouse_backward(){
+        bitmap_texture_dynamic->transaction_undo();
+    }
+    void mouse_forward(){
+        bitmap_texture_dynamic->transaction_redo();
     }
     bool middle_btn_down(){
         draw_state.pan_canvas = true;
@@ -138,10 +147,12 @@ namespace draw {
 
 
 BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height) 
-    :   bitmap { pimage::Bitmap(width , height) }
+    :   bitmap_current_state { pimage::Bitmap(width , height) },
+        bitmap_rendered         { pimage::Bitmap(width , height) }
 {
     // SET BITMAP COLOR TO ALL-BLACK
-    bitmap.replace_color({0,0,0,0}, {0,0,0, 255});
+    bitmap_rendered.replace_color({0,0,0,0}, {0,0,0, 255});
+    bitmap_current_state.replace_color({0,0,0,0}, {0,0,0, 255});
 
     aabb.w = width;
     aabb.h = height;
@@ -166,14 +177,101 @@ BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height)
     glBindTexture(GL_TEXTURE_2D, texture);
 
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width, bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap.pixels.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap_rendered.width, bitmap_rendered.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap_rendered.pixels.data());
     glGenerateMipmap(GL_TEXTURE_2D);
 
 
-    // bitmap.set_pixel(0, 0, {255, 255, 255, 255});
-
     reload_texture();
 
+}
+
+void BitmapTexture_Dynamic::transaction_undo(){
+    // No edits to undo
+    if(index_last_bitmap_transaction == -1)
+        return;
+
+        
+    for( PixelTransaction pixel_tr : bitmap_transactions[index_last_bitmap_transaction] ){
+
+        bitmap_current_state.set_pixel(pixel_tr.x, pixel_tr.y, pixel_tr.pixel_from);
+        bitmap_rendered.set_pixel(pixel_tr.x, pixel_tr.y, pixel_tr.pixel_from);
+        
+    }
+    
+    // Move to previous transaction
+    --index_last_bitmap_transaction;
+    bitmap_texture_dynamic->reload_texture();
+}
+void BitmapTexture_Dynamic::transaction_redo(){
+
+    if(bitmap_transactions.size() == 0)
+        return;
+
+    // Index is at end of transaction vector, thus there is no edits to redo
+    if(index_last_bitmap_transaction == bitmap_transactions.size() - 1)
+        return;
+
+    // Use next transaction
+    ++index_last_bitmap_transaction;
+
+    for( PixelTransaction pixel_tr : bitmap_transactions[index_last_bitmap_transaction] ){
+
+        bitmap_current_state.set_pixel(pixel_tr.x, pixel_tr.y, pixel_tr.pixel_to);
+        bitmap_rendered.set_pixel(pixel_tr.x, pixel_tr.y, pixel_tr.pixel_to);
+        
+    }
+    
+
+    bitmap_texture_dynamic->reload_texture();
+}
+
+void BitmapTexture_Dynamic::transaction_new(){
+
+    // when a new transaction is performed, all transaction ahead of current index is removed
+    if(bitmap_transactions.size() != 0){
+
+        if(index_last_bitmap_transaction != bitmap_transactions.size()-1){
+            while(index_last_bitmap_transaction != bitmap_transactions.size()-1)
+            bitmap_transactions.pop_back();
+        }
+
+    }
+
+    BitmapTransaction new_bitmap_transaction = bitmap_transactions.emplace_back(BitmapTransaction());
+
+    index_last_bitmap_transaction = bitmap_transactions.size() - 1;
+    
+    
+
+    // STEP THROUGH ALL PIXELS, STORE PIXELS THAT DIFFER TO TRANSACTION VECTOR
+    for(int col = 0; col < bitmap_rendered.width; col++){
+        for(int row = 0; row < bitmap_rendered.height; row++){
+
+            pimage::Pixel pix_new   = bitmap_rendered.get_pixel(col, row);
+            pimage::Pixel pix_last  = bitmap_current_state.get_pixel(col, row);
+
+            bool pixel_are_equal = pimage::pixels_equal(pix_new, pix_last);
+
+            if(!pixel_are_equal){
+
+                // Store bitmap diff
+                bitmap_transactions[index_last_bitmap_transaction].emplace_back( 
+                    PixelTransaction{
+                        col, 
+                        row, 
+                        pix_last,
+                        pix_new
+                    }
+                );
+
+                // Update the previous transaction bitmap to metch the rendered one
+                bitmap_current_state.set_pixel(col, row, pix_new);
+            }
+            
+            
+        }
+    }
+    int x = 0;
 }
 
 void BitmapTexture_Dynamic::draw(int x_pointer, int y_pointer){
@@ -183,12 +281,12 @@ void BitmapTexture_Dynamic::draw(int x_pointer, int y_pointer){
         return;
     }
     // OK to compare to unsigned for now as we clear negative cases previously
-    if(x_pointer > bitmap.width-1 || y_pointer > bitmap.height-1){
+    if(x_pointer > bitmap_rendered.width-1 || y_pointer > bitmap_rendered.height-1){
         return;
     }
 
     
-    bitmap.set_square(x_pointer, y_pointer, brush_current.color, brush_current.size);
+    bitmap_rendered.set_square(x_pointer, y_pointer, brush_current.color, brush_current.size);
 
     reload_texture();
 }
@@ -198,8 +296,8 @@ void BitmapTexture_Dynamic::reload_texture(){
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D(    GL_TEXTURE_2D, 0 , // identical to glTexImage2D
                         0, 0, // x, y
-                        bitmap.width, bitmap.height, 
-                        GL_RGBA, GL_UNSIGNED_BYTE, bitmap.pixels.data()); // identical to glTexImage2D
+                        bitmap_rendered.width, bitmap_rendered.height, 
+                        GL_RGBA, GL_UNSIGNED_BYTE, bitmap_rendered.pixels.data()); // identical to glTexImage2D
 
 }
 
