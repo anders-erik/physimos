@@ -11,7 +11,7 @@
 #include "ui_primitive.hh"
 #include "ui_globals.hh"
 #include "ui/ui_texture.hh"
-#include "ui/ui_texture_string.hh"
+#include "ui/ui_font.hh"
 
 
 namespace UI {
@@ -93,7 +93,7 @@ namespace UI {
 
         // Old String Texture generation
         texture::new_texture(privateStringTexture);
-        update_texture_with_string_row(privateStringTexture, _str);
+        font::update_texture_with_string_row(privateStringTexture, _str);
         set_texture(privateStringTexture);
         updateTransformationMatrix();
 
@@ -634,16 +634,16 @@ namespace UI {
 
 
 shader::VertexTexture charVertex[6] = {
-               {0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   // bottom-left
-               {1.0f, 1.0f, 0.0f, 1.0f, 0.01f},   // top-right
-               {0.0f, 1.0f, 0.0f, 0.0f, 0.01f},   // top-left
-               {1.0f, 1.0f, 0.0f, 1.0f, 0.01f},   // top-right
-               {0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   // bottom-left
-               {1.0f, 0.0f, 0.0f, 1.0f, 0.0f},   // bottom-right
+               {0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   30.0f},   // bottom-left
+               {1.0f, 1.0f, 0.0f, 1.0f, 0.01f,  30.0f},   // top-right
+               {0.0f, 1.0f, 0.0f, 0.0f, 0.01f,  30.0f},   // top-left
+               {1.0f, 1.0f, 0.0f, 1.0f, 0.01f,  30.0f},   // top-right
+               {0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   30.0f},   // bottom-left
+               {1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   30.0f},   // bottom-right
         };
 
 
-
+    std::vector<shader::VertexTexture> vertices;
     void Primitive::render() {
 
         // WARN: Does update happen when rendereding turned on?
@@ -680,12 +680,19 @@ shader::VertexTexture charVertex[6] = {
             texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
             texture_shader->draw();
 
+            
+        }
+
+        if(str != ""){
             // string_shader->set_transform(uiTransform.uiPrimitiveTransform16);
             // string_shader->set_texture(renderedTexture);
             // string_shader->draw();
-
+            
             string_shader->set_primitive_transform(uiTransform.uiPrimitiveTransform16);
-            string_shader->set_vertex_data(charVertex, sizeof(charVertex));
+            // string_shader->set_vertex_data(charVertex, sizeof(charVertex));
+            font::string_to_texture_vertex_list(vertices, str);
+            string_shader->set_vertex_data(vertices.data(), vertices.size() * sizeof(shader::VertexTexture));
+            // string_shader->set_vertex_data(charVertex, sizeof(charVertex));
             string_shader->draw();
         }
 

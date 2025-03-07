@@ -10,7 +10,7 @@
 #include "ui/ui_shader_string.hh"
 
 #include "ui/ui_globals.hh"
-#include "ui/ui_texture_string.hh"
+#include "ui/ui_font.hh"
 
 namespace UI {
 

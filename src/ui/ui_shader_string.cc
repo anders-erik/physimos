@@ -97,12 +97,23 @@ namespace UI {
 
         void StringShader::set_primitive_transform(float* primitiveTransform_mat) {
             glUseProgram(shader_id);
-            primitiveTransform_mat[7] += 40;
+
+            // We want the with of a char!
+            float orig_x = primitiveTransform_mat[0];
+            float orig_y = primitiveTransform_mat[5];
+            // offset for visibility
+            primitiveTransform_mat[7] -= 20;
+            primitiveTransform_mat[0] = 11;
+            primitiveTransform_mat[5] = 20;
+
             // GL_TRUE : Transpose before loading into uniform!
             glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform16);
             glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitiveTransform_mat);
 
-            primitiveTransform_mat[7] -= 40;
+
+            primitiveTransform_mat[0] = orig_x;
+            primitiveTransform_mat[5] = orig_y;
+            primitiveTransform_mat[7] += 20;
 
             // this->texture = texture;
         }
@@ -117,11 +128,14 @@ namespace UI {
 
             glBindVertexArray(vao);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
 
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
+
+            glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
+            glEnableVertexAttribArray(2);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -135,7 +149,7 @@ namespace UI {
 
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawArrays(GL_TRIANGLES, 0, vertex_count);
             glDisable(GL_BLEND);
         }
 

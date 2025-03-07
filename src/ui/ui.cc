@@ -10,7 +10,7 @@
 #include "ui/ui_texture.hh"
 #include "ui/ui_shader_texture.hh"
 #include "ui/ui_shader_color.hh"
-#include "ui/ui_texture_string.hh"
+#include "ui/ui_font.hh"
 #include "ui/ui_primitive.hh"
 
 #include "ui/uic/topbar/uic_topbar.hh"
@@ -126,7 +126,7 @@ void init(){
 
 
     // characters-2.bmp character map
-    UI::init_font();
+    UI::font::init_font();
     
     UI::texture::init_static_color_textures();
     UI::texture::init_static_icon_textures();
@@ -142,7 +142,7 @@ void init(){
     shader::string_shader.set_window_info(new_window.width, new_window.height, new_window.xscale, new_window.yscale);
     shader::string_shader.init();
     // shader::string_shader.set_bitmap(get_font_bitmap());
-    shader::string_shader.set_texture(get_font_texture());
+    shader::string_shader.set_texture(font::get_font_texture());
 
 
     topbar      = new UI::component::UIC_Root_Topbar();

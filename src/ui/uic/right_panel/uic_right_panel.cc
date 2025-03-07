@@ -114,8 +114,8 @@ UiResult UIC_Root_RightPanel::try_find_target_component(double x, double y) {
             break;
 
         case StateMain::Draw :
-        if (uic_RightPanel_Draw.containsPoint(x, y))
-            return uic_RightPanel_Draw.try_find_target_component(x, y);
+            if (uic_RightPanel_Draw.containsPoint(x, y))
+                return uic_RightPanel_Draw.try_find_target_component(x, y);
             break;
         
         default:

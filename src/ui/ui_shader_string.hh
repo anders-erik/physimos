@@ -2,6 +2,7 @@
 #define UI_SHADER_STRING_HH
 
 #include <string>
+#include <vector>
 
 #include "ui/ui_globals.hh"
 
@@ -9,6 +10,15 @@
 
 namespace UI {
     namespace shader {
+
+        typedef struct VertexTexture {
+            float vx;
+            float vy;
+            float vz;
+            float tx;
+            float ty;
+            float x_offset;
+        } VertexTexture;
 
         typedef struct RenderString {
             std::string str;
@@ -19,16 +29,10 @@ namespace UI {
             unsigned int vertex_count;
 
             float primitiveTransform[16];
+
+            std::vector<VertexTexture> vertices;
             
         } RenderString;
-
-        typedef struct VertexTexture {
-            float vx;
-            float vy;
-            float vz;
-            float tx;
-            float ty;
-        } VertexTexture;
 
         
         typedef class StringShader {

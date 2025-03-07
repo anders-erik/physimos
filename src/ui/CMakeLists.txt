@@ -5,7 +5,7 @@ add_library(ui
     ui_primitive.cc
     ui_globals.cc
     ui_texture.cc
-    ui_texture_string.cc
+    ui_font.cc
 
     ui_shader_texture.cc
     ui_shader_color.cc
