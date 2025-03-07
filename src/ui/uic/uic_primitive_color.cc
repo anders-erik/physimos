@@ -114,7 +114,7 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(::UI::Primitive& _primitive)
 UIC_PrimitiveColor::UIC_PrimitiveColor(Primitive *_parent, ::UI::Primitive& _primitive)
     :   Primitive(_parent)  ,
         boundObject     { _primitive },
-        title           { Primitive(this, "Color") },
+        title           { Primitive( "Color") },
         set_green_btn   { UIC_PrimitiveColor_SetGreen   (this) },
         set_red_btn     { UIC_PrimitiveColor_SetRed     (this) }
 {
@@ -128,7 +128,7 @@ UIC_PrimitiveColor::UIC_PrimitiveColor(Primitive *_parent, ::UI::Primitive& _pri
     set_color(active_pallete.base2);
 
 
-    // appendChild(&title);
+    appendChild(&title);
     title.str_setFontSize(FontSize::f18);
     title.set_x("<10x");
     title.set_y("^5x");

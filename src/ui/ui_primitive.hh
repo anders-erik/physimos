@@ -7,6 +7,7 @@
 
 #include "ui/ui_shader_texture.hh"
 #include "ui/ui_shader_color.hh"
+#include "ui/ui_shader_string.hh"
 
 #include "ui/ui_globals.hh"
 #include "ui/ui_texture_string.hh"
@@ -118,7 +119,7 @@ class Primitive {
         /** Initializes a new primitive ui object. Sets shader and initial string texture. Background color is set to transparent! */
         Primitive(std::string _str);
         /** Initializes a new primitive ui object with a specified parent. Sets shader and initial string texture. Background color is set to transparent! */
-        Primitive(Primitive* _parent, std::string _str);
+        // Primitive(Primitive* _parent, std::string _str);
 
 
         std::string id = "";
@@ -166,7 +167,7 @@ class Primitive {
 
         ::UI::shader::TextureShader*    texture_shader;
         ::UI::shader::ColorShader*      color_shader;
-
+        ::UI::shader::StringShader*      string_shader;
         bool render_enabled = true;
 
         /** Set the 4x4 transformation matrix that will be set as shader uniform */

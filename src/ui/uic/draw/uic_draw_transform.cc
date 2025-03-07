@@ -37,7 +37,7 @@ UIC_Draw_Transform::UIC_Draw_Transform()
     set_color({0.0, 0.0, 1.0, 0.3});
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f18);
+    title.str_setFontSize(FontSize::f15);
     title.set_x("<10x");
     title.set_y("^5x");
 
@@ -80,12 +80,12 @@ UIC_Draw_Transform::UIC_Draw_Transform()
 
 
     appendChild(&main_view_x);
-    main_view_x.str_fontSize = FontSize::f18;
+    main_view_x.str_fontSize = FontSize::f15;
     main_view_x.set_x("<50x");
     main_view_x.set_y("_20x");
 
     appendChild(&main_view_y);
-    main_view_x.str_fontSize = FontSize::f15;
+    main_view_y.str_fontSize = FontSize::f15;
     main_view_y.set_x("<150x");
     main_view_y.set_y("_20x");
 

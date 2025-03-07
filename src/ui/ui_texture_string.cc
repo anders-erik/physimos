@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <filesystem>
 #include <vector>
 
@@ -17,6 +18,7 @@ namespace UI {
 
 pimage::io::BMP BMP_loader;
 pimage::Bitmap  font_bitmap(0,0);
+unsigned int    font_texture;
 /** character width in font bitmap */
 size_t char_width = 80;
 /** character height in font bitmap */
@@ -33,6 +35,21 @@ void init_font(){
     // Replace black pixels with transparency
     font_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
 
+    texture::new_texture(font_texture);
+
+    // for(int i = 0; i < 80; i++)
+    //     std::cout << "" << font_bitmap.get_pixel(i, 360).R << font_bitmap.get_pixel(i, 360).G << font_bitmap.get_pixel(i, 360).B << font_bitmap.get_pixel(i, 360).A << std::endl;
+        
+    
+    texture::update_with_bitmap(font_texture, font_bitmap);
+}
+
+pimage::Bitmap& get_font_bitmap(){
+    return font_bitmap;
+}
+
+unsigned int get_font_texture(){
+    return font_texture;
 }
 
 pimage::Bitmap get_char_bitmap(char ch){

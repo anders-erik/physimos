@@ -9,9 +9,11 @@
 
 namespace UI {
 
-
 /** Init function */
 void init_font();
+
+pimage::Bitmap& get_font_bitmap();
+unsigned int get_font_texture();
 
 /** Return a bitmap containing the passed character [80x150 pixels]. */
 pimage::Bitmap get_char_bitmap(char ch);

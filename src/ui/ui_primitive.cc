@@ -20,6 +20,7 @@ namespace UI {
         
         texture_shader = &shader::texture_shader;
         color_shader = &shader::color_shader;
+        string_shader = &shader::string_shader;
 
         color = active_pallete.base1;
 
@@ -36,6 +37,7 @@ namespace UI {
 
         texture_shader = &shader::texture_shader;
         color_shader = &shader::color_shader;
+        string_shader = &shader::string_shader;
 
         color = active_pallete.base1;
     }
@@ -45,6 +47,7 @@ namespace UI {
     {
         texture_shader = &shader::texture_shader;
         color_shader = &shader::color_shader;
+        string_shader = &shader::string_shader;
 
         primitiveType = PrimitiveType::String;
         
@@ -53,26 +56,26 @@ namespace UI {
         set_color(transparent);
     }
 
-    Primitive::Primitive(Primitive* _parent, std::string _str) 
-        :   parent  { _parent },
-            str     { _str }
-    {
-        z = _parent->z + 1;
-        _parent->children.push_back(this);
+    // Primitive::Primitive(Primitive* _parent, std::string _str) 
+    //     :   parent  { _parent },
+    //         str     { _str }
+    // {
+    //     z = _parent->z + 1;
+    //     _parent->children.push_back(this);
 
-        update_x_real_recursive();
-        update_y_real_recursive();
+    //     update_x_real_recursive();
+    //     update_y_real_recursive();
 
 
-        texture_shader = &shader::texture_shader;
-        color_shader = &shader::color_shader;
+    //     texture_shader = &shader::texture_shader;
+    //     color_shader = &shader::color_shader;
 
-        primitiveType = PrimitiveType::String;
+    //     primitiveType = PrimitiveType::String;
         
-        str_setString(_str);
+    //     str_setString(_str);
         
-        set_color(transparent);
-    }
+    //     set_color(transparent);
+    // }
 
 
 
@@ -83,18 +86,19 @@ namespace UI {
     }
     void Primitive::str_setString(std::string _str) {
 
+        // Primitive size
         set_h(std::to_string(str_fontSize) + "x");
-
         size_t charWidth = (8 * str_fontSize) / 15;
-
         set_w(std::to_string(charWidth * _str.length()) + "x");
 
+        // Old String Texture generation
         texture::new_texture(privateStringTexture);
         update_texture_with_string_row(privateStringTexture, _str);
-
         set_texture(privateStringTexture);
-
         updateTransformationMatrix();
+
+        // New string generation
+
     }
 
 
@@ -627,6 +631,19 @@ namespace UI {
         }
     }
 
+
+
+shader::VertexTexture charVertex[6] = {
+               {0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   // bottom-left
+               {1.0f, 1.0f, 0.0f, 1.0f, 0.01f},   // top-right
+               {0.0f, 1.0f, 0.0f, 0.0f, 0.01f},   // top-left
+               {1.0f, 1.0f, 0.0f, 1.0f, 0.01f},   // top-right
+               {0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   // bottom-left
+               {1.0f, 0.0f, 0.0f, 1.0f, 0.0f},   // bottom-right
+        };
+
+
+
     void Primitive::render() {
 
         // WARN: Does update happen when rendereding turned on?
@@ -662,10 +679,19 @@ namespace UI {
         if(has_texture){
             texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
             texture_shader->draw();
+
+            // string_shader->set_transform(uiTransform.uiPrimitiveTransform16);
+            // string_shader->set_texture(renderedTexture);
+            // string_shader->draw();
+
+            string_shader->set_primitive_transform(uiTransform.uiPrimitiveTransform16);
+            string_shader->set_vertex_data(charVertex, sizeof(charVertex));
+            string_shader->draw();
         }
 
     }
 
+    
 
 
 

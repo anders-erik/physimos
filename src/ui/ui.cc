@@ -123,6 +123,10 @@ void init(){
     viewport_height = new_window.height / new_window.yscale;
 
     // subscribeWindowChange_ui(callback_window_change); // WINDOWING.CPP
+
+
+    // characters-2.bmp character map
+    UI::init_font();
     
     UI::texture::init_static_color_textures();
     UI::texture::init_static_icon_textures();
@@ -135,8 +139,10 @@ void init(){
     shader::color_shader.compile_shader();
     shader::color_shader.init();
 
-    // characters-2.bmp character map
-    UI::init_font();
+    shader::string_shader.set_window_info(new_window.width, new_window.height, new_window.xscale, new_window.yscale);
+    shader::string_shader.init();
+    // shader::string_shader.set_bitmap(get_font_bitmap());
+    shader::string_shader.set_texture(get_font_texture());
 
 
     topbar      = new UI::component::UIC_Root_Topbar();
@@ -230,6 +236,13 @@ void update_window(PhysWin physimos_window) {
     );
 
     shader::color_shader.set_window_info(
+        physimos_window.raw.w, 
+        physimos_window.raw.h, 
+        physimos_window.xscale, 
+        physimos_window.yscale
+    );
+
+    shader::string_shader.set_window_info(
         physimos_window.raw.w, 
         physimos_window.raw.h, 
         physimos_window.xscale, 

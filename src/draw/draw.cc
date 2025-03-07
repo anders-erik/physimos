@@ -231,8 +231,10 @@ void BitmapTexture_Dynamic::transaction_new(){
     if(bitmap_transactions.size() != 0){
 
         if(index_last_bitmap_transaction != bitmap_transactions.size()-1){
-            while(index_last_bitmap_transaction != bitmap_transactions.size()-1)
-            bitmap_transactions.pop_back();
+            while(index_last_bitmap_transaction != bitmap_transactions.size()-1){
+                
+                bitmap_transactions.pop_back();
+            }
         }
 
     }

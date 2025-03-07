@@ -102,7 +102,7 @@ UIC_Draw_Brush::UIC_Draw_Brush()
 
 
     appendChild(&title);
-    title.str_setFontSize(FontSize::f18);
+    title.str_setFontSize(FontSize::f32);
     title.set_x("<10x");
     title.set_y("^5x");
 
