@@ -86,15 +86,17 @@ namespace UI {
     }
     void Primitive::str_setString(std::string _str) {
 
+        str = _str;
+
         // Primitive size
         set_h(std::to_string(str_fontSize) + "x");
         size_t charWidth = (8 * str_fontSize) / 15;
         set_w(std::to_string(charWidth * _str.length()) + "x");
 
-        // Old String Texture generation
-        texture::new_texture(privateStringTexture);
-        font::update_texture_with_string_row(privateStringTexture, _str);
-        set_texture(privateStringTexture);
+        // // Old String Texture generation
+        // texture::new_texture(privateStringTexture);
+        // font::update_texture_with_string_row(privateStringTexture, _str);
+        // set_texture(privateStringTexture);
         updateTransformationMatrix();
 
         // New string generation
@@ -106,7 +108,7 @@ namespace UI {
 
         if (str != _str) {
             str = _str;
-            str_setString(_str);
+            // str_setString(_str);
         }
 
     }
@@ -643,7 +645,8 @@ shader::VertexTexture charVertex[6] = {
         };
 
 
-    std::vector<shader::VertexTexture> vertices;
+    std::vector<shader::VertexTexture> char_vertices;
+
     void Primitive::render() {
 
         // WARN: Does update happen when rendereding turned on?
@@ -674,26 +677,33 @@ shader::VertexTexture charVertex[6] = {
         color_shader->set(uiTransform.uiPrimitiveTransform16, darkness_shift, color);
         color_shader->draw();
     
-
-
-        if(has_texture){
-            texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
-            texture_shader->draw();
-
+        // If scrollable, then we need to check children AABBs, and discard all regions of children
+        if(scrollable){
             
         }
+
+        // Strings are no longer textures!
+        // if(has_texture && str == ""){
+        //     texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
+        //     texture_shader->draw();   
+        // }
 
         if(str != ""){
             // string_shader->set_transform(uiTransform.uiPrimitiveTransform16);
             // string_shader->set_texture(renderedTexture);
             // string_shader->draw();
             
+            // string_shader->set_vertex_data(charVertex, sizeof(charVertex));
+            // string_shader->set_vertex_data(charVertex, sizeof(charVertex));
+
             string_shader->set_primitive_transform(uiTransform.uiPrimitiveTransform16);
-            // string_shader->set_vertex_data(charVertex, sizeof(charVertex));
-            font::string_to_texture_vertex_list(vertices, str);
-            string_shader->set_vertex_data(vertices.data(), vertices.size() * sizeof(shader::VertexTexture));
-            // string_shader->set_vertex_data(charVertex, sizeof(charVertex));
+            font::string_to_texture_vertex_list(char_vertices, str);
+            string_shader->set_vertex_data(char_vertices.data(), char_vertices.size() * sizeof(shader::VertexTexture));
             string_shader->draw();
+        }
+        else if(has_texture){
+            texture_shader->set(uiTransform.uiPrimitiveTransform16, renderedTexture);
+            texture_shader->draw();  
         }
 
     }

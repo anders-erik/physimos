@@ -20,7 +20,7 @@ namespace UI {
             float x_offset;
         } VertexTexture;
 
-        typedef struct RenderString {
+        typedef struct StringRenderContext {
             std::string str;
 
             unsigned int vao;
@@ -32,7 +32,7 @@ namespace UI {
 
             std::vector<VertexTexture> vertices;
             
-        } RenderString;
+        } StringRenderContext;
 
         
         typedef class StringShader {

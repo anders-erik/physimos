@@ -102,9 +102,10 @@ namespace UI {
             float orig_x = primitiveTransform_mat[0];
             float orig_y = primitiveTransform_mat[5];
             // offset for visibility
-            primitiveTransform_mat[7] -= 20;
-            primitiveTransform_mat[0] = 11;
-            primitiveTransform_mat[5] = 20;
+            primitiveTransform_mat[7] -= 0;
+
+            primitiveTransform_mat[0] = 9;
+            primitiveTransform_mat[5] = 18;
 
             // GL_TRUE : Transpose before loading into uniform!
             glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, viewportTransform16);
@@ -113,7 +114,8 @@ namespace UI {
 
             primitiveTransform_mat[0] = orig_x;
             primitiveTransform_mat[5] = orig_y;
-            primitiveTransform_mat[7] += 20;
+
+            primitiveTransform_mat[7] += 0;
 
             // this->texture = texture;
         }

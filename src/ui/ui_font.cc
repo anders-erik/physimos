@@ -103,7 +103,7 @@ void string_to_texture_vertex_list(std::vector<shader::VertexTexture>& list_to_p
         float index_offset_fl = (float) index_offset;
         float texture_offset_y = index_offset_fl / 100;
 
-        float render_width = 11.0f;
+        float render_width = 9.0f;
 
         shader::VertexTexture vert_0 = charVertex[0];
         vert_0.ty += texture_offset_y;

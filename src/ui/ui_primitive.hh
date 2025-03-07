@@ -59,18 +59,18 @@ typedef struct Transform {
     bool size_has_been_changed = true;
     std::string h_input_string = "";
     std::string w_input_string = "";
-    size_t h_input = 100;
+    int h_input = 100;
     int h_offset_input = 0;
-    size_t w_input = 100;
+    int w_input = 100;
     int w_offset_input = 0;
     Unit h_unit = Unit::Percent;
     Unit w_unit = Unit::Percent;
-    size_t w_min = 0;
-    size_t h_min = 0;
-    size_t w_max = INT64_MAX;
-    size_t h_max = INT64_MAX;
-    size_t h_real = 0;
-    size_t w_real = 0;
+    int w_min = 0;
+    int h_min = 0;
+    int w_max = INT32_MAX;
+    int h_max = INT32_MAX;
+    int h_real = 0;
+    int w_real = 0;
 
 
 
