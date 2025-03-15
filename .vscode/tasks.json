@@ -5,13 +5,10 @@
             "type": "shell",
             "label": "Build & Run [debug]",
             "command": "${workspaceFolder}/scripts/build.sh debug && PHYSIMOS_ROOT_DIR=${workspaceFolder} ./build/debug/physimos",
-            "args": [],
-            "options": {},
             "problemMatcher": [
                 "$gcc"
             ],
             "group": "build",
-            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -23,8 +20,6 @@
             "type": "shell",
             "label": "Build Release - Linux",
             "command": "${workspaceFolder}/scripts/build.sh release-linux",
-            "args": [],
-            "options": {},
             "problemMatcher": [
                 "$gcc"
             ],
@@ -170,5 +165,13 @@
                 "panel": "shared"
             }
         },
+        {
+            "label": "XP - build and run",
+            "type": "shell",
+            "command": "cd xp/cube && ./build_run.sh",
+            "problemMatcher": [
+                "$gcc"
+            ],
+        }
     ]
 }

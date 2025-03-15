@@ -35,7 +35,7 @@ namespace pmath {
     typedef struct Vec3
     {
         double data[3];
-        float  fdata[3] { 0.0f, 0.0f, 0.0f};
+        // float  fdata[3] { 0.0f, 0.0f, 0.0f};
         void setData(double data0, double data1, double data2);
         /** Returns the underlying data as float data. */
         Vec3f_base get_f_base();

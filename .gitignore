@@ -10,6 +10,8 @@ build_cmake/
 build_cmake/*
 cmake-build*
 
+bin/
+
 GLFW/*
 glad/*
 glad.zip

@@ -27,9 +27,10 @@ int main(){
     std::cout << std::endl;
     std::cout << "-------------------------" << std::endl << std::endl;
 
-    std::cout << "sizeof(Vec3) = " << sizeof(Vec3) << std::endl << std::endl;
-    std::cout << "sizeof(Vec3d) = " << sizeof(Vec3d) << std::endl << std::endl;
-    
+    std::cout << "sizeof(Vec3) = " << sizeof(Vec3) << std::endl;
+    std::cout << "sizeof(Mat4f_base) = " << sizeof(Mat4f_base) << std::endl;
+    std::cout << "sizeof(Vec3[2]) = " << sizeof(Vec3[2]) << std::endl;
+    std::cout << std::endl;
     
 
     Vec3 z = Vec3(0.0, 0.0, 0.0);
