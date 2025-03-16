@@ -14,7 +14,7 @@ SOURCES="main.cc window.cc gpu.cc model.cc fs.cc math.cc scene.cc bin/glad.c"
 INCLUDE_DIRS="-I. -I../../extern/glad/include -I../../extern/GLFW/include"
 LIB_DIRS="-L../../extern/GLFW/lib"
 
-time g++ -Wall -g $INCLUDE_DIRS $SOURCES -o $BIN_DIR/cube.bin $LIB_DIRS -lglfw3
+time g++ -Wall -g $INCLUDE_DIRS $SOURCES -o $BIN_DIR/rubik.bin $LIB_DIRS -lglfw3
 
 
 if [ ! $? -eq 0 ]; then
@@ -24,5 +24,3 @@ if [ ! $? -eq 0 ]; then
 fi
 
 exit 0
-
-$BIN_DIR/cube.bin

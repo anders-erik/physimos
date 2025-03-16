@@ -4,7 +4,7 @@
 #include "fs.hh"
 #include "scene.hh"
 
-using namespace xpcube;
+using namespace xprubik;
 
 
 int main(){

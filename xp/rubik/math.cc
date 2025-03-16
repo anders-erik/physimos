@@ -1,0 +1,77 @@
+
+#include "math.hh"
+
+namespace xprubik {
+
+
+m4f4 new_translation_matrix(f3 transl){
+    m4f4 matrix;
+
+    matrix.x.w = transl.x;
+    matrix.y.w = transl.y;
+    matrix.z.w = transl.z;
+
+    return matrix;
+}
+
+void mat_mul(m4f4& lmat, m4f4& rmat){
+
+    m4f4 tmp;
+
+    tmp.x.x = lmat.x.x * rmat.x.x + lmat.x.y * rmat.y.x + lmat.x.z * rmat.z.x + lmat.x.w * rmat.w.x; 
+    tmp.x.y = lmat.x.x * rmat.x.y + lmat.x.y * rmat.y.y + lmat.x.z * rmat.z.y + lmat.x.w * rmat.w.y; 
+    tmp.x.z = lmat.x.x * rmat.x.z + lmat.x.y * rmat.y.z + lmat.x.z * rmat.z.z + lmat.x.w * rmat.w.z; 
+    tmp.x.w = lmat.x.x * rmat.x.w + lmat.x.y * rmat.y.w + lmat.x.z * rmat.z.w + lmat.x.w * rmat.w.w; 
+
+    tmp.y.x = lmat.y.x * rmat.x.x + lmat.y.y * rmat.y.x + lmat.y.z * rmat.z.x + lmat.y.w * rmat.w.x; 
+    tmp.y.y = lmat.y.x * rmat.x.y + lmat.y.y * rmat.y.y + lmat.y.z * rmat.z.y + lmat.y.w * rmat.w.y; 
+    tmp.y.z = lmat.y.x * rmat.x.z + lmat.y.y * rmat.y.z + lmat.y.z * rmat.z.z + lmat.y.w * rmat.w.z; 
+    tmp.y.w = lmat.y.x * rmat.x.w + lmat.y.y * rmat.y.w + lmat.y.z * rmat.z.w + lmat.y.w * rmat.w.w; 
+
+    tmp.z.x = lmat.z.x * rmat.x.x + lmat.z.y * rmat.y.x + lmat.z.z * rmat.z.x + lmat.z.w * rmat.w.x; 
+    tmp.z.y = lmat.z.x * rmat.x.y + lmat.z.y * rmat.y.y + lmat.z.z * rmat.z.y + lmat.z.w * rmat.w.y; 
+    tmp.z.z = lmat.z.x * rmat.x.z + lmat.z.y * rmat.y.z + lmat.z.z * rmat.z.z + lmat.z.w * rmat.w.z; 
+    tmp.z.w = lmat.z.x * rmat.x.w + lmat.z.y * rmat.y.w + lmat.z.z * rmat.z.w + lmat.z.w * rmat.w.w; 
+
+
+    tmp.w.x = lmat.w.x * rmat.x.x + lmat.w.y * rmat.y.x + lmat.w.z * rmat.z.x + lmat.w.w * rmat.w.x; 
+    tmp.w.y = lmat.w.x * rmat.x.y + lmat.w.y * rmat.y.y + lmat.w.z * rmat.z.y + lmat.w.w * rmat.w.y; 
+    tmp.w.z = lmat.w.x * rmat.x.z + lmat.w.y * rmat.y.z + lmat.w.z * rmat.z.z + lmat.w.w * rmat.w.z; 
+    tmp.w.w = lmat.w.x * rmat.x.w + lmat.w.y * rmat.y.w + lmat.w.z * rmat.z.w + lmat.w.w * rmat.w.w; 
+
+    lmat = tmp;
+
+}
+
+
+void m4f4::translate(f3 transl){
+
+    m4f4 tranls_matrix = new_translation_matrix(transl);
+
+    mat_mul(*this, tranls_matrix);
+
+}
+
+void m4f4::operator=(m4f4& rhs){
+    x.x = rhs.x.x;
+    x.y = rhs.x.y;
+    x.z = rhs.x.z;
+    x.w = rhs.x.w;
+
+    y.x = rhs.y.x;
+    y.y = rhs.y.y;
+    y.z = rhs.y.z;
+    y.w = rhs.y.w;
+
+    z.x = rhs.z.x;
+    z.y = rhs.z.y;
+    z.z = rhs.z.z;
+    z.w = rhs.z.w;
+
+    w.x = rhs.w.x;
+    w.y = rhs.w.y;
+    w.z = rhs.w.z;
+    w.w = rhs.w.w;
+}
+
+}

@@ -4,7 +4,7 @@
 #include <string>
 
 
-namespace xpcube {
+namespace xprubik {
 
 /** Verifies the XP_ROOT_DIR. Returns false on failed verification. */
 bool fs_init();

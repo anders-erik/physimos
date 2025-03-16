@@ -73,12 +73,12 @@
             "name": "XP (gdb)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/xp/cube/bin/cube.bin",
+            "program": "${workspaceFolder}/xp/rubik/bin/rubik.bin",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [
-                { "name": "XP_ROOT_DIR", "value": "${workspaceFolder}/xp/cube" }
+                { "name": "XP_ROOT_DIR", "value": "${workspaceFolder}/xp/rubik" }
             ],
             "externalConsole": false,
             "MIMode": "gdb",

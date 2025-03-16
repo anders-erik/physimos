@@ -6,8 +6,16 @@
 
 #include "gpu.hh"
 
-namespace xpcube {
 
+
+namespace xprubik {
+
+
+struct Transform {
+    f3 pos;
+    f3 rot;
+    m4f4 matrix;
+};
 
 struct TriangleFaceIndeces {
     int v0;
@@ -36,6 +44,8 @@ struct RenderContextModel {
 
 
 struct Model {
+    Transform transform;
+
     Mesh mesh;
 
     RenderContextModel rendering_context;
@@ -45,8 +55,13 @@ struct Model {
 struct RendererModel {
     Shader renderer_program = Shader::Model;
 
+    unsigned int transform_location;
+    unsigned int view_location;
+    unsigned int perspective_location;
+
     void init();
     void create_render_context(Model& model);
+    void set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat);
     void render(Model& model);
 };
 

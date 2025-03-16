@@ -1,6 +1,6 @@
 #pragma once
 
-namespace xpcube {
+namespace xprubik {
 
 struct InputState {
     bool esc = false;

@@ -8,7 +8,7 @@
 
 #include "gpu.hh"
 
-namespace xpcube {
+namespace xprubik {
 
 unsigned int program_model;
 
@@ -117,6 +117,22 @@ void gpu_use_program(Shader shader_enum){
             break;
     }
     
+}
+
+unsigned int gpu_get_program(Shader shader_enum){
+    unsigned int program;
+
+    switch (shader_enum){
+
+        case Shader::Model:
+            program = program_model;
+            break;
+        
+        default:
+            break;
+    }
+
+    return program;
 }
 
 

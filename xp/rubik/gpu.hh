@@ -1,6 +1,6 @@
 #pragma once
 
-namespace xpcube {
+namespace xprubik {
 
 enum class Shader {
     Model,
@@ -17,6 +17,7 @@ bool gpu_shader_link_check(unsigned int program);
 bool gpu_shader_compile_check(unsigned int program);
 
 void gpu_use_program(Shader shader_enum);
+unsigned int gpu_get_program(Shader shader_enum);
 
 
 }

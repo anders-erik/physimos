@@ -1,0 +1,65 @@
+
+#pragma once
+
+namespace xprubik {
+
+enum class Axis {
+    x,
+    y,
+    z,
+};
+
+struct f3 {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+
+
+    f3(float x, float y, float z) : x {z}, y {y}, z {z} {}; 
+    f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
+    // f3() : x {0.0f}, y {0.0f}, z {0.0f} {}; 
+    f3() = default;
+};
+
+struct f4 {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    float w = 1.0f;
+
+
+    f4(float x, float y, float z, float w) : x {x}, y {y}, z {z}, w {w} {}; 
+    f4(float x, float y, float z) : x {x}, y {y}, z {z}, w {1.0f} {}; 
+    f4(float xyz) : x {xyz}, y {xyz}, z {xyz}, w {1.0f} {}; 
+    f4(f3 _f3) : x {_f3.x}, y {_f3.y}, z {_f3.z}, w {1.0f} {}; 
+    // f4() : x {0.0f}, y {0.0f}, z {0.0f}, w {1.0f} {}; 
+    f4() = default;
+};
+
+
+struct m4f4 {
+    f4 x;
+    f4 y;
+    f4 z;
+    f4 w;
+
+    void operator=(m4f4& rhs);
+
+    void translate(f3 transl);
+
+    m4f4() : 
+        x { f4(1.0f, 0.0f, 0.0f, 0.0f) }, 
+        y { f4(0.0f, 1.0f, 0.0f, 0.0f) }, 
+        z { f4(0.0f, 0.0f, 1.0f, 0.0f) }, 
+        w { f4(0.0f, 0.0f, 0.0f, 1.0f) } {};
+    
+};
+
+// Create
+m4f4 new_translation_matrix(f3 transl);
+// m4f4 rotation_mat(float angle, Axis axis);
+
+// Operations
+void mat_mul(m4f4& lmat, m4f4& rmat);
+
+}

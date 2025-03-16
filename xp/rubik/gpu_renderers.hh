@@ -2,7 +2,7 @@
 
 #include "gpu.hh"
 
-namespace xpcube {
+namespace xprubik {
 
 // struct RenderContextModel {
 //     unsigned int vao;

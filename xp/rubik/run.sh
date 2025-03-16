@@ -6,4 +6,4 @@ CURR_DIR=$(pwd)
 BIN_DIR=$CURR_DIR/bin/
 
 
-$BIN_DIR/cube.bin
+$BIN_DIR/rubik.bin

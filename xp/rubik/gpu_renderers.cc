@@ -9,7 +9,7 @@
 #include "gpu.hh"
 #include "gpu_renderers.hh"
 
-namespace xpcube {
+namespace xprubik {
 
 // unsigned int program_model;
 

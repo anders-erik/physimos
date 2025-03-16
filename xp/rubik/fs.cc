@@ -10,7 +10,7 @@
 using namespace std;
 using namespace std::filesystem;
 
-namespace xpcube {
+namespace xprubik {
 
 path ROOT_DIR;
 

@@ -4,7 +4,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-namespace xpcube {
+namespace xprubik {
 
 GLFWwindow* window = NULL;
 
