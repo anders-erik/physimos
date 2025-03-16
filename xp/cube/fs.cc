@@ -10,6 +10,8 @@
 using namespace std;
 using namespace std::filesystem;
 
+namespace xpcube {
+
 path ROOT_DIR;
 
 bool fs_init(){
@@ -42,3 +44,4 @@ std::string cat(std::string path_str){
 }
 
 
+}

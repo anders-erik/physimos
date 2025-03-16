@@ -1,12 +1,10 @@
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
-
-#include <iostream>
 
 #include "window.hh"
 #include "gpu.hh"
 #include "fs.hh"
+#include "scene.hh"
 
+using namespace xpcube;
 
 
 int main(){
@@ -17,30 +15,31 @@ int main(){
     bool window_ok = window_init();
     if(!window_ok) return 1;
 
+    bool gpu_ok = gpu_init();
+    if(!gpu_ok) return 1;
+
+    bool scene_ok = scene_init();
+    if(!scene_ok) return 1;
 
     
-    bool build_ok = gpu_build_vert_frag_program(Shader::Model);
-    if(!build_ok) exit(1);
-
-    // std::cout << "Hello cube"  << std::endl;
-    
-    gpu_use_program(Shader::Model);
-    // glUseProgram(program);
+    // gpu_use_program(Shader::Model);
 
     
     
 
     while (!window_should_close())
-    {   
+    {
+
         window_new_frame();
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
         InputState input_state = window_get_input();
-
-
         if(input_state.esc)
             window_set_close();
+
+
+        // gpu_draw_triangle_moodel_shader();
+
+        scene_render();
 
         window_end_of_frame();
     }
@@ -48,5 +47,4 @@ int main(){
 
 
 }
-
 

@@ -4,6 +4,8 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+namespace xpcube {
+
 GLFWwindow* window = NULL;
 
 void framebuffer_callback(GLFWwindow* _window, int _width, int _height){
@@ -56,4 +58,7 @@ void window_set_close(){
 }
 bool window_should_close(){
     return glfwWindowShouldClose(window);
+}
+
+
 }

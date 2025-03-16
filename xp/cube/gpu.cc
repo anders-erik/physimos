@@ -8,12 +8,26 @@
 
 #include "gpu.hh"
 
-
+namespace xpcube {
 
 unsigned int program_model;
 
 
+bool gpu_init(){
 
+    bool build_ok = gpu_build_vert_frag_program(Shader::Model);
+    if(!build_ok) return false;
+
+
+    return true;
+}
+
+
+
+void gpu_draw_triangle_moodel_shader(){
+    gpu_use_program(Shader::Model);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}
 
 bool gpu_shader_compile_check(unsigned int shader){
     int shader_success;
@@ -44,10 +58,22 @@ bool gpu_shader_link_check(unsigned int program){
 
 unsigned int gpu_build_vert_frag_program(Shader shader_enum){
 
-    std::string vert = cat("shaders/vert.gl");
-    const char* vert_c = vert.c_str();
+    std::string vert;
+    std::string frag;
 
-    std::string frag = cat("shaders/frag.gl");
+    switch (shader_enum)
+    {
+        case Shader::Model:
+            vert = cat("shaders/model_vert.glsl");
+            frag = cat("shaders/model_frag.glsl");
+            break;
+        
+        default:
+            break;
+    }
+
+
+    const char* vert_c = vert.c_str();
     const char* frag_c = frag.c_str();
     
     
@@ -75,7 +101,6 @@ unsigned int gpu_build_vert_frag_program(Shader shader_enum){
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
-    std::cout <<  "asdf" << std::endl;
 
     return build_ok;
 }
@@ -92,4 +117,7 @@ void gpu_use_program(Shader shader_enum){
             break;
     }
     
+}
+
+
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+namespace xpcube {
 
 struct InputState {
     bool esc = false;
@@ -14,3 +15,5 @@ InputState window_get_input();
 
 void window_set_close();
 bool window_should_close();
+
+}
