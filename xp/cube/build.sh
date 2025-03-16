@@ -10,8 +10,8 @@ mkdir -p $BIN_DIR
 # NOTE: This should probably be copied once as an archive?
 cp ../../extern/glad/src/glad.c ./bin/glad.c
 
-SOURCES="main.cc bin/glad.c"
-INCLUDE_DIRS="-I../../extern/glad/include -I../../extern/GLFW/include"
+SOURCES="main.cc window.cc gpu.cc fs.cc bin/glad.c"
+INCLUDE_DIRS="-I. -I../../extern/glad/include -I../../extern/GLFW/include"
 LIB_DIRS="-L../../extern/GLFW/lib"
 
 g++ -Wall -g $INCLUDE_DIRS $SOURCES -o $BIN_DIR/cube.bin $LIB_DIRS -lglfw3
@@ -23,5 +23,6 @@ if [ ! $? -eq 0 ]; then
     exit 1
 fi
 
+exit 0
 
 $BIN_DIR/cube.bin

@@ -168,7 +168,16 @@
         {
             "label": "XP - build and run",
             "type": "shell",
-            "command": "cd xp/cube && ./build_run.sh",
+            "command": "cd xp/cube && XP_ROOT_DIR=${workspaceFolder}/xp/cube ./run.sh",
+            "problemMatcher": [
+                "$gcc",
+            ],
+            "dependsOn": "XP - build"
+        },
+        {
+            "label": "XP - build",
+            "type": "shell",
+            "command": "cd xp/cube && ./build.sh",
             "problemMatcher": [
                 "$gcc"
             ],

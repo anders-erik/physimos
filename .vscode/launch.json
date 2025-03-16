@@ -68,6 +68,34 @@
             "showDisplayString": true,
             // Optional, you can use if you want it to build before launching.
             // "preLaunchTask": "build"
-        }
+        },
+        {
+            "name": "XP (gdb)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/xp/cube/bin/cube.bin",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [
+                { "name": "XP_ROOT_DIR", "value": "${workspaceFolder}/xp/cube" }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "XP - build",
+
+        },
     ]
 }
