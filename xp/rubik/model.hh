@@ -49,6 +49,8 @@ struct Model {
     Mesh mesh;
 
     RenderContextModel rendering_context;
+
+    void set_transform_matrix();
 };
 
 

@@ -21,13 +21,22 @@ m4f4 m4f4_create_rotation_x(float angle){
     m4f4 matrix;
 
     matrix.y.y = cosf(angle);
-    matrix.y.z = sinf(angle);
-    matrix.z.y = -sinf(angle);
+    matrix.y.z = -sinf(angle);
+    matrix.z.y = sinf(angle);
     matrix.z.z = cosf(angle);
 
     return matrix;
 }
+m4f4 m4f4_create_rotation_y(float angle){
+    m4f4 matrix;
 
+    matrix.x.x = cosf(angle);
+    matrix.x.z = sinf(angle);
+    matrix.z.x = -sinf(angle);
+    matrix.z.z = cosf(angle);
+
+    return matrix;
+}
 m4f4 m4f4_create_rotation_z(float angle){
     m4f4 matrix;
 
@@ -81,6 +90,11 @@ void m4f4::rotate_x(float angle){
     m4f4 rot_x_matrix = m4f4_create_rotation_x(angle);
 
     mat_mul(*this, rot_x_matrix);
+}
+void m4f4::rotate_y(float angle){
+    m4f4 rot_y_matrix = m4f4_create_rotation_y(angle);
+
+    mat_mul(*this, rot_y_matrix);
 }
 void m4f4::rotate_z(float angle){
     m4f4 rot_z_matrix = m4f4_create_rotation_z(angle);

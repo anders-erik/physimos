@@ -75,6 +75,16 @@ void RendererModel::render(Model& model){
 }
 
 
+void Model::set_transform_matrix(){
+    m4f4 identity;
+
+    transform.matrix = identity;
+
+    transform.matrix.translate(transform.pos);
+    transform.matrix.rotate_z(transform.rot.z);
+    transform.matrix.rotate_x(transform.rot.x);
+}
+
 void model_add_cube_mesh(Mesh& mesh){
 
     float cube_size = 1.0f;

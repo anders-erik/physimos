@@ -53,6 +53,7 @@ struct m4f4 {
 
     void translate(f3 transl);
     void rotate_x(float angle);
+    void rotate_y(float angle);
     void rotate_z(float angle);
 
     void perspective(float fov, float width, float height, float zn, float zf);
@@ -68,6 +69,7 @@ struct m4f4 {
 // Create
 m4f4 m4f4_create_translation(f3 transl);
 m4f4 m4f4_create_rotation_x(float angle);
+m4f4 m4f4_create_rotation_y(float angle);
 m4f4 m4f4_create_rotation_z(float angle);
 // m4f4 rotation_mat(float angle, Axis axis);
 

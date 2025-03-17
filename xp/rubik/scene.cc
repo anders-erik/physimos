@@ -20,14 +20,16 @@ void Camera::set_matrices(){
     m4f4 indentity;
 
     view_mat = indentity;
+
+    view_mat.rotate_x(-camera.transform.rot.x);
+    view_mat.rotate_y(-camera.transform.rot.y);
+    // view_mat.rotate_z(camera.transform.rot.z);
+
     f3 negative_camera_pos;
     negative_camera_pos.x = -camera.transform.pos.x;
     negative_camera_pos.y = -camera.transform.pos.y;
     negative_camera_pos.z = -camera.transform.pos.z;
     view_mat.translate(negative_camera_pos);
-
-    view_mat.rotate_z(-camera.transform.rot.z);
-    view_mat.rotate_x(-camera.transform.rot.x);
 
     
     perspective_mat = indentity;
@@ -52,10 +54,12 @@ bool scene_init(){
     renderer_axes.init();
 
     // camera.transform.rot.z = 0.5;
+    camera.transform.rot.x = 0.0;
+    camera.transform.rot.y = 0.0;
     camera.transform.rot.z = 0.0;
 
-    camera.transform.pos.x = 0.0;
-    camera.transform.pos.y = 0.0;
+    camera.transform.pos.x = 2.0;
+    camera.transform.pos.y = 2.0;
     camera.transform.pos.z = 4.0f;
 
 
@@ -73,20 +77,37 @@ bool scene_init(){
 void scene_handle_input(InputState input_state){
     
     // Mouse
-    float pan_rot_scale = 0.1f;
-    camera.transform.rot.x += pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y;
-    camera.transform.rot.z += pan_rot_scale * (float) input_state.mouse.middle_delta_accum.x;
+    float pan_rot_scale = 0.005f;
+    camera.transform.rot.x -= pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y;
+    camera.transform.rot.y += pan_rot_scale * (float) input_state.mouse.middle_delta_accum.x;
 
     camera.transform.pos.z -= input_state.scroll_delta;
+
+
+    // Cube
+    if(input_state.up)
+        cube.transform.rot.x += 0.05;
+    if(input_state.down)
+        cube.transform.rot.x -= 0.05;
+
+    if(input_state.left)
+        cube.transform.rot.y += 0.05;
+    if(input_state.right)
+        cube.transform.rot.y -= 0.05;
+        // cube.transform.rot.x = 
+    
 
 }
 
 void scene_update(){
 
+    // cube
+    cube.set_transform_matrix();
+
     // camera
     camera.set_matrices();
     renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
-    renderer_axes.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
+    renderer_axes.set_uniforms(cube.transform.matrix, camera.view_mat, camera.perspective_mat);
 
 
 }
@@ -94,6 +115,11 @@ void scene_update(){
 void scene_render(){
 
     renderer_model.render(cube);
+
+    m4f4 identity;
+    renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
+    renderer_axes.render();
+    renderer_axes.set_uniforms(cube.transform.matrix, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
 
 }
@@ -106,6 +132,7 @@ void RendererAxes::init(){
     unsigned int program = gpu_get_program(Shader::Axes);
     glUseProgram(program);
 
+    transform_location = glGetUniformLocation(program, "transform");
     view_location = glGetUniformLocation(program, "view");
     perspective_location = glGetUniformLocation(program, "perspective");
 
@@ -142,13 +169,14 @@ void RendererAxes::init(){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(AxesVertex), (void*) 0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(AxesVertex), (void*) sizeof(f3));
-
     glEnableVertexAttribArray(1);
 
 }
-void RendererAxes::set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat){
+void RendererAxes::set_uniforms(m4f4 transform_mat, m4f4 view_mat, m4f4 pers_mat){
 
     gpu_use_program(Shader::Axes);
+
+    glUniformMatrix4fv(transform_location, 1, GL_TRUE, (float*) &transform_mat);
     glUniformMatrix4fv(view_location, 1, GL_TRUE, (float*) &view_mat);
     glUniformMatrix4fv(perspective_location, 1, GL_TRUE, (float*) &pers_mat);
 

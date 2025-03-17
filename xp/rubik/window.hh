@@ -18,6 +18,11 @@ struct MouseState {
 struct InputState {
     bool esc = false;
 
+    bool up = false;
+    bool left = false;
+    bool down = false;
+    bool right = false;
+
     float scroll_delta = 0.0f;
 
     // Copies the authoritative state during creation

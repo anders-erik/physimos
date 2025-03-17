@@ -119,6 +119,18 @@ InputState window_get_input(){
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         input_state.esc = true;
 
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        input_state.up = true;
+    
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        input_state.left = true;
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        input_state.down = true;
+
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        input_state.right = true;
+
 
     return input_state;
 }

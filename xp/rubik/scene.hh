@@ -38,11 +38,12 @@ struct RendererAxes {
     unsigned int vao;
     unsigned int vbo;
 
+    unsigned int transform_location;
     unsigned int view_location;
     unsigned int perspective_location;
 
     void init();
-    void set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat);
+    void set_uniforms(m4f4 transform_mat, m4f4 view_mat, m4f4 pers_mat);
     void render();
 };
 
