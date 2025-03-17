@@ -18,6 +18,8 @@ struct MouseState {
 struct InputState {
     bool esc = false;
 
+    bool p = false;
+
     bool up = false;
     bool left = false;
     bool down = false;

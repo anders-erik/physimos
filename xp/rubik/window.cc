@@ -12,6 +12,8 @@ namespace xprubik {
 GLFWwindow* window = NULL;
 
 MouseState mouse_state;
+GLFWcursor* default_cursor;
+GLFWcursor* pan_cursor;
 
 void framebuffer_callback(GLFWwindow* _window, int _width, int _height){
     glViewport(0, 0, _width, _height);
@@ -25,12 +27,13 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
         if(action == GLFW_PRESS){
             // std::cout << "moddle press" << std::endl;
             mouse_state.middle_down = true;
-
+            
+            glfwSetCursor(window, pan_cursor);
         }
         else if (action == GLFW_RELEASE){
             // std::cout << "moddle rel" << std::endl;
             mouse_state.middle_down = false;
-
+            glfwSetCursor(window, default_cursor);
         }
 
         mouse_state.middle_delta_accum.x = 0.0;
@@ -80,6 +83,9 @@ bool window_init(){
     glfwSetCursorPosCallback(window, mouse_position_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    default_cursor = glfwCreateStandardCursor(GLFW_CURSOR_NORMAL);
+    pan_cursor = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
+
     return true;
 }
 void window_new_frame(){
@@ -118,6 +124,12 @@ InputState window_get_input(){
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         input_state.esc = true;
+
+
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+        input_state.p = true;
+
+
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         input_state.up = true;

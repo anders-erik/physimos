@@ -6,6 +6,17 @@
 namespace xprubik {
 
 
+void f3::matmul(m4f4 matrix){
+    f3 tmp;
+    tmp.x = x*matrix.x.x + y*matrix.x.y + z*matrix.x.z;
+    tmp.y = x*matrix.y.x + y*matrix.y.y + z*matrix.y.z;
+    tmp.z = x*matrix.z.x + y*matrix.z.y + z*matrix.z.z;
+
+    this->x = tmp.x;
+    this->y = tmp.y;
+    this->z = tmp.z;
+}
+
 m4f4 m4f4_create_translation(f3 transl){
     m4f4 matrix;
 

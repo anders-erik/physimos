@@ -5,6 +5,7 @@
 #include "math.hh"
 
 #include <iostream>
+#include <cmath>
 
 namespace xprubik {
 
@@ -23,13 +24,22 @@ void Camera::set_matrices(){
 
     view_mat.rotate_x(-camera.transform.rot.x);
     view_mat.rotate_y(-camera.transform.rot.y);
-    // view_mat.rotate_z(camera.transform.rot.z);
+    view_mat.rotate_z(camera.transform.rot.z);
 
     f3 negative_camera_pos;
     negative_camera_pos.x = -camera.transform.pos.x;
     negative_camera_pos.y = -camera.transform.pos.y;
     negative_camera_pos.z = -camera.transform.pos.z;
     view_mat.translate(negative_camera_pos);
+
+    m4f4 sanity_mat;
+    sanity_mat.x.x = 0.0f;
+    sanity_mat.x.z = -1.0f;
+    sanity_mat.y.y = 0.0f;
+    sanity_mat.y.x = -1.0f;
+    sanity_mat.z.z = 0.0f;
+    sanity_mat.z.y = 1.0f;
+    // mat_mul(view_mat, sanity_mat);
 
     
     perspective_mat = indentity;
@@ -44,8 +54,9 @@ void Camera::set_matrices(){
 }
 
 void scene_set_viewport_dims(int _width, int _height){
-    std::cout << _width << _height << std::endl;
-    
+    // std::cout << _width << _height << std::endl;
+    camera.width = (float) _width;
+    camera.height = (float) _height;
 }
 
 bool scene_init(){
@@ -54,13 +65,13 @@ bool scene_init(){
     renderer_axes.init();
 
     // camera.transform.rot.z = 0.5;
-    camera.transform.rot.x = 0.0;
-    camera.transform.rot.y = 0.0;
-    camera.transform.rot.z = 0.0;
+    camera.transform.rot.x =  1.3;
+    camera.transform.rot.y =  0.0;
+    camera.transform.rot.z = -0.75;
 
-    camera.transform.pos.x = 2.0;
-    camera.transform.pos.y = 2.0;
-    camera.transform.pos.z = 4.0f;
+    camera.transform.pos.x = -2.0;
+    camera.transform.pos.y = -2.0;
+    camera.transform.pos.z = 1.0f;
 
 
     model_add_cube_mesh(cube.mesh);
@@ -76,24 +87,70 @@ bool scene_init(){
 
 void scene_handle_input(InputState input_state){
     
-    // Mouse
-    float pan_rot_scale = 0.005f;
-    camera.transform.rot.x -= pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y;
-    camera.transform.rot.y += pan_rot_scale * (float) input_state.mouse.middle_delta_accum.x;
-
-    camera.transform.pos.z -= input_state.scroll_delta;
 
 
-    // Cube
+    // ORBIT CONTROLS
+
+    float pan_rot_scale = 0.002f;
+    // camera.transform.rot.x -= pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y;
+    // camera.transform.rot.z += pan_rot_scale * (float) input_state.mouse.middle_delta_accum.x;
+    // float vert_mult = 1.41;
+    float vert_mult = 2.0f;
+
+    // VERT ORBIT
+    // I've been playing around with values/+/- configurations here
+    float angle = atan2f(camera.transform.pos.y, camera.transform.pos.x);
+
+    // float x_cos = 
+    // Make sure that the rotation depends on the current x/y location!
+    // Only work when x=y<0
+    float xy_cam_norm_2 = camera.transform.pos.x*camera.transform.pos.x + camera.transform.pos.y*camera.transform.pos.y;
+    float xy_cam_norm = sqrtf(xy_cam_norm_2);
+    float x_cam_norm = camera.transform.pos.x / xy_cam_norm;
+    float y_cam_norm = camera.transform.pos.y / xy_cam_norm;
+
+    // Lock the orbit when going very close to vertical
+    if( xy_cam_norm > 0.1f ){
+        m4f4 rot_x_mat = m4f4_create_rotation_x( y_cam_norm * vert_mult * -pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y);
+        m4f4 rot_y_mat = m4f4_create_rotation_y( x_cam_norm * vert_mult *  pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y);
+        camera.transform.pos.matmul(rot_y_mat);
+        camera.transform.pos.matmul(rot_x_mat);
+        // LOOK AT
+        camera.transform.rot.x += pan_rot_scale * vert_mult * (float) input_state.mouse.middle_delta_accum.y;
+    }
+    // Z ORBIT -- GOOD
+    m4f4 rot_z_mat = m4f4_create_rotation_z(pan_rot_scale * 2.0f * (float) input_state.mouse.middle_delta_accum.x);
+    camera.transform.pos.matmul(rot_z_mat);
+    camera.transform.rot.z -= pan_rot_scale * 2.0f * (float) input_state.mouse.middle_delta_accum.x;
+
+
+    // SCROLL ZOOM
+    camera.transform.pos.x -= camera.transform.pos.x * 0.2 * input_state.scroll_delta;
+    camera.transform.pos.y -= camera.transform.pos.y * 0.2 * input_state.scroll_delta;
+    camera.transform.pos.z -= camera.transform.pos.z * 0.2 * input_state.scroll_delta;
+    
+    // PRINTS
+    if(input_state.p){
+        std::cout << "camera.transform.rot.x = " << camera.transform.rot.x << std::endl;
+        std::cout << "camera.transform.rot.y = " << camera.transform.rot.y << std::endl;
+        std::cout << "camera.transform.rot.z = " << camera.transform.rot.z << std::endl;
+        std::cout << "y_cam_norm = " << y_cam_norm << std::endl;
+        
+    }
+
+
+    // ARROW LOOK AROUND
     if(input_state.up)
-        cube.transform.rot.x += 0.05;
+        camera.transform.rot.x += 0.02f;
+        // cube.transform.rot.x += 0.05;
     if(input_state.down)
-        cube.transform.rot.x -= 0.05;
+        camera.transform.rot.x -= 0.02f;
+        // cube.transform.rot.x -= 0.05;
 
     if(input_state.left)
-        cube.transform.rot.y += 0.05;
+        camera.transform.rot.z += 0.02;
     if(input_state.right)
-        cube.transform.rot.y -= 0.05;
+        camera.transform.rot.z -= 0.02;
         // cube.transform.rot.x = 
     
 

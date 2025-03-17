@@ -3,6 +3,7 @@
 
 namespace xprubik {
 
+struct m4f4;
 
 struct PointD {
     double x = 0.0;
@@ -20,6 +21,7 @@ struct f3 {
     float y = 0.0f;
     float z = 0.0f;
 
+    void matmul(m4f4 matrix);
 
     f3(float x, float y, float z) : x {z}, y {y}, z {z} {}; 
     f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
