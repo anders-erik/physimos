@@ -11,12 +11,18 @@
 namespace xprubik {
 
 unsigned int program_model;
+unsigned int program_axes;
 
 
 bool gpu_init(){
 
-    bool build_ok = gpu_build_vert_frag_program(Shader::Model);
-    if(!build_ok) return false;
+    bool build_ok = false;
+
+    build_ok = gpu_build_vert_frag_program(Shader::Model);
+    if(!build_ok) return build_ok;
+
+    build_ok = gpu_build_vert_frag_program(Shader::Axes);
+    if(!build_ok) return build_ok;
 
 
     return true;
@@ -67,6 +73,11 @@ unsigned int gpu_build_vert_frag_program(Shader shader_enum){
             vert = cat("shaders/model_vert.glsl");
             frag = cat("shaders/model_frag.glsl");
             break;
+
+        case Shader::Axes:
+            vert = cat("shaders/axes_vert.glsl");
+            frag = cat("shaders/axes_frag.glsl");
+            break;
         
         default:
             break;
@@ -91,11 +102,29 @@ unsigned int gpu_build_vert_frag_program(Shader shader_enum){
     build_ok = gpu_shader_compile_check(frag_shader);
     if(!build_ok) return build_ok;
 
-    program_model = glCreateProgram();
-    glAttachShader(program_model, vert_shader);
-    glAttachShader(program_model, frag_shader);
-    glLinkProgram(program_model);
-    build_ok = gpu_shader_link_check(program_model);
+    unsigned int program;
+
+    switch (shader_enum)
+    {
+        case Shader::Model:
+            program_model = glCreateProgram();
+            program = program_model;
+            break;
+
+        case Shader::Axes:
+            program_axes = glCreateProgram();
+            program = program_axes;
+            break;
+        
+        default:
+            break;
+    }
+
+
+    glAttachShader(program, vert_shader);
+    glAttachShader(program, frag_shader);
+    glLinkProgram(program);
+    build_ok = gpu_shader_link_check(program);
     if(!build_ok) return build_ok;
 
 
@@ -113,6 +142,10 @@ void gpu_use_program(Shader shader_enum){
             glUseProgram(program_model);
             break;
         
+        case Shader::Axes:
+            glUseProgram(program_axes);
+            break;
+        
         default:
             break;
     }
@@ -126,6 +159,10 @@ unsigned int gpu_get_program(Shader shader_enum){
 
         case Shader::Model:
             program = program_model;
+            break;
+
+        case Shader::Axes:
+            program = program_axes;
             break;
         
         default:

@@ -39,6 +39,8 @@ int main(){
 
         // gpu_draw_triangle_moodel_shader();
 
+        scene_handle_input(input_state);
+        scene_update();
         scene_render();
 
         window_end_of_frame();

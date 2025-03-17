@@ -1,15 +1,40 @@
 
 #include "math.hh"
 
+#include <cmath>
+
 namespace xprubik {
 
 
-m4f4 new_translation_matrix(f3 transl){
+m4f4 m4f4_create_translation(f3 transl){
     m4f4 matrix;
 
     matrix.x.w = transl.x;
     matrix.y.w = transl.y;
     matrix.z.w = transl.z;
+
+    return matrix;
+}
+
+
+m4f4 m4f4_create_rotation_x(float angle){
+    m4f4 matrix;
+
+    matrix.y.y = cosf(angle);
+    matrix.y.z = sinf(angle);
+    matrix.z.y = -sinf(angle);
+    matrix.z.z = cosf(angle);
+
+    return matrix;
+}
+
+m4f4 m4f4_create_rotation_z(float angle){
+    m4f4 matrix;
+
+    matrix.x.x = cosf(angle);
+    matrix.x.y = sinf(angle);
+    matrix.y.x = -sinf(angle);
+    matrix.y.y = cosf(angle);
 
     return matrix;
 }
@@ -33,7 +58,6 @@ void mat_mul(m4f4& lmat, m4f4& rmat){
     tmp.z.z = lmat.z.x * rmat.x.z + lmat.z.y * rmat.y.z + lmat.z.z * rmat.z.z + lmat.z.w * rmat.w.z; 
     tmp.z.w = lmat.z.x * rmat.x.w + lmat.z.y * rmat.y.w + lmat.z.z * rmat.z.w + lmat.z.w * rmat.w.w; 
 
-
     tmp.w.x = lmat.w.x * rmat.x.x + lmat.w.y * rmat.y.x + lmat.w.z * rmat.z.x + lmat.w.w * rmat.w.x; 
     tmp.w.y = lmat.w.x * rmat.x.y + lmat.w.y * rmat.y.y + lmat.w.z * rmat.z.y + lmat.w.w * rmat.w.y; 
     tmp.w.z = lmat.w.x * rmat.x.z + lmat.w.y * rmat.y.z + lmat.w.z * rmat.z.z + lmat.w.w * rmat.w.z; 
@@ -46,13 +70,40 @@ void mat_mul(m4f4& lmat, m4f4& rmat){
 
 void m4f4::translate(f3 transl){
 
-    m4f4 tranls_matrix = new_translation_matrix(transl);
+    m4f4 tranls_matrix = m4f4_create_translation(transl);
 
     mat_mul(*this, tranls_matrix);
 
 }
 
-void m4f4::operator=(m4f4& rhs){
+
+void m4f4::rotate_x(float angle){
+    m4f4 rot_x_matrix = m4f4_create_rotation_x(angle);
+
+    mat_mul(*this, rot_x_matrix);
+}
+void m4f4::rotate_z(float angle){
+    m4f4 rot_z_matrix = m4f4_create_rotation_z(angle);
+
+    mat_mul(*this, rot_z_matrix);
+}
+
+
+void m4f4::perspective(float fov, float width, float height, float zn, float zf){
+    float aspect = width / height;
+    float tanHalfFov = tanf(fov / 2.0f);
+
+    x.x = 1 / (aspect * tanHalfFov);
+    y.y = 1 / tanHalfFov;
+    z.z = - (zf + zn) / (zf - zn);
+    w.w = 0.0f;
+
+    z.w = - (2.0f * zf * zn) / (zf - zn);
+    w.z = - 1.0f;
+
+}
+
+m4f4& m4f4::operator=(m4f4& rhs){
     x.x = rhs.x.x;
     x.y = rhs.x.y;
     x.z = rhs.x.z;
@@ -72,6 +123,8 @@ void m4f4::operator=(m4f4& rhs){
     w.y = rhs.w.y;
     w.z = rhs.w.z;
     w.w = rhs.w.w;
+
+    return *this;
 }
 
 }

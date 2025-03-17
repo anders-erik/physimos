@@ -3,6 +3,12 @@
 
 namespace xprubik {
 
+
+struct PointD {
+    double x = 0.0;
+    double y = 0.0;
+};
+
 enum class Axis {
     x,
     y,
@@ -43,9 +49,13 @@ struct m4f4 {
     f4 z;
     f4 w;
 
-    void operator=(m4f4& rhs);
+    m4f4& operator=(m4f4& rhs);
 
     void translate(f3 transl);
+    void rotate_x(float angle);
+    void rotate_z(float angle);
+
+    void perspective(float fov, float width, float height, float zn, float zf);
 
     m4f4() : 
         x { f4(1.0f, 0.0f, 0.0f, 0.0f) }, 
@@ -56,7 +66,9 @@ struct m4f4 {
 };
 
 // Create
-m4f4 new_translation_matrix(f3 transl);
+m4f4 m4f4_create_translation(f3 transl);
+m4f4 m4f4_create_rotation_x(float angle);
+m4f4 m4f4_create_rotation_z(float angle);
 // m4f4 rotation_mat(float angle, Axis axis);
 
 // Operations

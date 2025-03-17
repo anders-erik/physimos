@@ -69,8 +69,7 @@ struct RendererModel {
 
 
 
-
-bool scene_init();
+void model_add_cube_mesh(Mesh& mesh);
 
 
 }

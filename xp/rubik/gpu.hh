@@ -4,6 +4,7 @@ namespace xprubik {
 
 enum class Shader {
     Model,
+    Axes,
 };
 
 bool gpu_init();
