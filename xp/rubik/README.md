@@ -11,3 +11,8 @@
 - |x| Camera Controls
 - |x| LUI
 
+
+## TODO:
+
+- I need a better modeling and rendering pipeline for phong shading exploration. I'll start building an editor for now.
+

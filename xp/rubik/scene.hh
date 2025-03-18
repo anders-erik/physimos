@@ -12,17 +12,23 @@ namespace xprubik {
 
 struct GLFWWindow;
 
-struct Camera {
+
+struct CameraOrbital {
     Transform transform;
     
     m4f4 view_mat;
     m4f4 perspective_mat;
+
 
     float fov = 0.785f;
     float width = 600.0f;
     float height = 400.0f;
     float zn = 0.1f;
     float zf = 100.0f;
+
+    void orbit_z(float orbit_z_delta);
+    void orbit_xy(float xy_delta);
+    void zoom(float zoom_delta);
 
     void set_matrices();
 };

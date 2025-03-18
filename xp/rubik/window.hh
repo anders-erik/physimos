@@ -20,6 +20,8 @@ struct InputState {
 
     bool p = false;
 
+    bool f = false;
+
     bool up = false;
     bool left = false;
     bool down = false;

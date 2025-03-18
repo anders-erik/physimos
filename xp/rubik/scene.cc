@@ -12,12 +12,13 @@ namespace xprubik {
 RendererModel renderer_model;
 RendererAxes renderer_axes;
 
-Camera camera;
+CameraOrbital camera;
 
-Model cube;
+Model cubie_1;
+Model cubie_2;
 
 
-void Camera::set_matrices(){
+void CameraOrbital::set_matrices(){
     m4f4 indentity;
 
     view_mat = indentity;
@@ -53,6 +54,42 @@ void Camera::set_matrices(){
 
 }
 
+
+void CameraOrbital::orbit_z(float orbit_z_delta){
+
+    // Z ORBIT -- GOOD
+    m4f4 rot_z_mat = m4f4_create_rotation_z(orbit_z_delta);
+    transform.pos.matmul(rot_z_mat);
+    transform.rot.z -= orbit_z_delta;
+
+}
+void CameraOrbital::orbit_xy(float xy_delta){
+
+    float xy_cam_norm_2 = transform.pos.x*transform.pos.x + transform.pos.y*transform.pos.y;
+    float xy_cam_norm = sqrtf(xy_cam_norm_2);
+    float x_cam_norm = transform.pos.x / xy_cam_norm;
+    float y_cam_norm = transform.pos.y / xy_cam_norm;
+
+    // Lock the orbit when going very close to vertical
+    if( xy_cam_norm > 0.1f ){
+        m4f4 rot_x_mat = m4f4_create_rotation_x( y_cam_norm * -xy_delta);
+        m4f4 rot_y_mat = m4f4_create_rotation_y( x_cam_norm * xy_delta);
+        transform.pos.matmul(rot_y_mat);
+        transform.pos.matmul(rot_x_mat);
+        // LOOK AT
+        transform.rot.x += xy_delta;
+    }
+
+}
+void CameraOrbital::zoom(float zoom_delta){
+
+    transform.pos.x -= transform.pos.x * 0.2 * zoom_delta;
+    transform.pos.y -= transform.pos.y * 0.2 * zoom_delta;
+    transform.pos.z -= transform.pos.z * 0.2 * zoom_delta;
+
+}
+
+
 void scene_set_viewport_dims(int _width, int _height){
     // std::cout << _width << _height << std::endl;
     camera.width = (float) _width;
@@ -74,12 +111,17 @@ bool scene_init(){
     camera.transform.pos.z = 2.0f;
 
 
-    model_add_cube_mesh(cube.mesh);
+    model_add_cube_mesh(cubie_1.mesh);
+    cubie_1.transform.pos.x = 1.0f;
+    model_add_cube_mesh(cubie_2.mesh);
+    cubie_2.transform.pos.x = 1.0f;
+    cubie_2.transform.pos.y = 1.0f;
 
     
 
 
-    renderer_model.create_render_context(cube);
+    renderer_model.create_render_context(cubie_1);
+    renderer_model.create_render_context(cubie_2);
     
 
     return true;
@@ -91,68 +133,58 @@ void scene_handle_input(InputState input_state){
 
     // ORBIT CONTROLS
 
-    float pan_rot_scale = 0.002f;
+
     // camera.transform.rot.x -= pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y;
     // camera.transform.rot.z += pan_rot_scale * (float) input_state.mouse.middle_delta_accum.x;
     // float vert_mult = 1.41;
-    float vert_mult = 2.0f;
+    // float vert_mult = 2.0f;
 
-    // VERT ORBIT
     // I've been playing around with values/+/- configurations here
-    float angle = atan2f(camera.transform.pos.y, camera.transform.pos.x);
+    // float angle = atan2f(camera.transform.pos.y, camera.transform.pos.x);
 
-    // float x_cos = 
-    // Make sure that the rotation depends on the current x/y location!
-    // Only work when x=y<0
-    float xy_cam_norm_2 = camera.transform.pos.x*camera.transform.pos.x + camera.transform.pos.y*camera.transform.pos.y;
-    float xy_cam_norm = sqrtf(xy_cam_norm_2);
-    float x_cam_norm = camera.transform.pos.x / xy_cam_norm;
-    float y_cam_norm = camera.transform.pos.y / xy_cam_norm;
+ 
+    float orbit_xy_scale = 0.004f;
+    float orbit_z_scale = 0.008f;
 
-    // Lock the orbit when going very close to vertical
-    if( xy_cam_norm > 0.1f ){
-        m4f4 rot_x_mat = m4f4_create_rotation_x( y_cam_norm * vert_mult * -pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y);
-        m4f4 rot_y_mat = m4f4_create_rotation_y( x_cam_norm * vert_mult *  pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y);
-        camera.transform.pos.matmul(rot_y_mat);
-        camera.transform.pos.matmul(rot_x_mat);
-        // LOOK AT
-        camera.transform.rot.x += pan_rot_scale * vert_mult * (float) input_state.mouse.middle_delta_accum.y;
-    }
-    // Z ORBIT -- GOOD
-    m4f4 rot_z_mat = m4f4_create_rotation_z(pan_rot_scale * 4.0f * (float) input_state.mouse.middle_delta_accum.x);
-    camera.transform.pos.matmul(rot_z_mat);
-    camera.transform.rot.z -= pan_rot_scale * 4.0f * (float) input_state.mouse.middle_delta_accum.x;
-
-
-    // SCROLL ZOOM
-    camera.transform.pos.x -= camera.transform.pos.x * 0.2 * input_state.scroll_delta;
-    camera.transform.pos.y -= camera.transform.pos.y * 0.2 * input_state.scroll_delta;
-    camera.transform.pos.z -= camera.transform.pos.z * 0.2 * input_state.scroll_delta;
+    camera.orbit_xy(orbit_xy_scale * (float) input_state.mouse.middle_delta_accum.y);
+    camera.orbit_z( orbit_z_scale * (float) input_state.mouse.middle_delta_accum.x);
+    camera.zoom(input_state.scroll_delta);
     
+
     // PRINTS
     if(input_state.p){
         std::cout << "camera.transform.rot.x = " << camera.transform.rot.x << std::endl;
         std::cout << "camera.transform.rot.y = " << camera.transform.rot.y << std::endl;
         std::cout << "camera.transform.rot.z = " << camera.transform.rot.z << std::endl;
-        std::cout << "xy_cam_norm = " << xy_cam_norm << std::endl;
+        // std::cout << "xy_cam_norm = " << xy_cam_norm << std::endl;
         
     }
 
 
-    // ARROW LOOK AROUND
-    if(input_state.up)
-        // camera.transform.rot.x += 0.02f;
-        cube.transform.rot.x += 0.05;
-    if(input_state.down)
-        // camera.transform.rot.x -= 0.02f;
-        cube.transform.rot.x -= 0.05;
+    // Permute
+    if(input_state.f){
+        cubie_1.transform.rot.x += 0.1;
+        cubie_2.transform.rot.x += 0.1;
+    }
 
+
+    // ARROW LOOK AROUND
+    if(input_state.up){
+        // camera.transform.rot.x += 0.02f;
+        cubie_1.transform.rot.x += 0.05;
+        cubie_2.transform.rot.x += 0.05;
+    }
+    if(input_state.down){
+        // camera.transform.rot.x -= 0.02f;
+        cubie_1.transform.rot.x -= 0.05;
+        cubie_2.transform.rot.x -= 0.05;
+    }
     if(input_state.left)
         // camera.transform.rot.z += 0.02;
-        cube.transform.rot.z += 0.05;
+        cubie_1.transform.rot.z += 0.05;
     if(input_state.right)
         // camera.transform.rot.z -= 0.02;
-        cube.transform.rot.z -= 0.05;
+        cubie_1.transform.rot.z -= 0.05;
         // cube.transform.rot.x = 
     
 
@@ -161,12 +193,13 @@ void scene_handle_input(InputState input_state){
 void scene_update(){
 
     // cube
-    cube.set_transform_matrix();
+    cubie_1.set_transform_matrix();
+    cubie_2.set_transform_matrix();
 
     // camera
     camera.set_matrices();
     renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
-    renderer_axes.set_uniforms(cube.transform.matrix, camera.view_mat, camera.perspective_mat);
+    renderer_axes.set_uniforms(cubie_1.transform.matrix, camera.view_mat, camera.perspective_mat);
 
 
 }
@@ -177,10 +210,11 @@ void scene_render(){
     m4f4 identity;
     renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
-    renderer_axes.set_uniforms(cube.transform.matrix, camera.view_mat, camera.perspective_mat);
+    renderer_axes.set_uniforms(cubie_1.transform.matrix, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
 
-    renderer_model.render(cube);
+    renderer_model.render(cubie_1);
+    renderer_model.render(cubie_2);
 }
 
 

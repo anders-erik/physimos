@@ -4,6 +4,7 @@
 
 #include "glad/glad.h"
 #include <iostream>
+#include <cmath>
 
 namespace xprubik {
 
@@ -42,6 +43,12 @@ void RendererModel::create_render_context(Model& model){
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0 );
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(f3)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(f3)*2));
+    glEnableVertexAttribArray(2);
 
 }
 
@@ -104,6 +111,9 @@ void model_add_cube_mesh(Mesh& mesh){
     v00.pos.x = -cube_half;
     v00.pos.y = -cube_half;
     v00.pos.z = -cube_half;
+    // v00.color.x = 0.0f;
+    // v00.color.y = 0.0f;
+    // v00.color.z = 0.0f;
     mesh.vertices.push_back(v00);
 
     Vertex v01;
@@ -151,6 +161,19 @@ void model_add_cube_mesh(Mesh& mesh){
     v13.pos.z =  cube_half;
     mesh.vertices.push_back(v13);
 
+    // Color & Normals
+    for(Vertex& vert : mesh.vertices){
+        vert.color.x = 0.5f;
+        vert.color.y = 0.5f;
+        vert.color.z = 0.5f;
+
+        // extend vert position from center
+        float len_2 = vert.pos.x * vert.pos.x + vert.pos.y * vert.pos.y + vert.pos.z * vert.pos.z;
+        float len = sqrtf(len_2);
+        vert.normal.x = vert.pos.x / len;
+        vert.normal.y = vert.pos.y / len;
+        vert.normal.z = vert.pos.z / len;
+    }
 
     // Front
     mesh.faces.emplace_back(TriangleFaceIndeces{1, 5, 2});

@@ -25,9 +25,11 @@ struct TriangleFaceIndeces {
 
 typedef struct Vertex {
     f3 pos;
+    f3 color;
+    f3 normal;
 
     Vertex(f3 pos) : pos {pos} {};
-    Vertex() : pos {f3()} {};
+    Vertex() : pos {f3()}, color {f3()}, normal {f3()} {};
 } Vertex;
 
 typedef struct Mesh {
