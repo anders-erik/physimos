@@ -152,13 +152,31 @@ void model_add_cube_mesh(Mesh& mesh){
     mesh.vertices.push_back(v13);
 
 
-    // front
+    // Front
+    mesh.faces.emplace_back(TriangleFaceIndeces{1, 5, 2});
+    mesh.faces.emplace_back(TriangleFaceIndeces{2, 5, 6});
+
+    // Right
+    mesh.faces.emplace_back(TriangleFaceIndeces{2, 6, 3});
+    mesh.faces.emplace_back(TriangleFaceIndeces{3, 6, 7});
+
+    // Back
+    mesh.faces.emplace_back(TriangleFaceIndeces{3, 7, 0});
+    mesh.faces.emplace_back(TriangleFaceIndeces{0, 7, 4});
+
+    // Left
+    mesh.faces.emplace_back(TriangleFaceIndeces{0, 4, 1});
+    mesh.faces.emplace_back(TriangleFaceIndeces{1, 4, 5});
+
+    // Up
     mesh.faces.emplace_back(TriangleFaceIndeces{0, 1, 2});
     mesh.faces.emplace_back(TriangleFaceIndeces{2, 3, 0});
 
-    // back
+    // Down
     mesh.faces.emplace_back(TriangleFaceIndeces{4, 5, 6});
     mesh.faces.emplace_back(TriangleFaceIndeces{6, 7, 4});
+
+    
 
 }
 

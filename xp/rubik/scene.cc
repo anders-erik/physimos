@@ -69,9 +69,9 @@ bool scene_init(){
     camera.transform.rot.y =  0.0;
     camera.transform.rot.z = -0.75;
 
-    camera.transform.pos.x = -2.0;
-    camera.transform.pos.y = -2.0;
-    camera.transform.pos.z = 1.0f;
+    camera.transform.pos.x = -4.0;
+    camera.transform.pos.y = -4.0;
+    camera.transform.pos.z = 2.0f;
 
 
     model_add_cube_mesh(cube.mesh);
@@ -119,9 +119,9 @@ void scene_handle_input(InputState input_state){
         camera.transform.rot.x += pan_rot_scale * vert_mult * (float) input_state.mouse.middle_delta_accum.y;
     }
     // Z ORBIT -- GOOD
-    m4f4 rot_z_mat = m4f4_create_rotation_z(pan_rot_scale * 2.0f * (float) input_state.mouse.middle_delta_accum.x);
+    m4f4 rot_z_mat = m4f4_create_rotation_z(pan_rot_scale * 4.0f * (float) input_state.mouse.middle_delta_accum.x);
     camera.transform.pos.matmul(rot_z_mat);
-    camera.transform.rot.z -= pan_rot_scale * 2.0f * (float) input_state.mouse.middle_delta_accum.x;
+    camera.transform.rot.z -= pan_rot_scale * 4.0f * (float) input_state.mouse.middle_delta_accum.x;
 
 
     // SCROLL ZOOM
@@ -134,23 +134,25 @@ void scene_handle_input(InputState input_state){
         std::cout << "camera.transform.rot.x = " << camera.transform.rot.x << std::endl;
         std::cout << "camera.transform.rot.y = " << camera.transform.rot.y << std::endl;
         std::cout << "camera.transform.rot.z = " << camera.transform.rot.z << std::endl;
-        std::cout << "y_cam_norm = " << y_cam_norm << std::endl;
+        std::cout << "xy_cam_norm = " << xy_cam_norm << std::endl;
         
     }
 
 
     // ARROW LOOK AROUND
     if(input_state.up)
-        camera.transform.rot.x += 0.02f;
-        // cube.transform.rot.x += 0.05;
+        // camera.transform.rot.x += 0.02f;
+        cube.transform.rot.x += 0.05;
     if(input_state.down)
-        camera.transform.rot.x -= 0.02f;
-        // cube.transform.rot.x -= 0.05;
+        // camera.transform.rot.x -= 0.02f;
+        cube.transform.rot.x -= 0.05;
 
     if(input_state.left)
-        camera.transform.rot.z += 0.02;
+        // camera.transform.rot.z += 0.02;
+        cube.transform.rot.z += 0.05;
     if(input_state.right)
-        camera.transform.rot.z -= 0.02;
+        // camera.transform.rot.z -= 0.02;
+        cube.transform.rot.z -= 0.05;
         // cube.transform.rot.x = 
     
 
@@ -171,7 +173,6 @@ void scene_update(){
 
 void scene_render(){
 
-    renderer_model.render(cube);
 
     m4f4 identity;
     renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
@@ -179,6 +180,7 @@ void scene_render(){
     renderer_axes.set_uniforms(cube.transform.matrix, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
 
+    renderer_model.render(cube);
 }
 
 
