@@ -8,6 +8,8 @@
 #include "model.hh"
 #include "window.hh"
 
+#include "rubik.hh"
+
 namespace xprubik {
 
 struct GLFWWindow;
@@ -53,11 +55,11 @@ struct RendererAxes {
     void render();
 };
 
-bool scene_init();
+bool scene_init(Cube& _cube);
 
 void scene_handle_input(InputState input_state);
-void scene_update();
-void scene_render();
+void scene_update(Cube& _cube);
+void scene_render(Cube& _cube);
 
 void scene_set_viewport_dims(int _width, int _height);
 

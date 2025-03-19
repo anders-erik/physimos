@@ -129,8 +129,22 @@ InputState window_get_input(){
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
         input_state.p = true;
 
+
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         input_state.f = true;
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+        input_state.b = true;
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+        input_state.r = true;
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        input_state.l = true;
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+        input_state.u = true;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        input_state.d = true;
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
+        input_state.shift = true;
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         input_state.up = true;

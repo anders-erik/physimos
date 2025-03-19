@@ -5,6 +5,17 @@ namespace xprubik {
 
 struct m4f4;
 
+// #ifndef A
+//     #define A true
+//     #define A0 0.0f
+//     #define A1 1.57f
+//     #define A2 3.14f
+//     #define A2 4.71f
+// #endif
+
+
+
+
 struct PointD {
     double x = 0.0;
     double y = 0.0;

@@ -3,9 +3,11 @@
 #include "gpu.hh"
 #include "fs.hh"
 #include "scene.hh"
+#include "rubik.hh"
 
 using namespace xprubik;
 
+Cube _cube;
 
 int main(){
 
@@ -18,7 +20,7 @@ int main(){
     bool gpu_ok = gpu_init();
     if(!gpu_ok) return 1;
 
-    bool scene_ok = scene_init();
+    bool scene_ok = scene_init(_cube);
     if(!scene_ok) return 1;
 
     
@@ -36,12 +38,14 @@ int main(){
         if(input_state.esc)
             window_set_close();
 
-
         // gpu_draw_triangle_moodel_shader();
 
+
+        _cube.handle_input(input_state);
         scene_handle_input(input_state);
-        scene_update();
-        scene_render();
+
+        scene_update(_cube);
+        scene_render(_cube);
 
         window_end_of_frame();
     }

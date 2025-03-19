@@ -87,9 +87,11 @@ void Model::set_transform_matrix(){
 
     transform.matrix = identity;
 
-    transform.matrix.translate(transform.pos);
     transform.matrix.rotate_z(transform.rot.z);
+    transform.matrix.rotate_y(transform.rot.y);
     transform.matrix.rotate_x(transform.rot.x);
+
+    transform.matrix.translate(transform.pos);
 }
 
 void model_add_cube_mesh(Mesh& mesh){

@@ -21,6 +21,13 @@ struct InputState {
     bool p = false;
 
     bool f = false;
+    bool b = false;
+    bool r = false;
+    bool l = false;
+    bool u = false;
+    bool d = false;
+
+    bool shift = false;
 
     bool up = false;
     bool left = false;

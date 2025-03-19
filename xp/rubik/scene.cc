@@ -4,6 +4,8 @@
 #include "model.hh"
 #include "math.hh"
 
+// #include "rubik.hh"
+
 #include <iostream>
 #include <cmath>
 
@@ -14,8 +16,7 @@ RendererAxes renderer_axes;
 
 CameraOrbital camera;
 
-Model cubie_1;
-Model cubie_2;
+// Cube cube;
 
 
 void CameraOrbital::set_matrices(){
@@ -96,7 +97,7 @@ void scene_set_viewport_dims(int _width, int _height){
     camera.height = (float) _height;
 }
 
-bool scene_init(){
+bool scene_init(Cube& _cube){
 
     renderer_model.init();
     renderer_axes.init();
@@ -111,17 +112,8 @@ bool scene_init(){
     camera.transform.pos.z = 2.0f;
 
 
-    model_add_cube_mesh(cubie_1.mesh);
-    cubie_1.transform.pos.x = 1.0f;
-    model_add_cube_mesh(cubie_2.mesh);
-    cubie_2.transform.pos.x = 1.0f;
-    cubie_2.transform.pos.y = 1.0f;
-
-    
-
-
-    renderer_model.create_render_context(cubie_1);
-    renderer_model.create_render_context(cubie_2);
+    renderer_model.create_render_context(_cube.c0.model);
+    renderer_model.create_render_context(_cube.c1.model);
     
 
     return true;
@@ -153,68 +145,58 @@ void scene_handle_input(InputState input_state){
 
     // PRINTS
     if(input_state.p){
-        std::cout << "camera.transform.rot.x = " << camera.transform.rot.x << std::endl;
-        std::cout << "camera.transform.rot.y = " << camera.transform.rot.y << std::endl;
-        std::cout << "camera.transform.rot.z = " << camera.transform.rot.z << std::endl;
+        // std::cout << "camera.transform.rot.x = " << camera.transform.rot.x << std::endl;
+        // std::cout << "camera.transform.rot.y = " << camera.transform.rot.y << std::endl;
+        // std::cout << "camera.transform.rot.z = " << camera.transform.rot.z << std::endl;
         // std::cout << "xy_cam_norm = " << xy_cam_norm << std::endl;
         
     }
 
-
-    // Permute
-    if(input_state.f){
-        cubie_1.transform.rot.x += 0.1;
-        cubie_2.transform.rot.x += 0.1;
-    }
-
-
     // ARROW LOOK AROUND
     if(input_state.up){
-        // camera.transform.rot.x += 0.02f;
-        cubie_1.transform.rot.x += 0.05;
-        cubie_2.transform.rot.x += 0.05;
+        camera.transform.rot.x += 0.02f;
     }
     if(input_state.down){
-        // camera.transform.rot.x -= 0.02f;
-        cubie_1.transform.rot.x -= 0.05;
-        cubie_2.transform.rot.x -= 0.05;
+        camera.transform.rot.x -= 0.02f;
     }
     if(input_state.left)
-        // camera.transform.rot.z += 0.02;
-        cubie_1.transform.rot.z += 0.05;
+        camera.transform.rot.z += 0.02;
     if(input_state.right)
-        // camera.transform.rot.z -= 0.02;
-        cubie_1.transform.rot.z -= 0.05;
-        // cube.transform.rot.x = 
+        camera.transform.rot.z -= 0.02;
     
 
 }
 
-void scene_update(){
+void scene_update(Cube& _cube){
+
+    _cube.update_animator();
 
     // cube
-    cubie_1.set_transform_matrix();
-    cubie_2.set_transform_matrix();
+    _cube.c0.model.set_transform_matrix();
+    _cube.c1.model.set_transform_matrix();
 
     // camera
     camera.set_matrices();
     renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
-    renderer_axes.set_uniforms(cubie_1.transform.matrix, camera.view_mat, camera.perspective_mat);
+    
+    m4f4 indentity;
+    renderer_axes.set_uniforms(indentity, camera.view_mat, camera.perspective_mat);
+    // renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
 
 
 }
 
-void scene_render(){
+void scene_render(Cube& _cube){
 
 
     m4f4 identity;
     renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
-    renderer_axes.set_uniforms(cubie_1.transform.matrix, camera.view_mat, camera.perspective_mat);
+    renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
 
-    renderer_model.render(cubie_1);
-    renderer_model.render(cubie_2);
+    renderer_model.render(_cube.c0.model);
+    renderer_model.render(_cube.c1.model);
 }
 
 

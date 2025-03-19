@@ -6,6 +6,8 @@
 namespace xprubik {
 
 
+
+
 void f3::matmul(m4f4 matrix){
     f3 tmp;
     tmp.x = x*matrix.x.x + y*matrix.x.y + z*matrix.x.z;

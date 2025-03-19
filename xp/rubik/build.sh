@@ -10,7 +10,7 @@ mkdir -p $BIN_DIR
 # NOTE: This should probably be copied once as an archive?
 cp ../../extern/glad/src/glad.c ./bin/glad.c
 
-SOURCES="main.cc window.cc gpu.cc model.cc fs.cc math.cc scene.cc bin/glad.c"
+SOURCES="main.cc window.cc gpu.cc model.cc rubik.cc fs.cc math.cc scene.cc bin/glad.c"
 INCLUDE_DIRS="-I. -I../../extern/glad/include -I../../extern/GLFW/include"
 LIB_DIRS="-L../../extern/GLFW/lib"
 

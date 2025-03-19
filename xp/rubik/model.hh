@@ -6,7 +6,7 @@
 
 #include "gpu.hh"
 
-
+// #include "rubik.hh"
 
 namespace xprubik {
 
