@@ -2,6 +2,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include "math.hh"
 
 #include "gpu.hh"
@@ -31,6 +32,21 @@ enum class Permutation {
     Di,
 };
 
+enum class Face {
+    None,
+    F,
+    B,
+    R,
+    L,
+    U,
+    D,
+};
+
+enum class CubieType {
+    Center,
+    Edge,
+    Corner,
+};
 
 enum class Rot90 {
     A0,
@@ -39,22 +55,19 @@ enum class Rot90 {
     A270,
 };
 
-struct CubieRotation {
-    Rot90 x = Rot90::A0;
-    Rot90 y = Rot90::A0;
-    Rot90 z = Rot90::A0;
+struct Faces {
+    Face one   = Face::None;
+    Face two   = Face::None;
+    Face three = Face::None;
 
-    void pos_x();
-    void neg_x();
-
-    float get_x_rad();
+    
+    void permute_f_edge(Permutation p);
+    void permute_fi_edge(Permutation p);
+    void permute_r_edge(Permutation p);
+    void permute_ri_edge(Permutation p);
+    
+    bool contains(Face face);
 };
-
-struct Cubie {
-    CubieRotation c_rot;
-    Model model;
-};
-
 
 
 struct Animator {
@@ -75,14 +88,46 @@ struct Animator {
     int current_frame_count = 0;
 };
 
+
+/** Keeps track of Cubie rotations relative to home. */
+struct CubieRotation {
+    Rot90 x = Rot90::A0;
+    Rot90 y = Rot90::A0;
+    Rot90 z = Rot90::A0;
+
+    void pos_x();
+    void neg_x();
+    float get_x_rad();
+
+    Rot90 pos(Rot90 rot);
+    Rot90 neg(Rot90 rot);
+    float get_rad(Rot90 rot);
+};
+
+
+struct Cubie {
+    CubieType type;
+    CubieRotation c_rot;
+    Faces faces;
+
+    bool is_animating = false;
+    
+    Model model;
+
+    void update_animation(Permutation perm, float angle_delta);
+};
+
+
 /** A Rubik's Cube */
 struct Cube {
-    Cubie c0;
-    Cubie c1;
+    std::array<Cubie, 2> cubies;
+    // Cubie c0;
+    // Cubie c1;
 
     /** Performs incremental cubie model rotations to display permutation transitions. */
     Animator animator;
 
+    void permute(Permutation p);
 
     void update_animator();
     void handle_input(InputState input_state);

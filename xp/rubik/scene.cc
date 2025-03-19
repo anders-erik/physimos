@@ -111,9 +111,12 @@ bool scene_init(Cube& _cube){
     camera.transform.pos.y = -4.0;
     camera.transform.pos.z = 2.0f;
 
-
-    renderer_model.create_render_context(_cube.c0.model);
-    renderer_model.create_render_context(_cube.c1.model);
+    for(Cubie& c : _cube.cubies){
+        // c.model.transform.rot.x += animator.animation_angle_step;
+        renderer_model.create_render_context(c.model);
+    }
+    // renderer_model.create_render_context(_cube.c0.model);
+    // renderer_model.create_render_context(_cube.c1.model);
     
 
     return true;
@@ -172,13 +175,16 @@ void scene_update(Cube& _cube){
     _cube.update_animator();
 
     // cube
-    _cube.c0.model.set_transform_matrix();
-    _cube.c1.model.set_transform_matrix();
+    for(Cubie& c : _cube.cubies){
+        c.model.set_transform_matrix();
+    }
+    // _cube.c0.model.set_transform_matrix();
+    // _cube.c1.model.set_transform_matrix();
 
     // camera
     camera.set_matrices();
     renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
-    
+
     m4f4 indentity;
     renderer_axes.set_uniforms(indentity, camera.view_mat, camera.perspective_mat);
     // renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
@@ -192,11 +198,14 @@ void scene_render(Cube& _cube){
     m4f4 identity;
     renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
-    renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
+    renderer_axes.set_uniforms(_cube.cubies[0].model.transform.matrix, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
 
-    renderer_model.render(_cube.c0.model);
-    renderer_model.render(_cube.c1.model);
+    // renderer_model.render(_cube.c0.model);
+    // renderer_model.render(_cube.c1.model);
+    for(Cubie& c : _cube.cubies){
+        renderer_model.render(c.model);
+    }
 }
 
 
