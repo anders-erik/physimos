@@ -11,6 +11,8 @@ namespace xprubik {
 
 GLFWwindow* window = NULL;
 
+InputState input_state;
+
 MouseState mouse_state;
 GLFWcursor* default_cursor;
 GLFWcursor* pan_cursor;
@@ -68,6 +70,20 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
     // std::cout << "mouse_state.scroll_accumulator = " << mouse_state.scroll_accumulator << std::endl;
 }
 
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods){
+   
+
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+        input_state.up = true;
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+        input_state.left = true;
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+        input_state.down = true;
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+        input_state.right = true;
+       
+}
+
 
 
 bool window_init(){
@@ -82,6 +98,7 @@ bool window_init(){
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, mouse_position_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     default_cursor = glfwCreateStandardCursor(GLFW_CURSOR_NORMAL);
     pan_cursor = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
@@ -110,56 +127,49 @@ void window_end_of_frame(){
 
 InputState window_get_input(){
 
-    InputState input_state;
+    // InputState _input_state;
+
+    InputState _input_state = input_state;
+    // Reset
+    input_state = InputState();
 
     // Mouse
-    input_state.mouse = mouse_state;
+    _input_state.mouse = mouse_state;
     // reset
     mouse_state.middle_delta_accum.x = 0.0;
     mouse_state.middle_delta_accum.y = 0.0;
 
 
-    input_state.scroll_delta = mouse_state.scroll_accumulator;
+    _input_state.scroll_delta = mouse_state.scroll_accumulator;
     mouse_state.scroll_accumulator = 0.0f;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        input_state.esc = true;
+        _input_state.esc = true;
 
 
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-        input_state.p = true;
+        _input_state.p = true;
 
 
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-        input_state.f = true;
+        _input_state.f = true;
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
-        input_state.b = true;
+        _input_state.b = true;
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-        input_state.r = true;
+        _input_state.r = true;
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        input_state.l = true;
+        _input_state.l = true;
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-        input_state.u = true;
+        _input_state.u = true;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        input_state.d = true;
+        _input_state.d = true;
 
     if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
-        input_state.shift = true;
-
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        input_state.up = true;
-    
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        input_state.left = true;
-
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        input_state.down = true;
-
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        input_state.right = true;
+        _input_state.shift = true;
 
 
-    return input_state;
+
+    return _input_state;
 }
 
 

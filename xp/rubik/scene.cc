@@ -115,6 +115,7 @@ bool scene_init(Cube& _cube){
         // c.model.transform.rot.x += animator.animation_angle_step;
         renderer_model.create_render_context(c.model);
     }
+    renderer_model.create_render_context(_cube.c_xp.model);
     // renderer_model.create_render_context(_cube.c0.model);
     // renderer_model.create_render_context(_cube.c1.model);
     
@@ -156,16 +157,16 @@ void scene_handle_input(InputState input_state){
     }
 
     // ARROW LOOK AROUND
-    if(input_state.up){
-        camera.transform.rot.x += 0.02f;
-    }
-    if(input_state.down){
-        camera.transform.rot.x -= 0.02f;
-    }
-    if(input_state.left)
-        camera.transform.rot.z += 0.02;
-    if(input_state.right)
-        camera.transform.rot.z -= 0.02;
+    // if(input_state.up){
+    //     camera.transform.rot.x += 0.02f;
+    // }
+    // if(input_state.down){
+    //     camera.transform.rot.x -= 0.02f;
+    // }
+    // if(input_state.left)
+    //     camera.transform.rot.z += 0.02;
+    // if(input_state.right)
+    //     camera.transform.rot.z -= 0.02;
     
 
 }
@@ -175,9 +176,11 @@ void scene_update(Cube& _cube){
     _cube.update_animator();
 
     // cube
-    for(Cubie& c : _cube.cubies){
-        c.model.set_transform_matrix();
-    }
+    _cube.update_cubies();
+    
+    // _cube.c_xp.model.set_transform_matrix();
+    // _cube.c_xp.tr
+
     // _cube.c0.model.set_transform_matrix();
     // _cube.c1.model.set_transform_matrix();
 
@@ -201,11 +204,10 @@ void scene_render(Cube& _cube){
     renderer_axes.set_uniforms(_cube.cubies[0].model.transform.matrix, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
 
-    // renderer_model.render(_cube.c0.model);
-    // renderer_model.render(_cube.c1.model);
     for(Cubie& c : _cube.cubies){
         renderer_model.render(c.model);
     }
+    renderer_model.render(_cube.c_xp.model);
 }
 
 

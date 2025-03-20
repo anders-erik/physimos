@@ -84,17 +84,112 @@ bool Faces::contains(Face face){
 
 Cube::Cube() {
 
-    model_add_cube_mesh(cubies[0].model.mesh);
-    cubies[0].model.transform.pos.x = 1.0f;
-    cubies[0].type = CubieType::Center;
-    cubies[0].faces.one = Face::F;
 
-    model_add_cube_mesh(cubies[1].model.mesh);
-    cubies[1].model.transform.pos.x = 1.0f;
-    cubies[1].model.transform.pos.y = 1.0f;
-    cubies[1].type = CubieType::Edge;
-    cubies[1].faces.one = Face::F;
-    cubies[1].faces.two = Face::R;
+    f3 red =   f3(0.5f, 0.0f, 0.0f);
+    f3 green = f3(0.0f, 0.5f, 0.0f);
+    f3 blue =  f3(0.0f, 0.0f, 0.5f);
+    f3 orange = f3(0.5f, 0.25f, 0.0f);
+    f3 yellow = f3(0.5f, 0.5f, 0.0f);
+    f3 white =  f3(0.8f, 0.8f, 0.8f);
+
+    f3 f_color = green;
+    f3 b_color = blue;
+    f3 r_color = red;
+    f3 l_color = orange;
+    f3 u_color = yellow;
+    f3 d_color = white;
+
+
+    Cubie& f = cubies[0];
+    Cubie& fr = cubies[1];
+    Cubie& fl = cubies[2];
+    Cubie& fu = cubies[3];
+    Cubie& fd = cubies[4];
+
+    Cubie& rb = cubies[5];
+    Cubie& ru = cubies[6];
+    Cubie& rd = cubies[7];
+    
+
+    // F CENTER
+    model_add_cube_mesh(f.model.mesh);
+    model_add_facelet(f.model.mesh, f_color, Axis::x);
+    f.type = CubieType::Center;
+    f.faces.one = Face::F;
+
+    model_add_cube_mesh(fr.model.mesh);
+    model_add_facelet(fr.model.mesh, f_color, Axis::x);
+    model_add_facelet(fr.model.mesh, r_color, Axis::y);
+    fr.type = CubieType::Edge;
+    fr.faces.one = Face::F;
+    fr.faces.two = Face::R;
+
+    model_add_cube_mesh(fl.model.mesh);
+    model_add_facelet(fl.model.mesh, f_color, Axis::x);
+    model_add_facelet(fl.model.mesh, l_color, Axis::ny);
+    fl.type = CubieType::Edge;
+    fl.faces.one = Face::F;
+    fl.faces.two = Face::L;
+
+    model_add_cube_mesh(fu.model.mesh);
+    model_add_facelet(fu.model.mesh, f_color, Axis::x);
+    model_add_facelet(fu.model.mesh, u_color, Axis::z);
+    fu.type = CubieType::Edge;
+    fu.faces.one = Face::F;
+    fu.faces.two = Face::U;
+
+    model_add_cube_mesh(fd.model.mesh);
+    model_add_facelet(fd.model.mesh, f_color, Axis::x);
+    model_add_facelet(fd.model.mesh, d_color, Axis::nz);
+    fd.type = CubieType::Edge;
+    fd.faces.one = Face::F;
+    fd.faces.two = Face::D;
+
+
+
+
+    model_add_cube_mesh(rb.model.mesh);
+    model_add_facelet(rb.model.mesh, r_color, Axis::y);
+    model_add_facelet(rb.model.mesh, b_color, Axis::nx);
+    rb.type = CubieType::Edge;
+    rb.faces.one = Face::R;
+    rb.faces.two = Face::B;
+
+    model_add_cube_mesh(ru.model.mesh);
+    model_add_facelet(ru.model.mesh, r_color, Axis::y);
+    model_add_facelet(ru.model.mesh, u_color, Axis::z);
+    ru.type = CubieType::Edge;
+    ru.faces.one = Face::R;
+    ru.faces.two = Face::U;
+
+    model_add_cube_mesh(rd.model.mesh);
+    model_add_facelet(rd.model.mesh, r_color, Axis::y);
+    model_add_facelet(rd.model.mesh, d_color, Axis::nz);
+    rd.type = CubieType::Edge;
+    rd.faces.one = Face::R;
+    rd.faces.two = Face::D;
+
+
+    model_add_cube_mesh(c_xp.model.mesh);
+    // c_xp.model.set_base_color(green);
+    // c_xp.model.transform.pos.x = 0.0f;
+    // c_xp.model.transform.pos.y = 1.0f;
+    // c_xp.model.transform.pos.z = 1.0f;
+    model_add_facelet(c_xp.model.mesh, green, Axis::x);
+    model_add_facelet(c_xp.model.mesh, blue, Axis::nx);
+    model_add_facelet(c_xp.model.mesh, red, Axis::y);
+    model_add_facelet(c_xp.model.mesh, orange, Axis::ny);
+    model_add_facelet(c_xp.model.mesh, yellow, Axis::z);
+    model_add_facelet(c_xp.model.mesh, white, Axis::nz);
+    c_xp.type = CubieType::Edge;
+    c_xp.faces.one = Face::R;
+    c_xp.faces.two = Face::U;
+    // Initial matrix:
+    m4f4 identity;
+    m4f4 initial_pos_mat = m4f4_create_translation(c_xp.model.transform.pos);
+    mat_mul(c_xp.model.transform.matrix, initial_pos_mat);
+    // c_xp.model.transform.matrix = identity;
+
 
 };
 
@@ -171,6 +266,49 @@ void Cube::permute(Permutation permutation){
 
 }
 
+void Cubie::set_position_from_faces(){
+
+    if(faces.contains(Face::F)){
+        model.transform.pos.x = 1.0f;
+    }
+    if(faces.contains(Face::B)){
+        model.transform.pos.x = -1.0f;
+    }
+    if(faces.contains(Face::R)){
+        model.transform.pos.y = 1.0f;
+    }
+    if(faces.contains(Face::L)){
+        model.transform.pos.y = -1.0f;
+    }
+    if(faces.contains(Face::U)){
+        model.transform.pos.z = 1.0f;
+    }
+    if(faces.contains(Face::D)){
+        model.transform.pos.z = -1.0f;
+    }
+
+}
+void Cubie::set_rotation_transform_from_discrete_rot(){
+
+    model.transform.rot.x = c_rot.get_rad(c_rot.x);
+    model.transform.rot.y = c_rot.get_rad(c_rot.y);
+    model.transform.rot.z = c_rot.get_rad(c_rot.z);
+
+}
+void Cube::update_cubies(){
+
+
+
+    for(Cubie& c : cubies){
+        c.model.transform.pos = f3();
+        c.model.transform.rot = f3();
+        c.set_position_from_faces();
+        c.set_rotation_transform_from_discrete_rot();
+        c.model.set_transform_matrix();
+    }
+}
+
+int count = 0;
 void Cube::handle_input(InputState input_state){
 
     if(animator.is_animating)
@@ -191,6 +329,31 @@ void Cube::handle_input(InputState input_state){
     if(input_state.p){
         print();
     }
+
+    if(input_state.left){
+        // c_xp.model.transform.pos.x += 0.01f;
+        // c_xp.model.transform.rot.x += 0.1f;
+        float angle = 1.5707825f;
+        m4f4 identity;
+        m4f4 x_rot_mat = m4f4_create_rotation_x(angle);
+        m4f4 current_tmp = c_xp.model.transform.matrix;
+        c_xp.model.transform.matrix = identity;
+        mat_mul(c_xp.model.transform.matrix, x_rot_mat);
+        mat_mul(c_xp.model.transform.matrix, current_tmp);
+        
+        // std::cout << "count = " << ++count << std::endl;
+        
+    }
+    else if(input_state.down){
+        float angle = 1.5707825f;
+        m4f4 identity;
+        m4f4 y_rot_mat = m4f4_create_rotation_y(angle);
+        m4f4 current_tmp = c_xp.model.transform.matrix;
+        c_xp.model.transform.matrix = identity;
+        mat_mul(c_xp.model.transform.matrix, y_rot_mat);
+        mat_mul(c_xp.model.transform.matrix, current_tmp);
+    }
+    else if(input_state.right){}
 
 }
 

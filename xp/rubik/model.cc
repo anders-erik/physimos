@@ -87,11 +87,126 @@ void Model::set_transform_matrix(){
 
     transform.matrix = identity;
 
+    transform.matrix.translate(transform.pos);
+    
+    // Intrinsic rotations work??
+    transform.matrix.rotate_x(transform.rot.x);
+    transform.matrix.rotate_y(transform.rot.y);
+    transform.matrix.rotate_z(transform.rot.z);
+
+}
+void Model::set_transform_matrix_anim(){
+    m4f4 identity;
+
+    // transform.matrix = identity;
+
     transform.matrix.rotate_z(transform.rot.z);
     transform.matrix.rotate_y(transform.rot.y);
     transform.matrix.rotate_x(transform.rot.x);
 
     transform.matrix.translate(transform.pos);
+}
+
+void Model::set_base_color(f3 color){
+
+    for(Vertex& vert : mesh.vertices){
+        vert.color.x = color.x;
+        vert.color.y = color.y;
+        vert.color.z = color.z;
+    }
+}
+
+void model_add_facelet(Mesh& mesh, f3 color, Axis axis){
+
+    float cube_size = 1.01f;
+    float cube_half = cube_size / 2.0f;
+
+    Vertex v0;
+    Vertex v1;
+    Vertex v2;
+    Vertex v3;
+
+    if(axis == Axis::x || axis == Axis::nx){
+
+        v0.pos = f3( 0.0f, -cube_half, -cube_half);
+        v1.pos = f3( 0.0f,  cube_half, -cube_half);
+        v2.pos = f3( 0.0f,  cube_half,  cube_half);
+        v3.pos = f3( 0.0f, -cube_half,  cube_half);
+
+        if(axis == Axis::x){
+            v0.pos.x += cube_half;
+            v1.pos.x += cube_half;
+            v2.pos.x += cube_half;
+            v3.pos.x += cube_half;
+        }
+        else{
+            v0.pos.x -= cube_half;
+            v1.pos.x -= cube_half;
+            v2.pos.x -= cube_half;
+            v3.pos.x -= cube_half;
+        }
+    }
+    else if(axis == Axis::y || axis == Axis::ny){
+
+        v0.pos = f3( -cube_half, 0.0f, -cube_half);
+        v1.pos = f3(  cube_half, 0.0f, -cube_half);
+        v2.pos = f3(  cube_half, 0.0f,  cube_half);
+        v3.pos = f3( -cube_half, 0.0f,  cube_half);
+
+        if(axis == Axis::y){
+            v0.pos.y += cube_half;
+            v1.pos.y += cube_half;
+            v2.pos.y += cube_half;
+            v3.pos.y += cube_half;
+        }
+        else{
+            v0.pos.y -= cube_half;
+            v1.pos.y -= cube_half;
+            v2.pos.y -= cube_half;
+            v3.pos.y -= cube_half;
+        }
+    }
+    else if(axis == Axis::z || axis == Axis::nz){
+
+        v0.pos = f3( -cube_half, -cube_half, 0.0f);
+        v1.pos = f3(  cube_half, -cube_half, 0.0f);
+        v2.pos = f3(  cube_half,  cube_half, 0.0f);
+        v3.pos = f3( -cube_half,  cube_half, 0.0f);
+
+        if(axis == Axis::z){
+            v0.pos.z += cube_half;
+            v1.pos.z += cube_half;
+            v2.pos.z += cube_half;
+            v3.pos.z += cube_half;
+        }
+        else{
+            v0.pos.z -= cube_half;
+            v1.pos.z -= cube_half;
+            v2.pos.z -= cube_half;
+            v3.pos.z -= cube_half;
+        }
+    }
+
+
+
+    v0.color = color;
+    v1.color = color;
+    v2.color = color;
+    v3.color = color;
+
+    mesh.vertices.push_back(v0);
+    mesh.vertices.push_back(v1);
+    mesh.vertices.push_back(v2);
+    mesh.vertices.push_back(v3);
+    
+    int v0i = mesh.vertices.size()-4;
+    int v1i = mesh.vertices.size()-3;
+    int v2i = mesh.vertices.size()-2;
+    int v3i = mesh.vertices.size()-1;
+
+    mesh.faces.emplace_back(TriangleFaceIndeces{v0i, v1i, v2i});
+    mesh.faces.emplace_back(TriangleFaceIndeces{v2i, v3i, v0i});
+
 }
 
 void model_add_cube_mesh(Mesh& mesh){

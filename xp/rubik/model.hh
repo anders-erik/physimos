@@ -15,6 +15,7 @@ struct Transform {
     f3 pos;
     f3 rot;
     m4f4 matrix;
+    m4f4 matrix_anim;
 };
 
 struct TriangleFaceIndeces {
@@ -28,7 +29,7 @@ typedef struct Vertex {
     f3 color;
     f3 normal;
 
-    Vertex(f3 pos) : pos {pos} {};
+    Vertex(f3 pos) : pos {pos}, color {f3()}, normal {f3()} {};
     Vertex() : pos {f3()}, color {f3()}, normal {f3()} {};
 } Vertex;
 
@@ -53,6 +54,8 @@ struct Model {
     RenderContextModel rendering_context;
 
     void set_transform_matrix();
+    void set_transform_matrix_anim();
+    void set_base_color(f3 color);
 };
 
 
@@ -74,6 +77,7 @@ struct RendererModel {
 
 
 void model_add_cube_mesh(Mesh& mesh);
+void model_add_facelet(Mesh& mesh, f3 color, Axis axis);
 
 
 }

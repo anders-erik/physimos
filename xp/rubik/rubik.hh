@@ -65,7 +65,7 @@ struct Faces {
     void permute_fi_edge(Permutation p);
     void permute_r_edge(Permutation p);
     void permute_ri_edge(Permutation p);
-    
+
     bool contains(Face face);
 };
 
@@ -115,19 +115,23 @@ struct Cubie {
     Model model;
 
     void update_animation(Permutation perm, float angle_delta);
+    void set_position_from_faces();
+    void set_rotation_transform_from_discrete_rot();
 };
 
 
 /** A Rubik's Cube */
 struct Cube {
-    std::array<Cubie, 2> cubies;
-    // Cubie c0;
+    std::array<Cubie, 8> cubies;
+    Cubie c_xp;
     // Cubie c1;
 
     /** Performs incremental cubie model rotations to display permutation transitions. */
     Animator animator;
 
     void permute(Permutation p);
+
+    void update_cubies();
 
     void update_animator();
     void handle_input(InputState input_state);
