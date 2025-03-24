@@ -177,7 +177,7 @@ void scene_update(Cube& _cube){
         // _cube.update_animator();
     // else
         // cube
-    _cube.update_cubies();
+    // _cube.update_cubies();
     
     // _cube.c_xp.model.set_transform_matrix();
     // _cube.c_xp.tr

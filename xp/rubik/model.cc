@@ -287,9 +287,9 @@ void model_add_cube_mesh(Mesh& mesh){
 
     // Color & Normals
     for(Vertex& vert : mesh.vertices){
-        vert.color.x = 0.5f;
-        vert.color.y = 0.5f;
-        vert.color.z = 0.5f;
+        vert.color.x = 0.3f;
+        vert.color.y = 0.3f;
+        vert.color.z = 0.3f;
 
         // extend vert position from center
         float len_2 = vert.pos.x * vert.pos.x + vert.pos.y * vert.pos.y + vert.pos.z * vert.pos.z;

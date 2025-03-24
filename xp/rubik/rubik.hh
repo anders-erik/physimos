@@ -77,7 +77,10 @@ struct Animator {
     /** Currently animated permutation. */
     Permutation permutation;
 
+    /** Animation flag. */
     bool is_animating = false;
+    /** Synchronize current internal state once when animation is complete. */
+    bool synchronization_frame = false;
 
     /** Always animate 90 deg */
     float animation_angle = 1.5707825f;

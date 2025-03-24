@@ -16,12 +16,12 @@ namespace xprubik {
 Cube::Cube() {
 
 
-    f3 red =   f3(0.5f, 0.0f, 0.0f);
-    f3 green = f3(0.0f, 0.5f, 0.0f);
-    f3 blue =  f3(0.0f, 0.0f, 0.5f);
-    f3 orange = f3(0.5f, 0.25f, 0.0f);
-    f3 yellow = f3(0.5f, 0.5f, 0.0f);
-    f3 white =  f3(0.9f, 0.9f, 0.9f);
+    f3 red =   f3(1.0f, 0.0f, 0.0f);
+    f3 green = f3(0.0f, 1.0f, 0.0f);
+    f3 blue =  f3(0.0f, 0.0f, 1.0f);
+    f3 orange = f3(1.0f, 0.5f, 0.0f);
+    f3 yellow = f3(1.0f, 1.0f, 0.0f);
+    f3 white =  f3(1.0f, 1.0f, 1.0f);
 
     f3 f_color = green;
     f3 b_color = blue;
@@ -301,7 +301,9 @@ void Cube::update_cubies(){
     // When animating, the cubes previous render state is preserved and manipulated.
     // The goal of animation is to smoothly transition visually to the new internal state.
     // Discontinutity between the final animation frame and next internal state. Try to get close match.
+
     if(!animator.is_animating){
+        animator.synchronization_frame = false;
 
         for(Cubie& c : cubies){
 
@@ -311,8 +313,6 @@ void Cube::update_cubies(){
 
             // Update pos and rot vectors
             c.set_position_from_faces();
-            // c.set_rotation_transform_from_discrete_rot();
-
 
             c.model.set_transform_matrix();
 
@@ -368,7 +368,7 @@ void Cube::update_cubies(){
 int count = 0;
 void Cube::handle_input(InputState input_state){
 
-    if(animator.is_animating)
+    if(animator.is_animating || animator.synchronization_frame)
         return;
 
 
@@ -430,7 +430,7 @@ void Cube::update_animator(){
             c.is_rotating = false;
         }
         
-        
+        animator.synchronization_frame = true;
     }
 }
 

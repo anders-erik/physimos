@@ -42,8 +42,10 @@ int main(){
 
 
         _cube.handle_input(input_state);
-        scene_handle_input(input_state);
+        _cube.update_cubies();
 
+
+        scene_handle_input(input_state);
         scene_update(_cube);
         scene_render(_cube);
 
