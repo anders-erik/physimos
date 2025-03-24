@@ -21,7 +21,7 @@ Cube::Cube() {
     f3 blue =  f3(0.0f, 0.0f, 0.5f);
     f3 orange = f3(0.5f, 0.25f, 0.0f);
     f3 yellow = f3(0.5f, 0.5f, 0.0f);
-    f3 white =  f3(0.8f, 0.8f, 0.8f);
+    f3 white =  f3(0.9f, 0.9f, 0.9f);
 
     f3 f_color = green;
     f3 b_color = blue;
@@ -36,10 +36,17 @@ Cube::Cube() {
     Cubie& fl = cubies[2];
     Cubie& fu = cubies[3];
     Cubie& fd = cubies[4];
+    Cubie& fru = cubies[5];
+    Cubie& frd = cubies[6];
+    Cubie& flu = cubies[7];
+    Cubie& fld = cubies[8];
 
-    Cubie& rb = cubies[5];
-    Cubie& ru = cubies[6];
-    Cubie& rd = cubies[7];
+    Cubie& r = cubies[9];
+    Cubie& rb = cubies[10];
+    Cubie& ru = cubies[11];
+    Cubie& rd = cubies[12];
+    Cubie& rbu = cubies[13];
+    Cubie& rbd = cubies[14];
     
 
     // F CENTER
@@ -76,8 +83,49 @@ Cube::Cube() {
     fd.faces.one = Face::F;
     fd.faces.two = Face::D;
 
+    model_add_cube_mesh(fru.model.mesh);
+    model_add_facelet(fru.model.mesh, f_color, Axis::x);
+    model_add_facelet(fru.model.mesh, r_color, Axis::y);
+    model_add_facelet(fru.model.mesh, u_color, Axis::z);
+    fru.type = CubieType::Corner;
+    fru.faces.one = Face::F;
+    fru.faces.two = Face::R;
+    fru.faces.three = Face::U;
+
+    model_add_cube_mesh(frd.model.mesh);
+    model_add_facelet(frd.model.mesh, f_color, Axis::x);
+    model_add_facelet(frd.model.mesh, r_color, Axis::y);
+    model_add_facelet(frd.model.mesh, d_color, Axis::nz);
+    frd.type = CubieType::Corner;
+    frd.faces.one = Face::F;
+    frd.faces.two = Face::R;
+    frd.faces.three = Face::D;
+
+    model_add_cube_mesh(flu.model.mesh);
+    model_add_facelet(flu.model.mesh, f_color, Axis::x);
+    model_add_facelet(flu.model.mesh, l_color, Axis::ny);
+    model_add_facelet(flu.model.mesh, u_color, Axis::z);
+    flu.type = CubieType::Corner;
+    flu.faces.one = Face::F;
+    flu.faces.two = Face::L;
+    flu.faces.three = Face::U;
+
+    model_add_cube_mesh(fld.model.mesh);
+    model_add_facelet(fld.model.mesh, f_color, Axis::x);
+    model_add_facelet(fld.model.mesh, l_color, Axis::ny);
+    model_add_facelet(fld.model.mesh, d_color, Axis::nz);
+    fld.type = CubieType::Corner;
+    fld.faces.one = Face::F;
+    fld.faces.two = Face::L;
+    fld.faces.three = Face::D;
 
 
+
+    // R
+    model_add_cube_mesh(r.model.mesh);
+    model_add_facelet(r.model.mesh, r_color, Axis::y);
+    r.type = CubieType::Center;
+    r.faces.one = Face::R;
 
     model_add_cube_mesh(rb.model.mesh);
     model_add_facelet(rb.model.mesh, r_color, Axis::y);
@@ -99,6 +147,28 @@ Cube::Cube() {
     rd.type = CubieType::Edge;
     rd.faces.one = Face::R;
     rd.faces.two = Face::D;
+
+    model_add_cube_mesh(rbu.model.mesh);
+    model_add_facelet(rbu.model.mesh, r_color, Axis::y);
+    model_add_facelet(rbu.model.mesh, b_color, Axis::nx);
+    model_add_facelet(rbu.model.mesh, u_color, Axis::z);
+    rbu.type = CubieType::Corner;
+    rbu.faces.one = Face::R;
+    rbu.faces.two = Face::B;
+    rbu.faces.three = Face::U;
+
+    model_add_cube_mesh(rbd.model.mesh);
+    model_add_facelet(rbd.model.mesh, r_color, Axis::y);
+    model_add_facelet(rbd.model.mesh, b_color, Axis::nx);
+    model_add_facelet(rbd.model.mesh, d_color, Axis::nz);
+    rbd.type = CubieType::Corner;
+    rbd.faces.one = Face::R;
+    rbd.faces.two = Face::B;
+    rbd.faces.three = Face::D;
+
+
+
+
 
 
     model_add_cube_mesh(c_xp.model.mesh);
@@ -147,6 +217,9 @@ void Cube::permute(Permutation permutation){
                 if(c.type == CubieType::Edge)
                     c.faces.permute_f_edge(permutation);
 
+                if(c.type == CubieType::Corner)
+                    c.faces.permute_f_corner(permutation);
+
                 c.c_rot.rot(Axis::nx);
                 break;
 
@@ -156,6 +229,9 @@ void Cube::permute(Permutation permutation){
 
                 if(c.type == CubieType::Edge)
                     c.faces.permute_fi_edge(permutation);
+
+                if(c.type == CubieType::Corner)
+                    c.faces.permute_fi_corner(permutation);
 
                 c.c_rot.rot(Axis::x);
                 break;
@@ -167,6 +243,9 @@ void Cube::permute(Permutation permutation){
                 if(c.type == CubieType::Edge)
                     c.faces.permute_r_edge(permutation);
 
+                if(c.type == CubieType::Corner)
+                    c.faces.permute_r_corner(permutation);
+
                 c.c_rot.rot(Axis::ny);
                 break;
 
@@ -176,6 +255,9 @@ void Cube::permute(Permutation permutation){
 
                 if(c.type == CubieType::Edge)
                     c.faces.permute_ri_edge(permutation);
+
+                if(c.type == CubieType::Corner)
+                    c.faces.permute_ri_corner(permutation);
 
                 c.c_rot.rot(Axis::y);
 
@@ -410,68 +492,6 @@ void CubieRotation::rot(Axis axis){
 
 
 
-
-void Faces::permute_f_edge(Permutation p){
-    
-    Face& non_f = (one == Face::F) ? two : one;
-
-    if(non_f == Face::R)
-        non_f = Face::D;
-    else if(non_f == Face::U)
-        non_f = Face::R;
-    else if(non_f == Face::L)
-        non_f = Face::U;
-    else if(non_f == Face::D)
-        non_f = Face::L;
-    
-}
-void Faces::permute_fi_edge(Permutation p){
-
-    Face& non_f = (one == Face::F) ? two : one;
-
-    if(non_f == Face::R)
-        non_f = Face::U;
-    else if(non_f == Face::U)
-        non_f = Face::L;
-    else if(non_f == Face::L)
-        non_f = Face::D;
-    else if(non_f == Face::D)
-        non_f = Face::R;
-
-}
-void Faces::permute_r_edge(Permutation p){
-    
-    Face& non_r = (one == Face::R) ? two : one;
-
-    if(non_r == Face::B)
-        non_r = Face::D;
-    else if(non_r == Face::U)
-        non_r = Face::B;
-    else if(non_r == Face::F)
-        non_r = Face::U;
-    else if(non_r == Face::D)
-        non_r = Face::F;
-
-
-}
-void Faces::permute_ri_edge(Permutation p){
-
-    Face& non_r = (one == Face::R) ? two : one;
-
-    if(non_r == Face::B)
-        non_r = Face::U;
-    else if(non_r == Face::U)
-        non_r = Face::F;
-    else if(non_r == Face::F)
-        non_r = Face::D;
-    else if(non_r == Face::D)
-        non_r = Face::B;
-}
-
-
-
-
-
 bool Faces::contains(Face face){
 
     if      (one == face)
@@ -483,6 +503,144 @@ bool Faces::contains(Face face){
 
     return false;
 }
+
+void Faces::permute_f(Face& face){
+    if(face == Face::R)
+        face = Face::D;
+    else if(face == Face::U)
+        face = Face::R;
+    else if(face == Face::L)
+        face = Face::U;
+    else if(face == Face::D)
+        face = Face::L;
+}
+
+void Faces::permute_fi(Face& face){
+    if(face == Face::R)
+        face = Face::U;
+    else if(face == Face::U)
+        face = Face::L;
+    else if(face == Face::L)
+        face = Face::D;
+    else if(face == Face::D)
+        face = Face::R;
+}
+
+void Faces::permute_r(Face& face){
+    if(face == Face::B)
+        face = Face::D;
+    else if(face == Face::U)
+        face = Face::B;
+    else if(face == Face::F)
+        face = Face::U;
+    else if(face == Face::D)
+        face = Face::F;
+}
+
+void Faces::permute_ri(Face& face){
+    if(face == Face::B)
+        face = Face::U;
+    else if(face == Face::U)
+        face = Face::F;
+    else if(face == Face::F)
+        face = Face::D;
+    else if(face == Face::D)
+        face = Face::B;
+}
+
+void Faces::permute_f_edge(Permutation p){
+    
+    Face& non_f = (one == Face::F) ? two : one;
+
+    permute_f(non_f);
+
+}
+
+void Faces::permute_fi_edge(Permutation p){
+
+    Face& non_f = (one == Face::F) ? two : one;
+
+    permute_fi(non_f);
+
+}
+
+void Faces::permute_r_edge(Permutation p){
+    
+    Face& non_r = (one == Face::R) ? two : one;
+
+    permute_r(non_r);
+
+
+}
+void Faces::permute_ri_edge(Permutation p){
+
+    Face& non_r = (one == Face::R) ? two : one;
+
+    permute_ri(non_r);
+}
+
+
+void Faces::permute_f_corner(Permutation p){
+
+    if(one == Face::F){
+        permute_f(two);
+        permute_f(three);
+    }
+    else if(two == Face::F){
+        permute_f(one);
+        permute_f(three);
+    }
+    else if(three == Face::F) {
+        permute_f(one);
+        permute_f(two);
+    }
+
+}
+
+void Faces::permute_fi_corner(Permutation p){
+    if(one == Face::F){
+        permute_fi(two);
+        permute_fi(three);
+    }
+    else if(two == Face::F){
+        permute_fi(one);
+        permute_fi(three);
+    }
+    else if(three == Face::F) {
+        permute_fi(one);
+        permute_fi(two);
+    }
+}
+void Faces::permute_r_corner(Permutation p){
+    if(one == Face::R){
+        permute_r(two);
+        permute_r(three);
+    }
+    else if(two == Face::R){
+        permute_r(one);
+        permute_r(three);
+    }
+    else if(three == Face::R) {
+        permute_r(one);
+        permute_r(two);
+    }
+}
+void Faces::permute_ri_corner(Permutation p){
+
+    if(one == Face::R){
+        permute_ri(two);
+        permute_ri(three);
+    }
+    else if(two == Face::R){
+        permute_ri(one);
+        permute_ri(three);
+    }
+    else if(three == Face::R) {
+        permute_ri(one);
+        permute_ri(two);
+    }
+}
+
 
 
 

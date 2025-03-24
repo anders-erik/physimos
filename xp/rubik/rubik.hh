@@ -48,28 +48,28 @@ enum class CubieType {
     Corner,
 };
 
-enum class Rot90 {
-    A0,
-    A90,
-    A180,
-    A270,
-};
-
 struct Faces {
     Face one   = Face::None;
     Face two   = Face::None;
     Face three = Face::None;
 
-    
+    bool contains(Face face);
+
+    void permute_f(Face& face);
+    void permute_fi(Face& face);
+    void permute_r(Face& face);
+    void permute_ri(Face& face);
+
     void permute_f_edge(Permutation p);
     void permute_fi_edge(Permutation p);
     void permute_r_edge(Permutation p);
     void permute_ri_edge(Permutation p);
 
-    // void permute_f_corner(Permutation p);
-
-
-    bool contains(Face face);
+    void permute_f_corner(Permutation p);
+    void permute_fi_corner(Permutation p);
+    void permute_r_corner(Permutation p);
+    void permute_ri_corner(Permutation p);
+    
 };
 
 
@@ -118,7 +118,7 @@ struct Cubie {
 
 /** A Rubik's Cube */
 struct Cube {
-    std::array<Cubie, 8> cubies;
+    std::array<Cubie, 15> cubies;
     Cubie c_xp;
     // Cubie c1;
 
