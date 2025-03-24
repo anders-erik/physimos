@@ -11,75 +11,6 @@
 namespace xprubik {
 
 
-void Faces::permute_f_edge(Permutation p){
-    
-    Face& non_f = (one == Face::F) ? two : one;
-
-    if(non_f == Face::R)
-        non_f = Face::D;
-    else if(non_f == Face::U)
-        non_f = Face::R;
-    else if(non_f == Face::L)
-        non_f = Face::U;
-    else if(non_f == Face::D)
-        non_f = Face::L;
-    
-}
-void Faces::permute_fi_edge(Permutation p){
-
-    Face& non_f = (one == Face::F) ? two : one;
-
-    if(non_f == Face::R)
-        non_f = Face::U;
-    else if(non_f == Face::U)
-        non_f = Face::L;
-    else if(non_f == Face::L)
-        non_f = Face::D;
-    else if(non_f == Face::D)
-        non_f = Face::R;
-
-}
-void Faces::permute_r_edge(Permutation p){
-    
-    Face& non_r = (one == Face::R) ? two : one;
-
-    if(non_r == Face::B)
-        non_r = Face::D;
-    else if(non_r == Face::U)
-        non_r = Face::B;
-    else if(non_r == Face::F)
-        non_r = Face::U;
-    else if(non_r == Face::D)
-        non_r = Face::F;
-
-
-}
-void Faces::permute_ri_edge(Permutation p){
-
-    Face& non_r = (one == Face::R) ? two : one;
-
-    if(non_r == Face::B)
-        non_r = Face::U;
-    else if(non_r == Face::U)
-        non_r = Face::F;
-    else if(non_r == Face::F)
-        non_r = Face::D;
-    else if(non_r == Face::D)
-        non_r = Face::B;
-}
-
-
-bool Faces::contains(Face face){
-
-    if      (one == face)
-        return true;
-    else if (two == face)
-        return true;
-    else if (three == face)
-        return true;
-
-    return false;
-}
 
 
 Cube::Cube() {
@@ -172,9 +103,9 @@ Cube::Cube() {
 
     model_add_cube_mesh(c_xp.model.mesh);
     // c_xp.model.set_base_color(green);
-    // c_xp.model.transform.pos.x = 0.0f;
-    // c_xp.model.transform.pos.y = 1.0f;
-    // c_xp.model.transform.pos.z = 1.0f;
+    c_xp.model.transform.pos.x = -2.0f;
+    c_xp.model.transform.pos.y = -2.0f;
+    c_xp.model.transform.pos.z = 1.0f;
     model_add_facelet(c_xp.model.mesh, green, Axis::x);
     model_add_facelet(c_xp.model.mesh, blue, Axis::nx);
     model_add_facelet(c_xp.model.mesh, red, Axis::y);
@@ -193,6 +124,10 @@ Cube::Cube() {
 
 };
 
+// void Cubie::permute(Permutation permutation){
+
+// }
+
 void Cube::permute(Permutation permutation){
 
     // Start Animator
@@ -206,62 +141,51 @@ void Cube::permute(Permutation permutation){
         switch (permutation)
         {
             case Permutation::F:
-                // Only permute if face is part of current twist
                 if(!c.faces.contains(Face::F))
                     continue;
-                
-                c.is_animating = true;
 
                 if(c.type == CubieType::Edge)
                     c.faces.permute_f_edge(permutation);
 
-                c.c_rot.x = c.c_rot.neg(c.c_rot.x);
-                
+                c.c_rot.rot(Axis::nx);
                 break;
 
             case Permutation::Fi:
-                // Only permute if face is part of current twist
                 if(!c.faces.contains(Face::F))
                     continue;
-
-                c.is_animating = true;
 
                 if(c.type == CubieType::Edge)
                     c.faces.permute_fi_edge(permutation);
 
-                c.c_rot.x = c.c_rot.pos(c.c_rot.x);
+                c.c_rot.rot(Axis::x);
                 break;
 
             case Permutation::R:
-                // Only permute if face is part of current twist
                 if(!c.faces.contains(Face::R))
                     continue;
-
-                c.is_animating = true;
 
                 if(c.type == CubieType::Edge)
                     c.faces.permute_r_edge(permutation);
 
-                c.c_rot.y = c.c_rot.neg(c.c_rot.y);
+                c.c_rot.rot(Axis::ny);
                 break;
 
             case Permutation::Ri:
-                // Only permute if face is part of current twist
                 if(!c.faces.contains(Face::R))
                     continue;
-
-                c.is_animating = true;
 
                 if(c.type == CubieType::Edge)
                     c.faces.permute_ri_edge(permutation);
 
-                c.c_rot.y = c.c_rot.pos(c.c_rot.y);
+                c.c_rot.rot(Axis::y);
+
                 break;
         
         default:
             break;
         }
 
+        c.is_rotating = true;
     }
 
 }
@@ -288,24 +212,75 @@ void Cubie::set_position_from_faces(){
     }
 
 }
-void Cubie::set_rotation_transform_from_discrete_rot(){
 
-    model.transform.rot.x = c_rot.get_rad(c_rot.x);
-    model.transform.rot.y = c_rot.get_rad(c_rot.y);
-    model.transform.rot.z = c_rot.get_rad(c_rot.z);
-
-}
 void Cube::update_cubies(){
 
+    // as long as the animator is not animating, we simply render the internal cube state
+    // When animating, the cubes previous render state is preserved and manipulated.
+    // The goal of animation is to smoothly transition visually to the new internal state.
+    // Discontinutity between the final animation frame and next internal state. Try to get close match.
+    if(!animator.is_animating){
+
+        for(Cubie& c : cubies){
+
+            // Reset
+            c.model.transform.pos = f3();
+            c.model.transform.rot = f3();
+
+            // Update pos and rot vectors
+            c.set_position_from_faces();
+            // c.set_rotation_transform_from_discrete_rot();
 
 
-    for(Cubie& c : cubies){
-        c.model.transform.pos = f3();
-        c.model.transform.rot = f3();
-        c.set_position_from_faces();
-        c.set_rotation_transform_from_discrete_rot();
-        c.model.set_transform_matrix();
+            c.model.set_transform_matrix();
+
+            mat_mul(c.model.transform.matrix, c.c_rot.matrix);
+        }
+
     }
+    else{
+
+
+        update_animator();
+
+        for(Cubie& c : cubies){
+
+            // Extrinsic rotation of cubes we identified during permutation
+            if (c.is_rotating) {
+
+                // Extrinsic rotation for animation
+                m4f4 rot_mat;
+
+                switch(animator.permutation){
+
+                    case Permutation::F :
+                        rot_mat.rotate_x(-animator.animation_angle_step);
+                        break;
+
+                    case Permutation::Fi :
+                        rot_mat.rotate_x(animator.animation_angle_step);
+                        break;
+                
+                    case Permutation::R :
+                        rot_mat.rotate_y(-animator.animation_angle_step);
+                        break;
+
+                    case Permutation::Ri :
+                        rot_mat.rotate_y(animator.animation_angle_step);
+                        break;
+                
+                }
+
+                // pre multuiply = extrinsic rotation based on current transform matrix
+                mat_mul(rot_mat, c.model.transform.matrix);
+                c.model.transform.matrix = rot_mat;
+
+            }
+        }
+    }
+
+
+    
 }
 
 int count = 0;
@@ -359,42 +334,9 @@ void Cube::handle_input(InputState input_state){
 
 
 
-
-void Cubie::update_animation(Permutation perm, float angle_delta){
-
-    if(!is_animating)
-        return;
-
-    if(perm == Permutation::F){
-        model.transform.rot.x -= angle_delta;
-
-    }
-    else if(perm == Permutation::Fi){
-        model.transform.rot.x += angle_delta;
-    }
-    else if(perm == Permutation::R){
-        model.transform.rot.y -= angle_delta;
-
-    }
-    else if(perm == Permutation::Ri){
-        model.transform.rot.y += angle_delta;
-
-    }
-
-}
-
-
 void Cube::update_animator(){
 
-    if(!animator.is_animating)
-        return;
-
     ++animator.current_frame_count;
-
-
-    for(Cubie& c : cubies){
-        c.update_animation(animator.permutation, animator.animation_angle_step);
-    }
 
     // END CONDITION
     if(animator.current_frame_count > animator.frames_per_anim){
@@ -403,152 +345,143 @@ void Cube::update_animator(){
         animator.current_frame_count = 0;
 
         for(Cubie& c : cubies){
-            c.is_animating = false;
-            // Set end rotation to fixed value. Prevents compounding rotation errors.
-            c.model.transform.rot.x = c.c_rot.get_rad(c.c_rot.x);
-            c.model.transform.rot.y = c.c_rot.get_rad(c.c_rot.y);
-            c.model.transform.rot.z = c.c_rot.get_rad(c.c_rot.z);
+            c.is_rotating = false;
         }
         
         
     }
 }
 
-Rot90 CubieRotation::pos(Rot90 rot){
-    Rot90 return_rot;
 
-    switch (rot){
+void CubieRotation::rot(Axis axis){
+    m4f4 permute_matrix;
 
-        case Rot90::A0 :
-            return_rot = Rot90::A90;
-            break;
-        case Rot90::A90 :
-            return_rot = Rot90::A180;
-            break;
-        case Rot90::A180 :
-            return_rot = Rot90::A270;
-            break;
-        case Rot90::A270 :
-            return_rot = Rot90::A0;
-            break;
-
-    }
-
-    return return_rot;
-}
-Rot90 CubieRotation::neg(Rot90 rot){
-    Rot90 return_rot;
-
-    switch (rot){
-
-        case Rot90::A0 :
-            return_rot = Rot90::A270;
-            break;
-        case Rot90::A90 :
-            return_rot = Rot90::A0;
-            break;
-        case Rot90::A180 :
-            return_rot = Rot90::A90;
-            break;
-        case Rot90::A270 :
-            return_rot = Rot90::A180;
-            break;
-            
-    }
-
-    return return_rot;
-}
-
-void CubieRotation::pos_x(){
-    switch (x)
+    switch (axis)
     {
-    case Rot90::A0 :
-        x = Rot90::A90;
-        break;
-    case Rot90::A90 :
-        x = Rot90::A180;
-        break;
-    case Rot90::A180 :
-        x = Rot90::A270;
-        break;
-    case Rot90::A270 :
-        x = Rot90::A0;
-        break;
-    
-    default:
-        break;
-    }
-}
-void CubieRotation::neg_x(){
-    switch (x)
-    {
-    case Rot90::A0 :
-        x = Rot90::A270;
-        break;
-    case Rot90::A90 :
-        x = Rot90::A0;
-        break;
-    case Rot90::A180 :
-        x = Rot90::A90;
-        break;
-    case Rot90::A270 :
-        x = Rot90::A180;
-        break;
-    
-    default:
-        break;
-    }
-}
+        case Axis::x :
+            permute_matrix.y.y = 0.0f;
+            permute_matrix.y.z = -1.0f;
+            permute_matrix.z.y = 1.0f;
+            permute_matrix.z.z = 0.0f;
+            break;
 
-float CubieRotation::get_x_rad(){
-    float return_value;
+        case Axis::nx :
+            permute_matrix.y.y = 0.0f;
+            permute_matrix.y.z = 1.0f;
+            permute_matrix.z.y = -1.0f;
+            permute_matrix.z.z = 0.0f;
+            break;
 
-    switch (x)
-    {
-    case Rot90::A0 :
-        return_value = 0.0f;
-        break;
-    case Rot90::A90 :
-        return_value = 1.57f;
-        break;
-    case Rot90::A180 :
-        return_value = 3.14f;
-        break;
-    case Rot90::A270 :
-        return_value = 4.71f;
-        break;
-    
+        case Axis::y :
+            permute_matrix.x.x = 0.0f;
+            permute_matrix.x.z = 1.0f;
+            permute_matrix.z.x = -1.0f;
+            permute_matrix.z.z = 0.0f;
+            break;
+
+        case Axis::ny :
+            permute_matrix.x.x = 0.0f;
+            permute_matrix.x.z = -1.0f;
+            permute_matrix.z.x = 1.0f;
+            permute_matrix.z.z = 0.0f;
+            break;
+
+        case Axis::z :
+            permute_matrix.x.x = 0.0f;
+            permute_matrix.x.y = -1.0f;
+            permute_matrix.y.x = 1.0f;
+            permute_matrix.y.y = 0.0f;
+            break;
+
+        case Axis::nz :
+            permute_matrix.x.x = 0.0f;
+            permute_matrix.x.y = 1.0f;
+            permute_matrix.y.x = -1.0f;
+            permute_matrix.y.y = 0.0f;
+            break;
+
     default:
         break;
     }
 
-    return return_value;
+    mat_mul(permute_matrix, matrix);
+    matrix = permute_matrix;
 }
 
-float CubieRotation::get_rad(Rot90 rot){
-    float return_value;
 
-    switch (rot)
-    {
-    case Rot90::A0 :
-        return_value = 0.0f;
-        break;
-    case Rot90::A90 :
-        return_value = 1.57f;
-        break;
-    case Rot90::A180 :
-        return_value = 3.14f;
-        break;
-    case Rot90::A270 :
-        return_value = 4.71f;
-        break;
+
+
+void Faces::permute_f_edge(Permutation p){
     
-    default:
-        break;
-    }
+    Face& non_f = (one == Face::F) ? two : one;
 
-    return return_value;
+    if(non_f == Face::R)
+        non_f = Face::D;
+    else if(non_f == Face::U)
+        non_f = Face::R;
+    else if(non_f == Face::L)
+        non_f = Face::U;
+    else if(non_f == Face::D)
+        non_f = Face::L;
+    
+}
+void Faces::permute_fi_edge(Permutation p){
 
+    Face& non_f = (one == Face::F) ? two : one;
+
+    if(non_f == Face::R)
+        non_f = Face::U;
+    else if(non_f == Face::U)
+        non_f = Face::L;
+    else if(non_f == Face::L)
+        non_f = Face::D;
+    else if(non_f == Face::D)
+        non_f = Face::R;
+
+}
+void Faces::permute_r_edge(Permutation p){
+    
+    Face& non_r = (one == Face::R) ? two : one;
+
+    if(non_r == Face::B)
+        non_r = Face::D;
+    else if(non_r == Face::U)
+        non_r = Face::B;
+    else if(non_r == Face::F)
+        non_r = Face::U;
+    else if(non_r == Face::D)
+        non_r = Face::F;
+
+
+}
+void Faces::permute_ri_edge(Permutation p){
+
+    Face& non_r = (one == Face::R) ? two : one;
+
+    if(non_r == Face::B)
+        non_r = Face::U;
+    else if(non_r == Face::U)
+        non_r = Face::F;
+    else if(non_r == Face::F)
+        non_r = Face::D;
+    else if(non_r == Face::D)
+        non_r = Face::B;
+}
+
+
+
+
+
+bool Faces::contains(Face face){
+
+    if      (one == face)
+        return true;
+    else if (two == face)
+        return true;
+    else if (three == face)
+        return true;
+
+    return false;
 }
 
 

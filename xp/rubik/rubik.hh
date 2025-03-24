@@ -66,6 +66,9 @@ struct Faces {
     void permute_r_edge(Permutation p);
     void permute_ri_edge(Permutation p);
 
+    // void permute_f_corner(Permutation p);
+
+
     bool contains(Face face);
 };
 
@@ -89,19 +92,11 @@ struct Animator {
 };
 
 
-/** Keeps track of Cubie rotations relative to home. */
+/** Keeps track of Cubie rotations relative original rotation. Extrinsic rotations. */
 struct CubieRotation {
-    Rot90 x = Rot90::A0;
-    Rot90 y = Rot90::A0;
-    Rot90 z = Rot90::A0;
-
-    void pos_x();
-    void neg_x();
-    float get_x_rad();
-
-    Rot90 pos(Rot90 rot);
-    Rot90 neg(Rot90 rot);
-    float get_rad(Rot90 rot);
+    m4f4 matrix;
+    /** Permute the rotation matrix by 90deg by premultiplying current rotation matrix by rotation matrix of passed axis. */
+    void rot(Axis axis);
 };
 
 
@@ -110,13 +105,14 @@ struct Cubie {
     CubieRotation c_rot;
     Faces faces;
 
-    bool is_animating = false;
+    bool is_rotating = false; // Animation flag
     
     Model model;
 
-    void update_animation(Permutation perm, float angle_delta);
+    // void update_animation(Permutation perm, float angle_delta);
     void set_position_from_faces();
-    void set_rotation_transform_from_discrete_rot();
+    // void permute(Permutation permutation);
+    // void set_rotation_transform_from_discrete_rot();
 };
 
 

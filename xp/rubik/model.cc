@@ -90,21 +90,28 @@ void Model::set_transform_matrix(){
     transform.matrix.translate(transform.pos);
     
     // Intrinsic rotations work??
-    transform.matrix.rotate_x(transform.rot.x);
-    transform.matrix.rotate_y(transform.rot.y);
-    transform.matrix.rotate_z(transform.rot.z);
+    // transform.matrix.rotate_x(transform.rot.x);
+    // transform.matrix.rotate_y(transform.rot.y);
+    // transform.matrix.rotate_z(transform.rot.z);
+
+    // mat_mul(transform.matrix, );
 
 }
 void Model::set_transform_matrix_anim(){
     m4f4 identity;
 
+    
+
     // transform.matrix = identity;
 
-    transform.matrix.rotate_z(transform.rot.z);
-    transform.matrix.rotate_y(transform.rot.y);
-    transform.matrix.rotate_x(transform.rot.x);
+    // transform.matrix.rotate_z(transform.rot.z);
+    // transform.matrix.rotate_y(transform.rot.y);
+    // transform.matrix.rotate_x(transform.rot.x);
 
-    transform.matrix.translate(transform.pos);
+    // // transform.matrix.translate(transform.pos);
+
+    // transform.matrix = transform.matrix;
+
 }
 
 void Model::set_base_color(f3 color){
