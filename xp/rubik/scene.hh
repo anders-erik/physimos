@@ -28,9 +28,10 @@ struct CameraOrbital {
     float zn = 0.1f;
     float zf = 100.0f;
 
-    void orbit_z(float orbit_z_delta);
-    void orbit_xy(float xy_delta);
-    void zoom(float zoom_delta);
+    float rho   = 11.0f; // Radius
+    float theta = 0.83f; // x-y plane
+    float phi   = 0.89f; // z-axis
+    void set_triplet(float _rho, float _theta, float _phi);
 
     void set_matrices();
 };

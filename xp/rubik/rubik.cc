@@ -387,30 +387,30 @@ void Cube::handle_input(InputState input_state){
         print();
     }
 
-    if(input_state.left){
-        // c_xp.model.transform.pos.x += 0.01f;
-        // c_xp.model.transform.rot.x += 0.1f;
-        float angle = 1.5707825f;
-        m4f4 identity;
-        m4f4 x_rot_mat = m4f4_create_rotation_x(angle);
-        m4f4 current_tmp = c_xp.model.transform.matrix;
-        c_xp.model.transform.matrix = identity;
-        mat_mul(c_xp.model.transform.matrix, x_rot_mat);
-        mat_mul(c_xp.model.transform.matrix, current_tmp);
+    // if(input_state.left){
+    //     // c_xp.model.transform.pos.x += 0.01f;
+    //     // c_xp.model.transform.rot.x += 0.1f;
+    //     float angle = 1.5707825f;
+    //     m4f4 identity;
+    //     m4f4 x_rot_mat = m4f4_create_rotation_x(angle);
+    //     m4f4 current_tmp = c_xp.model.transform.matrix;
+    //     c_xp.model.transform.matrix = identity;
+    //     mat_mul(c_xp.model.transform.matrix, x_rot_mat);
+    //     mat_mul(c_xp.model.transform.matrix, current_tmp);
         
-        // std::cout << "count = " << ++count << std::endl;
+    //     // std::cout << "count = " << ++count << std::endl;
         
-    }
-    else if(input_state.down){
-        float angle = 1.5707825f;
-        m4f4 identity;
-        m4f4 y_rot_mat = m4f4_create_rotation_y(angle);
-        m4f4 current_tmp = c_xp.model.transform.matrix;
-        c_xp.model.transform.matrix = identity;
-        mat_mul(c_xp.model.transform.matrix, y_rot_mat);
-        mat_mul(c_xp.model.transform.matrix, current_tmp);
-    }
-    else if(input_state.right){}
+    // }
+    // else if(input_state.down){
+    //     float angle = 1.5707825f;
+    //     m4f4 identity;
+    //     m4f4 y_rot_mat = m4f4_create_rotation_y(angle);
+    //     m4f4 current_tmp = c_xp.model.transform.matrix;
+    //     c_xp.model.transform.matrix = identity;
+    //     mat_mul(c_xp.model.transform.matrix, y_rot_mat);
+    //     mat_mul(c_xp.model.transform.matrix, current_tmp);
+    // }
+    // else if(input_state.right){}
 
 }
 

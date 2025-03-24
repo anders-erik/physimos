@@ -168,6 +168,15 @@ InputState window_get_input(){
         _input_state.shift = true;
 
 
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        input_state.up = true;
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        input_state.left = true;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        input_state.down = true;
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        input_state.right = true;
+
 
     return _input_state;
 }

@@ -16,8 +16,23 @@ RendererAxes renderer_axes;
 
 CameraOrbital camera;
 
-// Cube cube;
 
+
+void CameraOrbital::set_triplet(float _rho, float _theta, float _phi){
+
+    rho = _rho;
+    theta = _theta;
+
+    phi = _phi < 0.0f ? 0.0f : _phi;
+    phi = phi > 3.14f ? 3.14f : phi;
+
+    transform.pos.x = rho * cosf(theta) * sinf(phi);
+    transform.pos.y = rho * sinf(theta) * sinf(phi);
+    transform.pos.z = rho * cosf(phi);
+
+    transform.rot.x = phi;
+    transform.rot.z = 1.57f + theta; // Offset by 90 deg to align camera with initial theta
+}
 
 void CameraOrbital::set_matrices(){
     m4f4 indentity;
@@ -34,16 +49,7 @@ void CameraOrbital::set_matrices(){
     negative_camera_pos.z = -camera.transform.pos.z;
     view_mat.translate(negative_camera_pos);
 
-    m4f4 sanity_mat;
-    sanity_mat.x.x = 0.0f;
-    sanity_mat.x.z = -1.0f;
-    sanity_mat.y.y = 0.0f;
-    sanity_mat.y.x = -1.0f;
-    sanity_mat.z.z = 0.0f;
-    sanity_mat.z.y = 1.0f;
-    // mat_mul(view_mat, sanity_mat);
 
-    
     perspective_mat = indentity;
     perspective_mat.perspective(
                         camera.fov, 
@@ -55,40 +61,6 @@ void CameraOrbital::set_matrices(){
 
 }
 
-
-void CameraOrbital::orbit_z(float orbit_z_delta){
-
-    // Z ORBIT -- GOOD
-    m4f4 rot_z_mat = m4f4_create_rotation_z(orbit_z_delta);
-    transform.pos.matmul(rot_z_mat);
-    transform.rot.z -= orbit_z_delta;
-
-}
-void CameraOrbital::orbit_xy(float xy_delta){
-
-    float xy_cam_norm_2 = transform.pos.x*transform.pos.x + transform.pos.y*transform.pos.y;
-    float xy_cam_norm = sqrtf(xy_cam_norm_2);
-    float x_cam_norm = transform.pos.x / xy_cam_norm;
-    float y_cam_norm = transform.pos.y / xy_cam_norm;
-
-    // Lock the orbit when going very close to vertical
-    if( xy_cam_norm > 0.1f ){
-        m4f4 rot_x_mat = m4f4_create_rotation_x( y_cam_norm * -xy_delta);
-        m4f4 rot_y_mat = m4f4_create_rotation_y( x_cam_norm * xy_delta);
-        transform.pos.matmul(rot_y_mat);
-        transform.pos.matmul(rot_x_mat);
-        // LOOK AT
-        transform.rot.x += xy_delta;
-    }
-
-}
-void CameraOrbital::zoom(float zoom_delta){
-
-    transform.pos.x -= transform.pos.x * 0.2 * zoom_delta;
-    transform.pos.y -= transform.pos.y * 0.2 * zoom_delta;
-    transform.pos.z -= transform.pos.z * 0.2 * zoom_delta;
-
-}
 
 
 void scene_set_viewport_dims(int _width, int _height){
@@ -126,48 +98,46 @@ bool scene_init(Cube& _cube){
 void scene_handle_input(InputState input_state){
     
 
-
     // ORBIT CONTROLS
 
+    // Spherical Coords
 
-    // camera.transform.rot.x -= pan_rot_scale * (float) input_state.mouse.middle_delta_accum.y;
-    // camera.transform.rot.z += pan_rot_scale * (float) input_state.mouse.middle_delta_accum.x;
-    // float vert_mult = 1.41;
-    // float vert_mult = 2.0f;
+    float rho_factor = -0.2f;
+    float theta_scale = -0.008f;
+    float phi_scale = 0.010f;
 
-    // I've been playing around with values/+/- configurations here
-    // float angle = atan2f(camera.transform.pos.y, camera.transform.pos.x);
+    float _rho      = camera.rho   + camera.rho  * rho_factor * input_state.scroll_delta;
+    float _theta    = camera.theta + theta_scale * (float) input_state.mouse.middle_delta_accum.x;
+    float _phi      = camera.phi   + phi_scale   * (float) input_state.mouse.middle_delta_accum.y;
 
- 
-    float orbit_xy_scale = 0.004f;
-    float orbit_z_scale = 0.008f;
+    camera.set_triplet(_rho, _theta, _phi);
 
-    camera.orbit_xy(orbit_xy_scale * (float) input_state.mouse.middle_delta_accum.y);
-    camera.orbit_z( orbit_z_scale * (float) input_state.mouse.middle_delta_accum.x);
-    camera.zoom(input_state.scroll_delta);
+
     
+    if(input_state.up){
 
+    }
+    if(input_state.down){
+
+    }
+    if(input_state.left){
+
+    }
+    if(input_state.right){
+
+    }
+    
+    
     // PRINTS
     if(input_state.p){
         // std::cout << "camera.transform.rot.x = " << camera.transform.rot.x << std::endl;
         // std::cout << "camera.transform.rot.y = " << camera.transform.rot.y << std::endl;
         // std::cout << "camera.transform.rot.z = " << camera.transform.rot.z << std::endl;
         // std::cout << "xy_cam_norm = " << xy_cam_norm << std::endl;
-        
+        // std::cout << "camera.rho    = " << camera.rho << std::endl;
+        // std::cout << "camera.theta  = " << camera.theta << std::endl;
+        // std::cout << "camera.phi    = " << camera.phi << std::endl;
     }
-
-    // ARROW LOOK AROUND
-    // if(input_state.up){
-    //     camera.transform.rot.x += 0.02f;
-    // }
-    // if(input_state.down){
-    //     camera.transform.rot.x -= 0.02f;
-    // }
-    // if(input_state.left)
-    //     camera.transform.rot.z += 0.02;
-    // if(input_state.right)
-    //     camera.transform.rot.z -= 0.02;
-    
 
 }
 
@@ -186,6 +156,7 @@ void scene_update(Cube& _cube){
     // _cube.c1.model.set_transform_matrix();
 
     // camera
+    camera.set_triplet(camera.rho, camera.theta, camera.phi);
     camera.set_matrices();
     renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
 
