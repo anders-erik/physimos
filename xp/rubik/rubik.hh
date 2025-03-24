@@ -57,18 +57,42 @@ struct Faces {
 
     void permute_f(Face& face);
     void permute_fi(Face& face);
+    void permute_b(Face& face);
+    void permute_bi(Face& face);
     void permute_r(Face& face);
     void permute_ri(Face& face);
+    void permute_l(Face& face);
+    void permute_li(Face& face);
+    void permute_u(Face& face);
+    void permute_ui(Face& face);
+    void permute_d(Face& face);
+    void permute_di(Face& face);
 
     void permute_f_edge(Permutation p);
     void permute_fi_edge(Permutation p);
+    void permute_b_edge(Permutation p);
+    void permute_bi_edge(Permutation p);
     void permute_r_edge(Permutation p);
     void permute_ri_edge(Permutation p);
+    void permute_l_edge(Permutation p);
+    void permute_li_edge(Permutation p);
+    void permute_u_edge(Permutation p);
+    void permute_ui_edge(Permutation p);
+    void permute_d_edge(Permutation p);
+    void permute_di_edge(Permutation p);
 
     void permute_f_corner(Permutation p);
     void permute_fi_corner(Permutation p);
+    void permute_b_corner(Permutation p);
+    void permute_bi_corner(Permutation p);
     void permute_r_corner(Permutation p);
     void permute_ri_corner(Permutation p);
+    void permute_l_corner(Permutation p);
+    void permute_li_corner(Permutation p);
+    void permute_u_corner(Permutation p);
+    void permute_ui_corner(Permutation p);
+    void permute_d_corner(Permutation p);
+    void permute_di_corner(Permutation p);
     
 };
 
@@ -87,10 +111,12 @@ struct Animator {
     /** Manually step size for 60 frames per anim */
     // float animation_angle_step = 0.026179708f;
     /** Manually step size for 30 frames per anim */
-    float animation_angle_step = 0.053f;
+    // float animation_angle_step = 0.053f;
+    /** Manually step size for 10 frames per anim */
+    float animation_angle_step = 0.15f;
 
 
-    int frames_per_anim = 30;
+    int frames_per_anim = 10;
     int current_frame_count = 0;
 };
 
@@ -112,18 +138,13 @@ struct Cubie {
     
     Model model;
 
-    // void update_animation(Permutation perm, float angle_delta);
     void set_position_from_faces();
-    // void permute(Permutation permutation);
-    // void set_rotation_transform_from_discrete_rot();
 };
 
 
 /** A Rubik's Cube */
 struct Cube {
-    std::array<Cubie, 15> cubies;
-    Cubie c_xp;
-    // Cubie c1;
+    std::array<Cubie, 26> cubies;
 
     /** Performs incremental cubie model rotations to display permutation transitions. */
     Animator animator;

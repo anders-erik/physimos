@@ -87,7 +87,7 @@ bool scene_init(Cube& _cube){
         // c.model.transform.rot.x += animator.animation_angle_step;
         renderer_model.create_render_context(c.model);
     }
-    renderer_model.create_render_context(_cube.c_xp.model);
+    // renderer_model.create_render_context(_cube.c_xp.model);
     // renderer_model.create_render_context(_cube.c0.model);
     // renderer_model.create_render_context(_cube.c1.model);
     
@@ -179,7 +179,7 @@ void scene_render(Cube& _cube){
     for(Cubie& c : _cube.cubies){
         renderer_model.render(c.model);
     }
-    renderer_model.render(_cube.c_xp.model);
+    // renderer_model.render(_cube.c_xp.model);
 }
 
 
