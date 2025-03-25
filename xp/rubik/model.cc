@@ -125,8 +125,11 @@ void Model::set_base_color(f3 color){
 
 void model_add_facelet(Mesh& mesh, f3 color, Axis axis){
 
-    float cube_size = 1.01f;
+    float cube_size = 1.0f;
     float cube_half = cube_size / 2.0f;
+
+    float facelet_offset = cube_half + 0.001;
+    float facelet_width = cube_half - 0.05;
 
     Vertex v0;
     Vertex v1;
@@ -135,62 +138,86 @@ void model_add_facelet(Mesh& mesh, f3 color, Axis axis){
 
     if(axis == Axis::x || axis == Axis::nx){
 
-        v0.pos = f3( 0.0f, -cube_half, -cube_half);
-        v1.pos = f3( 0.0f,  cube_half, -cube_half);
-        v2.pos = f3( 0.0f,  cube_half,  cube_half);
-        v3.pos = f3( 0.0f, -cube_half,  cube_half);
+        v0.pos = f3( 0.0f, -facelet_width, -facelet_width);
+        v1.pos = f3( 0.0f,  facelet_width, -facelet_width);
+        v2.pos = f3( 0.0f,  facelet_width,  facelet_width);
+        v3.pos = f3( 0.0f, -facelet_width,  facelet_width);
 
         if(axis == Axis::x){
-            v0.pos.x += cube_half;
-            v1.pos.x += cube_half;
-            v2.pos.x += cube_half;
-            v3.pos.x += cube_half;
+            v0.pos.x += facelet_offset;
+            v1.pos.x += facelet_offset;
+            v2.pos.x += facelet_offset;
+            v3.pos.x += facelet_offset;
+            v0.normal.x = 1.0f;
+            v1.normal.x = 1.0f;
+            v2.normal.x = 1.0f;
+            v3.normal.x = 1.0f;
         }
         else{
-            v0.pos.x -= cube_half;
-            v1.pos.x -= cube_half;
-            v2.pos.x -= cube_half;
-            v3.pos.x -= cube_half;
+            v0.pos.x -= facelet_offset;
+            v1.pos.x -= facelet_offset;
+            v2.pos.x -= facelet_offset;
+            v3.pos.x -= facelet_offset;
+            v0.normal.x = -1.0f;
+            v1.normal.x = -1.0f;
+            v2.normal.x = -1.0f;
+            v3.normal.x = -1.0f;
         }
     }
     else if(axis == Axis::y || axis == Axis::ny){
 
-        v0.pos = f3( -cube_half, 0.0f, -cube_half);
-        v1.pos = f3(  cube_half, 0.0f, -cube_half);
-        v2.pos = f3(  cube_half, 0.0f,  cube_half);
-        v3.pos = f3( -cube_half, 0.0f,  cube_half);
+        v0.pos = f3( -facelet_width, 0.0f, -facelet_width);
+        v1.pos = f3(  facelet_width, 0.0f, -facelet_width);
+        v2.pos = f3(  facelet_width, 0.0f,  facelet_width);
+        v3.pos = f3( -facelet_width, 0.0f,  facelet_width);
 
         if(axis == Axis::y){
-            v0.pos.y += cube_half;
-            v1.pos.y += cube_half;
-            v2.pos.y += cube_half;
-            v3.pos.y += cube_half;
+            v0.pos.y += facelet_offset;
+            v1.pos.y += facelet_offset;
+            v2.pos.y += facelet_offset;
+            v3.pos.y += facelet_offset;
+            v0.normal.y = 1.0f;
+            v1.normal.y = 1.0f;
+            v2.normal.y = 1.0f;
+            v3.normal.y = 1.0f;
         }
         else{
-            v0.pos.y -= cube_half;
-            v1.pos.y -= cube_half;
-            v2.pos.y -= cube_half;
-            v3.pos.y -= cube_half;
+            v0.pos.y -= facelet_offset;
+            v1.pos.y -= facelet_offset;
+            v2.pos.y -= facelet_offset;
+            v3.pos.y -= facelet_offset;
+            v0.normal.y = -1.0f;
+            v1.normal.y = -1.0f;
+            v2.normal.y = -1.0f;
+            v3.normal.y = -1.0f;
         }
     }
     else if(axis == Axis::z || axis == Axis::nz){
 
-        v0.pos = f3( -cube_half, -cube_half, 0.0f);
-        v1.pos = f3(  cube_half, -cube_half, 0.0f);
-        v2.pos = f3(  cube_half,  cube_half, 0.0f);
-        v3.pos = f3( -cube_half,  cube_half, 0.0f);
+        v0.pos = f3( -facelet_width, -facelet_width, 0.0f);
+        v1.pos = f3(  facelet_width, -facelet_width, 0.0f);
+        v2.pos = f3(  facelet_width,  facelet_width, 0.0f);
+        v3.pos = f3( -facelet_width,  facelet_width, 0.0f);
 
         if(axis == Axis::z){
-            v0.pos.z += cube_half;
-            v1.pos.z += cube_half;
-            v2.pos.z += cube_half;
-            v3.pos.z += cube_half;
+            v0.pos.z += facelet_offset;
+            v1.pos.z += facelet_offset;
+            v2.pos.z += facelet_offset;
+            v3.pos.z += facelet_offset;
+            v0.normal.z = 1.0f;
+            v1.normal.z = 1.0f;
+            v2.normal.z = 1.0f;
+            v3.normal.z = 1.0f;
         }
         else{
-            v0.pos.z -= cube_half;
-            v1.pos.z -= cube_half;
-            v2.pos.z -= cube_half;
-            v3.pos.z -= cube_half;
+            v0.pos.z -= facelet_offset;
+            v1.pos.z -= facelet_offset;
+            v2.pos.z -= facelet_offset;
+            v3.pos.z -= facelet_offset;
+            v0.normal.z = -1.0f;
+            v1.normal.z = -1.0f;
+            v2.normal.z = -1.0f;
+            v3.normal.z = -1.0f;
         }
     }
 

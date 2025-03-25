@@ -20,11 +20,14 @@ CameraOrbital camera;
 
 void CameraOrbital::set_triplet(float _rho, float _theta, float _phi){
 
-    rho = _rho;
+    rho = _rho < 4.0f ? 4.0f : _rho ;
+    rho = rho > 30.0f ? 30.0f : rho ;
+
     theta = _theta;
 
-    phi = _phi < 0.0f ? 0.0f : _phi;
-    phi = phi > 3.14f ? 3.14f : phi;
+    // phi = _phi < 0.0f ? 0.0f : _phi;
+    // phi = phi > 3.14f ? 3.14f : phi;
+    phi = _phi;
 
     transform.pos.x = rho * cosf(theta) * sinf(phi);
     transform.pos.y = rho * sinf(theta) * sinf(phi);
@@ -173,8 +176,8 @@ void scene_render(Cube& _cube){
     m4f4 identity;
     renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
-    renderer_axes.set_uniforms(_cube.cubies[0].model.transform.matrix, camera.view_mat, camera.perspective_mat);
-    renderer_axes.render();
+    // renderer_axes.set_uniforms(_cube.cubies[0].model.transform.matrix, camera.view_mat, camera.perspective_mat);
+    // renderer_axes.render();
 
     for(Cubie& c : _cube.cubies){
         renderer_model.render(c.model);
@@ -197,22 +200,24 @@ void RendererAxes::init(){
 
     AxesVertex vertices[6];
 
+    float axes_scale = 3.0f;
+
     vertices[0].pos.x = 0.0f;
     vertices[0].color.x = 1.0f;
 
-    vertices[1].pos.x = 1.0f;
+    vertices[1].pos.x = axes_scale;
     vertices[1].color.x = 1.0f;
 
     vertices[2].pos.y = 0.0f;
     vertices[2].color.y = 1.0f;
 
-    vertices[3].pos.y = 1.0f;
+    vertices[3].pos.y = axes_scale;
     vertices[3].color.y = 1.0f;
 
     vertices[4].pos.z = 0.0f;
     vertices[4].color.z = 1.0f;
 
-    vertices[5].pos.z = 1.0f;
+    vertices[5].pos.z = axes_scale;
     vertices[5].color.z = 1.0f;
 
     

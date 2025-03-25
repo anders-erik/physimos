@@ -29,6 +29,12 @@ Cube::Cube() {
     f3 l_color = orange;
     f3 u_color = yellow;
     f3 d_color = white;
+    // f3 f_color = white;
+    // f3 b_color = yellow;
+    // f3 r_color = red;
+    // f3 l_color = orange;
+    // f3 u_color = green;
+    // f3 d_color = blue;
 
 
     Cubie& f = cubies[0];

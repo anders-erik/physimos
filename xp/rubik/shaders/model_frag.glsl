@@ -9,12 +9,12 @@ out vec4 FragColor;
 void main() {
 
     // Lamp
-    vec3 light_pos =   vec3(0.0, 0.0, 5.0);
-    vec3 light_color = vec3(0.3, 0.2, 0.2);
-    // vec3 light_color = vec3(0.5, 0.5, 0.5);
+    vec3 light_pos =   vec3(3.0, 3.0, 5.0);
+    // vec3 light_color = vec3(0.3, 0.2, 0.2);
+    vec3 light_color = vec3(0.5, 0.5, 0.5);
     vec3 light_dir = normalize(light_pos - fragPos);
 
-    vec3 ambient = vec3(0.2, 0.2, 0.2);
+    vec3 ambient = vec3(0.4, 0.4, 0.4);
 
     float diffuse_value = max(dot(light_dir, normal), 0.0);
     vec3 diffuse = vec3(diffuse_value);
