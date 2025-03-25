@@ -71,212 +71,232 @@ Cube::Cube() {
     
 
     // F 
+    f.set_center_face(Face::F);
     model_add_cube_mesh(f.model.mesh);
     model_add_facelet(f.model.mesh, f_color, Axis::x);
-    f.type = CubieType::Center;
-    f.faces.one = Face::F;
 
+    fr.set_edge_faces(Face::F, Face::R);
     model_add_cube_mesh(fr.model.mesh);
     model_add_facelet(fr.model.mesh, f_color, Axis::x);
     model_add_facelet(fr.model.mesh, r_color, Axis::y);
-    fr.type = CubieType::Edge;
-    fr.faces.one = Face::F;
-    fr.faces.two = Face::R;
 
+    fl.set_edge_faces(Face::F, Face::L);
     model_add_cube_mesh(fl.model.mesh);
     model_add_facelet(fl.model.mesh, f_color, Axis::x);
     model_add_facelet(fl.model.mesh, l_color, Axis::ny);
-    fl.type = CubieType::Edge;
-    fl.faces.one = Face::F;
-    fl.faces.two = Face::L;
 
+    fu.set_edge_faces(Face::F, Face::U);
     model_add_cube_mesh(fu.model.mesh);
     model_add_facelet(fu.model.mesh, f_color, Axis::x);
     model_add_facelet(fu.model.mesh, u_color, Axis::z);
-    fu.type = CubieType::Edge;
-    fu.faces.one = Face::F;
-    fu.faces.two = Face::U;
 
+    fd.set_edge_faces(Face::F, Face::D);
     model_add_cube_mesh(fd.model.mesh);
     model_add_facelet(fd.model.mesh, f_color, Axis::x);
     model_add_facelet(fd.model.mesh, d_color, Axis::nz);
-    fd.type = CubieType::Edge;
-    fd.faces.one = Face::F;
-    fd.faces.two = Face::D;
 
+    fru.set_corner_faces(Face::F, Face::R, Face::U);
     model_add_cube_mesh(fru.model.mesh);
     model_add_facelet(fru.model.mesh, f_color, Axis::x);
     model_add_facelet(fru.model.mesh, r_color, Axis::y);
     model_add_facelet(fru.model.mesh, u_color, Axis::z);
-    fru.type = CubieType::Corner;
-    fru.faces.one = Face::F;
-    fru.faces.two = Face::R;
-    fru.faces.three = Face::U;
 
+    frd.set_corner_faces(Face::F, Face::R, Face::D);
     model_add_cube_mesh(frd.model.mesh);
     model_add_facelet(frd.model.mesh, f_color, Axis::x);
     model_add_facelet(frd.model.mesh, r_color, Axis::y);
     model_add_facelet(frd.model.mesh, d_color, Axis::nz);
-    frd.type = CubieType::Corner;
-    frd.faces.one = Face::F;
-    frd.faces.two = Face::R;
-    frd.faces.three = Face::D;
 
+    flu.set_corner_faces(Face::F, Face::L, Face::U);
     model_add_cube_mesh(flu.model.mesh);
     model_add_facelet(flu.model.mesh, f_color, Axis::x);
     model_add_facelet(flu.model.mesh, l_color, Axis::ny);
     model_add_facelet(flu.model.mesh, u_color, Axis::z);
-    flu.type = CubieType::Corner;
-    flu.faces.one = Face::F;
-    flu.faces.two = Face::L;
-    flu.faces.three = Face::U;
 
+    fld.set_corner_faces(Face::F, Face::L, Face::D);
     model_add_cube_mesh(fld.model.mesh);
     model_add_facelet(fld.model.mesh, f_color, Axis::x);
     model_add_facelet(fld.model.mesh, l_color, Axis::ny);
     model_add_facelet(fld.model.mesh, d_color, Axis::nz);
-    fld.type = CubieType::Corner;
-    fld.faces.one = Face::F;
-    fld.faces.two = Face::L;
-    fld.faces.three = Face::D;
 
 
 
     // R
+    r.set_center_face(Face::R);
     model_add_cube_mesh(r.model.mesh);
     model_add_facelet(r.model.mesh, r_color, Axis::y);
-    r.type = CubieType::Center;
-    r.faces.one = Face::R;
 
+    rb.set_edge_faces(Face::R, Face::B);
     model_add_cube_mesh(rb.model.mesh);
     model_add_facelet(rb.model.mesh, r_color, Axis::y);
     model_add_facelet(rb.model.mesh, b_color, Axis::nx);
-    rb.type = CubieType::Edge;
-    rb.faces.one = Face::R;
-    rb.faces.two = Face::B;
 
+    ru.set_edge_faces(Face::R, Face::U);
     model_add_cube_mesh(ru.model.mesh);
     model_add_facelet(ru.model.mesh, r_color, Axis::y);
     model_add_facelet(ru.model.mesh, u_color, Axis::z);
-    ru.type = CubieType::Edge;
-    ru.faces.one = Face::R;
-    ru.faces.two = Face::U;
 
+    rd.set_edge_faces(Face::R, Face::D);
     model_add_cube_mesh(rd.model.mesh);
     model_add_facelet(rd.model.mesh, r_color, Axis::y);
     model_add_facelet(rd.model.mesh, d_color, Axis::nz);
-    rd.type = CubieType::Edge;
-    rd.faces.one = Face::R;
-    rd.faces.two = Face::D;
 
+    rbu.set_corner_faces(Face::R, Face::B, Face::U);
     model_add_cube_mesh(rbu.model.mesh);
     model_add_facelet(rbu.model.mesh, r_color, Axis::y);
     model_add_facelet(rbu.model.mesh, b_color, Axis::nx);
     model_add_facelet(rbu.model.mesh, u_color, Axis::z);
-    rbu.type = CubieType::Corner;
-    rbu.faces.one = Face::R;
-    rbu.faces.two = Face::B;
-    rbu.faces.three = Face::U;
 
+    rbd.set_corner_faces(Face::R, Face::B, Face::D);
     model_add_cube_mesh(rbd.model.mesh);
     model_add_facelet(rbd.model.mesh, r_color, Axis::y);
     model_add_facelet(rbd.model.mesh, b_color, Axis::nx);
     model_add_facelet(rbd.model.mesh, d_color, Axis::nz);
-    rbd.type = CubieType::Corner;
-    rbd.faces.one = Face::R;
-    rbd.faces.two = Face::B;
-    rbd.faces.three = Face::D;
 
 
 
 
 
     // B
-
+    b.set_center_face(Face::B);
     model_add_cube_mesh(b.model.mesh);
     model_add_facelet(b.model.mesh, b_color, Axis::nx);
-    b.type = CubieType::Center;
-    b.faces.one = Face::B;
 
+    bl.set_edge_faces(Face::B, Face::L);
     model_add_cube_mesh(bl.model.mesh);
     model_add_facelet(bl.model.mesh, b_color, Axis::nx);
     model_add_facelet(bl.model.mesh, l_color, Axis::ny);
-    bl.type = CubieType::Edge;
-    bl.faces.one = Face::B;
-    bl.faces.two = Face::L;
 
+    bu.set_edge_faces(Face::B, Face::U);
     model_add_cube_mesh(bu.model.mesh);
     model_add_facelet(bu.model.mesh, b_color, Axis::nx);
     model_add_facelet(bu.model.mesh, u_color, Axis::z);
-    bu.type = CubieType::Edge;
-    bu.faces.one = Face::B;
-    bu.faces.two = Face::U;
 
+    bd.set_edge_faces(Face::B, Face::D);
     model_add_cube_mesh(bd.model.mesh);
     model_add_facelet(bd.model.mesh, b_color, Axis::nx);
     model_add_facelet(bd.model.mesh, d_color, Axis::nz);
-    bd.type = CubieType::Edge;
-    bd.faces.one = Face::B;
-    bd.faces.two = Face::D;
 
+    blu.set_corner_faces(Face::B, Face::L, Face::U);
     model_add_cube_mesh(blu.model.mesh);
     model_add_facelet(blu.model.mesh, b_color, Axis::nx);
     model_add_facelet(blu.model.mesh, l_color, Axis::ny);
     model_add_facelet(blu.model.mesh, u_color, Axis::z);
-    blu.type = CubieType::Corner;
-    blu.faces.one = Face::B;
-    blu.faces.two = Face::L;
-    blu.faces.three = Face::U;
 
+    bld.set_corner_faces(Face::B, Face::L, Face::D);
     model_add_cube_mesh(bld.model.mesh);
     model_add_facelet(bld.model.mesh, b_color, Axis::nx);
     model_add_facelet(bld.model.mesh, l_color, Axis::ny);
     model_add_facelet(bld.model.mesh, d_color, Axis::nz);
-    bld.type = CubieType::Corner;
-    bld.faces.one = Face::B;
-    bld.faces.two = Face::L;
-    bld.faces.three = Face::D;
 
 
     // L
+    l.set_center_face(Face::L);
     model_add_cube_mesh(l.model.mesh);
     model_add_facelet(l.model.mesh, l_color, Axis::ny);
-    l.type = CubieType::Center;
-    l.faces.one = Face::L;
 
+    lu.set_edge_faces(Face::L, Face::U);
     model_add_cube_mesh(lu.model.mesh);
     model_add_facelet(lu.model.mesh, l_color, Axis::ny);
     model_add_facelet(lu.model.mesh, u_color, Axis::z);
-    lu.type = CubieType::Edge;
-    lu.faces.one = Face::L;
-    lu.faces.two = Face::U;
 
+    ld.set_edge_faces(Face::L, Face::D);
     model_add_cube_mesh(ld.model.mesh);
     model_add_facelet(ld.model.mesh, l_color, Axis::ny);
     model_add_facelet(ld.model.mesh, d_color, Axis::nz);
-    ld.type = CubieType::Edge;
-    ld.faces.one = Face::L;
-    ld.faces.two = Face::D;
 
 
 
     // U
+    u.set_center_face(Face::U);
     model_add_cube_mesh(u.model.mesh);
     model_add_facelet(u.model.mesh, u_color, Axis::z);
-    u.type = CubieType::Center;
-    u.faces.one = Face::U;
 
 
     // D
+    d.set_center_face(Face::D);
     model_add_cube_mesh(d.model.mesh);
     model_add_facelet(d.model.mesh, d_color, Axis::nz);
-    d.type = CubieType::Center;
-    d.faces.one = Face::D;
 
 
 };
 
+void Cube::solve(){
 
+    Cubie fb = find_edge_home(Face::F, Face::D);
+
+    
+
+}
+
+Cubie Cube::find_edge_home(Face face_1, Face face_2){
+    Cubie return_cubie;
+    for(Cubie& c : cubies){
+        
+        if(c.type == CubieType::Edge){
+        
+            if(c.contains_face_home(face_1) && c.contains_face_home(face_2))
+                return c;
+        
+        }
+
+    }
+
+    return return_cubie;
+}
+
+void Cube::permute(std::string permutation_string){
+
+    for(char c : permutation_string){
+    
+        switch (c)
+        {
+
+        case 'F':
+            permutation_backlog.push_back(Permutation::F);
+            break;
+        case 'f':
+            permutation_backlog.push_back(Permutation::Fi);
+            break;
+        case 'B':
+            permutation_backlog.push_back(Permutation::B);
+            break;
+        case 'b':
+            permutation_backlog.push_back(Permutation::Bi);
+            break;
+        case 'R':
+            permutation_backlog.push_back(Permutation::R);
+            break;
+        case 'r':
+            permutation_backlog.push_back(Permutation::Ri);
+            break;
+        case 'L':
+            permutation_backlog.push_back(Permutation::L);
+            break;
+        case 'l':
+            permutation_backlog.push_back(Permutation::Li);
+            break;
+        case 'U':
+            permutation_backlog.push_back(Permutation::U);
+            break;
+        case 'u':
+            permutation_backlog.push_back(Permutation::Ui);
+            break;
+        case 'D':
+            permutation_backlog.push_back(Permutation::D);
+            break;
+        case 'd':
+            permutation_backlog.push_back(Permutation::Di);
+            break;
+        
+        
+        default:
+            break;
+        }
+    
+    }
+
+}
 
 void Cube::permute(Permutation permutation){
 
@@ -461,6 +481,45 @@ void Cube::permute(Permutation permutation){
 
 }
 
+bool Cubie::contains_face_home(Face face){
+    if      (faces_home.one == face)
+        return true;
+    else if (faces_home.two == face)
+        return true;
+    else if (faces_home.three == face)
+        return true;
+
+    return false;
+}
+
+void Cubie::set_center_face(Face face_1){
+    type = CubieType::Center;
+
+    faces.one       = face_1;
+    faces_home.one  = face_1;
+}
+void Cubie::set_edge_faces(Face face_1, Face face_2){
+    type = CubieType::Edge;
+
+    faces.one       = face_1;
+    faces_home.one  = face_1;
+    
+    faces.two       = face_2;
+    faces_home.two  = face_2;
+}
+void Cubie::set_corner_faces(Face face_1, Face face_2, Face face_3){
+    type = CubieType::Corner;
+
+    faces.one       = face_1;
+    faces_home.one  = face_1;
+
+    faces.two       = face_2;
+    faces_home.two  = face_2;
+
+    faces.three     = face_3;
+    faces_home.three = face_3;
+}
+
 void Cubie::set_position_from_faces(){
 
     if(faces.contains(Face::F)){
@@ -506,6 +565,13 @@ void Cube::update_cubies(){
             c.model.set_transform_matrix();
 
             mat_mul(c.model.transform.matrix, c.c_rot.matrix);
+        }
+
+
+        // After synchronization, we check backlog
+        if(permutation_backlog.size() > 0){
+            permute(permutation_backlog.back());
+            permutation_backlog.pop_back();
         }
 
     }
@@ -592,6 +658,15 @@ void Cube::handle_input(InputState input_state){
     if(animator.is_animating || animator.synchronization_frame)
         return;
 
+    if(input_state.up)
+        permute("FFFFFFFF");
+
+    if(input_state.m){ // mix
+        permute("FUBlrubRLDfd");
+    }
+    if(input_state.s){ // solve
+        solve();
+    }
 
     if(input_state.f && input_state.shift)
         permute(Permutation::Fi);

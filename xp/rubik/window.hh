@@ -27,6 +27,9 @@ struct InputState {
     bool u = false;
     bool d = false;
 
+    bool s = false;
+    bool m = false;
+
     bool shift = false;
 
     bool up = false;

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <array>
 #include "math.hh"
 
@@ -132,11 +133,20 @@ struct CubieRotation {
 struct Cubie {
     CubieType type;
     CubieRotation c_rot;
+    /** Current faces. */
     Faces faces;
+    /** Home faces. */
+    Faces faces_home;
 
     bool is_rotating = false; // Animation flag
     
     Model model;
+
+    bool contains_face_home(Face face);
+
+    void set_center_face(Face face_1);
+    void set_edge_faces(Face face_1, Face face_2);
+    void set_corner_faces(Face face_1, Face face_2, Face face_3);
 
     void set_position_from_faces();
 };
@@ -145,14 +155,20 @@ struct Cubie {
 /** A Rubik's Cube */
 struct Cube {
     std::array<Cubie, 26> cubies;
+    std::vector<Permutation> permutation_backlog;
 
     /** Performs incremental cubie model rotations to display permutation transitions. */
     Animator animator;
 
+    
+    void permute(std::string permutation_string);
     void permute(Permutation p);
 
-    void update_cubies();
+    Cubie find_edge_home(Face face_1, Face face_2);
+    void solve();
 
+
+    void update_cubies();
     void update_animator();
     void handle_input(InputState input_state);
     /** Simple prints as we currently don't have a ui */
