@@ -70,10 +70,10 @@
             // "preLaunchTask": "build"
         },
         {
-            "name": "XP (gdb)",
+            "name": "Phont (gdb)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/xp/rubik/bin/rubik.bin",
+            "program": "${workspaceFolder}/build/debug/src/phont/phont_main",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -94,7 +94,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "XP - build",
+            "preLaunchTask": "Build Debug",
 
         },
     ]

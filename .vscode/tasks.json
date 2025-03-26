@@ -168,7 +168,7 @@
         {
             "label": "XP - build and run",
             "type": "shell",
-            "command": "cd xp/rubik && XP_ROOT_DIR=${workspaceFolder}/xp/rubik ./run.sh",
+            "command": "cd xp/phont && XP_ROOT_DIR=${workspaceFolder}/xp/phont ./run.sh",
             "problemMatcher": [
                 "$gcc",
             ],
@@ -177,10 +177,19 @@
         {
             "label": "XP - build",
             "type": "shell",
-            "command": "cd xp/rubik && ./build.sh",
+            "command": "cd xp/phont && ./build.sh",
             "problemMatcher": [
                 "$gcc"
             ],
-        }
+        },
+        {
+            "label": "Phont",
+            "type": "shell",
+            "command": "XP_ROOT_DIR=${workspaceFolder}/src/phont ${workspaceFolder}/build/debug/src/phont/phont_main",
+            "problemMatcher": [
+                "$gcc",
+            ],
+            "dependsOn": "Build Debug"
+        },
     ]
 }

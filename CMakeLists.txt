@@ -54,20 +54,32 @@ set(glad_header ${CMAKE_SOURCE_DIR}/extern/glad/include/glad/glad.h)
 # Add all the source-files as a library
 # add_subdirectory(source)
 add_subdirectory(src)
-
+# add_subdirectory(xp)
 
 # Link the GLFW precompiled static library
 # set(GLFW_LIB ${CMAKE_SOURCE_DIR}/lib/libglfw3.a) # old path
 set(GLFW_LIB ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a)
 
 
-# Define the executable 
+# MAIN
 add_executable(physimos src/main.cpp ${glad_header} )
-
 
 # Link : needs to be after add_exectuable()!
 target_link_libraries(physimos source ui uic uic_draw uic_topbar uic_main_view uic_right_panel image scene draw logger res simulator math render lib  glad ${GLFW_LIB})
 # target_link_libraries(physimos source glad ${GLFW_LIB})
+
+
+#  PHONT
+# add_executable(phont_main 
+#     xp/phont/main.cc 
+#     ${glad_header} 
+# )
+# target_link_libraries(phont_main 
+#     phont
+#     glad 
+#     ${GLFW_LIB}
+# )
+
 
 # GPT
 # target_link_libraries(physimos X11 Xrandr Xi Xxf86vm Xinerama Xcursor GL dl pthread)
