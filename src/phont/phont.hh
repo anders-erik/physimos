@@ -2,6 +2,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 #include "math/math.hh"
 
@@ -17,6 +18,10 @@ struct Vertex {
     f2 tex;
 };
 
+struct GlyphMesh {
+    std::vector<f3> verts;
+    std::vector<i3> faces;
+};
 
 struct QuadRenderContext {
     unsigned int VAO;
@@ -45,7 +50,7 @@ struct QuadRenderer {
 
     void create_context(phont::Quad& quad);
 
-    void render_context(QuadRenderContext context);
+    void render(QuadRenderContext context);
 
     QuadRenderer();
 };
@@ -55,6 +60,7 @@ struct QuadRenderer {
 void set_texture_checker(unsigned int& texture_id);
 
 unsigned int get_texture_F();
+void get_mesh_F(GlyphMesh& mesh);
 
 
 }

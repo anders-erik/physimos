@@ -8,6 +8,7 @@ namespace opengl {
 
     enum class Programs {
         phont_texture,
+        phont_char,
     };
 
 

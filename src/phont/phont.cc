@@ -26,15 +26,15 @@ Quad::Quad(float window_width, float window_height){
 
     // WINDOW_WIDTH = 
 
-    float width_pixels  = 320.0f;
-    float height_pixels = 320.0f;
+    float width_pixels  = 20.0f;
+    float height_pixels = 30.0f;
     
 	float x_center_ndc = 0.0f;
     float y_center_ndc = 0.0f;
 
 
-    float width_ndc_per_pixel = (1.0f / window_width);
-    float height_ndc_per_pixel = (1.0f / window_height);
+    float width_ndc_per_pixel = (2.0f / window_width);
+    float height_ndc_per_pixel = (2.0f / window_height);
 
     float width_ndc = width_pixels * width_ndc_per_pixel;
     float height_ndc = height_pixels * height_ndc_per_pixel;
@@ -104,7 +104,7 @@ void QuadRenderer::create_context(phont::Quad& quad){
     
 }
 
-void QuadRenderer::render_context(QuadRenderContext context){
+void QuadRenderer::render(QuadRenderContext context){
 
     glUseProgram(program);
 
@@ -120,116 +120,93 @@ void QuadRenderer::render_context(QuadRenderContext context){
 
 }
 
+void get_mesh_F(GlyphMesh& mesh){
+
+    // float size = 0.9f;
+    
+    // VERTICAL BAR
+    float l_vert_bar    = -0.9;
+    float r_vert_bar    = -0.5;
+    float t_vert_bar    =  0.9;
+    float b_vert_bar    = -0.6;
+    f3 v0 (l_vert_bar, b_vert_bar,  0.0f); // Lower left
+    f3 v1 (r_vert_bar, b_vert_bar,  0.0f); // Lower right
+    f3 v2 (r_vert_bar, t_vert_bar,  0.0f); // Upper right
+    f3 v3 (l_vert_bar, t_vert_bar,  0.0f); // Upper left
+
+    mesh.verts.push_back(v0);
+    mesh.verts.push_back(v1);
+    mesh.verts.push_back(v2);
+    mesh.verts.push_back(v3);
+    
+    i3 _f0 (0, 1, 2);
+    i3 _f1 (0, 2, 3);
+    mesh.faces.push_back(_f0);
+    mesh.faces.push_back(_f1);
+
+
+
+    // TOP HORIZONAL BAR
+    float l_top_hori_bar    = -0.5;
+    float r_top_hori_bar    =  0.9;
+    float t_top_hori_bar    =  0.9;
+    float b_top_hori_bar    =  0.6;
+    f3 v4 (l_top_hori_bar, b_top_hori_bar,  0.0f); // Lower left
+    f3 v5 (r_top_hori_bar, b_top_hori_bar,  0.0f); // Lower right
+    f3 v6 (r_top_hori_bar, t_top_hori_bar,  0.0f); // Upper right
+    f3 v7 (l_top_hori_bar, t_top_hori_bar,  0.0f); // Upper left
+
+    mesh.verts.push_back(v4);
+    mesh.verts.push_back(v5);
+    mesh.verts.push_back(v6);
+    mesh.verts.push_back(v7);
+
+    i3 _f2 (4, 5, 6);
+    i3 _f3 (4, 6, 7);
+    mesh.faces.push_back(_f2);
+    mesh.faces.push_back(_f3);
+
+
+
+    // BOTTOM HORIZONAL BAR
+    float l_bottom_hori_bar    = -0.5;
+    float r_bottom_hori_bar    =  0.6;
+    float t_bottom_hori_bar    =  0.3;
+    float b_bottom_hori_bar    =  0.0;
+    f3 v8  (l_bottom_hori_bar, b_bottom_hori_bar,  0.0f); // Lower left
+    f3 v9  (r_bottom_hori_bar, b_bottom_hori_bar,  0.0f); // Lower right
+    f3 v10 (r_bottom_hori_bar, t_bottom_hori_bar,  0.0f); // Upper right
+    f3 v11 (l_bottom_hori_bar, t_bottom_hori_bar,  0.0f); // Upper left
+
+    mesh.verts.push_back(v8 );
+    mesh.verts.push_back(v9 );
+    mesh.verts.push_back(v10);
+    mesh.verts.push_back(v11);
+
+    i3 f4 (8, 9, 10);
+    i3 f5 (8, 10, 11);
+    mesh.faces.push_back(f4);
+    mesh.faces.push_back(f5);
+    
+
+
+    
+}
+
 unsigned int get_texture_F(){
 
-    // FRAMEBUFFER
-    unsigned int framebuffer;
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    int texture_width   = 200;
+    int texture_height  = 300;
 
+    // MESH
 
-    // TEXTURE
-    unsigned int textureColorbuffer;
-    glGenTextures(1, &textureColorbuffer);
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 32, 32, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GlyphMesh mesh_F;
+    get_mesh_F(mesh_F);
 
-    // attach it to currently bound framebuffer object
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0); 
+    unsigned int VAO, VBO, EBO;
+    int triangle_count;
 
-
-    // RENDER BUFFER OBJECT
-    unsigned int rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 32, 32);  
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    else 
-        std::cout << "FRAMEBUFFER OK!" << std::endl;
-
-    
-
-    // RENDER F
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-    // SETUP
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-    // glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
-    // glEnable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT); 
-    // glDrawArrays(GL_TRIANGLES, 0, 0);
-
-
-
-    // VERTEX
-
-    // QUAD
-
-    float width_glyph_px = 32.0f;
-    float height_glyph_px = 32.0f;
-
-    std::array<Vertex, 4> quad;
-    std::array<i3, 2> faces;
-
-    float width_pixels  = 32.0f;
-    float height_pixels = 32.0f;
-    
-	float x_center_ndc = 0.0f;
-    float y_center_ndc = 0.0f;
-
-
-    float width_ndc_per_pixel = (1.0f / width_glyph_px);
-    float height_ndc_per_pixel = (1.0f / height_glyph_px);
-
-    float width_ndc = width_pixels * width_ndc_per_pixel;
-    float height_ndc = height_pixels * height_ndc_per_pixel;
-
-
-    // Lower left
-    quad[0].pos.x = x_center_ndc - width_ndc / 2;
-    quad[0].pos.y = y_center_ndc - height_ndc / 2;
-    quad[0].pos.z = 0.0f;
-    quad[0].tex.x = 0.0f;
-    quad[0].tex.y = 0.0f;
-
-    // Lower right
-    quad[1].pos.x = x_center_ndc + width_ndc / 2;
-    quad[1].pos.y = y_center_ndc - height_ndc / 2;
-    quad[1].pos.z = 0.0f;
-    quad[1].tex.x = 1.0f;
-    quad[1].tex.y = 0.0f;
-
-    // Upper right
-    quad[2].pos.x = x_center_ndc + width_ndc / 2;
-    quad[2].pos.y = y_center_ndc + height_ndc / 2;
-    quad[2].pos.z = 0.0f;
-    quad[2].tex.x = 1.0f;
-    quad[2].tex.y = 1.0f;
-
-    // Upper left
-    quad[3].pos.x = x_center_ndc - width_ndc / 2;
-    quad[3].pos.y = y_center_ndc + height_ndc / 2;
-    quad[3].pos.z = 0.0f;
-    quad[3].tex.x = 0.0f;
-    quad[3].tex.y = 1.0f;
-    
-
-    faces[0] = {0, 1, 2};
-    faces[1] = {0, 2, 3};
-
-
-
-	unsigned int VAO, VBO, EBO;
+    triangle_count = mesh_F.faces.size() * 3;
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -237,51 +214,83 @@ unsigned int get_texture_F(){
 
 	glBindVertexArray(VAO);
 
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces.size() * sizeof(i3), faces.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_F.faces.size() * sizeof(i3), mesh_F.faces.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(f3) * mesh_F.verts.size(), mesh_F.verts.data(), GL_STATIC_DRAW);
     
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void *)0);
 	glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)(sizeof(f3)));
-	glEnableVertexAttribArray(1);
+    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(f3), (void *)(sizeof(f3)));
+	// glEnableVertexAttribArray(1);
 
 
-    // TEXTURE
-    unsigned int texture_checker = 0;
-    phont::set_texture_checker(texture_checker);
+    // FRAMEBUFFER 
+
+    unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);    
+
+    // generate texture
+    unsigned int textureColorbuffer;
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // attach it to currently bound framebuffer object
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
 
 
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    else 
+        std::cout << "FRAMEBUFFER OK!" << std::endl;
+
+
+
+
+    // RENDER
+
+
+    unsigned int program_char = opengl::build_program_vert_frag(opengl::Programs::phont_char);
+    glUseProgram(program_char);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    
+    glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT); 
+
+
+
+    glViewport(0,0, texture_width, texture_height);
 
     glBindVertexArray(VAO); 
-    glBindTexture(GL_TEXTURE_2D, texture_checker);
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, faces.size() * 3 , GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, triangle_count, GL_UNSIGNED_INT, 0);
+
+    glViewport(0,0, 800, 600);
 
 
 
-    glBindVertexArray(0); 
 
+    // FOUR RED PIXELS
+    float pixels_4_red[16] = {  1.0f, 0.0f, 0.0f, 1.0f, 
+                                1.0f, 0.0f, 0.0f, 1.0f, 
+                                1.0f, 0.0f, 0.0f, 1.0f, 
+                                1.0f, 0.0f, 0.0f, 1.0f
+    };
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 2,  GL_RGBA,  GL_FLOAT, pixels_4_red);
 
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // RENDER F END
 
-
-    // texture_id = textureColorbuffer;
-
-    
 
     return textureColorbuffer;
-
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);  
 
 }
 

@@ -32,7 +32,7 @@ int main()
 	phont::QuadRenderer renderer_quad;
 	renderer_quad.create_context(quad);
 
-	quad.render_context.texture = texture_checker;
+	// quad.render_context.texture = texture_checker;
 	quad.render_context.texture = texture_F;
 
 
@@ -50,7 +50,7 @@ int main()
 
 
 		// RENDER
-		renderer_quad.render_context(quad.render_context);
+		renderer_quad.render(quad.render_context);
 
 
 		auxwin.end_frame();

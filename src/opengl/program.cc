@@ -19,9 +19,16 @@ unsigned int build_program_vert_frag(Programs phont_texture){
 
     switch (phont_texture)
     {
+
     case Programs::phont_texture :
         vert_str = physimos_root_dir + "/src/phont/shaders/phont_texture_vert.glsl";
         frag_str = physimos_root_dir + "/src/phont/shaders/phont_texture_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        break;
+
+    case Programs::phont_char :
+        vert_str = physimos_root_dir + "/src/phont/shaders/phont_char_vert.glsl";
+        frag_str = physimos_root_dir + "/src/phont/shaders/phont_char_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
     
