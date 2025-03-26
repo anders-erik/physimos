@@ -2,6 +2,7 @@
 
 set(PHONT 
     phont.cc
+    auxwin.cc
 )
 
 
@@ -13,9 +14,9 @@ target_include_directories(phont PUBLIC
     ${CMAKE_SOURCE_DIR}/extern/glad/include/
     ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
 )
-# target_link_libraries(phont
-#     # math
-# )
+target_link_libraries(phont
+    lib
+)
 
 
 add_executable(phont_main
@@ -23,6 +24,9 @@ add_executable(phont_main
 )
 target_link_libraries(phont_main
     phont
+
+    lib
+    opengl
 
     glad 
     ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a

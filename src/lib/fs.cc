@@ -9,8 +9,18 @@
 
 
 #include "fs.hh"
+#include "process.hh"
 
 namespace plib {
+
+std::string fs_cat_rel(std::string path_std_string){
+    std::string relative_path_str = physimos_root_dir_or_die();
+    return fs_cat(relative_path_str + "/" + path_std_string);
+}
+std::vector<unsigned char>& fs_cat_bin_rel(std::string path_std_string){
+    std::string relative_path_str = physimos_root_dir_or_die();
+    return fs_cat_bin(relative_path_str + "/" + path_std_string);
+}
 
 std::string fs_cat(std::string path_std_string){
     std::string string;

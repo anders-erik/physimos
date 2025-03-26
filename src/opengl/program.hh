@@ -6,9 +6,19 @@
 
 namespace opengl {
 
+    enum class Programs {
+        phont_texture,
+    };
+
+
+    /** Compile single vertex and fragment shader, links program, and returns program name. */
+    unsigned int build_program_vert_frag(Programs phont_texture);
+
 
     /** Compile single vertex and fragment shader, links program, and returns program name. */
     unsigned int build_program_vert_frag(std::string vert_path, std::string frag_path);
+
+
 
 
     /** INTERNAL */

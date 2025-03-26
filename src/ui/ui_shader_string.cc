@@ -13,7 +13,7 @@
 #include "PSO_util.hpp"
 // #include "ui_shader.hh"
 
-#include "opengl/shader.hh"
+#include "opengl/program.hh"
 #include "ui/ui_texture.hh"
 
 namespace UI {

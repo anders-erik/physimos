@@ -2,10 +2,36 @@
 
 #include "lib/log.hh"
 #include "lib/fs.hh"
+#include "lib/process.hh"
 
-#include "shader.hh"
+#include "program.hh"
 
 namespace opengl {
+
+unsigned int build_program_vert_frag(Programs phont_texture){
+
+    unsigned int new_program;
+
+    std::string physimos_root_dir = physimos_root_dir_or_die();
+
+    std::string vert_str;
+    std::string frag_str;
+
+    switch (phont_texture)
+    {
+    case Programs::phont_texture :
+        vert_str = physimos_root_dir + "/src/phont/shaders/phont_texture_vert.glsl";
+        frag_str = physimos_root_dir + "/src/phont/shaders/phont_texture_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        break;
+    
+    default:
+        break;
+    }
+
+
+    return new_program;
+}
 
 unsigned int build_program_vert_frag(std::string vert_path, std::string frag_path){
 

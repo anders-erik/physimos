@@ -78,7 +78,7 @@
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [
-                { "name": "XP_ROOT_DIR", "value": "${workspaceFolder}/xp/rubik" }
+                { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }
             ],
             "externalConsole": false,
             "MIMode": "gdb",

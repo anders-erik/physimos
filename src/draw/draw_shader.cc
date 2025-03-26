@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <glad/glad.h>
-#include "opengl/shader.hh"
+#include "opengl/program.hh"
 
 #include "lib/fs.hh"
 #include "lib/process.hh"

@@ -185,7 +185,7 @@
         {
             "label": "Phont",
             "type": "shell",
-            "command": "XP_ROOT_DIR=${workspaceFolder}/src/phont ${workspaceFolder}/build/debug/src/phont/phont_main",
+            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/phont/phont_main",
             "problemMatcher": [
                 "$gcc",
             ],

@@ -1,6 +1,6 @@
 
 add_library(opengl
-    shader.cc
+    program.cc
 )
 
 target_include_directories(opengl PUBLIC 
@@ -9,4 +9,8 @@ target_include_directories(opengl PUBLIC
 
     ${CMAKE_SOURCE_DIR}/extern/glad/include/
     ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
+)
+
+target_link_libraries(opengl
+    lib
 )
