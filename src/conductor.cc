@@ -21,6 +21,7 @@
 #include "conductor.hh"
 #include "conductor_common.hh"
 #include "conductor_internal.hh"
+#include "conductor_callbacks.hh"
 #include "conductor_viewport.hh"
 
 #include "ui/ui_primitive.hh"
@@ -459,7 +460,7 @@ void callback_left_release(ViewportCursor _pointer_pos) {
 }
 
 void callback_left_down(ViewportCursor _pointer_pos) {
-
+	// std::chrono::steady_clock::now();
 	viewport_context.set_cursor(_pointer_pos.x, _pointer_pos.y);
 
 	UI::UiResult clickTargetResult;
@@ -476,7 +477,7 @@ void callback_left_down(ViewportCursor _pointer_pos) {
 			// SET GRABBED PRIMITIVE
 			grabbed_primitive = try_grab.primitive;
 
-			// If we grabbed a primitive, no other changes should take place
+			// If we grabbed a primitive, no other changes should be made
 			return;
 		}
 

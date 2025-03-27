@@ -14,3 +14,6 @@ target_include_directories( uic_draw PUBLIC
     ${CMAKE_SOURCE_DIR}/extern/glad/include
 )
 
+target_link_libraries(uic_draw
+    uic
+)

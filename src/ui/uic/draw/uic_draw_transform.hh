@@ -3,8 +3,8 @@
 
 
 #include "ui/ui_primitive.hh"
-
 #include "ui/ui_globals.hh"
+#include "ui/uic/uic_label.hh"
 
 #include "draw/draw.hh"
 
@@ -19,7 +19,8 @@ struct UIC_Draw_Transform : public ::UI::Primitive {
 
     Primitive title;
 
-    Primitive zoom;
+    // Primitive zoom;
+    UIC_Label_float zoom;
     Primitive pan_x;
     Primitive pan_y;
     Primitive texture_x;
@@ -34,25 +35,6 @@ struct UIC_Draw_Transform : public ::UI::Primitive {
 
     UIC_Draw_Transform();
 };
-
-
-// struct UIC_Draw_Transform: public ::UI::Primitive {
-
-//     draw::TransformContext& boundObject;
-    
-
-//     Primitive title;
-
-//     UIC_Draw_Transform_MainViewPos   main_view_pos;
-
-//     void update_component();
-//     void render_component();
-
-//     UiResult try_find_target_component(double x, double y);
-    
-//     UIC_Draw_Transform();
-// };
-
 
 
 }

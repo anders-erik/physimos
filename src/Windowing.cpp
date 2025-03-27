@@ -16,6 +16,8 @@ int physimosLoadedOk;
 
 
 // CURSORS
+PCursor cursor_current;
+
 GLFWcursor* cursor_default;
 GLFWcursor* cursor_hori;
 GLFWcursor* cursor_vert;
@@ -23,6 +25,12 @@ GLFWcursor* cursor_pan;
 GLFWcursor* cursor_point;
 
 void set_cursor(PCursor cursor){
+
+    if(cursor == cursor_current)
+        return;
+
+    cursor_current = cursor;
+
     switch (cursor){
 
         case PCursor::Default :

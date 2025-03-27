@@ -16,7 +16,7 @@ namespace UI::component {
 UIC_Draw_Transform::UIC_Draw_Transform()
     :   boundObject     { draw::ui_get_transform_context() },
         title           { Primitive("Transform") },
-        zoom            { Primitive("zoom")},
+        zoom            { UIC_Label_float(0.0f, 5)},
         pan_x           { Primitive("pan x")},
         pan_y           { Primitive("pan y")},
         texture_x       { Primitive("text x")},
@@ -27,7 +27,7 @@ UIC_Draw_Transform::UIC_Draw_Transform()
         main_view_y     { Primitive("y")}
 {
 
-    id = "UIC_Draw_Transform_MainViewPos";
+    id = "UIC_Draw_Transform";
     set_w("90%");
     set_h("200x");
 
@@ -43,7 +43,9 @@ UIC_Draw_Transform::UIC_Draw_Transform()
 
 
     appendChild(&zoom);
+    // zoom.max_chars = 5;
     zoom.str_fontSize = FontSize::f18;
+    zoom.set_value(1.234);
     zoom.set_x("<100x");
     zoom.set_y("_150x");
 
@@ -96,7 +98,8 @@ void UIC_Draw_Transform::render_component(){
 
     title.render();
 
-    zoom.render();
+    // zoom.render();
+    zoom.render_component();
     
     pan_x.render();
     pan_y.render();
@@ -115,6 +118,10 @@ void UIC_Draw_Transform::update_component(){
     
     draw::TransformContext transform_context = boundObject;
 
+    zoom.set_value(transform_context.zoom);
+
+
+
     // Trigger rerender on main_view position change
     if( transform_context.texture_px_x != transform_context_cache.texture_px_x 
         || transform_context.texture_px_y != transform_context_cache.texture_px_y 
@@ -124,7 +131,8 @@ void UIC_Draw_Transform::update_component(){
         transform_context_cache.texture_px_y    = transform_context.texture_px_y;
         transform_context_cache.zoom            = transform_context.zoom;
 
-        zoom.update_str_double(transform_context.zoom, 4);
+        // zoom.update_str_double(transform_context.zoom, 4);
+        
 
         pan_x.update_str_double(transform_context.pan_texture_coords_x, 5);
         pan_y.update_str_double(transform_context.pan_texture_coords_y, 5);
@@ -141,60 +149,6 @@ void UIC_Draw_Transform::update_component(){
         main_view_y.update_str_double(transform_context.main_view_y, 5);
     }
 }
-
-
-// UIC_Draw_Transform::UIC_Draw_Transform()
-//     :   boundObject { draw::ui_get_transform_context() },
-//         title { Primitive("Transform") },
-//         main_view_pos { UIC_Draw_Transform_MainViewPos() }
-// {
-//     id = "prim_color";
-//     // set_w("180x");
-//     set_w("96%");
-//     set_x("<2%");
-    
-//     set_h("20%");
-//     // set_color_texture(ColorTexture::DarkGray);
-//     set_color(active_pallete.detail1);
-
-
-//     appendChild(&title);
-//     title.str_setFontSize(FontSize::f18);
-//     title.set_x("<10x");
-//     title.set_y("^5x");
-
-//     appendChild(&main_view_pos);
-//     main_view_pos.set_x("<0x");
-//     main_view_pos.set_y("_10x");
-
-    
-// }
-
-// void UIC_Draw_Transform::update_component() {
-//     main_view_pos.update_component();
-// }
-
-// void UIC_Draw_Transform::render_component() {
-//     render();
-
-//     title.render();
-//     main_view_pos.render_component();
-// }
-
-// UiResult UIC_Draw_Transform::try_find_target_component(double x, double y) {
-//     // Return if point is not contain within the root component primitive
-//     if (!containsPoint(x, y))
-//         return UiResult();
-
-//     if (title.containsPoint(x, y))
-//         return UiResult(true, CAction::None, &title);
-
-//     if (main_view_pos.containsPoint(x, y))
-//         return UiResult(true, CAction::None, &main_view_pos);
-
-//     return UiResult(true, CAction::None, this);
-
-// }
 
 
 
