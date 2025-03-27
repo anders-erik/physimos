@@ -4,7 +4,7 @@
         {
             "type": "shell",
             "label": "Build & Run [debug]",
-            "command": "${workspaceFolder}/scripts/build.sh debug && PHYSIMOS_ROOT_DIR=${workspaceFolder} ./build/debug/physimos",
+            "command": "time ${workspaceFolder}/scripts/build.sh debug && PHYSIMOS_ROOT_DIR=${workspaceFolder} ./build/debug/physimos",
             "problemMatcher": [
                 "$gcc"
             ],

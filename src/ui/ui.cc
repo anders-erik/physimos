@@ -13,7 +13,7 @@
 #include "ui/ui_font.hh"
 #include "ui/ui_primitive.hh"
 
-#include "ui/uic/topbar/uic_topbar.hh"
+#include "ui/uic/uic_topbar.hh"
 #include "ui/uic/main_view/uic_main_view.hh"
 #include "ui/uic/right_panel/uic_right_panel.hh"
 #include "ui/uic/uic_root_left_panel.hh"
@@ -94,21 +94,21 @@ void state_main_set(StateMain new_state_main){
     // TOPBAR BUTTONS
 
     // Reset topbar buttons highlight
-    topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Default);
-    topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Default);
-    topbar->main_states.uic_Topbar_MainStates_UIEditor.set_state(PrimitiveState::Default);
+    topbar->main_states.scene_3d.set_state(PrimitiveState::Default);
+    topbar->main_states.canvas.set_state(PrimitiveState::Default);
+    topbar->main_states.ui_editor.set_state(PrimitiveState::Default);
     
     // Set new topbar button highlight
     switch (new_state_main){
 
         case StateMain::Scene3D :
-            topbar->main_states.uic_Topbar_MainStates_Scene3D.set_state(PrimitiveState::Selected);
+            topbar->main_states.scene_3d.set_state(PrimitiveState::Selected);
             break;
         case StateMain::Draw :
-            topbar->main_states.uic_Topbar_MainStates_Canvas.set_state(PrimitiveState::Selected);
+            topbar->main_states.canvas.set_state(PrimitiveState::Selected);
             break;
         case StateMain::UIEditor :
-            topbar->main_states.uic_Topbar_MainStates_UIEditor.set_state(PrimitiveState::Selected);
+            topbar->main_states.ui_editor.set_state(PrimitiveState::Selected);
             break;
     
     default:

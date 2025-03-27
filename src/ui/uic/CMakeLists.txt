@@ -1,5 +1,5 @@
 
-add_subdirectory(topbar)
+# add_subdirectory(topbar)
 add_subdirectory(right_panel)
 add_subdirectory(main_view)
 add_subdirectory(draw)
@@ -15,6 +15,8 @@ add_library(uic
     uic_primitive_list.cc
     uic_primitive_list_editor.cc
     uic_button.cc
+
+    uic_topbar.cc
 )
 
 
