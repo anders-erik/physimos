@@ -36,9 +36,8 @@ void main() {
 
     vec3 color = vec3( ambient + diffuse ) * text_vec3;
 
-    // FragColor = vec4( color , 1.0);
-
-    FragColor = vec4( color , 0.7);
+    FragColor = vec4( color , 1.0);
+    // FragColor = vec4( color , 0.7);
 
     // FragColor = vec4(1.0, 1.0, 1.0, 1.0);
     // FragColor = vec4(1.0, 0.0, 0.0, 1.0);

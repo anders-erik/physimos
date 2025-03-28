@@ -35,9 +35,9 @@ public:
     m4f4 view_mat;
     m4f4 perspective_mat;
 
-    float rho   = 11.0f; // Radius
-    float theta = 0.83f; // x-y plane
-    float phi   = 0.89f; // z-axis
+    float rho   =  10.0f; // Radius
+    float theta =  3.9f; // x-y plane
+    float phi   =  1.0f; // z-axis
 
     
 

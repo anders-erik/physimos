@@ -95,9 +95,12 @@ void RendererVector::set_project_view_matrix(m4f4 project_mat, m4f4 view_mat){
 
 
 void RendererVector::render(f3 vector, f3 translation){
+    // NOTE: ANTIPATTERN
+    if(vector.x == 0.0f && vector.y == 0.0f)
+        vector.x = 0.0001f;
 
-    glUseProgram(program);
-    // opengl::gpu_use_program(Programs::Vector);
+    // glUseProgram(program);
+    opengl::gpu_use_program(Programs::Vector);
 
     glUniform3fv(glGetUniformLocation(program, "vector"), 3, (float*) &vector);
 
@@ -110,7 +113,7 @@ void RendererVector::render(f3 vector, f3 translation){
     // Calculate pitch + yaw using passed vector, then use extrinsic rotation to construct rotation vector
 
     f3 vector_xy = vector;
-    vector_xy.z = 0.0f;
+    // vector_xy.z = 0.0f;
 
     float vector_xy_mag = sqrtf( vector_xy.x*vector_xy.x + vector_xy.y*vector_xy.y);
 
@@ -121,11 +124,16 @@ void RendererVector::render(f3 vector, f3 translation){
     if(vector_xy.x < 0.0f)
         yaw += 3.141592;
 
+
+
     m4f4 rotation_mat;// = glm::mat4(1.0f);
+
     // rotation_mat = glm::rotate(rotation_mat, yaw, f3(0.0f, 0.0f, 1.0f));
     // rotation_mat = glm::rotate(rotation_mat, -pitch, f3(0.0f, 1.0f, 0.0f));
-    rotation_mat.rotate_z(yaw);
-    rotation_mat.rotate_y(-pitch);
+    
+    rotation_mat.rotate_z(-yaw);    // NOTE: Not sure why the signs should both be negative, 
+    rotation_mat.rotate_y(-pitch);  // Yet the vectors appear to be displayed correctly when this is the case...
+
     // rotation_mat = glm::translate(rotation_mat, translation);
     glUniformMatrix4fv(glGetUniformLocation(program, "rotation_mat"), 1, GL_TRUE, (float*) &rotation_mat);
 

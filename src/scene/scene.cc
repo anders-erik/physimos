@@ -20,9 +20,9 @@ namespace scene {
 
 model::TubeContext tube_context = {
     1.0f,   //  float radius;
-    3,      //  int frame_point_count;
-    5,      //  int frame_count;
-    1,      //  float frame_gap;
+    10,      //  int frame_point_count;
+    10,      //  int frame_count;
+    1.0,      //  float frame_gap;
     0,      //  int vertex_count_target;
 };
 
@@ -44,9 +44,9 @@ SceneModelEditor::SceneModelEditor(){
     // TUBE
     model_generate_tube(tube.mesh, tube_context);
     model_center(tube.mesh);
-    // model_scale(tube.mesh, 0.5f);
+    model_scale(tube.mesh, 0.5f);
     // model_rotate(tube.mesh, 0.5f , {1.0f, 0.0f, 0.0f});
-    // model_translate(tube.mesh, {-3.0f, 0.0f, 2.0f});
+    model_translate(tube.mesh, {-3.0f, 0.0f, 2.0f});
     renderer_model_texture.create_model_rendering_context(tube.mesh, tube_render_context, opengl::Texture::Colors );
 
 
@@ -102,28 +102,37 @@ void SceneModelEditor::render(){
     renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
     renderer_axes.render();
 
+
+    renderer_vector.render({0.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f});
+
+    // renderer_vector.render({0.0f, 0.0f, 2.0f}, {0.0f, 0.0f, 1.0f});
+
+    // TUBE NORMAL VECTORS
+    for(model::VertexTexture vertex : tube.mesh.vertices){
+        renderer_vector.render(vertex.normal, vertex.pos);
+    }
+
+
+
+    
     // glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
     // glPointSize(5);
     // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glLineWidth(2);
+    // glLineWidth(2);
     // glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     renderer_model.render(model_render_context, model.transform.matrix, model.mesh.faces.size()*3);
 
 
     // renderer_model_texture.render(ground.mesh, ground.transform.matrix);
     renderer_model_texture.render_model_rendering_context(ground.mesh, ground_render_context, ground.transform.matrix);
+    
+
+    // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    // glLineWidth(2);
     renderer_model_texture.render_model_rendering_context(tube.mesh, tube_render_context, tube.transform.matrix);
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-    renderer_vector.render({0.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f});
-
-    int i = 0;
-    for(model::VertexTexture vertex : tube.mesh.vertices){
-        renderer_vector.render(vertex.normal, vertex.pos);
-        std::cout << "i = " << i++ << ", pos = " << vertex.pos.x << vertex.pos.y << vertex.pos.z << std::endl;
-        
-    }
 };
-
 
 
 

@@ -399,7 +399,7 @@ void model_generate_tube(MeshTexture& mesh, TubeContext tube_context){
 
 
     // glm::vec2 tex_coords = gpu_get_color_coordinate(TextColor::Blue);
-    f2 tex_coords = opengl::texture_get_color_coordinate(opengl::TextColor::LightGray);
+    f2 tex_coords = opengl::texture_get_color_coordinate(opengl::TextColor::Black);
 
 
     // Check if vertices are generated correctly

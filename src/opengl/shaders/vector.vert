@@ -15,10 +15,11 @@ uniform mat4 projection;
 out vec4 color;
 
 void main(){
+    float const_scale = 0.2;
 
     color = vec4(vector_color, 1.0);
 
-    vec3 vertPos_scaled = vertPos * vector_scale;
+    vec3 vertPos_scaled = vertPos * vector_scale * const_scale;
 
     // gl_Position = projection * view * translation_mat * vec4(scaled_vector, 1.0);
     // gl_Position = projection * view * translation_mat * vec4(vertPos, 1.0);

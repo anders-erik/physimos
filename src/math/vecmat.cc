@@ -93,6 +93,13 @@ void m4f4::translate(f3 transl){
 
     mat_mul(*this, tranls_matrix);
 
+    // m4f4 tmp_mat;
+    // tmp_mat = tranls_matrix;
+    // mat_mul(tmp_mat, tranls_matrix);
+    // mat_mul(tmp_mat, *this);
+
+    // *this = tmp_mat;
+
 }
 
 
