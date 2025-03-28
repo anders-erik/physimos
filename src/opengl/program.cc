@@ -83,22 +83,22 @@ unsigned int build_program_vert_frag(Programs program_enum){
         break;
 
     case Programs::ModelColor :
-        vert_str = physimos_root_dir + "/src/model/shaders/model_editor_vert.glsl";
-        frag_str = physimos_root_dir + "/src/model/shaders/model_editor_frag.glsl";
+        vert_str = physimos_root_dir + "/src/opengl/shaders/model_editor_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/model_editor_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_model_color = new_program;
         break;
 
     case Programs::ModelTexture :
-        vert_str = physimos_root_dir + "/src/model/shaders/model_texture_vert.glsl";
-        frag_str = physimos_root_dir + "/src/model/shaders/model_texture_frag.glsl";
+        vert_str = physimos_root_dir + "/src/opengl/shaders/model_texture_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/model_texture_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_model_texture = new_program;
         break;
 
     case Programs::Axes :
-        vert_str = physimos_root_dir + "/src/model/shaders/axes_vert.glsl";
-        frag_str = physimos_root_dir + "/src/model/shaders/axes_frag.glsl";
+        vert_str = physimos_root_dir + "/src/opengl/shaders/axes_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/axes_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_axes = new_program;
         break;

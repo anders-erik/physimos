@@ -6,10 +6,9 @@ set(MODEL_OBJS
     obj.cc
 
     # XP EDITOR
-    scene.cc
-    camera.cc
-    renderer_axes.cc
-    renderer_model.cc
+    # scene.cc
+    # camera.cc
+    # renderer_model.cc
 )
 add_library(model ${MODEL_OBJS})
 target_include_directories(model PUBLIC 
@@ -18,6 +17,7 @@ target_include_directories(model PUBLIC
 )
 target_link_libraries(model
     glad
+    scene
 )
 
 

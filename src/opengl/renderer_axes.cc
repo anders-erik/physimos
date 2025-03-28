@@ -1,10 +1,10 @@
 #include "glad/glad.h"
-#include "scene.hh"
-#include "camera.hh"
+#include "scene/scene.hh"
+#include "scene/camera.hh"
 
 #include "renderer_axes.hh"
 
-#include "model.hh"
+#include "model/model.hh"
 #include "math/vecmat.hh"
 
 // #include "rubik.hh"
@@ -12,7 +12,7 @@
 #include <iostream>
 #include <cmath>
 
-namespace xpeditor {
+namespace opengl {
 
 // RendererModel renderer_model;
 // RendererAxes renderer_axes;

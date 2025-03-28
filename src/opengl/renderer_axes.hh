@@ -11,7 +11,7 @@
 // #include "rubik.hh"
 struct GLFWWindow;
 
-namespace xpeditor {
+namespace opengl {
 
 
 

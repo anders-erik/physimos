@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cmath>
 
-namespace xpeditor {
+namespace opengl {
 
 
 
@@ -23,7 +23,7 @@ void RendererModel::init(){
 
 
 }
-void RendererModel::create_render_context(RenderContextModel& context, ModelColor& model){
+void RendererModel::create_render_context(RenderContextModel& context, model::ModelColor& model){
     
     gpu_use_program(renderer_program);
 
@@ -35,21 +35,21 @@ void RendererModel::create_render_context(RenderContextModel& context, ModelColo
     glBindVertexArray(context.vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, context.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexColor) * model.mesh.vertices.size(), model.mesh.vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(model::VertexColor) * model.mesh.vertices.size(), model.mesh.vertices.data(), GL_STATIC_DRAW);
 
     // std::cout <<  model.mesh.vertices[1].pos.x << std::endl;
     
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context.ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(TriangleFaceIndeces)*model.mesh.faces.size(), model.mesh.faces.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(model::TriangleFaceIndeces)*model.mesh.faces.size(), model.mesh.faces.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (void*)0 );
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(model::VertexColor), (void*)0 );
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (void*)(sizeof(f3)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(model::VertexColor), (void*)(sizeof(f3)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (void*)(sizeof(f3)*2));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(model::VertexColor), (void*)(sizeof(f3)*2));
     glEnableVertexAttribArray(2);
 
 }

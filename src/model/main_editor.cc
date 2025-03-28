@@ -1,8 +1,7 @@
 #include <iostream>
 
 #include "window/auxwin.hh"
-
-#include "scene.hh"
+#include "scene/scene.hh"
 
 int main(){
 
@@ -10,8 +9,8 @@ int main(){
 
     std::cout << "Hello from editor!" << std::endl;
 
-    // xpeditor::scene_init();
-    xpeditor::Scene scene;
+
+    scene::SceneModelEditor scene;
     
     while(auxwin.is_open()){
         auxwin.new_frame();

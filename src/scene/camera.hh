@@ -11,7 +11,7 @@
 
 // #include "rubik.hh"
 
-namespace xpeditor {
+namespace scene {
 
 
 

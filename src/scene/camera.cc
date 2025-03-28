@@ -10,7 +10,7 @@
 #include <iostream>
 #include <cmath>
 
-namespace xpeditor {
+namespace scene {
 
 CameraOrbital::CameraOrbital(){
     triplet_reload();

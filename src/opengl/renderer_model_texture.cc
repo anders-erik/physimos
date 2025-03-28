@@ -42,7 +42,7 @@ void RendererModelTexture::set_camera_view_projection(m4f4 persective_mat, m4f4 
 
 
 
-void RendererModelTexture::create_model_rendering_context(xpeditor::MeshTexture& mesh, RendererModelTextureContext& context, Texture texture_enum){
+void RendererModelTexture::create_model_rendering_context(model::MeshTexture& mesh, RendererModelTextureContext& context, Texture texture_enum){
 
     glUseProgram(program);
     context.program = program;
@@ -58,23 +58,23 @@ void RendererModelTexture::create_model_rendering_context(xpeditor::MeshTexture&
     glBindVertexArray(context.VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, context.VBO);
-    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(xpeditor::VertexTexture), mesh.vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(model::VertexTexture), mesh.vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context.EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.faces.size() * sizeof(xpeditor::TriangleFaceIndeces), mesh.faces.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.faces.size() * sizeof(model::TriangleFaceIndeces), mesh.faces.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0); // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(xpeditor::VertexTexture), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(model::VertexTexture), (void*)0);
 
     glEnableVertexAttribArray(1); // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(xpeditor::VertexTexture), (void*)offsetof(xpeditor::VertexTexture, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(model::VertexTexture), (void*)offsetof(model::VertexTexture, normal));
     // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)12);
 
     glEnableVertexAttribArray(2); // TexCoords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(xpeditor::VertexTexture), (void*)offsetof(xpeditor::VertexTexture, tex));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(model::VertexTexture), (void*)offsetof(model::VertexTexture, tex));
 
 }
-void RendererModelTexture::render_model_rendering_context(xpeditor::MeshTexture& mesh, RendererModelTextureContext& context, m4f4 model_matrix){
+void RendererModelTexture::render_model_rendering_context(model::MeshTexture& mesh, RendererModelTextureContext& context, m4f4 model_matrix){
 
     glUseProgram(program);
 
@@ -90,7 +90,7 @@ void RendererModelTexture::render_model_rendering_context(xpeditor::MeshTexture&
 
 
 
-void RendererModelTexture::render(xpeditor::MeshTexture& model, m4f4 model_matrix){
+void RendererModelTexture::render(model::MeshTexture& model, m4f4 model_matrix){
 
     glUseProgram(program);
 
@@ -110,20 +110,20 @@ void RendererModelTexture::render(xpeditor::MeshTexture& model, m4f4 model_matri
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, model.vertices.size() * sizeof(xpeditor::VertexTexture), model.vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, model.vertices.size() * sizeof(model::VertexTexture), model.vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.faces.size() * sizeof(xpeditor::TriangleFaceIndeces), model.faces.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.faces.size() * sizeof(model::TriangleFaceIndeces), model.faces.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0); // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(xpeditor::VertexTexture), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(model::VertexTexture), (void*)0);
 
     glEnableVertexAttribArray(1); // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(xpeditor::VertexTexture), (void*)offsetof(xpeditor::VertexTexture, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(model::VertexTexture), (void*)offsetof(model::VertexTexture, normal));
     // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)12);
 
     glEnableVertexAttribArray(2); // TexCoords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(xpeditor::VertexTexture), (void*)offsetof(xpeditor::VertexTexture, tex));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(model::VertexTexture), (void*)offsetof(model::VertexTexture, tex));
     // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)24);
 
     // glBindVertexArray(0);

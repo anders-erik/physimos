@@ -6,6 +6,9 @@ set(SCENE_OBJS
     pobject.cc
     WorldSimulator.cc
     Camera.cpp
+
+    scene.cc
+    camera.cc
 )
 
 

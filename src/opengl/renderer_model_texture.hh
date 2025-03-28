@@ -25,13 +25,13 @@ typedef struct RendererModelTexture {
     unsigned int VBO;
     unsigned int EBO;
 
-    void create_model_rendering_context(xpeditor::MeshTexture& mesh, RendererModelTextureContext& context, Texture texture_enum);
-    void render_model_rendering_context(xpeditor::MeshTexture& mesh, RendererModelTextureContext& context, m4f4 model_matrix);
+    void create_model_rendering_context(model::MeshTexture& mesh, RendererModelTextureContext& context, Texture texture_enum);
+    void render_model_rendering_context(model::MeshTexture& mesh, RendererModelTextureContext& context, m4f4 model_matrix);
 
     void set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat);
 
     void init();
-    void render(xpeditor::MeshTexture& mesh, m4f4 model_matrix);
+    void render(model::MeshTexture& mesh, m4f4 model_matrix);
 } RendererModelTexture;
 
 

@@ -11,7 +11,7 @@
 
 // #include "rubik.hh"
 
-namespace xpeditor {
+namespace opengl {
 
 
 
@@ -34,7 +34,7 @@ struct RendererModel {
     unsigned int perspective_location;
 
     void init();
-    void create_render_context(RenderContextModel& context, ModelColor& model);
+    void create_render_context(RenderContextModel& context, model::ModelColor& model);
     void set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat);
     void render(const RenderContextModel& context, m4f4 matrix, int vertex_count);
 };

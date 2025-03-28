@@ -4,7 +4,9 @@ add_library(opengl
     texture.cc
     error.cc
 
+    renderer_model.cc
     renderer_model_texture.cc
+    renderer_axes.cc
 )
 
 target_include_directories(opengl PUBLIC 
@@ -17,4 +19,6 @@ target_include_directories(opengl PUBLIC
 
 target_link_libraries(opengl
     lib
+    model
+    math
 )

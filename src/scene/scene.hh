@@ -7,7 +7,7 @@
 #include "opengl/renderer_model_texture.hh"
 
 #include "math/vecmat.hh"
-#include "renderer_model.hh"
+#include "opengl/renderer_model.hh"
 #include "window/auxwin.hh"
 
 #include "camera.hh"
@@ -17,30 +17,30 @@
 
 struct GLFWWindow;
 
-namespace xpeditor {
+namespace scene {
 
 
-class Scene {
+class SceneModelEditor {
 
 public:
-    ModelColor model;
-    RendererModel renderer_model;
-    RenderContextModel model_render_context;
+    model::ModelColor model;
+    opengl::RendererModel renderer_model;
+    opengl::RenderContextModel model_render_context;
 
-    ModelTexture ground;
+    model::ModelTexture ground;
     opengl::RendererModelTextureContext ground_render_context;
 
-    ModelTexture tube;
+    model::ModelTexture tube;
     opengl::RendererModelTextureContext tube_render_context;
 
     opengl::RendererModelTexture renderer_model_texture;
 
-    RendererAxes renderer_axes;
+    opengl::RendererAxes renderer_axes;
 
     CameraOrbital camera;
     bool camera_grabbed = false;
 
-    Scene();
+    SceneModelEditor();
 
 
     void handle_input(window::InputEvent input_event);

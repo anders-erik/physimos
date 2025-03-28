@@ -4,7 +4,7 @@
 
 #include "model.hh"
 
-namespace xpeditor {
+namespace model {
 
 
 

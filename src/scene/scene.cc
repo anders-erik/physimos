@@ -15,10 +15,10 @@
 #include <iostream>
 #include <cmath>
 
-namespace xpeditor {
+namespace scene {
 
 
-TubeContext tube_context = {
+model::TubeContext tube_context = {
     1.0f,   //  float radius;
     3,      //  int frame_point_count;
     5,      //  int frame_count;
@@ -26,7 +26,7 @@ TubeContext tube_context = {
     0,      //  int vertex_count_target;
 };
 
-Scene::Scene(){
+SceneModelEditor::SceneModelEditor(){
 
     opengl::textures_init();
 
@@ -56,7 +56,7 @@ Scene::Scene(){
 }
 
 
-void Scene::update(){
+void SceneModelEditor::update(){
 
     // if(_cube.animator.is_animating)
         // _cube.update_animator();
@@ -91,7 +91,7 @@ void Scene::update(){
 
 }
 
-void Scene::render(){
+void SceneModelEditor::render(){
 
 
     m4f4 identity;
@@ -114,7 +114,7 @@ void Scene::render(){
 
 
 
-void Scene::handle_input(window::InputEvent input_event){
+void SceneModelEditor::handle_input(window::InputEvent input_event){
 
 
     switch (input_event.type){
