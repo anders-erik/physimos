@@ -55,22 +55,42 @@ typedef struct MeshTexture {
 } MeshTexture;
 
 
-struct Model {
+struct ModelColor {
     Transform transform;
 
     MeshColor mesh;
 
-    void set_transform_matrix();
-    void set_transform_matrix_anim();
     void set_base_color(f3 color);
 };
 
+struct ModelTexture {
+    Transform transform;
 
+    MeshTexture mesh;
+
+};
+
+
+struct TubeContext {
+    float radius;
+    int frame_point_count;
+    int frame_count;
+    float frame_gap;
+    int vertex_count_target;
+};
 
 
 void model_add_cube_mesh(MeshColor& mesh);
 void model_add_facelet(MeshColor& mesh, f3 color, Axis axis);
 
 
+void model_center(MeshTexture& mesh);
+void model_translate(MeshTexture& mesh, f3 translation);
+void model_scale(MeshTexture& mesh, float scale);
+/** Only supports x, y, or z axes. */
+void model_rotate(MeshTexture& mesh, float angle_rad, f3 axis);
+
+void model_generate_ground(MeshTexture& mesh);
+void model_generate_tube(MeshTexture& mesh, TubeContext tube_context);
 
 }

@@ -10,16 +10,18 @@ namespace opengl {
         phont_texture,
         phont_char,
 
-        Model,
+        ModelColor,
+        ModelTexture,
         Axes
     };
 
     unsigned int    gpu_get_program(Programs program_enum);
     void            gpu_use_program(Programs program_enum);
-    
+
 
     /** Compile single vertex and fragment shader, links program, and returns program name. */
-    unsigned int build_program_vert_frag(Programs phont_texture);
+    unsigned int build_program_vert_frag(Programs program_enum);
+    
 
 
     /** Compile single vertex and fragment shader, links program, and returns program name. */

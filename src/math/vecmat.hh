@@ -101,6 +101,8 @@ struct m4f4 {
 
     void perspective(float fov, float width, float height, float zn, float zf);
 
+    void print();
+
     m4f4() : 
         x { f4(1.0f, 0.0f, 0.0f, 0.0f) }, 
         y { f4(0.0f, 1.0f, 0.0f, 0.0f) }, 

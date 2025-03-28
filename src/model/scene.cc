@@ -2,6 +2,8 @@
 #include "scene.hh"
 #include "camera.hh"
 
+#include "opengl/error.hh"
+
 #include "renderer_axes.hh"
 
 
@@ -16,29 +18,41 @@
 namespace xpeditor {
 
 
+TubeContext tube_context = {
+    1.0f,   //  float radius;
+    3,      //  int frame_point_count;
+    5,      //  int frame_count;
+    1,      //  float frame_gap;
+    0,      //  int vertex_count_target;
+};
 
 Scene::Scene(){
 
+    opengl::textures_init();
+
     renderer_model.init();
     renderer_axes.init();
+    renderer_model_texture.init();
 
-    // camera.transform.rot.z = 0.5;
-    // camera.transform.rot.x =  1.3;
-    // camera.transform.rot.y =  0.0;
-    // camera.transform.rot.z = -0.75;
+    // GROUND
+    model_generate_ground(ground.mesh);
+    model_center(ground.mesh);
+    renderer_model_texture.create_model_rendering_context(ground.mesh, ground_render_context, opengl::Texture::Grass);
+    
+    // TUBE
+    model_generate_tube(tube.mesh, tube_context);
+    model_center(tube.mesh);
+    model_scale(tube.mesh, 0.5f);
+    model_rotate(tube.mesh, 0.5f , {1.0f, 0.0f, 0.0f});
+    model_translate(tube.mesh, {-3.0f, 0.0f, 2.0f});
+    renderer_model_texture.create_model_rendering_context(tube.mesh, tube_render_context, opengl::Texture::Colors );
 
-    // camera.transform.pos.x = -4.0;
-    // camera.transform.pos.y = -4.0;
-    // camera.transform.pos.z = 2.0f;
 
+    // COLOR MODEL
     model_add_cube_mesh(model.mesh);
     renderer_model.create_render_context(model_render_context, model);
+    model.transform.pos.x = 5.0f;
 
-    // renderer_model.create_render_context(_cube.c_xp.model);
-    // renderer_model.create_render_context(_cube.c1.model);
-    
-
-    // return true;
 }
 
 
@@ -61,12 +75,19 @@ void Scene::update(){
     // camera.triplet_reload();
 
     camera.set_matrices();
+
+
     renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
+    renderer_model_texture.set_camera_view_projection(camera.perspective_mat, camera.view_mat);
 
     m4f4 indentity;
     renderer_axes.set_uniforms(indentity, camera.view_mat, camera.perspective_mat);
     // renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
-
+    
+    // model.set_transform_matrix();
+    model.transform.set_matrix_model();
+    ground.transform.set_matrix_model();
+    tube.transform.set_matrix_model();
 
 }
 
@@ -84,6 +105,10 @@ void Scene::render(){
     // glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     renderer_model.render(model_render_context, model.transform.matrix, model.mesh.faces.size()*3);
 
+
+    // renderer_model_texture.render(ground.mesh, ground.transform.matrix);
+    renderer_model_texture.render_model_rendering_context(ground.mesh, ground_render_context, ground.transform.matrix);
+    renderer_model_texture.render_model_rendering_context(tube.mesh, tube_render_context, tube.transform.matrix);
 }
 
 
@@ -139,9 +164,15 @@ void Scene::handle_input(window::InputEvent input_event){
             switch (input_event.key_stroke.key){
 
             case window::Key::p :
-                std::cout << "camera.rho    = " << camera.rho << std::endl;
-                std::cout << "camera.theta  = " << camera.theta << std::endl;
-                std::cout << "camera.phi    = " << camera.phi << std::endl;
+                // std::cout << "camera.rho    = " << camera.rho << std::endl;
+                // std::cout << "camera.theta  = " << camera.theta << std::endl;
+                // std::cout << "camera.phi    = " << camera.phi << std::endl;
+
+                // ground.transform.matrix.print();
+                // camera.perspective_mat.print();
+                // camera.view_mat.print();
+
+                opengl::error_check();
                 break;
             
             default:

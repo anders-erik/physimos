@@ -13,9 +13,9 @@ namespace xpeditor {
 void RendererModel::init(){
     // gpu_build_vert_frag_program(shader_enum);
 
-    opengl::build_program_vert_frag(opengl::Programs::Model);
+    opengl::build_program_vert_frag(opengl::Programs::ModelColor);
 
-    unsigned int program = gpu_get_program(opengl::Programs::Model);
+    unsigned int program = gpu_get_program(opengl::Programs::ModelColor);
 
     transform_location = glGetUniformLocation(program, "transform");
     view_location = glGetUniformLocation(program, "view");
@@ -23,7 +23,7 @@ void RendererModel::init(){
 
 
 }
-void RendererModel::create_render_context(RenderContextModel& context, Model& model){
+void RendererModel::create_render_context(RenderContextModel& context, ModelColor& model){
     
     gpu_use_program(renderer_program);
 
@@ -56,7 +56,7 @@ void RendererModel::create_render_context(RenderContextModel& context, Model& mo
 
 void RendererModel::set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat){
 
-    gpu_use_program(opengl::Programs::Model);
+    gpu_use_program(opengl::Programs::ModelColor);
 
     // unsigned int program = gpu_get_program(Shader::Model);
 

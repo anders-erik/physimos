@@ -8,18 +8,22 @@
 
 namespace opengl {
 
-unsigned int program_model;
+unsigned int program_model_color;
+unsigned int program_model_texture;
 unsigned int program_axes;
-
 
 void gpu_use_program(Programs program_enum){
 
     switch (program_enum){
 
-        case Programs::Model:
-            glUseProgram(program_model);
+        case Programs::ModelColor:
+            glUseProgram(program_model_color);
             break;
         
+        case Programs::ModelTexture:
+            glUseProgram(program_model_texture);
+            break;
+
         case Programs::Axes:
             glUseProgram(program_axes);
             break;
@@ -35,8 +39,12 @@ unsigned int gpu_get_program(Programs program_enum){
 
     switch (program_enum){
 
-        case Programs::Model:
-            program = program_model;
+        case Programs::ModelColor:
+            program = program_model_color;
+            break;
+        
+        case Programs::ModelTexture:
+            program = program_model_texture;
             break;
 
         case Programs::Axes:
@@ -50,7 +58,7 @@ unsigned int gpu_get_program(Programs program_enum){
     return program;
 }
 
-unsigned int build_program_vert_frag(Programs phont_texture){
+unsigned int build_program_vert_frag(Programs program_enum){
 
     unsigned int new_program;
 
@@ -59,7 +67,7 @@ unsigned int build_program_vert_frag(Programs phont_texture){
     std::string vert_str;
     std::string frag_str;
 
-    switch (phont_texture)
+    switch (program_enum)
     {
 
     case Programs::phont_texture :
@@ -74,11 +82,18 @@ unsigned int build_program_vert_frag(Programs phont_texture){
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
-    case Programs::Model :
+    case Programs::ModelColor :
         vert_str = physimos_root_dir + "/src/model/shaders/model_editor_vert.glsl";
         frag_str = physimos_root_dir + "/src/model/shaders/model_editor_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
-        program_model = new_program;
+        program_model_color = new_program;
+        break;
+
+    case Programs::ModelTexture :
+        vert_str = physimos_root_dir + "/src/model/shaders/model_texture_vert.glsl";
+        frag_str = physimos_root_dir + "/src/model/shaders/model_texture_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        program_model_texture = new_program;
         break;
 
     case Programs::Axes :
@@ -87,6 +102,9 @@ unsigned int build_program_vert_frag(Programs phont_texture){
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_axes = new_program;
         break;
+
+
+        
     
     default:
         break;

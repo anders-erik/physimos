@@ -1,6 +1,10 @@
 
 add_library(opengl
     program.cc
+    texture.cc
+    error.cc
+
+    renderer_model_texture.cc
 )
 
 target_include_directories(opengl PUBLIC 

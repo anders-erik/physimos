@@ -2,6 +2,7 @@
 #include "vecmat.hh"
 
 #include <cmath>
+#include <iostream>
 
 
 void f3::matmul(m4f4 matrix){
@@ -148,4 +149,11 @@ m4f4& m4f4::operator=(m4f4& rhs){
     w.w = rhs.w.w;
 
     return *this;
+}
+
+void m4f4::print(){
+    std::cout << x.x << " " << x.y << " " << x.z << " " << x.w << std::endl;
+    std::cout << y.x << " " << y.y << " " << y.z << " " << y.w << std::endl;
+    std::cout << z.x << " " << z.y << " " << z.z << " " << z.w << std::endl;
+    std::cout << w.x << " " << w.y << " " << w.z << " " << w.w << std::endl;
 }
