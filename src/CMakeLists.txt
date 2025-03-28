@@ -12,6 +12,7 @@ add_subdirectory(scene)
 add_subdirectory(draw)
 add_subdirectory(opengl)
 add_subdirectory(phont)
+add_subdirectory(window)
 
 
 set(SOURCES 

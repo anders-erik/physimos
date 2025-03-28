@@ -2,7 +2,6 @@
 
 set(PHONT 
     phont.cc
-    auxwin.cc
 )
 
 
@@ -16,6 +15,7 @@ target_include_directories(phont PUBLIC
 )
 target_link_libraries(phont
     lib
+    
 )
 
 
@@ -24,6 +24,8 @@ add_executable(phont_main
 )
 target_link_libraries(phont_main
     phont
+
+    window
 
     lib
     opengl

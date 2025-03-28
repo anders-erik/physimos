@@ -191,5 +191,14 @@
             ],
             "dependsOn": "Build Debug"
         },
+        {
+            "label": "Model",
+            "type": "shell",
+            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/model/model_main",
+            "problemMatcher": [
+                "$gcc",
+            ],
+            "dependsOn": "Build Debug"
+        },
     ]
 }

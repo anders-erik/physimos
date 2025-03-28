@@ -8,6 +8,48 @@
 
 namespace opengl {
 
+unsigned int program_model;
+unsigned int program_axes;
+
+
+void gpu_use_program(Programs program_enum){
+
+    switch (program_enum){
+
+        case Programs::Model:
+            glUseProgram(program_model);
+            break;
+        
+        case Programs::Axes:
+            glUseProgram(program_axes);
+            break;
+        
+        default:
+            break;
+    }
+    
+}
+
+unsigned int gpu_get_program(Programs program_enum){
+    unsigned int program;
+
+    switch (program_enum){
+
+        case Programs::Model:
+            program = program_model;
+            break;
+
+        case Programs::Axes:
+            program = program_axes;
+            break;
+        
+        default:
+            break;
+    }
+
+    return program;
+}
+
 unsigned int build_program_vert_frag(Programs phont_texture){
 
     unsigned int new_program;
@@ -30,6 +72,20 @@ unsigned int build_program_vert_frag(Programs phont_texture){
         vert_str = physimos_root_dir + "/src/phont/shaders/phont_char_vert.glsl";
         frag_str = physimos_root_dir + "/src/phont/shaders/phont_char_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
+        break;
+
+    case Programs::Model :
+        vert_str = physimos_root_dir + "/src/model/shaders/model_editor_vert.glsl";
+        frag_str = physimos_root_dir + "/src/model/shaders/model_editor_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        program_model = new_program;
+        break;
+
+    case Programs::Axes :
+        vert_str = physimos_root_dir + "/src/model/shaders/axes_vert.glsl";
+        frag_str = physimos_root_dir + "/src/model/shaders/axes_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        program_axes = new_program;
         break;
     
     default:

@@ -1,7 +1,6 @@
 
 
-#include "auxwin.hh"
-// #include "opengl/program.hh"
+#include "window/auxwin.hh"
 
 #include "phont.hh"
 
@@ -15,7 +14,7 @@ const unsigned int WINDOW_HEIGHT = 600;
 int main()
 {
 	// WINDOW
-	Auxwin auxwin(WINDOW_WIDTH, WINDOW_HEIGHT);
+	window::Auxwin auxwin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 
     // QUAD
@@ -43,7 +42,7 @@ int main()
 
 
 		// INPUT
-		InputState input_state = auxwin.handle_input();
+		window::InputState input_state = auxwin.get_input_state();
 		if(input_state.esc){
 			auxwin.close();
 		}
