@@ -5,7 +5,7 @@
 #include "renderer_axes.hh"
 
 #include "model.hh"
-#include "math/math.hh"
+#include "math/vecmat.hh"
 
 // #include "rubik.hh"
 
@@ -37,7 +37,7 @@ void RendererAxes::init(){
 
     AxesVertex vertices[6];
 
-    float axes_scale = 3.0f;
+    float axes_scale = 1.0f;
 
     vertices[0].pos.x = 0.0f;
     vertices[0].color.x = 1.0f;

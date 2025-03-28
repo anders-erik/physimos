@@ -9,7 +9,7 @@ set(MODEL_OBJS
     scene.cc
     camera.cc
     renderer_axes.cc
-    model_editor.cc
+    renderer_model.cc
 )
 add_library(model ${MODEL_OBJS})
 target_include_directories(model PUBLIC 

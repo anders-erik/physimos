@@ -4,7 +4,7 @@
 #include <array>
 #include <vector>
 
-#include "math/math.hh"
+#include "math/vecmat.hh"
 
 namespace phont {
 

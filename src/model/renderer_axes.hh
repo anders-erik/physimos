@@ -4,8 +4,8 @@
 #include <vector>
 
 #include "opengl/program.hh"
-#include "math/math.hh"
-#include "model_editor.hh"
+#include "math/vecmat.hh"
+// #include "model_editor.hh"
 #include "window/auxwin.hh"
 
 // #include "rubik.hh"

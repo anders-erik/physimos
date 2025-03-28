@@ -6,7 +6,7 @@
 
 
 #include "model.hh"
-#include "math/math.hh"
+#include "math/vecmat.hh"
 
 // #include "rubik.hh"
 
@@ -17,28 +17,22 @@ namespace xpeditor {
 
 
 
-void Scene::set_viewport_dims(int _width, int _height){
-    // std::cout << _width << _height << std::endl;
-    camera.width = (float) _width;
-    camera.height = (float) _height;
-}
-
 Scene::Scene(){
 
     renderer_model.init();
     renderer_axes.init();
 
     // camera.transform.rot.z = 0.5;
-    camera.transform.rot.x =  1.3;
-    camera.transform.rot.y =  0.0;
-    camera.transform.rot.z = -0.75;
+    // camera.transform.rot.x =  1.3;
+    // camera.transform.rot.y =  0.0;
+    // camera.transform.rot.z = -0.75;
 
-    camera.transform.pos.x = -4.0;
-    camera.transform.pos.y = -4.0;
-    camera.transform.pos.z = 2.0f;
+    // camera.transform.pos.x = -4.0;
+    // camera.transform.pos.y = -4.0;
+    // camera.transform.pos.z = 2.0f;
 
     model_add_cube_mesh(model.mesh);
-    renderer_model.create_render_context(model);
+    renderer_model.create_render_context(model_render_context, model);
 
     // renderer_model.create_render_context(_cube.c_xp.model);
     // renderer_model.create_render_context(_cube.c1.model);
@@ -46,6 +40,54 @@ Scene::Scene(){
 
     // return true;
 }
+
+
+void Scene::update(){
+
+    // if(_cube.animator.is_animating)
+        // _cube.update_animator();
+    // else
+        // cube
+    // _cube.update_cubies();
+    
+    // _cube.c_xp.model.set_transform_matrix();
+    // _cube.c_xp.tr
+
+    // _cube.c0.model.set_transform_matrix();
+    // _cube.c1.model.set_transform_matrix();
+
+    // camera
+    // camera.set_triplet(camera.rho, camera.theta, camera.phi);
+    // camera.triplet_reload();
+
+    camera.set_matrices();
+    renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
+
+    m4f4 indentity;
+    renderer_axes.set_uniforms(indentity, camera.view_mat, camera.perspective_mat);
+    // renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
+
+
+}
+
+void Scene::render(){
+
+
+    m4f4 identity;
+    renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
+    renderer_axes.render();
+
+    // glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
+    // glPointSize(5);
+    // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    glLineWidth(5);
+    // glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    renderer_model.render(model_render_context, model.transform.matrix, model.mesh.faces.size()*3);
+
+}
+
+
+
 
 void Scene::handle_input(window::InputEvent input_event){
 
@@ -118,56 +160,13 @@ void Scene::handle_input(window::InputEvent input_event){
 
     case window::EventType::WindowResize:
 
-        std::cout << "WIN RESIZE" << std::endl;
+        camera.set_fov(input_event.window_resize.size.x, input_event.window_resize.size.y);
 
         break;
 
     }
 
 }
-
-void Scene::update(){
-
-    // if(_cube.animator.is_animating)
-        // _cube.update_animator();
-    // else
-        // cube
-    // _cube.update_cubies();
-    
-    // _cube.c_xp.model.set_transform_matrix();
-    // _cube.c_xp.tr
-
-    // _cube.c0.model.set_transform_matrix();
-    // _cube.c1.model.set_transform_matrix();
-
-    // camera
-    camera.set_triplet(camera.rho, camera.theta, camera.phi);
-    camera.set_matrices();
-    renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
-
-    m4f4 indentity;
-    renderer_axes.set_uniforms(indentity, camera.view_mat, camera.perspective_mat);
-    // renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
-
-
-}
-
-void Scene::render(){
-
-
-    m4f4 identity;
-    renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
-    renderer_axes.render();
-    // renderer_axes.set_uniforms(_cube.cubies[0].model.transform.matrix, camera.view_mat, camera.perspective_mat);
-    // renderer_axes.render();
-
-    // for(Cubie& c : _cube.cubies){
-    //     renderer_model.render(c.model);
-    // }
-    // renderer_model.render(_cube.c_xp.model);
-}
-
-
 
 
 }

@@ -2,38 +2,69 @@
 #include "camera.hh"
 
 #include "model.hh"
-#include "math/math.hh"
+#include "math/vecmat.hh"
 
 // #include "rubik.hh"
+// #include "renderer_model.hh"
 
 #include <iostream>
 #include <cmath>
 
 namespace xpeditor {
 
+CameraOrbital::CameraOrbital(){
+    triplet_reload();
+}
+
+void CameraOrbital::set_fov(int _width, int _height){
+    width = (float) _width;
+    height = (float) _height;
+}
+
+
+float CameraOrbital::rho_clamp(float _rho){
+    if(_rho < rho_min)
+        return rho_min;
+    if(_rho > rho_max)
+        return rho_max;
+    return _rho;
+}
 void CameraOrbital::rho_change(float delta){
-    rho = rho + rho * rho_factor * delta;
-    set_triplet(rho, theta, phi);
+    float rho_new = rho + rho * rho_factor * delta;
+
+    // rho = rho_new < 4.0f ? 4.0f : rho_new ;
+    // rho = rho > 30.0f ? 30.0f : rho ;
+
+    triplet_set(rho_clamp(rho_new), theta, phi);
+
+    // triplet_set(rho, theta, phi);
 }
 void CameraOrbital::theta_change(float delta){
     theta = theta + theta_scale * delta;
-    set_triplet(rho, theta, phi);
+    triplet_set(rho, theta, phi);
 }
 void CameraOrbital::phi_change(float delta){
     phi = phi + phi_scale * delta;
-    set_triplet(rho, theta, phi);
+    triplet_set(rho, theta, phi);
 }
 
-void CameraOrbital::set_triplet(float _rho, float _theta, float _phi){
+void CameraOrbital::triplet_set(float _rho, float _theta, float _phi){
 
-    rho = _rho < 4.0f ? 4.0f : _rho ;
-    rho = rho > 30.0f ? 30.0f : rho ;
+    // rho = _rho < 4.0f ? 4.0f : _rho ;
+    // rho = rho > 30.0f ? 30.0f : rho ;
 
+    rho = rho_clamp(_rho);
     theta = _theta;
+    phi = _phi;
 
     // phi = _phi < 0.0f ? 0.0f : _phi;
     // phi = phi > 3.14f ? 3.14f : phi;
-    phi = _phi;
+
+    triplet_reload();
+}
+
+void CameraOrbital::triplet_reload(){
+    // triplet_set(rho, theta, phi);
 
     transform.pos.x = rho * cosf(theta) * sinf(phi);
     transform.pos.y = rho * sinf(theta) * sinf(phi);
@@ -41,6 +72,7 @@ void CameraOrbital::set_triplet(float _rho, float _theta, float _phi){
 
     transform.rot.x = phi;
     transform.rot.z = 1.57f + theta; // Offset by 90 deg to align camera with initial theta
+
 }
 
 void CameraOrbital::set_matrices(){

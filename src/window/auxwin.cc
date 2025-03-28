@@ -244,6 +244,7 @@ Auxwin::Auxwin(int width, int height){
     glfwSetKeyCallback(glfw_window, key_callback);
 
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_DEPTH_TEST);
 }
 
 
@@ -261,7 +262,8 @@ bool Auxwin::is_open(){
 void Auxwin::new_frame(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.1f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+    // glClear(GL_COLOR_BUFFER_BIT);
 }
 void Auxwin::end_frame(){
     glBindVertexArray(0); 

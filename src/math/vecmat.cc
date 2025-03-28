@@ -1,5 +1,5 @@
 
-#include "math.hh"
+#include "vecmat.hh"
 
 #include <cmath>
 

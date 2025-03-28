@@ -4,8 +4,8 @@
 #include <vector>
 
 #include "opengl/program.hh"
-#include "math/math.hh"
-#include "model_editor.hh"
+#include "math/vecmat.hh"
+#include "renderer_model.hh"
 #include "window/auxwin.hh"
 
 #include "camera.hh"
@@ -23,6 +23,8 @@ class Scene {
 public:
 
     RendererModel renderer_model;
+    RenderContextModel model_render_context;
+
     RendererAxes renderer_axes;
     Model model;
 
@@ -36,8 +38,6 @@ public:
 
     void update();
     void render();
-
-    void set_viewport_dims(int _width, int _height);
     
 };
 

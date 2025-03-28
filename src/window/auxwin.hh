@@ -3,7 +3,7 @@
 
 #include <queue>
 
-#include "math/math.hh"
+#include "math/vecmat.hh"
 
 struct GLFWwindow;
 
