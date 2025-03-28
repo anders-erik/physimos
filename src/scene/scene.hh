@@ -5,9 +5,10 @@
 
 #include "opengl/program.hh"
 #include "opengl/renderer_model_texture.hh"
+#include "opengl/renderer_vector.hh"
+#include "opengl/renderer_model.hh"
 
 #include "math/vecmat.hh"
-#include "opengl/renderer_model.hh"
 #include "window/auxwin.hh"
 
 #include "camera.hh"
@@ -26,6 +27,7 @@ public:
     model::ModelColor model;
     opengl::RendererModel renderer_model;
     opengl::RenderContextModel model_render_context;
+    opengl::RendererVector renderer_vector;
 
     model::ModelTexture ground;
     opengl::RendererModelTextureContext ground_render_context;

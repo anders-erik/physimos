@@ -7,6 +7,7 @@ add_library(opengl
     renderer_model.cc
     renderer_model_texture.cc
     renderer_axes.cc
+    renderer_vector.cc
 )
 
 target_include_directories(opengl PUBLIC 

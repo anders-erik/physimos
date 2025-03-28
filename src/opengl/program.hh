@@ -12,7 +12,8 @@ namespace opengl {
 
         ModelColor,
         ModelTexture,
-        Axes
+        Axes,
+        Vector,
     };
 
     unsigned int    gpu_get_program(Programs program_enum);
@@ -21,7 +22,7 @@ namespace opengl {
 
     /** Compile single vertex and fragment shader, links program, and returns program name. */
     unsigned int build_program_vert_frag(Programs program_enum);
-    
+
 
 
     /** Compile single vertex and fragment shader, links program, and returns program name. */

@@ -11,6 +11,7 @@ namespace opengl {
 unsigned int program_model_color;
 unsigned int program_model_texture;
 unsigned int program_axes;
+unsigned int program_vector;
 
 void gpu_use_program(Programs program_enum){
 
@@ -26,6 +27,10 @@ void gpu_use_program(Programs program_enum){
 
         case Programs::Axes:
             glUseProgram(program_axes);
+            break;
+
+        case Programs::Vector:
+            glUseProgram(program_vector);
             break;
         
         default:
@@ -49,6 +54,10 @@ unsigned int gpu_get_program(Programs program_enum){
 
         case Programs::Axes:
             program = program_axes;
+            break;
+
+        case Programs::Vector:
+            program = program_vector;
             break;
         
         default:
@@ -101,6 +110,13 @@ unsigned int build_program_vert_frag(Programs program_enum){
         frag_str = physimos_root_dir + "/src/opengl/shaders/axes_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_axes = new_program;
+        break;
+
+    case Programs::Vector :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/vector.vert";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/vector.frag";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        program_vector = new_program;
         break;
 
 
