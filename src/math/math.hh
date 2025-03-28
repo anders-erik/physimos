@@ -29,6 +29,15 @@ enum class Axis {
     nz,
 };
 
+struct i2 {
+    int x = 0;
+    int y = 0;
+
+    i2(int x, int y) : x {x}, y {y} {}; 
+    i2(int xy) : x {xy}, y {xy} {}; 
+    i2() = default;
+};
+
 struct i3 {
     int x = 0;
     int y = 0;
@@ -43,7 +52,7 @@ struct f2 {
     float x = 0.0f;
     float y = 0.0f;
 
-    f2(float x, float y, float z) : x {x}, y {y} {}; 
+    f2(float x, float y) : x {x}, y {y} {}; 
     f2(float xyz) : x {xyz}, y {xyz} {}; 
     f2() = default;
 };

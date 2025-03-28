@@ -10,19 +10,26 @@ int main(){
 
     std::cout << "Hello from editor!" << std::endl;
 
-    xpeditor::scene_init();
+    // xpeditor::scene_init();
+    xpeditor::Scene scene;
     
     while(auxwin.is_open()){
         auxwin.new_frame();
 
-        window::InputState input_state = auxwin.get_input_state();
-        if(input_state.esc)
-            auxwin.close();
+        std::queue<window::InputEvent> events = auxwin.get_input_events();
+        while(events.size() > 0){
+            window::InputEvent event = events.front();
+            
+            if(event.type == window::EventType::Keystroke && event.key_stroke.key == window::Key::Esc)
+                auxwin.close();
 
+            scene.handle_input(event);
+            
+            events.pop();
+        }
 
-        xpeditor::scene_handle_input(input_state);
-        xpeditor::scene_update();
-        xpeditor::scene_render();
+        scene.update();
+        scene.render();
 
         auxwin.end_frame();
     }

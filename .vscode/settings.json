@@ -72,7 +72,8 @@
 		"span": "cpp",
 		"variant": "cpp",
 		"list": "cpp",
-		"cstring": "cpp"
+		"cstring": "cpp",
+		"set": "cpp"
 	},
 	"makefile.configureOnOpen": false
 }

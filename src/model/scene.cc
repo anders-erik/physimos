@@ -1,5 +1,9 @@
 #include "glad/glad.h"
 #include "scene.hh"
+#include "camera.hh"
+
+#include "renderer_axes.hh"
+
 
 #include "model.hh"
 #include "math/math.hh"
@@ -11,69 +15,15 @@
 
 namespace xpeditor {
 
-RendererModel renderer_model;
-RendererAxes renderer_axes;
-
-CameraOrbital camera;
-
-Model model;
 
 
-void CameraOrbital::set_triplet(float _rho, float _theta, float _phi){
-
-    rho = _rho < 4.0f ? 4.0f : _rho ;
-    rho = rho > 30.0f ? 30.0f : rho ;
-
-    theta = _theta;
-
-    // phi = _phi < 0.0f ? 0.0f : _phi;
-    // phi = phi > 3.14f ? 3.14f : phi;
-    phi = _phi;
-
-    transform.pos.x = rho * cosf(theta) * sinf(phi);
-    transform.pos.y = rho * sinf(theta) * sinf(phi);
-    transform.pos.z = rho * cosf(phi);
-
-    transform.rot.x = phi;
-    transform.rot.z = 1.57f + theta; // Offset by 90 deg to align camera with initial theta
-}
-
-void CameraOrbital::set_matrices(){
-    m4f4 indentity;
-
-    view_mat = indentity;
-
-    view_mat.rotate_x(-camera.transform.rot.x);
-    view_mat.rotate_y(-camera.transform.rot.y);
-    view_mat.rotate_z(camera.transform.rot.z);
-
-    f3 negative_camera_pos;
-    negative_camera_pos.x = -camera.transform.pos.x;
-    negative_camera_pos.y = -camera.transform.pos.y;
-    negative_camera_pos.z = -camera.transform.pos.z;
-    view_mat.translate(negative_camera_pos);
-
-
-    perspective_mat = indentity;
-    perspective_mat.perspective(
-                        camera.fov, 
-                        camera.width, 
-                        camera.height, 
-                        camera.zn,
-                        camera.zf
-    );
-
-}
-
-
-
-void scene_set_viewport_dims(int _width, int _height){
+void Scene::set_viewport_dims(int _width, int _height){
     // std::cout << _width << _height << std::endl;
     camera.width = (float) _width;
     camera.height = (float) _height;
 }
 
-bool scene_init(){
+Scene::Scene(){
 
     renderer_model.init();
     renderer_axes.init();
@@ -94,56 +44,89 @@ bool scene_init(){
     // renderer_model.create_render_context(_cube.c1.model);
     
 
-    return true;
+    // return true;
 }
 
-void scene_handle_input(window::InputState input_state){
+void Scene::handle_input(window::InputEvent input_event){
+
+
+    switch (input_event.type){
+
+    case window::EventType::MouseButton:
+        
+        if(input_event.mouse_button.button == window::MouseButton::Middle){
+
+            if(input_event.mouse_button.action == window::ButtonAction::Press)
+                camera_grabbed = true;
+                // std::cout << "GRAB CAMERA" << std::endl;
+
+            if(input_event.mouse_button.action == window::ButtonAction::Release)
+                camera_grabbed = false;
+                // std::cout << "RELEASE CAMERA" << std::endl;
+
+
+        }
+
+        break;
+
+
+    case window::EventType::MouseMove:
+
+        if(camera_grabbed){
+            camera.theta_change(input_event.mouse_movement.delta.x);
+            camera.phi_change(input_event.mouse_movement.delta.y);
+        }
+        
+
+        break;
     
+    case window::EventType::MouseScroll:
 
-    // ORBIT CONTROLS
+        camera.rho_change(input_event.mouse_scroll.delta);
 
-    // Spherical Coords
+        break;
 
-    float rho_factor = -0.2f;
-    float theta_scale = -0.008f;
-    float phi_scale = 0.010f;
+    case window::EventType::Keystroke:
 
-    float _rho      = camera.rho   + camera.rho  * rho_factor * input_state.scroll_delta;
-    float _theta    = camera.theta + theta_scale * (float) input_state.mouse.middle_delta_accum.x;
-    float _phi      = camera.phi   + phi_scale   * (float) input_state.mouse.middle_delta_accum.y;
+        if(input_event.key_stroke.action == window::ButtonAction::Hold){
+            // std::cout << "KEY HOLD" << std::endl;
+        }
+        else if(input_event.key_stroke.action == window::ButtonAction::Press){
+            // std::cout << "KEY PRESS" << std::endl;
+        
+            switch (input_event.key_stroke.key){
 
-    camera.set_triplet(_rho, _theta, _phi);
+            case window::Key::p :
+                std::cout << "camera.rho    = " << camera.rho << std::endl;
+                std::cout << "camera.theta  = " << camera.theta << std::endl;
+                std::cout << "camera.phi    = " << camera.phi << std::endl;
+                break;
+            
+            default:
+                break;
+            }
+        
+        }
+        else if(input_event.key_stroke.action == window::ButtonAction::Release){
+            // std::cout << "KEY RELEASE" << std::endl;
+        }
 
 
-    
-    // if(input_state.up){
+        
 
-    // }
-    // if(input_state.down){
+        break;
 
-    // }
-    // if(input_state.left){
+    case window::EventType::WindowResize:
 
-    // }
-    // if(input_state.right){
+        std::cout << "WIN RESIZE" << std::endl;
 
-    // }
-    
-    
-    // PRINTS
-    if(input_state.p){
-    //     // std::cout << "camera.transform.rot.x = " << camera.transform.rot.x << std::endl;
-    //     // std::cout << "camera.transform.rot.y = " << camera.transform.rot.y << std::endl;
-    //     // std::cout << "camera.transform.rot.z = " << camera.transform.rot.z << std::endl;
-    //     // std::cout << "xy_cam_norm = " << xy_cam_norm << std::endl;
-        std::cout << "camera.rho    = " << camera.rho << std::endl;
-        std::cout << "camera.theta  = " << camera.theta << std::endl;
-        std::cout << "camera.phi    = " << camera.phi << std::endl;
+        break;
+
     }
 
 }
 
-void scene_update(){
+void Scene::update(){
 
     // if(_cube.animator.is_animating)
         // _cube.update_animator();
@@ -169,7 +152,7 @@ void scene_update(){
 
 }
 
-void scene_render(){
+void Scene::render(){
 
 
     m4f4 identity;
@@ -186,72 +169,5 @@ void scene_render(){
 
 
 
-
-void RendererAxes::init(){
-
-    opengl::build_program_vert_frag(opengl::Programs::Axes);
-
-    unsigned int program = opengl::gpu_get_program(opengl::Programs::Axes);
-    glUseProgram(program);
-
-    transform_location = glGetUniformLocation(program, "transform");
-    view_location = glGetUniformLocation(program, "view");
-    perspective_location = glGetUniformLocation(program, "perspective");
-
-
-    AxesVertex vertices[6];
-
-    float axes_scale = 3.0f;
-
-    vertices[0].pos.x = 0.0f;
-    vertices[0].color.x = 1.0f;
-
-    vertices[1].pos.x = axes_scale;
-    vertices[1].color.x = 1.0f;
-
-    vertices[2].pos.y = 0.0f;
-    vertices[2].color.y = 1.0f;
-
-    vertices[3].pos.y = axes_scale;
-    vertices[3].color.y = 1.0f;
-
-    vertices[4].pos.z = 0.0f;
-    vertices[4].color.z = 1.0f;
-
-    vertices[5].pos.z = axes_scale;
-    vertices[5].color.z = 1.0f;
-
-    
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(AxesVertex) * 6, vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(AxesVertex), (void*) 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(AxesVertex), (void*) sizeof(f3));
-    glEnableVertexAttribArray(1);
-
-}
-void RendererAxes::set_uniforms(m4f4 transform_mat, m4f4 view_mat, m4f4 pers_mat){
-
-    opengl::gpu_use_program(opengl::Programs::Axes);
-
-    glUniformMatrix4fv(transform_location, 1, GL_TRUE, (float*) &transform_mat);
-    glUniformMatrix4fv(view_location, 1, GL_TRUE, (float*) &view_mat);
-    glUniformMatrix4fv(perspective_location, 1, GL_TRUE, (float*) &pers_mat);
-
-}
-void RendererAxes::render(){
-
-    opengl::gpu_use_program(opengl::Programs::Axes);
-
-    glBindVertexArray(vao);
-
-    glDrawArrays(GL_LINES, 0, 6);
-}
 
 }

@@ -7,6 +7,8 @@ set(MODEL_OBJS
 
     # XP EDITOR
     scene.cc
+    camera.cc
+    renderer_axes.cc
     model_editor.cc
 )
 add_library(model ${MODEL_OBJS})

@@ -8,60 +8,38 @@
 #include "model_editor.hh"
 #include "window/auxwin.hh"
 
-// #include "rubik.hh"
+#include "camera.hh"
 
-namespace xpeditor {
+#include "renderer_axes.hh"
+
 
 struct GLFWWindow;
 
-
-struct CameraOrbital {
-    Transform transform;
-    
-    m4f4 view_mat;
-    m4f4 perspective_mat;
+namespace xpeditor {
 
 
-    float fov = 0.785f;
-    float width = 600.0f;
-    float height = 400.0f;
-    float zn = 0.1f;
-    float zf = 100.0f;
+class Scene {
 
-    float rho   = 11.0f; // Radius
-    float theta = 0.83f; // x-y plane
-    float phi   = 0.89f; // z-axis
-    void set_triplet(float _rho, float _theta, float _phi);
+public:
 
-    void set_matrices();
-};
+    RendererModel renderer_model;
+    RendererAxes renderer_axes;
+    Model model;
 
-struct AxesVertex {
-    f3 pos;
-    f3 color;
-};
+    CameraOrbital camera;
+    bool camera_grabbed = false;
 
-struct RendererAxes {
-    opengl::Programs renderer_program = opengl::Programs::Axes;
+    Scene();
 
-    unsigned int vao;
-    unsigned int vbo;
 
-    unsigned int transform_location;
-    unsigned int view_location;
-    unsigned int perspective_location;
+    void handle_input(window::InputEvent input_event);
 
-    void init();
-    void set_uniforms(m4f4 transform_mat, m4f4 view_mat, m4f4 pers_mat);
+    void update();
     void render();
+
+    void set_viewport_dims(int _width, int _height);
+    
 };
 
-bool scene_init();
-
-void scene_handle_input(window::InputState input_state);
-void scene_update();
-void scene_render();
-
-void scene_set_viewport_dims(int _width, int _height);
 
 }
