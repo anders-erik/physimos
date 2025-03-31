@@ -153,6 +153,7 @@ class Ptest:
         
         # if the file extension of the object path was never replaced then the source file is invalid.
         # Very important to exit at this point. I do not want to risk overwriting source file during build.
+        print(object_file_name)
         if (not object_file_name):
             raise ValueError(' No matching file extension was found for source file.')
 

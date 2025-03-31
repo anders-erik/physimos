@@ -25,9 +25,9 @@ namespace plib {
     struct TOML_Array;
     class TOML_Value;
 
-    typedef pstring     TOML_String;
-    typedef long        TOML_Int;
-    typedef double      TOML_Float;
+    typedef std::string     TOML_String;
+    typedef long            TOML_Int;
+    typedef double          TOML_Float;
 
     /**
      * Supported TOML Types:
@@ -48,6 +48,15 @@ namespace plib {
      *   Other: Only single line KV pairs
      */
     typedef class TOML {
+
+    
+        // New methods to implement
+    public:
+        
+    private:
+        void parse(std::string toml_string);
+        void get_line_type(std::string toml_line);
+
     public:
         /**
          *   A list of all tables in a loaded toml file.
@@ -65,7 +74,7 @@ namespace plib {
          * table_name = "ROOT_TABLE" || "" will return the root table.
          * @return Match or nullptr
          */
-        TOML_Table* find_table(TOML_String table_name);
+        TOML_Table* find_table(std::string table_name);
 
         /**
          *  Simple check during line parsing to see if a new table line is present.
@@ -76,7 +85,7 @@ namespace plib {
          * Search loaded tables and returns table with matching toml table.
          * If no match is found the returned table is the root table wchich always exists.
          */
-        TOML_Table& operator[](TOML_String table_name);
+        TOML_Table& operator[](std::string table_name);
 
         TOML() {};
     } TOML;
@@ -86,21 +95,21 @@ namespace plib {
      * Toml table identified by [table_name] in document and 'contains' a list of KV pairs.
      */
     typedef struct TOML_Table {
-        std::string name;
+        TOML_String name;
         std::vector<TOML_KV> kvs;
 
         /**
          * Returns true if successful parse. False on errors.
          * Currently 3 types of lines : empty, table label, or KVs which are identified using a '='
          */
-        bool        parse_line_and_push_kv(std::string line);
+        bool        parse_line_and_push_kv(TOML_String line);
 
         /**
          * Search table for KV object with key matching argument.
          */
         TOML_KV     operator[](TOML_String key_name);
 
-        TOML_Table(std::vector<std::string> lines);
+        TOML_Table(std::vector<TOML_String> lines);
     } TOML_Table;
 
 
@@ -110,7 +119,7 @@ namespace plib {
         /**
          * Search table for TOML_Values equal the parsed argument string.  
          */
-        TOML_Value      operator[](pstring value_string);
+        TOML_Value      operator[](TOML_String value_string);
         /** Compares the type and value of each containing TOML_Value. WARN: probably unsafe iterating. */
         bool      operator==(TOML_Array& rhs);
 
@@ -119,7 +128,7 @@ namespace plib {
          */
         std::vector<TOML_Value>& get_vector();
         
-        TOML_Array(pstring array_str);
+        TOML_Array(TOML_String array_str);
         TOML_Array() : vector({}) {};
     } TOML_Array;
 
@@ -143,7 +152,7 @@ namespace plib {
             bool      operator==(TOML_Value& rhs);
 
             // Trimmed string to be parsed as a toml value
-            TOML_Value(pstring value_string);
+            TOML_Value(TOML_String value_string);
             TOML_Value() : type(TOML_ValueType::EMPTY) {};
     } TOML_Value;
 

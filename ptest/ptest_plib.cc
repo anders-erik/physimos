@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cstdio>
+#include <optional>
 
 #include <iostream>
 #include <filesystem>
@@ -21,16 +22,7 @@ using namespace ptest;
 int main(){
     std::cout << "--------------------------------------------------------------" << std::endl << std::endl;
 
-    std::string physimos_root_dir = physimos_root_dir_or_die();
-
-    // 
-    // std::cout << "Object Size Information" << std::endl;
-    // std::cout << "sizeof(plib::TOML) = " << sizeof(plib::TOML) << std::endl;
-    // std::cout << "sizeof(plib::TOML_KV) = " << sizeof(plib::TOML_KV) << std::endl;
-    // std::cout << "sizeof(plib::TOML_Value) = " << sizeof(plib::TOML_Value) << std::endl;
-    // std::cout << "sizeof(std::string) = " << sizeof(std::string) << std::endl;
-    // std::cout << "" << std::endl;
-    
+    std::string physimos_root_dir = physimos_root_dir_or_die();    
     
 
     // CAT & ECHO
@@ -64,16 +56,36 @@ int main(){
     std::cout << "Done    : cat_bin & echo_bin" << std::endl << std::endl;
 
 
+    // STD::OPTIONAL
+    std::cout << "Starting: optional tests" << std::endl;
+    std::optional<int> a = 123;
+    std::optional<int> b = std::nullopt;
+    std::cout << "a? = " << a.has_value() << std::endl;
+    std::cout << "a = " << a.value() << std::endl;
+    std::cout << "b? = " << b.has_value() << std::endl;
+    std::cout << "Ended:   optional tests" << std::endl << std::endl;
+
+    // TOML OBJECT SIZES
+    std::cout << "Object Size Information" << std::endl;
+    std::cout << "sizeof(plib::TOML) = " << sizeof(plib::TOML) << std::endl;
+    std::cout << "sizeof(plib::TOML_Table) = " << sizeof(plib::TOML_Table) << std::endl;
+    std::cout << "sizeof(plib::TOML_Value) = " << sizeof(plib::TOML_Value) << std::endl;
+    std::cout << "sizeof(plib::TOML_KV) = " << sizeof(plib::TOML_KV) << std::endl;
+    std::cout << "sizeof(std::string) = " << sizeof(std::string) << std::endl;
+    std::cout << "" << std::endl;
+
     // TOML PARSE
     std::cout << "Starting: toml parsing" << std::endl;
 
     std::string toml_test_file_spath = physimos_root_dir + "/ptest/testdata/plib_toml.toml";
+
 
     // First table
     plib::TOML toml;
     toml.load(toml_test_file_spath);
     plib::TOML_Table* toml_first_table = toml.find_table("first_table");
     assertTrue(toml_first_table != nullptr, "toml_first_table != nullptr");
+    // assertTrue( typeof (toml_first_table->name) == std::string, "toml_first_table->name ==== std::string)";
     assertTrue(toml_first_table->name == "first_table", "toml_first_table->name == \"first_table\"");
     
 
@@ -91,6 +103,9 @@ int main(){
     plib::TOML_Value _100x100_manual_array = plib::TOML_Value("[\"_100x100_rand_generated.bmp\", \"_100x100_rand_test_output.bmp\"]");
     assertTrue(_100x100_array_from_file == _100x100_manual_array, "_100x100_array_from_file == _100x100_manual_array");
     
+    // sizeof(char);
+    // sizeof(std::string);
+    // sizeof(std::basic_string<char>);
 
     std::cout << "Done    : toml parsing" << std::endl << std::endl;
 

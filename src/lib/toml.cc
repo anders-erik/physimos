@@ -26,10 +26,10 @@ namespace plib {
 
 
         std::string                 file_contents = plib::fs_cat(file_path);
-        std::vector <std::string>   file_lines = plib::std_string::split(file_contents, '\n');
+        std::vector <TOML_String>   file_lines = plib::std_string::split(file_contents, '\n');
 
 
-        for (std::string line : file_lines) {
+        for (TOML_String line : file_lines) {
 
             bool is_table_label = is_table_label_line(line);
 
@@ -59,7 +59,7 @@ namespace plib {
     }
 
 
-    TOML_Table* TOML::find_table(TOML_String table_name) {
+    TOML_Table* TOML::find_table(std::string table_name) {
 
         for( TOML_Table* table : tables){
             if (table_name == table->name)
@@ -69,7 +69,7 @@ namespace plib {
         return nullptr;
     }
 
-    TOML_Table& TOML::operator[](TOML_String table_name) {
+    TOML_Table& TOML::operator[](std::string table_name) {
         for (TOML_Table* table : tables) {
             if (table_name == table->name)
                 return *table;
@@ -88,7 +88,7 @@ namespace plib {
         // Will be overwritten if label-line found
         name = "_";
 
-        for (std::string line : lines) {
+        for (TOML_String line : lines) {
 
             parse_line_and_push_kv(line);
 
@@ -106,7 +106,7 @@ namespace plib {
     }
 
 
-    bool     TOML_Table::parse_line_and_push_kv(std::string line) {
+    bool     TOML_Table::parse_line_and_push_kv(TOML_String line) {
 
         // TOML_Value new_value;
         TOML_String key;
@@ -115,10 +115,10 @@ namespace plib {
             return true;
 
         // No '=' found --> Table Label
-        bool is_table_label = line.find('=') == std::string::npos;
+        bool is_table_label = line.find('=') == TOML_String::npos;
         if (is_table_label) {
 
-            pstring label_str = line;
+            TOML_String label_str = line;
             plib::std_string::trim(label_str);
 
             // bool table_format_ok = line[0] == '[' && line[line.size() - 1] == ']';
@@ -138,16 +138,16 @@ namespace plib {
 
         // NOTE: this is a generic string splitting function
         // For example any equal-sign in the line that is not the KV-separator will trigger a split!
-        std::vector <std::string> line_kv_strings = plib::std_string::split(line, '=');
+        std::vector <TOML_String> line_kv_strings = plib::std_string::split(line, '=');
 
         // First substring is the key
-        std::string first_substr = line_kv_strings[0];
+        TOML_String first_substr = line_kv_strings[0];
         plib::std_string::trim(first_substr);
         key = first_substr;
 
 
         // VALUE
-        std::string second_substr = line_kv_strings[1];
+        TOML_String second_substr = line_kv_strings[1];
         plib::std_string::trim(second_substr);
 
         // TOML_Value parsed_value = parse_toml_value(second_substr);
@@ -166,15 +166,15 @@ namespace plib {
     
     // START TOML ARRAY
 
-    TOML_Array::TOML_Array(pstring array_str_single_line) {
+    TOML_Array::TOML_Array(TOML_String array_str_single_line) {
 
         // TOML_Array toml_array = {};
 
-        pstring array_str_no_brackets = array_str_single_line.substr(1, array_str_single_line.size() - 2);
+        TOML_String array_str_no_brackets = array_str_single_line.substr(1, array_str_single_line.size() - 2);
 
-        std::vector<pstring> array_str_entries = plib::std_string::split(array_str_no_brackets, ',');
+        std::vector<TOML_String> array_str_entries = plib::std_string::split(array_str_no_brackets, ',');
 
-        for (pstring string_entry : array_str_entries) {
+        for (TOML_String string_entry : array_str_entries) {
             plib::std_string::trim(string_entry);
             TOML_Value parsed_value = TOML_Value(string_entry);
             // toml_array.push_back(parsed_value);
@@ -185,7 +185,7 @@ namespace plib {
 
     }
 
-    TOML_Value  TOML_Array::operator[](pstring value_string){
+    TOML_Value  TOML_Array::operator[](TOML_String value_string){
 
         for(TOML_Value vector_value : vector){
             TOML_Value new_value = TOML_Value(value_string);
@@ -222,7 +222,7 @@ namespace plib {
     // START TOML VALUE
 
 
-    TOML_Value::TOML_Value(pstring value_string) {
+    TOML_Value::TOML_Value(TOML_String value_string) {
 
         // Type detection
         char first_char = value_string[0];
@@ -230,7 +230,7 @@ namespace plib {
         {
         case '"':
         {
-            std::string str_without_quotes = value_string.substr(1, value_string.size() - 2);
+            TOML_String str_without_quotes = value_string.substr(1, value_string.size() - 2);
             string = str_without_quotes;
             type = TOML_ValueType::STRING;
         }
@@ -303,7 +303,7 @@ namespace plib {
             return false;
 
         // No '=' found --> table
-        bool is_table_label = line.find('=') == std::string::npos;
+        bool is_table_label = line.find('=') == TOML_String::npos;
 
         return is_table_label;
 

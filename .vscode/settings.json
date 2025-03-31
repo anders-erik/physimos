@@ -73,7 +73,12 @@
 		"variant": "cpp",
 		"list": "cpp",
 		"cstring": "cpp",
-		"set": "cpp"
+		"set": "cpp",
+		"condition_variable": "cpp",
+		"mutex": "cpp",
+		"semaphore": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp"
 	},
 	"makefile.configureOnOpen": false
 }

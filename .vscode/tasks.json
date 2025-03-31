@@ -2,8 +2,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "shell",
             "label": "Build & Run [debug]",
+            "type": "shell",
             "command": "time ${workspaceFolder}/scripts/build.sh debug && PHYSIMOS_ROOT_DIR=${workspaceFolder} ./build/debug/physimos",
             "problemMatcher": [
                 "$gcc"
@@ -17,8 +17,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "Build Release - Linux",
+            "type": "shell",
             "command": "${workspaceFolder}/scripts/build.sh release-linux",
             "problemMatcher": [
                 "$gcc"
@@ -32,8 +32,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "Build Debug",
+            "type": "shell",
             "command": "${workspaceFolder}/scripts/build.sh debug",
             "args": [],
             "options": {},
@@ -49,8 +49,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "Build gprof",
+            "type": "shell",
             "command": "${workspaceFolder}/scripts/build.sh gprof",
             "args": [],
             "options": {},
@@ -66,8 +66,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "Test",
+            "type": "shell",
             "command": "${workspaceFolder}/ptest/ptest.sh ui_curses",
             "args": [],
             "options": {},
@@ -83,8 +83,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "gdb",
+            "type": "shell",
             "command": "gdb ${workspaceFolder}/build_cmake/physimos",
             "options": {},
             "group": "build",
@@ -97,8 +97,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "Cmake Clean",
+            "type": "shell",
             "command": "rm -rf ${workspaceFolder}/build_cmake && mkdir ${workspaceFolder}/build_cmake && cd ${workspaceFolder}/build_cmake && cmake ..",
             "args": [],
             "options": {},
@@ -114,8 +114,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "Valgrind - run",
+            "type": "shell",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} valgrind --leak-check=yes ${workspaceFolder}/build/debug/physimos",
             "args": [],
             "options": {},
@@ -131,8 +131,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "Valgrind - profiler",
+            "type": "shell",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes  ${workspaceFolder}/build/debug/physimos",
             "args": [],
             "options": {},
@@ -148,8 +148,8 @@
             }
         },
         {
-            "type": "shell",
             "label": "gprof - generate gprof.txt",
+            "type": "shell",
             "command": "gprof ${workspaceFolder}/build/gprof/physimos > gprof.txt",
             "args": [],
             "options": {},
@@ -194,6 +194,16 @@
         {
             "label": "Model",
             "type": "shell",
+            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/model/model_main",
+            "problemMatcher": [
+                "$gcc",
+            ],
+            "dependsOn": "Build Debug"
+        },
+        {
+            "label": "Toml-test",
+            "type": "shell",
+            "group": "test",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/model/model_main",
             "problemMatcher": [
                 "$gcc",
