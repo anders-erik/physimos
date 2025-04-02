@@ -1,9 +1,64 @@
-
-#include "vecmat.hh"
-
 #include <cmath>
 #include <iostream>
 
+#include "vecmat.hh"
+
+
+
+m3f3& m3f3::operator=(m3f3& rhs){
+    x = rhs.x;
+    y = rhs.y;
+    z = rhs.z;
+
+    return *this;
+}
+
+void m3f3::mult(m3f3 rhs){
+
+    m3f3 copy;
+    copy = *this;
+    
+    copy.x.x = x.x * rhs.x.x + x.y * rhs.y.x + x.z * rhs.z.x;
+    copy.x.y = x.x * rhs.x.y + x.y * rhs.y.y + x.z * rhs.z.y;
+    copy.x.z = x.x * rhs.x.z + x.y * rhs.y.z + x.z * rhs.z.z;
+
+    copy.y.x = y.x * rhs.x.x + y.y * rhs.y.x + y.z * rhs.z.x;
+    copy.y.y = y.x * rhs.x.y + y.y * rhs.y.y + y.z * rhs.z.y;
+    copy.y.z = y.x * rhs.x.z + y.y * rhs.y.z + y.z * rhs.z.z;
+
+    copy.z.x = z.x * rhs.x.x + z.y * rhs.y.x + z.z * rhs.z.x;
+    copy.z.y = z.x * rhs.x.y + z.y * rhs.y.y + z.z * rhs.z.y;
+    copy.z.z = z.x * rhs.x.z + z.y * rhs.y.z + z.z * rhs.z.z;
+
+    *this = copy;
+}
+
+void m3f3::translate(f2 transl){
+    x.z = transl.x;
+    y.z = transl.y;
+}
+void m3f3::scale(f2 scale){
+    x.x = scale.x;
+    y.y = scale.y;
+}
+void m3f3::rotate(float angle){
+
+    m3f3 matrix;
+    matrix.x.x = cosf(angle);
+    matrix.x.y = sinf(angle);
+    matrix.y.x = -sinf(angle);
+    matrix.y.y = cosf(angle);
+
+
+
+    // return matrix;
+}
+
+void m3f3::print(){
+    std::cout << x.x << " " << x.y << " " << x.z << " " << std::endl;
+    std::cout << y.x << " " << y.y << " " << y.z << " " << std::endl;
+    std::cout << z.x << " " << z.y << " " << z.z << " " << std::endl;
+}
 
 void f3::matmul(m4f4 matrix){
     f3 tmp;

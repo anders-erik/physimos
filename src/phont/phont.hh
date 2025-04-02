@@ -5,23 +5,20 @@
 #include <vector>
 
 #include "math/vecmat.hh"
+#include "math/transform.hh"
 #include "opengl/texture.hh"
 
-namespace phont {
 
-struct Quad;
-struct QuadRenderer;
-struct QuadRenderContext;
+namespace opengl {
+
+// struct Quad;
+// struct QuadRenderer;
+// struct QuadRenderContext;
 
 
-struct Vertex {
+struct VertexQuad {
     f3 pos;
     f2 tex;
-};
-
-struct GlyphMesh {
-    std::vector<f3> verts;
-    std::vector<i3> faces;
 };
 
 struct QuadRenderContext {
@@ -36,25 +33,64 @@ struct QuadRenderContext {
     void delete_contents();
 };
 
-struct Quad {
-    std::array<phont::Vertex, 4> verts;
-    std::array<i3, 2> faces;
+struct Quad2D {
+    std::array<VertexQuad, 6> verts;
 
-    phont::QuadRenderContext render_context;
+    Transform2D transform_2d;
 
-    Quad(float window_width, float window_height);
+    QuadRenderContext render_context;
+
+    Quad2D(float window_width, float window_height);
+
+    void set_dims(float window_width, float window_height, float width_pixels, float height_pixels);
+
+    static std::array<VertexQuad, 6> generate_quad();
+
 };
 
 
 struct QuadRenderer {
     unsigned int program;
 
-    void create_context(phont::Quad& quad);
+    void create_context(Quad2D& quad);
 
+    void set_model_camera(m3f3 model_mat, m3f3 camera);
     void render(QuadRenderContext context);
 
     QuadRenderer();
 };
+
+
+}
+
+
+namespace scene {
+
+/** Captures [-1, 1]x[-1,1]x[-1, -1] by default. */
+struct Camera2D {
+    Transform2D transform_2d;
+
+    void zoom(float zoom_scale);
+};
+
+class Scene2D {
+public:
+    Camera2D camera_2d;
+
+    Scene2D() {};
+};
+
+};
+
+namespace phont {
+
+
+
+struct GlyphMesh {
+    std::vector<f3> verts;
+    std::vector<i3> faces;
+};
+
 
 
 

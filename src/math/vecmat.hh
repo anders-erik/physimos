@@ -86,6 +86,26 @@ struct f4 {
 };
 
 
+struct m3f3 {
+    f3 x;
+    f3 y;
+    f3 z;
+
+    m3f3& operator=(m3f3& rhs);
+    /** this x rhs */
+    void mult(m3f3 rhs);
+    void translate(f2 transl);
+    void rotate(float angle);
+    void scale(f2 scale);
+
+    void print();
+
+    m3f3() : 
+        x { f3(1.0f, 0.0f, 0.0f) }, 
+        y { f3(0.0f, 1.0f, 0.0f) }, 
+        z { f3(0.0f, 0.0f, 1.0f) } {};
+};
+
 struct m4f4 {
     f4 x;
     f4 y;

@@ -29,10 +29,9 @@
 
 ## Opengl
 
-- texture frambuffer abstraction
-- texture abstraction
-	- set pixel areas
-	- clear
+- texture abstraction - set nearest/linear
+- texture abstraction - set pixel area
+- texture abstraction - clear
 
 
 ## Phont 1.0
@@ -72,6 +71,10 @@
 --- 
 
 # Completed
+
+## Opengl
+
+- texture frambuffer abstraction (2025-04-02)
 
 
 ## Phont 1.0

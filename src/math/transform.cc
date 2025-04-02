@@ -4,6 +4,71 @@
 #include <cmath>
 
 
+void Transform2D::set_pos(float posx, float posy){
+    pos.x = posx;
+    pos.y = posy;
+}
+void Transform2D::set_scale(float scalex, float scaley){
+    scale.x = scalex;
+    scale.y = scaley;
+}
+void Transform2D::move_x(float dx){
+    pos.x += dx;
+}
+void Transform2D::move_y(float dy){
+    pos.y += dy;
+}
+
+void Transform2D::set_matrix_model(){
+
+    m3f3 identity;
+
+    matrix = identity;
+
+    
+    // matrix.rotate(rot.x);
+
+    matrix.scale(scale);
+
+    matrix.translate(pos);
+
+}
+void Transform2D::set_matrix_camera(){
+
+    m3f3 identity;
+
+    matrix = identity;
+    
+    f2 pos_neg = {-pos.x, -pos.y};
+
+    matrix.translate(pos_neg);
+    
+    matrix.scale(scale);
+    // matrix.rotate(rot.x);
+
+
+}
+
+
+
+m4f4 Transform2D::get_m4f4(){
+    m4f4 new_m4f4;
+
+    new_m4f4.x.x = matrix.x.x;
+    new_m4f4.x.y = matrix.x.y;
+    new_m4f4.x.z = matrix.x.z;
+
+    new_m4f4.y.x = matrix.y.x;
+    new_m4f4.y.y = matrix.y.y;
+    new_m4f4.y.z = matrix.y.z;
+
+    new_m4f4.z.x = matrix.x.x;
+    new_m4f4.z.y = matrix.x.y;
+    new_m4f4.z.z = matrix.x.z;
+
+    return new_m4f4;
+}
+
 void Transform::set_matrix_model(){
 
     m4f4 identity;

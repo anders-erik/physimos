@@ -37,7 +37,7 @@ enum class MouseButton {
 enum ButtonAction {
     Press,
     Release,
-    Hold, // ??
+    Hold,
 };
 
 struct MouseButtonEvent {

@@ -12,6 +12,7 @@ unsigned int program_model_color;
 unsigned int program_model_texture;
 unsigned int program_axes;
 unsigned int program_vector;
+unsigned int program_texture_2d;
 
 void gpu_use_program(Programs program_enum){
 
@@ -23,6 +24,10 @@ void gpu_use_program(Programs program_enum){
         
         case Programs::ModelTexture:
             glUseProgram(program_model_texture);
+            break;
+        
+        case Programs::Texture2D:
+            glUseProgram(program_texture_2d);
             break;
 
         case Programs::Axes:
@@ -50,6 +55,10 @@ unsigned int gpu_get_program(Programs program_enum){
         
         case Programs::ModelTexture:
             program = program_model_texture;
+            break;
+
+        case Programs::Texture2D:
+            program = program_texture_2d;
             break;
 
         case Programs::Axes:
@@ -88,6 +97,12 @@ unsigned int build_program_vert_frag(Programs program_enum){
     case Programs::phont_char :
         vert_str = physimos_root_dir + "/src/phont/shaders/phont_char_vert.glsl";
         frag_str = physimos_root_dir + "/src/phont/shaders/phont_char_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        break;
+
+    case Programs::Texture2D :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/2d/texture_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/2d/texture_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 

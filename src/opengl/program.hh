@@ -14,6 +14,8 @@ namespace opengl {
         ndc_black,
         ndc_white,
 
+        Texture2D,
+
         ModelColor,
         ModelTexture,
         Axes,
