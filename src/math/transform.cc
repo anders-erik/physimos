@@ -28,9 +28,9 @@ void Transform2D::set_matrix_model(){
     
     // matrix.rotate(rot.x);
 
+    matrix.translate(pos);
     matrix.scale(scale);
 
-    matrix.translate(pos);
 
 }
 void Transform2D::set_matrix_camera(){
@@ -40,13 +40,13 @@ void Transform2D::set_matrix_camera(){
     matrix = identity;
     
     f2 pos_neg = {-pos.x, -pos.y};
-
     matrix.translate(pos_neg);
     
+    // f2 scale_neg = {scale.x, scale.y};
+    // matrix.scale(scale_neg);
     matrix.scale(scale);
+
     // matrix.rotate(rot.x);
-
-
 }
 
 

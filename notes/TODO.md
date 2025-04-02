@@ -39,9 +39,7 @@
 ### Misc
 
 ### 2D scene
-- Tranform
-- Camera
-- quad renderer
+
 
 
 ### Geometry editor
@@ -75,6 +73,13 @@
 ## Opengl
 
 - texture frambuffer abstraction (2025-04-02)
+
+## Scene2D
+- Transform
+- Camera
+- quad renderer
+- move more into scene 2D
+- zoom maintins same x/y origin
 
 
 ## Phont 1.0
