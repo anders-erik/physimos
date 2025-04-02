@@ -10,6 +10,10 @@ namespace opengl {
         phont_texture,
         phont_char,
 
+        ndc_texture,
+        ndc_black,
+        ndc_white,
+
         ModelColor,
         ModelTexture,
         Axes,

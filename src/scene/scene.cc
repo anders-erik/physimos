@@ -39,7 +39,7 @@ SceneModelEditor::SceneModelEditor(){
     // GROUND
     model_generate_ground(ground.mesh);
     model_center(ground.mesh);
-    renderer_model_texture.create_model_rendering_context(ground.mesh, ground_render_context, opengl::Texture::Grass);
+    renderer_model_texture.create_model_rendering_context(ground.mesh, ground_render_context, opengl::Textures::Grass);
     
     // TUBE
     model_generate_tube(tube.mesh, tube_context);
@@ -47,7 +47,7 @@ SceneModelEditor::SceneModelEditor(){
     model_scale(tube.mesh, 0.5f);
     // model_rotate(tube.mesh, 0.5f , {1.0f, 0.0f, 0.0f});
     model_translate(tube.mesh, {-3.0f, 0.0f, 2.0f});
-    renderer_model_texture.create_model_rendering_context(tube.mesh, tube_render_context, opengl::Texture::Colors );
+    renderer_model_texture.create_model_rendering_context(tube.mesh, tube_render_context, opengl::Textures::Colors );
 
 
     // COLOR MODEL

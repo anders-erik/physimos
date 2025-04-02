@@ -62,6 +62,7 @@ struct MouseScrollEvent {
 };
 
 enum class Key {
+    None,
     Esc,
     p
 };
@@ -78,7 +79,7 @@ enum class KeyModifier :int {
 };
 
 struct KeyStrokeEvent {
-    Key key;
+    Key key = Key::None;
     KeyModifier modifier;
     ButtonAction action;
 

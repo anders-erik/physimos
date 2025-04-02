@@ -7,6 +7,7 @@
 #include "math/vecmat.hh"
 
 #include "opengl/program.hh"
+#include "opengl/texture.hh"
 
 #include "phont.hh"
 
@@ -193,12 +194,17 @@ void get_mesh_F(GlyphMesh& mesh){
     
 }
 
-unsigned int get_texture_F(){
+opengl::TextureFrameBuffer get_texture_F(){
 
     int texture_width   = 200;
     int texture_height  = 300;
 
-    // MESH
+
+    // PROGRAM
+    unsigned int program_char = opengl::build_program_vert_frag(opengl::Programs::ndc_black);
+    glUseProgram(program_char);
+
+    // RENDERER CONTEXT
 
     GlyphMesh mesh_F;
     get_mesh_F(mesh_F);
@@ -227,53 +233,23 @@ unsigned int get_texture_F(){
 	// glEnableVertexAttribArray(1);
 
 
-    // FRAMEBUFFER 
 
-    unsigned int framebuffer;
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);    
-
-    // generate texture
-    unsigned int textureColorbuffer;
-    glGenTextures(1, &textureColorbuffer);
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // attach it to currently bound framebuffer object
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
-
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    else 
-        std::cout << "FRAMEBUFFER OK!" << std::endl;
+    // TEXTURE FRAMEBUFFER 
+    opengl::TextureFrameBuffer texture_framebuffer (texture_width, texture_height);
+    texture_framebuffer.set_clear_color( {0.8f, 0.8f, 0.8f, 1.0f} );
 
 
 
-
-    // RENDER
-
-
-    unsigned int program_char = opengl::build_program_vert_frag(opengl::Programs::phont_char);
-    glUseProgram(program_char);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     
-    glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT); 
+    texture_framebuffer.framebuffer_bind();
+    texture_framebuffer.clear();
 
-
-
-    glViewport(0,0, texture_width, texture_height);
-
-    glBindVertexArray(VAO); 
+    glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, triangle_count, GL_UNSIGNED_INT, 0);
 
-    glViewport(0,0, 800, 600);
 
+    texture_framebuffer.framebuffer_unbind(800, 600);
+    
 
 
 
@@ -283,14 +259,14 @@ unsigned int get_texture_F(){
                                 1.0f, 0.0f, 0.0f, 1.0f, 
                                 1.0f, 0.0f, 0.0f, 1.0f
     };
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, texture_framebuffer.texture_id);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 2,  GL_RGBA,  GL_FLOAT, pixels_4_red);
 
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
 
 
-    return textureColorbuffer;
+    return texture_framebuffer;
 
 }
 

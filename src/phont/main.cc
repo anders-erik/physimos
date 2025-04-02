@@ -1,4 +1,5 @@
-
+#include <iostream>
+#include <queue>
 
 #include "window/auxwin.hh"
 
@@ -13,6 +14,8 @@ const unsigned int WINDOW_HEIGHT = 600;
 
 int main()
 {
+	std::cout << "PHONT MAIN"  << std::endl;
+
 	// WINDOW
 	window::Auxwin auxwin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -24,7 +27,7 @@ int main()
     // TEXTURE
     unsigned int texture_checker = 0;
     phont::set_texture_checker(texture_checker);
-	unsigned int texture_F = phont::get_texture_F();
+	opengl::TextureFrameBuffer texture_framebuffer_F = phont::get_texture_F();
 
 
 	// RENDERER
@@ -32,9 +35,9 @@ int main()
 	renderer_quad.create_context(quad);
 
 	// quad.render_context.texture = texture_checker;
-	quad.render_context.texture = texture_F;
-
-
+	quad.render_context.texture = texture_framebuffer_F.texture_id;
+	
+	
 
 	while (auxwin.is_open())
 	{
@@ -42,9 +45,16 @@ int main()
 
 
 		// INPUT
-		window::InputState input_state = auxwin.get_input_state();
-		if(input_state.esc){
-			auxwin.close();
+		std::queue<window::InputEvent> input_events = auxwin.get_input_events();
+
+		while(input_events.size() > 0){
+			window::InputEvent event = input_events.front();
+			input_events.pop();
+
+			if(event.key_stroke.key == window::Key::Esc)
+				auxwin.close();
+
+
 		}
 
 

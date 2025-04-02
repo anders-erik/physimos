@@ -1,6 +1,6 @@
-#pragma once
 
 #include <random>
+#include <iostream>
 
 #include "glad/glad.h"
 
@@ -12,6 +12,97 @@ namespace opengl {
 unsigned int colors_texture_id;
 unsigned int grass_texture_id;
 
+
+Texture::Texture(int width, int height){
+    size.x = width;
+    size.y = height;
+
+
+}
+
+Texture::Texture(pimage::Bitmap& bitmap){
+    set(bitmap);
+}
+
+void Texture::set(pimage::Bitmap& bitmap){
+    size.x = bitmap.width;
+    size.y = bitmap.height;
+
+    pimage::Pixel* pixels_data_raw;
+
+    pixels_data_raw =  bitmap.pixels.data();
+    glGenTextures(1, &id_gl);
+    glBindTexture(GL_TEXTURE_2D, id_gl);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels_data_raw);
+    // glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    
+}
+
+void Texture::bind(){
+    glBindTexture(GL_TEXTURE_2D, id_gl);
+}
+void Texture::unbind(){
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+TextureFrameBuffer::TextureFrameBuffer(int width, int height){
+    size.x = width;
+    size.y = height;
+
+
+    // FRAMEBUFFER
+    // unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);    
+
+    // TEXTURE
+    // unsigned int texture;
+    glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size.x, size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // BIND
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
+
+    // ERROR
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    else 
+        std::cout << "FRAMEBUFFER OK!" << std::endl;
+
+}
+
+void TextureFrameBuffer::framebuffer_bind(){
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glViewport(0,0, size.x, size.y);
+}
+
+void TextureFrameBuffer::framebuffer_unbind(int width, int height){
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0, width, height);
+}
+void TextureFrameBuffer::texture_bind(){
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+}
+void TextureFrameBuffer::texture_unbind(){
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+void TextureFrameBuffer::set_clear_color(f4 color){
+    clear_color = color;
+}
+void TextureFrameBuffer::clear(){
+    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
 
 void textures_init(){
 
@@ -93,33 +184,33 @@ f2 texture_get_random_grass_color(int seed){
 
 }
 
-f2 texture_get_color_coordinate(TextColor text_color){
+f2 texture_get_color_coordinate(TextureColors text_color){
 
     f2 tex_coords;
 
     switch (text_color){
 
-        case TextColor::Black:
+        case TextureColors::Black:
             tex_coords = {0.05f, 0.5f};
             break;
 
-        case TextColor::White:
+        case TextureColors::White:
             tex_coords = {0.15f, 0.5f};
             break;
 
-        case TextColor::Red:
+        case TextureColors::Red:
             tex_coords = {0.25f, 0.5f};
             break;
         
-        case TextColor::Green:
+        case TextureColors::Green:
             tex_coords = {0.35f, 0.5f};
             break;
 
-        case TextColor::Blue:
+        case TextureColors::Blue:
             tex_coords = {0.45f, 0.5f};
             break;
 
-        case TextColor::LightGray:
+        case TextureColors::LightGray:
             tex_coords = {0.55f, 0.5f};
             break;
     }
@@ -127,13 +218,13 @@ f2 texture_get_color_coordinate(TextColor text_color){
     return tex_coords;
 }
 
-unsigned int texture_get_id(Texture texture) {
+unsigned int texture_get_id(Textures texture) {
     switch (texture){
 
-        case Texture::Colors:
+        case Textures::Colors:
             return colors_texture_id;
             break;
-        case Texture::Grass:
+        case Textures::Grass:
             return grass_texture_id;
             break;
         default:

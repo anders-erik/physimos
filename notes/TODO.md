@@ -27,15 +27,23 @@
 
 # Current
 
+## Opengl
+
+- texture frambuffer abstraction
+- texture abstraction
+	- set pixel areas
+	- clear
+
+
 ## Phont 1.0
 
 ### Misc
-- texture buffer rendering -- opengl abstraction
-- use updated auxwin
 
 ### 2D scene
 - Tranform
 - Camera
+- quad renderer
+
 
 ### Geometry editor
 - render glyph points/primitives
@@ -68,7 +76,8 @@
 
 ## Phont 1.0
 
-
+## Mics
+- use updated auxwin (2025-04-02)
 
 ---
 

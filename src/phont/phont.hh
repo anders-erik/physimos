@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "math/vecmat.hh"
+#include "opengl/texture.hh"
 
 namespace phont {
 
@@ -59,7 +60,7 @@ struct QuadRenderer {
 
 void set_texture_checker(unsigned int& texture_id);
 
-unsigned int get_texture_F();
+opengl::TextureFrameBuffer get_texture_F();
 void get_mesh_F(GlyphMesh& mesh);
 
 

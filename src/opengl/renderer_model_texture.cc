@@ -42,7 +42,7 @@ void RendererModelTexture::set_camera_view_projection(m4f4 persective_mat, m4f4 
 
 
 
-void RendererModelTexture::create_model_rendering_context(model::MeshTexture& mesh, RendererModelTextureContext& context, Texture texture_enum){
+void RendererModelTexture::create_model_rendering_context(model::MeshTexture& mesh, RendererModelTextureContext& context, Textures texture_enum){
 
     glUseProgram(program);
     context.program = program;

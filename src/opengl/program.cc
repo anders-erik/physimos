@@ -91,6 +91,24 @@ unsigned int build_program_vert_frag(Programs program_enum){
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
+    case Programs::ndc_texture :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ndc/texture_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ndc/texture_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        break;
+
+    case Programs::ndc_black :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ndc/vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ndc/black_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        break;
+
+    case Programs::ndc_white :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ndc/vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ndc/white_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        break;
+
     case Programs::ModelColor :
         vert_str = physimos_root_dir + "/src/opengl/shaders/model_editor_vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/model_editor_frag.glsl";
