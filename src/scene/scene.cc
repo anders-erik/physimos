@@ -20,9 +20,9 @@ namespace scene {
 
 model::TubeContext tube_context = {
     1.0f,   //  float radius;
-    10,      //  int frame_point_count;
-    10,      //  int frame_count;
-    1.0,      //  float frame_gap;
+    6,      //  int frame_point_count;
+    10,     //  int frame_count;
+    1.0,    //  float frame_gap;
     0,      //  int vertex_count_target;
 };
 
@@ -30,7 +30,7 @@ SceneModelEditor::SceneModelEditor(){
 
     opengl::textures_init();
 
-    renderer_model.init();
+    renderer_model_color.init();
     renderer_axes.init();
     renderer_model_texture.init();
     renderer_vector.init();
@@ -52,7 +52,7 @@ SceneModelEditor::SceneModelEditor(){
 
     // COLOR MODEL
     model_add_cube_mesh(model.mesh);
-    renderer_model.create_render_context(model_render_context, model);
+    renderer_model_color.create_render_context(model_render_context, model);
     model.transform.pos.x = 5.0f;
 
 }
@@ -79,7 +79,7 @@ void SceneModelEditor::update(){
     camera.set_matrices();
 
 
-    renderer_model.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
+    renderer_model_color.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
     renderer_model_texture.set_camera_view_projection(camera.perspective_mat, camera.view_mat);
     renderer_vector.set_project_view_matrix(camera.perspective_mat, camera.view_mat);
 
@@ -120,18 +120,19 @@ void SceneModelEditor::render(){
     // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     // glLineWidth(2);
     // glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    renderer_model.render(model_render_context, model.transform.matrix, model.mesh.faces.size()*3);
+    renderer_model_color.render(model_render_context, model.transform.matrix, model.mesh.faces.size()*3);
 
 
     // renderer_model_texture.render(ground.mesh, ground.transform.matrix);
     renderer_model_texture.render_model_rendering_context(ground.mesh, ground_render_context, ground.transform.matrix);
     
 
+    
+    renderer_model_texture.render_model_rendering_context(tube.mesh, tube_render_context, tube.transform.matrix);
     // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     // glLineWidth(2);
-    renderer_model_texture.render_model_rendering_context(tube.mesh, tube_render_context, tube.transform.matrix);
+    // renderer_model_texture.render_model_rendering_context(tube.mesh, tube_render_context, tube.transform.matrix);
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
 };
 
 

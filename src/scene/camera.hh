@@ -6,7 +6,7 @@
 #include "opengl/program.hh"
 #include "math/vecmat.hh"
 // #include "model_editor.hh"
-#include "renderer_model.hh"
+#include "renderer_model_color.hh"
 #include "window/auxwin.hh"
 
 // #include "rubik.hh"

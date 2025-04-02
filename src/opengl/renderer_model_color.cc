@@ -1,6 +1,6 @@
 
 #include "math/vecmat.hh"
-#include "renderer_model.hh"
+#include "renderer_model_color.hh"
 
 #include "glad/glad.h"
 #include <iostream>
@@ -10,7 +10,7 @@ namespace opengl {
 
 
 
-void RendererModel::init(){
+void RendererModelColor::init(){
     // gpu_build_vert_frag_program(shader_enum);
 
     opengl::build_program_vert_frag(opengl::Programs::ModelColor);
@@ -23,7 +23,7 @@ void RendererModel::init(){
 
 
 }
-void RendererModel::create_render_context(RenderContextModel& context, model::ModelColor& model){
+void RendererModelColor::create_render_context(RenderContextModelColor& context, model::ModelColor& model){
     
     gpu_use_program(renderer_program);
 
@@ -54,7 +54,7 @@ void RendererModel::create_render_context(RenderContextModel& context, model::Mo
 
 }
 
-void RendererModel::set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat){
+void RendererModelColor::set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat){
 
     gpu_use_program(opengl::Programs::ModelColor);
 
@@ -69,7 +69,7 @@ void RendererModel::set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat){
 
 }
 
-void RendererModel::render(const RenderContextModel& context, m4f4 matrix, int vertex_count){
+void RendererModelColor::render(const RenderContextModelColor& context, m4f4 matrix, int vertex_count){
     
     gpu_use_program(renderer_program);
 

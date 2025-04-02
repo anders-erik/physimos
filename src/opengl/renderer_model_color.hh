@@ -18,14 +18,14 @@ namespace opengl {
 
 
 
-struct RenderContextModel {
+struct RenderContextModelColor {
     unsigned int vao;
     unsigned int vbo;
     unsigned int ebo;
 };
 
 
-struct RendererModel {
+struct RendererModelColor {
     opengl::Programs renderer_program = opengl::Programs::ModelColor;
     
 
@@ -34,9 +34,9 @@ struct RendererModel {
     unsigned int perspective_location;
 
     void init();
-    void create_render_context(RenderContextModel& context, model::ModelColor& model);
+    void create_render_context(RenderContextModelColor& context, model::ModelColor& model);
     void set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat);
-    void render(const RenderContextModel& context, m4f4 matrix, int vertex_count);
+    void render(const RenderContextModelColor& context, m4f4 matrix, int vertex_count);
 };
 
 

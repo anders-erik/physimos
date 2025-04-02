@@ -24,6 +24,54 @@
 
 ---
 
+
+# Current
+
+## Phont 1.0
+
+### Misc
+- texture buffer rendering -- opengl abstraction
+- use updated auxwin
+
+### 2D scene
+- Tranform
+- Camera
+
+### Geometry editor
+- render glyph points/primitives
+- hover glyph points
+- grap glpyh point
+- move glyph point
+- read glyph from toml file
+- write glyph to toml file
+- save button for glyph
+- point collections (for splines primarily)
+- draw lines for point collection
+- point generation from spline/collection points
+- draw quadratic spline
+- draw cubic spline
+
+
+### Delauney Triangulation
+- plot all points (on curve for rendering)
+- render mesh
+- triangulate: start with triangle and rectangle, then determine next step.
+
+### Double rendering pass
+- double pass rendering: outline + subtract (e.g. D needs the small D subtracted from outline)
+- make sure 
+
+--- 
+
+# Completed
+
+
+## Phont 1.0
+
+
+
+---
+
 ## 2025-02-20
 - UI
 	- |o| Update window scale

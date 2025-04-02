@@ -4,7 +4,7 @@ add_library(opengl
     texture.cc
     error.cc
 
-    renderer_model.cc
+    renderer_model_color.cc
     renderer_model_texture.cc
     renderer_axes.cc
     renderer_vector.cc
