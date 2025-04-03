@@ -98,6 +98,8 @@ struct m3f3 {
     void rotate(float angle);
     void scale(f2 scale);
 
+    void set_to_identity();
+
     void print();
 
     m3f3() : 

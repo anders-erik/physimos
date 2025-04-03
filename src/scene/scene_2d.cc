@@ -20,40 +20,89 @@
 
 namespace scene {
 
-void Camera2D::set_aspect_ratio(float ar){
-    aspect_ratio = ar;
-    // std::cout << "aspect_ratio = " << aspect_ratio << std::endl;
+void Box2D::print(){
+    std::cout << "Box2D: " << std::endl;
+    std::cout << "box.pos.x  = " << pos.x << std::endl;
+    std::cout << "box.pos.y  = " << pos.y << std::endl;
+    std::cout << "box.size.x = " << size.x << std::endl;
+    std::cout << "box.size.y = " << size.y << std::endl;
     
+}
+
+void Camera2D::reload_dims(){
+
+    box.size.x = width_initial / zoom_current;
+    box.size.y = box.size.x / aspect_ratio;
+
+    units_per_px = box.size.x / window_size_px.x;
+
+    transform.scale.x = zoom_current;
     transform.scale.y = transform.scale.x * aspect_ratio;
+}
+
+void Camera2D::set_window_size_px(f2 size){
+    window_size_px.x = size.x;
+    window_size_px.y = size.y;
+
+    aspect_ratio = window_size_px.x / window_size_px.y;
+
+    reload_dims();
 }
 
 void Camera2D::set_zoom_multiplier(float multiplier){
     zoom_multiplier = multiplier;
 }
+
 void Camera2D::zoom_set(float zoom){
     zoom_current = zoom;
-
-    transform.scale.x = 1 / zoom_current;
-    transform.scale.y = transform.scale.x * aspect_ratio;
+    reload_dims();
 }
 
 void Camera2D::zoom_in(){
     zoom_current *= zoom_multiplier;
-
-    transform.scale.x = zoom_current;
-    transform.scale.y = transform.scale.x * aspect_ratio;
+    reload_dims();
 }
+
 void Camera2D::zoom_out(){
     zoom_current *= 1.0f / zoom_multiplier;
+    reload_dims();
+}
 
-    transform.scale.x = zoom_current;
-    transform.scale.y = transform.scale.x * aspect_ratio;
+void Camera2D::pan(f2 delta_px){
+
+    // std::cout << "box.pos dx = " << units_per_px * delta_px.x << std::endl;
+
+    float dx_scene_units = units_per_px * delta_px.x;
+    float dy_scene_units = units_per_px * delta_px.y;
+
+    box.pos.x -= dx_scene_units;
+    box.pos.y -= dy_scene_units;
+
+    // float pan_scale = 0.003f;
+    // float pan_scale_x = 2.0f / window_size_px.x;
+    // float pan_scale_y = 2.0f / window_size_px.y;
+    // transform.move_x(- delta_px.x * pan_scale_x);
+    // transform.move_y(- delta_px.y * pan_scale_y);
+    // transform.set_matrix_camera();
+
+    transform.pos.x = box.pos.x;
+    transform.pos.y = box.pos.y;
+    transform.set_matrix_camera();
+}
+
+void Camera2D::set_cursor_pos(f2 pos_px, f2 pos_norm){
+    cursor_viewport_px = pos_px;
+    cursor_viewport_norm = pos_norm;
+
+    cursor_viewport_scene.x = box.pos.x + (cursor_viewport_norm.x - 0.5) * box.size.x ;
+    cursor_viewport_scene.y = box.pos.y + (cursor_viewport_norm.y - 0.5) * box.size.y ;
 }
 
 
-Scene2D::Scene2D()
+Scene2D::Scene2D(f2 _window_size)
     : texture_framebuffer_F { phont::get_texture_F() }
 {
+    set_window_size(_window_size);
 
     renderer_quad.create_context(quad);
 	
@@ -64,20 +113,24 @@ Scene2D::Scene2D()
 	quad.render_context.texture = texture_framebuffer_F.texture_id;
 
 
-	camera.transform.set_pos	 (0.0f, 0.0f);
+	camera.box.pos = { 0.0f, 0.0f };
+    camera.pan({ 0.0f, 0.0f});
 	// camera.transform.set_scale(1.0f, 1.0f);
-    camera.zoom_set(1.0f);
+
+    // camera.zoom_set(0.1f);
     camera.set_zoom_multiplier(1.2f);
+    camera.set_window_size_px(window_size);
+
+
+    // camera.box.pos = {-8.0f, -8.0f};
 
 }
 
 
-void Scene2D::set_window_size(i2 size){
+void Scene2D::set_window_size(f2 size){
     window_size = size;
 
-    float aspect_ratio = (float) size.x / (float) size.y;
-
-    camera.set_aspect_ratio(aspect_ratio);
+    camera.set_window_size_px(size);
 }
 
 void Scene2D::update(){
@@ -127,23 +180,23 @@ void Scene2D::handle_input(window::InputEvent event){
 
     
     if(event.type == window::EventType::MouseMove){
+    
         if(mouse_pan){
-            float pan_scale = 0.003f;
-            camera.transform.move_x(- event.mouse_movement.delta.x * pan_scale);
-            camera.transform.move_y(- event.mouse_movement.delta.y * pan_scale);
-            camera.transform.set_matrix_camera();
+            
+            camera.pan(event.mouse_movement.delta);
+
         }
+        
+        camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
     }
 
 
     if(event.type == window::EventType::WindowResize){
 
-        window_size.x = event.window_resize.size.x;
-        window_size.y = event.window_resize.size.y;
+        window_size.x = event.window_resize.size_f.x;
+        window_size.y = event.window_resize.size_f.y;
 
-        float aspect_ratio = (float) event.window_resize.size.x / (float) event.window_resize.size.y;
-
-        camera.set_aspect_ratio(aspect_ratio);
+        camera.set_window_size_px(window_size);
 
     }
 
@@ -151,10 +204,21 @@ void Scene2D::handle_input(window::InputEvent event){
         // quad.transform_2d.matrix.print();
         // camera.transform.matrix.print();
 
-        // std::cout << " " << camera.transform.pos.x << " " << camera.transform.pos.y << std::endl;
-        // std::cout << " " << camera.transform.scale.x << " " << camera.transform.scale.y << std::endl;
+        // std::cout << "camera.transform.pos   = " << camera.transform.pos.x << " " << camera.transform.pos.y << std::endl;
+        // std::cout << "camera.transform.scale = " << camera.transform.scale.x << " " << camera.transform.scale.y << std::endl;
 
-        std::cout << "camera.zoom_current = " << camera.zoom_current  << std::endl;
+        // std::cout << "camera.zoom_current = " << camera.zoom_current  << std::endl;
+
+        camera.box.print();
+
+        // std::cout << "camera.units_per_px = " << camera.units_per_px << std::endl;
+
+        // std::cout << "camera.window_size_px = " << camera.window_size_px.x << " " << camera.window_size_px.y << std::endl;
+
+        // std::cout << "camera.cursor_viewport_px    = " << camera.cursor_viewport_px.x << " " << camera.cursor_viewport_px.y << std::endl;
+        // std::cout << "camera.cursor_viewport_norm  = " << camera.cursor_viewport_norm.x << " " << camera.cursor_viewport_norm.y << std::endl;
+        std::cout << "camera.cursor_viewport_scene = " << camera.cursor_viewport_scene.x << " " << camera.cursor_viewport_scene.y << std::endl;
+        
         
         // scene_2d.camera_2d.transform_2d.matrix.print();
         // std::cout << "mouse_pan = " << mouse_pan << std::endl;

@@ -35,18 +35,21 @@ void Transform2D::set_matrix_model(){
 }
 void Transform2D::set_matrix_camera(){
 
-    m3f3 identity;
+    // m3f3 identity;
 
-    matrix = identity;
-    
+    // SCALE
+    m3f3 scale_mat;
+    scale_mat.scale(scale);
+
+    // TRANSLATION
+    m3f3 pos_mat;
     f2 pos_neg = {-pos.x, -pos.y};
-    matrix.translate(pos_neg);
-    
-    // f2 scale_neg = {scale.x, scale.y};
-    // matrix.scale(scale_neg);
-    matrix.scale(scale);
+    pos_mat.translate(pos_neg);
 
-    // matrix.rotate(rot.x);
+    // MULTIPLY
+    matrix.set_to_identity();
+    matrix.mult(scale_mat);
+    matrix.mult(pos_mat);
 }
 
 

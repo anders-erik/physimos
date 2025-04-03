@@ -54,6 +54,20 @@ void m3f3::rotate(float angle){
     // return matrix;
 }
 
+void m3f3::set_to_identity(){
+    x.x = 1.0f;
+    x.y = 0.0f;
+    x.z = 0.0f;
+
+    y.x = 0.0f;
+    y.y = 1.0f;
+    y.z = 0.0f;
+
+    z.x = 0.0f;
+    z.y = 0.0f;
+    z.z = 1.0f;
+}
+
 void m3f3::print(){
     std::cout << x.x << " " << x.y << " " << x.z << " " << std::endl;
     std::cout << y.x << " " << y.y << " " << y.z << " " << std::endl;

@@ -26,6 +26,9 @@ void framebuffer_callback(GLFWwindow* _window, int _width, int _height) {
     WindowResizeEvent win_resize_event (i2(_width, _height)) ;
     input_events.emplace(event_type, win_resize_event);
 
+    mouse_state.window_dims.x = (float) _width;
+    mouse_state.window_dims.y = (float) _height;
+
     glViewport(0, 0, _width, _height);
     // scene_set_viewport_dims(_width, _height);
 }
@@ -72,12 +75,9 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 
 void mouse_position_callback(GLFWwindow *window, double xpos, double ypos){
 
-    // std::cout << "mouse mouse" << std::endl;
-    // std::cout << "accum x = " << mouse_state.middle_delta_accum.x << std::endl;
-    // std::cout << "accum y = " << mouse_state.middle_delta_accum.y << std::endl;
-
     // Update Delta
     f2 pos ((float)xpos, (float)ypos);
+    f2 pos_sane = { pos.x, mouse_state.window_dims.y - pos.y};
 
     float dx =    pos.x - mouse_state.pos_prev.x;
     float dy = - (pos.y - mouse_state.pos_prev.y); // Positive is up
@@ -86,23 +86,23 @@ void mouse_position_callback(GLFWwindow *window, double xpos, double ypos){
 
 
     EventType       event_type = EventType::MouseMove;
-    MouseMoveEvent   mouse_movement (dx, dy);
+    MouseMoveEvent   mouse_movement (dx, dy, pos_sane, mouse_state.window_dims);
 
     input_events.emplace(event_type, mouse_movement);
 
 
     // OLD
-    if(mouse_state.middle_down){
-        mouse_state.middle_delta_accum.x += xpos - mouse_state.middle_prev_pos.x;
-        mouse_state.middle_delta_accum.y += mouse_state.middle_prev_pos.y - ypos;
+    // if(mouse_state.middle_down){
+    //     mouse_state.middle_delta_accum.x += xpos - mouse_state.middle_prev_pos.x;
+    //     mouse_state.middle_delta_accum.y += mouse_state.middle_prev_pos.y - ypos;
 
-        mouse_state.middle_prev_pos.x = xpos;
-        mouse_state.middle_prev_pos.y = ypos;
+    //     mouse_state.middle_prev_pos.x = xpos;
+    //     mouse_state.middle_prev_pos.y = ypos;
     
-    }
+    // }
+    // mouse_state.cursor_pos.x = (float) xpos;
+    // mouse_state.cursor_pos.y = (float) ypos;
 
-    mouse_state.cursor_pos.x = xpos;
-    mouse_state.cursor_pos.y = ypos;
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
@@ -242,6 +242,9 @@ Auxwin::Auxwin(int width, int height){
     glfwSetCursorPosCallback(glfw_window, mouse_position_callback);
     glfwSetScrollCallback(glfw_window, scroll_callback);
     glfwSetKeyCallback(glfw_window, key_callback);
+
+    mouse_state.window_dims.x = (float) width;
+    mouse_state.window_dims.y = (float) height;
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);

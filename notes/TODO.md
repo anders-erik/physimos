@@ -39,7 +39,11 @@
 ### Misc
 
 ### 2D scene
-
+- track camera box in scene coordinates
+- track cursor location
+	- normalized coords
+	- scene coords
+- 
 
 
 ### Geometry editor

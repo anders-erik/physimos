@@ -49,8 +49,15 @@ struct MouseButtonEvent {
 struct MouseMoveEvent {
     f2 delta;
 
-    MouseMoveEvent(f2 _delta) : delta { _delta } {};
-    MouseMoveEvent(float _dx, float _dy) : delta { f2(_dx, _dy) } {};
+    f2 pos_px;
+    f2 pos_norm;
+
+    // MouseMoveEvent(f2 _delta) : delta { _delta } {};
+    MouseMoveEvent(float _dx, float _dy, f2 _pos_px, f2 window_dims) : delta { f2(_dx, _dy) } {
+        pos_px = _pos_px;
+        pos_norm.x = pos_px.x / window_dims.x;
+        pos_norm.y = pos_px.y / window_dims.y;
+    };
     MouseMoveEvent() = default;
 };
 
@@ -91,8 +98,9 @@ struct KeyStrokeEvent {
 
 struct WindowResizeEvent {
     i2 size;
+    f2 size_f;
 
-    WindowResizeEvent(i2 _size) : size { _size } {};
+    WindowResizeEvent(i2 _size) : size { _size }, size_f { f2{ (float) _size.x, (float)_size.y}} {};
     WindowResizeEvent() = default;
 };
 
@@ -114,14 +122,17 @@ struct InputEvent {
 
 
 struct MouseState {
+    f2 cursor_pos;
+    f2 window_dims;
+    f2 cursor_pos_sane;
+
+    // OLD
     f2 pos_prev;
     bool    middle_down = false;
     f2  middle_prev_pos;
     f2  middle_delta_accum;
 
     float scroll_accumulator = 0.0f;
-
-    f2 cursor_pos;
 };
 
 struct InputState {
