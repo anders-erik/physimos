@@ -1,102 +1,23 @@
-#include "glad/glad.h"
-#include "scene/scene_2d.hh"
-
-#include "camera.hh"
-
-#include "opengl/error.hh"
-
-#include "renderer_axes.hh"
-
-
-#include "model.hh"
-#include "math/vecmat.hh"
+#include <iostream>
 
 #include "phont/phont.hh"
+#include "math/vecmat.hh"
 
-// #include "rubik.hh"
+#include "scene/scene_2d.hh"
+#include "math/transform.hh"
 
-#include <iostream>
-#include <cmath>
+namespace scene2D {
 
-namespace scene {
 
-void Box2D::print(){
-    std::cout << "Box2D: " << std::endl;
-    std::cout << "box.pos.x  = " << pos.x << std::endl;
-    std::cout << "box.pos.y  = " << pos.y << std::endl;
-    std::cout << "box.size.x = " << size.x << std::endl;
-    std::cout << "box.size.y = " << size.y << std::endl;
-    
+void CursorContext2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
+    viewport_px = pos_px;
+    viewport_norm = pos_norm;
+
+    scene.x = camera_box.pos.x + (viewport_norm.x - 0.5) * camera_box.size.x ;
+    scene.y = camera_box.pos.y + (viewport_norm.y - 0.5) * camera_box.size.y ;
 }
 
-void Camera2D::reload_dims(){
 
-    box.size.x = width_initial / zoom_current;
-    box.size.y = box.size.x / aspect_ratio;
-
-    units_per_px = box.size.x / window_size_px.x;
-
-    transform.scale.x = zoom_current;
-    transform.scale.y = transform.scale.x * aspect_ratio;
-}
-
-void Camera2D::set_window_size_px(f2 size){
-    window_size_px.x = size.x;
-    window_size_px.y = size.y;
-
-    aspect_ratio = window_size_px.x / window_size_px.y;
-
-    reload_dims();
-}
-
-void Camera2D::set_zoom_multiplier(float multiplier){
-    zoom_multiplier = multiplier;
-}
-
-void Camera2D::zoom_set(float zoom){
-    zoom_current = zoom;
-    reload_dims();
-}
-
-void Camera2D::zoom_in(){
-    zoom_current *= zoom_multiplier;
-    reload_dims();
-}
-
-void Camera2D::zoom_out(){
-    zoom_current *= 1.0f / zoom_multiplier;
-    reload_dims();
-}
-
-void Camera2D::pan(f2 delta_px){
-
-    // std::cout << "box.pos dx = " << units_per_px * delta_px.x << std::endl;
-
-    float dx_scene_units = units_per_px * delta_px.x;
-    float dy_scene_units = units_per_px * delta_px.y;
-
-    box.pos.x -= dx_scene_units;
-    box.pos.y -= dy_scene_units;
-
-    // float pan_scale = 0.003f;
-    // float pan_scale_x = 2.0f / window_size_px.x;
-    // float pan_scale_y = 2.0f / window_size_px.y;
-    // transform.move_x(- delta_px.x * pan_scale_x);
-    // transform.move_y(- delta_px.y * pan_scale_y);
-    // transform.set_matrix_camera();
-
-    transform.pos.x = box.pos.x;
-    transform.pos.y = box.pos.y;
-    transform.set_matrix_camera();
-}
-
-void Camera2D::set_cursor_pos(f2 pos_px, f2 pos_norm){
-    cursor_viewport_px = pos_px;
-    cursor_viewport_norm = pos_norm;
-
-    cursor_viewport_scene.x = box.pos.x + (cursor_viewport_norm.x - 0.5) * box.size.x ;
-    cursor_viewport_scene.y = box.pos.y + (cursor_viewport_norm.y - 0.5) * box.size.y ;
-}
 
 
 Scene2D::Scene2D(f2 _window_size)
@@ -113,16 +34,10 @@ Scene2D::Scene2D(f2 _window_size)
 	quad.render_context.texture = texture_framebuffer_F.texture_id;
 
 
-	camera.box.pos = { 0.0f, 0.0f };
-    camera.pan({ 0.0f, 0.0f});
-	// camera.transform.set_scale(1.0f, 1.0f);
-
-    // camera.zoom_set(0.1f);
-    camera.set_zoom_multiplier(1.2f);
     camera.set_window_size_px(window_size);
-
-
-    // camera.box.pos = {-8.0f, -8.0f};
+    camera.zoom_set(0.2f);
+    camera.set_zoom_multiplier(1.2f);
+    camera.pan({ -400.0f, -300.0f}); // Half of window size
 
 }
 
@@ -187,7 +102,12 @@ void Scene2D::handle_input(window::InputEvent event){
 
         }
         
-        camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
+        // camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
+        cursor_context.set_cursor_pos(  event.mouse_movement.pos_px, 
+                                        event.mouse_movement.pos_norm,
+                                        camera.box
+        );
+
     }
 
 
@@ -217,8 +137,9 @@ void Scene2D::handle_input(window::InputEvent event){
 
         // std::cout << "camera.cursor_viewport_px    = " << camera.cursor_viewport_px.x << " " << camera.cursor_viewport_px.y << std::endl;
         // std::cout << "camera.cursor_viewport_norm  = " << camera.cursor_viewport_norm.x << " " << camera.cursor_viewport_norm.y << std::endl;
-        std::cout << "camera.cursor_viewport_scene = " << camera.cursor_viewport_scene.x << " " << camera.cursor_viewport_scene.y << std::endl;
+        // std::cout << "camera.cursor_viewport_scene = " << camera.cursor_viewport_scene.x << " " << camera.cursor_viewport_scene.y << std::endl;
         
+        std::cout << "cursor_context.scene = " << cursor_context.scene.x << " " << cursor_context.scene.y << std::endl;
         
         // scene_2d.camera_2d.transform_2d.matrix.print();
         // std::cout << "mouse_pan = " << mouse_pan << std::endl;

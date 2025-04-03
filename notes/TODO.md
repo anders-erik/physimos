@@ -39,11 +39,6 @@
 ### Misc
 
 ### 2D scene
-- track camera box in scene coordinates
-- track cursor location
-	- normalized coords
-	- scene coords
-- 
 
 
 ### Geometry editor
@@ -84,7 +79,10 @@
 - quad renderer
 - move more into scene 2D
 - zoom maintins same x/y origin
-
+- track camera box in scene coordinates
+- track cursor location
+	- normalized coords
+	- scene coords
 
 ## Phont 1.0
 

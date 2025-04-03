@@ -21,15 +21,18 @@ void Transform2D::move_y(float dy){
 
 void Transform2D::set_matrix_model(){
 
-    m3f3 identity;
+    // SCALE
+    m3f3 scale_mat;
+    scale_mat.scale(scale);
 
-    matrix = identity;
+    // TRANSLATION
+    m3f3 pos_mat;
+    pos_mat.translate(pos);
 
-    
-    // matrix.rotate(rot.x);
-
-    matrix.translate(pos);
-    matrix.scale(scale);
+    // MULTIPLY
+    matrix.set_to_identity();
+    matrix.mult(pos_mat);
+    matrix.mult(scale_mat);
 
 
 }

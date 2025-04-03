@@ -12,11 +12,8 @@
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
-const float WINDOW_WIDTH_F = 800.0f;
-const float WINDOW_HEIGHT_F = 600.0f;
 f2 window_size = {800.0f, 600.0f};
 
-float aspect_ratio = WINDOW_WIDTH_F / WINDOW_HEIGHT_F;
 
 
 int main()
@@ -27,14 +24,13 @@ int main()
 	window::Auxwin auxwin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	// SCENE 2D
-	scene::Scene2D scene = scene::Scene2D(window_size);
-	scene.set_window_size({ WINDOW_WIDTH_F, WINDOW_HEIGHT_F} );
+	scene2D::Scene2D scene = scene2D::Scene2D(window_size);
 
     // TEXTURE (UNUSED)
     unsigned int texture_checker = 0;
     phont::set_texture_checker(texture_checker);
 	
-	
+
 
 	while (auxwin.is_open())
 	{
