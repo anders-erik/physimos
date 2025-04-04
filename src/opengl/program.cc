@@ -13,6 +13,9 @@ unsigned int program_model_texture;
 unsigned int program_axes;
 unsigned int program_vector;
 unsigned int program_texture_2d;
+unsigned int program_ndc_black;
+
+
 
 void gpu_use_program(Programs program_enum){
 
@@ -28,6 +31,10 @@ void gpu_use_program(Programs program_enum){
         
         case Programs::Texture2D:
             glUseProgram(program_texture_2d);
+            break;
+        
+        case Programs::ndc_black:
+            glUseProgram(program_ndc_black);
             break;
 
         case Programs::Axes:
@@ -116,6 +123,7 @@ unsigned int build_program_vert_frag(Programs program_enum){
         vert_str = physimos_root_dir + "/src/opengl/shaders/ndc/vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/ndc/black_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
+        program_ndc_black = new_program;
         break;
 
     case Programs::ndc_white :

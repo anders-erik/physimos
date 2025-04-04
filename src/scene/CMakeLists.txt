@@ -28,5 +28,6 @@ target_include_directories(scene PUBLIC
 # What to link against
 target_link_libraries(scene 
     source # this will be changed to specific libraries as refactoring progress allows, and not the whole physimos source
+    phont
 )
 

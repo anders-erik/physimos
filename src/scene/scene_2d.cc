@@ -21,17 +21,21 @@ void CursorContext2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
 
 
 Scene2D::Scene2D(f2 _window_size)
-    : texture_framebuffer_F { phont::get_texture_F() }
+    :   F_10_16 { phont::GlyphTextureGenerator( 'F', {10, 16} ) }
 {
     set_window_size(_window_size);
 
+    F_10_16.generate();
+    F_10_16.text_framebuff.texture.draw_rect({1, 1}, {2, 2}, {255, 0, 255, 255});
+
     renderer_quad.create_context(quad);
 	
-
 	quad.transform_2d.set_pos(0.0f, 0.0f);
 	quad.transform_2d.set_scale(2.0f, 3.0f);
 
-	quad.render_context.texture = texture_framebuffer_F.texture_id;
+    // opengl::set_texture_checker_2x2(quad.render_context.texture);
+	// quad.render_context.texture = texture_framebuffer_F.texture.id_gl;
+    quad.render_context.texture = F_10_16.get_texture().id_gl;
 
 
     camera.set_window_size_px(window_size);

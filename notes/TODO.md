@@ -33,6 +33,9 @@
 - texture abstraction - set pixel area
 - texture abstraction - clear
 
+- shader struct (path)
+- program struct (paths/shader, program_id, compiled/linked flag)
+
 
 ## Phont 1.0
 

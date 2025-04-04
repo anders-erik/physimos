@@ -12,16 +12,53 @@ namespace opengl {
 unsigned int colors_texture_id;
 unsigned int grass_texture_id;
 
+Texture::Texture(i2 _size){
+    size.x = _size.x;
+    size.y = _size.y;
 
+    new_texture(size.x, size.y);
+}
 Texture::Texture(int width, int height){
     size.x = width;
     size.y = height;
 
+    new_texture(size.x, size.y);
+}
+Texture::Texture(pimage::Bitmap& bitmap){
+    set(bitmap);
+}
+
+
+void Texture::new_texture(int width, int height){
+
+    glGenTextures(1, &id_gl);
+    glBindTexture(GL_TEXTURE_2D, id_gl);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    // glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 
-Texture::Texture(pimage::Bitmap& bitmap){
-    set(bitmap);
+void Texture::draw_rect(i2 _pos, i2 _size, ColorUC _color){
+    bind();
+    int rect_pixels = _size.x * _size.y;
+    int rect_bytes = rect_pixels * sizeof(_color);
+
+    unsigned char bytes[rect_bytes] = {0};
+
+    for(int i = 0; i < rect_bytes; i = i + sizeof(_color)){
+        bytes[i+0] = _color.R;
+        bytes[i+1] = _color.G;
+        bytes[i+2] = _color.B;
+        bytes[i+3] = _color.A;
+    }
+
+    glTexSubImage2D(GL_TEXTURE_2D, 0, _pos.x, _pos.y, _size.x, _size.y,  GL_RGBA,  GL_UNSIGNED_BYTE, bytes);
+    unbind();
 }
 
 void Texture::set(pimage::Bitmap& bitmap){
@@ -50,28 +87,31 @@ void Texture::unbind(){
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
-TextureFrameBuffer::TextureFrameBuffer(int width, int height){
+TextureFrameBuffer::TextureFrameBuffer(i2 _size)
+    : texture { Texture(_size) }
+{
+    size.x = _size.x;
+    size.y = _size.y;
+    init();
+}
+TextureFrameBuffer::TextureFrameBuffer(int width, int height)
+    : texture { Texture(width, height) }
+{
     size.x = width;
     size.y = height;
+
+    init();
+
+}
+
+void TextureFrameBuffer::init(){
 
 
     // FRAMEBUFFER
     // unsigned int framebuffer;
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);    
-
-    // TEXTURE
-    // unsigned int texture;
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size.x, size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // BIND
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.id_gl, 0);
 
     // ERROR
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -91,7 +131,7 @@ void TextureFrameBuffer::framebuffer_unbind(int width, int height){
     glViewport(0,0, width, height);
 }
 void TextureFrameBuffer::texture_bind(){
-    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture.id_gl);
 }
 void TextureFrameBuffer::texture_unbind(){
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -103,6 +143,11 @@ void TextureFrameBuffer::clear(){
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
 }
+void TextureFrameBuffer::set_size(i2 _size){
+    size = _size;
+    
+}
+
 
 void textures_init(){
 
@@ -232,5 +277,43 @@ unsigned int texture_get_id(Textures texture) {
             break;
     }
 }
+
+
+
+
+void set_texture_checker_2x2(unsigned int& texture_id){
+
+    // unsigned char bitmap[16] = {255, 255, 255, 255,
+    //                             0,   0,   0,   255,
+    //                             0,   0,   0,   255,
+    //                             255, 255, 255, 255,
+    // };
+
+    float bitmap[16] = {    1.0f, 1.0f, 1.0f, 1.0f,
+                            0.0f, 0.0f, 0.0f, 1.0f,
+                            0.0f, 0.0f, 0.0f, 1.0f,
+                            1.0f, 1.0f, 1.0f, 1.0f,
+    };
+
+    
+    glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // Not necessary
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_FLOAT, bitmap);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+
+}
+
 
 }

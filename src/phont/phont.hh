@@ -13,16 +13,33 @@
 
 namespace phont {
 
+struct GlyphRenderContext {
+    unsigned int VAO;
+    unsigned int VBO;
+    unsigned int EBO;
+    int vertex_count;
+};
 
 struct GlyphMesh {
     std::vector<f3> verts;
     std::vector<i3> faces;
 };
 
+struct GlyphTextureGenerator {
+    char char_value = 0x0;
+    GlyphMesh mesh_glyph;
+    GlyphRenderContext render_context;
+    opengl::TextureFrameBuffer text_framebuff;
 
-void set_texture_checker(unsigned int& texture_id);
+    GlyphTextureGenerator(char ch, i2 size);
+    // GlyphTextureGenerator() = default;
 
-opengl::TextureFrameBuffer get_texture_F();
+    void set_char(char ch);
+    void set_texture_size(i2 size);
+    opengl::Texture get_texture();
+    void generate();
+};
+
 void get_mesh_F(GlyphMesh& mesh);
 
 

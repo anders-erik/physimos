@@ -11,6 +11,8 @@
 
 #include "scene/camera_2d.hh"
 
+#include "phont/phont.hh"
+
 struct GLFWWindow;
 
 
@@ -40,7 +42,7 @@ public:
 
     CursorContext2D cursor_context;
 
-    opengl::TextureFrameBuffer texture_framebuffer_F;
+	phont::GlyphTextureGenerator F_10_16;
 
     opengl::Quad2D quad;
 

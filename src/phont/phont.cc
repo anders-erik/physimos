@@ -2,7 +2,6 @@
 #include <array>
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include "math/vecmat.hh"
 
@@ -15,13 +14,71 @@
 namespace phont {
 
 
+GlyphTextureGenerator::GlyphTextureGenerator(char ch, i2 _size)
+    : text_framebuff { opengl::TextureFrameBuffer(_size) }
+{
+    set_char(ch);
+    set_texture_size(_size);
+}
+
+void GlyphTextureGenerator::set_char(char ch){
+    char_value = ch;
+    
+    if(char_value == 'F'){
+        get_mesh_F(mesh_glyph);
+    }
+}
+void GlyphTextureGenerator::set_texture_size(i2 _size){
+    
+    
+}
+opengl::Texture GlyphTextureGenerator::get_texture(){
+    return text_framebuff.texture;
+}
+
+void GlyphTextureGenerator::generate(){
+
+    opengl::gpu_use_program(opengl::Programs::ndc_black);
+
+    render_context.vertex_count = mesh_glyph.faces.size() * 3;
+
+	glGenVertexArrays(1, &render_context.VAO);
+	glGenBuffers(1, &render_context.VBO);
+    glGenBuffers(1, &render_context.EBO);
+
+	glBindVertexArray(render_context.VAO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_context.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_glyph.faces.size() * sizeof(i3), mesh_glyph.faces.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, render_context.VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(f3) * mesh_glyph.verts.size(), mesh_glyph.verts.data(), GL_STATIC_DRAW);
+    
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void *)0);
+	glEnableVertexAttribArray(0);
+
+
+    text_framebuff.set_clear_color( {0.8f, 0.8f, 0.8f, 1.0f} );
+
+    text_framebuff.framebuffer_bind();
+    text_framebuff.clear();
+
+    glBindVertexArray(render_context.VAO);
+    glDrawElements(GL_TRIANGLES, render_context.vertex_count, GL_UNSIGNED_INT, 0);
+
+
+    text_framebuff.framebuffer_unbind(800, 600);
+}
+
+
+
 void get_mesh_F(GlyphMesh& mesh){
 
     // float size = 0.9f;
     
     // VERTICAL BAR
-    float l_vert_bar    = -0.9;
-    float r_vert_bar    = -0.5;
+    float l_vert_bar    = -0.8;
+    float r_vert_bar    = -0.4;
     float t_vert_bar    =  0.9;
     float b_vert_bar    = -0.6;
     f3 v0 (l_vert_bar, b_vert_bar,  0.0f); // Lower left
@@ -42,7 +99,7 @@ void get_mesh_F(GlyphMesh& mesh){
 
 
     // TOP HORIZONAL BAR
-    float l_top_hori_bar    = -0.5;
+    float l_top_hori_bar    = -0.4;
     float r_top_hori_bar    =  0.9;
     float t_top_hori_bar    =  0.9;
     float b_top_hori_bar    =  0.6;
@@ -64,7 +121,7 @@ void get_mesh_F(GlyphMesh& mesh){
 
 
     // BOTTOM HORIZONAL BAR
-    float l_bottom_hori_bar    = -0.5;
+    float l_bottom_hori_bar    = -0.4;
     float r_bottom_hori_bar    =  0.6;
     float t_bottom_hori_bar    =  0.3;
     float b_bottom_hori_bar    =  0.0;
@@ -86,116 +143,6 @@ void get_mesh_F(GlyphMesh& mesh){
 
 
     
-}
-
-opengl::TextureFrameBuffer get_texture_F(){
-
-    int texture_width   = 200;
-    int texture_height  = 300;
-
-
-    // PROGRAM
-    unsigned int program_char = opengl::build_program_vert_frag(opengl::Programs::ndc_black);
-    glUseProgram(program_char);
-
-    // RENDERER CONTEXT
-
-    GlyphMesh mesh_F;
-    get_mesh_F(mesh_F);
-
-    unsigned int VAO, VBO, EBO;
-    int triangle_count;
-
-    triangle_count = mesh_F.faces.size() * 3;
-
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_F.faces.size() * sizeof(i3), mesh_F.faces.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(f3) * mesh_F.verts.size(), mesh_F.verts.data(), GL_STATIC_DRAW);
-    
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void *)0);
-	glEnableVertexAttribArray(0);
-
-    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(f3), (void *)(sizeof(f3)));
-	// glEnableVertexAttribArray(1);
-
-
-
-    // TEXTURE FRAMEBUFFER 
-    opengl::TextureFrameBuffer texture_framebuffer (texture_width, texture_height);
-    texture_framebuffer.set_clear_color( {0.8f, 0.8f, 0.8f, 1.0f} );
-
-
-
-    
-    texture_framebuffer.framebuffer_bind();
-    texture_framebuffer.clear();
-
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, triangle_count, GL_UNSIGNED_INT, 0);
-
-
-    texture_framebuffer.framebuffer_unbind(800, 600);
-    
-
-
-
-    // FOUR RED PIXELS
-    float pixels_4_red[16] = {  1.0f, 0.0f, 0.0f, 1.0f, 
-                                1.0f, 0.0f, 0.0f, 1.0f, 
-                                1.0f, 0.0f, 0.0f, 1.0f, 
-                                1.0f, 0.0f, 0.0f, 1.0f
-    };
-    glBindTexture(GL_TEXTURE_2D, texture_framebuffer.texture_id);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 2,  GL_RGBA,  GL_FLOAT, pixels_4_red);
-
-
-    
-
-
-    return texture_framebuffer;
-
-}
-
-void set_texture_checker(unsigned int& texture_id){
-
-    // unsigned char bitmap[16] = {255, 255, 255, 255,
-    //                             0,   0,   0,   255,
-    //                             0,   0,   0,   255,
-    //                             255, 255, 255, 255,
-    // };
-
-    float bitmap[16] = {    1.0f, 1.0f, 1.0f, 1.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f,
-                            1.0f, 1.0f, 1.0f, 1.0f,
-    };
-
-    
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // Not necessary
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_FLOAT, bitmap);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-
 }
 
 

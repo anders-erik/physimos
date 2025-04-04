@@ -183,6 +183,14 @@
             ],
         },
         {
+            "label": "XP - rubik",
+            "type": "shell",
+            "command": "cd xp/rubik && XP_ROOT_DIR=${workspaceFolder}/xp/rubik ./bin/rubik.bin",
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+        {
             "label": "Phont",
             "type": "shell",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/phont/phont_main",

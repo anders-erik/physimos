@@ -23,12 +23,11 @@ int main()
 	// WINDOW
 	window::Auxwin auxwin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+	// OPENGL
+	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
+
 	// SCENE 2D
 	scene2D::Scene2D scene = scene2D::Scene2D(window_size);
-
-    // TEXTURE (UNUSED)
-    unsigned int texture_checker = 0;
-    phont::set_texture_checker(texture_checker);
 	
 
 
