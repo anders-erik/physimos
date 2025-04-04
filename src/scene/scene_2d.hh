@@ -43,8 +43,10 @@ public:
     CursorContext2D cursor_context;
 
 	phont::GlyphTextureGenerator F_10_16;
+    opengl::Quad2D quad_F;
 
-    opengl::Quad2D quad;
+    phont::GlyphTextureGenerator A_200_320;
+    opengl::Quad2D quad_A;
 
     opengl::Quad2DRenderer renderer_quad;
 

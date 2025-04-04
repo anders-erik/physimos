@@ -41,6 +41,7 @@ struct GlyphTextureGenerator {
 };
 
 void get_mesh_F(GlyphMesh& mesh);
+void get_mesh_A(GlyphMesh& mesh);
 
 
 }

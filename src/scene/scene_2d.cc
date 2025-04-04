@@ -21,21 +21,29 @@ void CursorContext2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
 
 
 Scene2D::Scene2D(f2 _window_size)
-    :   F_10_16 { phont::GlyphTextureGenerator( 'F', {10, 16} ) }
+    :   F_10_16 { phont::GlyphTextureGenerator( 'F', {10, 16} ) },
+        A_200_320 { phont::GlyphTextureGenerator( 'A', {200, 320} ) }
 {
     set_window_size(_window_size);
 
     F_10_16.generate();
     F_10_16.text_framebuff.texture.draw_rect({1, 1}, {2, 2}, {255, 0, 255, 255});
 
-    renderer_quad.create_context(quad);
-	
-	quad.transform_2d.set_pos(0.0f, 0.0f);
-	quad.transform_2d.set_scale(2.0f, 3.0f);
+    renderer_quad.create_context(quad_F);
+	quad_F.transform_2d.set_pos(0.0f, 0.0f);
+	quad_F.transform_2d.set_scale(2.0f, 3.0f);
 
-    // opengl::set_texture_checker_2x2(quad.render_context.texture);
-	// quad.render_context.texture = texture_framebuffer_F.texture.id_gl;
-    quad.render_context.texture = F_10_16.get_texture().id_gl;
+    quad_F.render_context.texture = F_10_16.get_texture().id_gl;
+
+
+
+    A_200_320.generate();
+
+    renderer_quad.create_context(quad_A);
+	quad_A.transform_2d.set_pos(2.0f, 0.0f);
+	quad_A.transform_2d.set_scale(2.0f, 3.0f);
+
+    quad_A.render_context.texture = A_200_320.get_texture().id_gl;
 
 
     camera.set_window_size_px(window_size);
@@ -54,17 +62,22 @@ void Scene2D::set_window_size(f2 size){
 
 void Scene2D::update(){
 
-    quad.transform_2d.set_matrix_model();
+    quad_F.transform_2d.set_matrix_model();
+    quad_A.transform_2d.set_matrix_model();
+
     camera.transform.set_matrix_camera();
 
-    renderer_quad.set_model_camera(quad.transform_2d.matrix, camera.transform.matrix);
+    // renderer_quad.set_model_camera(quad_F.transform_2d.matrix, camera.transform.matrix);
 }
 
 
 void Scene2D::render(){
     // RENDER
-    renderer_quad.set_model_camera(quad.transform_2d.matrix, camera.transform.matrix);
-    renderer_quad.render(quad.render_context);
+    renderer_quad.set_model_camera(quad_F.transform_2d.matrix, camera.transform.matrix);
+    renderer_quad.render(quad_F.render_context);
+
+    renderer_quad.set_model_camera(quad_A.transform_2d.matrix, camera.transform.matrix);
+    renderer_quad.render(quad_A.render_context);
 }
 
 

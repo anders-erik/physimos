@@ -58,7 +58,7 @@ int main()
 		auxwin.end_frame();
 	}
 
-	scene.quad.render_context.delete_contents();
+	scene.quad_F.render_context.delete_contents();
 
 
 	// glDeleteProgram(program); // NOTE: This was never replaced!

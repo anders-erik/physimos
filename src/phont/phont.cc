@@ -27,6 +27,9 @@ void GlyphTextureGenerator::set_char(char ch){
     if(char_value == 'F'){
         get_mesh_F(mesh_glyph);
     }
+    else if(char_value == 'A'){
+        get_mesh_A(mesh_glyph);
+    }
 }
 void GlyphTextureGenerator::set_texture_size(i2 _size){
     
@@ -129,6 +132,78 @@ void get_mesh_F(GlyphMesh& mesh){
     f3 v9  (r_bottom_hori_bar, b_bottom_hori_bar,  0.0f); // Lower right
     f3 v10 (r_bottom_hori_bar, t_bottom_hori_bar,  0.0f); // Upper right
     f3 v11 (l_bottom_hori_bar, t_bottom_hori_bar,  0.0f); // Upper left
+
+    mesh.verts.push_back(v8 );
+    mesh.verts.push_back(v9 );
+    mesh.verts.push_back(v10);
+    mesh.verts.push_back(v11);
+
+    i3 f4 (8, 9, 10);
+    i3 f5 (8, 10, 11);
+    mesh.faces.push_back(f4);
+    mesh.faces.push_back(f5);
+    
+
+
+    
+}
+
+void get_mesh_A(GlyphMesh& mesh){
+
+
+    // VERTICAL BAR LEFT
+    float bottom_left_x = -0.8f;
+    float bottom_y = -0.7f;
+    float width = 0.5f;
+    float height = 1.6f;
+    float dx_slope = 0.6f;
+
+    f3 v0 (bottom_left_x                    , bottom_y          ,  0.0f); // Lower left
+    f3 v1 (bottom_left_x+width              , bottom_y          ,  0.0f); // Lower right
+    f3 v2 (bottom_left_x + dx_slope + width , bottom_y+height   ,  0.0f); // Upper right
+    f3 v3 (bottom_left_x + dx_slope         , bottom_y+height   ,  0.0f); // Upper left
+
+    mesh.verts.push_back(v0);
+    mesh.verts.push_back(v1);
+    mesh.verts.push_back(v2);
+    mesh.verts.push_back(v3);
+    
+    i3 _f0 (0, 1, 2);
+    i3 _f1 (0, 2, 3);
+    mesh.faces.push_back(_f0);
+    mesh.faces.push_back(_f1);
+
+
+
+    // VERTICAL BAR RIGHT
+    bottom_left_x = 0.5f;
+
+    f3 v4 (bottom_left_x                    , bottom_y          ,  0.0f); // Lower left
+    f3 v5 (bottom_left_x + width            , bottom_y          ,  0.0f); // Lower right
+    f3 v6 (bottom_left_x - dx_slope + width , bottom_y+height   ,  0.0f); // Upper right
+    f3 v7 (bottom_left_x - dx_slope         , bottom_y+height   ,  0.0f); // Upper left
+
+    mesh.verts.push_back(v4);
+    mesh.verts.push_back(v5);
+    mesh.verts.push_back(v6);
+    mesh.verts.push_back(v7);
+
+    i3 _f2 (4, 5, 6);
+    i3 _f3 (4, 6, 7);
+    mesh.faces.push_back(_f2);
+    mesh.faces.push_back(_f3);
+
+
+
+    // BOTTOM HORIZONAL BAR
+    float bar_x = -0.4f;
+    float bar_y = -0.3f;
+    float bar_w =  0.8f;
+    float bar_h =  0.2f;
+    f3 v8  (bar_x, bar_y,  0.0f); // Lower left
+    f3 v9  (bar_x+bar_w, bar_y,  0.0f); // Lower right
+    f3 v10 (bar_x+bar_w, bar_y+bar_h,  0.0f); // Upper right
+    f3 v11 (bar_x, bar_y+bar_h,  0.0f); // Upper left
 
     mesh.verts.push_back(v8 );
     mesh.verts.push_back(v9 );
