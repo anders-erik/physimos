@@ -102,58 +102,76 @@ void Texture::unbind(){
 
 
 
-TextureFrameBufferMultisample::TextureFrameBufferMultisample(i2 _text_size, int samples)
+TextureFrameBufferMultisample::TextureFrameBufferMultisample(i2 _text_size, int _samples)
 {
     size = _text_size;
+    samples = _samples;
 
-    glGenTextures(1, &text_id); // same as regular texture??
+    init_gl_objects();
 
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, text_id);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA, size.x, size.y, GL_TRUE);
-    // glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    multisample_fbo_bind();
+    multisample_fbo_clear_red();
 
+    blit();
 
-    // FRAMEBUFFER
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, text_id, 0);
-
-    // ERROR
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    else 
-        std::cout << "FRAMEBUFFER OK!" << std::endl;
-
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glEnable(GL_MULTISAMPLE);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, text_id);
-    
-    glViewport(0, 0, size.x, size.y);
-
-
-    glClearColor(1.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-
-    glViewport(0, 0, 800, 600);
-
+    // Unbind framebuffers
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-
-    // glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaFBO);
-    // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, resolvedFBO);
-    // glBlitFramebuffer(0, 0, size.x, size.y,
-    //                 0, 0, size.x, size.y,
-    //                 GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 }
 
+void TextureFrameBufferMultisample::init_gl_objects(){
 
+
+    glGenTextures(1, &multisampleTexture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, multisampleTexture);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA, size.x, size.y, GL_TRUE);
+
+    glGenTextures(1, &resolvedTexture);
+    glBindTexture(GL_TEXTURE_2D, resolvedTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+    glGenFramebuffers(1, &multisampleFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, multisampleTexture, 0);
+    
+    // render_multisample();
+
+    glGenFramebuffers(1, &resolvedFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, resolvedFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, resolvedTexture, 0);
+
+}
+
+void TextureFrameBufferMultisample::multisample_fbo_bind(){
+    glViewport(0,0, size.x, size.y);
+    glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
+}
+void TextureFrameBufferMultisample::multisample_fbo_unbind(){
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0, 800, 600);
+}
+
+void TextureFrameBufferMultisample::multisample_fbo_clear_red(){
+    glClearColor(1.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+void TextureFrameBufferMultisample::multisample_fbo_clear(){
+    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+
+void TextureFrameBufferMultisample::blit(){
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFBO);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, resolvedFBO);
+    glBlitFramebuffer(0, 0, size.x, size.y, 0, 0, size.x, size.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
 
 TextureFrameBuffer::TextureFrameBuffer(i2 _size)

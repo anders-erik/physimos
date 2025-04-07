@@ -48,6 +48,11 @@ public:
     phont::GlyphTextureGenerator A_200_320;
     opengl::Quad2D quad_A;
 
+    phont::GlyphTextureGenerator A_multi;
+    opengl::Quad2D quad_A_multi;
+
+    
+
     opengl::TextureFrameBufferMultisample Triangle_text_buf_multi;
     opengl::Quad2D quad_Triangle;
 

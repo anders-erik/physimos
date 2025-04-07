@@ -15,7 +15,8 @@ namespace phont {
 
 
 GlyphTextureGenerator::GlyphTextureGenerator(char ch, i2 _size)
-    : text_framebuff { opengl::TextureFrameBuffer(_size) }
+    :   text_framebuff { opengl::TextureFrameBuffer(_size) },
+        text_framebuff_multi { opengl::TextureFrameBufferMultisample(_size, 8) }
 {
     set_char(ch);
     set_texture_size(_size);
@@ -71,6 +72,39 @@ void GlyphTextureGenerator::generate(){
 
 
     text_framebuff.framebuffer_unbind(800, 600);
+}
+
+void GlyphTextureGenerator::generate_multisample(){
+
+    opengl::gpu_use_program(opengl::Programs::ndc_black);
+
+    render_context.vertex_count = mesh_glyph.faces.size() * 3;
+
+	glGenVertexArrays(1, &render_context.VAO);
+	glGenBuffers(1, &render_context.VBO);
+    glGenBuffers(1, &render_context.EBO);
+
+	glBindVertexArray(render_context.VAO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_context.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_glyph.faces.size() * sizeof(i3), mesh_glyph.faces.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, render_context.VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(f3) * mesh_glyph.verts.size(), mesh_glyph.verts.data(), GL_STATIC_DRAW);
+    
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void *)0);
+	glEnableVertexAttribArray(0);
+
+
+    text_framebuff_multi.clear_color = {0.8f, 0.8f, 0.8f, 1.0f};
+    text_framebuff_multi.multisample_fbo_bind();
+    text_framebuff_multi.multisample_fbo_clear();
+
+    glBindVertexArray(render_context.VAO);
+    glDrawElements(GL_TRIANGLES, render_context.vertex_count, GL_UNSIGNED_INT, 0);
+
+    text_framebuff_multi.blit();
+    text_framebuff_multi.multisample_fbo_unbind();
 }
 
 
@@ -154,7 +188,7 @@ void get_mesh_A(GlyphMesh& mesh){
     // VERTICAL BAR LEFT
     float bottom_left_x = -0.8f;
     float bottom_y = -0.7f;
-    float width = 0.5f;
+    float width = 0.4f;
     float height = 1.6f;
     float dx_slope = 0.6f;
 
@@ -199,7 +233,7 @@ void get_mesh_A(GlyphMesh& mesh){
     float bar_x = -0.4f;
     float bar_y = -0.3f;
     float bar_w =  0.8f;
-    float bar_h =  0.2f;
+    float bar_h =  0.25f;
     f3 v8  (bar_x, bar_y,  0.0f); // Lower left
     f3 v9  (bar_x+bar_w, bar_y,  0.0f); // Lower right
     f3 v10 (bar_x+bar_w, bar_y+bar_h,  0.0f); // Upper right

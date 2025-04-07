@@ -31,6 +31,8 @@ struct GlyphTextureGenerator {
     GlyphRenderContext render_context;
     opengl::TextureFrameBuffer text_framebuff;
 
+    opengl::TextureFrameBufferMultisample text_framebuff_multi;
+
     GlyphTextureGenerator(char ch, i2 size);
     // GlyphTextureGenerator() = default;
 
@@ -38,6 +40,7 @@ struct GlyphTextureGenerator {
     void set_texture_size(i2 size);
     opengl::Texture get_texture();
     void generate();
+    void generate_multisample();
 };
 
 void get_mesh_F(GlyphMesh& mesh);
