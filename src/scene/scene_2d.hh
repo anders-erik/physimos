@@ -48,6 +48,9 @@ public:
     phont::GlyphTextureGenerator A_200_320;
     opengl::Quad2D quad_A;
 
+    opengl::TextureFrameBufferMultisample Triangle_text_buf_multi;
+    opengl::Quad2D quad_Triangle;
+
     opengl::Quad2DRenderer renderer_quad;
 
     Scene2D(f2 _window_size);

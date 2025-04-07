@@ -36,18 +36,20 @@
 - shader struct (path)
 - program struct (paths/shader, program_id, compiled/linked flag)
 
+## Model editor
+- 
 
 ## Phont 1.0
 
 ### Misc
-
+- Multisampled TextureRenderer
+- 
 ### 2D scene
-
 
 ### Geometry editor
 - render glyph points/primitives
 - hover glyph points
-- grap glpyh point
+- grab glyph point
 - move glyph point
 - read glyph from toml file
 - write glyph to toml file

@@ -22,7 +22,8 @@ void CursorContext2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
 
 Scene2D::Scene2D(f2 _window_size)
     :   F_10_16 { phont::GlyphTextureGenerator( 'F', {10, 16} ) },
-        A_200_320 { phont::GlyphTextureGenerator( 'A', {200, 320} ) }
+        A_200_320 { phont::GlyphTextureGenerator( 'A', {20, 32} ) },
+        Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) }
 {
     set_window_size(_window_size);
 
@@ -32,7 +33,6 @@ Scene2D::Scene2D(f2 _window_size)
     renderer_quad.create_context(quad_F);
 	quad_F.transform_2d.set_pos(0.0f, 0.0f);
 	quad_F.transform_2d.set_scale(2.0f, 3.0f);
-
     quad_F.render_context.texture = F_10_16.get_texture().id_gl;
 
 
@@ -40,10 +40,22 @@ Scene2D::Scene2D(f2 _window_size)
     A_200_320.generate();
 
     renderer_quad.create_context(quad_A);
+    quad_A.render_context.texture = A_200_320.get_texture().id_gl;
 	quad_A.transform_2d.set_pos(2.0f, 0.0f);
 	quad_A.transform_2d.set_scale(2.0f, 3.0f);
 
-    quad_A.render_context.texture = A_200_320.get_texture().id_gl;
+
+    // TRIANGLE MULTISAMPLE
+
+    renderer_quad.create_context(quad_Triangle);
+    // TODO: Render triangle texture
+    // quad_Triangle.render_context.texture = A_200_320.get_texture().id_gl; 
+    quad_Triangle.render_context.texture = Triangle_text_buf_multi.text_id;
+    unsigned char *pixel = opengl::Texture::get_pixel({2, 2}, quad_Triangle.render_context.texture);
+    // quad_Triangle.render_context.texture = opengl::texture_get_id(opengl::Textures::Colors);
+
+	quad_Triangle.transform_2d.set_pos(4.0f, 0.0f);
+	quad_Triangle.transform_2d.set_scale(2.0f, 3.0f);
 
 
     camera.set_window_size_px(window_size);
@@ -64,6 +76,7 @@ void Scene2D::update(){
 
     quad_F.transform_2d.set_matrix_model();
     quad_A.transform_2d.set_matrix_model();
+    quad_Triangle.transform_2d.set_matrix_model();
 
     camera.transform.set_matrix_camera();
 
@@ -78,6 +91,9 @@ void Scene2D::render(){
 
     renderer_quad.set_model_camera(quad_A.transform_2d.matrix, camera.transform.matrix);
     renderer_quad.render(quad_A.render_context);
+
+    renderer_quad.set_model_camera(quad_Triangle.transform_2d.matrix, camera.transform.matrix);
+    renderer_quad.render(quad_Triangle.render_context);
 }
 
 

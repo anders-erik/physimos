@@ -200,6 +200,15 @@
             "dependsOn": "Build Debug"
         },
         {
+            "label": "opengl",
+            "type": "shell",
+            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/opengl/main_opengl",
+            "problemMatcher": [
+                "$gcc",
+            ],
+            "dependsOn": "Build Debug"
+        },
+        {
             "label": "Model",
             "type": "shell",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/model/model_main",

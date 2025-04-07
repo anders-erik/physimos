@@ -19,6 +19,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 
 enum class EventType {
+    None, // Indicates end of event queue
     MouseButton,
     MouseMove,
     MouseScroll,
@@ -118,6 +119,7 @@ struct InputEvent {
     InputEvent(EventType _type, MouseScrollEvent _mouse_scroll) : type {_type}, mouse_scroll { _mouse_scroll}   {};
     InputEvent(EventType _type, KeyStrokeEvent _key_stroke)     : type {_type}, key_stroke { _key_stroke}       {};
     InputEvent(EventType _type, WindowResizeEvent _window_resize):type {_type}, window_resize { _window_resize} {};
+    InputEvent() : type { EventType::None} {};
 };
 
 
@@ -192,6 +194,7 @@ class Auxwin {
 
         InputState get_input_state();
         std::queue<InputEvent> get_input_events();
+        InputEvent get_input_event();
 };
 
 

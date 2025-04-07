@@ -209,9 +209,9 @@ Auxwin::Auxwin(int width, int height){
     glfwInit();
 
 
-	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwWindowHint(GLFW_SAMPLES, 4);
     
@@ -363,6 +363,20 @@ std::queue<InputEvent> Auxwin::get_input_events(){
         input_events.pop();
 
     return tmp_queue;
+}
+
+InputEvent Auxwin::get_input_event(){
+    InputEvent input_event;
+
+    if(input_events.size() == 0){
+        input_event.type = EventType::None;
+    }
+    else {
+        input_event = input_events.front();
+        input_events.pop();
+    }
+
+    return input_event;
 }
 
 }

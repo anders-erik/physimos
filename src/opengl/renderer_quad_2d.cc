@@ -164,6 +164,7 @@ void Quad2DRenderer::render(Quad2DRenderContext context){
 
     // glBindTexture(GL_TEXTURE_2D, texture_checker);
     // glBindTexture(GL_TEXTURE_2D, texture_F);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 3);
     glBindTexture(GL_TEXTURE_2D, context.texture);
 
     glBindVertexArray(context.VAO); 
@@ -171,6 +172,16 @@ void Quad2DRenderer::render(Quad2DRenderContext context){
     // glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
     // glDrawArrays(GL_TRIANGLES, 0, 3);
     // glDrawElements(GL_TRIANGLES, context.element_count , GL_UNSIGNED_INT, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+void Quad2DRenderer::render_multisample_texture(Quad2DRenderContext context){
+
+    glUseProgram(program);
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, context.texture);
+
+    glBindVertexArray(context.VAO);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }

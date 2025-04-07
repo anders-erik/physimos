@@ -45,10 +45,24 @@ struct Texture {
 
     void draw_rect(i2 pos, i2 size, ColorUC color);
 
+    static unsigned char* get_pixel(i2 pos, unsigned int texture_id);
+
     void bind();
     void unbind();
 };
 
+struct TextureFrameBufferMultisample {
+    // opengl::Texture texture;
+    unsigned int text_id;
+    
+    unsigned int framebuffer;
+    f4 clear_color;
+
+    i2 size;
+
+    TextureFrameBufferMultisample(i2 _text_size, int samples);
+
+};
 
 struct TextureFrameBuffer {
     opengl::Texture texture;

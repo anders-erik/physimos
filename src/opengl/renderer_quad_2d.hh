@@ -54,6 +54,8 @@ struct Quad2DRenderer {
 
     void set_model_camera(m3f3 model_mat, m3f3 camera);
     void render(Quad2DRenderContext context);
+    void render_multisample_texture(Quad2DRenderContext context);
+    
 
     Quad2DRenderer();
 };
