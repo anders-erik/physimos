@@ -72,7 +72,7 @@ struct MouseScrollEvent {
 enum class Key {
     None,
     Esc,
-    p
+    p,
 };
 
 enum class KeyModifier :int {
@@ -137,39 +137,10 @@ struct MouseState {
     float scroll_accumulator = 0.0f;
 };
 
-struct InputState {
-    bool esc = false;
-
-    bool p = false;
-
-    bool f = false;
-    bool b = false;
-    bool r = false;
-    bool l = false;
-    bool u = false;
-    bool d = false;
-
-    bool s = false;
-    bool m = false;
-
-    bool shift = false;
-
-    bool up = false;
-    bool left = false;
-    bool down = false;
-    bool right = false;
-
-    float scroll_delta = 0.0f;
-
-    // Copies the authoritative state during creation
-    MouseState mouse;
-
-    MouseButtonEvent mouse_button;
-};
-
 
 class Auxwin {
     // Not working...
+    // Maybe add using 'function' and 'bind'??
     // void framebuffer_callback(GLFWwindow *window, int width, int height);
     // void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
     // void mouse_position_callback(GLFWwindow *window, double xpos, double ypos);
@@ -192,7 +163,7 @@ class Auxwin {
         void close();
         void destroy();
 
-        InputState get_input_state();
+        // InputState get_input_state();
         std::queue<InputEvent> get_input_events();
         InputEvent get_input_event();
 };

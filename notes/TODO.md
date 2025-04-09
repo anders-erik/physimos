@@ -27,6 +27,18 @@
 
 # Current
 
+## Auxwin
+
+- double click
+- double key press
+- modifier keys in all events
+- cleanup
+
+## bitmap
+- minimize rebuild frequency
+	- add bitmap manipulation methods by inheritence/composition in **another header**
+	- minimize the bitmap interface
+
 ## Opengl
 
 - texture abstraction - set nearest/linear
@@ -36,15 +48,38 @@
 - shader struct (path)
 - program struct (paths/shader, program_id, compiled/linked flag)
 
+## Lib
+- TOML
+	- std::optional
+	- structure parsing
+	- add number types
+- Config loader
+	- uses TOML
+	- phont
+	- model
+
+
 ## Model editor
-- 
+- add 2d scene texture editor
+- live reload using config loader
+
+## UI
+- Collect draw component into generic components
+- list component where components are added dynamicallyA A
+
+
+## 2D scene
+- Only quads
+- detect cursor location in quad
+- quad types:
+	- dynamic bitmap/texture for drawing
+	- glyph editor
+
 
 ## Phont 1.0
 
-### Misc
-- Multisampled TextureRenderer
-- 
-### 2D scene
+## Misc
+- face/glyph generation in main, then quads added to scene
 
 ### Geometry editor
 - render glyph points/primitives
@@ -93,6 +128,7 @@
 
 ## Mics
 - use updated auxwin (2025-04-02)
+- Multisampled TextureRenderer (2025-04-07)
 
 ---
 

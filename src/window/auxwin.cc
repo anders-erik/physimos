@@ -1,6 +1,5 @@
 
 #include <iostream>
-#include <set>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -10,14 +9,14 @@
 
 namespace window {
 
-InputState input_state;
 
 MouseState mouse_state;
+
+std::queue<InputEvent> input_events;
+
 GLFWcursor* default_cursor;
 GLFWcursor* pan_cursor;
 
-std::queue<InputEvent> input_events;
-std::set<Key>    keys_pressed;
 
 void framebuffer_callback(GLFWwindow* _window, int _width, int _height) {
 
@@ -90,19 +89,6 @@ void mouse_position_callback(GLFWwindow *window, double xpos, double ypos){
 
     input_events.emplace(event_type, mouse_movement);
 
-
-    // OLD
-    // if(mouse_state.middle_down){
-    //     mouse_state.middle_delta_accum.x += xpos - mouse_state.middle_prev_pos.x;
-    //     mouse_state.middle_delta_accum.y += mouse_state.middle_prev_pos.y - ypos;
-
-    //     mouse_state.middle_prev_pos.x = xpos;
-    //     mouse_state.middle_prev_pos.y = ypos;
-    
-    // }
-    // mouse_state.cursor_pos.x = (float) xpos;
-    // mouse_state.cursor_pos.y = (float) ypos;
-
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
@@ -168,42 +154,10 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 
 
-    // Originally used a set to detect hold. Turns out im stupid and never realized that glfw had 'GLFW_REPEAT'
-
-    // ButtonAction registered_action = action == GLFW_PRESS ? ButtonAction::Press : ButtonAction::Release;
-    // if(registered_action == GLFW_PRESS){ 
-
-    //     if(keys_pressed.count(keystroke.key) > 0){
-    //         keystroke.action = ButtonAction::Hold;
-    //     }
-    //     else {
-    //         keystroke_event.action = ButtonAction::Press;
-    //         keys_pressed.insert(keystroke.key);
-    //     }
-
-    // }
-    // else if(action == GLFW_RELEASE){
-    //     keystroke_event.action = ButtonAction::Release;
-    //     keys_pressed.erase(keystroke_event.key);
-    // }
-   
-
-    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-        input_state.up = true;
-    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-        input_state.left = true;
-    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-        input_state.down = true;
-    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-        input_state.right = true;
-    
-
     input_events.emplace(event_type, keystroke_event);
 }
 
-// void framebuffer_size_callback_2(GLFWwindow *window, int width, int height){
-// 	glViewport(0, 0, width, height);
-// }
+
 
 Auxwin::Auxwin(int width, int height){
     glfwInit();
@@ -246,6 +200,9 @@ Auxwin::Auxwin(int width, int height){
     mouse_state.window_dims.x = (float) width;
     mouse_state.window_dims.y = (float) height;
 
+    // Set up cursors
+    pan_cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
 
@@ -287,74 +244,6 @@ void Auxwin::destroy(){
     glfwTerminate();
 }
 
-
-
-InputState Auxwin::get_input_state(){
-    // InputState input_state;
-
-    // if (glfwGetKey(glfw_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    //     input_state.esc = true;
-	// 	// auxwin.close();
-    
-    // return input_state;
-
-
-    InputState _input_state = input_state;
-    // Reset
-    input_state = InputState();
-
-    // Mouse
-    _input_state.mouse = mouse_state;
-    // reset
-    mouse_state.middle_delta_accum.x = 0.0;
-    mouse_state.middle_delta_accum.y = 0.0;
-
-
-    _input_state.scroll_delta = mouse_state.scroll_accumulator;
-    mouse_state.scroll_accumulator = 0.0f;
-
-    if (glfwGetKey(glfw_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        _input_state.esc = true;
-
-
-    if (glfwGetKey(glfw_window, GLFW_KEY_P) == GLFW_PRESS)
-        _input_state.p = true;
-
-
-    if (glfwGetKey(glfw_window, GLFW_KEY_F) == GLFW_PRESS)
-        _input_state.f = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_B) == GLFW_PRESS)
-        _input_state.b = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_R) == GLFW_PRESS)
-        _input_state.r = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_L) == GLFW_PRESS)
-        _input_state.l = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_U) == GLFW_PRESS)
-        _input_state.u = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_D) == GLFW_PRESS)
-        _input_state.d = true;
-
-    if(glfwGetKey(glfw_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(glfw_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
-        _input_state.shift = true;
-
-    if (glfwGetKey(glfw_window, GLFW_KEY_S) == GLFW_PRESS)
-        _input_state.s = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_M) == GLFW_PRESS)
-        _input_state.m = true;
-
-
-    if (glfwGetKey(glfw_window, GLFW_KEY_UP) == GLFW_PRESS)
-        input_state.up = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        input_state.left = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        input_state.down = true;
-    if (glfwGetKey(glfw_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        input_state.right = true;
-
-
-    return _input_state;
-}
 
 std::queue<InputEvent> Auxwin::get_input_events(){
     std::queue<InputEvent> tmp_queue = input_events;
