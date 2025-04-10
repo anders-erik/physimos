@@ -47,7 +47,7 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 
         if(action == GLFW_PRESS){
             // std::cout << "moddle press" << std::endl;
-            mouse_state.middle_down = true;
+            // mouse_state.middle_down = true;
             
             glfwSetCursor(window, pan_cursor);
 
@@ -55,16 +55,12 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
         }
         else if (action == GLFW_RELEASE){
             // std::cout << "moddle rel" << std::endl;
-            mouse_state.middle_down = false;
+            // mouse_state.middle_down = false;
             glfwSetCursor(window, default_cursor);
 
             mouse_button_event.action = ButtonAction::Release;
         }
 
-        mouse_state.middle_delta_accum.x = 0.0;
-        mouse_state.middle_delta_accum.y = 0.0;
-        mouse_state.middle_prev_pos.x = mouse_state.cursor_pos.x;
-        mouse_state.middle_prev_pos.y = mouse_state.cursor_pos.y;
     }
     
     // InputEvent input_event (event_type, mouse_button_event);
@@ -74,18 +70,25 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 
 void mouse_position_callback(GLFWwindow *window, double xpos, double ypos){
 
-    // Update Delta
-    f2 pos ((float)xpos, (float)ypos);
-    f2 pos_sane = { pos.x, mouse_state.window_dims.y - pos.y};
+    // store raw for debugging
+    mouse_state.pos_raw = {(float)xpos, (float)ypos};
 
-    float dx =    pos.x - mouse_state.pos_prev.x;
-    float dy = - (pos.y - mouse_state.pos_prev.y); // Positive is up
+    // Use my own coordinate system
+    mouse_state.pos = { mouse_state.pos_raw.x, mouse_state.window_dims.y - mouse_state.pos_raw.y};
 
-    mouse_state.pos_prev = pos;
+    mouse_state.pos_delta.x = mouse_state.pos.x - mouse_state.pos_prev.x;
+    mouse_state.pos_delta.y = mouse_state.pos.y - mouse_state.pos_prev.y;
+
+    mouse_state.pos_prev = mouse_state.pos;
 
 
     EventType       event_type = EventType::MouseMove;
-    MouseMoveEvent   mouse_movement (dx, dy, pos_sane, mouse_state.window_dims);
+    MouseMoveEvent   mouse_movement (
+                                        mouse_state.pos_delta.x, 
+                                        mouse_state.pos_delta.y, 
+                                        mouse_state.pos, 
+                                        mouse_state.window_dims
+                                    );
 
     input_events.emplace(event_type, mouse_movement);
 
@@ -100,9 +103,6 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
 
     input_events.emplace(event_type, mouse_scroll);
 
-
-    mouse_state.scroll_accumulator += (float) yoffset;
-    // std::cout << "mouse_state.scroll_accumulator = " << mouse_state.scroll_accumulator << std::endl;
 }
 
 Key get_key_from_glfw_key(int _glfw_key){

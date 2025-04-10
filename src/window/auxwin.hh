@@ -5,7 +5,8 @@
 
 #include "math/vecmat.hh"
 
-struct GLFWwindow;
+struct GLFWwindow; // To not require the inclusion of the glfw header
+
 
 namespace window {
 
@@ -124,17 +125,16 @@ struct InputEvent {
 
 
 struct MouseState {
-    f2 cursor_pos;
-    f2 window_dims;
-    f2 cursor_pos_sane;
-
-    // OLD
+    f2 pos_raw;
+    
+    // Positive y is measured from bottom of window to top
+    f2 pos;
+    // Positive y is measured from bottom of window to top
     f2 pos_prev;
-    bool    middle_down = false;
-    f2  middle_prev_pos;
-    f2  middle_delta_accum;
+    // Last mouse movement delta
+    f2 pos_delta;
 
-    float scroll_accumulator = 0.0f;
+    f2 window_dims; // TODO: move to auxwin when callbacks have been moved into class
 };
 
 
