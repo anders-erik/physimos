@@ -16,7 +16,7 @@ namespace UI::component {
 UIC_Draw_Transform::UIC_Draw_Transform()
     :   boundObject     { draw::ui_get_transform_context() },
         title           { Primitive("Transform") },
-        zoom            { UIC_Label_float(0.0f, 5)},
+        zoom            { UIC_Label_float("Zoom: ", 0.0f, 5)},
         pan_x           { Primitive("pan x")},
         pan_y           { Primitive("pan y")},
         texture_x       { Primitive("text x")},
@@ -123,30 +123,30 @@ void UIC_Draw_Transform::update_component(){
 
 
     // Trigger rerender on main_view position change
-    if( transform_context.texture_px_x != transform_context_cache.texture_px_x 
-        || transform_context.texture_px_y != transform_context_cache.texture_px_y 
+    if( transform_context.cursor_pos_scene_px.x != transform_context_cache.cursor_pos_scene_px.x 
+        || transform_context.cursor_pos_scene_px.y != transform_context_cache.cursor_pos_scene_px.y 
         || transform_context.zoom != transform_context_cache.zoom 
     ){
-        transform_context_cache.texture_px_x    = transform_context.texture_px_x;
-        transform_context_cache.texture_px_y    = transform_context.texture_px_y;
+        transform_context_cache.cursor_pos_scene_px.x    = transform_context.cursor_pos_scene_px.x;
+        transform_context_cache.cursor_pos_scene_px.y    = transform_context.cursor_pos_scene_px.y;
         transform_context_cache.zoom            = transform_context.zoom;
 
         // zoom.update_str_double(transform_context.zoom, 4);
         
 
-        pan_x.update_str_double(transform_context.pan_texture_coords_x, 5);
-        pan_y.update_str_double(transform_context.pan_texture_coords_y, 5);
+        pan_x.update_str_double(transform_context.pan_texture_pos.x, 5);
+        pan_y.update_str_double(transform_context.pan_texture_pos.y, 5);
 
 
-        texture_x.update_str_double(transform_context.texture_x, 5);
-        texture_y.update_str_double(transform_context.texture_y, 5);
+        texture_x.update_str_double(transform_context.cursor_pos_scene.x, 5);
+        texture_y.update_str_double(transform_context.cursor_pos_scene.y, 5);
         
-        texture_px_x.update_str_int(transform_context.texture_px_x);
-        texture_px_y.update_str_int(transform_context.texture_px_y);
+        texture_px_x.update_str_int(transform_context.cursor_pos_scene_px.x);
+        texture_px_y.update_str_int(transform_context.cursor_pos_scene_px.y);
 
         
-        main_view_x.update_str_double(transform_context.main_view_x, 5);
-        main_view_y.update_str_double(transform_context.main_view_y, 5);
+        main_view_x.update_str_double(transform_context.cursor_pos_main_view.x, 5);
+        main_view_y.update_str_double(transform_context.cursor_pos_main_view.y, 5);
     }
 }
 

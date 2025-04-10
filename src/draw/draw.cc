@@ -43,7 +43,7 @@ namespace draw {
     }
 
     bool left_btn_down(){
-        bitmap_texture_dynamic->draw(transform_context.texture_px_x, transform_context.texture_px_y);
+        bitmap_texture_dynamic->draw(transform_context.cursor_pos_scene_px.x, transform_context.cursor_pos_scene_px.y);
         draw_state.drawing = true;
         return true;
     }
@@ -70,8 +70,8 @@ namespace draw {
     void scroll(double dy){
         // transform_context.zoom += (float) dy * 0.3;
 
-        float text_coord_x_before_zoom = transform_context.texture_x;
-        float text_coord_y_before_zoom = transform_context.texture_y;
+        float text_coord_x_before_zoom = transform_context.cursor_pos_scene.x;
+        float text_coord_y_before_zoom = transform_context.cursor_pos_scene.y;
 
         // Adjust the pan to keep the same texture coordinate cursor target
         if(dy > 0){
@@ -82,8 +82,8 @@ namespace draw {
             transform_context.zoom *= 1.25;
 
             // Pan to match the text coord target with old zoom value
-            transform_context.pan_texture_coords_x = transform_context.main_view_x / transform_context.zoom - text_coord_x_before_zoom;
-            transform_context.pan_texture_coords_y = transform_context.main_view_y / transform_context.zoom - text_coord_y_before_zoom;
+            transform_context.pan_texture_pos.x = transform_context.cursor_pos_main_view.x / transform_context.zoom - text_coord_x_before_zoom;
+            transform_context.pan_texture_pos.y = transform_context.cursor_pos_main_view.y / transform_context.zoom - text_coord_y_before_zoom;
 
         }
         else {
@@ -94,8 +94,8 @@ namespace draw {
             transform_context.zoom *= 0.8;
 
             // Pan to match the text coord target with old zoom value
-            transform_context.pan_texture_coords_x = transform_context.main_view_x / transform_context.zoom - text_coord_x_before_zoom;
-            transform_context.pan_texture_coords_y = transform_context.main_view_y / transform_context.zoom - text_coord_y_before_zoom;
+            transform_context.pan_texture_pos.x = transform_context.cursor_pos_main_view.x / transform_context.zoom - text_coord_x_before_zoom;
+            transform_context.pan_texture_pos.y = transform_context.cursor_pos_main_view.y / transform_context.zoom - text_coord_y_before_zoom;
 
         }
 
@@ -104,17 +104,17 @@ namespace draw {
     }
 
     void set_cursor_main_view(ViewportCursor cursor_main_view){
-        transform_context.main_view_x = cursor_main_view.x;
-        transform_context.main_view_y = cursor_main_view.y;
+        transform_context.cursor_pos_main_view.x = cursor_main_view.x;
+        transform_context.cursor_pos_main_view.y = cursor_main_view.y;
     }
 
     void cursor_move(ViewportCursor cursor_delta){
 
-        transform_context.texture_x = transform_context.main_view_x / transform_context.zoom - transform_context.pan_texture_coords_x;
-        transform_context.texture_y = transform_context.main_view_y / transform_context.zoom - transform_context.pan_texture_coords_y;
+        transform_context.cursor_pos_scene.x = transform_context.cursor_pos_main_view.x / transform_context.zoom - transform_context.pan_texture_pos.x;
+        transform_context.cursor_pos_scene.y = transform_context.cursor_pos_main_view.y / transform_context.zoom - transform_context.pan_texture_pos.y;
 
-        transform_context.texture_px_x = (int) std::floor(transform_context.texture_x);
-        transform_context.texture_px_y = (int) std::floor(transform_context.texture_y);
+        transform_context.cursor_pos_scene_px.x = (int) std::floor(transform_context.cursor_pos_scene.x);
+        transform_context.cursor_pos_scene_px.y = (int) std::floor(transform_context.cursor_pos_scene.y);
 
         // // Use absolute value change to not update any every tiny cursor change
         // if(abs(transform_context.main_view_x + cursor_delta.x) > 2.0){
@@ -127,13 +127,13 @@ namespace draw {
         // }
 
         if(draw_state.pan_canvas){
-            transform_context.pan_texture_coords_x += cursor_delta.x / transform_context.zoom;
-            transform_context.pan_texture_coords_y += cursor_delta.y / transform_context.zoom;
+            transform_context.pan_texture_pos.x += cursor_delta.x / transform_context.zoom;
+            transform_context.pan_texture_pos.y += cursor_delta.y / transform_context.zoom;
             draw_shader.set_transform_context(transform_context);
         }
 
         if(draw_state.drawing){
-            bitmap_texture_dynamic->draw(transform_context.texture_px_x, transform_context.texture_px_y);
+            bitmap_texture_dynamic->draw(transform_context.cursor_pos_scene_px.x, transform_context.cursor_pos_scene_px.y);
         }
     }
 
@@ -154,10 +154,10 @@ BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height)
     bitmap_rendered.replace_color({0,0,0,0}, {0,0,0, 255});
     bitmap_current_state.replace_color({0,0,0,0}, {0,0,0, 255});
 
-    aabb.w = width;
-    aabb.h = height;
-    aabb.x = 0;
-    aabb.y = 0;
+    box.pos.x = 0.0f;
+    box.pos.y = 0.0f;
+    box.size.x = (float) width;
+    box.size.y = (float) height;
 
 
     id = "bitmap_texture_dynamic";
@@ -306,11 +306,11 @@ void BitmapTexture_Dynamic::reload_texture(){
 // make sure the transform matrix is updated to current height, width, x, and y
 void BitmapTexture_Dynamic::updateTransformationMatrix() {
 
-    squareTransform[0] = aabb.w;
-    squareTransform[5] = aabb.h;
+    squareTransform[0] = box.size.x;
+    squareTransform[5] = box.size.y;
 
-    squareTransform[3] = aabb.x;
-    squareTransform[7] = aabb.y;
+    squareTransform[3] = box.pos.x;
+    squareTransform[7] = box.pos.y;
 
 }
 

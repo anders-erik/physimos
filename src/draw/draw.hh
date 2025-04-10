@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "math/vecmat.hh"
+
 #include "Windowing.hpp"
 
 #include "conductor_viewport.hh"
@@ -13,23 +15,28 @@
 
 namespace draw {
 
+
+typedef struct Box2df_draw {
+    f2 pos;
+    f2 size;
+} Box2df_draw;
+
+
 /** Draw information for transforming texture into main_view */
 typedef struct TransformContext {
     float zoom = 1.0f;
-    float pan_texture_coords_x = 0.0f;
-    float pan_texture_coords_y = 0.0f;
-    float main_view_x = 0.0f;
-    float main_view_y = 0.0f;
-    float texture_x = 0.0f; /** texture coord - exact */
-    float texture_y = 0.0f; /** texture coord - exact */
-    int texture_px_x = 0; /** texture coord rounded - actual pixel we draw to */
-    int texture_px_y = 0; /** texture coord rounded - actual pixel we draw to */
+    f2 pan_texture_pos;         /** Scene origin pos, measured from main_view origin, in scene units. Nightmare! */
+    f2 cursor_pos_main_view;    /** Cursor position in main view, in scene units - exact pixels */
+    f2 cursor_pos_scene;        /** cursor location relative to scene/texture origin - exact */
+    i2 cursor_pos_scene_px;     /** cursor location relative to origin - rounded down to pixel */
 } TransformContext;
+
 
 typedef struct Brush {
     int size = 2;
     pimage::Pixel color = pimage::pixel_color_green;
 } Brush;
+
 
 /** Draw information for transforming texture into main_view */
 typedef struct DrawState {
@@ -39,14 +46,6 @@ typedef struct DrawState {
     bool drawing = false;
 } DrawState;
 
-
-
-typedef struct AABB_FLOAT_2D {
-    float w;
-    float h;
-    float x; 
-    float y;
-} AABB_FLOAT_2D;
 
 void init(const ViewportContext& viewport_context);
 
@@ -111,7 +110,7 @@ typedef struct BitmapTexture_Dynamic {
     uint texture;
 
     /**  */
-    AABB_FLOAT_2D aabb;
+    Box2df_draw box;
 
     void draw(int x, int y);
 

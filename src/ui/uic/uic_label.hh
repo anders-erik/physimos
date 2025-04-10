@@ -17,14 +17,20 @@ struct UIC_Label : public ::UI::Primitive {
 };
 
 
-struct UIC_Label_float : public UIC_Label {
+struct UIC_Label_float : public Primitive {
+
+    Primitive float_label;
     float number = 0.0f;
     int max_chars = 10;
 
+    Primitive name_label;
+    std::string name; // displayed name of float
+
+
+    UIC_Label_float(std::string label_text, float initial_float, int _max_chars);
+
     void set_value(float value);
-
-    UIC_Label_float(float initial_float, int _max_chars);
-
+    void render_component();
 };
 
 

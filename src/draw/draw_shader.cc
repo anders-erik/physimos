@@ -42,8 +42,8 @@ namespace draw {
         void DrawShader::set_window_info(const ViewportContext& viewport_context) {
 
             float draw_zoom = 3.0f;
-            float pan_image_pixels_x = transform_context.pan_texture_coords_x;
-            float pan_image_pixels_y = transform_context.pan_texture_coords_y;
+            float pan_image_pixels_x = transform_context.pan_texture_pos.x;
+            float pan_image_pixels_y = transform_context.pan_texture_pos.y;
 
             float pan_ndc_x = pan_image_pixels_x * 2.0f * draw_zoom / viewport_context.phys_win.logical.w;
             float pan_ndc_y = pan_image_pixels_y * 2.0f * draw_zoom / viewport_context.phys_win.logical.h;
@@ -60,8 +60,8 @@ namespace draw {
         void DrawShader::update_main_view() {
 
             float draw_zoom = transform_context.zoom;
-            float pan_image_pixels_x = transform_context.pan_texture_coords_x;
-            float pan_image_pixels_y = transform_context.pan_texture_coords_y;
+            float pan_image_pixels_x = transform_context.pan_texture_pos.x;
+            float pan_image_pixels_y = transform_context.pan_texture_pos.y;
 
             float pan_ndc_x = pan_image_pixels_x * 2.0f * draw_zoom / viewport_context.phys_win.logical.w;
             float pan_ndc_y = pan_image_pixels_y * 2.0f * draw_zoom / viewport_context.phys_win.logical.h;
