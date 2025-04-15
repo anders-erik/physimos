@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "opengl/program.hh"
 #include "opengl/renderer_quad_2d.hh"
 #include "opengl/texture.hh"
@@ -42,13 +44,13 @@ public:
 
     CursorContext2D cursor_context;
 
-	phont::GlyphTextureGenerator F_10_16;
+	phont::Glyph F_10_16;
     opengl::Quad2D quad_F;
 
-    phont::GlyphTextureGenerator A_200_320;
+    phont::Glyph A_200_320;
     opengl::Quad2D quad_A;
 
-    phont::GlyphTextureGenerator A_multi;
+    phont::Glyph A_multi;
     opengl::Quad2D quad_A_multi;
 
     
@@ -59,6 +61,10 @@ public:
     opengl::Quad2DRenderer renderer_quad;
 
     Scene2D(f2 _window_size);
+
+    // TODO: create a scene_2d-quad
+    std::vector<opengl::Quad2D> quads;
+    void add_quad(opengl::Quad2D& quad_);
 
     void update();
     void render();

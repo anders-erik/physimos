@@ -14,7 +14,7 @@
 namespace phont {
 
 
-GlyphTextureGenerator::GlyphTextureGenerator(char ch, i2 _size)
+Glyph::Glyph(char ch, i2 _size)
     :   text_framebuff { opengl::TextureFrameBuffer(_size) },
         text_framebuff_multi { opengl::TextureFrameBufferMultisample(_size, 8) }
 {
@@ -22,7 +22,7 @@ GlyphTextureGenerator::GlyphTextureGenerator(char ch, i2 _size)
     set_texture_size(_size);
 }
 
-void GlyphTextureGenerator::set_char(char ch){
+void Glyph::set_char(char ch){
     char_value = ch;
     
     if(char_value == 'F'){
@@ -32,15 +32,15 @@ void GlyphTextureGenerator::set_char(char ch){
         get_mesh_A(mesh_glyph);
     }
 }
-void GlyphTextureGenerator::set_texture_size(i2 _size){
+void Glyph::set_texture_size(i2 _size){
     
     
 }
-opengl::Texture GlyphTextureGenerator::get_texture(){
+opengl::Texture Glyph::get_texture(){
     return text_framebuff.texture;
 }
 
-void GlyphTextureGenerator::generate(){
+void Glyph::generate(){
 
     opengl::gpu_use_program(opengl::Programs::ndc_black);
 
@@ -74,7 +74,7 @@ void GlyphTextureGenerator::generate(){
     text_framebuff.framebuffer_unbind(800, 600);
 }
 
-void GlyphTextureGenerator::generate_multisample(){
+void Glyph::generate_multisample(){
 
     opengl::gpu_use_program(opengl::Programs::ndc_black);
 

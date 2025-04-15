@@ -167,6 +167,11 @@ void Quad2DRenderer::render(Quad2DRenderContext context){
     // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 3);
     glBindTexture(GL_TEXTURE_2D, context.texture);
 
+    // Visualize the actual rendered pixels of glyph
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    
+
     glBindVertexArray(context.VAO); 
     // glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);

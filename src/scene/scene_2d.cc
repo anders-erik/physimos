@@ -21,10 +21,10 @@ void CursorContext2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
 
 
 Scene2D::Scene2D(f2 _window_size)
-    :   F_10_16 { phont::GlyphTextureGenerator( 'F', {10, 16} ) },
-        A_200_320 { phont::GlyphTextureGenerator( 'A', {20, 32} ) },
+    :   F_10_16 { phont::Glyph( 'F', {10, 16} ) },
+        A_200_320 { phont::Glyph( 'A', {20, 32} ) },
         // A_multi { phont::GlyphTextureGenerator( 'A', {150, 240} ) },
-        A_multi { phont::GlyphTextureGenerator( 'A', {15, 24} ) },
+        A_multi { phont::Glyph( 'A', {15, 24} ) },
         Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) }
 {
     set_window_size(_window_size);
@@ -92,12 +92,21 @@ void Scene2D::set_window_size(f2 size){
     camera.set_window_size_px(size);
 }
 
+
+void Scene2D::add_quad(opengl::Quad2D& quad_){
+    renderer_quad.create_context(quad_);
+    quads.push_back(quad_);
+}
+
 void Scene2D::update(){
 
     quad_F.transform_2d.set_matrix_model();
     quad_A.transform_2d.set_matrix_model();
     quad_A_multi.transform_2d.set_matrix_model();
     quad_Triangle.transform_2d.set_matrix_model();
+
+    for(opengl::Quad2D& _quad : quads)
+        _quad.transform_2d.set_matrix_model();
 
     camera.transform.set_matrix_camera();
 
@@ -118,6 +127,11 @@ void Scene2D::render(){
 
     renderer_quad.set_model_camera(quad_Triangle.transform_2d.matrix, camera.transform.matrix);
     renderer_quad.render(quad_Triangle.render_context);
+
+    for(opengl::Quad2D& _quad : quads){
+        renderer_quad.set_model_camera(_quad.transform_2d.matrix, camera.transform.matrix);
+        renderer_quad.render(_quad.render_context);
+    }
 }
 
 

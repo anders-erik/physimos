@@ -3,6 +3,7 @@
 
 #include <array>
 #include <vector>
+#include <map>
 
 #include "math/vecmat.hh"
 #include "math/transform.hh"
@@ -25,7 +26,13 @@ struct GlyphMesh {
     std::vector<i3> faces;
 };
 
-struct GlyphTextureGenerator {
+struct Glyph {
+    // New dimensions based on FreeType
+    i2 pos;
+    i2 size;
+    float advance;
+
+    // Glyph
     char char_value = 0x0;
     GlyphMesh mesh_glyph;
     GlyphRenderContext render_context;
@@ -33,7 +40,7 @@ struct GlyphTextureGenerator {
 
     opengl::TextureFrameBufferMultisample text_framebuff_multi;
 
-    GlyphTextureGenerator(char ch, i2 size);
+    Glyph(char ch, i2 size);
     // GlyphTextureGenerator() = default;
 
     void set_char(char ch);
@@ -41,6 +48,12 @@ struct GlyphTextureGenerator {
     opengl::Texture get_texture();
     void generate();
     void generate_multisample();
+};
+
+
+struct Face {
+    std::map<char, Glyph> glyphs;
+
 };
 
 void get_mesh_F(GlyphMesh& mesh);
