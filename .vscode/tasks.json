@@ -227,5 +227,42 @@
             ],
             "dependsOn": "Build Debug"
         },
+
+
+
+
+        {
+			"label": "run json",
+			"type": "cppbuild",
+			"command": "cd src/lib/json && ./build/physon data/simple.json",
+			"args": [
+				// "data/simple.json"
+			],
+			"dependsOn": [
+				// "build json"
+			],
+
+		},
+		{
+			"label": "build json",
+			"type": "cppbuild",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-Wall",
+				"-g",
+				"src/lib/json/main.cc",
+				"-o",
+				"src/lib/json/build/physon",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: /usr/bin/g++"
+		},
     ]
 }
