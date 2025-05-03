@@ -232,19 +232,19 @@
 
 
         {
-			"label": "run json",
+			"label": "json_run",
 			"type": "cppbuild",
 			"command": "cd src/lib/json && ./build/physon data/simple.json",
 			"args": [
 				// "data/simple.json"
 			],
 			"dependsOn": [
-				// "build json"
+				"build json"
 			],
 
 		},
 		{
-			"label": "build json",
+			"label": "json_build",
 			"type": "cppbuild",
 			"command": "/usr/bin/g++",
 			"args": [
