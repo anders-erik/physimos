@@ -10,6 +10,7 @@
 
 #include "ui/ui_texture.hh"
 #include "ui/ui_font.hh"
+#include "lib/process.hh"
 
 
 
@@ -30,7 +31,9 @@ size_t char_height = 150;
 // Read whole ascii bitmap from file and extract all characters as individual bitmaps
 void init_font(){
 
-    std::filesystem::path path("/home/anders/dev/Physimos/resources/ui/font/characters-2-tall.bmp");
+    std::string phys_dir = physimos_root_dir_or_die();
+    
+    std::filesystem::path path(phys_dir + "/resources/ui/font/characters-2-tall.bmp");
     font_bitmap = BMP_loader.load(path);
 
     // Replace black pixels with transparency

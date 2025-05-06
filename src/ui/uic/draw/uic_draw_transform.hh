@@ -19,16 +19,12 @@ struct UIC_Draw_Transform : public ::UI::Primitive {
 
     Primitive title;
 
-    // Primitive zoom;
     UIC_Label_float zoom;
-    Primitive pan_x;
-    Primitive pan_y;
-    Primitive texture_x;
-    Primitive texture_y;
-    Primitive texture_px_x;
-    Primitive texture_px_y;
-    Primitive main_view_x;
-    Primitive main_view_y;
+    UIC_Label_f2 pan;
+    UIC_Label_f2 scene_pos;
+    UIC_Label_f2 scene_pos_px;
+    UIC_Label_f2 main_view_px;
+
 
     void update_component();
     void render_component();

@@ -10,6 +10,7 @@
 
 #include "fs.hh"
 #include "process.hh"
+#include "log.hh"
 
 namespace plib {
 
@@ -47,11 +48,9 @@ std::vector<unsigned char>& fs_cat_bin(std::string path_std_string){
     try
     {
         std::ifstream _ifstream(path_std_string, std::ios::binary);
-        if (!_ifstream.is_open()) {
-            // std::cerr << "Error: Could not open file " << filePath << std::endl;
-            returnVector = new std::vector<unsigned char> {};
-            return *returnVector;
-        }
+
+        if (!_ifstream.is_open()) 
+            throw std::runtime_error("Could not open file");
 
         returnVector = new std::vector<unsigned char>(std::istreambuf_iterator<char>(_ifstream), {});
         
@@ -60,6 +59,8 @@ std::vector<unsigned char>& fs_cat_bin(std::string path_std_string){
     }
     catch (const std::exception& e)
     {
+        std::cout << "Error: Could not read file " << path_std_string << std::endl;
+        plib::plog_error("FS, ", "fs_cat_bin, ", "Error: Could not read file " + path_std_string);
         returnVector = new std::vector<unsigned char> {};
         return *returnVector;
     }
