@@ -20,62 +20,9 @@ void CursorContext2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
 
 
 
-Scene2D::Scene2D(f2 _window_size)
-    :   F_10_16 { phont::Glyph( 'F', {10, 16} ) },
-        A_200_320 { phont::Glyph( 'A', {20, 32} ) },
-        // A_multi { phont::GlyphTextureGenerator( 'A', {150, 240} ) },
-        A_multi { phont::Glyph( 'A', {15, 24} ) },
-        Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) }
-{
+Scene2D::Scene2D(f2 _window_size) {
+
     set_window_size(_window_size);
-
-    // F_10_16.generate();
-    F_10_16.generate_multisample();
-    F_10_16.text_framebuff.texture.draw_rect({1, 1}, {2, 2}, {255, 0, 255, 255});
-
-    renderer_quad.create_context(quad_F);
-	quad_F.transform_2d.set_pos(0.0f, 0.0f);
-	quad_F.transform_2d.set_scale(2.0f, 3.0f);
-    // quad_F.render_context.texture = F_10_16.get_texture().id_gl;
-    quad_F.render_context.texture = F_10_16.text_framebuff_multi.resolvedTexture;
-
-
-
-    A_200_320.generate();
-
-    renderer_quad.create_context(quad_A);
-    quad_A.render_context.texture = A_200_320.get_texture().id_gl;
-	quad_A.transform_2d.set_pos(2.0f, 0.0f);
-	quad_A.transform_2d.set_scale(2.0f, 3.0f);
-
-
-    A_multi.generate_multisample();
-    renderer_quad.create_context(quad_A_multi);
-    quad_A_multi.render_context.texture = A_multi.text_framebuff_multi.resolvedTexture;
-	quad_A_multi.transform_2d.set_pos(6.0f, 0.0f);
-	quad_A_multi.transform_2d.set_scale(2.0f, 3.0f);
-
-
-    // TRIANGLE MULTISAMPLE
-
-    renderer_quad.create_context(quad_Triangle);
-    // TODO: Render triangle texture
-    // quad_Triangle.render_context.texture = A_200_320.get_texture().id_gl; 
-    // quad_Triangle.render_context.texture = Triangle_text_buf_multi.text_id;
-    quad_Triangle.render_context.texture = Triangle_text_buf_multi.resolvedTexture;
-    // opengl::set_texture_checker_2x2(quad_Triangle.render_context.texture);
-
-    Triangle_text_buf_multi.clear_color = {0.5f, 0.0f, 0.5f, 1.0f};
-    Triangle_text_buf_multi.multisample_fbo_bind();
-    Triangle_text_buf_multi.multisample_fbo_clear();
-
-    Triangle_text_buf_multi.blit();
-    Triangle_text_buf_multi.multisample_fbo_unbind();
-
-    unsigned char *pixel = opengl::Texture::get_pixel({2, 2}, quad_Triangle.render_context.texture);
-
-	quad_Triangle.transform_2d.set_pos(4.0f, 0.0f);
-	quad_Triangle.transform_2d.set_scale(2.0f, 3.0f);
 
 
     camera.set_window_size_px(window_size);
@@ -98,40 +45,24 @@ void Scene2D::add_quad(opengl::Quad2D& quad_){
     quads.push_back(quad_);
 }
 
-void Scene2D::update(){
 
-    quad_F.transform_2d.set_matrix_model();
-    quad_A.transform_2d.set_matrix_model();
-    quad_A_multi.transform_2d.set_matrix_model();
-    quad_Triangle.transform_2d.set_matrix_model();
+void Scene2D::update(){
 
     for(opengl::Quad2D& _quad : quads)
         _quad.transform_2d.set_matrix_model();
 
     camera.transform.set_matrix_camera();
 
-    // renderer_quad.set_model_camera(quad_F.transform_2d.matrix, camera.transform.matrix);
 }
 
 
-void Scene2D::render(){
-    // RENDER
-    renderer_quad.set_model_camera(quad_F.transform_2d.matrix, camera.transform.matrix);
-    renderer_quad.render(quad_F.render_context);
-
-    renderer_quad.set_model_camera(quad_A.transform_2d.matrix, camera.transform.matrix);
-    renderer_quad.render(quad_A.render_context);
-
-    renderer_quad.set_model_camera(quad_A_multi.transform_2d.matrix, camera.transform.matrix);
-    renderer_quad.render(quad_A_multi.render_context);
-
-    renderer_quad.set_model_camera(quad_Triangle.transform_2d.matrix, camera.transform.matrix);
-    renderer_quad.render(quad_Triangle.render_context);
+void Scene2D::render_window(){
 
     for(opengl::Quad2D& _quad : quads){
         renderer_quad.set_model_camera(_quad.transform_2d.matrix, camera.transform.matrix);
         renderer_quad.render(_quad.render_context);
     }
+
 }
 
 

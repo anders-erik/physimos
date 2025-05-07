@@ -39,35 +39,23 @@ public:
     f2 window_size;
     void set_window_size(f2 size);
 
-    Camera2D camera;
-    bool mouse_pan = false;
 
     CursorContext2D cursor_context;
 
-	phont::Glyph F_10_16;
-    opengl::Quad2D quad_F;
-
-    phont::Glyph A_200_320;
-    opengl::Quad2D quad_A;
-
-    phont::Glyph A_multi;
-    opengl::Quad2D quad_A_multi;
-
-    
-
-    opengl::TextureFrameBufferMultisample Triangle_text_buf_multi;
-    opengl::Quad2D quad_Triangle;
-
-    opengl::Quad2DRenderer renderer_quad;
 
     Scene2D(f2 _window_size);
 
-    // TODO: create a scene_2d-quad
+
+    bool mouse_pan = false;
     std::vector<opengl::Quad2D> quads;
     void add_quad(opengl::Quad2D& quad_);
 
+    Camera2D camera;
+    opengl::Quad2DRenderer renderer_quad;
+
+
     void update();
-    void render();
+    void render_window();
 
     void handle_input(window::InputEvent input_event);
 };
