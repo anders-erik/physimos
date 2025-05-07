@@ -13,7 +13,9 @@ window::InputEvent input_event;
 
 int main(){
 
-    window::Auxwin auxwin (800, 600);
+    window::Auxwin auxwin;
+    auxwin.init(800, 600);
+    
     scene2D::Camera2D camera;
 
     opengl::Quad2D quad;

@@ -17,13 +17,15 @@ f2 window_size = {800.0f, 600.0f};
 
 phont::Face face;
 
+window::InputEvent event;
 
 int main()
 {
 	std::cout << "PHONT MAIN"  << std::endl;
 
 	// WINDOW
-	window::Auxwin auxwin(WINDOW_WIDTH, WINDOW_HEIGHT);
+	window::Auxwin auxwin;
+	auxwin.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	// OPENGL
 	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
@@ -48,17 +50,14 @@ int main()
 		auxwin.new_frame();
 
 
-		// INPUT
-		std::queue<window::InputEvent> input_events = auxwin.get_input_events();		
-		while(input_events.size() > 0){
-			window::InputEvent event = input_events.front();
-			input_events.pop();
+		// Handle Input
+		while(event = auxwin.get_input_event(), event.type != window::EventType::None){
 
-			if(event.key_stroke.key == window::Key::Esc)
-				auxwin.close();
-
+            if(event.key_stroke.key == window::Key::Esc)
+                auxwin.close();
+            
 			scene.handle_input(event);
-		}
+        }
 
 		// UPDATE
 		scene.update();

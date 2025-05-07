@@ -2,6 +2,7 @@
 
 set(WINDOW 
     auxwin.cc
+    auxkey.cc
 )
 
 

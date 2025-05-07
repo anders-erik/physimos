@@ -5,123 +5,15 @@
 
 #include "math/vecmat.hh"
 
-struct GLFWwindow; // To not require the inclusion of the glfw header
+
+#include "auxevent.hh"
+
+// To not require the inclusion of the glfw header
+struct GLFWwindow;
+struct GLFWcursor;
 
 
 namespace window {
-
-
-void framebuffer_callback(GLFWwindow *window, int width, int height);
-void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
-void mouse_position_callback(GLFWwindow *window, double xpos, double ypos);
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-
-
-
-enum class EventType {
-    None, // Indicates end of event queue
-    MouseButton,
-    MouseMove,
-    MouseScroll,
-    Keystroke,
-    WindowResize,
-};
-
-enum class MouseButton {
-    Left,
-    Right,
-    Middle,
-    Aux1,
-    Aux2,
-};
-
-enum ButtonAction {
-    Press,
-    Release,
-    Hold,
-};
-
-struct MouseButtonEvent {
-    MouseButton button;
-    ButtonAction action;
-};
-
-
-struct MouseMoveEvent {
-    f2 delta;
-
-    f2 pos_px;
-    f2 pos_norm;
-
-    // MouseMoveEvent(f2 _delta) : delta { _delta } {};
-    MouseMoveEvent(float _dx, float _dy, f2 _pos_px, f2 window_dims) : delta { f2(_dx, _dy) } {
-        pos_px = _pos_px;
-        pos_norm.x = pos_px.x / window_dims.x;
-        pos_norm.y = pos_px.y / window_dims.y;
-    };
-    MouseMoveEvent() = default;
-};
-
-struct MouseScrollEvent {
-    float delta;
-
-    MouseScrollEvent(float _delta) : delta { _delta } {};
-    MouseScrollEvent() : delta { 0.0f } {};
-};
-
-enum class Key {
-    None,
-    Esc,
-    p,
-};
-
-enum class KeyModifier :int {
-    alt_ctl_shift   = 7,
-    alt_ctrl        = 6,
-    alt_shift       = 5,
-    alt             = 4,
-    ctl_shift       = 3,
-    ctl             = 2,
-    shift           = 1,
-    none            = 0,
-};
-
-struct KeyStrokeEvent {
-    Key key = Key::None;
-    KeyModifier modifier;
-    ButtonAction action;
-
-    KeyStrokeEvent(Key _key, KeyModifier _modifier, ButtonAction _action) : key         {_key},
-                                                                            modifier    {_modifier},
-                                                                            action      {_action} {};
-    KeyStrokeEvent() = default;
-};
-
-struct WindowResizeEvent {
-    i2 size;
-    f2 size_f;
-
-    WindowResizeEvent(i2 _size) : size { _size }, size_f { f2{ (float) _size.x, (float)_size.y}} {};
-    WindowResizeEvent() = default;
-};
-
-struct InputEvent {
-    EventType type;
-    
-    MouseButtonEvent mouse_button;
-    MouseMoveEvent mouse_movement;
-    MouseScrollEvent mouse_scroll;
-    KeyStrokeEvent key_stroke;
-    WindowResizeEvent window_resize;
-
-    InputEvent(EventType _type, MouseButtonEvent _mouse_button) : type {_type}, mouse_button {_mouse_button}    {};
-    InputEvent(EventType _type, MouseMoveEvent _mouse_movement) : type {_type}, mouse_movement {_mouse_movement}{};
-    InputEvent(EventType _type, MouseScrollEvent _mouse_scroll) : type {_type}, mouse_scroll { _mouse_scroll}   {};
-    InputEvent(EventType _type, KeyStrokeEvent _key_stroke)     : type {_type}, key_stroke { _key_stroke}       {};
-    InputEvent(EventType _type, WindowResizeEvent _window_resize):type {_type}, window_resize { _window_resize} {};
-    InputEvent() : type { EventType::None} {};
-};
 
 
 struct MouseState {
@@ -138,21 +30,30 @@ struct MouseState {
 };
 
 
-class Auxwin {
-    // Not working...
-    // Maybe add using 'function' and 'bind'??
-    // void framebuffer_callback(GLFWwindow *window, int width, int height);
-    // void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
-    // void mouse_position_callback(GLFWwindow *window, double xpos, double ypos);
-    // void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-    // void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
+class Auxwin {
+
+    private:
+
+        void glfw_window_hints();
+        void glfw_create_window(int width, int height);
+        void opengl_init();
+
+        MouseState mouse_state;
+
+        std::queue<InputEvent> input_events;
+
+        GLFWcursor* default_cursor;
+        GLFWcursor* pan_cursor;
 
     public:
         GLFWwindow *glfw_window;
         bool open = true;
 
-        Auxwin(int width, int height);
+
+        Auxwin() {};
+
+        void init(int width, int height);
         
         void make_current();
 
@@ -163,10 +64,19 @@ class Auxwin {
         void close();
         void destroy();
 
-        // InputState get_input_state();
         std::queue<InputEvent> get_input_events();
         InputEvent get_input_event();
+        /** Create an artificial event. */
+        void add_input_event(InputEvent event);
+
+
+        void framebuffer_callback(GLFWwindow* _window, int _width, int _height);
+        void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+        void mouse_position_callback(GLFWwindow *window, double xpos, double ypos);
+        void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+        void key_callback(GLFWwindow *window, int key, int action, int mods);
 };
+
 
 
 }

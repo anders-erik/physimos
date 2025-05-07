@@ -5,7 +5,8 @@
 
 int main(){
 
-    window::Auxwin auxwin(800, 600);
+    window::Auxwin auxwin;
+    auxwin.init(800, 600);
 
     std::cout << "Hello from editor!" << std::endl;
 
