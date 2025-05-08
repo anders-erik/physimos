@@ -1,8 +1,10 @@
 
 #pragma once
 
+#include <string>
 
 struct m4f4;
+struct m3f3;
 
 // #ifndef A
 //     #define A true
@@ -52,6 +54,8 @@ struct f2 {
     float x = 0.0f;
     float y = 0.0f;
 
+    void print(std::string prefix);
+
     f2(float x, float y) : x {x}, y {y} {}; 
     f2(float xyz) : x {xyz}, y {xyz} {}; 
     f2() = default;
@@ -63,6 +67,7 @@ struct f3 {
     float z = 0.0f;
 
     void matmul(m4f4 matrix);
+    void matmul(m3f3 matrix);
 
     f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
     f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
@@ -85,6 +90,22 @@ struct f4 {
     f4() = default;
 };
 
+struct m2f2 {
+    f2 x;
+    f2 y;
+
+    m2f2& operator=(m2f2& rhs);
+
+    f2 mult(f2 _f2); /** Multiply the matrix by a f2 vector e.g. f2 = m2f2 x f2 * */
+
+    void set_to_identity();
+
+    void print();
+
+    m2f2() : 
+        x { f2(1.0f, 0.0f) }, 
+        y { f2(0.0f, 1.0f) } {};
+};
 
 struct m3f3 {
     f3 x;
@@ -94,6 +115,7 @@ struct m3f3 {
     m3f3& operator=(m3f3& rhs);
     /** this x rhs */
     void mult(m3f3 rhs);
+    f2 mult(f2 _f2); /** Translate, rotate, and scale f2 using the set m3f3 values. */
     void translate(f2 transl);
     void rotate(float angle);
     void scale(f2 scale);

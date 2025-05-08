@@ -4,6 +4,39 @@
 #include "vecmat.hh"
 
 
+void f2::print(std::string prefix){
+    std::cout << prefix <<  ": x = " << x << ", y = " << y << std::endl;
+}
+
+m2f2& m2f2::operator=(m2f2& rhs){
+    x = rhs.x;
+    y = rhs.y;
+
+    return *this;
+}
+
+f2 m2f2::mult(f2 vec){
+    f2 _f2;
+
+    _f2.x = x.x * vec.x + x.y * vec.y;
+    _f2.y = y.x * vec.x + y.y * vec.y;
+
+    return _f2;
+}
+
+void m2f2::set_to_identity(){
+    x.x = 1.0f;
+    x.y = 0.0f;
+
+    y.x = 0.0f;
+    y.y = 1.0f;
+}
+
+void m2f2::print(){
+    std::cout << x.x << " " << x.y << " " << std::endl;
+    std::cout << y.x << " " << y.y << " " << std::endl;
+}
+
 
 m3f3& m3f3::operator=(m3f3& rhs){
     x = rhs.x;
@@ -31,6 +64,17 @@ void m3f3::mult(m3f3 rhs){
     copy.z.z = z.x * rhs.x.z + z.y * rhs.y.z + z.z * rhs.z.z;
 
     *this = copy;
+}
+
+f2 m3f3::mult(f2 _f2){
+    f3 _f3 (_f2.x,_f2.y, 1.0f);
+
+    _f3.matmul(*this);
+
+    _f2.x = _f3.x;
+    _f2.y = _f3.y;
+
+    return _f2;
 }
 
 void m3f3::translate(f2 transl){
@@ -84,6 +128,17 @@ void f3::matmul(m4f4 matrix){
     this->y = tmp.y;
     this->z = tmp.z;
 }
+void f3::matmul(m3f3 matrix){
+    f3 tmp;
+    tmp.x = matrix.x.x*x + matrix.x.y*y + matrix.x.z*z;
+    tmp.y = matrix.y.x*x + matrix.y.y*y + matrix.y.z*z;
+    tmp.z = matrix.z.x*x + matrix.z.y*y + matrix.z.z*z;
+
+    this->x = tmp.x;
+    this->y = tmp.y;
+    this->z = tmp.z;
+}
+
 
 m4f4 m4f4_create_translation(f3 transl){
     m4f4 matrix;

@@ -93,7 +93,7 @@ int main()
     Triangle_text_buf_multi.blit();
     Triangle_text_buf_multi.multisample_fbo_unbind();
 
-    unsigned char *pixel = opengl::Texture::get_pixel({2, 2}, quad_Triangle.render_context.texture);
+    // unsigned char *pixel = opengl::Texture::get_pixel({2, 2}, quad_Triangle.render_context.texture);
 
 	quad_Triangle.transform_2d.set_pos(4.0f, 0.0f);
 	quad_Triangle.transform_2d.set_scale(2.0f, 3.0f);

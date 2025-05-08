@@ -24,8 +24,8 @@ void glfw_framebuffer_callback(GLFWwindow* _window, int _width, int _height) {
 void glfw_mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
     current_auxwin->mouse_button_callback(window, button, action, mods);
 }
-void glfw_mouse_position_callback(GLFWwindow *window, double xpos, double ypos){
-    current_auxwin->mouse_position_callback(window, xpos, ypos);
+void glfw_cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
+    current_auxwin->cursor_position_callback(window, xpos, ypos);
 }
 void glfw_scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
     current_auxwin->scroll_callback(window, xoffset, yoffset);
@@ -49,8 +49,8 @@ void Auxwin::init(int width, int height){
     glfw_create_window(width, height);
     opengl_init();
     
-    mouse_state.window_dims.x = (float) width;
-    mouse_state.window_dims.y = (float) height;
+    cursor.window_dims.x = (float) width;
+    cursor.window_dims.y = (float) height;
 
 }
 
@@ -85,9 +85,33 @@ void Auxwin::glfw_create_window(int _width, int _height){
     default_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 
 
+    // COORDINATE SETUP
+    {
+        GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+
+        const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
+        coords_input.monitor_size_px.x = mode->width;
+        coords_input.monitor_size_px.y = mode->height;
+
+        int width_mm, height_mm;
+        glfwGetMonitorPhysicalSize(primary_monitor, &width_mm, &height_mm);
+        coords_input.monitor_size_mm.x = width_mm;
+        coords_input.monitor_size_mm.y = height_mm;
+
+        float xscale, yscale;
+        glfwGetMonitorContentScale(primary_monitor, &xscale, &yscale);
+        coords_input.content_scale.x = xscale;
+        coords_input.content_scale.y = yscale;
+
+        coords_input.window_size_sc.x = (float) _width;
+        coords_input.window_size_sc.y = (float) _height;
+
+        coords.set_constants(coords_input);
+    }
+
     glfwSetFramebufferSizeCallback(glfw_window, glfw_framebuffer_callback);
     glfwSetMouseButtonCallback(glfw_window, glfw_mouse_button_callback);
-    glfwSetCursorPosCallback(glfw_window, glfw_mouse_position_callback);
+    glfwSetCursorPosCallback(glfw_window, glfw_cursor_position_callback);
     glfwSetScrollCallback(glfw_window, glfw_scroll_callback);
     glfwSetKeyCallback(glfw_window, glfw_key_callback);
 
@@ -198,8 +222,8 @@ void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
     WindowResizeEvent win_resize_event (i2(_width, _height)) ;
     input_events.emplace(glfw_window, event_type, win_resize_event);
 
-    mouse_state.window_dims.x = (float) _width;
-    mouse_state.window_dims.y = (float) _height;
+    cursor.window_dims.x = (float) _width;
+    cursor.window_dims.y = (float) _height;
 
     glViewport(0, 0, _width, _height);
 }
@@ -232,26 +256,46 @@ void Auxwin::mouse_button_callback(GLFWwindow *window, int button, int action, i
     input_events.emplace(window, event_type, mouse_button_event);
 }
 
-void Auxwin::mouse_position_callback(GLFWwindow *window, double xpos, double ypos){
+void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
+
+    // COORDS TESTING
+    std::cout << std::endl;
+    
+    f2 input (xpos, ypos);
+    f2 sane = coords.i_s(input);
+    f2 pixel = coords.s_p(sane);
+    f2 nomalized = coords.s_n(sane);
+    f2 millimeters = coords.s_m(sane);
+
+    // input.print("Input       ");
+    // sane.print("Sane        ");
+    // pixel.print("Pixel       ");
+    // nomalized.print("Normalized  ");
+    // millimeters.print("Millimeters ");
+    
+
+    // std::cout << std::endl << "INPUT : x = " << xpos << ", y = " << ypos << std::endl;
+
+    
 
     // store raw for debugging
-    mouse_state.pos_raw = {(float)xpos, (float)ypos};
+    cursor.pos_raw = {(float)xpos, (float)ypos};
 
     // Use my own coordinate system
-    mouse_state.pos = { mouse_state.pos_raw.x, mouse_state.window_dims.y - mouse_state.pos_raw.y};
+    cursor.pos = { cursor.pos_raw.x, cursor.window_dims.y - cursor.pos_raw.y};
 
-    mouse_state.pos_delta.x = mouse_state.pos.x - mouse_state.pos_prev.x;
-    mouse_state.pos_delta.y = mouse_state.pos.y - mouse_state.pos_prev.y;
+    cursor.pos_delta.x = cursor.pos.x - cursor.pos_prev.x;
+    cursor.pos_delta.y = cursor.pos.y - cursor.pos_prev.y;
 
-    mouse_state.pos_prev = mouse_state.pos;
+    cursor.pos_prev = cursor.pos;
 
 
     EventType       event_type = EventType::MouseMove;
     MouseMoveEvent   mouse_movement (
-                                        mouse_state.pos_delta.x, 
-                                        mouse_state.pos_delta.y, 
-                                        mouse_state.pos, 
-                                        mouse_state.window_dims
+                                        cursor.pos_delta.x, 
+                                        cursor.pos_delta.y, 
+                                        cursor.pos, 
+                                        cursor.window_dims
                                     );
 
     input_events.emplace(window, event_type, mouse_movement);

@@ -70,7 +70,7 @@ struct TextureFrameBufferMultisample {
     void multisample_fbo_unbind();
     void multisample_fbo_clear_red();
     void multisample_fbo_clear();
-    void blit();
+    void blit(); /** copy multisampled frambuffer data to resolved framebuffer  */
 
 };
 
