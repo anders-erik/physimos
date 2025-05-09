@@ -98,6 +98,8 @@ void Scene2D::handle_input(window::InputEvent event){
     
     if(event.type == window::EventType::MouseMove){
     
+        event.mouse_movement.cursor.print();
+
         if(mouse_pan){
             
             camera.pan(event.mouse_movement.delta);
@@ -105,8 +107,8 @@ void Scene2D::handle_input(window::InputEvent event){
         }
         
         // camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
-        cursor_context.set_cursor_pos(  event.mouse_movement.pos_px, 
-                                        event.mouse_movement.pos_norm,
+        cursor_context.set_cursor_pos(  event.mouse_movement.cursor.sane, 
+                                        event.mouse_movement.cursor.normalized,
                                         camera.box
         );
 
@@ -132,6 +134,7 @@ void Scene2D::handle_input(window::InputEvent event){
         // std::cout << "camera.zoom_current = " << camera.zoom_current  << std::endl;
 
         camera.box.print();
+        
 
         // std::cout << "camera.units_per_px = " << camera.units_per_px << std::endl;
 

@@ -8,10 +8,20 @@
 
 struct GLFWwindow; // bypass glfw inclusion
 
-
 namespace window {
 
 
+struct CursorPosition {
+    f2 input;
+    f2 sane;
+    f2 normalized;
+    f2 pixels;
+    f2 millimeters;
+
+    void print();
+
+    f2 window_dims; // TODO: move to auxwin when callbacks have been moved into class
+};
 
 
 enum class EventType {
@@ -44,17 +54,12 @@ struct MouseButtonEvent {
 
 
 struct MouseMoveEvent {
+
+    CursorPosition cursor;
+
     f2 delta;
 
-    f2 pos_px;
-    f2 pos_norm;
-
-    // MouseMoveEvent(f2 _delta) : delta { _delta } {};
-    MouseMoveEvent(float _dx, float _dy, f2 _pos_px, f2 window_dims) : delta { f2(_dx, _dy) } {
-        pos_px = _pos_px;
-        pos_norm.x = pos_px.x / window_dims.x;
-        pos_norm.y = pos_px.y / window_dims.y;
-    };
+    MouseMoveEvent(CursorPosition _cursor_pos, f2 _delta) : cursor {_cursor_pos}, delta { _delta } {};
     MouseMoveEvent() = default;
 };
 

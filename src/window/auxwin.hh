@@ -16,19 +16,6 @@ struct GLFWcursor;
 namespace window {
 
 
-struct Cursor {
-    f2 pos_raw;
-    
-    // Positive y is measured from bottom of window to top
-    f2 pos;
-    // Positive y is measured from bottom of window to top
-    f2 pos_prev;
-    // Last mouse movement delta
-    f2 pos_delta;
-
-    f2 window_dims; // TODO: move to auxwin when callbacks have been moved into class
-};
-
 struct PWCoordinatesInput{
     f2 window_size_sc;
     f2 content_scale;
@@ -120,15 +107,20 @@ private:
 class Auxwin {
 
     private:
+        f2 current_window_size;
 
-        PWCoordinatesInput coords_input;
-        PWCoordinates coords;
+        PWCoordinatesInput coords_input;                /** Required input for coordinate transformation constants.  */
+        PWCoordinates coords;                           /** Provides coordinate tranformations of 2D points.  */
+         /**    Queries glfw for coordinate system values, then reloads the coord object. 
+                Depends on current_window_size.
+         */
+        void reload_coordinate_constants_using_glfw();
 
         void glfw_window_hints();
         void glfw_create_window(int width, int height);
         void opengl_init();
 
-        Cursor cursor;
+        CursorPosition cursor;
 
         std::queue<InputEvent> input_events;
 

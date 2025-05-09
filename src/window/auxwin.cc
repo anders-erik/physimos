@@ -13,7 +13,16 @@ namespace window {
 Auxwin* current_auxwin;
 
 
+void CursorPosition::print(){
 
+    std::cout << std::endl;
+    input.print("Input       ");
+    sane.print("Sane        ");
+    pixels.print("Pixel       ");
+    normalized.print("Normalized  ");
+    millimeters.print("Millimeters ");
+
+}
 
 /*
     GLFW C-Style callbacks as indirection layer
@@ -49,9 +58,31 @@ void Auxwin::init(int width, int height){
     glfw_create_window(width, height);
     opengl_init();
     
-    cursor.window_dims.x = (float) width;
-    cursor.window_dims.y = (float) height;
 
+}
+
+void Auxwin::reload_coordinate_constants_using_glfw(){
+
+    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+
+    const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
+    coords_input.monitor_size_px.x = mode->width;
+    coords_input.monitor_size_px.y = mode->height;
+
+    int width_mm, height_mm;
+    glfwGetMonitorPhysicalSize(primary_monitor, &width_mm, &height_mm);
+    coords_input.monitor_size_mm.x = width_mm;
+    coords_input.monitor_size_mm.y = height_mm;
+
+    float xscale, yscale;
+    glfwGetMonitorContentScale(primary_monitor, &xscale, &yscale);
+    coords_input.content_scale.x = xscale;
+    coords_input.content_scale.y = yscale;
+
+    coords_input.window_size_sc = current_window_size;
+
+    coords.set_constants(coords_input);
+    
 }
 
 void Auxwin::glfw_window_hints(){
@@ -69,6 +100,9 @@ void Auxwin::glfw_window_hints(){
 }
 void Auxwin::glfw_create_window(int _width, int _height){
 
+    current_window_size = { (float) _width, (float) _height};
+    cursor.window_dims = current_window_size;
+
     glfw_window = glfwCreateWindow(_width, _height, "Auxwin", NULL, NULL);
 
 
@@ -85,29 +119,8 @@ void Auxwin::glfw_create_window(int _width, int _height){
     default_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 
 
-    // COORDINATE SETUP
-    {
-        GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+    reload_coordinate_constants_using_glfw();
 
-        const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
-        coords_input.monitor_size_px.x = mode->width;
-        coords_input.monitor_size_px.y = mode->height;
-
-        int width_mm, height_mm;
-        glfwGetMonitorPhysicalSize(primary_monitor, &width_mm, &height_mm);
-        coords_input.monitor_size_mm.x = width_mm;
-        coords_input.monitor_size_mm.y = height_mm;
-
-        float xscale, yscale;
-        glfwGetMonitorContentScale(primary_monitor, &xscale, &yscale);
-        coords_input.content_scale.x = xscale;
-        coords_input.content_scale.y = yscale;
-
-        coords_input.window_size_sc.x = (float) _width;
-        coords_input.window_size_sc.y = (float) _height;
-
-        coords.set_constants(coords_input);
-    }
 
     glfwSetFramebufferSizeCallback(glfw_window, glfw_framebuffer_callback);
     glfwSetMouseButtonCallback(glfw_window, glfw_mouse_button_callback);
@@ -217,6 +230,11 @@ void Auxwin::add_input_event(InputEvent event){
 void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
     std::cout << "auxwin->framebuffer_callback" << std::endl;
 
+    current_window_size = {(float) _width, (float) _height};
+    cursor.window_dims = current_window_size;
+    
+    reload_coordinate_constants_using_glfw();
+
     EventType event_type = EventType::WindowResize;
     // i2 size (_width, _height);
     WindowResizeEvent win_resize_event (i2(_width, _height)) ;
@@ -258,44 +276,23 @@ void Auxwin::mouse_button_callback(GLFWwindow *window, int button, int action, i
 
 void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
 
-    // COORDS TESTING
-    std::cout << std::endl;
-    
-    f2 input (xpos, ypos);
-    f2 sane = coords.i_s(input);
-    f2 pixel = coords.s_p(sane);
-    f2 nomalized = coords.s_n(sane);
-    f2 millimeters = coords.s_m(sane);
+    f2 input ((float) xpos, (float) ypos);
 
-    // input.print("Input       ");
-    // sane.print("Sane        ");
-    // pixel.print("Pixel       ");
-    // nomalized.print("Normalized  ");
-    // millimeters.print("Millimeters ");
-    
+    CursorPosition cursor_prev = cursor;
 
-    // std::cout << std::endl << "INPUT : x = " << xpos << ", y = " << ypos << std::endl;
+    // Update current cursor
+    cursor.input = input;
+    cursor.sane = coords.i_s(input);
+    cursor.pixels = coords.s_p(cursor.sane);
+    cursor.normalized = coords.s_n(cursor.sane);
+    cursor.millimeters = coords.s_m(cursor.sane);
 
-    
-
-    // store raw for debugging
-    cursor.pos_raw = {(float)xpos, (float)ypos};
-
-    // Use my own coordinate system
-    cursor.pos = { cursor.pos_raw.x, cursor.window_dims.y - cursor.pos_raw.y};
-
-    cursor.pos_delta.x = cursor.pos.x - cursor.pos_prev.x;
-    cursor.pos_delta.y = cursor.pos.y - cursor.pos_prev.y;
-
-    cursor.pos_prev = cursor.pos;
-
+    f2 delta_sane = cursor.sane - cursor_prev.sane;
 
     EventType       event_type = EventType::MouseMove;
     MouseMoveEvent   mouse_movement (
-                                        cursor.pos_delta.x, 
-                                        cursor.pos_delta.y, 
-                                        cursor.pos, 
-                                        cursor.window_dims
+                                        cursor,
+                                        delta_sane
                                     );
 
     input_events.emplace(window, event_type, mouse_movement);

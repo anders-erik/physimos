@@ -7,6 +7,9 @@
 void f2::print(std::string prefix){
     std::cout << prefix <<  ": x = " << x << ", y = " << y << std::endl;
 }
+f2 f2::operator-(const f2& rhs){
+    return f2 {this->x - rhs.x, this->y - rhs.y};
+}
 
 m2f2& m2f2::operator=(m2f2& rhs){
     x = rhs.x;

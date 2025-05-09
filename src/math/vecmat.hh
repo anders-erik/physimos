@@ -59,6 +59,8 @@ struct f2 {
     f2(float x, float y) : x {x}, y {y} {}; 
     f2(float xyz) : x {xyz}, y {xyz} {}; 
     f2() = default;
+
+    f2 operator-(const f2& rhs);
 };
 
 struct f3 {
