@@ -239,7 +239,7 @@
 				// "data/simple.json"
 			],
 			"dependsOn": [
-				"build json"
+				"json_build"
 			],
 
 		},
