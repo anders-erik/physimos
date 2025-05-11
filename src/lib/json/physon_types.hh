@@ -59,37 +59,28 @@ typedef std::vector<JsonWrapper>            json_array_wrap;
 typedef std::vector<JsonWrapper>            json_object_wrap;
 
 // Value containers
-struct JsonValue;
-typedef std::vector<JsonValue> json_array_;
-typedef std::vector<JsonValue> json_object_;
-typedef std::pair<json_string, JsonValue> json_kv_;
+struct Json;
 
-union JsonUnion {
+typedef std::pair<json_string, Json> json_kv_value;
+typedef std::vector<Json> json_array_value;
+typedef std::vector<json_kv_value> json_object_value;
+
+
+union JsonValue {
     json_string     string_;
     json_bool       bool_;
     json_null       null_;
     json_float      float_;
     json_int        int_;
 
-    json_array_      array_;
-    json_object_     object_;
-    // json_kv_         kv_;
+    json_array_value      array_;
+    json_object_value     object_;
 };
 
-
-struct JsonValue
+struct Json
 {
-    int id;             // Global object index in JsonValue storage
-    JSON_TYPE type_;
-
-    JsonUnion   union_; 
-    
-    // Idea: store kv by simply storing key-string and keeping track of which value
-    // E.g. is type_ = KV -> return pair<> (but pair is not stored in the union itself)
-    // kv_type is the normally store JsonValue-data
-    json_string kv_key_;
-    JSON_TYPE kv_type;
-
+    JSON_TYPE type;
+    JsonValue value;
 };
 
 
@@ -237,8 +228,12 @@ enum class JSON_PARSE_STATE {
     ROOT_END_OF_VALUE,      /** Reached end of root value */
     DONE,                   /** Parsing done. Return primary parse method. */
 
-    ARRAY_ENTERED,
+    VALUE_AT_NEW_VALUE_CHAR,
+    VALUE_PARSE_LITERAL,
+    VALUE_END_OF_VALUE,
+
     ARRAY_ENTER,
+    ARRAY_ENTERED,
     ARRAY_CLOSE,
 
     OBJECT_ENTER,
@@ -246,10 +241,6 @@ enum class JSON_PARSE_STATE {
     OBJECT_CLOSE,
 
     NEW_KV,
-
-    VALUE_AT_NEW_VALUE_CHAR,
-    VALUE_PARSE_LITERAL,
-    VALUE_END_OF_VALUE,
 
     ERROR,
 };

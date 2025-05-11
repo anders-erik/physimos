@@ -26,7 +26,7 @@ public:
 std::vector<Point> ConfigShape::unwrap_point_array(json_array_wrap point_array){
     std::vector<Point> points;
 
-    for(int i = 0; i < point_array.size(); i++){
+    for(size_t i = 0; i < point_array.size(); i++){
 
         JsonWrapper point_wrapper = point_array[i];
 
