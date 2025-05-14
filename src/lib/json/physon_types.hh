@@ -6,6 +6,9 @@
 #include <fstream>
 #include <string>
 
+#include <variant>
+#include <memory>
+
 void print_type_sizes();
 
 
@@ -66,6 +69,23 @@ typedef std::vector<Json> json_array_value;
 typedef std::vector<json_kv_value> json_object_value;
 
 
+struct json_variant; // forward declare
+typedef std::pair<json_string, json_variant> json_kv_variant;
+typedef std::vector<json_kv_variant> json_object_variant;
+typedef std::vector<json_variant> json_array_variant;
+struct json_variant {
+    JSON_TYPE type;
+    std::variant<   json_string, 
+                    json_bool,
+                    json_null, 
+                    json_float,
+                    json_int,
+                    json_array_variant,
+                    json_object_variant
+                > variant_;
+    };
+
+
 union JsonValue {
     json_string     string_;
     json_bool       bool_;
@@ -75,6 +95,7 @@ union JsonValue {
 
     json_array_value      array_;
     json_object_value     object_;
+    // json_kv_value     kv_;
 
     JsonValue() : null_ { nullptr } {};
     JsonValue(json_bool new_bool) : bool_ {new_bool} {};
