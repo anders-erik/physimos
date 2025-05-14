@@ -78,7 +78,8 @@
 		"mutex": "cpp",
 		"semaphore": "cpp",
 		"stop_token": "cpp",
-		"thread": "cpp"
+		"thread": "cpp",
+		"xdg-shell-client-protocol.h": "c"
 	},
 	"makefile.configureOnOpen": false
 }

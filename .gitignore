@@ -33,3 +33,6 @@ ptest/testdata.out/
 __pycache__/
 
 tmp/
+
+
+src/window/wayland/protocols
