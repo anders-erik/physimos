@@ -71,16 +71,28 @@ union JsonValue {
     json_bool       bool_;
     json_null       null_;
     json_float      float_;
-    json_int        int_;
+    json_int        int_ = 0;
 
     json_array_value      array_;
     json_object_value     object_;
+
+    JsonValue() : null_ { nullptr } {};
+    JsonValue(json_bool new_bool) : bool_ {new_bool} {};
+    JsonValue(json_int new_int) : int_ {new_int} {};
+    JsonValue(json_float new_float) : float_ {new_float} {};
+    JsonValue(json_string new_str) : string_ {new_str} {};
+
+    ~JsonValue() {};
+
+    // JsonValue(json_string new_str) : string_ {new_str} {};
 };
 
 struct Json
 {
     JSON_TYPE type;
     JsonValue value;
+
+    // Json(): type {JSON_TYPE::NULL_}, value { nullptr } {};
 };
 
 
@@ -248,11 +260,11 @@ enum class JSON_PARSE_STATE {
 
 struct ParserCursor {
     size_t index = 0;
-    JSON_PARSE_STATE state = JSON_PARSE_STATE::ROOT_BEFORE_VALUE;  // Keeps track of the current parsing state
+    // JSON_PARSE_STATE state = JSON_PARSE_STATE::ROOT_BEFORE_VALUE;  // Keeps track of the current parsing state
     // json_element current_element;             // element cursor
     // json_element current_container;           // container cursor
     // JSON_TYPE current_container_type; // current container type (array or object)
-    std::stack<JsonWrapper> container_trace; // stack of current container level
+    std::stack<JsonWrapper> container_trace_wrapper; // stack of current container level
 
 };
 

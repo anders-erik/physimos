@@ -29,30 +29,38 @@ int main (int argc, char **argv) {
 
     std::cout << "Hello, Physon!" << std::endl;
 
-    // std::string json_string = load_file("data/empty.json");
-    // std::string json_string = load_file("data/ws.json");
-    // std::string json_string = load_file("data/null.json");
-    // std::string json_string = load_file("data/true.json");
-    // std::string json_string = load_file("data/false.json");
-    // std::string json_string = load_file("data/name_literals_array.json");
-    // std::string json_string = load_file("data/name_literals_nested_array.json");
-    // std::string json_string = load_file("data/string_array.json");
-    // std::string json_string = load_file("data/object.json");
-    // std::string json_string = load_file("data/object_nested.json");
+    // std::string _json_string = load_file("data/empty.json");
+    // std::string _json_string = load_file("data/ws.json");
+    // std::string _json_string = load_file("data/null.json");
+    std::string _json_string = load_file("data/true.json");
+    // std::string _json_string = load_file("data/false.json");
+    // std::string _json_string = load_file("data/name_literals_array.json");
+    // std::string _json_string = load_file("data/name_literals_nested_array.json");
+    // std::string _json_string = load_file("data/string_array.json");
+    // std::string _json_string = load_file("data/object.json");
+    // std::string _json_string = load_file("data/object_nested.json");
 
-    // std::string json_string = load_file("data/integer.json");
-    // std::string json_string = load_file("data/integers.json");
-    // std::string json_string = load_file("data/numbers.json");
-    // std::string json_string = load_file("data/numbers_2.json");
+    // std::string _json_string = load_file("data/integer.json");
+    // std::string _json_string = load_file("data/integers.json");
+    // std::string _json_string = load_file("data/numbers.json");
+    // std::string _json_string = load_file("data/numbers_2.json");
 
-    // std::string json_string = load_file("data/penpaper.json");
+    // std::string _json_string = load_file("data/penpaper.json");
 
     // Non-valid
-    // std::string json_string = load_file("data/unclosed_string.json");
+    // std::string _json_string = load_file("data/unclosed_string.json");
 
     // Shapes
-    std::string _json_string = load_file("data/shapes.json");
+    // std::string _json_string = load_file("data/shapes.json");
+    // Shape config
+    // ConfigShape shape_config {_json_string};
+    // std::vector<Shape>& shapes = shape_config.load_shapes();
+    // for(Shape shape : shapes){
+    //     shape.print();
+    // }
 
+    // External
+    // std::string _json_string = load_file("data/widget.json");
 
     Physon physon (_json_string);
 
@@ -68,12 +76,6 @@ int main (int argc, char **argv) {
     
 
 
-    // Shape config
-    ConfigShape shape_config {_json_string};
-    std::vector<Shape>& shapes = shape_config.load_shapes();
-    for(Shape shape : shapes){
-        shape.print();
-    }
 
     // bool space =  is_whitespace(' ');
     // bool tab =  is_whitespace('\t');
