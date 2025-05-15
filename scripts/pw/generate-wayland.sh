@@ -1,6 +1,8 @@
 #! /bin/bash
 
-cd src/window/wayland
+wayland_dir=src/window/wayland
+
+cd $wayland_dir
 
 mkdir -p protocols && cd protocols
 cp /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml .

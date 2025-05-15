@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+// #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -12,13 +13,14 @@
 
 static struct wl_display* display;
 static struct wl_registry* registry;
+// Below tripplet is checked in main to validate wayland globals
 static struct wl_compositor* compositor;
-static struct xdg_wm_base* wm_base;
-static struct wl_shm* shm;
+static struct xdg_wm_base* wm_base;     // Generated using wayland-scanner
+static struct wl_shm* shm; // part of global handler and pool creation
 
 static struct wl_surface* surface;
-static struct xdg_surface* xdg_surface;
-static struct xdg_toplevel* toplevel;
+static struct xdg_surface* xdg_surface; // Generated using wayland-scanner
+static struct xdg_toplevel* toplevel;   // Generated using wayland-scanner
 static struct wl_buffer* buffer;
 
 static void shm_format(void* data, struct wl_shm* shm, uint32_t format) {}
@@ -89,15 +91,16 @@ static struct wl_buffer* create_buffer(int width, int height) {
 }
 
 int main() {
-    display = wl_display_connect(NULL);
+    int x = 1;
+    display = wl_display_connect(NULL); // core
     if (!display) {
         fprintf(stderr, "No Wayland display.\n");
         return 1;
     }
 
-    registry = wl_display_get_registry(display);
-    wl_registry_add_listener(registry, &registry_listener, NULL);
-    wl_display_roundtrip(display);
+    registry = wl_display_get_registry(display); // protocol
+    wl_registry_add_listener(registry, &registry_listener, NULL); // protocol
+    wl_display_roundtrip(display); // core
 
     if (!compositor || !wm_base || !shm) {
         fprintf(stderr, "Missing required Wayland globals.\n");
@@ -117,6 +120,13 @@ int main() {
 
     wl_surface_commit(surface);
 
-    while (wl_display_dispatch(display) != -1) {}
+    int i = 0;
+    int target = 6;
+
+    while ( !(i > target) && wl_display_dispatch(display) != -1) {
+        i++;
+        printf("\r%d", i);
+        fflush(stdout);
+    }
     return 0;
 }

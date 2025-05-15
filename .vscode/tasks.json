@@ -227,5 +227,24 @@
             ],
             "dependsOn": "Build Debug"
         },
+
+        {
+            "label": "Wayland_run",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/debug/src/window/wayland/wayland",
+            "problemMatcher": [
+                "$gcc",
+            ],
+            // "dependsOn": "Build Debug"
+            "dependsOn": "Wayland_build",
+        },
+        {
+            "label": "Wayland_build",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/build/debug/src/window/wayland && make",
+            "problemMatcher": [
+                "$gcc",
+            ],
+        },
     ]
 }
