@@ -69,12 +69,22 @@ typedef std::vector<Json> json_array_value;
 typedef std::vector<json_kv_value> json_object_value;
 
 
-struct json_variant; // forward declare
-typedef std::pair<json_string, json_variant> json_kv_variant;
+struct json_variant_wrap; // forward declare
+enum class json_type {
+    null,
+    boolean,
+    number_int,
+    number_float,
+    string,
+
+    object,
+    array,
+};
+typedef std::pair<json_string, json_variant_wrap> json_kv_variant;
 typedef std::vector<json_kv_variant> json_object_variant;
-typedef std::vector<json_variant> json_array_variant;
-struct json_variant {
-    JSON_TYPE type;
+typedef std::vector<json_variant_wrap> json_array_variant;
+struct json_variant_wrap {
+    json_type type = json_type::null;
     std::variant<   json_string, 
                     json_bool,
                     json_null, 
@@ -82,8 +92,24 @@ struct json_variant {
                     json_int,
                     json_array_variant,
                     json_object_variant
-                > variant_;
-    };
+                > variant_ = nullptr;
+    
+    json_variant_wrap()  {};
+    json_variant_wrap(json_bool new_bool) : type {json_type::boolean}, variant_ {new_bool} {};
+
+    void set_bool(json_bool new_bool) {
+        type = json_type::boolean;
+        variant_ = new_bool;
+    }
+
+    bool is_null() {return type == json_type::null ? true : false; };
+    bool is_boolean() {return type == json_type::boolean ? true : false; };
+    bool is_number_int() {return type == json_type::number_int ? true : false; };
+    bool is_number_float() {return type == json_type::number_float ? true : false; };
+    bool is_string() {return type == json_type::string ? true : false; };
+    bool is_object() {return type == json_type::object ? true : false; };
+    bool is_array() {return type == json_type::array ? true : false; };
+};
 
 
 union JsonValue {

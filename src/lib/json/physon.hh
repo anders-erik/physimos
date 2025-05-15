@@ -1071,7 +1071,7 @@ JsonWrapper Physon::parse_true_literal(){
     if(!is_true_literal)
         json_error("Invalid true-literal at index " + std::to_string(cursor.index));
     
-    std::cout << "true at "  << cursor.index << std::endl;
+    // std::cout << "true at "  << cursor.index << std::endl;
 
     tokens.emplace_back(token_type::TRUE, cursor.index, 4);
     cursor.index += 4;
@@ -1104,7 +1104,7 @@ JsonWrapper Physon::parse_null_literal(){
     if(!is_null_literal)
         json_error("Invalid null-literal at index " + std::to_string(cursor.index));
     
-    std::cout << "null at "  << cursor.index << std::endl;
+    // std::cout << "null at "  << cursor.index << std::endl;
 
     tokens.emplace_back(token_type::NULL_, cursor.index, 4);
     cursor.index += 4;
