@@ -7,7 +7,7 @@
 
 #include "physon.hh"
 #include "physon_types.hh"
-
+#include "physon_tests.hh"
 
 std::string load_file(std::string path) {
 
@@ -28,25 +28,6 @@ std::string load_file(std::string path) {
 
 
 
-void test_conformance(std::string file_path_str){
-
-    try
-    {
-        /* code */
-        std::string json_data = load_file(file_path_str);
-        Physon physon (json_data);
-        physon.parse();
-        std::cout << "Conformance test OK : " << file_path_str << std::endl;
-        
-    }
-    catch(const std::exception& e)
-    {
-        std::cout << "Conformance test FAILED : " << file_path_str << std::endl;
-
-        std::cout << e.what() << '\n';
-    }
-    
-}
 
 // helper type for overloaded visitor lambdas 
 template<class... Ts>
@@ -102,32 +83,9 @@ int main (int argc, char **argv) {
     bool conformance_test_flag = false;
 
     if(conformance_test_flag){
-        test_conformance("data/null.json");
-        test_conformance("data/true.json");
-        test_conformance("data/false.json");
 
-        test_conformance("data/name_literals_array.json");
-        test_conformance("data/name_literals_nested_array.json");
-        test_conformance("data/string_array.json");
-        test_conformance("data/object.json");
-        test_conformance("data/object_nested.json");
-
-        test_conformance("data/integer.json");
-        test_conformance("data/integers.json");
-        test_conformance("data/numbers.json");
-        test_conformance("data/numbers_2.json");
-
-        test_conformance("data/penpaper.json");
-        test_conformance("data/widget.json");
-
-        test_conformance("data/shapes.json");
-
-
-        // Invalid json -- Should not pass!
-        // test_conformance("data/empty.json");
-        // test_conformance("data/ws.json");
-        // test_conformance("data/unclosed_string.json");
-        // test_conformance("data/numbers_invalid.json");
+        JsonTest::test_conformance();
+        JsonTest::test_serialization();
         
         return 0;
     }
@@ -137,7 +95,7 @@ int main (int argc, char **argv) {
 
     // Shapes
     // std::string _json_string = load_file("data/shapes.json");
-    // Shape config
+    // Shape config;
     // ConfigShape shape_config {_json_string};
     // std::vector<Shape>& shapes = shape_config.load_shapes();
     // for(Shape shape : shapes){

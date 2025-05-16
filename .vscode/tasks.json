@@ -247,7 +247,7 @@
             ],
         },
 
-        
+
         {
 			"label": "json_run",
 			"type": "cppbuild",
@@ -258,7 +258,6 @@
 			"dependsOn": [
 				"json_build"
 			],
-
 		},
 		{
 			"label": "json_build",
