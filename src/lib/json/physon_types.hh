@@ -11,6 +11,9 @@
 
 void print_type_sizes();
 
+void json_error_get_variant_value(std::string error_msg){
+    throw std::runtime_error("Error trying to get value from variant. " + error_msg);
+}
 
 enum class JSON_TYPE {
 
@@ -81,8 +84,8 @@ enum class json_type {
     array,
 };
 typedef std::pair<json_string, json_variant_wrap> json_kv_variant;
-typedef std::vector<json_kv_variant> json_object_variant;
-typedef std::vector<json_variant_wrap> json_array_variant;
+typedef std::vector<json_kv_variant> json_object_variants;
+typedef std::vector<json_variant_wrap> json_array_variants;
 struct json_variant_wrap {
     json_type type = json_type::null;
     std::variant<   json_string, 
@@ -90,12 +93,58 @@ struct json_variant_wrap {
                     json_null, 
                     json_float,
                     json_int,
-                    json_array_variant,
-                    json_object_variant
+                    json_array_variants,
+                    json_object_variants
                 > variant_ = nullptr;
     
     json_variant_wrap()  {};
     json_variant_wrap(json_bool new_bool) : type {json_type::boolean}, variant_ {new_bool} {};
+    json_variant_wrap(json_int new_int) : type {json_type::number_int}, variant_ {new_int} {};
+    json_variant_wrap(json_float new_float) : type {json_type::number_float}, variant_ {new_float} {};
+    json_variant_wrap(json_string new_string) : type {json_type::string}, variant_ {new_string} {};
+    // json_variant_wrap(json_string& new_string) : type {json_type::string}, variant_ {new_string} {};
+    // json_variant_wrap(json_string&& new_string) : type {json_type::string}, variant_ {new_string} {};
+    json_variant_wrap(json_array_variants new_array) : type {json_type::array}, variant_ {new_array} {};
+    json_variant_wrap(json_object_variants new_object) : type {json_type::object}, variant_ {new_object} {};
+    json_variant_wrap(json_type new_type){
+        type = new_type;
+        
+        switch (new_type){
+
+        case json_type::boolean :
+            variant_ = false;
+            break;
+
+        case json_type::number_int :
+            variant_ = 0;
+            break;
+
+        case json_type::number_float :
+            variant_ = 0.0;
+            break;
+
+        case json_type::string :
+            variant_ = "";
+            break;
+
+        case json_type::array :
+            variant_ = json_array_variants();
+            break;
+
+        case json_type::object :
+            variant_ = json_object_variants();
+            break;
+        
+        default:
+            variant_ = nullptr;
+            break;
+        }
+    };
+
+    json_kv_variant new_kv(json_string key, json_variant_wrap value){
+        json_kv_variant kv (key, value);
+        return kv;
+    };
 
     void set_bool(json_bool new_bool) {
         type = json_type::boolean;
@@ -109,6 +158,49 @@ struct json_variant_wrap {
     bool is_string() {return type == json_type::string ? true : false; };
     bool is_object() {return type == json_type::object ? true : false; };
     bool is_array() {return type == json_type::array ? true : false; };
+
+    json_string& get_string(){
+        if(type == json_type::string)
+            return std::get<json_string>(variant_);
+        else
+            throw std::runtime_error("Error trying to get value from variant. json_string. ");
+            // json_error_get_variant_value("json_string");
+    };
+
+    json_array_variants& get_array(){
+        if(type == json_type::array)
+            return std::get<json_array_variants>(variant_);
+        else
+            throw std::runtime_error("Error trying to get value from variant. json_array_variants. ");
+            // json_error_get_variant_value("json_string");
+    };
+
+    json_object_variants& get_object(){
+        if(type == json_type::object)
+            return std::get<json_object_variants>(variant_);
+        else
+            throw std::runtime_error("Error trying to get value from variant. json_object_variants. ");
+            // json_error_get_variant_value("json_string");
+    };
+
+    void push_array(json_variant_wrap& var_to_push){
+        if(type == json_type::array){
+            json_array_variants& array = get_array();
+            array.push_back(var_to_push);
+        }
+        else {
+            throw std::runtime_error("Error trying to push value to non-array."); 
+        }
+    }
+    void push_object(json_kv_variant& kv_to_push){
+        if(type == json_type::object){
+            json_object_variants& object = get_object();
+            object.push_back(kv_to_push);
+        }
+        else {
+            throw std::runtime_error("Error trying to push value to non-object."); 
+        }
+    }
 };
 
 

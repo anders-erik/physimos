@@ -44,6 +44,37 @@ void variant_playground(){
 
     json_variant_wrap json_var = true;
 
+    json_int new_int = 123;
+    json_variant_wrap json_var_int (new_int);
+
+    json_string new_string_hole = "HOLE";
+    json_variant_wrap json_var_str_hole (new_string_hole);
+    json_variant_wrap json_var_str_hola (json_string("HOLA"));
+    // json_variant_wrap json_var_str_como ("COMO");
+
+    std::cout << json_var_str_hole.get_string() << std::endl;
+    std::cout << json_var_str_hola.get_string() << std::endl;
+    // std::cout << json_var_str_como.get_string() << std::endl;
+
+    json_variant_wrap json_var_array (json_type::array);
+    json_var_array.push_array(json_var_str_hola);
+    // json_var_array.variant_.push_back(json_var_str_hole);
+
+    json_string key = "kk";
+    json_variant_wrap value = json_string("vv");
+    json_kv_variant kv (key, value);
+    json_variant_wrap object (json_type::object);
+    object.push_object(kv);
+
+    std::cout << object.get_object()[0].first << std::endl;
+    std::cout << object.get_object()[0].second.get_string() << std::endl;
+    
+    
+    std::cout << "sizeof(json_variant_wrap) = " << sizeof(json_variant_wrap) << std::endl;
+    std::cout << "sizeof(json_var_array) = " << sizeof(json_var_array) << std::endl;
+    std::cout << "sizeof(json_var_array.variant_) = " << sizeof(json_var_array.variant_) << std::endl;
+    
+
 
     // json_var.set_bool(true);
 
@@ -66,8 +97,8 @@ void variant_playground(){
             [](json_int arg) { std::cout << "int" << ' '; },
             [](json_float arg) { std::cout << "float" << ' '; },
             [](const json_string& arg) { std::cout << "string" << ' '; },
-            [](json_array_variant& arg) { std::cout << "array" << ' '; },
-            [](json_object_variant& arg) { std::cout << "object" << ' '; }
+            [](json_array_variants& arg) { std::cout << "array" << ' '; },
+            [](json_object_variants& arg) { std::cout << "object" << ' '; }
         },
         json_var.variant_
     );
