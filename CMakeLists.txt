@@ -5,41 +5,73 @@
 # $ rm -r ./** && cmake .. && make && cd .. && ./build_cmake/physimos && cd ./build_cmake
 
 
-cmake_minimum_required(VERSION 3.10)
+message("CMake version is " ${CMAKE_VERSION})
+cmake_minimum_required(VERSION 3.28)
+
 project(physimos)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_GENERATOR "Ninja")
-message("generator is set to ${CMAKE_GENERATOR}")
 
 # set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
-
-
 # write_file(tmp/test.txt "${BUILD_TYPE_FROM_CLI}")
-message([BUILD_TYPE_FROM_CLI] " = " "${BUILD_TYPE_FROM_CLI}")
 
-if(${BUILD_TYPE_FROM_CLI}==DEBUG)
+# set(CMAKE_GENERATOR "Ninja")
+# message("generator is set to ${CMAKE_GENERATOR}")
 
-    set(CMAKE_BUILD_TYPE Debug)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")             # 'regular' build
-    # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra")   # Gave me warnings that I cannot prioritize 
-
-elseif(BUILD_TYPE_FROM_CLI==GPROF)
-
-    set(CMAKE_BUILD_TYPE Gprof)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -pg")       # gprof compiler flag
-
-elseif(BUILD_TYPE_FROM_CLI==RELEASE_LINUX)
-
-    set(CMAKE_BUILD_TYPE Release)
-
-else() # Default build is debug
-
-    set(CMAKE_BUILD_TYPE Debug)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")             # 'regular' build
-
+# Architecture
+message("Architecture:        ${CMAKE_SYSTEM_PROCESSOR}")
+# 64 or 32 bit
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message("Bits:                64")
+elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
+  message("Bits:                32")
+else ()
+  message("Bits:                unknown")
 endif()
+# print platform
+if(WIN32)
+    message("Platform:            WIN32")
+elseif(APPLE)
+    message("Platform:            APPLE")
+elseif(UNIX)
+    message("Platform:            LINUX")
+endif()
+# print compiler
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  message("Compiler :           Clang")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  message("Compiler :           GCC")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+  message("Compiler :       Intel")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" or MSVC)
+  message("Compiler :       MSVC")
+endif()
+# Generator
+message("Current generator:   ${CMAKE_GENERATOR}")
+# Build Type
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message("Build type:          Debug")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall") 
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")  
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message("Build type:          Release")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Gprof")
+    message("Build type:          Gprof")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -pg")
+else()
+    message("Build type:          Unknown")
+endif()
+# Debug flag
+message("Debug flags:         ${CMAKE_CXX_FLAGS_DEBUG}")
+message("Compile flags (C):   ${CMAKE_C_FLAGS}")
+message("Compile flags (C++): ${CMAKE_CXX_FLAGS}")
+message("Comp. f. (C++, env): ${CXXFLAGS}")
+message("C Flags (Debug):     ${CMAKE_C_FLAGS_DEBUG}")
+message("CXX Flags (Debug):   ${CMAKE_CXX_FLAGS_DEBUG}")
+message("C Flags (Release):   ${CMAKE_C_FLAGS_RELEASE}")
+message("CXX Flags (Release): ${CMAKE_CXX_FLAGS_RELEASE}")
+
 
 
 

@@ -29,8 +29,15 @@ set(SOURCES
 )
 
 
-
 add_library(source ${SOURCES})
+
+
+if(MSVC)
+  target_compile_options(source PRIVATE /W4 /WX)
+else()
+  target_compile_options(source PRIVATE -Wall )
+endif()
+
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/res)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/scene)

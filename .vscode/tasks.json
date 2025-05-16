@@ -13,7 +13,7 @@
                 "echo": true,
                 "reveal": "always",
                 "panel": "shared",
-                "close": false,
+                "close": false
             }
         },
         {
@@ -71,12 +71,13 @@
             "command": "${workspaceFolder}/ptest/ptest.sh ui_curses",
             "args": [],
             "options": {},
-            "icon": {"color": "terminal.ansiWhite"},
+            "icon": {
+                "color": "terminal.ansiWhite"
+            },
             "problemMatcher": [],
             "group": "test",
             "detail": "",
             "presentation": {
-                // "focus": true,
                 "echo": true,
                 "reveal": "always",
                 "panel": "shared"
@@ -88,7 +89,7 @@
             "command": "gdb ${workspaceFolder}/build_cmake/physimos",
             "options": {},
             "group": "build",
-            "detail": "",
+            // "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -106,7 +107,7 @@
                 "$gcc"
             ],
             "group": "build",
-            "detail": "",
+            // "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -170,7 +171,7 @@
             "type": "shell",
             "command": "cd xp/phont && XP_ROOT_DIR=${workspaceFolder}/xp/phont ./run.sh",
             "problemMatcher": [
-                "$gcc",
+                "$gcc"
             ],
             "dependsOn": "XP - build"
         },
@@ -180,7 +181,7 @@
             "command": "cd xp/phont && ./build.sh",
             "problemMatcher": [
                 "$gcc"
-            ],
+            ]
         },
         {
             "label": "XP - rubik",
@@ -188,14 +189,14 @@
             "command": "cd xp/rubik && XP_ROOT_DIR=${workspaceFolder}/xp/rubik ./bin/rubik.bin",
             "problemMatcher": [
                 "$gcc"
-            ],
+            ]
         },
         {
             "label": "Phont",
             "type": "shell",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/phont/phont_main",
             "problemMatcher": [
-                "$gcc",
+                "$gcc"
             ],
             "dependsOn": "Build Debug"
         },
@@ -204,7 +205,7 @@
             "type": "shell",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/opengl/main_opengl",
             "problemMatcher": [
-                "$gcc",
+                "$gcc"
             ],
             "dependsOn": "Build Debug"
         },
@@ -213,7 +214,7 @@
             "type": "shell",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/model/model_main",
             "problemMatcher": [
-                "$gcc",
+                "$gcc"
             ],
             "dependsOn": "Build Debug"
         },
@@ -223,62 +224,100 @@
             "group": "test",
             "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ${workspaceFolder}/build/debug/src/model/model_main",
             "problemMatcher": [
-                "$gcc",
+                "$gcc"
             ],
             "dependsOn": "Build Debug"
         },
-        
         {
             "label": "Wayland_run",
             "type": "shell",
             "command": "${workspaceFolder}/build/debug/src/window/wayland/wayland",
             "problemMatcher": [
-                "$gcc",
+                "$gcc"
             ],
-            // "dependsOn": "Build Debug"
-            "dependsOn": "Wayland_build",
+            "dependsOn": "Wayland_build"
         },
         {
             "label": "Wayland_build",
             "type": "shell",
             "command": "cd ${workspaceFolder}/build/debug/src/window/wayland && make",
             "problemMatcher": [
-                "$gcc",
+                "$gcc"
+            ]
+        },
+        {
+            "label": "json_run",
+            "type": "cppbuild",
+            "command": "cd src/lib/json && ./build/physon data/simple.json",
+            "args": [],
+            "dependsOn": [
+                "json_build"
+            ]
+        },
+        {
+            "label": "json_build",
+            "type": "cppbuild",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-Wall",
+                "-g",
+                "src/lib/json/main.cc",
+                "-o",
+                "src/lib/json/build/physon"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            // "detail": "compiler: /usr/bin/g++"
         },
 
 
+
+
         {
-			"label": "json_run",
-			"type": "cppbuild",
-			"command": "cd src/lib/json && ./build/physon data/simple.json",
-			"args": [
-				// "data/simple.json"
-			],
-			"dependsOn": [
-				"json_build"
-			],
-		},
-		{
-			"label": "json_build",
-			"type": "cppbuild",
-			"command": "/usr/bin/g++",
-			"args": [
-				"-fdiagnostics-color=always",
-				"-Wall",
-				"-g",
-				"src/lib/json/main.cc",
-				"-o",
-				"src/lib/json/build/physon",
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": "build",
-			"detail": "compiler: /usr/bin/g++"
-		},
+            "label": "debug_linux configure",
+            "type": "shell",
+            "command": "cmake",
+            // "command": "configure",
+            // "command": "build",
+            "args": [
+                "--preset=debug_linux",
+            ],
+            "problemMatcher": [],
+        },
+        {
+
+            "label": "debug_linux build",
+            "type": "shell",
+            "command": "time",
+            "args": [
+                "cmake",
+                "--build",
+                "--preset=debug_linux",
+            ],
+            "problemMatcher": ["$gcc"],
+            "dependsOn": "debug_linux configure",
+        },
+        {
+            "label": "debug_linux",
+            "type": "shell",
+            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ./build/debug_linux/physimos",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+                "close": false
+            },
+            "dependsOn": "debug_linux build",
+        },
     ]
 }
