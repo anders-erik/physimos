@@ -227,7 +227,7 @@
             ],
             "dependsOn": "Build Debug"
         },
-
+        
         {
             "label": "Wayland_run",
             "type": "shell",
@@ -246,5 +246,40 @@
                 "$gcc",
             ],
         },
+
+        
+        {
+			"label": "json_run",
+			"type": "cppbuild",
+			"command": "cd src/lib/json && ./build/physon data/simple.json",
+			"args": [
+				// "data/simple.json"
+			],
+			"dependsOn": [
+				"json_build"
+			],
+
+		},
+		{
+			"label": "json_build",
+			"type": "cppbuild",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-Wall",
+				"-g",
+				"src/lib/json/main.cc",
+				"-o",
+				"src/lib/json/build/physon",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: /usr/bin/g++"
+		},
     ]
 }
