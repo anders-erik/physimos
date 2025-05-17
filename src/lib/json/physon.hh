@@ -9,6 +9,7 @@
 #include <climits> // LLONG_MAX
 
 #include "physon_types.hh"
+#include "json_store.hh"
 
 
 #define log(x) std::cout << x << std::endl;
@@ -36,13 +37,13 @@ struct Physon {
     ParserCursor cursor;  // source string cursor
     std::vector<Token> tokens;
 
-    JsonValue val;
+    // JsonValue val;
     // Json root;
     // std::stack<Json&> container_stack;
 
     void print_original();
     
-    Physon(std::string json_str) : content {json_str}, val { JsonValue("Hello, world") } {
+    Physon(std::string json_str) : content {json_str}/* , val { JsonValue("Hello, world") } */ {
         if(content.size() == 0)
             json_error("Error: json content string is empty. ");
     };
