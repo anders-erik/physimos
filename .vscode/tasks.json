@@ -89,7 +89,6 @@
             "command": "gdb ${workspaceFolder}/build_cmake/physimos",
             "options": {},
             "group": "build",
-            // "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -107,7 +106,6 @@
                 "$gcc"
             ],
             "group": "build",
-            // "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -245,51 +243,53 @@
                 "$gcc"
             ]
         },
-
-
-
         {
             "label": "json_run",
             "type": "shell",
             "linux": {
-                "command": "${workspaceFolder}/build/debug_linux/src/lib/json/main_json",
+                "command": "${workspaceFolder}/build/debug_linux/src/lib/json/main_json"
+            },
+            "windows": {
+                "command": "${workspaceFolder}\\build\\debug_windows\\src\\lib\\json\\Debug\\main_json.exe"
             },
             "options": {
                 "cwd": "${workspaceFolder}/src/lib/json"
             },
             "problemMatcher": [],
-            "dependsOn": [ "Debug build" ],
+            "dependsOn": [
+                "Debug build"
+            ]
         },
         {
             "label": "json_build",
             "type": "shell",
             "linux": {
-            "command": "cmake --build --preset=debug_linux --target main_json",
+                "command": "cmake --build --preset=debug_linux --target main_json"
             },
-            "problemMatcher": [],
+            "windows": {
+                "command": "cmake --build --preset=debug_windows --target main_json"
+            },
+            "problemMatcher": []
         },
-
-
-
-
         {
             "label": "Debug configure",
             "type": "shell",
             "problemMatcher": [],
             "linux": {
-                "command": "cmake --preset=debug_linux",
-            },
+                "command": "cmake --preset=debug_linux"
+            }
         },
         {
-
             "label": "Debug build",
             "type": "shell",
             "group": "build",
             "linux": {
-                "command": "time cmake --build --preset=debug_linux",
+                "command": "time cmake --build --preset=debug_linux"
             },
-            "problemMatcher": ["$gcc"],
-            "dependsOn": "Debug configure",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn": "Debug configure"
         },
         {
             "label": "Debug",
@@ -300,7 +300,7 @@
                     "env": {
                         "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
                     }
-                },
+                }
             },
             "presentation": {
                 "echo": true,
@@ -308,9 +308,7 @@
                 "panel": "shared",
                 "close": false
             },
-            "dependsOn": "Debug build",
-        },
-
-
+            "dependsOn": "Debug build"
+        }
     ]
 }

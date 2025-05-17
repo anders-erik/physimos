@@ -1,5 +1,7 @@
 
-add_subdirectory(wayland)
+if(LINUX)
+    add_subdirectory(wayland)
+endif()
 
 set(WINDOW 
     auxwin.cc

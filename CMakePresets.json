@@ -27,6 +27,18 @@
                 "CMAKE_BUILD_TYPE": "Debug"
             },
             "hidden": false
+        },
+        {
+            "name": "debug_windows",
+            "inherits": "default",
+            "displayName": "Debug Windows Config",
+            "description": "Default Windows Config using VS  generator",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build/debug_windows",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "hidden": false
         }
     ],
     "buildPresets": [
@@ -38,6 +50,11 @@
         {
             "name": "debug_linux",
             "configurePreset": "debug_linux",
+            "hidden": false
+        },
+        {
+            "name": "debug_windows",
+            "configurePreset": "debug_windows",
             "hidden": false
         }
     ]
