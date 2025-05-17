@@ -42,7 +42,7 @@ int main (int argc, char **argv) {
         variant,
         config,
         misc,
-    } flag = json_flag::misc;
+    } flag = json_flag::test;
 
 
 

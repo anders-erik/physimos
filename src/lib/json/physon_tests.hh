@@ -62,38 +62,67 @@ void JsonTest::test_conformance(){
 void JsonTest::test_serialization(){
 
     std::cout << std::endl << "    SERIALIZATION TESTS" << std::endl;
-    psps("data/null.json");
-    psps("data/true.json");
-    psps("data/false.json");
 
-    psps("data/name_literals_array.json");
-    psps("data/name_literals_nested_array.json");
-    psps("data/string_array.json");
-    psps("data/object.json");
-    psps("data/object_nested.json");
+    bool single_file = false;
 
-    psps("data/integer.json");
-    psps("data/integers.json");
-    psps("data/numbers.json");
-    psps("data/numbers_2.json");
+    if(single_file){
+        psps("data/string_array.json");
+    }
+    else {
+        psps("data/null.json");
+        psps("data/true.json");
+        psps("data/false.json");
 
-    psps("data/penpaper.json");
-    psps("data/widget.json");
+        psps("data/name_literals_array.json");
+        psps("data/name_literals_nested_array.json");
+        psps("data/string_array.json");
+        psps("data/object.json");
+        psps("data/object_nested.json");
 
-    psps("data/shapes.json");
+        psps("data/integer.json");
+        psps("data/integers.json");
+        psps("data/numbers.json");
+        psps("data/numbers_2.json");
+
+        psps("data/penpaper.json");
+        psps("data/widget.json");
+
+        psps("data/shapes.json");
+    }
 }
 
 
 void JsonTest::psps(std::string file_path_str){
 
+    enum class PSPS_STATE {
+        PARSE_1  = 0,
+        SERIAL_1 = 1,
+        PARSE_2  = 2,
+        SERIAL_2 = 3,
+    } state = PSPS_STATE::PARSE_1;
+
     try
     {
         std::string json_data = load_file(file_path_str);
         Physon physon (json_data);
+
         physon.parse();
+
+        state = PSPS_STATE::SERIAL_1;
+
         std::string serialized_1 = physon.stringify();
         physon.content = serialized_1; // TODO : turn this into a method call, reseting the internal json structure
+        
+        // std::cout << json_data << std::endl;
+        // std::cout << serialized_1 << std::endl;
+
+
+        state = PSPS_STATE::PARSE_2;
+
         physon.parse();
+
+        state = PSPS_STATE::SERIAL_2;
+
         std::string serialized_2 = physon.stringify();
 
         // std::cout << serialized_1 << std::endl;
@@ -107,7 +136,9 @@ void JsonTest::psps(std::string file_path_str){
     }
     catch(const std::exception& e)
     {
-        std::cout << "Exception thrown during serialization testing. file : " << file_path_str << std::endl;
+        std::cout << "Exception thrown during serialization testing.";
+        std::cout << "State : " << int(state) << std::endl;
+        std::cout << "file : " << file_path_str << std::endl;
 
         std::cout << e.what() << '\n';
     }

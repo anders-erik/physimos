@@ -114,13 +114,18 @@ struct Physon {
 
 
         /* parse literals */
-    std::string parse_digits();
-    bool integer_within_limits(std::string int_);
-    JsonWrapper parse_number_literal();  /** parse and progress index. */
-    JsonWrapper parse_string_literal();  /** parse and progress index. */
-    JsonWrapper parse_true_literal();    /** confirm "true" chars and progress index. */
-    JsonWrapper parse_false_literal();   /** confirm "false" chars and progress index. */
-    JsonWrapper parse_null_literal();    /** confirm "null" chars and progress index. */
+    std::string parse_digits(); /** Progress index until char is no longer a digit. Returns the processed digits. */
+    bool integer_within_limits(std::string int_); /** Preemptive check. Else std error if outside bounds.  */
+    json_int parse_verified_integer_string(const std::string& str);
+    json_float parse_verified_float_string(const std::string& str);
+    bool is_fractional_number_string(const std::string& verified_number_string);
+    std::string extract_number_string();  /** Progress index and verify that string is valid json. Returns string for parsing.  */
+    // JsonWrapper parse_number_literal();  /** parse and progress index. */
+
+    json_string parse_string_literal();  /** parse and progress index. */
+    void parse_null_literal();    /** confirm "null" chars and progress index. */
+    void parse_true_literal();    /** confirm "true" chars and progress index. Throws on non-conforming content. */
+    void parse_false_literal();   /** confirm "false" chars and progress index. Throws on non-conforming content. */
 
 
 
@@ -246,13 +251,16 @@ std::string Physon::string_to_json_representation(std::string cpp_string){
     for(const char ch : cpp_string){
         
         if(ch == QUOTATION_MARK){
-            json_representation += "\\\"";
+            json_representation += "\\";
+            json_representation += "\"";
         }
         else if (ch == SOLLIDUS){
-            json_representation += "/\\";
+            // I print the regular sollidus as-is. Parsing DOES handle escaped sollidus!
+            json_representation += "/";
         }
         else if(ch == SOLLIDUS_BACKWARDS){
-            json_representation += "\\\\";
+            json_representation += "\\";
+            json_representation += "\\";
         }
         else if(ch == '\u0008'){
             json_representation += "\\b";
@@ -552,20 +560,36 @@ void Physon::value_parse_literal(){
 
 
     if     (current_char == 't'){
-        new_value = parse_true_literal();
+        parse_true_literal();
+        new_value.type = JSON_TYPE::TRUE;
+        new_value.store_id = 0;
     }
     else if(current_char == 'f'){
-        new_value = parse_false_literal();
+        parse_false_literal();
+        new_value.type = JSON_TYPE::FALSE;
+        new_value.store_id = 0;
     }
     else if(current_char == 'n'){
-        new_value = parse_null_literal();
+        parse_null_literal();
+        new_value.type = JSON_TYPE::NULL_;
+        new_value.store_id = 0;
     }
     else if(current_char == '"'){
-        new_value = parse_string_literal();
+        new_value.type = JSON_TYPE::STRING;
+        new_value.store_id = store.add_string(parse_string_literal());
     }
     else if(current_char == '-' || is_digit(current_char) ){
-        new_value = parse_number_literal();
-        // json_error("Number parsing not yet implemented.");
+
+        std::string verified_num_str = extract_number_string();
+
+        // Branch because we don't yet know what number type we're dealing with
+        if(is_fractional_number_string(verified_num_str)){
+            new_value = store.new_float(parse_verified_float_string(verified_num_str));
+        }
+        else {
+            new_value = store.new_integer(parse_verified_integer_string(verified_num_str));
+        }
+
     }
     else{
         json_error("Unexpected first literal character.");
@@ -654,7 +678,9 @@ void Physon::object_parse_key_comma(){
         json_error("Invalid JSON: Unexpected char '" + content.substr(cursor.index, 1) + "' when entered object. Occured at index " + std::to_string(cursor.index));
     
 
-    JsonWrapper key = parse_string_literal();
+    JsonWrapper key = JSON_TYPE::STRING;
+    key.store_id = store.add_string(parse_string_literal());
+    // JsonWrapper key = parse_string_literal();
     colon_skip();
 
 
@@ -706,8 +732,17 @@ bool Physon::integer_within_limits(std::string str){
     return true;
 }
 
-JsonWrapper Physon::parse_number_literal(){
+bool Physon::is_fractional_number_string(const std::string& verified_number_string){
 
+    for(char ch : verified_number_string){
+        if(ch == '.')
+            return true;
+    }
+
+    return false;
+}
+
+std::string Physon::extract_number_string(){
     enum class NUMBER_STATE {
         NEGATIVE,
         LEADING_ZERO,
@@ -720,8 +755,9 @@ JsonWrapper Physon::parse_number_literal(){
         END,
     } number_state = NUMBER_STATE::NEGATIVE;
 
+
     bool is_fractional = false;
-    
+
     std::string string_to_parse = "";
 
     // FIRST CHECKS
@@ -783,190 +819,32 @@ JsonWrapper Physon::parse_number_literal(){
 
     number_state = NUMBER_STATE::END;
 
-    JsonWrapper wrapper;
+    
     if(is_fractional){
-        json_float float_ = std::stod(string_to_parse);
-        wrapper = store.new_float(float_);
-    }
-    else {
 
-        if(! integer_within_limits(string_to_parse))
-            json_error("Integer too large for internal representation.");
-
-        json_int int_ = std::stol(string_to_parse);
-        wrapper = store.new_integer(int_);
     }
 
-    return wrapper;
-
-    // else if (is_digit(current_char())){
-    //     number_state = NUMBER_STATE::INTEGRAL_DIGITS;
-    // }
-    // else {
-        
-    // }
-
-    // while (!end_of_number)
-    // {
-        
-    //     switch (number_state){
-        
-    //     case NUMBER_STATE::LEADING_ZERO:
-    //         {
-    //             if(current_char() == '0'){
-    //                 is_leading_zero = true;
-    //                 string_to_parse += "0";
-    //                 cursor.index++;
-    //                 number_state = NUMBER_STATE::FRACTION;
-    //             }
-    //             else if ( is_digit(current_char()) ){
-    //                 number_state = NUMBER_STATE::INTEGRAL_DIGITS;
-    //             }
-    //             else {
-    //                 json_error("Invalid char when checking for leading zero in number literal.");
-    //             }
-    //         }
-    //         break;
-        
-    //     case NUMBER_STATE::INTEGRAL_DIGITS:
-    //         {
-    //             if(is_digit(current_char())){
-    //                 string_to_parse += current_char();
-    //                 cursor.index++;
-    //             }
-    //             else {
-    //                 number_state = NUMBER_STATE::FRACTION;
-    //             }
-
-    //         }
-    //         break;
-
-    //     case NUMBER_STATE::FRACTION:
-    //         {
-    //             if(current_char() == '.'){
-    //                 is_fractional = true;
-    //                 string_to_parse += '.';
-    //                 cursor.index++;
-    //                 number_state = NUMBER_STATE::FRACTIONAL_DIGITS;
-    //             }
-    //             else if (current_char() == 'e' || current_char() == 'E') {
-    //                 number_state = NUMBER_STATE::EXPONENT_E;
-    //             }
-    //             else {
-    //                 number_state = NUMBER_STATE::END;
-    //             }
-                
-    //         }
-    //         break;
-
-    //     case NUMBER_STATE::FRACTIONAL_DIGITS:
-    //         {
-    //             if(is_digit(current_char())){
-    //                 string_to_parse += current_char();
-    //                 cursor.index++;
-    //             }
-    //             else {
-    //                 number_state = NUMBER_STATE::EXPONENT_E;
-    //             }
-                
-    //         }
-    //         break;
-
-    //     case NUMBER_STATE::EXPONENT_E:
-    //         {
-    //             enum class EXPONENT_STATE {
-    //                 E,
-    //                 SIGN,
-    //                 DIGITS,
-    //                 DONE,
-    //             };
-
-    //             EXPONENT_STATE exponent_state = EXPONENT_STATE::E;
-
-    //             while(exponent_state != EXPONENT_STATE::DONE){
-
-    //                 switch (exponent_state){
-
-    //                 case EXPONENT_STATE::E :
-    //                     {
-    //                         if(current_char() == 'e' || current_char() == 'E'){
-    //                             string_to_parse += current_char();
-    //                             cursor.index++;
-    //                             exponent_state = EXPONENT_STATE::SIGN;
-    //                         }
-    //                         else {
-    //                             json_error("Failed to identify 'e'/'E' character while in exponent state during number parse. ");
-    //                         }
-    //                     }
-    //                     break;
-
-    //                 case EXPONENT_STATE::SIGN :
-    //                     {
-    //                         if(current_char() == '+' || current_char() == '-'){
-    //                             string_to_parse += current_char();
-    //                             cursor.index++;
-    //                         }
-    //                         exponent_state = EXPONENT_STATE::DIGITS;
-
-    //                     }
-    //                     break;
-
-    //                 case EXPONENT_STATE::DIGITS :
-    //                     {
-    //                         if( is_digit(current_char()) ){
-    //                             string_to_parse += current_char();
-    //                             cursor.index++;
-    //                         }
-    //                         else {
-    //                             exponent_state = EXPONENT_STATE::DONE;
-    //                         }
-                            
-    //                     }
-    //                     break;
-                    
-    //                 default:
-    //                     break;
-    //                 }
-                    
-    //             }
-                
-    //             number_state = NUMBER_STATE::END;
-    //         }
-    //         break;
-        
-    //     default:
-    //         break;
-    //     }
-    // }
-
-    
-    
-    // type = JSON_TYPE::FLOAT;
-    // if(type == JSON_TYPE::FLOAT){
-    //     const char* str_cnst = string_to_parse.c_str();
-    //     char * c_str = (char*)str_cnst;
-    //     char * c_str_end = c_str;
-    //     char ** str_end = &c_str_end;
-    //     json_float fl = strtod(str_cnst, str_end);
-    //     std::cout << fl << std::endl;
-        
-    // }
-    // else if (type == JSON_TYPE::INTEGER){
-    //     // json_int integer = std::to_integer(string_to_parse);
-    // }
-    // else {
-    //     json_error("Failed to determine number type during parsing of literal.");
-    // }
-
-    // return store.new_integer(1);
+    return string_to_parse;
 }
 
-JsonWrapper Physon::parse_string_literal(){
+json_int Physon::parse_verified_integer_string(const std::string& str){
+    if(! integer_within_limits(str))
+            json_error("Integer too large for internal representation.");
+
+    return std::stol(str);
+}
+
+json_float Physon::parse_verified_float_string(const std::string& str){
+    return std::stod(str);
+}
+
+
+json_string Physon::parse_string_literal(){
 
     // Skip quotation mark, but no gobbling in string literal
     cursor.index++;
 
-    std::string new_string = "";
+    json_string new_string = "";
 
     while(content[cursor.index] != QUOTATION_MARK ){
 
@@ -1058,15 +936,15 @@ JsonWrapper Physon::parse_string_literal(){
     index_advance();
 
     // Add string to store
-    JsonWrapper new_value;
-    new_value.type = JSON_TYPE::STRING;
-    new_value.store_id = store.add_string(new_string);
+    // JsonWrapper new_value;
+    // new_value.type = JSON_TYPE::STRING;
+    // new_value.store_id = store.add_string(new_string);
 
 
-    return new_value;
+    return new_string;
 };
 
-JsonWrapper Physon::parse_true_literal(){
+void Physon::parse_true_literal(){
 
     bool is_true_literal = (content[cursor.index + 1] == 'r' && content[cursor.index + 2] == 'u' && content[cursor.index + 3] == 'e');
     if(!is_true_literal)
@@ -1077,14 +955,9 @@ JsonWrapper Physon::parse_true_literal(){
     tokens.emplace_back(token_type::TRUE, cursor.index, 4);
     cursor.index += 4;
 
-    JsonWrapper new_value;
-    new_value.type = JSON_TYPE::TRUE;
-    new_value.store_id = 0;
-
-    return new_value;
 };
 
-JsonWrapper Physon::parse_false_literal(){
+void Physon::parse_false_literal(){
 
     bool is_false_literal = (content[cursor.index + 1] == 'a' && content[cursor.index + 2] == 'l' && content[cursor.index + 3] == 's' && content[cursor.index + 4] == 'e');
     if(!is_false_literal)
@@ -1093,13 +966,9 @@ JsonWrapper Physon::parse_false_literal(){
     tokens.emplace_back(token_type::FALSE, cursor.index, 5);
     cursor.index += 5;
 
-    JsonWrapper new_value;
-    new_value.type = JSON_TYPE::FALSE;
-    new_value.store_id = 0;
-    return new_value;
 };
 
-JsonWrapper Physon::parse_null_literal(){
+void Physon::parse_null_literal(){
 
     bool is_null_literal = (content[cursor.index + 1] == 'u' && content[cursor.index + 2] == 'l' && content[cursor.index + 3] == 'l');
     if(!is_null_literal)
@@ -1109,11 +978,6 @@ JsonWrapper Physon::parse_null_literal(){
 
     tokens.emplace_back(token_type::NULL_, cursor.index, 4);
     cursor.index += 4;
-
-    JsonWrapper new_value;
-    new_value.type = JSON_TYPE::NULL_;
-    new_value.store_id = 0;
-    return new_value;
 };
 
 
