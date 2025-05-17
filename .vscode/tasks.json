@@ -245,79 +245,72 @@
                 "$gcc"
             ]
         },
+
+
+
         {
             "label": "json_run",
-            "type": "cppbuild",
-            "command": "cd src/lib/json && ./build/physon data/simple.json",
-            "args": [],
-            "dependsOn": [
-                "json_build"
-            ]
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/build/debug_linux/src/lib/json/main_json",
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/src/lib/json"
+            },
+            "problemMatcher": [],
+            "dependsOn": [ "Debug build" ],
         },
         {
             "label": "json_build",
-            "type": "cppbuild",
-            "command": "/usr/bin/g++",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-Wall",
-                "-g",
-                "src/lib/json/main.cc",
-                "-o",
-                "src/lib/json/build/physon"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            // "detail": "compiler: /usr/bin/g++"
-        },
-
-
-
-
-        {
-            "label": "debug_linux configure",
             "type": "shell",
-            "command": "cmake",
-            // "command": "configure",
-            // "command": "build",
-            "args": [
-                "--preset=debug_linux",
-            ],
+            "linux": {
+            "command": "cmake --build --preset=debug_linux --target main_json",
+            },
             "problemMatcher": [],
         },
-        {
 
-            "label": "debug_linux build",
+
+
+
+        {
+            "label": "Debug configure",
             "type": "shell",
-            "command": "time",
-            "args": [
-                "cmake",
-                "--build",
-                "--preset=debug_linux",
-            ],
-            "problemMatcher": ["$gcc"],
-            "dependsOn": "debug_linux configure",
+            "problemMatcher": [],
+            "linux": {
+                "command": "cmake --preset=debug_linux",
+            },
         },
         {
-            "label": "debug_linux",
+
+            "label": "Debug build",
             "type": "shell",
-            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} ./build/debug_linux/physimos",
-            "problemMatcher": [
-                "$gcc"
-            ],
             "group": "build",
+            "linux": {
+                "command": "time cmake --build --preset=debug_linux",
+            },
+            "problemMatcher": ["$gcc"],
+            "dependsOn": "Debug configure",
+        },
+        {
+            "label": "Debug",
+            "type": "shell",
+            "linux": {
+                "command": "./build/debug_linux/physimos",
+                "options": {
+                    "env": {
+                        "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
+                    }
+                },
+            },
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "panel": "shared",
                 "close": false
             },
-            "dependsOn": "debug_linux build",
+            "dependsOn": "Debug build",
         },
+
+
     ]
 }

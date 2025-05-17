@@ -1,4 +1,6 @@
 
+add_subdirectory(json)
+
 add_library(lib
 
     string.cc

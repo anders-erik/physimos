@@ -71,6 +71,8 @@ message("C Flags (Debug):     ${CMAKE_C_FLAGS_DEBUG}")
 message("CXX Flags (Debug):   ${CMAKE_CXX_FLAGS_DEBUG}")
 message("C Flags (Release):   ${CMAKE_C_FLAGS_RELEASE}")
 message("CXX Flags (Release): ${CMAKE_CXX_FLAGS_RELEASE}")
+# VARIABLES
+message("CMAKE_INCLUDE_CURRENT_DIR: ${CMAKE_INCLUDE_CURRENT_DIR}") # add source and bin dirs automatically
 
 
 
