@@ -42,6 +42,7 @@ int main (int argc, char **argv) {
         test,
         variant,
         config,
+        beyond_ascii,
         misc,
     } flag = json_flag::test;
 
@@ -69,6 +70,47 @@ int main (int argc, char **argv) {
             shape.print();
         }
 
+    }
+    if(flag == json_flag::beyond_ascii){
+
+
+        // CHINESE MOON START
+        std::cout << "Chinese : moon" << std::endl;
+
+        std::string chinese_moon = load_file("data/non_ascii_strings/chinese_moon.json");
+        std::cout << chinese_moon << std::endl;
+
+        std::cout << "chinese_moon.length() = " << chinese_moon.length() << std::endl;
+        std::cout << "chinese_moon.size()   = " << chinese_moon.size()   << std::endl;
+        
+
+        // This loops through each char
+        // BUT if there is no space, then the output is proper UTF-8 in vscode terminal
+
+        std::cout << "Individual basic_string bytes = ";
+        for(char ch : chinese_moon)
+            std::cout << "'" << ch <<"'" << ", ";
+        std::cout << std::endl;
+        std::cout << "basic_string bytes joined     = ";
+        for(char ch : chinese_moon)
+            std::cout << ch;
+        std::cout << std::endl;
+
+        std::cout << std::endl;
+        // CHINESE MOON END
+
+        
+        // EXTENDED ASCII - Not UTF8 compatible
+        unsigned char bits = 0b11111111;
+        std::cout << int(bits) << std::endl;
+
+        unsigned char bits_ä = 0b11100100;
+        unsigned char ä = 0xe4; // ä
+        std::cout << int(bits_ä) << std::endl;
+        std::cout << int(ä) << std::endl;
+        std::cout << ä << std::endl;
+        // EXTENDED ASCII
+        
     }
     else if(flag == json_flag::misc){
 
