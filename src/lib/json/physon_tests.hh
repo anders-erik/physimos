@@ -3,6 +3,7 @@
 
 #include "physon.hh"
 #include "physon_types.hh"
+#include "json_serialize.hh"
 
 
 
@@ -105,12 +106,15 @@ void JsonTest::psps(std::string file_path_str){
     {
         std::string json_data = load_file(file_path_str);
         Physon physon (json_data);
+        JsonSerializer serializer;
 
         physon.parse();
 
         state = PSPS_STATE::SERIAL_1;
 
-        std::string serialized_1 = physon.stringify();
+        // std::string serialized_1 = physon.stringify();
+        std::string serialized_1 = serializer.serialize(physon.root_wrapper, physon.store);
+
         physon.content = serialized_1; // TODO : turn this into a method call, reseting the internal json structure
         
         // std::cout << json_data << std::endl;
@@ -123,7 +127,8 @@ void JsonTest::psps(std::string file_path_str){
 
         state = PSPS_STATE::SERIAL_2;
 
-        std::string serialized_2 = physon.stringify();
+        // std::string serialized_2 = physon.stringify();
+        std::string serialized_2 = serializer.serialize(physon.root_wrapper, physon.store);
 
         // std::cout << serialized_1 << std::endl;
         // std::cout << serialized_2 << std::endl;

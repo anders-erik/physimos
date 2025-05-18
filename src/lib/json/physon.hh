@@ -12,12 +12,6 @@
 #include "json_store.hh"
 
 
-#define log(x) std::cout << x << std::endl;
-
-#define QUOTATION_MARK      '\u0022'
-#define SOLLIDUS            '\u002F'
-#define SOLLIDUS_BACKWARDS  '\u005C'
-
 
 struct Physon {
 
@@ -152,9 +146,6 @@ struct Physon {
     /*
         VALUE / WRAPPER
     */
-
-    bool is_literal(JSON_TYPE type);
-    bool is_container(JSON_TYPE type);
 
     json_float& unwrap_float(JsonWrapper float_wrapper){
         return store.get_float(float_wrapper.store_id);
@@ -521,19 +512,6 @@ void Physon::print_tokens() {
     }
 }
 
-bool Physon::is_literal(JSON_TYPE type){
-    return  type == JSON_TYPE::NULL_ ||
-            type == JSON_TYPE::TRUE ||
-            type == JSON_TYPE::FALSE ||
-            type == JSON_TYPE::NUMBER ||
-            type == JSON_TYPE::FLOAT ||
-            type == JSON_TYPE::INTEGER ||
-            type == JSON_TYPE::STRING;
-}
-bool Physon::is_container(JSON_TYPE type){
-    return  type == JSON_TYPE::ARRAY ||
-            type == JSON_TYPE::OBJECT;
-}
 
 JsonWrapper Physon::current_container(){
     JsonWrapper empty_value;
@@ -1041,7 +1019,7 @@ bool Physon::is_new_literal_char(){
     return literal_name || string || number;
 }
 
-void Physon::gobble_ws() {
+void Physon::gobble_ws(){
 
     while (is_whitespace(content[cursor.index]))
         cursor.index++;

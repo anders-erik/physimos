@@ -7,7 +7,7 @@
 
 
 
-struct JsonVariant; // forward declare
+struct JsonVar; // forward declare
 enum class json_type {
     null,
     boolean,
@@ -18,31 +18,32 @@ enum class json_type {
     object,
     array,
 };
-typedef std::pair<json_string, JsonVariant> json_kv_variant;
+typedef std::pair<json_string, JsonVar> json_kv_variant;
 typedef std::vector<json_kv_variant> json_object_variants;
-typedef std::vector<JsonVariant> json_array_variants;
+typedef std::vector<JsonVar> json_array_variants;
+typedef std::variant<   json_string, 
+                        json_bool,
+                        json_null, 
+                        json_float,
+                        json_int,
+                        json_array_variants,
+                        json_object_variants
+                    > json_variant;
 /** Thick tag-union-like structure implemented using std::variant. */
-struct JsonVariant {
+struct JsonVar {
     json_type type = json_type::null;
-    std::variant<   json_string, 
-                    json_bool,
-                    json_null, 
-                    json_float,
-                    json_int,
-                    json_array_variants,
-                    json_object_variants
-                > variant_ = nullptr;
+    json_variant variant_;
     
-    JsonVariant()  {};
-    JsonVariant(json_bool new_bool) : type {json_type::boolean}, variant_ {new_bool} {};
-    JsonVariant(json_int new_int) : type {json_type::number_int}, variant_ {new_int} {};
-    JsonVariant(json_float new_float) : type {json_type::number_float}, variant_ {new_float} {};
-    JsonVariant(json_string new_string) : type {json_type::string}, variant_ {new_string} {};
-    // JsonVariant(json_string& new_string) : type {json_type::string}, variant_ {new_string} {};
-    // JsonVariant(json_string&& new_string) : type {json_type::string}, variant_ {new_string} {};
-    JsonVariant(json_array_variants new_array) : type {json_type::array}, variant_ {new_array} {};
-    JsonVariant(json_object_variants new_object) : type {json_type::object}, variant_ {new_object} {};
-    JsonVariant(json_type new_type){
+    JsonVar()  {};
+    JsonVar(json_bool new_bool) : type {json_type::boolean}, variant_ {new_bool} {};
+    JsonVar(json_int new_int) : type {json_type::number_int}, variant_ {new_int} {};
+    JsonVar(json_float new_float) : type {json_type::number_float}, variant_ {new_float} {};
+    JsonVar(json_string new_string) : type {json_type::string}, variant_ {new_string} {};
+    // JsonVar(json_string& new_string) : type {json_type::string}, variant_ {new_string} {};
+    // JsonVar(json_string&& new_string) : type {json_type::string}, variant_ {new_string} {};
+    JsonVar(json_array_variants new_array) : type {json_type::array}, variant_ {new_array} {};
+    JsonVar(json_object_variants new_object) : type {json_type::object}, variant_ {new_object} {};
+    JsonVar(json_type new_type){
         type = new_type;
         
         switch (new_type){
@@ -78,7 +79,7 @@ struct JsonVariant {
     };
 
 
-    json_kv_variant new_kv(json_string key, JsonVariant value){
+    json_kv_variant new_kv(json_string key, JsonVar value){
         json_kv_variant kv (key, value);
         return kv;
     };
@@ -154,7 +155,7 @@ struct JsonVariant {
 
 
 
-    void push_array(JsonVariant& var_to_push){
+    void push_to_array(JsonVar& var_to_push){
         if(type == json_type::array){
             json_array_variants& array = get_array();
             array.push_back(var_to_push);
@@ -163,14 +164,23 @@ struct JsonVariant {
         
         throw std::runtime_error("Error trying to push value to non-array."); 
     }
-    void push_object(json_kv_variant& kv_to_push){
+    void push_to_array(JsonVar&& var_to_push){
+        if(type == json_type::array){
+            json_array_variants& array = get_array();
+            array.push_back(var_to_push);
+            return;
+        }
+        
+        throw std::runtime_error("Error trying to push value to non-array."); 
+    }
+    void push_to_object(const json_kv_variant& kv_to_push){
         if(type == json_type::object){
             json_object_variants& object = get_object();
             object.push_back(kv_to_push);
             return;
         }
         
-        throw std::runtime_error("Error trying to push value to non-object."); 
+        throw std::runtime_error("Error trying to push kv to non-object."); 
     }
 
 };
@@ -191,32 +201,32 @@ overloaded(Ts...) -> overloaded<Ts...>;
 void variant_playground(){
     std::cout << std::endl;
 
-    // JsonVariant json_var;
+    // JsonVar json_var;
     // json_var.set_bool(false);
 
-    JsonVariant json_var = true;
+    JsonVar json_var = true;
 
     json_int new_int = 123;
-    JsonVariant json_var_int (new_int);
+    JsonVar json_var_int (new_int);
 
     json_string new_string_hole = "HOLE";
-    JsonVariant json_var_str_hole (new_string_hole);
-    JsonVariant json_var_str_hola (json_string("HOLA"));
-    // JsonVariant json_var_str_como ("COMO");
+    JsonVar json_var_str_hole (new_string_hole);
+    JsonVar json_var_str_hola (json_string("HOLA"));
+    // JsonVar json_var_str_como ("COMO");
 
     std::cout << json_var_str_hole.get_string() << std::endl;
     std::cout << json_var_str_hola.get_string() << std::endl;
     // std::cout << json_var_str_como.get_string() << std::endl;
 
-    JsonVariant json_var_array (json_type::array);
-    json_var_array.push_array(json_var_str_hola);
+    JsonVar json_var_array (json_type::array);
+    json_var_array.push_to_array(json_var_str_hola);
     // json_var_array.variant_.push_back(json_var_str_hole);
 
     json_string key = "kk";
-    JsonVariant value = json_string("vv");
+    JsonVar value = json_string("vv");
     json_kv_variant kv (key, value);
-    JsonVariant object (json_type::object);
-    object.push_object(kv);
+    JsonVar object (json_type::object);
+    object.push_to_object(kv);
 
     std::cout << object.get_object()[0].first << std::endl;
     std::cout << object.get_object()[0].second.get_string() << std::endl;
@@ -224,8 +234,8 @@ void variant_playground(){
 
     // TYPE CONVERSIONS
     std::cout << std::endl << "TYPE CONVERSIONS" << std::endl;
-    JsonVariant int_1 = json_int(1111);
-    JsonVariant int_2 = json_int(2222);
+    JsonVar int_1 = json_int(1111);
+    JsonVar int_2 = json_int(2222);
     std::cout << "int_2.get_int() = " << int_2.get_int()  << std::endl;
     int_2.set_bool(true);
     std::cout << "int_2.get_bool() = " << int_2.get_bool()  << std::endl;
@@ -243,7 +253,7 @@ void variant_playground(){
 
     // check for any significant memory leaks when switching between int and very large array
     // Conclusion: The proper destructor seems to be autmatically called!
-    JsonVariant arr = json_array_variants();
+    JsonVar arr = json_array_variants();
     for(size_t i = 0; i < 10; i++){
         // turn into int
         arr.set_int(1);
@@ -251,17 +261,23 @@ void variant_playground(){
         // Convert to array and populate with ints
         arr.set_array();
         for(size_t j = 0; j < 10000; j++)
-            arr.get_array().push_back(JsonVariant(json_int(1)));
+            arr.get_array().push_back(JsonVar(json_int(1)));
         
     }
     
     std::cout << std::endl;
+
+
+
+
+    // variant_.emplace(variant(json_float(0.0)));
+    // variant_.emplace(0);
+
     
-    std::cout << "sizeof(JsonVariant) = " << sizeof(JsonVariant) << std::endl;
+    
+    std::cout << "sizeof(JsonVar) = " << sizeof(JsonVar) << std::endl;
     std::cout << "sizeof(json_var_array) = " << sizeof(json_var_array) << std::endl;
     std::cout << "sizeof(json_var_array.variant_) = " << sizeof(json_var_array.variant_) << std::endl;
-    
-
 
     // json_var.set_bool(true);
 
@@ -291,4 +307,75 @@ void variant_playground(){
     );
 
     std::cout << std::endl;
+
+
+    // VARIANT METHODS EXPLORATION
+
+    // json_int intint = 123;
+    json_variant variant_int (json_int(123));
+    json_variant variant_float (json_float(1.23));
+
+    std::cout << "std::get<json_int>(variant_int) = " << std::get<json_int>(variant_int) << std::endl;
+    variant_int.swap(variant_float);
+    std::cout << "std::get<json_float>(variant_int) = " << std::get<json_float>(variant_int) << std::endl;
+    // variant_int.emplace( json_variant(json_int(123)) );
+    // variant_int.emplace( 123 );
+    // variant_int.emplace( json_int(1) );
+    // variant_int.emplace( intint );
+    // variant_int = json_variant::emplace<json_int>;
+    // variant_int.emplace( std::in_place_type<json_int> );
+    // std::cout << "std::get<json_int>(variant_int) = " << std::get<json_int>(variant_int) << std::endl;
+
+    variant_int = json_variant(json_int(123));
+    std::cout << std::get<4>(variant_int) << std::endl;
+    variant_int = 321;
+    std::cout << std::get<json_int>(variant_int) << std::endl;
+    std::cout << *std::get_if<json_int>(&variant_int) << std::endl;
+    using T = std::decay_t< decltype(variant_int) >;
+    std::cout << "std::is_same_v<T, json_variant> = " << std::is_same_v<T, json_variant> << std::endl;
+    
+    
+    std::cout << "variant_int.index() = " << variant_int.index() << std::endl;
+    std::cout << "variant_int.valueless_by_exception() = " << variant_int.valueless_by_exception() << std::endl;
+
+
+    std::cout << std::endl;
+
+    // NESTED JSON TESTS BY HAND
+    {
+        JsonVar root_arr  = json_array_variants();
+        JsonVar intintint = json_int(123);
+        JsonVar arrarrarr = json_array_variants();
+        arrarrarr.push_to_array(intintint);
+        JsonVar objobjobj = json_object_variants();
+        json_kv_variant kvkvkv_1 = std::pair<json_string, JsonVar>("keykey1", json_string("Valval1"));
+        json_kv_variant kvkvkv_2 ("keykey2", json_int(2));
+        json_kv_variant kvkvkv_3 {"keykey3", json_int(3)};
+        // json_kv_variant kvkvkv_4 = ("keykey2", json_int(4)); // es a no wok
+        json_kv_variant kvkvkv_5 = {"keykey5", json_int(5)};
+        objobjobj.push_to_object(kvkvkv_1);
+        objobjobj.push_to_object(kvkvkv_2);
+        objobjobj.push_to_object(kvkvkv_3);
+        objobjobj.push_to_object(kvkvkv_5);
+        objobjobj.push_to_object( {"keykey6", json_int(6)} );
+
+        root_arr.push_to_array(intintint);              // lvalue
+        root_arr.push_to_array(json_int(456)); // rvalue
+        root_arr.push_to_array(arrarrarr); // rvalue
+        root_arr.push_to_array(objobjobj);
+
+        std::cout << sizeof(JsonVar) << std::endl;
+        std::cout << sizeof(root_arr) << std::endl;
+        std::cout << sizeof(root_arr.get_array()) << std::endl;
+        std::cout << root_arr.get_array().size() << std::endl;
+        std::cout << root_arr.get_array().capacity() << std::endl;
+        
+
+        // for(JsonVar var : root_arr.get_array()){
+        //     std::cout << int(var.get_type()) << std::endl;
+        // }
+
+    
+    }
+    
 }

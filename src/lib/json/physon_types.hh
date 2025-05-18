@@ -10,6 +10,15 @@
 #include <memory>
 
 
+
+#define log(x) std::cout << x << std::endl;
+
+#define QUOTATION_MARK      '\u0022'
+#define SOLLIDUS            '\u002F'
+#define SOLLIDUS_BACKWARDS  '\u005C'
+
+
+
 void json_error_get_variant_value(std::string error_msg){
     throw std::runtime_error("Error trying to get value from variant. " + error_msg);
 }
@@ -34,6 +43,19 @@ enum class JSON_TYPE {
     NONE, /** When no type is valid */
 };
 
+bool is_literal(JSON_TYPE type){
+    return  type == JSON_TYPE::NULL_    ||
+            type == JSON_TYPE::TRUE     ||
+            type == JSON_TYPE::FALSE    ||
+            type == JSON_TYPE::NUMBER   ||
+            type == JSON_TYPE::FLOAT    ||
+            type == JSON_TYPE::INTEGER  ||
+            type == JSON_TYPE::STRING;
+}
+bool is_container(JSON_TYPE type){
+    return  type == JSON_TYPE::ARRAY    ||
+            type == JSON_TYPE::OBJECT;
+}
 
 
 typedef std::string     json_string;

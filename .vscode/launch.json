@@ -190,7 +190,10 @@
             "name": "JSON (gdb)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/src/lib/json/build/physon",
+            "linux": {
+                "program": "${workspaceRoot}/build/debug_linux/src/lib/json/main_json"
+            },
+            // "program": "${workspaceFolder}/src/lib/json/build/physon",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/src/lib/json",
@@ -212,6 +215,12 @@
                 }
             ],
             "preLaunchTask": "json_build",
+            "presentation": {
+                "hidden": false,
+                "group": "",
+                "order": 1,
+                "panel": "dedicated",
+            }
 
         },
     ]

@@ -10,6 +10,7 @@
 #include "json_store.hh"
 #include "json_variant.hh"
 #include "json_union.hh"
+#include "json_serialize.hh"
 
 
 
@@ -86,6 +87,10 @@ int main (int argc, char **argv) {
 
         std::cout << std::endl << physon.stringify() << std::endl;
 
+        JsonSerializer serializer;
+        std::string serialized_str = serializer.serialize(physon.root_wrapper, physon.store);
+        std::cout << std::endl << serialized_str << std::endl << std::endl;
+        
     }
 
 
