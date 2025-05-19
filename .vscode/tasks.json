@@ -244,6 +244,20 @@
             ]
         },
         {
+            "label": "str8_run",
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/build/debug_linux/src/lib/str8/main_str8"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/src/lib/str8"
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "Debug build"
+            ]
+        },
+        {
             "label": "json_run",
             "type": "shell",
             "linux": {

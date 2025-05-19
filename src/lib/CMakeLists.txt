@@ -1,5 +1,8 @@
 
 add_subdirectory(json)
+if(LINUX)
+    add_subdirectory(str8)
+endif()
 
 add_library(lib
 
