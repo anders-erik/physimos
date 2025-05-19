@@ -1,5 +1,34 @@
 
 
+add_executable(main_drm
+    main_drm.cc
+)
+target_include_directories(main_drm PUBLIC 
+    /usr/include/drm # libdrm-dev uses <drm.h> isntead of <drm/drm.h>
+)
+target_link_libraries(main_drm PUBLIC 
+    drm
+)
+execute_process(
+    COMMAND bash -c "dpkg -l | grep libdrm-dev"
+    OUTPUT_VARIABLE libdrm_dev
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(
+    COMMAND bash -c "dpkg -l | grep libdrm2"
+    OUTPUT_VARIABLE libdrm_runtime
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+message(STATUS "libdrm_dev: _${libdrm_dev}_")
+message(STATUS "libdrm_runtime: _${libdrm_runtime}_")
+if("${libdrm_dev}" STREQUAL "")
+    message(FATAL_ERROR "libdrm-dev not installed.")
+elseif("${libdrm_runtime}" STREQUAL "")
+    message(FATAL_ERROR "libdrm-runtime not installed.")
+endif()
+
+
 set(WAYLAND 
     main.c
     protocols/xdg-shell-protocol.c

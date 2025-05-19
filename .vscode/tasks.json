@@ -258,6 +258,20 @@
             ]
         },
         {
+            "label": "drm_run",
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/build/debug_linux/src/window/wayland/main_drm"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/src/window/wayland"
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "Debug build"
+            ]
+        },
+        {
             "label": "json_run",
             "type": "shell",
             "linux": {
