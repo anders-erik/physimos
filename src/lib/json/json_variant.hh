@@ -6,11 +6,12 @@
 #include "physon_types.hh"
 
 
-
 struct JsonVar; // forward declare
 enum class json_type {
     null,
     boolean,
+    bool_true,
+    bool_false,
     number_int,
     number_float,
     string,
@@ -18,6 +19,16 @@ enum class json_type {
     object,
     array,
 };
+bool is_literal(json_type type){
+    return  type == json_type::null         ||
+            type == json_type::boolean      ||
+            type == json_type::bool_true    ||
+            type == json_type::bool_false   ||
+            type == json_type::number_int   ||
+            type == json_type::number_float ||
+            type == json_type::string;
+}
+
 typedef std::pair<json_string, JsonVar> json_kv_variant;
 typedef std::vector<json_kv_variant> json_object_variants;
 typedef std::vector<JsonVar> json_array_variants;
@@ -35,7 +46,10 @@ struct JsonVar {
     json_variant variant_;
     
     JsonVar()  {};
-    JsonVar(json_bool new_bool) : type {json_type::boolean}, variant_ {new_bool} {};
+    JsonVar(json_null new_null) : type {json_type::null}, variant_ {new_null} {};
+    JsonVar(json_bool new_bool) : variant_ {new_bool}  { 
+        type = new_bool ? json_type::bool_true : json_type::bool_false;
+    };
     JsonVar(json_int new_int) : type {json_type::number_int}, variant_ {new_int} {};
     JsonVar(json_float new_float) : type {json_type::number_float}, variant_ {new_float} {};
     JsonVar(json_string new_string) : type {json_type::string}, variant_ {new_string} {};
@@ -172,6 +186,19 @@ struct JsonVar {
         }
         
         throw std::runtime_error("Error trying to push value to non-array."); 
+    }
+    json_kv_variant& emplace_kv(json_string key, JsonVar value){
+
+        if(type != json_type::object)
+            throw std::runtime_error("Can't emplace KV when JsonVar is not an object.");
+
+        json_object_variants& object = get_object();
+
+        json_kv_variant& kv = object.emplace_back(  );
+        kv.first = key;
+        kv.second = value;
+        
+        return kv;
     }
     void push_to_object(const json_kv_variant& kv_to_push){
         if(type == json_type::object){
@@ -322,6 +349,7 @@ void variant_playground(){
     // variant_int.emplace( 123 );
     // variant_int.emplace( json_int(1) );
     // variant_int.emplace( intint );
+    variant_int.emplace<4>(123);
     // variant_int = json_variant::emplace<json_int>;
     // variant_int.emplace( std::in_place_type<json_int> );
     // std::cout << "std::get<json_int>(variant_int) = " << std::get<json_int>(variant_int) << std::endl;
@@ -375,6 +403,8 @@ void variant_playground(){
         //     std::cout << int(var.get_type()) << std::endl;
         // }
 
+        
+        
     
     }
     

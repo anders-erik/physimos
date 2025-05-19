@@ -5,12 +5,12 @@
 
 #include "physon.hh"
 #include "physon_types.hh"
+#include "json_serialize.hh"
 #include "physon_tests.hh"
 
 #include "json_store.hh"
 #include "json_variant.hh"
 #include "json_union.hh"
-#include "json_serialize.hh"
 
 
 
@@ -57,6 +57,40 @@ int main (int argc, char **argv) {
     else if(flag == json_flag::variant){
 
         variant_playground();
+
+        // ARRAY
+        JsonVar root_array = json_array_variants();
+        root_array.push_to_array(true);
+        root_array.push_to_array(false);
+        root_array.push_to_array(json_null(nullptr));
+
+        JsonSerializer serializer;
+        std::cout << serializer.serialize(root_array) << std::endl;
+
+        // OBJECT
+        JsonVar root_obj = json_object_variants();
+        root_obj.emplace_kv("key1", json_int(123));
+        root_obj.emplace_kv("key2", json_int(234));
+        // nested object
+        json_kv_variant& kv = root_obj.emplace_kv("key3", json_object_variants());
+        JsonVar& kv_value = kv.second;
+        kv_value.emplace_kv("k1", json_int(555));
+
+        // PRINT OBJECTS
+        std::string obj_str;
+
+        serializer.set_config( { serial_ws::minimized, 0 } );
+        obj_str = serializer.serialize(root_obj);
+        std::cout << obj_str << std::endl;
+
+        serializer.set_config( { serial_ws::oneline, 4 } );
+        obj_str = serializer.serialize(root_obj);
+        std::cout << obj_str << std::endl;
+
+        serializer.set_config( { serial_ws::new_lines, 4 } );
+        obj_str = serializer.serialize(root_obj);
+        std::cout << obj_str << std::endl;
+        
 
     }
     else if(flag == json_flag::config){
