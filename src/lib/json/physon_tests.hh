@@ -33,7 +33,7 @@ void JsonTest::test_conformance(){
     conforms("data/true.json");
     conforms("data/false.json");
 
-    conforms("data/name_literals_array.json");
+    conforms("data/literal_names_array.json");
     conforms("data/name_literals_nested_array.json");
     conforms("data/string_array.json");
     conforms("data/object.json");
@@ -74,7 +74,7 @@ void JsonTest::test_serialization(){
         psps("data/true.json");
         psps("data/false.json");
 
-        psps("data/name_literals_array.json");
+        psps("data/literal_names_array.json");
         psps("data/name_literals_nested_array.json");
         psps("data/string_array.json");
         psps("data/object.json");

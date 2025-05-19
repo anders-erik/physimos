@@ -13,15 +13,34 @@
 
 #define log(x) std::cout << x << std::endl;
 
+
+
 #define QUOTATION_MARK      '\u0022'
 #define SOLLIDUS            '\u002F'
 #define SOLLIDUS_BACKWARDS  '\u005C'
 
+#define SPACE               '\u0020'
+#define TAB                 '\u0009'
+#define NEW_LINE            '\u000A'
+#define CARRIAGE_RETURN     '\u000D'
 
 
-void json_error_get_variant_value(std::string error_msg){
-    throw std::runtime_error("Error trying to get value from variant. " + error_msg);
-}
+
+
+typedef std::string     json_string;
+typedef bool            json_bool;
+typedef std::nullptr_t  json_null;
+typedef double          json_float;
+typedef long long int   json_int;
+
+
+
+
+/*
+
+    STORE
+
+*/
 
 /** Original : store type */
 enum class JSON_TYPE {
@@ -42,7 +61,6 @@ enum class JSON_TYPE {
 
     NONE, /** When no type is valid */
 };
-
 bool is_literal(JSON_TYPE type){
     return  type == JSON_TYPE::NULL_    ||
             type == JSON_TYPE::TRUE     ||
@@ -58,44 +76,11 @@ bool is_container(JSON_TYPE type){
 }
 
 
-typedef std::string     json_string;
-typedef bool            json_bool;
-typedef std::nullptr_t  json_null;
-typedef double          json_float;
-typedef long long int   json_int;
 
 
-
-
-
-
-
-
-enum class token_type {
-
-    STRING =0,
-    NUMBER,
-    TRUE,
-    FALSE,
-    NULL_,
-
-    LEFT_SQUARE,
-    RIGHT_SQUARE,
-    LEFT_CURLY,
-    RIGHT_CURLY,
-    COLON,
-    COMMA,
-};
-
-struct Token {
-    // int id;
-    token_type type;
-    int str_start_i;
-    int str_length;
-
-    Token(token_type type, int str_start_i, int str_length) 
-        : type(type), str_start_i(str_start_i), str_length(str_length) {}
-};
+/*
+    PARSER
+*/
 
 enum class JSON_PARSE_STATE {
 

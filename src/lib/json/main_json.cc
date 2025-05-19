@@ -5,6 +5,7 @@
 
 #include "physon.hh"
 #include "physon_types.hh"
+#include "json_lexer.hh"
 #include "json_serialize.hh"
 #include "physon_tests.hh"
 
@@ -39,6 +40,7 @@ int main (int argc, char **argv) {
     
 
     enum class json_flag {
+        lexer,
         test,
         variant,
         config,
@@ -47,8 +49,18 @@ int main (int argc, char **argv) {
     } flag = json_flag::test;
 
 
+    if(flag == json_flag::lexer){
 
-    if(flag == json_flag::test){
+        std::string _json_string = load_file("data/literal_names_array.json");
+
+        JsonLexer lexer;
+
+        lexer.lex(_json_string);
+
+        lexer.print_tokens();
+
+    }
+    else if(flag == json_flag::test){
 
         JsonTest::test_conformance();
         JsonTest::test_serialization();
@@ -149,7 +161,7 @@ int main (int argc, char **argv) {
     else if(flag == json_flag::misc){
 
 
-        std::string _json_string = load_file("data/name_literals_array.json");
+        std::string _json_string = load_file("data/literal_names_array.json");
 
         Physon physon (_json_string);
 

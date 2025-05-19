@@ -29,7 +29,6 @@ struct Physon {
     json_store store; // store for all json data
     JsonWrapper root_wrapper; // the first element encountered in file
     ParserCursor cursor;  // source string cursor
-    std::vector<Token> tokens;
 
     // JsonValue val;
     // Json root;
@@ -80,7 +79,6 @@ struct Physon {
         PARSER
     */
     void parse();                   /** Parse the content string */
-    void print_tokens();
 
         /* advance */
     void index_advance();
@@ -504,13 +502,6 @@ bool Physon::root_no_container(){
     return cursor.container_trace_wrapper.empty();
 }
 
-void Physon::print_tokens() {
-    for (const auto& token : tokens) {
-        std::cout << "Token Type: " << static_cast<int>(token.type) 
-                  << ", Start Index: " << token.str_start_i
-                  << ", Length: " << token.str_length << std::endl;
-    }
-}
 
 
 JsonWrapper Physon::current_container(){
@@ -930,7 +921,6 @@ void Physon::parse_true_literal(){
     
     // std::cout << "true at "  << cursor.index << std::endl;
 
-    tokens.emplace_back(token_type::TRUE, cursor.index, 4);
     cursor.index += 4;
 
 };
@@ -941,7 +931,6 @@ void Physon::parse_false_literal(){
     if(!is_false_literal)
         json_error("Invalid false-literal at index " + std::to_string(cursor.index));
 
-    tokens.emplace_back(token_type::FALSE, cursor.index, 5);
     cursor.index += 5;
 
 };
@@ -954,7 +943,6 @@ void Physon::parse_null_literal(){
     
     // std::cout << "null at "  << cursor.index << std::endl;
 
-    tokens.emplace_back(token_type::NULL_, cursor.index, 4);
     cursor.index += 4;
 };
 
