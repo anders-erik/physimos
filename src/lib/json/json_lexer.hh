@@ -12,15 +12,17 @@ struct JsonLexer {
     JsonLexer() {};
     // JsonLexer(const std::string& _json_source) : json_source{_json_source} {};
 
-    void print_tokens();
-    std::vector<Token>& lex(std::string& _json_source);
+    static void print_tokens(Tokens& tokens);
+
+    Tokens lex(std::string& _json_source);
 
 
 private:
 
     std::string json_source;
     size_t index = 0;
-    std::vector<Token> tokens;
+    Tokens tokens;
+    std::vector<Token> _tokens;
 
     void reset_lexer();
 
@@ -43,16 +45,16 @@ private:
     void increment_index(int count);
     /** Returns current char at time of call. Increment index by one. */
     char consume_char();
-    int consume_null_literal();
-    int consume_true_literal();
-    int consume_false_literal();
+    size_t consume_null_literal();
+    size_t consume_true_literal();
+    size_t consume_false_literal();
     /** Throws on invalid string format.  */
-    int consume_string_literal();
+    size_t consume_string_literal();
     /** Consumes digits until non-digit encountered. */
-    int consume_digits();
+    size_t consume_digits();
     /** Throws on invalid number format. */
-    int consume_number_literal();
-    int consume_ws();
+    size_t consume_number_literal();
+    size_t consume_ws();
     
 
     // TOKENIZE 
@@ -79,6 +81,7 @@ private:
 
 void JsonLexer::reset_lexer(){
     index = 0;
+    _tokens.clear();
     tokens.clear();
     json_source.clear();
 }
@@ -99,8 +102,8 @@ char JsonLexer::consume_char(){
     return json_source[index++];
 }
 
-int JsonLexer::consume_ws(){
-    int ws_chars_consumed = 0;
+size_t JsonLexer::consume_ws(){
+    size_t ws_chars_consumed = 0;
 
     while(is_whitespace(json_source[index])){
         consume_char();
@@ -110,8 +113,8 @@ int JsonLexer::consume_ws(){
     return ws_chars_consumed;
 }
 
-int JsonLexer::consume_string_literal(){
-    int start_i = index;
+size_t JsonLexer::consume_string_literal(){
+    size_t start_i = index;
     // Skip quotation mark, but no gobbling in string literal
     index++;
 
@@ -128,7 +131,7 @@ int JsonLexer::consume_string_literal(){
         if( ch >= '\u0000' && ch < '\u0020'){
             throw_error("Error: unescaped control character in string. Found at index " + std::to_string(json_source[index]) );
         }
-        else if(ch == SOLLIDUS_BACKWARDS){
+        else if(ch == SOLLIDUS_REVERSE){
 
             // skip backwards sollidus
             index++;
@@ -143,8 +146,8 @@ int JsonLexer::consume_string_literal(){
             case SOLLIDUS:
                 new_string += SOLLIDUS;
                 break;
-            case SOLLIDUS_BACKWARDS:
-                new_string += SOLLIDUS_BACKWARDS;
+            case SOLLIDUS_REVERSE:
+                new_string += SOLLIDUS_REVERSE;
                 break;
             
             case 'b':
@@ -223,7 +226,7 @@ int JsonLexer::consume_string_literal(){
 }
 
 
-int JsonLexer::consume_null_literal(){
+size_t JsonLexer::consume_null_literal(){
     bool is_null_literal =  json_source[index+0] == 'n' &&
                             json_source[index+1] == 'u' &&
                             json_source[index+2] == 'l' &&
@@ -236,7 +239,7 @@ int JsonLexer::consume_null_literal(){
     
     return 4;
 }
-int JsonLexer::consume_true_literal(){
+size_t JsonLexer::consume_true_literal(){
     bool consume_true_literal =  json_source[index+0] == 't' &&
                             json_source[index+1] == 'r' &&
                             json_source[index+2] == 'u' &&
@@ -249,7 +252,7 @@ int JsonLexer::consume_true_literal(){
     
     return 4;
 }
-int JsonLexer::consume_false_literal(){
+size_t JsonLexer::consume_false_literal(){
     bool consume_false_literal = json_source[index+0] == 'f' &&
                             json_source[index+1] == 'a' &&
                             json_source[index+2] == 'l' &&
@@ -277,8 +280,8 @@ bool JsonLexer::is_non_zero_digit(char c){
     return (c >= '1' && c <= '9') ? true : false;
 };
 
-int JsonLexer::consume_digits(){
-    int digit_count = 0;
+size_t JsonLexer::consume_digits(){
+    size_t digit_count = 0;
 
     while(is_digit(current_char())){
         increment_index();
@@ -289,7 +292,7 @@ int JsonLexer::consume_digits(){
 }
 
 
-int JsonLexer::consume_number_literal(){
+size_t JsonLexer::consume_number_literal(){
     enum class number_state {
         negative_check,
         integral_digits,
@@ -300,7 +303,7 @@ int JsonLexer::consume_number_literal(){
         end
     } number_state = number_state::negative_check;
 
-    int start_index = index;
+    size_t start_index = index;
 
     // bool is_fractional = false;
 
@@ -415,50 +418,50 @@ bool JsonLexer::is_fractional_number_string(std::string number_string){
 
 
 void JsonLexer::tokenize_array_open(){
-    tokens.emplace_back(token_t::array_open, index++, 1);
+    tokens.emplace( { token_t::array_open, index++, 1 } );
 }
 void JsonLexer::tokenize_array_close(){
-    tokens.emplace_back(token_t::array_close, index++, 1);
+    tokens.emplace( { token_t::array_close, index++, 1 } );
 }
 void JsonLexer::tokenize_object_open(){
-    tokens.emplace_back(token_t::object_open, index++, 1);
+    tokens.emplace( { token_t::object_open, index++, 1 } );
 }
 void JsonLexer::tokenize_object_close(){
-    tokens.emplace_back(token_t::object_close, index++, 1);
+    tokens.emplace( { token_t::object_close, index++, 1 } );
 }
 void JsonLexer::tokenize_comma(){
-    tokens.emplace_back(token_t::comma, index++, 1);
+    tokens.emplace( { token_t::comma, index++, 1 } );
 }
 void JsonLexer::tokenize_colon(){
-    tokens.emplace_back(token_t::colon, index++, 1);
+    tokens.emplace( { token_t::colon, index++, 1 } );
 }
 void JsonLexer::tokenize_literal_null(){
-    int start_i = index;
-    tokens.emplace_back(token_t::null_, start_i, consume_null_literal());
+    size_t start_i = index;
+    tokens.emplace( { token_t::null_, start_i, consume_null_literal() } );
 }
 void JsonLexer::tokenize_literal_true(){
-    int start_i = index;
-    tokens.emplace_back(token_t::true_, start_i, consume_true_literal());
+    size_t start_i = index;
+    tokens.emplace( { token_t::true_, start_i, consume_true_literal() } );
 }
 void JsonLexer::tokenize_literal_false(){
-    int start_i = index;
-    tokens.emplace_back(token_t::false_, start_i, consume_false_literal());
+    size_t start_i = index;
+    tokens.emplace( { token_t::false_, start_i, consume_false_literal() } );
 }
 void JsonLexer::tokenize_literal_string(){
-    int start_i = index;
-    tokens.emplace_back(token_t::string_, start_i, consume_string_literal());
+    size_t start_i = index;
+    tokens.emplace( { token_t::string_, start_i, consume_string_literal() } );
 }
 void JsonLexer::tokenize_literal_number(){
-    int start_index = index;
-    int len = consume_number_literal();
-    Token& new_token = tokens.emplace_back(token_t::int_, start_index, len);
+    size_t start_index = index;
+    size_t len = consume_number_literal();
+    Token& new_token = tokens.emplace( { token_t::int_, start_index, len } );
 
     if(is_fractional_number_string(json_source.substr(start_index, len)))
         new_token.type = token_t::float_;
 }
 void JsonLexer::tokenize_ws(){
-    int index_start = index;
-    tokens.emplace_back(token_t::whitespace, index_start, consume_ws());
+    size_t index_start = index;
+    tokens.emplace( { token_t::whitespace, index_start, consume_ws() } );
 }
 
 
@@ -473,8 +476,7 @@ void JsonLexer::throw_error(std::string error_msg){
 }
 
 
-
-void JsonLexer::print_tokens() {
+void JsonLexer::print_tokens(Tokens& tokens) {
 
     std::cout << "Tokens: " << std::endl << std::endl;
 
@@ -482,7 +484,7 @@ void JsonLexer::print_tokens() {
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
     
     
-    for (const auto& token : tokens) {
+    for (const auto& token : tokens.get_vector()) {
         std::cout << std::setw(12) << token_type_to_string(token.type) << "  |" << std::endl;
     }
 
@@ -491,7 +493,8 @@ void JsonLexer::print_tokens() {
 
 
 
-std::vector<Token>& JsonLexer::lex(std::string& _json_source){
+
+Tokens JsonLexer::lex(std::string& _json_source){
 
     reset_lexer();
 
@@ -567,6 +570,7 @@ std::vector<Token>& JsonLexer::lex(std::string& _json_source){
     
     }
 
+    // return _tokens;
     return tokens;
 }
 

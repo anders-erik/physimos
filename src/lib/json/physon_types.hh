@@ -17,7 +17,7 @@
 
 #define QUOTATION_MARK      '\u0022'
 #define SOLLIDUS            '\u002F'
-#define SOLLIDUS_BACKWARDS  '\u005C'
+#define SOLLIDUS_REVERSE    '\u005C'
 
 #define SPACE               '\u0020'
 #define TAB                 '\u0009'

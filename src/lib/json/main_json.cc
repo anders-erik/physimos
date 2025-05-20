@@ -6,6 +6,7 @@
 #include "physon.hh"
 #include "physon_types.hh"
 #include "json_lexer.hh"
+#include "json_parser.hh"
 #include "json_serialize.hh"
 #include "physon_tests.hh"
 
@@ -40,29 +41,57 @@ int main (int argc, char **argv) {
     
 
     enum class json_flag {
-        lexer,
+        json,
         test,
         variant,
         config,
         beyond_ascii,
         misc,
-    } flag = json_flag::lexer;
+    } flag = json_flag::json;
 
 
-    if(flag == json_flag::lexer){
+    if(flag == json_flag::json){
 
         std::string _json_string;
+
         _json_string = load_file("data/literal_names_array.json");
         // _json_string = load_file("data/name_literals_nested_array.json");
         // _json_string = load_file("data/string_array.json");
         // _json_string = load_file("data/numbers.json");
         // _json_string = load_file("data/object_nested.json");
+        // _json_string = load_file("data/false.json");
 
-        JsonLexer lexer;
 
-        lexer.lex(_json_string);
+        class Json {
+        
+            std::string json_source;
+            Tokens tokens;
 
-        lexer.print_tokens();
+        public:
+
+            Json(std::string _json_source) : json_source {_json_source} {};
+
+            void process(){
+
+                JsonLexer lexer;
+                tokens = lexer.lex(json_source);
+                lexer.print_tokens(tokens);
+
+                JsonParser parser (json_source, tokens);                
+                JsonVar root_var = parser.parse();
+                
+                JsonSerializer serializer;
+                // serializer.set_config( {} );
+                std::string str = serializer.serialize(root_var);
+                std::cout << str << std::endl;
+
+            };
+
+        };
+
+        Json json (_json_string);
+        json.process();
+
 
     }
     else if(flag == json_flag::test){

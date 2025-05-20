@@ -301,7 +301,7 @@ std::string JsonSerializer::string_to_json_representation(std::string cpp_string
             // I print the regular sollidus as-is. Parsing DOES handle escaped sollidus!
             json_representation += "/";
         }
-        else if(ch == SOLLIDUS_BACKWARDS){
+        else if(ch == SOLLIDUS_REVERSE){
             json_representation += "\\";
             json_representation += "\\";
         }

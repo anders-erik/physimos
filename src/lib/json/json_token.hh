@@ -28,18 +28,69 @@ enum class token_t {
 struct Token {
     token_t type;
     /** First char of token in source string.  */
-    int str_start_i;
+    size_t str_start_i;
     /** Length of token in source string. */
-    int str_length;
+    size_t str_length;
 
     Token(token_t type) 
         : type(type) {};
-    Token(token_t type, int str_start_i, int str_length) 
+    Token(token_t type, size_t str_start_i, size_t str_length) 
         : type(type), str_start_i(str_start_i), str_length(str_length) {};
 
+    static bool is_literal(token_t type) {
+        return  type == token_t::string_    ||
+                type == token_t::int_       ||
+                type == token_t::uint_      ||
+                type == token_t::float_     ||
+                type == token_t::true_      ||
+                type == token_t::false_     ||
+                type == token_t::null_;
+    }
+    static bool is_literal(Token token) {
+        return  is_literal(token.type);
+    }
+    static bool is_new_value(token_t type) {
+        return  type == token_t::array_open     ||
+                type == token_t::object_open    ||
+                type == token_t::string_        ||
+                type == token_t::int_           ||
+                type == token_t::uint_          ||
+                type == token_t::float_         ||
+                type == token_t::true_          ||
+                type == token_t::false_         ||
+                type == token_t::null_;
+    }
+    static bool is_new_value(Token token) {
+        return  is_new_value(token.type);
+    }
 };
 
+class Tokens {
+    std::vector<Token> vec;
+    size_t current_index = 0;
+public:
 
+    void push(Token& token) {vec.push_back(token);};
+    Token& emplace(Token&& token) {return vec.emplace_back(token);};
+    size_t get_index() {return current_index;}
+    void reset_index() {current_index = 0;}
+    void clear() {reset_index(); vec.clear();};
+    Token& operator[](size_t index) {return vec[current_index];}
+    Token& current() {return vec[current_index];}
+    Token& next() {return vec[++current_index];}
+    void remove_ws() {
+        std::vector<Token> vec_no_ws;
+        for(Token& token : vec){
+            if(token.type == token_t::whitespace)
+                continue;
+            vec_no_ws.push_back(token);
+        }
+        vec = vec_no_ws;
+    }
+    bool current_is_in_bounds() {return (current_index < vec.size()) ? true:false;};
+    bool next_is_in_bounds() {return (current_index < vec.size()) ? true:false;};
+    std::vector<Token>& get_vector() {return vec;};
+};
 
 std::string token_type_to_string(token_t type){
 

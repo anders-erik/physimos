@@ -247,7 +247,7 @@ std::string Physon::string_to_json_representation(std::string cpp_string){
             // I print the regular sollidus as-is. Parsing DOES handle escaped sollidus!
             json_representation += "/";
         }
-        else if(ch == SOLLIDUS_BACKWARDS){
+        else if(ch == SOLLIDUS_REVERSE){
             json_representation += "\\";
             json_representation += "\\";
         }
@@ -823,7 +823,7 @@ json_string Physon::parse_string_literal(){
         if( ch >= '\u0000' && ch < '\u0020'){
             json_error("Error: unescaped control character in string. Found at index " + std::to_string(content[cursor.index]) );
         }
-        else if(ch == SOLLIDUS_BACKWARDS){
+        else if(ch == SOLLIDUS_REVERSE){
 
             // skip backwards sollidus
             cursor.index++;
@@ -838,8 +838,8 @@ json_string Physon::parse_string_literal(){
             case SOLLIDUS:
                 new_string += SOLLIDUS;
                 break;
-            case SOLLIDUS_BACKWARDS:
-                new_string += SOLLIDUS_BACKWARDS;
+            case SOLLIDUS_REVERSE:
+                new_string += SOLLIDUS_REVERSE;
                 break;
             
             case 'b':
