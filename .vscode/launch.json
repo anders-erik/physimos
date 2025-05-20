@@ -261,5 +261,43 @@
             }
 
         },
+
+        {
+            "name": "str8 (gdb)",
+            "type": "cppdbg",
+            "request": "launch",
+            "linux": {
+                "program": "${workspaceRoot}/build/debug_linux/src/lib/str8/main_str8"
+            },
+            // "program": "${workspaceFolder}/src/lib/json/build/physon",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/src/lib/str8",
+            "environment": [
+                { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Debug build",
+            "presentation": {
+                "hidden": false,
+                "group": "",
+                "order": 1,
+                "panel": "dedicated",
+            }
+
+        },
     ]
 }
