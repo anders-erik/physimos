@@ -46,12 +46,17 @@ int main (int argc, char **argv) {
         config,
         beyond_ascii,
         misc,
-    } flag = json_flag::test;
+    } flag = json_flag::lexer;
 
 
     if(flag == json_flag::lexer){
 
-        std::string _json_string = load_file("data/literal_names_array.json");
+        std::string _json_string;
+        _json_string = load_file("data/literal_names_array.json");
+        // _json_string = load_file("data/name_literals_nested_array.json");
+        // _json_string = load_file("data/string_array.json");
+        // _json_string = load_file("data/numbers.json");
+        // _json_string = load_file("data/object_nested.json");
 
         JsonLexer lexer;
 

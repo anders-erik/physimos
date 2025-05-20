@@ -20,14 +20,16 @@ enum class token_t {
     object_close,
     kv_separator,
     comma,
+    colon,
 
     whitespace,
 };
 
 struct Token {
-    // int id;
     token_t type;
+    /** First char of token in source string.  */
     int str_start_i;
+    /** Length of token in source string. */
     int str_length;
 
     Token(token_t type) 
@@ -35,7 +37,6 @@ struct Token {
     Token(token_t type, int str_start_i, int str_length) 
         : type(type), str_start_i(str_start_i), str_length(str_length) {};
 
-    static Token array_open() {return Token(token_t::array_open);};
 };
 
 
@@ -86,6 +87,10 @@ std::string token_type_to_string(token_t type){
     case token_t::comma:
         return "comma";
         break;
+    case token_t::colon:
+        return "colon";
+        break;
+
     case token_t::whitespace:
         return "ws";
         break;
