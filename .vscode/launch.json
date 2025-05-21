@@ -263,16 +263,16 @@
         },
 
         {
-            "name": "str8 (gdb)",
+            "name": "Str (gdb)",
             "type": "cppdbg",
             "request": "launch",
             "linux": {
-                "program": "${workspaceRoot}/build/debug_linux/src/lib/str8/main_str8"
+                "program": "${workspaceRoot}/build/debug_linux/src/lib/str/main_str"
             },
             // "program": "${workspaceFolder}/src/lib/json/build/physon",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/src/lib/str8",
+            "cwd": "${workspaceFolder}/src/lib/str",
             "environment": [
                 { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }
             ],
@@ -290,12 +290,12 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Debug build",
+            "preLaunchTask": "str_build",
             "presentation": {
-                "hidden": false,
-                "group": "",
-                "order": 1,
-                "panel": "dedicated",
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+                "close": false
             }
 
         },

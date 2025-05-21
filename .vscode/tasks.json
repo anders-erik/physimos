@@ -244,18 +244,29 @@
             ]
         },
         {
-            "label": "str8_run",
+            "label": "str_run",
             "type": "shell",
             "linux": {
-                "command": "${workspaceFolder}/build/debug_linux/src/lib/str8/main_str8"
+                "command": "${workspaceFolder}/build/debug_linux/src/lib/str/main_str"
             },
             "options": {
-                "cwd": "${workspaceFolder}/src/lib/str8"
+                "cwd": "${workspaceFolder}/src/lib/str"
             },
             "problemMatcher": [],
             "dependsOn": [
-                "Debug build"
+                "str_build"
             ]
+        },
+        {
+            "label": "str_build",
+            "type": "shell",
+            "linux": {
+                "command": "cmake --build --preset=debug_linux --target main_str"
+            },
+            "windows": {
+                "command": "cmake --build --preset=debug_windows --target main_str"
+            },
+            "problemMatcher": []
         },
         {
             "label": "drm_run",
