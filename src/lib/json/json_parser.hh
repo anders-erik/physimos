@@ -24,8 +24,9 @@ private:
     Tokens& tokens;
 
     JsonVar parse_array();
+    JsonVar parse_object();
 
-    JsonVar parse_string_literal(std::string string_literal);
+    json_string parse_string_literal(std::string string_literal);
     JsonVar parse_integer_str(std::string number_str);
     JsonVar parse_float_str(std::string number_str);
 
@@ -34,7 +35,7 @@ private:
     void throw_error(std::string error_msg);
 };
 
-JsonVar JsonParser::parse_string_literal(std::string string_literal){
+json_string JsonParser::parse_string_literal(std::string string_literal){
 
     // Remove quotes
     std::string unquoted_str = string_literal.substr(1, string_literal.size()-2);
@@ -50,7 +51,7 @@ JsonVar JsonParser::parse_string_literal(std::string string_literal){
         u2,
         u3,
         u4,
-    } state;
+    } state = str_parse_state::normal;
 
     std::string unicode_chars = "1234";
 
@@ -184,7 +185,7 @@ JsonVar JsonParser::parse_float_str(std::string number_str){
     json_float parsed_float;
 
     try {
-        parsed_float = std::stol(number_str);
+        parsed_float = std::stod(number_str);
     }
     catch(const std::exception& e)
     {
@@ -199,30 +200,28 @@ JsonVar JsonParser::parse_array(){
 
     JsonVar arr = json_array_variants();
 
+    // Non-progressing close-check
+    // {
     if(!tokens.next_is_in_bounds())
             throw_error("End of tokens inside array. ");
-
-    {
-    // Try to close right away
     size_t next_index = tokens.get_index() + 1;
     Token close_bracket_token = tokens[next_index];
-    if(close_bracket_token.type == token_t::array_close)
+    if(close_bracket_token.type == token_t::array_close){
+        tokens.next_w_bounds_check(); // actual increment
         return arr;
     }
+    // }
 
     while(true){
 
-        if(!tokens.next_is_in_bounds())
-            throw_error("End of tokens inside array. ");
-        
-        Token value_token = tokens.next();
+        Token value_token = tokens.next_w_bounds_check();
 
         if(Token::is_new_value(value_token))
             arr.push_to_array(parse_value(value_token));
         else
             throw_error("Value expected in array.");
         
-        Token end_of_value_token = tokens.next();
+        Token end_of_value_token = tokens.next_w_bounds_check();
         if(end_of_value_token.type == token_t::comma)
             continue;
         else if (end_of_value_token.type == token_t::array_close)
@@ -234,12 +233,56 @@ JsonVar JsonParser::parse_array(){
     
 }
 
-JsonVar JsonParser::parse_value(Token& token){
 
-    // if( ! tokens.next_is_in_bounds())
-    //         throw_error("End of tokens inside array. ");
+JsonVar JsonParser::parse_object(){
+
+    JsonVar object = json_object_variants();
+
+
+    // Try to close right away without progressing index
+    {
+    if(!tokens.next_is_in_bounds())
+            throw_error("End of tokens inside object. ");
+    size_t next_index = tokens.get_index() + 1;
+    Token close_brace_token = tokens[next_index];
+    if(close_brace_token.type == token_t::object_close){
+        tokens.next_w_bounds_check(); // actual increment
+        return object;
+    }
+    }
+
+    while(true){
+        
+        // KV check
+        Token key_token = tokens.next_w_bounds_check();
+        Token colon_token = tokens.next_w_bounds_check();
+        Token value_token = tokens.next_w_bounds_check();
+        if( !Token::is_string(key_token) || \
+            !Token::is_colon(colon_token) || \
+            !Token::is_new_value(value_token) )
+            throw_error("Invalid kv token sequence in object.");
+
+        // KV creation
+        std::string raw_json_str = json_source.substr(key_token.str_start_i, key_token.str_length);
+        json_string key = parse_string_literal(raw_json_str);
+
+        json_kv_variant kv (key, parse_value(value_token));
+        object.push_to_object(kv);
+        
+        // End of value checks
+        Token end_of_value_token = tokens.next();
+        if(end_of_value_token.type == token_t::comma)
+            continue;
+        else if (end_of_value_token.type == token_t::object_close)
+            return object;
+        else
+            throw_error("Comma or closing-brace expected after value in object.");
+
+    }
     
-    // Token token = tokens.next();
+}
+
+JsonVar JsonParser::parse_value(Token& token){
 
     JsonVar json_var;
 
@@ -249,8 +292,8 @@ JsonVar JsonParser::parse_value(Token& token){
     case token_t::whitespace :
         // if( tokens.next_is_in_bounds())
         //     return parse_literal(tokens.next());
-        throw_error("Cant parse whitespace.");
-        
+        throw_error("No whitespace expected in parser.");
+        // json_var = parse_value(tokens.next());
         break;
 
     case token_t::null_ :
@@ -274,19 +317,21 @@ JsonVar JsonParser::parse_value(Token& token){
         break;
 
     case token_t::string_ :
-        json_var = parse_string_literal(json_source.substr(token.str_start_i, token.str_length));
+        json_var = JsonVar(parse_string_literal(json_source.substr(token.str_start_i, token.str_length)));
         break;
 
     case token_t::array_open :
         json_var = parse_array();
         break;
 
+    case token_t::object_open :
+        json_var = parse_object();
+        break;
+
     default:
         throw_error("Token type not matched. ");
         break;
     }
-
-    
 
     return json_var;
 }
@@ -298,12 +343,13 @@ JsonVar JsonParser::parse(){
     tokens.reset_index();
     if(!tokens.current_is_in_bounds())
         throw_error("No tokens found.");
+    
+    if(tokens.get_count() == 1 && Token::is_ws(tokens.current()))
+        throw_error("Tried to parse a whitespace-only json source string. ");
 
     tokens.remove_ws();
     
     Token first_token = tokens.current();
-
-
 
     return parse_value(first_token);
 
@@ -311,12 +357,8 @@ JsonVar JsonParser::parse(){
 
 
 void JsonParser::throw_error(std::string error_msg){
-    std::string prev_token_type = token_type_to_string(tokens.current().type);
-    std::string curr_token_type = token_type_to_string(tokens.current().type);
-
-    std::string state_string = "\nPrevious token: " + prev_token_type + "\nCurrent token : " + curr_token_type;
-
-    std::string full_error_str = "Parser: " + error_msg + state_string;
+    // token_type_to_string
+    std::string full_error_str = "Parser: " + error_msg + tokens.get_state_string();
 
     throw std::runtime_error(full_error_str);
 }

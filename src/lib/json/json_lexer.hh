@@ -115,8 +115,6 @@ size_t JsonLexer::consume_ws(){
 
 size_t JsonLexer::consume_string_literal(){
     size_t start_i = index;
-    // Skip quotation mark, but no gobbling in string literal
-    index++;
 
     json_string new_string = "";
 
@@ -198,31 +196,25 @@ size_t JsonLexer::consume_string_literal(){
 
         }
         else if(ch == QUOTATION_MARK){
-            end_of_string = true;
+            // end_of_string = true;
+            break;
         }
         else {
             new_string += json_source[index];
         }
-    
 
         // Next char
         index++;
 
         if(index >= json_source.size())
-            throw_error("Error: Unclosed string literal. Expected closing quotation mark before end of content string.");
+            throw_error("Error: Unclosed string literal. Expected closing quotation mark before end of source string.");
     }
 
     // Move past closing quotation mark
     increment_index();
 
-    // Add string to store
-    // JsonWrapper new_value;
-    // new_value.type = JSON_TYPE::STRING;
-    // new_value.store_id = store.add_string(new_string);
-
-
-    return index - start_i;
-    // return new_string;
+    // Minus 1 because the quotation mark is not part of string 
+    return index - start_i - 1;
 }
 
 
@@ -448,7 +440,7 @@ void JsonLexer::tokenize_literal_false(){
     tokens.emplace( { token_t::false_, start_i, consume_false_literal() } );
 }
 void JsonLexer::tokenize_literal_string(){
-    size_t start_i = index;
+    size_t start_i = ++index; // skip quotation
     tokens.emplace( { token_t::string_, start_i, consume_string_literal() } );
 }
 void JsonLexer::tokenize_literal_number(){
@@ -497,6 +489,9 @@ void JsonLexer::print_tokens(Tokens& tokens) {
 Tokens JsonLexer::lex(std::string& _json_source){
 
     reset_lexer();
+
+    if(_json_source.size() == 0)
+        throw_error("Tried to lex an empty json source string. ");
 
     json_source = _json_source;
 
@@ -570,7 +565,6 @@ Tokens JsonLexer::lex(std::string& _json_source){
     
     }
 
-    // return _tokens;
     return tokens;
 }
 

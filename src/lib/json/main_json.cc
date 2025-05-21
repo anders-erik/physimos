@@ -3,16 +3,16 @@
 
 #include "examples/config_shape.hh"
 
-#include "physon.hh"
 #include "physon_types.hh"
-#include "json_lexer.hh"
-#include "json_parser.hh"
-#include "json_serialize.hh"
-#include "physon_tests.hh"
 
+#include "physon.hh"
+#include "physon_tests.hh"
 #include "json_store.hh"
-#include "json_variant.hh"
-#include "json_union.hh"
+
+#include "json.hh"
+#include "json_test.hh"
+
+// #include "json_union.hh"
 
 
 
@@ -42,62 +42,49 @@ int main (int argc, char **argv) {
 
     enum class json_flag {
         json,
+        json_test,
         test,
         variant,
         config,
         beyond_ascii,
         misc,
-    } flag = json_flag::json;
+    } flag = json_flag::json_test;
 
 
-    if(flag == json_flag::json){
+    if(flag == json_flag::json || flag == json_flag::json_test){
 
-        std::string _json_string;
+        if(flag == json_flag::json){
 
-        _json_string = load_file("data/literal_names_array.json");
-        // _json_string = load_file("data/name_literals_nested_array.json");
-        // _json_string = load_file("data/string_array.json");
-        // _json_string = load_file("data/numbers.json");
-        // _json_string = load_file("data/object_nested.json");
-        // _json_string = load_file("data/false.json");
+            std::string _json_string;
+
+            // _json_string = load_file("data/literal_names_array.json");
+            // _json_string = load_file("data/name_literals_nested_array.json");
+            // _json_string = load_file("data/string_array.json");
+            // _json_string = load_file("data/numbers.json");
+            // _json_string = load_file("data/object_nested.json");
+            // _json_string = load_file("data/object.json");
+            _json_string = load_file("data/shapes.json");
 
 
-        class Json {
-        
-            std::string json_source;
-            Tokens tokens;
+            Json json (_json_string);
+            json.lex();
+            json.print_tokens();
+            json.parse();
+            std::string serialized_json = json.serialize();
+            std::cout << serialized_json << std::endl;
+            
+        }
+        else if(flag == json_flag::json_test){
 
-        public:
+            JsonTest::test_conformance();
 
-            Json(std::string _json_source) : json_source {_json_source} {};
-
-            void process(){
-
-                JsonLexer lexer;
-                tokens = lexer.lex(json_source);
-                lexer.print_tokens(tokens);
-
-                JsonParser parser (json_source, tokens);                
-                JsonVar root_var = parser.parse();
-                
-                JsonSerializer serializer;
-                // serializer.set_config( {} );
-                std::string str = serializer.serialize(root_var);
-                std::cout << str << std::endl;
-
-            };
-
-        };
-
-        Json json (_json_string);
-        json.process();
-
+        }
 
     }
     else if(flag == json_flag::test){
 
-        JsonTest::test_conformance();
-        JsonTest::test_serialization();
+        PhysonTest::test_conformance();
+        PhysonTest::test_serialization();
         
     }
     else if(flag == json_flag::variant){

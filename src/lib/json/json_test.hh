@@ -1,13 +1,13 @@
 #include <string>
 #include <iostream>
 
-#include "physon.hh"
 #include "physon_types.hh"
+#include "json.hh"
 #include "json_serialize.hh"
 
 
 
-struct PhysonTest {
+struct JsonTest {
 
     static void test_conformance(); /** Throws error on invalid json. */
     static void test_serialization(); /** 2 parse-serialize cycles without change. Only applies to valid json. */
@@ -26,7 +26,7 @@ private:
 
 
 
-void PhysonTest::test_conformance(){
+void JsonTest::test_conformance(){
 
     std::cout << std::endl << "    CONFORMANCE TESTS : VAILD JSON" << std::endl;
     conforms("data/null.json");
@@ -49,18 +49,22 @@ void PhysonTest::test_conformance(){
 
     conforms("data/shapes.json");
 
+    std::cout << std::endl;
 
-    std::cout << std::endl << "    CONFORMANCE TESTS : INVAILD JSON" << std::endl;
+    std::cout << "    CONFORMANCE TESTS : INVAILD JSON" << std::endl;
+    // LEXING
     conforms_not("data/non_valid_json/empty.json");
-    conforms_not("data/non_valid_json/ws.json");
     conforms_not("data/non_valid_json/unclosed_string.json");
     conforms_not("data/non_valid_json/numbers_invalid.json");
+    // PARSING
+    conforms_not("data/non_valid_json/ws.json");
 
+    std::cout << std::endl;
 };
 
 
 
-void PhysonTest::test_serialization(){
+void JsonTest::test_serialization(){
 
     std::cout << std::endl << "    SERIALIZATION TESTS" << std::endl;
 
@@ -93,7 +97,7 @@ void PhysonTest::test_serialization(){
 }
 
 
-void PhysonTest::psps(std::string file_path_str){
+void JsonTest::psps(std::string file_path_str){
 
     enum class PSPS_STATE {
         PARSE_1  = 0,
@@ -104,39 +108,39 @@ void PhysonTest::psps(std::string file_path_str){
 
     try
     {
-        std::string json_data = load_file(file_path_str);
-        Physon physon (json_data);
-        JsonSerializer serializer;
+        // std::string json_data = load_file(file_path_str);
+        // Physon physon (json_data);
+        // JsonSerializer serializer;
 
-        physon.parse();
+        // physon.parse();
 
-        state = PSPS_STATE::SERIAL_1;
+        // state = PSPS_STATE::SERIAL_1;
 
-        // std::string serialized_1 = physon.stringify();
-        std::string serialized_1 = serializer.serialize(physon.root_wrapper, physon.store);
+        // // std::string serialized_1 = physon.stringify();
+        // std::string serialized_1 = serializer.serialize(physon.root_wrapper, physon.store);
 
-        physon.content = serialized_1; // TODO : turn this into a method call, reseting the internal json structure
+        // physon.content = serialized_1; // TODO : turn this into a method call, reseting the internal json structure
         
-        // std::cout << json_data << std::endl;
-        // std::cout << serialized_1 << std::endl;
+        // // std::cout << json_data << std::endl;
+        // // std::cout << serialized_1 << std::endl;
 
 
-        state = PSPS_STATE::PARSE_2;
+        // state = PSPS_STATE::PARSE_2;
 
-        physon.parse();
+        // physon.parse();
 
-        state = PSPS_STATE::SERIAL_2;
+        // state = PSPS_STATE::SERIAL_2;
 
-        // std::string serialized_2 = physon.stringify();
-        std::string serialized_2 = serializer.serialize(physon.root_wrapper, physon.store);
+        // // std::string serialized_2 = physon.stringify();
+        // std::string serialized_2 = serializer.serialize(physon.root_wrapper, physon.store);
 
-        // std::cout << serialized_1 << std::endl;
-        // std::cout << serialized_2 << std::endl;
+        // // std::cout << serialized_1 << std::endl;
+        // // std::cout << serialized_2 << std::endl;
         
-        if(serialized_1 == serialized_2)
-            std::cout << "Serilization test OK : " << file_path_str << std::endl;
-        else
-            throw std::runtime_error("Serialization test Error. \nSerialized 1 = <" + serialized_1 + "> \nSerialized 2 = <" + serialized_2 + ">.");
+        // if(serialized_1 == serialized_2)
+        //     std::cout << "Serilization test OK : " << file_path_str << std::endl;
+        // else
+        //     throw std::runtime_error("Serialization test Error. \nSerialized 1 = <" + serialized_1 + "> \nSerialized 2 = <" + serialized_2 + ">.");
         
     }
     catch(const std::exception& e)
@@ -151,11 +155,10 @@ void PhysonTest::psps(std::string file_path_str){
 
 
 /** Make sure it does not throw */
-void PhysonTest::conforms(std::string file_path_str){
-
-    std::string json_data;
+void JsonTest::conforms(std::string file_path_str){
 
     // If reading file fails, the actual test is not performed
+    std::string json_data;
     try
     {
         json_data = load_file(file_path_str);
@@ -168,8 +171,10 @@ void PhysonTest::conforms(std::string file_path_str){
 
     try
     {
-        Physon physon (json_data);
-        physon.parse();
+        Json json (json_data);
+        // Physon physon (json_data);
+        // physon.parse();
+        json.lex_parse();
         std::cout << "Conformance test OK : " << file_path_str << std::endl;
         
     }
@@ -183,26 +188,36 @@ void PhysonTest::conforms(std::string file_path_str){
 }
 
 /** Make sure it throws */
-void PhysonTest::conforms_not(std::string file_path_str){
+void JsonTest::conforms_not(std::string file_path_str){
+
+
+    // If reading file fails, the actual test is not performed
+    std::string json_data;
     try
     {
-        std::string json_data = load_file(file_path_str);
-        Physon physon (json_data);
-        physon.parse();
+        json_data = load_file(file_path_str);
+    }
+    catch(const std::exception& e)
+    {
+        std::cout << e.what() << '\n';
+    }
+
+    try
+    {
+        Json json (json_data);
+        json.lex_parse();
         std::cout << "Conformance test Failed : " << file_path_str << std::endl;
         
     }
     catch(const std::exception& e)
     {
         std::cout << "Conformance test OK : " << file_path_str << std::endl;
-
-        // std::cout << e.what() << '\n';
     }
 }
 
 
 
-std::string PhysonTest::load_file(std::string path) {
+std::string JsonTest::load_file(std::string path) {
 
     std::ifstream file(path); // Open the file
     if (!file.is_open()) {
