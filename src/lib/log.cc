@@ -149,7 +149,7 @@ void plog_error(LogScope logScope, LogError logError, std::string message){
 
 
     plib::fs_echo_append(full_log_path, full_log_string);
-
+    std::cout << full_log_string << std::endl;
 }
 
 
@@ -167,7 +167,7 @@ void plog_info(LogScope logScope, std::string message) {
 
     // ALWAYS LOG MAIN
     plib::fs_echo_append(physimos_root_dir + "/" + main_log_spath, full_log_string);
-    
+    std::cout << full_log_string << std::endl;
 }
 
 void plog_info(LogScope logScope, LogEvent logEvent, std::string message) {
@@ -183,6 +183,7 @@ void plog_info(LogScope logScope, LogEvent logEvent, std::string message) {
 
 
     plib::fs_echo_append(full_log_path, full_log_string);
+    std::cout << full_log_string << std::endl;
 }
 
 void plog_error(std::string scope, std::string error_type, std::string message){
@@ -190,9 +191,15 @@ void plog_error(std::string scope, std::string error_type, std::string message){
     std::string full_log_path = physimos_root_dir + "/" + main_log_spath;
 
     std::string time_string = get_current_timestring();
-    std::string full_log_string = "[ERROR] " + time_string + scope + error_type + "\"" + message + "\"";
+    std::string scope_string = "_" + scope + "_ ";
+    std::string type_string = "_" + error_type + "_ ";
+    std::string message_string = "\"" + message + "\"";
+
+    std::string full_log_string = "[ERROR] " + time_string + scope_string + type_string + message_string;
 
     plib::fs_echo_append(full_log_path, full_log_string);
+    std::cout << full_log_string << std::endl;
+    
 }
 
 }

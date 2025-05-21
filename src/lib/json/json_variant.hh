@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <optional>
 #include <type_traits>
 
 #include "physon_types.hh"
@@ -165,6 +165,22 @@ struct JsonVar {
         if(type == json_type::object)
             return std::get<json_object_variants>(variant_);
         throw std::runtime_error("Error trying to get value from variant. json_object_variants. ");
+    };
+    // std::optional<json_kv_variant&> find_in_object(json_string str_to_match){
+    json_kv_variant find_in_object(json_string str_to_match){
+
+        if(type != json_type::object)
+            throw std::runtime_error("Error: tried to get kv from non object variant.");
+
+        for (json_kv_variant& kv : get_object()){
+            if(kv.first == str_to_match)
+                return kv;
+        }
+
+        json_string empty_str = "";
+        JsonVar null_var;
+        json_kv_variant empty_kv {empty_str, null_var};
+        return empty_kv;
     };
 
 

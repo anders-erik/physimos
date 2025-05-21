@@ -281,8 +281,10 @@
                 "command": "${workspaceFolder}\\build\\debug_windows\\src\\lib\\json\\Debug\\main_json.exe"
             },
             "options": {
-                "cwd": "${workspaceFolder}/src/lib/json"
+                "cwd": "${workspaceFolder}/src/lib/json",
+                "env": {"PHYSIMOS_ROOT_DIR": "${workspaceFolder}" }
             },
+            "args": [],
             "problemMatcher": [],
             "dependsOn": [
                 "Debug build"

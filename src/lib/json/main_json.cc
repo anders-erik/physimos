@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 
-#include "examples/config_shape.hh"
+#include "examples/jphile_shape.hh"
 
 #include "physon_types.hh"
 
@@ -43,6 +43,7 @@ int main (int argc, char **argv) {
     enum class json_flag {
         json,
         json_test,
+        json_config,
         test,
         variant,
         config,
@@ -51,7 +52,7 @@ int main (int argc, char **argv) {
     } flag = json_flag::json_test;
 
 
-    if(flag == json_flag::json || flag == json_flag::json_test){
+    if(flag == json_flag::json || flag == json_flag::json_test || flag == json_flag::json_config){
 
         if(flag == json_flag::json){
 
@@ -77,6 +78,12 @@ int main (int argc, char **argv) {
         else if(flag == json_flag::json_test){
 
             JsonTest::test_conformance();
+
+        }
+        else if(flag == json_flag::json_config){
+
+            Phile file ("src/lib/json/data/shapes.json");
+            JPhileShape shape_config (file);
 
         }
 
@@ -129,13 +136,13 @@ int main (int argc, char **argv) {
     else if(flag == json_flag::config){
 
         // Shapes
-        std::string _json_string = load_file("data/shapes.json");
-        Shape config;
-        ConfigShape shape_config {_json_string};
-        std::vector<Shape>& shapes = shape_config.load_shapes();
-        for(Shape shape : shapes){
-            shape.print();
-        }
+        // std::string _json_string = load_file("data/shapes.json");
+        // Shape config;
+        // ConfigShape shape_config {_json_string};
+        // std::vector<Shape>& shapes = shape_config.load_shapes();
+        // for(Shape shape : shapes){
+        //     shape.print();
+        // }
 
     }
     if(flag == json_flag::beyond_ascii){
