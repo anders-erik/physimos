@@ -313,6 +313,30 @@
             "problemMatcher": []
         },
         {
+            "label": "physics_run",
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/build/debug_linux/src/physics/main_physics"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/src/physics",
+                "env": {"PHYSIMOS_ROOT_DIR": "${workspaceFolder}" }
+            },
+            "args": [],
+            "problemMatcher": [],
+            "dependsOn": [
+                "physics_build"
+            ]
+        },
+        {
+            "label": "physics_build",
+            "type": "shell",
+            "linux": {
+                "command": "cmake --build --preset=debug_linux --target main_physics"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "Debug configure",
             "type": "shell",
             "problemMatcher": [],
