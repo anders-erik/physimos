@@ -293,13 +293,14 @@
             },
             "options": {
                 "cwd": "${workspaceFolder}/src/lib/json",
-                "env": {"PHYSIMOS_ROOT_DIR": "${workspaceFolder}" }
+                "env": {
+                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
+                }
             },
             "args": [],
             "problemMatcher": [],
             "dependsOn": [
                 "Debug build"
-                // "json_build"
             ]
         },
         {
@@ -321,7 +322,9 @@
             },
             "options": {
                 "cwd": "${workspaceFolder}/src/physics",
-                "env": {"PHYSIMOS_ROOT_DIR": "${workspaceFolder}" }
+                "env": {
+                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
+                }
             },
             "args": [],
             "problemMatcher": [],
@@ -336,6 +339,30 @@
                 "command": "cmake --build --preset=debug_linux --target main_physics"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "run",
+            "detail": "Custom run task",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/debug_linux/src/lib/json/main_json",
+            "options": {
+                "cwd": "${workspaceFolder}/src/lib/json",
+                "env": {
+                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
+                }
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "Debug build"
+            ]
+        },
+        {
+            "label": "build",
+            "detail": "Custom build task",
+            "type": "shell",
+            "command": "time cmake --build --preset=debug_linux",
+            "problemMatcher": [],
+            "dependsOn": []
         },
         {
             "label": "Debug configure",
@@ -364,6 +391,7 @@
                 "command": "./build/debug_linux/physimos",
                 "options": {
                     "env": {
+                        "cwd": "${workspaceFolder}",
                         "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
                     }
                 }
@@ -375,6 +403,24 @@
                 "close": false
             },
             "dependsOn": "Debug build"
+        },
+        {
+            "label": "package_create",
+            "type": "shell",
+            "command": "./scripts/package_create.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "package_install",
+            "type": "shell",
+            "command": "sudo ./scripts/package_install.sh build/package_physimos.tar.gz /tmp/phys_install",
+            "problemMatcher": []
+        },
+        {
+            "label": "package_uninstall",
+            "type": "shell",
+            "command": "sudo ./scripts/package_uninstall.sh",
+            "problemMatcher": []
         }
     ]
 }

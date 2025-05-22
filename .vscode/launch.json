@@ -299,5 +299,43 @@
             }
 
         },
+        {
+            "name": "Debugger",
+            "type": "cppdbg",
+            "request": "launch",
+
+            // LINUX
+            "program": "${workspaceRoot}/build/debug_linux/src/lib/str/main_str",
+            // WINDOWS
+            
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/src/lib/str",
+            "environment": [
+                { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "str_build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+                "close": false
+            }
+
+        },
     ]
 }
