@@ -13,9 +13,9 @@
 
 class Json {
         
-            std::string json_source;
-            Tokens tokens;
-            JsonVar root_var;
+            std::string json_source;    // Original json content to parse
+            Tokens tokens;              // Lexed Json including whitespace
+            JsonVar root_var;           // Parsed Json - whitespace not included
             
             bool is_lexed = false;
             bool is_parsed = false;
@@ -24,12 +24,6 @@ class Json {
 
             Json(std::string _json_source) : json_source {_json_source} {};
 
-            JsonVar& get_root(){
-                if(!is_parsed)
-                    throw_error("Tried to access root value before successful parse.");
-                return root_var;
-            }
-
             void set_json_source(std::string _json_source){
                 json_source = _json_source;
                 is_lexed = false;
@@ -37,6 +31,9 @@ class Json {
             }
 
             void lex(){
+                if(is_lexed)
+                    std::cout << "Warning: Lexing already lexed json source. " << std::endl;
+
                 JsonLexer lexer;
                 tokens = lexer.lex(json_source);
                 is_lexed = true;
@@ -52,31 +49,20 @@ class Json {
 
                 if(tokens.get_count() < 1)
                     std::cout << "Warning: No tokens to parse. " << std::endl;
+                if(is_parsed)
+                    std::cout << "Warning: parsing already parsed tokens. " << std::endl;
                     
                 JsonParser parser (json_source, tokens); 
-                
-                // try
-                // {
                 root_var = parser.parse();
-                // }
-                // catch(const std::exception& e)
-                // {
-                //     std::cout << "Json Parsing error." << std::endl;
-                //     std::cerr << e.what() << '\n';
-                // }
 
                 is_parsed = true;
                 return root_var;
             }
 
-            JsonVar& lex_parse(){
-                lex();
-                return parse();
-            };
-
-
-            JsonVar& find() {
-
+            JsonVar& get_root(){
+                if(!is_parsed)
+                    throw_error("Tried to access root value before successful parse.");
+                return root_var;
             }
 
             std::string serialize() {
@@ -90,6 +76,26 @@ class Json {
                 return serializer.serialize(root_var);
             }
 
+            JsonVar& lex_parse(){
+                lex();
+                return parse();
+            };
+            JsonVar& lex_parse(std::string _json_source){
+                set_json_source(_json_source);
+                lex();
+                return parse();
+            };
+            std::string lex_parse_serialize(){
+                lex();
+                parse();
+                return serialize();
+            };
+            std::string lex_parse_serialize(std::string _json_source){
+                set_json_source(_json_source);
+                lex();
+                parse();
+                return serialize();
+            };
 
             static void throw_error(std::string error_msg){
                 std::string base_msg = "Json Error: \n";

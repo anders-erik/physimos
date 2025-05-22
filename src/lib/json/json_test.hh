@@ -94,6 +94,8 @@ void JsonTest::test_serialization(){
 
         psps("data/shapes.json");
     }
+
+    std::cout << std::endl;
 }
 
 
@@ -104,53 +106,61 @@ void JsonTest::psps(std::string file_path_str){
         SERIAL_1 = 1,
         PARSE_2  = 2,
         SERIAL_2 = 3,
+        EQUALITY = 4,
     } state = PSPS_STATE::PARSE_1;
 
+    // If reading file fails, the actual test is not performed
+    std::string json_data;
     try
     {
-        // std::string json_data = load_file(file_path_str);
-        // Physon physon (json_data);
-        // JsonSerializer serializer;
-
-        // physon.parse();
-
-        // state = PSPS_STATE::SERIAL_1;
-
-        // // std::string serialized_1 = physon.stringify();
-        // std::string serialized_1 = serializer.serialize(physon.root_wrapper, physon.store);
-
-        // physon.content = serialized_1; // TODO : turn this into a method call, reseting the internal json structure
-        
-        // // std::cout << json_data << std::endl;
-        // // std::cout << serialized_1 << std::endl;
-
-
-        // state = PSPS_STATE::PARSE_2;
-
-        // physon.parse();
-
-        // state = PSPS_STATE::SERIAL_2;
-
-        // // std::string serialized_2 = physon.stringify();
-        // std::string serialized_2 = serializer.serialize(physon.root_wrapper, physon.store);
-
-        // // std::cout << serialized_1 << std::endl;
-        // // std::cout << serialized_2 << std::endl;
-        
-        // if(serialized_1 == serialized_2)
-        //     std::cout << "Serilization test OK : " << file_path_str << std::endl;
-        // else
-        //     throw std::runtime_error("Serialization test Error. \nSerialized 1 = <" + serialized_1 + "> \nSerialized 2 = <" + serialized_2 + ">.");
-        
+        json_data = load_file(file_path_str);
     }
     catch(const std::exception& e)
     {
-        std::cout << "Exception thrown during serialization testing.";
-        std::cout << "State : " << int(state) << std::endl;
-        std::cout << "file : " << file_path_str << std::endl;
-
         std::cout << e.what() << '\n';
+        return;
     }
+
+    try
+    {
+        Json json (json_data);
+        JsonSerializer serializer;
+
+        // PS 1
+        state = PSPS_STATE::PARSE_1;
+        JsonVar parse_1 = json.lex_parse();
+
+        state = PSPS_STATE::SERIAL_1;
+        std::string serial_1 = serializer.serialize(parse_1);
+
+
+        // PS 2
+        json.set_json_source(serial_1);
+
+        state = PSPS_STATE::PARSE_2;
+        JsonVar parse_2 = json.lex_parse();
+
+        state = PSPS_STATE::SERIAL_2;
+        std::string serial_2 = serializer.serialize(parse_2);
+
+
+        // EQUALITY
+        state = PSPS_STATE::EQUALITY;
+        if(serial_1 != serial_2)
+            throw std::runtime_error("Type: Serial_1 != Serial_2.");
+
+        std::cout << "Conformance test OK : " << file_path_str << std::endl;
+
+    }
+    catch(const std::exception& e)
+    {
+        std::cout << "Exception thrown during serialization testing.\n";
+        std::cout << "    State : " << int(state) << std::endl;
+        std::cout << "    file : " << file_path_str << std::endl;
+
+        std::cout << "    " << e.what() << '\n';
+    }
+
 }
 
 
