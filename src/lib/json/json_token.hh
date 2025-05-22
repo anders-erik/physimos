@@ -124,6 +124,12 @@ struct Token {
     static bool is_string(Token token) {
         return  token.type == token_t::string_ ? true : false;
     }
+    static bool is_array_close(Token token) {
+        return  token.type == token_t::array_close ? true : false;
+    }
+    static bool is_object_close(Token token) {
+        return  token.type == token_t::object_close ? true : false;
+    }
     static bool is_colon(Token token) {
         return  token.type == token_t::colon ? true : false;
     }
@@ -144,15 +150,19 @@ public:
     void push(Token& token) {vec.push_back(token);};
     Token& emplace(Token&& token) {return vec.emplace_back(token);};
     size_t get_index() {return current_index;}
-    size_t get_count() {return vec.size();}
+    void decrement_index() {
+        if(--current_index > vec.size())
+            throw_bounds_error("when trying to decrement index.");
+    }
     void reset_index() {current_index = 0;}
+    size_t get_count() {return vec.size();}
     void clear() {reset_index(); vec.clear();};
     Token& operator[](size_t index) {return vec[index];}
     Token& current() {return vec[current_index];}
     Token& next() {return vec[++current_index];}
     Token& next_w_bounds_check() {
         if(++current_index >= vec.size())
-            throw_bounds_error();
+            throw_bounds_error("when trying to grab next token.");
         return vec[current_index];
     }
     void remove_ws() {
@@ -190,10 +200,10 @@ public:
         }
         return state_string;
     }
-    void throw_bounds_error(){
+    void throw_bounds_error(std::string when_msg){
         --current_index; // move back to in bounds
         std::string state_string = get_state_string();
-        std::string error_msg = "Out of bounds error when trying to grab next token.";
+        std::string error_msg = "Out of bounds error." + when_msg;
         throw std::runtime_error(error_msg + state_string);
     };
 };

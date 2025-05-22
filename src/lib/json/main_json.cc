@@ -60,11 +60,11 @@ int main (int argc, char **argv) {
 
             // _json_string = load_file("data/literal_names_array.json");
             // _json_string = load_file("data/name_literals_nested_array.json");
-            // _json_string = load_file("data/string_array.json");
+            _json_string = load_file("data/string_array.json");
             // _json_string = load_file("data/numbers.json");
             // _json_string = load_file("data/object_nested.json");
             // _json_string = load_file("data/object.json");
-            _json_string = load_file("data/shapes.json");
+            // _json_string = load_file("data/shapes.json");
 
 
             Json json (_json_string);

@@ -26,7 +26,10 @@ private:
     JsonVar parse_array();
     JsonVar parse_object();
 
+    /** Unquoted json source string as input.  */
     json_string parse_string_literal(std::string string_literal);
+    char unicode_sequence_to_ASCII(std::string unicode_sequence);
+    char json_escape_char_to_value(char escape_char);
     JsonVar parse_integer_str(std::string number_str);
     JsonVar parse_float_str(std::string number_str);
 
@@ -35,131 +38,92 @@ private:
     void throw_error(std::string error_msg);
 };
 
-json_string JsonParser::parse_string_literal(std::string string_literal){
+char JsonParser::unicode_sequence_to_ASCII(std::string unicode_sequence){
 
-    // Remove quotes
-    std::string unquoted_str = string_literal.substr(1, string_literal.size()-2);
+    unsigned int unicode_value_decimal;
+    std::stringstream _stringstream;
+    _stringstream << std::hex << unicode_sequence;
+    _stringstream >> unicode_value_decimal;
+    // log(unicode_value_decimal);
+
+    // Enforce ASCII
+    if(unicode_value_decimal > 0x7F)
+        throw_error("ERROR: non-ASCII unicode values in string are not yet supported.");
+
+    return static_cast<char>(unicode_value_decimal);
+}
+char JsonParser::json_escape_char_to_value(char escape_char){
+
+    switch (escape_char)
+    {
+
+    case QUOTATION_MARK:
+        return QUOTATION_MARK;
+        break;
+    case SOLLIDUS:
+        return SOLLIDUS;
+        break;
+    case SOLLIDUS_REVERSE:
+        return SOLLIDUS_REVERSE;
+        break;
+    case 'b':
+        return '\u0008';
+        break;
+    case 'f':
+        return '\u000C';
+        break;
+    case 'n':
+        return '\u000A';
+        break;
+    case 'r':
+        return '\u000D';
+        break;
+    case 't':
+        return '\u0009';
+        break;
+    case 'u':
+        throw_error("String escape char: 'u' does not correspond to char.");
+        break;
+    default:
+        throw_error("String escape char: invalid char.");
+        break;
+
+    }
+
+    return 0;
+}
+
+json_string JsonParser::parse_string_literal(std::string string_literal){
 
     // Literal value to return
     json_string new_string = "";
 
-    enum class str_parse_state {
-        normal,
-        escape_check,
-        escape_skip,
-        u1,
-        u2,
-        u3,
-        u4,
-    } state = str_parse_state::normal;
+    // Parse loop
+    for(size_t i = 0; i < string_literal.length(); i++){
 
-    std::string unicode_chars = "1234";
+        /** Current char in the json-source string literal.  */
+        char ch = string_literal[i];
 
-
-    for(char& ch : string_literal){
-
-        switch (state)
-        {
-
-        case str_parse_state::normal :
-            if(ch == SOLLIDUS_REVERSE){
-                state = str_parse_state::escape_check;
-            }
-            else {
-                new_string += ch;
-            }
-            break;
-
-
-        case str_parse_state::escape_check :
-
-            switch (ch)
-            {
-
-            case QUOTATION_MARK:
-                new_string += QUOTATION_MARK;
-                break;
-            case SOLLIDUS:
-                new_string += SOLLIDUS;
-                break;
-            case SOLLIDUS_REVERSE:
-                new_string += SOLLIDUS_REVERSE;
-                break;
-            
-            case 'b':
-                new_string += '\u0008';
-                break;
-            case 'f':
-                new_string += '\u000C';
-                break;
-            case 'n':
-                new_string += '\u000A';
-                break;
-            case 'r':
-                new_string += '\u000D';
-                break;
-            case 't':
-                new_string += '\u0009';
-                break;
-
-            case 'u':
-                state = str_parse_state::u1;
-                unicode_chars = "1234"; // reset
-                break;
-            
-            default:
-                break;
-            }
-
-            break;
-
-        
-        // Parse unicode : '\uXXXX'
-        // Currently only supports ASCII
-        case str_parse_state::u1 :
-            unicode_chars[0] = ch;
-            state = str_parse_state::u2;
-            break;
-        case str_parse_state::u2 :
-            unicode_chars[1] = ch;
-            state = str_parse_state::u3;
-            break;
-        case str_parse_state::u3 :
-            unicode_chars[2] = ch;
-            state = str_parse_state::u4;
-            break;
-        case str_parse_state::u4 :
-            unicode_chars[3] = ch;
-            {
-                unsigned int unicode_value_decimal;
-                std::stringstream _stringstream;
-                _stringstream << std::hex << unicode_chars;
-                _stringstream >> unicode_value_decimal;
-
-                // log(unicode_digits);
-                // log(unicode_value_decimal);
-
-                // ASCII
-                if(unicode_value_decimal < 0x7F){
-                    new_string += static_cast<char>(unicode_value_decimal);
-                }
-                else {
-                    throw_error("ERROR: non-ASCII unicode values in string are not yet supported.");
-                }
-            }
-
-            state = str_parse_state::normal;
-            break; 
-
-
-        default:
-            break;
+        // Relies on lexer to have caught invalid quotes and control chars.
+        if(ch != SOLLIDUS_REVERSE){
+            new_string += ch;
+            continue;
         }
-        // End state : str_parse_state
 
+        // Skip escape char
+        ch = string_literal[++i];
 
+        // Single-char escape values
+        if(ch != 'u'){
+            new_string += json_escape_char_to_value(ch);
+            continue;
+        }
+        
+        // Unicode sequence - only ascii
+        std::string unicode_chars = string_literal.substr(i+1, 4);
+        new_string += unicode_sequence_to_ASCII(unicode_chars);
+        i += 4;
     }
-
 
     return new_string;
 };
@@ -198,34 +162,32 @@ JsonVar JsonParser::parse_float_str(std::string number_str){
 
 JsonVar JsonParser::parse_array(){
 
-    JsonVar arr = json_array_variants();
+    JsonVar array = json_array_variants();
 
-    // Non-progressing close-check
-    // {
-    if(!tokens.next_is_in_bounds())
-            throw_error("End of tokens inside array. ");
-    size_t next_index = tokens.get_index() + 1;
-    Token close_bracket_token = tokens[next_index];
-    if(close_bracket_token.type == token_t::array_close){
-        tokens.next_w_bounds_check(); // actual increment
-        return arr;
-    }
-    // }
+    // Try to close right away
+    if(Token::is_array_close(tokens.next_w_bounds_check()))
+            return array;
 
+    // Reset index as next token was not 'array close'
+    tokens.decrement_index();
+
+
+    // Value-parsing
     while(true){
 
         Token value_token = tokens.next_w_bounds_check();
 
         if(Token::is_new_value(value_token))
-            arr.push_to_array(parse_value(value_token));
+            array.push_to_array(parse_value(value_token));
         else
             throw_error("Value expected in array.");
         
+        // End of Value check
         Token end_of_value_token = tokens.next_w_bounds_check();
-        if(end_of_value_token.type == token_t::comma)
+        if(Token::is_comma(end_of_value_token))
             continue;
-        else if (end_of_value_token.type == token_t::array_close)
-            return arr;
+        else if (Token::is_array_close(end_of_value_token))
+            return array;
         else
             throw_error("Comma or closing-bracket expected after value in array.");
 
@@ -238,18 +200,13 @@ JsonVar JsonParser::parse_object(){
 
     JsonVar object = json_object_variants();
 
+    // Try to close right away
+    if(Token::is_object_close(tokens.next_w_bounds_check()))
+            return object;
 
-    // Try to close right away without progressing index
-    {
-    if(!tokens.next_is_in_bounds())
-            throw_error("End of tokens inside object. ");
-    size_t next_index = tokens.get_index() + 1;
-    Token close_brace_token = tokens[next_index];
-    if(close_brace_token.type == token_t::object_close){
-        tokens.next_w_bounds_check(); // actual increment
-        return object;
-    }
-    }
+    // Reset index as next token was not 'object close
+    tokens.decrement_index();
+
 
     while(true){
         
@@ -270,10 +227,10 @@ JsonVar JsonParser::parse_object(){
         object.push_to_object(kv);
         
         // End of value checks
-        Token end_of_value_token = tokens.next();
-        if(end_of_value_token.type == token_t::comma)
+        Token end_of_value_token = tokens.next_w_bounds_check();
+        if(Token::is_comma(end_of_value_token))
             continue;
-        else if (end_of_value_token.type == token_t::object_close)
+        else if (Token::is_object_close(end_of_value_token))
             return object;
         else
             throw_error("Comma or closing-brace expected after value in object.");

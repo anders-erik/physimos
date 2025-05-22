@@ -299,6 +299,7 @@
             "problemMatcher": [],
             "dependsOn": [
                 "Debug build"
+                // "json_build"
             ]
         },
         {

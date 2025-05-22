@@ -28,12 +28,14 @@ private:
 
 
     // STATIC
-    static bool is_whitespace(char ch);
-    static bool is_digit(char ch);
-    static bool is_non_zero_digit(char ch);
+    static bool is_whitespace(char c);
+    static bool is_digit(char c);
+    static bool is_non_zero_digit(char c);
+    static bool is_plus_minus(char c);
+    static bool is_hex_digit(char c);
     /**Only checks for existence of '.' */
     static bool is_fractional_number_string(std::string number_string);
-
+    bool is_unicode_quad(const std::string& four_unicode_digits);
 
     // QUERY
     /** Get current char without affecting index. */
@@ -45,6 +47,8 @@ private:
     void increment_index(int count);
     /** Returns current char at time of call. Increment index by one. */
     char consume_char();
+    /** Increments first, then returns the current char. */
+    char next_char();
     size_t consume_null_literal();
     size_t consume_true_literal();
     size_t consume_false_literal();
@@ -68,7 +72,7 @@ private:
     void tokenize_literal_null();
     void tokenize_literal_true();
     void tokenize_literal_false();
-    void tokenize_literal_string();
+    constexpr void tokenize_literal_string();
     void tokenize_literal_number();
     /** Increment index and create ws token if ws present. */
     void tokenize_ws();
@@ -101,6 +105,9 @@ void JsonLexer::increment_index(int count){
 char JsonLexer::consume_char(){
     return json_source[index++];
 }
+char JsonLexer::next_char(){
+    return json_source[++index];
+}
 
 size_t JsonLexer::consume_ws(){
     size_t ws_chars_consumed = 0;
@@ -113,98 +120,65 @@ size_t JsonLexer::consume_ws(){
     return ws_chars_consumed;
 }
 
+bool JsonLexer::is_unicode_quad(const std::string& four_unicode_digits){
+
+    for(const char& ch : four_unicode_digits)
+        if(! (is_hex_digit(ch)))
+            return false;
+    
+    return true;
+}
+
 size_t JsonLexer::consume_string_literal(){
+    
     size_t start_i = index;
+    char ch;
 
-    json_string new_string = "";
-
-    bool end_of_string = false;
-
-
-    while( !end_of_string ){
+    while( true ){
 
         // Current char
-        char ch = json_source[index];
+        ch = current_char();
         
         if( ch >= '\u0000' && ch < '\u0020'){
             throw_error("Error: unescaped control character in string. Found at index " + std::to_string(json_source[index]) );
         }
         else if(ch == SOLLIDUS_REVERSE){
 
-            // skip backwards sollidus
-            index++;
-            ch = json_source[index];
+            // skip reverse sollidus
+            ch = next_char();
 
             switch (ch)
             {
 
-            case QUOTATION_MARK:
-                new_string += QUOTATION_MARK;
-                break;
-            case SOLLIDUS:
-                new_string += SOLLIDUS;
-                break;
-            case SOLLIDUS_REVERSE:
-                new_string += SOLLIDUS_REVERSE;
-                break;
-            
-            case 'b':
-                new_string += '\u0008';
-                break;
-            case 'f':
-                new_string += '\u000C';
-                break;
-            case 'n':
-                new_string += '\u000A';
-                break;
-            case 'r':
-                new_string += '\u000D';
-                break;
-            case 't':
-                new_string += '\u0009';
-                break;
+                case QUOTATION_MARK:
+                case SOLLIDUS:
+                case SOLLIDUS_REVERSE:
+                case 'b':
+                case 'f':
+                case 'n':
+                case 'r':
+                case 't':
+                    break;
 
-            case 'u':
-                // Parse unicode : '\uXXXX'
-                // Currently only supports ASCII
-                {
-                    std::string unicode_digits = json_source.substr(index+1, 4);
-
-                    unsigned int unicode_value_decimal;
-                    std::stringstream _stringstream;
-                    _stringstream << std::hex << unicode_digits;
-                    _stringstream >> unicode_value_decimal;
-
-                    // log(unicode_digits);
-                    // log(unicode_value_decimal);
-
-                    // ASCII
-                    if(unicode_value_decimal < 0x7F){
-                        new_string += static_cast<char>(unicode_value_decimal);
-                    }
-                    else {
-                        throw_error("ERROR: non-ASCII unicode values in string are not yet supported.");
-                    }
-                }
-                // move to last unicode digit
-                index += 4;
-                break;
-            
-            default:
-                break;
+                case 'u':
+                    if(!is_unicode_quad(json_source.substr(index+1, 4)))
+                        throw_error("Non valid unicode escape characters.");
+                    increment_index(4);
+                    break;
+                
+                default:
+                    throw_error("Invalid escape character.");
+                    break;
+     
             }
 
         }
         else if(ch == QUOTATION_MARK){
-            // end_of_string = true;
             break;
-        }
-        else {
-            new_string += json_source[index];
         }
 
         // Next char
-        index++;
+        increment_index();
 
         if(index >= json_source.size())
             throw_error("Error: Unclosed string literal. Expected closing quotation mark before end of source string.");
@@ -262,8 +236,8 @@ size_t JsonLexer::consume_false_literal(){
 
 
 
-bool JsonLexer::is_whitespace(char ch){
-    return ch == SPACE || ch == TAB || ch == NEW_LINE || ch == CARRIAGE_RETURN;
+bool JsonLexer::is_whitespace(char c){
+    return c == SPACE || c == TAB || c == NEW_LINE || c == CARRIAGE_RETURN;
 }
 bool JsonLexer::is_digit(char c){
     return (c >= '0' && c <= '9') ? true : false;
@@ -271,6 +245,14 @@ bool JsonLexer::is_digit(char c){
 bool JsonLexer::is_non_zero_digit(char c){
     return (c >= '1' && c <= '9') ? true : false;
 };
+bool JsonLexer::is_plus_minus(char c){
+    return (c == '+' || c == '-') ? true : false;
+}
+bool JsonLexer::is_hex_digit(char c){
+    return (c >= '0' && c <= '9') || 
+            (c >= 'A' && c <= 'F') || 
+            (c >= 'a' && c <= 'f') ? true : false;
+}
 
 size_t JsonLexer::consume_digits(){
     size_t digit_count = 0;
@@ -297,46 +279,40 @@ size_t JsonLexer::consume_number_literal(){
 
     size_t start_index = index;
 
-    // bool is_fractional = false;
-
-    std::string string_to_parse = "";
-
 
     while (number_state != number_state::end)
     {
 
+        /** The 'current_char()' in number lexing loop.  */
+        char ch = current_char();
+
         switch (number_state){
         
         case number_state::negative_check:
-            if(current_char() == '-'){
-                string_to_parse += "-";
-                index++;
-            }
+            if(ch == '-')
+                increment_index();
+
             number_state = number_state::integral_digits;
             break;
 
 
         case number_state::integral_digits:
-            if (current_char() == '0'){
-                string_to_parse += "0";
-                index++;
-            }
-            else if (is_non_zero_digit(current_char())) {
+            if (ch == '0')
+                increment_index();
+            else if (is_non_zero_digit(ch))
                 consume_digits();
-            }
-            else {
+            else
                 throw_error("First digit in number trailing leading '-' not valid.");
-            }
+
             number_state = number_state::fraction;
             break;
 
 
         case number_state::fraction:
-            if(current_char() == '.'){
-                // is_fractional = true;
-                string_to_parse += consume_char();
+            if(ch == '.'){
+                ch = next_char();
 
-                if(! is_digit(current_char()))
+                if(! is_digit(ch))
                     throw_error("Fraction delimiter must be followed by digit.");
 
                 consume_digits();
@@ -346,8 +322,8 @@ size_t JsonLexer::consume_number_literal(){
 
 
         case number_state::exponent_detect:
-            if(current_char() == 'e' || current_char() == 'E'){
-                string_to_parse += consume_char();
+            if(ch == 'e' || ch == 'E'){
+                increment_index();
                 number_state = number_state::exponent_consume;
             }
             else {
@@ -358,18 +334,16 @@ size_t JsonLexer::consume_number_literal(){
 
         case number_state::exponent_consume:
         case number_state::exponent_digits:
-            {
-                bool first_exponent_char_valid = is_digit(current_char()) || current_char() == '+' || current_char() == '-';
-                if(! first_exponent_char_valid)
-                    throw_error("Exponent 'e'/'E' not trailed by sign nor digit.");
-            }
             
-            if(current_char() == '+' || current_char() == '-')
-                consume_char();
+            if(! (is_digit(ch) || is_plus_minus(ch)))
+                throw_error("Exponent 'e'/'E' not trailed by sign nor digit.");
+            
+            if(is_plus_minus(ch))
+                ch = next_char();
             
             number_state = number_state::exponent_digits;
 
-            if(! is_digit(current_char()))
+            if(! is_digit(ch))
                 throw_error("No exponent digits detected during number verification.");
 
             consume_digits();
@@ -379,30 +353,29 @@ size_t JsonLexer::consume_number_literal(){
 
         
         default:
-            throw_error("Unknown number verification state. ");
+            throw_error("Unexpected number verification state.");
             break;
+
         }
 
     }
 
-    // Post number checks for better error messages
+    // Beyond formal checks for better error messages
 
-    // if a "-0" or '0' is detected, a number such as "09" will be treated as two separate numbers. But since that input most likely is an attempt at writing the number '9', this error message provides this information. 
+    // if a "-0" or '0' is detected, a number such as "09" will be treated as two separate numbers, per the formal grammar. But since that input most likely is an attempt at writing the number '9', this error message provides this information. 
     if(is_digit(current_char()))
         throw_error("Superfluous leading zero not allowed.");
     
 
-    // return string_to_parse;
     return index - start_index;
 }
 
 
 bool JsonLexer::is_fractional_number_string(std::string number_string){
 
-    for(char ch : number_string){
+    for(char ch : number_string)
         if(ch == '.')
             return true;
-    }
 
     return false;
 }
@@ -439,7 +412,7 @@ void JsonLexer::tokenize_literal_false(){
     size_t start_i = index;
     tokens.emplace( { token_t::false_, start_i, consume_false_literal() } );
 }
-void JsonLexer::tokenize_literal_string(){
+constexpr void JsonLexer::tokenize_literal_string(){
     size_t start_i = ++index; // skip quotation
     tokens.emplace( { token_t::string_, start_i, consume_string_literal() } );
 }
