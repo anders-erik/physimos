@@ -304,13 +304,17 @@
             "type": "cppdbg",
             "request": "launch",
 
+            "program": 
             // LINUX
-            "program": "${workspaceRoot}/build/debug_linux/src/lib/str/main_str",
+            "${workspaceRoot}/build/debug_linux/src/lib/main_str",
             // WINDOWS
             
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/src/lib/str",
+            
+            "cwd": 
+            "${workspaceFolder}/src/lib",
+            
             "environment": [
                 { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }
             ],

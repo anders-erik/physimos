@@ -28,7 +28,7 @@ struct Str {
     //     return *this;
     // };
     Str(Str&& other) {
-        std::cout << "MOVE" << std::endl;
+        std::cout << "MOVE CONSTRUCTOR" << std::endl;
         
         mem = other.mem;
         size = other.size;
@@ -37,6 +37,7 @@ struct Str {
         other.deown();
     }
     Str& operator=(Str&& other){
+        std::cout << "MOVE ASSIGNMENT OP" << std::endl;
 
         if (this == &other)
             std::cout << "this != &other" << std::endl;
@@ -103,6 +104,13 @@ struct Str {
 
         return std_str_size;
     }
+    /** Reference-like string without copying. */
+    std::string_view to_std_string_view(){
+
+        std::string_view view = std::string_view(mem, size);
+
+        return view;
+    }
     const char* to_c_str(){
         return mem;
     }
@@ -128,5 +136,6 @@ struct Str {
         std::cout << '\n' << std::flush;
     }
 
+    void busy() {}
 };
 

@@ -344,9 +344,17 @@
             "label": "run",
             "detail": "Custom run task",
             "type": "shell",
-            "command": "${workspaceFolder}/build/debug_linux/src/lib/json/main_json",
+
+            "command": 
+            "${workspaceFolder}/build/debug_linux/src/lib/main_str",
+
             "options": {
-                "cwd": "${workspaceFolder}/src/lib/json",
+                "cwd": 
+                
+                "${workspaceFolder}/src/lib",
+                // "${workspaceFolder}/src/lib/json",
+
+
                 "env": {
                     "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
                 }
@@ -354,7 +362,13 @@
             "problemMatcher": [],
             "dependsOn": [
                 "Debug build"
-            ]
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+                "close": false
+            }
         },
         {
             "label": "build",

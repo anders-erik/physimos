@@ -1,8 +1,9 @@
 
 add_subdirectory(json)
-if(LINUX)
-    add_subdirectory(str)
-endif()
+
+add_executable(main_str
+    main_str.cc
+)
 
 add_library(lib
 
@@ -13,6 +14,7 @@ add_library(lib
 
     log.cc
     process.cc
+
 )
 
 
