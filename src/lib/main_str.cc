@@ -3,7 +3,7 @@
 
 
 #include "str.hh"
-
+#include "opt.hh"
 
 
 template <typename T>
@@ -114,7 +114,8 @@ void string_vector(){
     // std::cout << strings.capacity() << std::endl;
 
     
-    // Str str10 (10);
+    Str str1 (1);
+    str1 = std::move(str1);
     // Str str20 (20);
     // Str str30 (30);
 
@@ -148,7 +149,9 @@ void string_vector(){
     str110.busy();
 
     } // Does not call destructors because they are references
-
+    std::cout << sizeof(Str) << std::endl;
+    std::cout << sizeof(std::string) << std::endl;
+    
     // Here constructores are called
     // strings.pop_back();
     // strings.pop_back();
@@ -211,9 +214,20 @@ int main(){
 
     // constructors();
     // double_free();
-    string_vector();
+    // string_vector();
     // free_delete();
     // str_c_and_std_interface();
+    
+    Opt<int> opt_int = 10;
+    std::cout << "opt_int.has_value() = " << opt_int.has_value() << std::endl;
+    std::cout << "opt_int.get_value() = " << opt_int.get_value() << std::endl;
+
+    Str str {10, 'x'};
+    Opt<Str> opt_str_copy = str;
+    // Opt<Str> opt_str = Str(10, 'b');
+    // Opt<Str> opt_str_list {10, 'b'};
+    std::cout << "opt_str.has_value() = " << opt_str_copy.has_value() << std::endl;
+    std::cout << "opt_str.get_value() = " << opt_str_copy.get_value().to_std_string() << std::endl;
     
 
 

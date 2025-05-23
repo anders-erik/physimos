@@ -5,28 +5,59 @@
 #include <string>
 
 #include <cstring>
+#include <new>
+
 
 
 struct Str {
 
+    // NOT USED
+    struct StrStatus {
+        bool allocated = false; 
+        bool initialized = false;
+    } status;
+
     bool allocated = false; /** memory allocated */
     bool initialized = false; /** Allocated memory initialized */
-    size_t size;
-    char* mem;
+    size_t size = 0;
+    char* mem = nullptr;
 
-    void deown(){
-        allocated = false;
-        initialized = false;
+    Str(const Str& other) //= delete; 
+        :   size {other.get_size()}
+    {
+        std::cout << "Copy Constructor" << std::endl;
+        
+        // Allocate same size
+        if(!other.is_allocated())
+            return;
+        size = other.get_size();
+        allocate();
+
+        // Initialize with same memory contents
+        if(!other.is_initialized())
+            return;
+        const char* other_mem = other.get_pointer();
+        initalize(other_mem);
+
+    };
+
+    Str& operator=(const Str& other) // = delete; // {
+    {
+        if (this == &other)
+            std::cout << "this != &other" << std::endl;
+            
+        if(!other.is_allocated())
+            return *this;
+        size = other.get_size();
+        allocate();
+
+        if(!other.is_initialized())
+            return *this;
+        const char* others_mem = other.get_pointer();
+        initalize(others_mem);
+
+        return *this;
     }
-
-    Str(const Str& other) = delete;
-    //     std::cout << "Copy Constructor" << std::endl;
-    //     // other.deown();
-    // };
-    Str& operator=(const Str& other) = delete; // {
-    //     other.deown();
-    //     return *this;
-    // };
     Str(Str&& other) {
         std::cout << "MOVE CONSTRUCTOR" << std::endl;
         
@@ -34,7 +65,7 @@ struct Str {
         size = other.size;
         allocated = other.allocated;
         initialized = other.initialized;
-        other.deown();
+        other.rob();
     }
     Str& operator=(Str&& other){
         std::cout << "MOVE ASSIGNMENT OP" << std::endl;
@@ -47,7 +78,7 @@ struct Str {
         allocated = other.allocated;
         initialized = other.initialized;
 
-        other.deown();
+        other.rob();
 
         return *this;
     };
@@ -58,32 +89,31 @@ struct Str {
     Str(int size) {
         std::cout << "Str size constructor" << std::endl;
         this->size = size;
-        mem = (char*) std::malloc(size * sizeof(char));
-        allocated = true;
+        allocate();
     };
     Str(int size, char initialization_value) {
         std::cout << "Str initialization_value constructor" << std::endl;
+        
         this->size = size;
-        mem = (char*) std::malloc(size * sizeof(char));
-        allocated = true;
-        memset(mem, initialization_value, size);
-        initialized = true;
+        
+        allocate();
+        
+        initalize(initialization_value);
     };
     Str(const char *c_str) {
         std::cout << "Str c_str constructor" << std::endl;
+        
         size = std::strlen(c_str);
-        mem = (char*) std::malloc(size * sizeof(char));
-        allocated = true;
-        memcpy(mem, c_str, size);
-        initialized = true;
+
+        allocate();
+        
+        initalize(c_str);
+        
     }
 
     ~Str(){
         std::cout << "Str destructor with content = \"" << to_std_string() << "\"" << std::endl;
-        if(allocated)
-            free(mem);
-        allocated = false;
-        initialized = false;
+        release_mem();
     }
 
 
@@ -94,13 +124,59 @@ struct Str {
         return *(mem+index);
     }
 
+    void allocate(){
+        mem = (char*) std::malloc(size * sizeof(char));
+        allocated = true;
+    }
+    void release_mem(){
+        if(allocated)
+            free(mem);
+        allocated = false;
+        initialized = false;
+    }
+    // Ownership moved. Robbed of all assets. No mem release.
+    void rob(){
+        mem = nullptr;
+        allocated = false;
+        initialized = false;
+    }
+    void initalize(const char* new_mem_value){
+        memcpy(mem, new_mem_value, size);
+        initialized = true;
+    }
+    void initalize(const char init_char){
+        memset(mem, init_char, size);
+        initialized = true;
+    }
+
+    char* get_pointer() const {
+        return mem;
+    }
+    size_t get_size() const {
+        return size;
+    }
+    StrStatus get_status() const {
+        return status;
+    }
+    bool is_allocated() const {
+        return allocated;
+    }
+    bool is_initialized() const {
+        return initialized;
+    }
+
     std::string to_std_string(){
 
         // Ok to ignore null-termination??
         // std::string std_str = std::string(mem);
+
+        std::string std_str_size;
+
+        if(mem == nullptr)
+            std_str_size = "";
+        else
+            std_str_size = std::string(mem, size); // specify the size of current Str allocation
         
-        // specify the size of current Str allocation
-        std::string std_str_size = std::string(mem, size);
 
         return std_str_size;
     }

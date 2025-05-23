@@ -346,14 +346,14 @@
             "type": "shell",
 
             "command": 
-            // "${workspaceFolder}/build/debug_linux/src/lib/main_str",
-            "${workspaceFolder}/build/debug_linux/src/lib/json/main_json",
+            "${workspaceFolder}/build/debug_linux/src/lib/main_str",
+            // "${workspaceFolder}/build/debug_linux/src/lib/json/main_json",
 
             "options": {
                 "cwd": 
                 
-                // "${workspaceFolder}/src/lib",
-                "${workspaceFolder}/src/lib/json",
+                "${workspaceFolder}/src/lib",
+                // "${workspaceFolder}/src/lib/json",
 
 
                 "env": {

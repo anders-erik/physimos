@@ -2,9 +2,22 @@
 #pragma once
 
 template <typename T>
-struct Opt {
+class Opt {
     T t;
     bool value = false;
-    Opt(T _t): t {_t} {value = true;};
+
+public:
+    Opt(T _t){
+        t = _t;
+        value = true;
+    };
     Opt() {};
+
+
+    T get_value(){
+        return t;
+    };
+    bool has_value(){
+        return value;
+    }
 };

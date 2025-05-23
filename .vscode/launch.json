@@ -306,16 +306,16 @@
 
             "program": 
             // LINUX
-            // "${workspaceRoot}/build/debug_linux/src/lib/main_str",
-            "${workspaceRoot}/build/debug_linux/src/lib/json/main_json",
+            "${workspaceRoot}/build/debug_linux/src/lib/main_str",
+            // "${workspaceRoot}/build/debug_linux/src/lib/json/main_json",
             // WINDOWS
             
             "args": [],
             "stopAtEntry": false,
             
             "cwd": 
-            // "${workspaceFolder}/src/lib",
-            "${workspaceFolder}/src/lib/json",
+            "${workspaceFolder}/src/lib",
+            // "${workspaceFolder}/src/lib/json",
             
             "environment": [
                 { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }
