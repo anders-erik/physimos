@@ -229,6 +229,12 @@ struct JsonVar {
 };
 
 
+// KV METHODS
+bool kv_is_empty(json_kv_variant& kv){
+    return kv.first == "" ? true : false;
+}
+
+
 
 
 

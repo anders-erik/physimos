@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
@@ -14,179 +16,116 @@ class JPhileShape : JPhile {
 
     std::vector<Shape> shapes;
 
-    /** Returns the float 2d-points of a json-point array, e.g. [[0.0, 0.0],[1.0, 1.0]] */
-    // std::vector<Point> unwrap_point_array(json_array_wrap point_array);
+    // Log Messages
+    std::string log_base = "JPhileShape: ";
+    std::string root_not_array_msg  = log_base + "root json value not array.";
+    std::string msg_entry_not_object = log_base + "shape entry is not object.";
+    std::string msg_entry_type_not_shape = log_base + "shape entry is not type shape.";
+    std::string msg_shape_point_not_array = log_base + "shape point is not json array.";
+
+
+    void loop_shape_array(json_array_variants& root_array);
+    Point extract_point_from_array_2d(JsonVar& json_var);
+    void warn_shape_type_mismatch(std::string parsed, std::string deduced){
+        std::cout << "WARNING: Type mismatch in JPhileSHape. " << "Parsed='" << parsed << "'. Deduced='" << deduced << "'." << std::endl;
+    }
+
+
 
 public:
 
-    JPhileShape(Phile& _file) :  JPhile(_file) {
-
-        // At this point we've already got a parsed json file at 'json'.
-
-
-        // json_object_variants root_obj = json.root_var.get_object();
+    JPhileShape(std::string str_path) :  JPhile(str_path){
 
         JsonVar& root_var = json.get_root();
-        if(!root_var.is_array()){
-            std::string msg = "JPhileShape: root json value not array. File: " +  file.file_path_abs;
-            plib::plog_error("JPHILE", "json_format", msg);
+        
+        if(!verify_type_array(root_var, root_not_array_msg))
             return;
-        }
 
         json_array_variants root_array = root_var.get_array();
 
+        loop_shape_array(root_array);
+    }
 
-        // Iterate over shapes
-        for (JsonVar& shape_entry : root_array){
-            
-            if(!shape_entry.is_object()){
-                std::string msg = "JPhileShape: shape array entry is not object. File: " +  file.file_path_abs;
-                plib::plog_error("JPHILE", "json_format", msg);
-                return;
-            }
-
-            // json_object_variants shape = array_entry.get_object();
-
-            json_kv_variant type_kv = shape_entry.find_in_object("type");
-            if(type_kv.second.get_string() != "shape"){
-                std::string msg = "JPhileShape: array entry is not of type shape. File: " +  file.file_path_abs;
-                plib::plog_error("JPHILE", "json_format", msg);
-                return;
-            }
-
-            shape_t shape_type;
-
-            json_kv_variant shape_type_kv = shape_entry.find_in_object("shape");
-            if(shape_type_kv.second.get_string() == "line")
-                shape_type = shape_t::line;
-            
-            size_t point_count;
-
-            switch (shape_type){
-
-            case shape_t::line:
-                point_count = 2;
-                break;
-            
-            default:
-                point_count = 0;
-                break;
-            }
-
-            // Verify Points In Shape
-            json_kv_variant point_kv;
-            std::vector<Point> points;
-            for (size_t i = 1; i < point_count+1; i++){
-                std::string point_str = "p" + std::to_string(i);
-
-                point_kv = shape_entry.find_in_object(point_str);
-
-                if(!point_kv.second.is_array()){
-                    std::string msg = "JPhileShape: shape point is not of type array. File: " +  file.file_path_abs;
-                    plib::plog_error("JPHILE", "json_format", msg);
-                    return;
-                }
-
-                // POINT ARRAY
-                json_array_variants& point_array_var = point_kv.second.get_array();
-
-                // X
-                JsonVar& x_var = point_array_var[0];
-                json_float& x_fl = x_var.get_float();
-                std::cout << x_fl << ", ";
-                
-                // Y
-                JsonVar y_var = point_array_var[1];
-                json_float y_fl = y_var.get_float();
-                std::cout << y_fl << std::endl;
-                
-                points.emplace_back(x_fl, y_fl);
-
-            }
-            
-            // Create shape
-            Shape new_shape (points);
-            new_shape.print();
-        }
-        
-        
-
-
-    };
-    // ConfigShape(std::string config_string) :  JPhile(config_string, "") {};
-    // std::vector<Shape>& load_shapes();
 };
 
 
 
+void JPhileShape::loop_shape_array(json_array_variants& root_array){
 
-// std::vector<Point> ConfigShape::unwrap_point_array(json_array_wrap point_array){
-//     std::vector<Point> points;
+    // Iterate over shapes
+    for (JsonVar& shape_entry : root_array){
+        
+        if(!verify_type_object(shape_entry, msg_entry_not_object))
+            return;
 
-//     for(size_t i = 0; i < point_array.size(); i++){
-
-//         JsonWrapper point_wrapper = point_array[i];
-
-//         // Unwrap point
-//         json_array_wrap point_array = physon.unwrap_array(point_wrapper);
-
-//         json_float point_x = physon.unwrap_float(point_array[0]);
-//         json_float point_y = physon.unwrap_float(point_array[1]);
-
-//         Point point = {point_x, point_y};
-//         points.push_back(point);
-
-//     }
-
-//     return points;
-// }
+        json_kv_variant type_kv = shape_entry.find_in_object("type");
+        if(!json_equals_string(type_kv.second, "shape", msg_entry_type_not_shape))
+            return;
 
 
-
-// std::vector<Shape>& ConfigShape::load_shapes(){
-
-//     physon.parse();
-    
-//     JsonWrapper root_object_wrapper = physon.root_wrapper;
-//     json_object_wrap root_object = physon.unwrap_object(root_object_wrapper);
-
-//     // Loop shapes
-//     for(JsonWrapper kv_wrap : root_object){
-//         json_kv_wrap kv = physon.unwrap_kv(kv_wrap);
-
-//         Shape new_shape;
-
-//         std::string shape_name = kv.first;
-//         json_array_wrap point_array = physon.unwrap_array(kv.second);
+        // Points
+        json_kv_variant point_kv;
+        std::vector<Point> points;
+        size_t max_point_count = 10000;
 
 
-//         if(shape_name == "line"){
-//             new_shape.type = SHAPE::LINE;
-
-//             // JsonWrapper point_1_wrapper = point_array[0];
-//             // JsonWrapper point_2_wrapper = point_array[1];
-
-//             // // Unwrap point 1
-//             // json_array_wrap point_1_array = physon.unwrap_array(point_1_wrapper);
-//             // json_float point_1_x = physon.unwrap_float(point_1_array[0]);
-//             // json_float point_1_y = physon.unwrap_float(point_1_array[1]);
-//             // Point point_1 = {point_1_x, point_1_y};
-//             // new_shape.points.push_back(point_1);
+        for (size_t i = 1; i < max_point_count; i++){
             
-//             // // Unwrap point 2
-//             // json_array_wrap point_2_array = physon.unwrap_array(point_2_wrapper);
-//             // json_float point_2_x = physon.unwrap_float(point_2_array[0]);
-//             // json_float point_2_y = physon.unwrap_float(point_2_array[1]);
-//             // Point point_2 = {point_2_x, point_2_y};
-//             // new_shape.points.push_back(point_2);
-//         }
+            // Find point
+            std::string point_str = "p" + std::to_string(i);
+            point_kv = shape_entry.find_in_object(point_str);
+            if(kv_is_empty(point_kv))
+                break;
+            
+            // Point data is array
+            if(!verify_type_array(point_kv.second, msg_shape_point_not_array))
+                return;
+
+            // Extract
+            Point point = extract_point_from_array_2d(point_kv.second);
+            points.push_back(point);
+
+        }
+        if(points.size() >= max_point_count)
+            std::cout << "WARNING: Maximum number of allowed points was parsed in JPhileShape." << std::endl;
+        // std::cout << "Points found: " << points.size() << std::endl;
+        
+
+        // Create shape
+        Shape& new_shape = shapes.emplace_back(points);
+        new_shape.print();
 
 
-//         new_shape.points = unwrap_point_array(point_array);
+        // Shape Type check
+        // Make sure that if shape name exists in json file, we compare to deduced type. If they do not match then a warning is logged.
+        json_kv_variant shape_type_kv = shape_entry.find_in_object("shape");
+        std::string parsed_shape_type = shape_type_kv.second.get_string();
+        std::string deduced_shape_type = new_shape.get_shape_name();
+        if(parsed_shape_type != deduced_shape_type)
+            warn_shape_type_mismatch(parsed_shape_type, deduced_shape_type);
 
-//         shapes.push_back(new_shape);
+    }
 
-//     }
+}
 
-//     return shapes;
-// }
+
+Point JPhileShape::extract_point_from_array_2d(JsonVar& json_var){
+
+    json_array_variants& point_array_var = json_var.get_array();
+
+    if(point_array_var.size() > 2)
+        plib::plog_error("JPHILE", "json_format", "Shape: 2d array contains more that 2 coordinates");
+    if(point_array_var.size() < 2)
+        plib::plog_error("JPHILE", "json_format", "Shape: 2d array does not contain enough coordinates");
+
+    // X
+    JsonVar& x_var = point_array_var[0];
+    json_float& x_fl = x_var.get_float();
+    
+    // Y
+    JsonVar& y_var = point_array_var[1];
+    json_float& y_fl = y_var.get_float();
+
+
+    return {x_fl, y_fl};
+}

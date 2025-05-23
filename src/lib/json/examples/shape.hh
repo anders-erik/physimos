@@ -16,11 +16,17 @@ enum class shape_t {
 
 struct Point { double x; double y; };
 
-struct Shape {
+class Shape {
 
-    size_t get_point_count(){ return point_count; }
+    shape_t type;
+    size_t point_count;
+    std::vector<Point> points;
+
+public:
 
     void print();
+    std::string get_shape_name();
+    size_t get_point_count(){ return point_count; }
 
     Shape (Point p1, Point p2) {
         points.push_back(p1);
@@ -46,19 +52,43 @@ struct Shape {
         
     };
 
-private:
-    shape_t type;
-    size_t point_count;
-    std::vector<Point> points;
 };
 
+std::string Shape::get_shape_name(){
+    std::string shape_name;
+
+    switch (type)
+    {
+
+    case shape_t::point:
+        shape_name = "point";
+        break;
+    case shape_t::line:
+        shape_name = "line";
+        break;
+    case shape_t::triangle:
+        shape_name = "triangle";
+        break;
+    case shape_t::quad:
+        shape_name = "quad";
+        break;
+    case shape_t::polygon:
+        shape_name = "polygon";
+        break;
+    
+    default:
+        shape_name = "unknown";
+        break;
+    }
+
+    return shape_name;
+}
 
 void Shape::print(){
 
-    std::cout << std::endl << "Shape.print() : " << std::endl;
+    std::cout <<"\nShape.print()\n\n";
     
-    if(type == shape_t::line)
-        std::cout << "LINE" << std::endl;
+    std::cout << get_shape_name() << std::endl;
     
     for(Point& point : points){
         std::cout << "    x :" << point.x << ", y : " << point.y << std::endl;

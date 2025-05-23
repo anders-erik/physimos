@@ -43,16 +43,16 @@ int main (int argc, char **argv) {
     enum class json_flag {
         json,
         json_test,
-        json_config,
+        json_shape,
         test,
         variant,
         config,
         beyond_ascii,
         misc,
-    } flag = json_flag::json_test;
+    } flag = json_flag::json_shape;
 
 
-    if(flag == json_flag::json || flag == json_flag::json_test || flag == json_flag::json_config){
+    if(flag == json_flag::json || flag == json_flag::json_test || flag == json_flag::json_shape){
 
         if(flag == json_flag::json){
 
@@ -81,10 +81,12 @@ int main (int argc, char **argv) {
             JsonTest::test_serialization();
 
         }
-        else if(flag == json_flag::json_config){
+        else if(flag == json_flag::json_shape){
 
-            Phile file ("src/lib/json/data/shapes.json");
-            JPhileShape shape_config (file);
+            // Phile file ("src/lib/json/data/shapes.json");
+            // JPhileShape shape_config (file);
+
+            JPhileShape shape_config ("src/lib/json/data/shapes.json");
 
         }
 
