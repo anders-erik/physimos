@@ -46,8 +46,41 @@ public:
         loop_shape_array(root_array);
     }
 
+    static std::string serialize_shape(Shape& shape);
+
 };
 
+std::string JPhileShape::serialize_shape(Shape& shape){
+
+    JsonVar shape_object = json_object_variants();
+    shape_object.push_to_object( {"type", json_string("shape") } );
+    shape_object.push_to_object( {"name", shape.get_shape_name() } );
+    // JsonVar type = "shape";
+    // JsonVar shape = shape.get_shape_name();
+    // JsonVar points = json_array_variants();
+
+    for(size_t i = 0; i < shape.get_point_count(); i++){
+        json_kv_variant kv_point;
+        std::string px = "p" + std::to_string(i);
+
+        JsonVar point_array = json_array_variants();
+
+        point_array.push_to_array(json_float(shape[i].x));
+        point_array.push_to_array(json_float(shape[i].y));
+
+        shape_object.push_to_object( {px, point_array} );
+    }
+
+
+    // Configure serializer
+    FloatFormat float_format = { float_representation::fixed_trimmed, 4};
+    JSerialConfig serial_config = { serial_ws::new_lines, 4, float_format }; // 4 indent
+    JsonSerializer serializer { serial_config };
+
+
+    return serializer.serialize(shape_object);
+
+}
 
 
 void JPhileShape::loop_shape_array(json_array_variants& root_array){

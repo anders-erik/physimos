@@ -49,7 +49,7 @@ int main (int argc, char **argv) {
         config,
         beyond_ascii,
         misc,
-    } flag = json_flag::json_shape;
+    } flag = json_flag::json_test;
 
 
     if(flag == json_flag::json || flag == json_flag::json_test || flag == json_flag::json_shape){
@@ -87,6 +87,11 @@ int main (int argc, char **argv) {
             // JPhileShape shape_config (file);
 
             JPhileShape shape_config ("src/lib/json/data/shapes.json");
+
+            Shape line = { {0.03, 0.2}, {11.01, 12.343444}};
+            std::string shape_string = JPhileShape::serialize_shape(line);
+            std::cout << shape_string << std::endl;
+            
 
         }
 

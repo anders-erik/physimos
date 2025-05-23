@@ -26,7 +26,9 @@ public:
 
     void print();
     std::string get_shape_name();
-    size_t get_point_count(){ return point_count; }
+    size_t get_point_count();
+    std::vector<Point>& get_points();
+    Point& operator[](size_t index) {return points[index];};
 
     Shape (Point p1, Point p2) {
         points.push_back(p1);
@@ -53,6 +55,13 @@ public:
     };
 
 };
+
+std::vector<Point>& Shape::get_points(){
+    return points;
+}
+size_t Shape::get_point_count(){ 
+    return point_count; 
+}
 
 std::string Shape::get_shape_name(){
     std::string shape_name;
