@@ -10,24 +10,35 @@
 
 struct Phile {
 
-    std::string file_path_abs;
+    std::string physimos_core_path;
+    std::string relative_path;
+
+    bool use_core_path = false;
 
     std::string file_contents;
+    bool successful_read = false;
 
-    Phile(std::string physimos_file_path) {
+    Phile(std::string relative_path) : relative_path {relative_path} {
 
         std::string physiomos_dir = physimos_root_dir_or_die();
-        file_path_abs = physiomos_dir + "/" + physimos_file_path;
+        physimos_core_path = physiomos_dir + "/" + relative_path;
 
         // file_contents = cat_file_as_string();
         // std::cout << file_contents << std::endl;
         
     };
 
-    std::string copy_as_string(){
+    std::string copy_as_string_core(){
+        use_core_path = true;
+        successful_read = false;
         return cat_file_as_string();
     }
-    std::string& ref_as_string(){
+    std::string copy_as_string_cwd(){
+        successful_read = false;
+        return cat_file_as_string();
+    }
+    std::string& ref_as_string_cwd(){
+        successful_read = false;
         file_contents = cat_file_as_string();
         return file_contents;
     }
@@ -37,10 +48,17 @@ private:
     std::string cat_file_as_string(){
 
         std::string string;
+        std::ifstream _ifstream;
 
-        std::ifstream _ifstream(file_path_abs);
+        
+
+        if(use_core_path)
+            _ifstream.open(physimos_core_path);
+        else
+            _ifstream.open(relative_path);
+        
         if(!_ifstream.is_open()){
-            std::string error_msg = "Phile: cat_file_as_string. Path: " + file_path_abs;
+            std::string error_msg = "Phile: cat_file_as_string. Path: " + physimos_core_path;
             plib::plog_error("CONFIG", "OPEN_FILE", error_msg);
             return string;
         }
@@ -53,10 +71,11 @@ private:
         }
         catch(const std::exception& e)
         {
-            std::string error_msg = "Phile: cat_file_as_string. Path: " + file_path_abs;
+            std::string error_msg = "Phile: cat_file_as_string. Path: " + physimos_core_path;
             plib::plog_error("CONFIG", "READ_FILE", error_msg);
         }
         
+        successful_read = true;
         return string;
     }
 };

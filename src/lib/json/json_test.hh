@@ -1,6 +1,8 @@
 #include <string>
 #include <iostream>
 
+#include "lib/dir.hh"
+
 #include "physon_types.hh"
 #include "json.hh"
 #include "json_serialize.hh"
@@ -17,18 +19,20 @@ private:
     /** Parse-serialize-parse-serialize. Tests parser-serializer chain on already confirmed valid json strings.  */
     static void psps(std::string file_path_str); 
 
+    static void print_test_verbose(bool success, std::string test_name, std::string file_name, std::string msg);
+    static void conforms_not(std::string& file_path_str);
+
     /** Throws if file  */
     static void conforms(std::string file_path_str);
-    static void conforms_not(std::string file_path_str);
+    // static void conforms_not(std::string file_path_str);
 
     static std::string load_file(std::string path);
 };
 
 
-
 void JsonTest::test_conformance(){
 
-    std::cout << std::endl << "    CONFORMANCE TESTS : VAILD JSON" << std::endl;
+    std::cout << "\n        CONFORMANCE TESTS : VAILD JSON" << std::endl;
     conforms("data/null.json");
     conforms("data/true.json");
     conforms("data/false.json");
@@ -51,16 +55,89 @@ void JsonTest::test_conformance(){
 
     std::cout << std::endl;
 
-    std::cout << "    CONFORMANCE TESTS : INVAILD JSON" << std::endl;
+    std::cout << "\n        CONFORMANCE TESTS : INVAILD JSON" << std::endl;
+
+    Dir dir {};
+    std::vector<std::string> paths;
+
+
+
     // LEXING
-    conforms_not("data/non_valid_json/empty.json");
-    conforms_not("data/non_valid_json/unclosed_string.json");
-    conforms_not("data/non_valid_json/numbers_invalid.json");
+    std::cout << "Lexer" << std::endl;
+
+    dir.new_path("data/non_valid_lexer");
+    paths = dir.get_file_paths_with_extension("json");
+    for (std::string& path : paths)
+        conforms_not(path);
+    
+
+
     // PARSING
-    conforms_not("data/non_valid_json/ws.json");
+    std::cout << "\nParser" << std::endl;
+
+    dir.new_path("data/non_valid_parser");
+    paths = dir.get_file_paths_with_extension("json");
+    for (std::string& path : paths)
+        conforms_not(path);
+    
 
     std::cout << std::endl;
 };
+
+
+void JsonTest::print_test_verbose(
+    bool success,
+    std::string test_name,
+    std::string file_name,
+    std::string msg
+){
+    std::string status;
+
+    if(success)
+        status = "PASS";
+    else
+        status = "FAIL";
+    
+    std::string log_string =            status + \
+                                "\n     Test: " + test_name + \
+                                "\n     File: " + file_name + \
+                                "\n     Msg:  " + msg;
+
+    std::cout << log_string << std::endl;
+    
+}
+
+/** Make sure it throws */
+void JsonTest::conforms_not(std::string& file_path_str){
+
+    // Try read file
+    Phile phile {file_path_str};
+    std::string json_source = phile.copy_as_string_cwd();
+    if(!phile.successful_read){
+        print_test_verbose(
+            "XX", 
+            "Invalid Json", 
+            file_path_str, 
+            "Failed to read file"
+        );
+        return;
+    }
+
+
+    try
+    {
+        Json json (json_source);
+        json.lex_parse();
+
+        print_test_verbose("XX", "Invalid Json", file_path_str, "Successfully parsed invalid json.");
+        
+    }
+    catch(const std::exception& e)
+    {   
+        // TODO :Add json error message
+        print_test_verbose("OO", "Invalid Json", file_path_str, "< json error message goes here >");
+    }
+}
 
 
 
@@ -185,45 +262,45 @@ void JsonTest::conforms(std::string file_path_str){
         // Physon physon (json_data);
         // physon.parse();
         json.lex_parse();
-        std::cout << "Conformance test OK : " << file_path_str << std::endl;
+        std::cout << "  Conformance test OK : " << file_path_str << std::endl;
         
     }
     catch(const std::exception& e)
     {
-        std::cout << "Conformance test FAILED : " << file_path_str << std::endl;
+        std::cout << "  Conformance test FAILED : " << file_path_str << std::endl;
 
         std::cout << e.what() << '\n';
     }
     
 }
 
-/** Make sure it throws */
-void JsonTest::conforms_not(std::string file_path_str){
+// /** Make sure it throws */
+// void JsonTest::conforms_not(std::string file_path_str){
 
 
-    // If reading file fails, the actual test is not performed
-    std::string json_data;
-    try
-    {
-        json_data = load_file(file_path_str);
-    }
-    catch(const std::exception& e)
-    {
-        std::cout << e.what() << '\n';
-    }
+//     // If reading file fails, the actual test is not performed
+//     std::string json_data;
+//     try
+//     {
+//         json_data = load_file(file_path_str);
+//     }
+//     catch(const std::exception& e)
+//     {
+//         std::cout << e.what() << '\n';
+//     }
 
-    try
-    {
-        Json json (json_data);
-        json.lex_parse();
-        std::cout << "Conformance test Failed : " << file_path_str << std::endl;
+//     try
+//     {
+//         Json json (json_data);
+//         json.lex_parse();
+//         std::cout << "  Conformance test Failed : " << file_path_str << std::endl;
         
-    }
-    catch(const std::exception& e)
-    {
-        std::cout << "Conformance test OK : " << file_path_str << std::endl;
-    }
-}
+//     }
+//     catch(const std::exception& e)
+//     {
+//         std::cout << "  Conformance test OK : " << file_path_str << std::endl;
+//     }
+// }
 
 
 

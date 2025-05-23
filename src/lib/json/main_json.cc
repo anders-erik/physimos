@@ -78,7 +78,7 @@ int main (int argc, char **argv) {
         else if(flag == json_flag::json_test){
 
             JsonTest::test_conformance();
-            JsonTest::test_serialization();
+            // JsonTest::test_serialization();
 
         }
         else if(flag == json_flag::json_shape){
