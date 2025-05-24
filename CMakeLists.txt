@@ -53,7 +53,7 @@ message("Current generator:   ${CMAKE_GENERATOR}")
 # Build Type
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("Build type:          Debug")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall") 
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wdeprecated-declarations") 
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")  
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")

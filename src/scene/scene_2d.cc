@@ -51,8 +51,6 @@ void Scene2D::update(){
     for(opengl::Quad2D& _quad : quads)
         _quad.transform_2d.set_matrix_model();
 
-    camera.transform.set_matrix_camera();
-
 }
 
 
@@ -74,24 +72,16 @@ void Scene2D::handle_input(window::InputEvent event){
         if(event.mouse_button.button == window::MouseButton::Middle) {
     
             if(event.mouse_button.action == window::ButtonAction::Press)
-                mouse_pan = true;
+                panable = true;
             else if(event.mouse_button.action == window::ButtonAction::Release)
-                mouse_pan = false;
+                panable = false;
 
         }
 
     }
     else if(event.type == window::EventType::MouseScroll){
 
-        bool zooming_in = event.mouse_scroll.delta > 0 ? true : false;
-
-        if(zooming_in)
-            camera.zoom_in();
-        else 
-            camera.zoom_out();
-
-
-        camera.transform.set_matrix_camera();
+        camera.zoom(event.mouse_scroll.delta);
 
     }
 
@@ -100,11 +90,10 @@ void Scene2D::handle_input(window::InputEvent event){
     
         event.mouse_movement.cursor.print();
 
-        if(mouse_pan){
-            
+        // Scene can be panned
+        if(panable)
             camera.pan(event.mouse_movement.delta);
 
-        }
         
         // camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
         cursor_context.set_cursor_pos(  event.mouse_movement.cursor.sane, 
@@ -147,7 +136,7 @@ void Scene2D::handle_input(window::InputEvent event){
         std::cout << "cursor_context.scene = " << cursor_context.scene.x << " " << cursor_context.scene.y << std::endl;
         
         // scene_2d.camera_2d.transform_2d.matrix.print();
-        // std::cout << "mouse_pan = " << mouse_pan << std::endl;
+        // std::cout << "panable = " << panable << std::endl;
         
     }
 }

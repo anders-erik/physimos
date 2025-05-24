@@ -21,7 +21,7 @@ void Box2D::print(){
 }
 
 
-void Camera2D::reload_dims(){
+void Camera2D::reload(){
 
     box.size.x = width_initial / zoom_current;
     box.size.y = box.size.x / aspect_ratio;
@@ -30,6 +30,8 @@ void Camera2D::reload_dims(){
 
     transform.scale.x = zoom_current;
     transform.scale.y = transform.scale.x * aspect_ratio;
+
+    transform.set_matrix_camera();
 }
 
 void Camera2D::set_window_size_px(f2 size){
@@ -38,7 +40,7 @@ void Camera2D::set_window_size_px(f2 size){
 
     aspect_ratio = window_size_px.x / window_size_px.y;
 
-    reload_dims();
+    reload();
 }
 
 void Camera2D::set_zoom_multiplier(float multiplier){
@@ -47,18 +49,21 @@ void Camera2D::set_zoom_multiplier(float multiplier){
 
 void Camera2D::zoom_set(float zoom){
     zoom_current = zoom;
-    reload_dims();
+    reload();
 }
 
-void Camera2D::zoom_in(){
-    zoom_current *= zoom_multiplier;
-    reload_dims();
+void Camera2D::zoom(float delta){
+
+    // only determine direction for now
+    if(delta > 0)
+        zoom_current *= zoom_multiplier;
+    else
+        zoom_current *= 1.0f / zoom_multiplier;
+
+    reload();
+    transform.set_matrix_camera();
 }
 
-void Camera2D::zoom_out(){
-    zoom_current *= 1.0f / zoom_multiplier;
-    reload_dims();
-}
 
 void Camera2D::pan(f2 delta_px){
 

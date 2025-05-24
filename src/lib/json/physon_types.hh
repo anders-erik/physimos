@@ -11,7 +11,7 @@
 
 
 
-#define log(x) std::cout << x << std::endl;
+#define log_physon(x) std::cout << x << std::endl;
 
 
 

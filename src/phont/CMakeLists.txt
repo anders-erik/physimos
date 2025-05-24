@@ -19,10 +19,10 @@ target_link_libraries(phont
 )
 
 
-add_executable(phont_main
-    main.cc 
+add_executable(main_phont
+    main_phont.cc 
 )
-target_link_libraries(phont_main
+target_link_libraries(main_phont
     phont
 
     window

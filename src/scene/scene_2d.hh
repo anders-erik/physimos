@@ -35,29 +35,31 @@ struct CursorContext2D {
 
 
 class Scene2D {
-public:
-    f2 window_size;
-    void set_window_size(f2 size);
 
+    f2 window_size;
+    
+    Camera2D camera;
 
     CursorContext2D cursor_context;
+    bool panable = false; // Scene can be panned, usually with middle mouse button pressed
+
+    opengl::Quad2DRenderer renderer_quad;
+    std::vector<opengl::Quad2D> quads;
+
+public:
 
 
     Scene2D(f2 _window_size);
 
 
-    bool mouse_pan = false;
-    std::vector<opengl::Quad2D> quads;
-    void add_quad(opengl::Quad2D& quad_);
-
-    Camera2D camera;
-    opengl::Quad2DRenderer renderer_quad;
-
-
+    void handle_input(window::InputEvent input_event);
     void update();
     void render_window();
 
-    void handle_input(window::InputEvent input_event);
+
+    void set_window_size(f2 size);
+    void add_quad(opengl::Quad2D& quad_);
+
 };
 
 

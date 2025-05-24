@@ -25,7 +25,7 @@ class JPhileShape : JPhile {
 
 
     void loop_shape_array(json_array_variants& root_array);
-    Point extract_point_from_array_2d(JsonVar& json_var);
+    f2 extract_point_from_array_2d(JsonVar& json_var);
     void warn_shape_type_mismatch(std::string parsed, std::string deduced){
         std::cout << "WARNING: Type mismatch in JPhileSHape. " << "Parsed='" << parsed << "'. Deduced='" << deduced << "'." << std::endl;
     }
@@ -54,7 +54,7 @@ std::string JPhileShape::serialize_shape(Shape& shape){
 
     JsonVar shape_object = json_object_variants();
     shape_object.push_to_object( {"type", json_string("shape") } );
-    shape_object.push_to_object( {"name", shape.get_shape_name() } );
+    shape_object.push_to_object( {"name", shape.get_shape_name(shape.get_type()) } );
     // JsonVar type = "shape";
     // JsonVar shape = shape.get_shape_name();
     // JsonVar points = json_array_variants();
@@ -98,7 +98,7 @@ void JPhileShape::loop_shape_array(json_array_variants& root_array){
 
         // Points
         json_kv_variant point_kv;
-        std::vector<Point> points;
+        std::vector<f2> points;
         size_t max_point_count = 10000;
 
 
@@ -115,7 +115,7 @@ void JPhileShape::loop_shape_array(json_array_variants& root_array){
                 return;
 
             // Extract
-            Point point = extract_point_from_array_2d(point_kv.second);
+            f2 point = extract_point_from_array_2d(point_kv.second);
             points.push_back(point);
 
         }
@@ -133,7 +133,7 @@ void JPhileShape::loop_shape_array(json_array_variants& root_array){
         // Make sure that if shape name exists in json file, we compare to deduced type. If they do not match then a warning is logged.
         json_kv_variant shape_type_kv = shape_entry.find_in_object("shape");
         std::string parsed_shape_type = shape_type_kv.second.get_string();
-        std::string deduced_shape_type = new_shape.get_shape_name();
+        std::string deduced_shape_type = new_shape.get_shape_name(new_shape.get_type());
         if(parsed_shape_type != deduced_shape_type)
             warn_shape_type_mismatch(parsed_shape_type, deduced_shape_type);
 
@@ -142,7 +142,7 @@ void JPhileShape::loop_shape_array(json_array_variants& root_array){
 }
 
 
-Point JPhileShape::extract_point_from_array_2d(JsonVar& json_var){
+f2 JPhileShape::extract_point_from_array_2d(JsonVar& json_var){
 
     json_array_variants& point_array_var = json_var.get_array();
 

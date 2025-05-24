@@ -9,14 +9,19 @@
 #include "opengl/texture.hh"
 #include "opengl/renderer_quad_2d.hh"
 
+#include "lib/json/examples/shape.hh"
+
+
 window::InputEvent input_event;
 
 int main(){
 
     window::Auxwin auxwin;
     auxwin.init(800, 600);
-    
+
     scene2D::Camera2D camera;
+
+    Shape line = Shape::create(shape_t::line);
 
     opengl::Quad2D quad;
     // opengl::Quad2DRenderContext quad_render_context;
@@ -39,26 +44,25 @@ int main(){
     // camera.pan({ -400.0f, -300.0f}); // Half of window size
 
 
-    while (auxwin.is_open())
-    {
-        auxwin.new_frame();
-        
-        
-        while(input_event = auxwin.get_input_event(), input_event.type != window::EventType::None){
+    std::vector<window::InputEvent> input_events = auxwin.new_frame_2();
 
-            if(input_event.key_stroke.key == window::Key::Esc)
-                auxwin.close();
-            
-        }
+    while (auxwin.end_frame_2()){
+        input_events = auxwin.new_frame_2();
+
+        for(auto& event : input_events){}
 
         camera.transform.set_matrix_camera();
         quad.transform_2d.set_matrix_model();
 
-        quad_renderer.set_model_camera(quad.transform_2d.matrix, camera.transform.matrix);
+        quad_renderer.activate();
+        quad_renderer.set_camera(camera.transform.matrix);
+        
+        // Loop al models here
+        quad_renderer.set_model(quad.transform_2d.matrix);
+
         quad_renderer.render(quad.render_context);
 
 
-        auxwin.end_frame();
     }
     
 

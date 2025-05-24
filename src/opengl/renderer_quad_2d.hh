@@ -47,10 +47,17 @@ struct Quad2D {
 };
 
 
-struct Quad2DRenderer {
-    unsigned int program;
+class Quad2DRenderer {
+    opengl::Programs shader = opengl::Programs::Texture2D;
+    unsigned int program; // opengl id for renderer
+
+public:
 
     void create_context(Quad2D& quad);
+
+    void activate();
+    void set_camera(m3f3 camera);
+    void set_model(m3f3 model_mat);
 
     void set_model_camera(m3f3 model_mat, m3f3 camera);
     void render(Quad2DRenderContext context);

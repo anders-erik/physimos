@@ -19,16 +19,9 @@ phont::Face face;
 
 window::InputEvent event;
 
-int main()
-{
-	std::cout << "PHONT MAIN"  << std::endl;
 
-	// WINDOW
-	window::Auxwin auxwin;
-	auxwin.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+void add_glyph_quads_to_scene(scene2D::Scene2D& scene){
 
-	// OPENGL
-	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
 
 	// Glyph F 1
 	phont::Glyph glyph_F_1 {'F', {10, 16}};
@@ -99,16 +92,32 @@ int main()
 	quad_Triangle.transform_2d.set_scale(2.0f, 3.0f);
 
 
-
-
-	// SCENE 2D
-	scene2D::Scene2D scene = scene2D::Scene2D(window_size);
 	scene.add_quad(quad_F_1);
 	scene.add_quad(quad_F_2);
 	scene.add_quad(quad_A_1);
 	scene.add_quad(quad_A_multi);
 	scene.add_quad(quad_Triangle);
-	
+
+}
+
+
+int main()
+{
+	std::cout << "PHONT MAIN"  << std::endl;
+
+	// WINDOW
+	window::Auxwin auxwin;
+	auxwin.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	// OPENGL
+	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
+
+
+	// SCENE 2D
+	scene2D::Scene2D scene = scene2D::Scene2D(window_size);
+
+	add_glyph_quads_to_scene(scene);
+
 
 
 	while (auxwin.is_open())

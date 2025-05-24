@@ -176,6 +176,26 @@ void Auxwin::end_frame(){
 }
 
 
+std::vector<InputEvent> Auxwin::new_frame_2(){
+    new_frame();
+
+    std::vector<InputEvent> return_arr;
+
+    // move all event in current queue to return array
+    while(input_events.size() > 0){
+        return_arr.push_back(input_events.front());
+        input_events.pop();
+    }
+
+    return return_arr;
+
+}
+bool Auxwin::end_frame_2(){
+    end_frame();
+    return is_open();
+}
+
+
 void Auxwin::destroy(){
 
     // TODO: SHOUDL NOT TERMINATE THE GLFW LIB!
@@ -314,6 +334,10 @@ void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
 
     // KEY
     keystroke_event.key = get_key_from_glfw_key(key);
+
+    // CHECK CLOSE KEY
+    if(keystroke_event.key == close_key)
+        close();
 
     // BUTTON ACTION
     if(action == GLFW_PRESS)

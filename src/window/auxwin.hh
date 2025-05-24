@@ -108,6 +108,7 @@ class Auxwin {
 
     private:
         f2 current_window_size;
+        Key close_key = Key::Esc; // The key that will trigger auxwin to close.
 
         PWCoordinatesInput coords_input;                /** Required input for coordinate transformation constants.  */
         PWCoordinates coords;                           /** Provides coordinate tranformations of 2D points.  */
@@ -140,8 +141,14 @@ class Auxwin {
 
         void new_frame();
         void end_frame();
+        
+        // new frame + get all new events
+        std::vector<InputEvent>  new_frame_2();
+        // end frame + check if open
+        bool                    end_frame_2();  
 
         bool is_open();
+        // Will trigger the window to close on next end of frame call.
         void close();
         void destroy();
 

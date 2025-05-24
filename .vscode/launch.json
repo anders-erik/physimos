@@ -306,15 +306,18 @@
 
             "program": 
             // LINUX
-            "${workspaceRoot}/build/debug_linux/src/lib/main_str",
+            // "${workspaceRoot}/build/debug_linux/src/lib/main_str",
             // "${workspaceRoot}/build/debug_linux/src/lib/json/main_json",
+            // "${workspaceRoot}/build/debug_linux/src/phont/main_phont",
+            "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
             // WINDOWS
             
             "args": [],
             "stopAtEntry": false,
             
             "cwd": 
-            "${workspaceFolder}/src/lib",
+            "${workspaceFolder}",
+            // "${workspaceFolder}/src/lib",
             // "${workspaceFolder}/src/lib/json",
             
             "environment": [
@@ -334,7 +337,10 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "str_build",
+            "preLaunchTask": 
+            // "str_build",
+            "Debug build",
+
             "presentation": {
                 "echo": true,
                 "reveal": "always",

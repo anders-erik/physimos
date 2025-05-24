@@ -115,7 +115,7 @@ void Quad2DRenderContext::delete_contents(){
 
 Quad2DRenderer::Quad2DRenderer(){
     // program = opengl::build_program_vert_frag(opengl::Programs::phont_texture);
-    program = opengl::build_program_vert_frag(opengl::Programs::Texture2D);
+    program = opengl::build_program_vert_frag(shader);
 }
 
 
@@ -151,9 +151,20 @@ void Quad2DRenderer::create_context(Quad2D& quad){
     
 }
 
+void Quad2DRenderer::activate(){
+    glUseProgram(program);
+}
+void Quad2DRenderer::set_camera(m3f3 camera){
+    glUniformMatrix3fv(glGetUniformLocation(program, "camera2D_mat"), 1, GL_TRUE, (float*) &camera);
+}
+void Quad2DRenderer::set_model(m3f3 model_mat){
+    glUniformMatrix3fv(glGetUniformLocation(program, "model_mat"), 1, GL_TRUE, (float*) &model_mat);
+}
+
+
+[[deprecated("Use separate calls instead.")]] 
 void Quad2DRenderer::set_model_camera(m3f3 model_mat, m3f3 camera){
     glUseProgram(program);
-
     glUniformMatrix3fv(glGetUniformLocation(program, "model_mat"), 1, GL_TRUE, (float*) &model_mat);
     glUniformMatrix3fv(glGetUniformLocation(program, "camera2D_mat"), 1, GL_TRUE, (float*) &camera);
 }
