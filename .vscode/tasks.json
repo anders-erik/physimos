@@ -346,10 +346,10 @@
             "type": "shell",
 
             "command": 
-            // "${workspaceFolder}/build/debug_linux/src/lib/main_str",
+            "${workspaceFolder}/build/debug_linux/src/lib/main_str",
             // "${workspaceFolder}/build/debug_linux/src/lib/json/main_json",
             // "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
-            "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
+            // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
 
             "options": {
                 "cwd": 

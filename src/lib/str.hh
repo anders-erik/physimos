@@ -25,7 +25,7 @@ struct Str {
     Str(const Str& other) //= delete; 
         :   size {other.get_size()}
     {
-        std::cout << "Copy Constructor" << std::endl;
+        std::cout << "Str Copy Constructor" << std::endl;
         
         // Allocate same size
         if(!other.is_allocated())
@@ -43,6 +43,8 @@ struct Str {
 
     Str& operator=(const Str& other) // = delete; // {
     {
+        std::cout << "Str copy assignment" << std::endl;
+
         if (this == &other)
             std::cout << "this != &other" << std::endl;
             
@@ -59,7 +61,7 @@ struct Str {
         return *this;
     }
     Str(Str&& other) {
-        std::cout << "MOVE CONSTRUCTOR" << std::endl;
+        std::cout << "Str move constructor" << std::endl;
         
         mem = other.mem;
         size = other.size;
@@ -68,7 +70,7 @@ struct Str {
         other.rob();
     }
     Str& operator=(Str&& other){
-        std::cout << "MOVE ASSIGNMENT OP" << std::endl;
+        std::cout << "Str move assignment op" << std::endl;
 
         if (this == &other)
             std::cout << "this != &other" << std::endl;
@@ -169,6 +171,10 @@ struct Str {
 
         // Ok to ignore null-termination??
         // std::string std_str = std::string(mem);
+
+        if(mem == nullptr)
+            std::cout << "WARN: returning std string with mem == nullptr" << std::endl;
+            
 
         std::string std_str_size;
 

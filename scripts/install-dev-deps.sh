@@ -4,10 +4,10 @@ ninja() {
   sudo apt install ninja-build
 }
 glfw(){
-  
+    echo "no glfw installed"
 }
 wayland(){
-  sudo apt install libwayland-dev wayland-protocols
+  sudo apt install libwayland-dev wayland-protocols libdrm-dev
 }
 
 

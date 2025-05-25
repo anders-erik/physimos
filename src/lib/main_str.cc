@@ -4,6 +4,7 @@
 
 #include "str.hh"
 #include "opt.hh"
+// #include "res.hh"
 
 
 template <typename T>
@@ -206,6 +207,33 @@ void str_c_and_std_interface(){
 }
 
 
+void opt_str(){
+
+    int i = 123;
+    Opt<int> opt_int = { 10 };
+    // std::cout << "opt_int.has_value() = " << opt_int.has_value() << std::endl;
+    std::cout << "opt_int.consume() = " << opt_int.consume() << std::endl;
+    opt_int = i;
+    std::cout << "opt_int.consume() = " << opt_int.consume() << std::endl;
+
+    Str str {10, 'x'};
+    Opt<Str> opt_str_copy = str;
+    // Opt<Str> opt_str = Str(10, 'b');
+    // Opt<Str> opt_str_list {10, 'b'};
+    std::cout << "opt_str.has_value() = " << opt_str_copy.has_value() << std::endl;
+    Str opt_str_copy_value = opt_str_copy.consume();
+    Str opt_str_copy_value_consumed_again = opt_str_copy.consume();
+    std::cout << "value.consume() = " << opt_str_copy_value.to_std_string() << std::endl;
+    std::cout << "value_consumed_again.consume() = " << opt_str_copy_value_consumed_again.to_std_string() << std::endl;
+
+}
+
+void res_str(){
+    // Str str = "apa";
+    // Res<Str> res_int { str };
+
+}
+
 
 int main(){
     std::cout << "Str main." << std::endl << std::endl;
@@ -218,17 +246,9 @@ int main(){
     // free_delete();
     // str_c_and_std_interface();
     
-    Opt<int> opt_int = 10;
-    std::cout << "opt_int.has_value() = " << opt_int.has_value() << std::endl;
-    std::cout << "opt_int.get_value() = " << opt_int.get_value() << std::endl;
+    opt_str();
+    res_str();
 
-    Str str {10, 'x'};
-    Opt<Str> opt_str_copy = str;
-    // Opt<Str> opt_str = Str(10, 'b');
-    // Opt<Str> opt_str_list {10, 'b'};
-    std::cout << "opt_str.has_value() = " << opt_str_copy.has_value() << std::endl;
-    std::cout << "opt_str.get_value() = " << opt_str_copy.get_value().to_std_string() << std::endl;
-    
 
 
     std::cout << "Str End" << std::endl << std::endl;
