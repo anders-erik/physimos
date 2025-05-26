@@ -107,18 +107,21 @@ private:
 class Auxwin {
 
     private:
-        f2 current_window_size;
+        f2 current_window_size_f;
+        i2 current_window_size_i;
         Key close_key = Key::Esc; // The key that will trigger auxwin to close.
 
-        PWCoordinatesInput coords_input;                /** Required input for coordinate transformation constants.  */
-        PWCoordinates coords;                           /** Provides coordinate tranformations of 2D points.  */
+        /** Required input for coordinate transformation constants.  */
+        PWCoordinatesInput coords_input;
+        /** Provides coordinate tranformations of 2D points.  */
+        PWCoordinates coords;
          /**    Queries glfw for coordinate system values, then reloads the coord object. 
-                Depends on current_window_size.
+                Depends on current_window_size_f.
          */
         void reload_coordinate_constants_using_glfw();
 
         void glfw_window_hints();
-        void glfw_create_window(int width, int height);
+        void glfw_create_window();
         void opengl_init();
 
         CursorPosition cursor;
@@ -135,7 +138,10 @@ class Auxwin {
 
         Auxwin() {};
 
+        void init(i2 window_size);
+        void init(f2 window_size);
         void init(int width, int height);
+        void init();
         
         void make_current();
 

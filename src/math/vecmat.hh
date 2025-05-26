@@ -115,8 +115,14 @@ struct m3f3 {
     f3 z;
 
     m3f3& operator=(m3f3& rhs);
-    /** this x rhs */
-    void mult(m3f3 rhs);
+    /** copy = this x rhs 
+        this = copy
+    */
+    void mult_right(m3f3 rhs);
+    /** copy = lhs x this 
+        this = copy
+    */
+    void mult_left(m3f3 lhs);
     f2 mult(f2 _f2); /** Translate, rotate, and scale f2 using the set m3f3 values. */
     void translate(f2 transl);
     void rotate(float angle);

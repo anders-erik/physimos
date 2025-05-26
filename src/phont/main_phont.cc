@@ -20,7 +20,7 @@ phont::Face face;
 window::InputEvent event;
 
 
-void add_glyph_quads_to_scene(scene2D::Scene2D& scene){
+void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 
 	// Glyph F 1
@@ -101,6 +101,22 @@ void add_glyph_quads_to_scene(scene2D::Scene2D& scene){
 }
 
 
+/** Owns a window and 2D scenes. Handles events and decides which scene will recieve input events.*/
+class Win2D {
+	f2 window_size_f;
+public:
+
+	std::vector<scene::Scene2D> scenes;
+
+	Win2D() {}
+
+	void set_window_size(f2 size){
+		for(scene::Scene2D& scene : scenes)
+			scene.set_window_size(size);
+	}
+
+};
+
 int main()
 {
 	std::cout << "PHONT MAIN"  << std::endl;
@@ -114,34 +130,36 @@ int main()
 
 
 	// SCENE 2D
-	scene2D::Scene2D scene = scene2D::Scene2D(window_size);
+	scene::Scene2D scene = scene::Scene2D(window_size);
 
 	add_glyph_quads_to_scene(scene);
 
 
+	std::vector<window::InputEvent> input_events;
 
-	while (auxwin.is_open())
-	{
-		auxwin.new_frame();
+	while (auxwin.end_frame_2()){
+		input_events = auxwin.new_frame_2();
+
+		for(auto& event : input_events){
 
 
-		// Handle Input
-		while(event = auxwin.get_input_event(), event.type != window::EventType::None){
+			if(event.type == window::EventType::WindowResize){
 
-            if(event.key_stroke.key == window::Key::Esc)
-                auxwin.close();
-            
+				scene.set_window_size(event.window_resize.size_f);
+				continue;
+
+			}
+
 			scene.handle_input(event);
-        }
+
+		}
+
 
 		// UPDATE
 		scene.update();
 
 		// RENDER
 		scene.render_window();
-
-
-		auxwin.end_frame();
 	}
 
 	// scene.quad_F.render_context.delete_contents();

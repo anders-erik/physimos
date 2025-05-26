@@ -48,17 +48,34 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 
 
 // Auxwin::Auxwin(int width, int height){
-void Auxwin::init(int width, int height){
 
+
+        // void init(int width, int height);
+
+void Auxwin::init(int width, int height){
+    current_window_size_f = { (float) width, (float) height};
+    current_window_size_i = { width, height};
+    init();
+}
+
+void Auxwin::init(i2 new_window_size){
+    current_window_size_f = { (float) new_window_size.x, (float) new_window_size.y};
+    current_window_size_i = new_window_size;
+    init();
+}
+void Auxwin::init(f2 new_window_size){
+    current_window_size_f = new_window_size;
+    current_window_size_i = { (int) new_window_size.x, (int) new_window_size.y};
+    init();
+}
+void Auxwin::init(){
     current_auxwin = this;
 
     glfwInit();
     
     glfw_window_hints();
-    glfw_create_window(width, height);
+    glfw_create_window();
     opengl_init();
-    
-
 }
 
 void Auxwin::reload_coordinate_constants_using_glfw(){
@@ -79,7 +96,7 @@ void Auxwin::reload_coordinate_constants_using_glfw(){
     coords_input.content_scale.x = xscale;
     coords_input.content_scale.y = yscale;
 
-    coords_input.window_size_sc = current_window_size;
+    coords_input.window_size_sc = current_window_size_f;
 
     coords.set_constants(coords_input);
     
@@ -98,12 +115,11 @@ void Auxwin::glfw_window_hints(){
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 }
-void Auxwin::glfw_create_window(int _width, int _height){
+void Auxwin::glfw_create_window(){
 
-    current_window_size = { (float) _width, (float) _height};
-    cursor.window_dims = current_window_size;
+    cursor.window_dims = current_window_size_f;
 
-    glfw_window = glfwCreateWindow(_width, _height, "Auxwin", NULL, NULL);
+    glfw_window = glfwCreateWindow(current_window_size_i.x, current_window_size_i.y, "Auxwin", NULL, NULL);
 
 
 	// GLFWwindow *window = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
@@ -250,8 +266,8 @@ void Auxwin::add_input_event(InputEvent event){
 void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
     std::cout << "auxwin->framebuffer_callback" << std::endl;
 
-    current_window_size = {(float) _width, (float) _height};
-    cursor.window_dims = current_window_size;
+    current_window_size_f = {(float) _width, (float) _height};
+    cursor.window_dims = current_window_size_f;
     
     reload_coordinate_constants_using_glfw();
 

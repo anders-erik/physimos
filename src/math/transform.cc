@@ -31,8 +31,8 @@ void Transform2D::set_matrix_model(){
 
     // MULTIPLY
     matrix.set_to_identity();
-    matrix.mult(pos_mat);
-    matrix.mult(scale_mat);
+    matrix.mult_right(pos_mat);
+    matrix.mult_right(scale_mat);
 
 
 }
@@ -51,8 +51,8 @@ void Transform2D::set_matrix_camera(){
 
     // MULTIPLY
     matrix.set_to_identity();
-    matrix.mult(scale_mat);
-    matrix.mult(pos_mat);
+    matrix.mult_right(scale_mat);
+    matrix.mult_right(pos_mat);
 }
 
 

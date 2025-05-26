@@ -7,7 +7,7 @@
 
 
 
-namespace scene2D { 
+namespace scene { 
 
 
 
@@ -21,61 +21,81 @@ void Box2D::print(){
 }
 
 
-void Camera2D::reload(){
 
-    box.size.x = width_initial / zoom_current;
-    box.size.y = box.size.x / aspect_ratio;
+void Camera2D::matrix_reload(){
 
-    units_per_px = box.size.x / window_size_px.x;
+    // Reload values dependent on window size and box.x
+    AR = window_size_px.x / window_size_px.y;
+    box.size.y = box.size.x / AR;
+    scene_per_sane = box.size.x / window_size_px.x;
 
-    transform.scale.x = zoom_current;
-    transform.scale.y = transform.scale.x * aspect_ratio;
+    t_M_s_c.x.z = -box.pos.x;
+    t_M_s_c.y.z = -box.pos.y;
 
-    transform.set_matrix_camera();
+    t_M_c_ndc.x.z = -1.0f;
+    t_M_c_ndc.y.z = -1.0f;
+
+    // camera coords. -> ndc
+    s_M_c_ndc.x.x = 2 / box.size.x;
+    s_M_c_ndc.y.y = 2 * AR / box.size.x;
+
+
+    M_s_ndc.set_to_identity();
+
+    M_s_ndc.mult_left(t_M_s_c);
+
+    M_s_ndc.mult_left(s_M_c_ndc);
+    // | order of these two? |
+    M_s_ndc.mult_left(t_M_c_ndc);
+
+    
+}
+m3f3 Camera2D::get_matrix(){
+    return M_s_ndc;
 }
 
 void Camera2D::set_window_size_px(f2 size){
-    window_size_px.x = size.x;
-    window_size_px.y = size.y;
-
-    aspect_ratio = window_size_px.x / window_size_px.y;
-
-    reload();
+    window_size_px = size;
+    matrix_reload();
 }
 
-void Camera2D::set_zoom_multiplier(float multiplier){
-    zoom_multiplier = multiplier;
+void Camera2D::set_zoom_factor(float factor){
+    zoom_factor = factor;
 }
 
-void Camera2D::zoom_set(float zoom){
-    zoom_current = zoom;
-    reload();
+void Camera2D::set_width(float zoom){
+    box.size.x = zoom;
+    matrix_reload();
 }
 
 void Camera2D::zoom(float delta){
 
-    // only determine direction for now
-    if(delta > 0)
-        zoom_current *= zoom_multiplier;
+    // only determine direction - each scroll event is equivalent distance
+    if(delta < 0)
+        box.size.x *= zoom_factor; // zoom out by increasing camera width
     else
-        zoom_current *= 1.0f / zoom_multiplier;
+        box.size.x *= 1.0f / zoom_factor;
 
-    reload();
-    transform.set_matrix_camera();
+    matrix_reload();
 }
 
+void Camera2D::pan(f2 delta_sane){
 
-void Camera2D::pan(f2 delta_px){
+    box.pos.x -= scene_per_sane * delta_sane.x;
+    box.pos.y -= scene_per_sane * delta_sane.y;
 
-    box.pos.x -= units_per_px * delta_px.x;
-    box.pos.y -= units_per_px * delta_px.y;
-
-    transform.pos.x = box.pos.x;
-    transform.pos.y = box.pos.y;
-    transform.set_matrix_camera();
+    matrix_reload();
 }
 
+Box2D Camera2D::get_box(){
+    return box;
+}
 
+void Camera2D::print(){
+
+    box.print();
+
+}
 
 
 

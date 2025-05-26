@@ -49,7 +49,7 @@ m3f3& m3f3::operator=(m3f3& rhs){
     return *this;
 }
 
-void m3f3::mult(m3f3 rhs){
+void m3f3::mult_right(m3f3 rhs){
 
     m3f3 copy;
     copy = *this;
@@ -65,6 +65,27 @@ void m3f3::mult(m3f3 rhs){
     copy.z.x = z.x * rhs.x.x + z.y * rhs.y.x + z.z * rhs.z.x;
     copy.z.y = z.x * rhs.x.y + z.y * rhs.y.y + z.z * rhs.z.y;
     copy.z.z = z.x * rhs.x.z + z.y * rhs.y.z + z.z * rhs.z.z;
+
+    *this = copy;
+}
+
+void m3f3::mult_left(m3f3 lhs){
+
+    m3f3 copy;
+
+    m3f3 rhs = *this;
+    
+    copy.x.x = lhs.x.x * rhs.x.x + lhs.x.y * rhs.y.x + lhs.x.z * rhs.z.x;
+    copy.x.y = lhs.x.x * rhs.x.y + lhs.x.y * rhs.y.y + lhs.x.z * rhs.z.y;
+    copy.x.z = lhs.x.x * rhs.x.z + lhs.x.y * rhs.y.z + lhs.x.z * rhs.z.z;
+
+    copy.y.x = lhs.y.x * rhs.x.x + lhs.y.y * rhs.y.x + lhs.y.z * rhs.z.x;
+    copy.y.y = lhs.y.x * rhs.x.y + lhs.y.y * rhs.y.y + lhs.y.z * rhs.z.y;
+    copy.y.z = lhs.y.x * rhs.x.z + lhs.y.y * rhs.y.z + lhs.y.z * rhs.z.z;
+
+    copy.z.x = lhs.z.x * rhs.x.x + lhs.z.y * rhs.y.x + lhs.z.z * rhs.z.x;
+    copy.z.y = lhs.z.x * rhs.x.y + lhs.z.y * rhs.y.y + lhs.z.z * rhs.z.y;
+    copy.z.z = lhs.z.x * rhs.x.z + lhs.z.y * rhs.y.z + lhs.z.z * rhs.z.z;
 
     *this = copy;
 }

@@ -19,16 +19,16 @@ struct GLFWWindow;
 
 
 
-namespace scene2D {
+namespace scene {
 
 
 
 
 struct CursorContext2D {
-    f2 viewport_px; // [0,window_width]x[0,window_height] [pixels]
+    f2 viewport_sane; // [0,window_width]x[0,window_height] [pixels]
     f2 viewport_norm; // [0,1]x[0,1] [unitless]
     f2 scene; // [box.left,box.right]x[box.bottom, box.top] [scene_units]
-    void set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box);
+    void set_cursor_pos(f2 pos_sane, f2 pos_norm, Box2D camera_box);
 };
 
 
@@ -36,7 +36,7 @@ struct CursorContext2D {
 
 class Scene2D {
 
-    f2 window_size;
+    f2 window_size_f;
     
     Camera2D camera;
 
@@ -51,13 +51,13 @@ public:
 
     Scene2D(f2 _window_size);
 
+    void set_window_size(f2 size);
 
     void handle_input(window::InputEvent input_event);
     void update();
     void render_window();
 
 
-    void set_window_size(f2 size);
     void add_quad(opengl::Quad2D& quad_);
 
 };

@@ -5,6 +5,7 @@
 #include "window/auxwin.hh"
 
 #include "scene/camera_2d.hh"
+#include "scene/scene_2d.hh"
 
 #include "opengl/texture.hh"
 #include "opengl/renderer_quad_2d.hh"
@@ -14,14 +15,21 @@
 
 window::InputEvent input_event;
 
+
+
 int main(){
+    f2 win_size_init {800, 600};
 
     window::Auxwin auxwin;
-    auxwin.init(800, 600);
+    auxwin.init(win_size_init);
 
-    scene2D::Camera2D camera;
+    scene::Camera2D camera;
 
     Shape line = Shape::create(shape_t::line);
+
+    scene::Scene2D scene (win_size_init);
+
+
 
     opengl::Quad2D quad;
     // opengl::Quad2DRenderContext quad_render_context;
@@ -39,8 +47,8 @@ int main(){
 
 
     camera.set_window_size_px({800, 600});
-    // camera.zoom_set(0.2f);
-    camera.set_zoom_multiplier(1.2f);
+    // camera.set_width(0.2f);
+    camera.set_zoom_factor(1.2f);
     // camera.pan({ -400.0f, -300.0f}); // Half of window size
 
 
@@ -51,16 +59,16 @@ int main(){
 
         for(auto& event : input_events){}
 
-        camera.transform.set_matrix_camera();
-        quad.transform_2d.set_matrix_model();
+        // camera.transform.set_matrix_camera();
+        // quad.transform_2d.set_matrix_model();
 
-        quad_renderer.activate();
-        quad_renderer.set_camera(camera.transform.matrix);
+        // quad_renderer.activate();
+        // quad_renderer.set_camera(camera.transform.matrix);
         
-        // Loop al models here
-        quad_renderer.set_model(quad.transform_2d.matrix);
+        // // Loop al models here
+        // quad_renderer.set_model(quad.transform_2d.matrix);
 
-        quad_renderer.render(quad.render_context);
+        // quad_renderer.render(quad.render_context);
 
 
     }
