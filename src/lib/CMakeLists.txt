@@ -1,10 +1,6 @@
 
 add_subdirectory(json)
 
-add_executable(main_str
-    main_str.cc
-)
-
 add_library(lib
 
     string.cc
@@ -15,10 +11,20 @@ add_library(lib
     log.cc
     process.cc
 
+    str.cc
 )
 
 
 # Currently lib should be self contained, with the exception of the standard library
 target_include_directories(lib PUBLIC 
     .
+)
+
+
+add_executable(main_str
+    main_str.cc
+)
+
+target_link_libraries(main_str
+    lib
 )

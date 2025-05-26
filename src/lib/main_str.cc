@@ -234,6 +234,22 @@ void res_str(){
 
 }
 
+void concat(){
+    Str str_lval {5, 'z'};
+    Str str = "123";
+    str.println_quotes();
+    str += "456";
+    str.println_quotes();
+    str += "789";
+    str.println_quotes();
+    // str += str_lval;
+    // str.println_quotes();
+
+    const char* str_c = str.to_c_str();
+    std::cout << "str_c: \"" << str_c << "\"" << std::endl;
+    std::cout << "strlen(str_c): " << strlen(str_c) << std::endl;
+    
+}
 
 int main(){
     std::cout << "Str main." << std::endl << std::endl;
@@ -246,8 +262,10 @@ int main(){
     // free_delete();
     // str_c_and_std_interface();
     
-    opt_str();
-    res_str();
+    // opt_str();
+    // res_str();
+
+    concat();
 
 
 
