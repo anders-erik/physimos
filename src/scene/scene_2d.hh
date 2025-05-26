@@ -10,6 +10,7 @@
 #include "window/auxwin.hh"
 
 #include "math/vecmat.hh"
+#include "math/geometry/shape.hh"
 
 #include "scene/camera_2d.hh"
 
@@ -43,8 +44,12 @@ class Scene2D {
     CursorContext2D cursor_context;
     bool panable = false; // Scene can be panned, usually with middle mouse button pressed
 
-    opengl::Quad2DRenderer renderer_quad;
-    std::vector<opengl::Quad2D> quads;
+    opengl::Scene2DRenderer renderer2D;
+    std::vector<opengl::ShapeS2D> quads;
+
+    std::vector<opengl::ShapeS2D> points;
+    std::vector<opengl::ShapeS2D> lines;
+    std::vector<opengl::ShapeS2D> shapes;
 
 public:
 
@@ -58,7 +63,8 @@ public:
     void render_window();
 
 
-    void add_quad(opengl::Quad2D& quad_);
+    void add_quad(opengl::ShapeS2D& quad_);
+    void add_shape(Shape& shape);
 
 };
 

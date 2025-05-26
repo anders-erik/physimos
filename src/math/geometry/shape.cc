@@ -1,67 +1,33 @@
-#include <string>
-#include <vector>
-#include <cmath>
 
-#include "math/vecmat.hh"
-
-#include "../physon.hh"
-#include "../physon_types.hh"
+#include "shape.hh"
 
 
+Shape::Shape(f2 p1, f2 p2){
+    points.push_back(p1);
+    points.push_back(p2);
+    point_count = 2;
+    type = shape_t::line;
+}
 
-enum class shape_t {
-    point,
-    line,
-    triangle,
-    quad,
-    polygon,
+Shape::Shape(const std::vector<f2>& points) {
+    point_count = points.size();
+
+    if(point_count == 0)
+        throw std::runtime_error("Constructing shape with empty point array.");
+
+    this->points = points;
+
+    switch (point_count){
+        case 1: type = shape_t::point;      break;
+        case 2: type = shape_t::line;       break;
+        case 3: type = shape_t::triangle;   break;
+        case 4: type = shape_t::quad;       break;
+        default:type = shape_t::polygon;    break;
+    }
+    
 };
 
-struct Point { double x; double y; };
 
-class Shape {
-
-    shape_t type;
-    size_t point_count;
-    std::vector<f2> points;
-
-public:
-
-    void print();
-    shape_t get_type();
-    size_t get_point_count();
-    std::vector<f2>& get_points();
-    f2& operator[](size_t index) {return points[index];};
-
-    // creates the regular polygon shapes/dihedral group
-    static Shape create(shape_t type);
-    static std::string get_shape_name(shape_t type);
-
-    Shape (f2 p1, f2 p2) {
-        points.push_back(p1);
-        points.push_back(p2);
-        point_count = 2;
-        type = shape_t::line;
-    };
-    Shape (const std::vector<f2>& points) {
-        point_count = points.size();
-
-        if(point_count == 0)
-            throw std::runtime_error("Constructing shape with empty point array.");
-
-        this->points = points;
-
-        switch (point_count){
-            case 1: type = shape_t::point;      break;
-            case 2: type = shape_t::line;       break;
-            case 3: type = shape_t::triangle;   break;
-            case 4: type = shape_t::quad;       break;
-            default:type = shape_t::polygon;    break;
-        }
-        
-    };
-
-};
 
 Shape Shape::create(shape_t type){
     std::vector<f2> points;
@@ -87,6 +53,9 @@ Shape Shape::create(shape_t type){
     return Shape{points};
 }
 
+bool Shape::is(shape_t type){
+    return this->type == type ? true : false;
+}
 shape_t Shape::get_type(){
     return type;
 }
@@ -141,5 +110,4 @@ void Shape::print(){
 
     std::cout << std::endl;
 }
-
 

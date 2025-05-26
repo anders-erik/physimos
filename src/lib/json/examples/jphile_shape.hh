@@ -8,7 +8,7 @@
 #include "../physon.hh"
 #include "../physon_types.hh"
 
-#include "shape.hh"
+#include "math/geometry/shape.hh"
 #include "jphile.hh"
 
 

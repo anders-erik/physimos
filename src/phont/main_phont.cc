@@ -27,14 +27,14 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 	phont::Glyph glyph_F_1 {'F', {10, 16}};
 	glyph_F_1.generate_multisample();
 
-	opengl::Quad2D quad_F_1;
+	opengl::ShapeS2D quad_F_1;
 	quad_F_1.transform_2d.set_pos(3.0f, 3.0f);
 	quad_F_1.transform_2d.set_scale(2.0f, 3.0f);
     // quad_F.render_context.texture = F_10_16.get_texture().id_gl;
     quad_F_1.render_context.texture = glyph_F_1.text_framebuff_multi.resolvedTexture;
 
 
-    opengl::Quad2D quad_F_2;
+    opengl::ShapeS2D quad_F_2;
 	phont::Glyph F_10_16 { phont::Glyph( 'F', {10, 16} ) };
     F_10_16.generate_multisample();
     F_10_16.text_framebuff.texture.draw_rect({1, 1}, {2, 2}, {255, 0, 255, 255});
@@ -45,7 +45,7 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 
     phont::Glyph A_200_320 { phont::Glyph( 'A', {20, 32} ) };
-    opengl::Quad2D quad_A_1;
+    opengl::ShapeS2D quad_A_1;
 	
     A_200_320.generate();
 
@@ -56,10 +56,10 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 
     phont::Glyph A_multi { phont::Glyph( 'A', {15, 24} ) };;
-    opengl::Quad2D quad_A_multi;
+    opengl::ShapeS2D quad_A_multi;
 	
     A_multi.generate_multisample();
-    // renderer_quad.create_context(quad_A_multi);
+    // renderer2D.create_context(quad_A_multi);
     quad_A_multi.render_context.texture = A_multi.text_framebuff_multi.resolvedTexture;
 	quad_A_multi.transform_2d.set_pos(6.0f, 0.0f);
 	quad_A_multi.transform_2d.set_scale(2.0f, 3.0f);
@@ -69,10 +69,10 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 	// TRIANGLE MULTISAMPLE
 
     opengl::TextureFrameBufferMultisample Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) };
-    opengl::Quad2D quad_Triangle;
+    opengl::ShapeS2D quad_Triangle;
 
 
-    // renderer_quad.create_context(quad_Triangle);
+    // renderer2D.create_context(quad_Triangle);
     // TODO: Render triangle texture
     // quad_Triangle.render_context.texture = A_200_320.get_texture().id_gl; 
     // quad_Triangle.render_context.texture = Triangle_text_buf_multi.text_id;
@@ -127,10 +127,13 @@ int main()
 
 	// OPENGL
 	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
+	opengl::textures_init();
 
 
 	// SCENE 2D
 	scene::Scene2D scene = scene::Scene2D(window_size);
+	Shape point_to_draw = Shape::create(shape_t::point);
+	scene.add_shape(point_to_draw);
 
 	add_glyph_quads_to_scene(scene);
 

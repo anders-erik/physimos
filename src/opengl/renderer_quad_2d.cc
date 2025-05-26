@@ -1,6 +1,7 @@
 
 #include "math/vecmat.hh"
 #include "renderer_quad_2d.hh"
+#include "opengl/texture.hh"
 
 #include "glad/glad.h"
 #include <iostream>
@@ -10,10 +11,10 @@ namespace opengl {
 
 
 
-Quad2D::Quad2D(){
+ShapeS2D::ShapeS2D() : shape {Shape::create(shape_t::triangle)}{
 
 
-    verts = generate_quad();
+    verts_6 = generate_quad();
 
 
     // float width_pixels  = 20.0f;
@@ -24,8 +25,70 @@ Quad2D::Quad2D(){
     
 }
 
+ShapeS2D::ShapeS2D(Shape& shape) : shape {shape} {
+    
+    VertexShape2D v_tmp;
+    
+    std::vector<f2>& shape_points = shape.get_points();
+    
+    text_coord = opengl::texture_get_color_coordinate(opengl::TextureColors::Red);
 
-void Quad2D::set_dims(float window_width, float window_height, float width_pixels, float height_pixels){
+    // Create vertices
+    if(shape.is(shape_t::point))
+        create_point(shape_points[0]);
+    else if(shape.is(shape_t::line))
+        create_line(shape_points[0], shape_points[1]);
+    else
+        create_fan(shape_points);
+
+}
+
+void ShapeS2D::create_point(f2 point){
+    VertexShape2D v_tmp = {{point.x, point.y, 0.0f}, this->text_coord};
+    verts.push_back(v_tmp);
+}
+void ShapeS2D::create_line(f2 p1, f2 p2){
+    VertexShape2D v1 = {{p1.x, p1.y, 0.0f}, {0.0f, 0.0f}};
+    verts.push_back(v1);
+    VertexShape2D v2 = {{p2.x, p2.y, 0.0f}, {0.0f, 0.0f}};
+    verts.push_back(v2);
+}
+void ShapeS2D::create_fan(std::vector<f2>& points){
+
+    VertexShape2D v0 = {{points[0].x, points[0].y, 0.0f}, {0.0f, 0.0f}};
+
+    // create triangles with v0 as the connecting vertex
+    for(size_t i = 1; i < points.size(); i++){
+
+        VertexShape2D v_i =  {{points[i].x, points[i].y, 0.0f}, {0.0f, 0.0f}};
+        VertexShape2D v_ip1 =  {{points[i+1].x, points[i+1].y, 0.0f}, {0.0f, 0.0f}};
+        
+        verts.push_back(v0);
+        verts.push_back(v_i);
+        verts.push_back(v_ip1);
+    }
+
+}
+
+bool ShapeS2D::is_point(){
+    return shape.is(shape_t::point) ? true : false;
+}
+bool ShapeS2D::is_line(){
+    return shape.is(shape_t::line) ? true : false;
+}
+
+
+void ShapeS2D::set_texture(f2 text_coord){
+
+
+}
+
+m3f3 ShapeS2D::get_matrix(){
+    return M_m_s;
+}
+
+
+void ShapeS2D::set_dims(float window_width, float window_height, float width_pixels, float height_pixels){
 
 
 
@@ -40,52 +103,52 @@ void Quad2D::set_dims(float window_width, float window_height, float width_pixel
 
 
     // Lower left
-    verts[0].pos.x = x_center_ndc - width_ndc / 2;
-    verts[0].pos.y = y_center_ndc - height_ndc / 2;
+    verts_6[0].pos.x = x_center_ndc - width_ndc / 2;
+    verts_6[0].pos.y = y_center_ndc - height_ndc / 2;
     // Lower right
-    verts[1].pos.x = x_center_ndc + width_ndc / 2;
-    verts[1].pos.y = y_center_ndc - height_ndc / 2;
+    verts_6[1].pos.x = x_center_ndc + width_ndc / 2;
+    verts_6[1].pos.y = y_center_ndc - height_ndc / 2;
     // Upper right
-    verts[2].pos.x = x_center_ndc + width_ndc / 2;
-    verts[2].pos.y = y_center_ndc + height_ndc / 2;
+    verts_6[2].pos.x = x_center_ndc + width_ndc / 2;
+    verts_6[2].pos.y = y_center_ndc + height_ndc / 2;
 
     // Lower left
-    verts[3].pos.x = x_center_ndc - width_ndc / 2;
-    verts[3].pos.y = y_center_ndc - height_ndc / 2;
+    verts_6[3].pos.x = x_center_ndc - width_ndc / 2;
+    verts_6[3].pos.y = y_center_ndc - height_ndc / 2;
     // Upper right
-    verts[4].pos.x = x_center_ndc + width_ndc / 2;
-    verts[4].pos.y = y_center_ndc + height_ndc / 2;
+    verts_6[4].pos.x = x_center_ndc + width_ndc / 2;
+    verts_6[4].pos.y = y_center_ndc + height_ndc / 2;
     // Upper left
-    verts[5].pos.x = x_center_ndc - width_ndc / 2;
-    verts[5].pos.y = y_center_ndc + height_ndc / 2;
+    verts_6[5].pos.x = x_center_ndc - width_ndc / 2;
+    verts_6[5].pos.y = y_center_ndc + height_ndc / 2;
     
 }
 
-std::array<VertexQuad2D, 6> Quad2D::generate_quad(){
-    std::array<VertexQuad2D, 6> verts;
+std::array<VertexShape2D, 6> ShapeS2D::generate_quad(){
+    std::array<VertexShape2D, 6> verts;
 
-    VertexQuad2D v0;  // Lower left
+    VertexShape2D v0;  // Lower left
     v0.pos.x = 0.0f;
     v0.pos.y = 0.0f;
     v0.pos.z = 0.0f;
     v0.tex.x = 0.0f;
     v0.tex.y = 0.0f;
 
-    VertexQuad2D v1;  // Lower right
+    VertexShape2D v1;  // Lower right
     v1.pos.x = 1.0f;
     v1.pos.y = 0.0f;
     v1.pos.z = 0.0f;
     v1.tex.x = 1.0f;
     v1.tex.y = 0.0f;
 
-    VertexQuad2D v2;  // Upper right
+    VertexShape2D v2;  // Upper right
     v2.pos.x = 1.0f;
     v2.pos.y = 1.0f;
     v2.pos.z = 0.0f;
     v2.tex.x = 1.0f;
     v2.tex.y = 1.0f;
 
-    VertexQuad2D v3;  // Upper left
+    VertexShape2D v3;  // Upper left
     v3.pos.x = 0.0f;
     v3.pos.y = 1.0f;
     v3.pos.z = 0.0f;
@@ -106,21 +169,43 @@ std::array<VertexQuad2D, 6> Quad2D::generate_quad(){
 
 
 
-void Quad2DRenderContext::delete_contents(){
+void ShapeS2DRenderContext::delete_contents(){
     glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &VBO);
 }
 
 
-Quad2DRenderer::Quad2DRenderer(){
+Scene2DRenderer::Scene2DRenderer(){
     // program = opengl::build_program_vert_frag(opengl::Programs::phont_texture);
     program = opengl::build_program_vert_frag(shader);
 }
 
+void Scene2DRenderer::create_context(ShapeS2D& shape){
+
+    shape.render_context.texture = opengl::texture_get_id(opengl::Textures::Colors);
+
+	glGenVertexArrays(1, &shape.render_context.VAO);
+	glGenBuffers(1, &shape.render_context.VBO);
+
+	glBindVertexArray(shape.render_context.VAO);
 
 
-void Quad2DRenderer::create_context(Quad2D& quad){
+	glBindBuffer(GL_ARRAY_BUFFER, shape.render_context.VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(shape.verts), shape.verts.data(), GL_STATIC_DRAW);
+    
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexShape2D), (void *)0);
+	glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexShape2D), (void *)(sizeof(f3)));
+	glEnableVertexAttribArray(1);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Scene2DRenderer::create_context_quad(ShapeS2D& quad){
 
     // unsigned int render_context.VAO, VBO, EBO;
 
@@ -137,13 +222,13 @@ void Quad2DRenderer::create_context(Quad2D& quad){
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, quad.faces.size() * sizeof(i3), quad.faces.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, quad.render_context.VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad.verts), quad.verts.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad.verts_6), quad.verts_6.data(), GL_STATIC_DRAW);
     
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexQuad2D), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexShape2D), (void *)0);
 	glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexQuad2D), (void *)(sizeof(f3)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexShape2D), (void *)(sizeof(f3)));
 	glEnableVertexAttribArray(1);
 
 
@@ -151,25 +236,34 @@ void Quad2DRenderer::create_context(Quad2D& quad){
     
 }
 
-void Quad2DRenderer::activate(){
+void Scene2DRenderer::activate(){
     glUseProgram(program);
 }
-void Quad2DRenderer::set_camera(m3f3 camera){
+void Scene2DRenderer::set_camera(m3f3 camera){
     glUniformMatrix3fv(glGetUniformLocation(program, "camera2D_mat"), 1, GL_TRUE, (float*) &camera);
 }
-void Quad2DRenderer::set_model(m3f3 model_mat){
+void Scene2DRenderer::set_model(m3f3 model_mat){
     glUniformMatrix3fv(glGetUniformLocation(program, "model_mat"), 1, GL_TRUE, (float*) &model_mat);
 }
 
 
-[[deprecated("Use separate calls instead.")]] 
-void Quad2DRenderer::set_model_camera(m3f3 model_mat, m3f3 camera){
-    glUseProgram(program);
-    glUniformMatrix3fv(glGetUniformLocation(program, "model_mat"), 1, GL_TRUE, (float*) &model_mat);
-    glUniformMatrix3fv(glGetUniformLocation(program, "camera2D_mat"), 1, GL_TRUE, (float*) &camera);
+void Scene2DRenderer::render_point(ShapeS2DRenderContext context){
+
+    this->activate();
+
+    glPointSize(10);
+
+    glBindTexture(GL_TEXTURE_2D, context.texture);
+    
+    glBindVertexArray(context.VAO);
+
+    glDrawArrays(GL_POINTS, 0, 1);
 }
 
-void Quad2DRenderer::render(Quad2DRenderContext context){
+
+
+
+void Scene2DRenderer::render_quad(ShapeS2DRenderContext context){
 
     glUseProgram(program);
 
@@ -191,7 +285,10 @@ void Quad2DRenderer::render(Quad2DRenderContext context){
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
-void Quad2DRenderer::render_multisample_texture(Quad2DRenderContext context){
+
+
+
+void Scene2DRenderer::render_multisample_texture(ShapeS2DRenderContext context){
 
     glUseProgram(program);
 

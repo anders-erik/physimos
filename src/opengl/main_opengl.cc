@@ -10,7 +10,7 @@
 #include "opengl/texture.hh"
 #include "opengl/renderer_quad_2d.hh"
 
-#include "lib/json/examples/shape.hh"
+#include "math/geometry/shape.hh"
 
 
 window::InputEvent input_event;
@@ -31,9 +31,9 @@ int main(){
 
 
 
-    opengl::Quad2D quad;
-    // opengl::Quad2DRenderContext quad_render_context;
-    opengl::Quad2DRenderer quad_renderer;
+    opengl::ShapeS2D quad;
+    // opengl::ShapeS2DRenderContext quad_render_context;
+    opengl::Scene2DRenderer quad_renderer;
 
     quad.set_dims(800, 600, 100, 100);
 
@@ -42,7 +42,7 @@ int main(){
 	quad.transform_2d.set_scale(1.0f, 1.0f);
 
     // opengl::Texture texture (100, 100);
-    quad_renderer.create_context(quad);
+    quad_renderer.create_context_quad(quad);
     opengl::set_texture_checker_2x2(quad.render_context.texture);
 
 

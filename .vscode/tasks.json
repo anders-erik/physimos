@@ -343,7 +343,7 @@
         {
             "label": "run",
             "detail": "Custom run task",
-            "type": "shell",
+            "type": "process",
 
             "command": 
             // "${workspaceFolder}/build/debug_linux/src/lib/main_str",

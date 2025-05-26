@@ -26,6 +26,8 @@ target_link_libraries(main_phont
     phont
 
     window
+    math
+    geometry
 
     lib
     opengl
