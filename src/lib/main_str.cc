@@ -209,22 +209,28 @@ void str_c_and_std_interface(){
 
 void opt_str(){
 
+    Opt<int> opt_empty;
+    std::cout << "opt_empty.has_value() = " << opt_empty.has_value() << std::endl;
+
     int i = 123;
     Opt<int> opt_int = { 10 };
     // std::cout << "opt_int.has_value() = " << opt_int.has_value() << std::endl;
     std::cout << "opt_int.consume() = " << opt_int.consume() << std::endl;
-    opt_int = i;
+    // opt_int = i; // No copy
+    opt_int = std::move(i); // only move
     std::cout << "opt_int.consume() = " << opt_int.consume() << std::endl;
 
     Str str {10, 'x'};
-    Opt<Str> opt_str_copy = str;
+    // Opt<Str> opt_str_copy = str; // No copy
     // Opt<Str> opt_str = Str(10, 'b');
-    // Opt<Str> opt_str_list {10, 'b'};
-    std::cout << "opt_str.has_value() = " << opt_str_copy.has_value() << std::endl;
-    Str opt_str_copy_value = opt_str_copy.consume();
-    Str opt_str_copy_value_consumed_again = opt_str_copy.consume();
-    std::cout << "value.consume() = " << opt_str_copy_value.to_std_string() << std::endl;
-    std::cout << "value_consumed_again.consume() = " << opt_str_copy_value_consumed_again.to_std_string() << std::endl;
+    // Opt<Str> opt_str_list = Str(10, 'b') ;
+    // Opt<Str> opt_str_list = str; // implicit move not ok
+    Opt<Str> opt_str_list = std::move(str);
+    // std::cout << "opt_str.has_value() = " << opt_str_copy.has_value() << std::endl;
+    Str opt_str_list_value = opt_str_list.consume();
+    Str opt_str_list_value_consumed_again = opt_str_list.consume();
+    std::cout << "value.consume() = " << opt_str_list_value.to_std_string() << std::endl;
+    std::cout << "value_consumed_again.consume() = " << opt_str_list_value_consumed_again.to_std_string() << std::endl;
 
 }
 
@@ -251,6 +257,22 @@ void concat(){
     
 }
 
+void substr(){
+
+    Str str = "abcdef";
+    Str str_ = str.substr(0, 0);
+    Str str_abc = str.substr(0, 3);
+    Str str_abcdef = str.substr(0, 6);
+
+    std::cout << "str        = "; str.println();
+    std::cout << "str_       = "; str_.println();
+    std::cout << "str_abc    = "; str_abc.println();
+    std::cout << "str_abcdef = "; str_abcdef.println();
+    
+    str.cut_to_substr(3, 3);
+    std::cout << "str        = "; str.println();
+}
+
 int main(){
     std::cout << "Str main." << std::endl << std::endl;
 
@@ -265,8 +287,8 @@ int main(){
     // opt_str();
     // res_str();
 
-    concat();
-
+    // concat();
+    substr();
 
 
     std::cout << "Str End" << std::endl << std::endl;

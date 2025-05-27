@@ -11,6 +11,14 @@ Str::Str(unsigned int string_size) {
     this->size_str = string_size;
     allocate(this->size_str);
 };
+Str::Str(char * str_mem, unsigned int string_size) {
+    std::cout << "Str mem + size constructor" << std::endl;
+    
+    this->size_str = string_size;
+    
+    allocate(this->size_str);
+    
+};
 Str::Str(unsigned int string_size, char initialization_value) {
     std::cout << "Str initialization_value constructor" << std::endl;
     
@@ -111,6 +119,7 @@ Str& Str::operator=(Str&& other){
     
     mem = other.mem;
     size_str = other.size_str;
+    size_alloc = other.size_alloc;
     allocated = other.allocated;
     initialized = other.initialized;
 
@@ -125,9 +134,9 @@ void Str::allocate(unsigned int size_to_alloc){
     size_alloc = size_to_alloc;
     allocated = true;
 }
-void Str::reallocate(unsigned int size_expansion){
+void Str::reallocate(unsigned int new_size_alloc){
     
-    size_alloc = size_expansion;
+    size_alloc = new_size_alloc;
 
     mem = (char*) std::realloc(mem , size_alloc * sizeof(char));
     std::cout << "Realloc to size " << size_alloc << std::endl;
@@ -188,6 +197,24 @@ void Str::append(const Str& str_to_append){
     size_str = combined_str_size;
 }
 
+Str& Str::cut_to_substr(unsigned int start_index, unsigned int size){
+
+    if(start_index > size_str || start_index+size > size_str){
+        std::cout << "Error: unable to cut Str from substring. Substring beyond string size. " << std::endl;
+        return *this;
+    }
+        
+    memmove(mem, mem+start_index, size);
+    reallocate(size);
+    size_str = size;
+
+    return *this;
+}
+Str Str::substr(unsigned int start_index, unsigned int size){
+    Str copy = *this;
+    return copy.cut_to_substr(start_index, size);
+}
+
 
 
 std::string Str::to_std_string(){
@@ -195,19 +222,17 @@ std::string Str::to_std_string(){
     // Ok to ignore null-termination??
     // std::string std_str = std::string(mem);
 
-    if(mem == nullptr)
+    std::string std_str;
+
+    if(mem == nullptr){
         std::cout << "WARN: returning std string with mem == nullptr" << std::endl;
-        
+        std_str = "";
+    }
+    else {
+        std_str = std::string(mem, size_str); // specify the size of current Str allocation
+    }
 
-    std::string std_str_size;
-
-    if(mem == nullptr)
-        std_str_size = "";
-    else
-        std_str_size = std::string(mem, size_str); // specify the size of current Str allocation
-    
-
-    return std_str_size;
+    return std_str;
 }
 /** Reference-like string without copying. */
 std::string_view Str::to_std_string_view(){
