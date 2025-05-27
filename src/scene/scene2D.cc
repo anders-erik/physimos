@@ -5,16 +5,17 @@
 
 #include "scene/scene2D.hh"
 #include "math/transform.hh"
+#include "scene2D.hh"
 
 namespace scene {
 
 
-void CursorContext2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
+void CursorScene2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
     viewport_sane = pos_px;
     viewport_norm = pos_norm;
 
-    scene.x = camera_box.pos.x + (viewport_norm.x - 0.5) * camera_box.size.x ;
-    scene.y = camera_box.pos.y + (viewport_norm.y - 0.5) * camera_box.size.y ;
+    scene.x = camera_box.pos.x + (viewport_norm.x * camera_box.size.x) ;
+    scene.y = camera_box.pos.y + (viewport_norm.y * camera_box.size.y) ;
 }
 
 
@@ -37,6 +38,11 @@ void Scene2D::set_window_size(f2 size){
     window_size_f = size;
 
     camera.set_window_size_px(size);
+}
+
+void Scene2D::set_window_norm_box(f2 pos_normalized, f2 size_normalized){
+    window_norm_box_pos = pos_normalized;
+    window_norm_box_size = size_normalized;
 }
 
 
@@ -93,6 +99,7 @@ void Scene2D::render_window(){
 
 
 void Scene2D::handle_input(window::InputEvent event){
+
     if(event.type == window::EventType::MouseButton){
 
         // PAN
@@ -119,11 +126,11 @@ void Scene2D::handle_input(window::InputEvent event){
 
         // Scene can be panned
         if(panable)
-            camera.pan(event.mouse_movement.delta);
+            camera.pan(event.mouse_movement.delta.sane);
 
         
         // camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
-        cursor_context.set_cursor_pos(  event.mouse_movement.cursor.sane, 
+        cursor_scene.set_cursor_pos(  event.mouse_movement.cursor.sane, 
                                         event.mouse_movement.cursor.normalized,
                                         camera.get_box()
         );
@@ -152,7 +159,7 @@ void Scene2D::handle_input(window::InputEvent event){
         // std::cout << "camera.cursor_viewport_norm  = " << camera.cursor_viewport_norm.x << " " << camera.cursor_viewport_norm.y << std::endl;
         // std::cout << "camera.cursor_viewport_scene = " << camera.cursor_viewport_scene.x << " " << camera.cursor_viewport_scene.y << std::endl;
         
-        std::cout << "cursor_context.scene = " << cursor_context.scene.x << " " << cursor_context.scene.y << std::endl;
+        std::cout << "cursor_scene.scene = " << cursor_scene.scene.x << " " << cursor_scene.scene.y << std::endl;
         
         // scene_2d.camera_2d.transform_2d.matrix.print();
         // std::cout << "panable = " << panable << std::endl;

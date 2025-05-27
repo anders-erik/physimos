@@ -25,6 +25,7 @@ struct ShapeS2D {
     m3f3 M_m_s;
     std::vector<opengl::Vertex2DT> verts;
     Shape shape;
+    opengl::TextureColors texture_color = opengl::TextureColors::Red;
     f2 text_coord; // Texture coordinate for coloring texture
     opengl::ShapeS2DRenderContext render_context;
 

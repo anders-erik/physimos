@@ -26,7 +26,7 @@ namespace scene {
 
 
 
-struct CursorContext2D {
+struct CursorScene2D {
     f2 viewport_sane; // [0,window_width]x[0,window_height] [pixels]
     f2 viewport_norm; // [0,1]x[0,1] [unitless]
     f2 scene; // [box.left,box.right]x[box.bottom, box.top] [scene_units]
@@ -39,10 +39,13 @@ struct CursorContext2D {
 class Scene2D {
 
     f2 window_size_f;
+
+    f2 window_norm_box_pos;
+    f2 window_norm_box_size;
     
     Camera2D camera;
 
-    CursorContext2D cursor_context;
+    CursorScene2D cursor_scene;
     bool panable = false; // Scene can be panned, usually with middle mouse button pressed
 
     opengl::Scene2DRenderer renderer2D;
@@ -58,6 +61,8 @@ public:
     Scene2D(f2 _window_size);
 
     void set_window_size(f2 size);
+    void set_window_norm_box(f2 pos_normalized, f2 size_normalized);
+
 
     void handle_input(window::InputEvent input_event);
     void update();

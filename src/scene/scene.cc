@@ -163,8 +163,8 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
     case window::EventType::MouseMove:
 
         if(camera_grabbed){
-            camera.theta_change(input_event.mouse_movement.delta.x);
-            camera.phi_change(input_event.mouse_movement.delta.y);
+            camera.theta_change(input_event.mouse_movement.delta.sane.x);
+            camera.phi_change(input_event.mouse_movement.delta.sane.y);
         }
         
 

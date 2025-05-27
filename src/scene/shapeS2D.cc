@@ -30,7 +30,7 @@ ShapeS2D::ShapeS2D(Shape& shape) : shape {shape} {
     
     std::vector<f2>& shape_points = shape.get_points();
     
-    text_coord = opengl::texture_get_color_coordinate(opengl::TextureColors::Red);
+    text_coord = opengl::texture_get_color_coordinate(texture_color);
 
     // Create vertices
     if(shape.is(shape_t::point))

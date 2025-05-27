@@ -27,7 +27,7 @@ m2f2& m2f2::operator=(m2f2& rhs){
     return *this;
 }
 
-f2 m2f2::mult(f2 vec){
+f2 m2f2::mult_vec(f2 vec){
     f2 _f2;
 
     _f2.x = x.x * vec.x + x.y * vec.y;
@@ -35,6 +35,7 @@ f2 m2f2::mult(f2 vec){
 
     return _f2;
 }
+
 
 void m2f2::set_to_identity(){
     x.x = 1.0f;
@@ -58,7 +59,7 @@ m3f3& m3f3::operator=(m3f3& rhs){
     return *this;
 }
 
-void m3f3::mult_right(m3f3 rhs){
+void m3f3::mult_right(m3f3& rhs){
 
     m3f3 copy;
     copy = *this;
@@ -78,7 +79,7 @@ void m3f3::mult_right(m3f3 rhs){
     *this = copy;
 }
 
-void m3f3::mult_left(m3f3 lhs){
+void m3f3::mult_left(m3f3& lhs){
 
     m3f3 copy;
 
@@ -99,7 +100,7 @@ void m3f3::mult_left(m3f3 lhs){
     *this = copy;
 }
 
-f2 m3f3::mult(f2 _f2){
+f2 m3f3::mult_vec(f2 _f2){
     f3 _f3 (_f2.x,_f2.y, 1.0f);
 
     _f3.matmul(*this);

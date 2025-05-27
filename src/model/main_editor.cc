@@ -13,25 +13,25 @@ int main(){
 
     scene::SceneModelEditor scene;
     
-    while(auxwin.is_open()){
-        auxwin.new_frame();
+    while(auxwin.end_frame()){
+        // auxwin.new_frame();
 
-        std::queue<window::InputEvent> events = auxwin.get_input_events();
-        while(events.size() > 0){
-            window::InputEvent event = events.front();
+        std::vector<window::InputEvent> events = auxwin.new_frame();
+        for(window::InputEvent& event : events){
+            // window::InputEvent event = events.back();
             
-            if(event.type == window::EventType::Keystroke && event.key_stroke.key == window::Key::Esc)
-                auxwin.close();
+            // if(event.type == window::EventType::Keystroke && event.key_stroke.key == window::Key::Esc)
+            //     auxwin.close();
 
             scene.handle_input(event);
             
-            events.pop();
+            // events.pop_back();
         }
 
         scene.update();
         scene.render();
 
-        auxwin.end_frame();
+        // auxwin.end_frame();
     }
 
 

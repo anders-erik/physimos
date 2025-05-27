@@ -9,6 +9,7 @@
 
 #include "phont.hh"
 
+using namespace window;
 
 
 const unsigned int WINDOW_WIDTH = 800;
@@ -18,7 +19,7 @@ f2 window_size = {800.0f, 600.0f};
 
 phont::Face face;
 
-window::InputEvent event;
+InputEvent event;
 
 
 void add_glyph_quads_to_scene(scene::Scene2D& scene){
@@ -31,37 +32,37 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 	scene::ShapeS2D quad_F_1;
 	quad_F_1.transform_2d.set_pos(3.0f, 3.0f);
 	quad_F_1.transform_2d.set_scale(2.0f, 3.0f);
-    // quad_F.render_context.texture = F_10_16.get_texture().id_gl;
-    quad_F_1.render_context.texture = glyph_F_1.text_framebuff_multi.resolvedTexture;
+	// quad_F.render_context.texture = F_10_16.get_texture().id_gl;
+	quad_F_1.render_context.texture = glyph_F_1.text_framebuff_multi.resolvedTexture;
 
 
-    scene::ShapeS2D quad_F_2;
+    	scene::ShapeS2D quad_F_2;
 	phont::Glyph F_10_16 { phont::Glyph( 'F', {10, 16} ) };
-    F_10_16.generate_multisample();
-    F_10_16.text_framebuff.texture.draw_rect({1, 1}, {2, 2}, {255, 0, 255, 255});
+	F_10_16.generate_multisample();
+	F_10_16.text_framebuff.texture.draw_rect({1, 1}, {2, 2}, {255, 0, 255, 255});
 
 	quad_F_2.transform_2d.set_pos(0.0f, 0.0f);
 	quad_F_2.transform_2d.set_scale(2.0f, 3.0f);
-    quad_F_2.render_context.texture = F_10_16.text_framebuff_multi.resolvedTexture;
+    	quad_F_2.render_context.texture = F_10_16.text_framebuff_multi.resolvedTexture;
 
 
-    phont::Glyph A_200_320 { phont::Glyph( 'A', {20, 32} ) };
-    scene::ShapeS2D quad_A_1;
-	
-    A_200_320.generate();
+        phont::Glyph A_200_320 { phont::Glyph( 'A', {20, 32} ) };
+	scene::ShapeS2D quad_A_1;
+		
+        A_200_320.generate();
 
-    quad_A_1.render_context.texture = A_200_320.get_texture().id_gl;
+	quad_A_1.render_context.texture = A_200_320.get_texture().id_gl;
 	quad_A_1.transform_2d.set_pos(2.0f, 0.0f);
 	quad_A_1.transform_2d.set_scale(2.0f, 3.0f);
 
 
 
-    phont::Glyph A_multi { phont::Glyph( 'A', {15, 24} ) };;
-    scene::ShapeS2D quad_A_multi;
-	
-    A_multi.generate_multisample();
-    // renderer2D.create_context(quad_A_multi);
-    quad_A_multi.render_context.texture = A_multi.text_framebuff_multi.resolvedTexture;
+	phont::Glyph A_multi { phont::Glyph( 'A', {15, 24} ) };;
+	scene::ShapeS2D quad_A_multi;
+		
+	A_multi.generate_multisample();
+	// renderer2D.create_context(quad_A_multi);
+	quad_A_multi.render_context.texture = A_multi.text_framebuff_multi.resolvedTexture;
 	quad_A_multi.transform_2d.set_pos(6.0f, 0.0f);
 	quad_A_multi.transform_2d.set_scale(2.0f, 3.0f);
 
@@ -69,25 +70,25 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 	// TRIANGLE MULTISAMPLE
 
-    opengl::TextureFrameBufferMultisample Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) };
-    scene::ShapeS2D quad_Triangle;
+        opengl::TextureFrameBufferMultisample Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) };
+        scene::ShapeS2D quad_Triangle;
 
 
-    // renderer2D.create_context(quad_Triangle);
-    // TODO: Render triangle texture
-    // quad_Triangle.render_context.texture = A_200_320.get_texture().id_gl; 
-    // quad_Triangle.render_context.texture = Triangle_text_buf_multi.text_id;
-    quad_Triangle.render_context.texture = Triangle_text_buf_multi.resolvedTexture;
-    // opengl::set_texture_checker_2x2(quad_Triangle.render_context.texture);
+        // renderer2D.create_context(quad_Triangle);
+        // TODO: Render triangle texture
+        // quad_Triangle.render_context.texture = A_200_320.get_texture().id_gl; 
+        // quad_Triangle.render_context.texture = Triangle_text_buf_multi.text_id;
+        quad_Triangle.render_context.texture = Triangle_text_buf_multi.resolvedTexture;
+        // opengl::set_texture_checker_2x2(quad_Triangle.render_context.texture);
 
-    Triangle_text_buf_multi.clear_color = {0.5f, 0.0f, 0.5f, 1.0f};
-    Triangle_text_buf_multi.multisample_fbo_bind();
-    Triangle_text_buf_multi.multisample_fbo_clear();
+        Triangle_text_buf_multi.clear_color = {0.5f, 0.0f, 0.5f, 1.0f};
+        Triangle_text_buf_multi.multisample_fbo_bind();
+        Triangle_text_buf_multi.multisample_fbo_clear();
 
-    Triangle_text_buf_multi.blit();
-    Triangle_text_buf_multi.multisample_fbo_unbind();
+        Triangle_text_buf_multi.blit();
+        Triangle_text_buf_multi.multisample_fbo_unbind();
 
-    // unsigned char *pixel = opengl::Texture::get_pixel({2, 2}, quad_Triangle.render_context.texture);
+        // unsigned char *pixel = opengl::Texture::get_pixel({2, 2}, quad_Triangle.render_context.texture);
 
 	quad_Triangle.transform_2d.set_pos(4.0f, 0.0f);
 	quad_Triangle.transform_2d.set_scale(2.0f, 3.0f);
@@ -102,63 +103,73 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 }
 
 
-/** Owns a window and 2D scenes. Handles events and decides which scene will recieve input events.*/
+
+
+/** 
+	Owns a window and root 2D scenes.
+	Handles events and decides which root scene will recieve input events.
+*/
 class Win2D {
+
 	f2 window_size_f;
+	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
+	window::Auxwin auxwin;
+	std::vector<window::InputEvent> input_events;
+
 public:
 
-	std::vector<scene::Scene2D> scenes;
+	Win2D(f2 window_size);
 
-	Win2D() {}
+	scene::Scene2D& add_scene(f2 pos_normalized, f2 size_normalized);
+	void set_window_size(f2 size);
 
-	void set_window_size(f2 size){
-		for(scene::Scene2D& scene : scenes)
-			scene.set_window_size(size);
-	}
+	// launch window and transfer control
+	void open();
+        void start_frame();
+
+	void process_input(InputEvent & event);
 
 };
 
-int main()
-{
-	std::cout << "PHONT MAIN"  << std::endl;
 
-	// WINDOW
-	window::Auxwin auxwin;
-	auxwin.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	// OPENGL
+
+
+
+Win2D::Win2D(f2 window_size_f) {
+
+	this->window_size_f = window_size_f;
+
+	auxwin.init(window_size_f);
+
 	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
 	opengl::textures_init();
 
-
-	// SCENE 2D
-	scene::Scene2D scene = scene::Scene2D(window_size);
-	Shape point_to_draw = Shape::create(shape_t::point);
-	point_to_draw.move(f2{8.0f, 4.0f});
-	scene.add_shape(point_to_draw);
-
-	add_glyph_quads_to_scene(scene);
+}
 
 
-	std::vector<window::InputEvent> input_events;
+scene::Scene2D& Win2D::add_scene(f2 pos_normalized, f2 size_normalized){
 
-	while (auxwin.end_frame_2()){
-		input_events = auxwin.new_frame_2();
+	scene::Scene2D& scene = scenes.emplace_back(window_size_f);
+	scene.set_window_norm_box(pos_normalized, size_normalized);
 
-		for(auto& event : input_events){
+	return scene;
+}
 
 
-			if(event.type == window::EventType::WindowResize){
+void Win2D::set_window_size(f2 size){
+	for(scene::Scene2D& scene : scenes)
+		scene.set_window_size(size);
+}
 
-				scene.set_window_size(event.window_resize.size_f);
-				continue;
 
-			}
+void Win2D::open(){
 
-			scene.handle_input(event);
+	while (auxwin.end_frame()){
+		start_frame();
+		
 
-		}
-
+		scene::Scene2D& scene = scenes[0];
 
 		// UPDATE
 		scene.update();
@@ -167,12 +178,63 @@ int main()
 		scene.render_window();
 	}
 
-	// scene.quad_F.render_context.delete_contents();
-
-
-	// glDeleteProgram(program); // NOTE: This was never replaced!
-	// glfwTerminate();
 	auxwin.destroy();
+}
+
+
+void Win2D::process_input(InputEvent& event){
+
+        // Only one scene at the moment
+        scene::Scene2D& scene = scenes[0];
+
+        switch (event.type){
+
+        case EventType::WindowResize:
+                scene.set_window_size(event.window_resize.size_f);
+                break;
+
+        case EventType::MouseMove:
+                scene.handle_input(event);
+                break;
+        
+        default:
+                // std::cout << "WARN: unhandled input event" << std::endl;
+                scene.handle_input(event);
+                break;
+        }
+
+}
+
+
+void Win2D::start_frame(){
+
+	input_events = auxwin.new_frame();
+
+        for(InputEvent& event : input_events)
+                process_input(event);
+
+}
+
+
+int main()
+{
+	std::cout << "PHONT MAIN"  << std::endl;
+
+	Win2D win2D ({800, 600});
+
+	scene::Scene2D& root_scene_0 = win2D.add_scene({0.05f, 0.05f}, {0.9f, 0.9f});
+
+	// Add stuff to scene
+
+	Shape point_to_draw = Shape::create(shape_t::point);
+	point_to_draw.move(f2{8.0f, 4.0f});
+	root_scene_0.add_shape(point_to_draw);
+
+	add_glyph_quads_to_scene(root_scene_0);
+
+
+	
+	win2D.open();
 
 	return 0;
 }

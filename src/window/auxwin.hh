@@ -24,7 +24,7 @@ struct PWCoordinatesInput{
 };
 
 // Coordinate Transformation Matrices -- All values are relative to window origins!
-struct PWCoordinates {
+struct PWCoordinateTransformer {
 
     /** All available Physimos window units. */
     enum class PWUnit {
@@ -72,19 +72,19 @@ struct PWCoordinates {
 
     /** Input to sane */
     f2 i_s(f2 i){
-        return M_i_s.mult(i);
+        return M_i_s.mult_vec(i);
     }
      /** Sane to normalized */
     f2 s_n(f2 s){
-        return M_s_n.mult(s);
+        return M_s_n.mult_vec(s);
     }
      /** Sane to pixels */
     f2 s_p(f2 s){
-        return M_s_p.mult(s);
+        return M_s_p.mult_vec(s);
     }
     /** Sane to millimeters */
     f2 s_m(f2 s){
-        return M_p_m.mult(s_p(s));
+        return M_p_m.mult_vec(s_p(s));
     }
 
 private:
@@ -114,7 +114,7 @@ class Auxwin {
         /** Required input for coordinate transformation constants.  */
         PWCoordinatesInput coords_input;
         /** Provides coordinate tranformations of 2D points.  */
-        PWCoordinates coords;
+        PWCoordinateTransformer coord_transformer;
          /**    Queries glfw for coordinate system values, then reloads the coord object. 
                 Depends on current_window_size_f.
          */
@@ -144,14 +144,11 @@ class Auxwin {
         void init();
         
         void make_current();
-
-        void new_frame();
-        void end_frame();
         
-        // new frame + get all new events
-        std::vector<InputEvent>  new_frame_2();
+        // new frame GL-calls & retrieves all new events
+        std::vector<InputEvent> new_frame();
         // end frame + check if open
-        bool                    end_frame_2();  
+        bool                    end_frame();  
 
         bool is_open();
         // Will trigger the window to close on next end of frame call.

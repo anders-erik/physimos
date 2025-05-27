@@ -100,7 +100,7 @@ struct m2f2 {
 
     m2f2& operator=(m2f2& rhs);
 
-    f2 mult(f2 _f2); /** Multiply the matrix by a f2 vector e.g. f2 = m2f2 x f2 * */
+    f2 mult_vec(f2 _f2); /** Multiply the matrix by a f2 vector e.g. f2 = m2f2 x f2 * */
 
     void set_to_identity();
 
@@ -120,12 +120,12 @@ struct m3f3 {
     /** copy = this x rhs 
         this = copy
     */
-    void mult_right(m3f3 rhs);
+    void mult_right(m3f3& rhs);
     /** copy = lhs x this 
         this = copy
     */
-    void mult_left(m3f3 lhs);
-    f2 mult(f2 _f2); /** Translate, rotate, and scale f2 using the set m3f3 values. */
+    void mult_left(m3f3& lhs);
+    f2 mult_vec(f2 _f2); /** Translate, rotate, and scale f2 using the set m3f3 values. */
     void translate(f2 transl);
     void rotate(float angle);
     void scale(f2 scale);

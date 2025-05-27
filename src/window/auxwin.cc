@@ -98,7 +98,7 @@ void Auxwin::reload_coordinate_constants_using_glfw(){
 
     coords_input.window_size_sc = current_window_size_f;
 
-    coords.set_constants(coords_input);
+    coord_transformer.set_constants(coords_input);
     
 }
 
@@ -176,24 +176,16 @@ bool Auxwin::is_open(){
     return !glfwWindowShouldClose(glfw_window);
     // return open;
 }
-void Auxwin::new_frame(){
+
+
+std::vector<InputEvent> Auxwin::new_frame(){
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.1f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
     // glClear(GL_COLOR_BUFFER_BIT);
-
     // glEnable(GL_CULL_FACE);
-}
-void Auxwin::end_frame(){
-    glBindVertexArray(0); 
 
-    glfwSwapBuffers(glfw_window);
-	glfwPollEvents();
-}
-
-
-std::vector<InputEvent> Auxwin::new_frame_2(){
-    new_frame();
 
     std::vector<InputEvent> return_arr;
 
@@ -206,8 +198,13 @@ std::vector<InputEvent> Auxwin::new_frame_2(){
     return return_arr;
 
 }
-bool Auxwin::end_frame_2(){
-    end_frame();
+bool Auxwin::end_frame(){
+
+    glBindVertexArray(0); 
+
+    glfwSwapBuffers(glfw_window);
+	glfwPollEvents();
+    
     return is_open();
 }
 
@@ -318,17 +315,24 @@ void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double yp
 
     // Update current cursor
     cursor.input = input;
-    cursor.sane = coords.i_s(input);
-    cursor.pixels = coords.s_p(cursor.sane);
-    cursor.normalized = coords.s_n(cursor.sane);
-    cursor.millimeters = coords.s_m(cursor.sane);
+    cursor.sane = coord_transformer.i_s(input);
+    cursor.pixels = coord_transformer.s_p(cursor.sane);
+    cursor.normalized = coord_transformer.s_n(cursor.sane);
+    cursor.millimeters = coord_transformer.s_m(cursor.sane);
 
-    f2 delta_sane = cursor.sane - cursor_prev.sane;
+    CursorPosition delta;
+    delta.input = cursor.input - cursor_prev.input;
+    delta.sane = cursor.sane - cursor_prev.sane; // delta is translation inedependent
+    delta.pixels = coord_transformer.s_p(delta.sane);
+    delta.normalized = coord_transformer.s_n(delta.sane);
+    delta.millimeters = coord_transformer.s_m(delta.sane);
+
+    // f2 delta_input = cursor.input - cursor_prev.input;
 
     EventType       event_type = EventType::MouseMove;
     MouseMoveEvent   mouse_movement (
                                         cursor,
-                                        delta_sane
+                                        delta
                                     );
 
     input_events.emplace(window, event_type, mouse_movement);

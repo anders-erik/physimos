@@ -56,11 +56,13 @@ struct MouseButtonEvent {
 struct MouseMoveEvent {
 
     CursorPosition cursor;
+    CursorPosition delta;
 
-    f2 delta;
-
-    MouseMoveEvent(CursorPosition _cursor_pos, f2 _delta) : cursor {_cursor_pos}, delta { _delta } {};
     MouseMoveEvent() = default;
+    MouseMoveEvent(CursorPosition _cursor_pos, CursorPosition _delta) 
+        : cursor {_cursor_pos}, 
+          delta {_delta} {};
+          
 };
 
 struct MouseScrollEvent {
@@ -109,6 +111,8 @@ struct InputEvent {
     InputEvent(GLFWwindow* _glfw_window, EventType _type, KeyStrokeEvent _key_stroke)     :  glfw_window {_glfw_window}, type {_type}, key_stroke { _key_stroke}       {};
     InputEvent(GLFWwindow* _glfw_window, EventType _type, WindowResizeEvent _window_resize): glfw_window {_glfw_window}, type {_type}, window_resize { _window_resize} {};
     InputEvent() : type { EventType::None} {};
+
+    bool is_type(EventType _type) { return _type == type ? true : false;}
 };
 
 
