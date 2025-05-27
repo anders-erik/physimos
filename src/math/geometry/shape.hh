@@ -38,6 +38,7 @@ public:
     size_t get_point_count();
     std::vector<f2>& get_points();
 
+    void move(f2 move_vec);
     // creates the regular polygon shapes/dihedralgroup
     static Shape create(shape_t type);
     static std::string get_shape_name(shape_t type); 

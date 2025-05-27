@@ -3,7 +3,7 @@
 #include "phont/phont.hh"
 #include "math/vecmat.hh"
 
-#include "scene/camera_2d.hh"
+#include "scene/camera2D.hh"
 
 
 

@@ -9,7 +9,7 @@
 #include "math/transform.hh"
 
 #include "opengl/texture.hh"
-#include "opengl/renderer_quad_2d.hh"
+#include "opengl/renderer2D.hh"
 
 
 namespace phont {

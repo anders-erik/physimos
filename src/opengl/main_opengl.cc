@@ -4,11 +4,12 @@
 
 #include "window/auxwin.hh"
 
-#include "scene/camera_2d.hh"
-#include "scene/scene_2d.hh"
+#include "scene/camera2D.hh"
+#include "scene/scene2D.hh"
+#include "scene/shapeS2D.hh"
 
 #include "opengl/texture.hh"
-#include "opengl/renderer_quad_2d.hh"
+#include "opengl/renderer2D.hh"
 
 #include "math/geometry/shape.hh"
 
@@ -31,7 +32,7 @@ int main(){
 
 
 
-    opengl::ShapeS2D quad;
+    scene::ShapeS2D quad;
     // opengl::ShapeS2DRenderContext quad_render_context;
     opengl::Scene2DRenderer quad_renderer;
 
@@ -42,7 +43,7 @@ int main(){
 	quad.transform_2d.set_scale(1.0f, 1.0f);
 
     // opengl::Texture texture (100, 100);
-    quad_renderer.create_context_quad(quad);
+    quad_renderer.create_context_quad_t(quad.render_context, quad.verts_6);
     opengl::set_texture_checker_2x2(quad.render_context.texture);
 
 

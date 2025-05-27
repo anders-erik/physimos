@@ -4,12 +4,21 @@
 #include "vecmat.hh"
 
 
-void f2::print(std::string prefix){
-    std::cout << prefix <<  ": x = " << x << ", y = " << y << std::endl;
+
+void f2::operator+=(const f2& rhs){
+    this->x += rhs.x;
+    this->y += rhs.y;
+}
+f2&& f2::operator+(const f2& rhs){
+    return {this->x + rhs.x, this->y + rhs.y};
 }
 f2 f2::operator-(const f2& rhs){
     return f2 {this->x - rhs.x, this->y - rhs.y};
 }
+void f2::print(std::string prefix){
+    std::cout << prefix <<  ": x = " << x << ", y = " << y << std::endl;
+}
+
 
 m2f2& m2f2::operator=(m2f2& rhs){
     x = rhs.x;

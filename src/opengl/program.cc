@@ -108,8 +108,8 @@ unsigned int build_program_vert_frag(Programs program_enum){
         break;
 
     case Programs::Texture2D :
-        vert_str = physimos_root_dir + "/src/opengl/shaders/2d/texture_vert.glsl";
-        frag_str = physimos_root_dir + "/src/opengl/shaders/2d/texture_frag.glsl";
+        vert_str = physimos_root_dir + "/src/opengl/shaders/2D/texture_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/2D/texture_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 

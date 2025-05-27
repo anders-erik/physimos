@@ -11,6 +11,5 @@ include_directories( main_json
 
 target_link_libraries(main_json
     lib
-    math
     geometry
 )

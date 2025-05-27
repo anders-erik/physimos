@@ -67,6 +67,12 @@ size_t Shape::get_point_count(){
     return point_count; 
 }
 
+
+void Shape::move(f2 move_vec){
+    for(f2& point : points)
+        point += move_vec;
+}
+
 std::string Shape::get_shape_name(shape_t type){
     std::string shape_name;
 

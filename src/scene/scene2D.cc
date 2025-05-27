@@ -3,7 +3,7 @@
 #include "phont/phont.hh"
 #include "math/vecmat.hh"
 
-#include "scene/scene_2d.hh"
+#include "scene/scene2D.hh"
 #include "math/transform.hh"
 
 namespace scene {
@@ -40,16 +40,16 @@ void Scene2D::set_window_size(f2 size){
 }
 
 
-void Scene2D::add_quad(opengl::ShapeS2D& quad_){
-    renderer2D.create_context_quad(quad_);
+void Scene2D::add_quad(scene::ShapeS2D& quad_){
+    renderer2D.create_context_quad_t(quad_.render_context, quad_.verts_6);
     quads.push_back(quad_);
 }
 
 void Scene2D::add_shape(Shape& shape){
 
-    opengl::ShapeS2D new_shape_S2D = opengl::ShapeS2D{shape};
+    scene::ShapeS2D new_shape_S2D = scene::ShapeS2D{shape};
 
-    renderer2D.create_context(new_shape_S2D);
+    renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts);
 
     if(shape.is(shape_t::point))
         points.push_back(new_shape_S2D);
@@ -63,10 +63,10 @@ void Scene2D::add_shape(Shape& shape){
 
 void Scene2D::update(){
 
-    for(opengl::ShapeS2D& _quad : quads)
+    for(scene::ShapeS2D& _quad : quads)
         _quad.transform_2d.set_matrix_model();
 
-    for(opengl::ShapeS2D& point : points)
+    for(scene::ShapeS2D& point : points)
         point.transform_2d.set_matrix_model();
 
 }
@@ -78,12 +78,12 @@ void Scene2D::render_window(){
     // renderer2D.set_camera(camera.transform.matrix);
     renderer2D.set_camera(camera.get_matrix());
 
-    for(opengl::ShapeS2D& _quad : quads){
+    for(scene::ShapeS2D& _quad : quads){
         renderer2D.set_model(_quad.transform_2d.matrix);
         renderer2D.render_quad(_quad.render_context);
     }
 
-    for(opengl::ShapeS2D& point : points){
+    for(scene::ShapeS2D& point : points){
         renderer2D.set_model(point.get_matrix());
         renderer2D.render_point(point.render_context);
     }
@@ -115,7 +115,7 @@ void Scene2D::handle_input(window::InputEvent event){
     
     if(event.type == window::EventType::MouseMove){
     
-        event.mouse_movement.cursor.print();
+        // event.mouse_movement.cursor.print();
 
         // Scene can be panned
         if(panable)

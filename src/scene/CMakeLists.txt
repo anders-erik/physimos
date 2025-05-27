@@ -9,8 +9,10 @@ set(SCENE_OBJS
 
     scene.cc
     camera.cc
-    scene_2d.cc
-    camera_2d.cc
+
+    scene2D.cc
+    camera2D.cc
+    shapeS2D.cc
 )
 
 

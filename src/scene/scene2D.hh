@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "opengl/program.hh"
-#include "opengl/renderer_quad_2d.hh"
+#include "opengl/renderer2D.hh"
 #include "opengl/texture.hh"
 
 #include "window/auxwin.hh"
@@ -12,7 +12,8 @@
 #include "math/vecmat.hh"
 #include "math/geometry/shape.hh"
 
-#include "scene/camera_2d.hh"
+#include "scene/camera2D.hh"
+#include "scene/shapeS2D.hh"
 
 #include "phont/phont.hh"
 
@@ -45,11 +46,11 @@ class Scene2D {
     bool panable = false; // Scene can be panned, usually with middle mouse button pressed
 
     opengl::Scene2DRenderer renderer2D;
-    std::vector<opengl::ShapeS2D> quads;
+    std::vector<ShapeS2D> quads;
 
-    std::vector<opengl::ShapeS2D> points;
-    std::vector<opengl::ShapeS2D> lines;
-    std::vector<opengl::ShapeS2D> shapes;
+    std::vector<ShapeS2D> points;
+    std::vector<ShapeS2D> lines;
+    std::vector<ShapeS2D> shapes;
 
 public:
 
@@ -63,7 +64,7 @@ public:
     void render_window();
 
 
-    void add_quad(opengl::ShapeS2D& quad_);
+    void add_quad(ShapeS2D& quad_);
     void add_shape(Shape& shape);
 
 };

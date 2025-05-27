@@ -4,7 +4,8 @@
 
 #include "window/auxwin.hh"
 
-#include "scene/scene_2d.hh"
+#include "scene/scene2D.hh"
+#include "scene/shapeS2D.hh"
 
 #include "phont.hh"
 
@@ -27,14 +28,14 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 	phont::Glyph glyph_F_1 {'F', {10, 16}};
 	glyph_F_1.generate_multisample();
 
-	opengl::ShapeS2D quad_F_1;
+	scene::ShapeS2D quad_F_1;
 	quad_F_1.transform_2d.set_pos(3.0f, 3.0f);
 	quad_F_1.transform_2d.set_scale(2.0f, 3.0f);
     // quad_F.render_context.texture = F_10_16.get_texture().id_gl;
     quad_F_1.render_context.texture = glyph_F_1.text_framebuff_multi.resolvedTexture;
 
 
-    opengl::ShapeS2D quad_F_2;
+    scene::ShapeS2D quad_F_2;
 	phont::Glyph F_10_16 { phont::Glyph( 'F', {10, 16} ) };
     F_10_16.generate_multisample();
     F_10_16.text_framebuff.texture.draw_rect({1, 1}, {2, 2}, {255, 0, 255, 255});
@@ -45,7 +46,7 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 
     phont::Glyph A_200_320 { phont::Glyph( 'A', {20, 32} ) };
-    opengl::ShapeS2D quad_A_1;
+    scene::ShapeS2D quad_A_1;
 	
     A_200_320.generate();
 
@@ -56,7 +57,7 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 
     phont::Glyph A_multi { phont::Glyph( 'A', {15, 24} ) };;
-    opengl::ShapeS2D quad_A_multi;
+    scene::ShapeS2D quad_A_multi;
 	
     A_multi.generate_multisample();
     // renderer2D.create_context(quad_A_multi);
@@ -69,7 +70,7 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 	// TRIANGLE MULTISAMPLE
 
     opengl::TextureFrameBufferMultisample Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) };
-    opengl::ShapeS2D quad_Triangle;
+    scene::ShapeS2D quad_Triangle;
 
 
     // renderer2D.create_context(quad_Triangle);
@@ -133,6 +134,7 @@ int main()
 	// SCENE 2D
 	scene::Scene2D scene = scene::Scene2D(window_size);
 	Shape point_to_draw = Shape::create(shape_t::point);
+	point_to_draw.move(f2{8.0f, 4.0f});
 	scene.add_shape(point_to_draw);
 
 	add_glyph_quads_to_scene(scene);

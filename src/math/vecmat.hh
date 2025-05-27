@@ -54,13 +54,15 @@ struct f2 {
     float x = 0.0f;
     float y = 0.0f;
 
-    void print(std::string prefix);
-
     f2(float x, float y) : x {x}, y {y} {}; 
     f2(float xyz) : x {xyz}, y {xyz} {}; 
     f2() = default;
 
+    void operator+=(const f2& rhs);
+    f2&& operator+(const f2& rhs);
     f2 operator-(const f2& rhs);
+
+    void print(std::string prefix);
 };
 
 struct f3 {

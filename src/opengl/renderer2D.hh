@@ -13,7 +13,7 @@
 namespace opengl {
 
 
-struct VertexShape2D {
+struct Vertex2DT {
     f3 pos;
     f2 tex;
 };
@@ -32,39 +32,6 @@ struct ShapeS2DRenderContext {
 
 
 
-struct ShapeS2D {
-    m3f3 M_m_s;
-    std::vector<VertexShape2D> verts;
-    Shape shape;
-    f2 text_coord; // Texture coordinate for coloring texture
-    ShapeS2DRenderContext render_context;
-
-    std::array<VertexShape2D, 6> verts_6;
-    Transform2D transform_2d;
-
-
-
-    ShapeS2D();
-    ShapeS2D(Shape &shape);
-
-    void create_point(f2 point);
-    void create_line(f2 p1, f2 p2);
-    void create_fan(std::vector<f2>& points);
-
-    bool is_point();
-    bool is_line();
-
-    void set_texture(f2 text_coord);
-
-    m3f3 get_matrix();
-
-
-    void set_dims(float window_width, float window_height, float width_pixels, float height_pixels);
-
-    static std::array<VertexShape2D, 6> generate_quad();
-
-};
-
 
 class Scene2DRenderer {
     opengl::Programs shader = opengl::Programs::Texture2D;
@@ -73,8 +40,8 @@ class Scene2DRenderer {
 public:
     Scene2DRenderer();
 
-    void create_context_quad(ShapeS2D& quad);
-    void create_context(ShapeS2D& shape);
+    void create_context_quad_t(ShapeS2DRenderContext& render_context, std::array<Vertex2DT, 6> verts);
+    void create_shape_context_t(ShapeS2DRenderContext& render_context, std::vector<Vertex2DT> verts);
 
     void activate();
     void set_camera(m3f3 camera);
