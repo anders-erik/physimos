@@ -1,26 +1,28 @@
 
 #include "str.hh"
 
+// #define VERBOSE_STR
+// #define NEW_ALLOCATION
 
 
 Str::Str() {
+#ifdef VERBOSE_STR
     std::cout << "Str default constructor" << std::endl;
+#endif
 };
 Str::Str(unsigned int string_size) {
+#ifdef VERBOSE_STR
     std::cout << "Str size constructor" << std::endl;
+#endif
+    
     this->size_str = string_size;
     allocate(this->size_str);
 };
-Str::Str(char * str_mem, unsigned int string_size) {
-    std::cout << "Str mem + size constructor" << std::endl;
-    
-    this->size_str = string_size;
-    
-    allocate(this->size_str);
-    
-};
+
 Str::Str(unsigned int string_size, char initialization_value) {
+#ifdef VERBOSE_STR
     std::cout << "Str initialization_value constructor" << std::endl;
+#endif
     
     this->size_str = string_size;
     
@@ -29,7 +31,10 @@ Str::Str(unsigned int string_size, char initialization_value) {
     initalize(initialization_value);
 };
 Str::Str(const char *c_str) {
+#ifdef VERBOSE_STR
     std::cout << "Str c_str constructor" << std::endl;
+#endif
+    
     
     size_str = std::strlen(c_str);
 
@@ -43,7 +48,9 @@ Str::Str(const char *c_str) {
 Str::Str(const Str& other) //= delete; 
     :   size_str {other.size()}
 {
+#ifdef VERBOSE_STR
     std::cout << "Str Copy Constructor" << std::endl;
+#endif
     
     // Allocate same size
     if(!other.is_allocated())
@@ -60,7 +67,9 @@ Str::Str(const Str& other) //= delete;
 };
 
 Str::Str(Str&& other) {
+#ifdef VERBOSE_STR
     std::cout << "Str move constructor" << std::endl;
+#endif
     
     mem = other.mem;
     size_str = other.size_str;
@@ -72,7 +81,9 @@ Str::Str(Str&& other) {
 
 
 Str::~Str(){
+#ifdef VERBOSE_STR
     std::cout << "Str destructor with content = \"" << to_std_string() << "\"" << std::endl;
+#endif
     release_mem();
 }
 
@@ -94,7 +105,9 @@ Str& Str::operator+=(Str&& rhs){
 
 Str& Str::operator=(const Str& other) // = delete; // {
 {
+#ifdef VERBOSE_STR
     std::cout << "Str copy assignment" << std::endl;
+#endif
 
     if (this == &other)
         std::cout << "this != &other" << std::endl;
@@ -112,7 +125,9 @@ Str& Str::operator=(const Str& other) // = delete; // {
     return *this;
 }
 Str& Str::operator=(Str&& other){
+#ifdef VERBOSE_STR
     std::cout << "Str move assignment op" << std::endl;
+#endif
 
     if (this == &other)
         std::cout << "this != &other" << std::endl;
@@ -130,20 +145,42 @@ Str& Str::operator=(Str&& other){
 
 
 void Str::allocate(unsigned int size_to_alloc){
-    mem = (char*) std::malloc(size_to_alloc * sizeof(char));
     size_alloc = size_to_alloc;
+
+#ifdef NEW_ALLOCATION
+    mem = static_cast<char*>(::operator new(size_alloc));
+#else
+    mem = (char*) std::malloc(size_to_alloc * sizeof(char));
+#endif
+
     allocated = true;
 }
 void Str::reallocate(unsigned int new_size_alloc){
     
+
+#ifdef NEW_ALLOCATION
+    char* new_mem = static_cast<char*>(::operator new(size_alloc));
+    memcpy(new_mem, mem, size_alloc);
+    delete[] mem;
+    mem = new_mem;
+#else
+    mem = (char*) std::realloc(mem , new_size_alloc * sizeof(char));
+#endif
+
     size_alloc = new_size_alloc;
 
-    mem = (char*) std::realloc(mem , size_alloc * sizeof(char));
+#ifdef VERBOSE_STR
     std::cout << "Realloc to size " << size_alloc << std::endl;
+#endif
 }
 void Str::release_mem(){
-    if(allocated)
+    if(allocated){
+#ifdef NEW_ALLOCATION
+        delete[] mem;
+#else
         free(mem);
+#endif
+    }
     size_alloc = 0;
     size_str = 0;
     allocated = false;

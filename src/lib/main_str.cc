@@ -1,6 +1,6 @@
 #include <vector>
 #include <iostream>
-
+#include <chrono>
 
 #include "str.hh"
 #include "opt.hh"
@@ -207,13 +207,13 @@ void str_c_and_std_interface(){
 }
 
 
-void opt_str(){
+void opt_move_str(){
 
-    Opt<int> opt_empty;
+    OptMove<int> opt_empty;
     std::cout << "opt_empty.has_value() = " << opt_empty.has_value() << std::endl;
 
     int i = 123;
-    Opt<int> opt_int = { 10 };
+    OptMove<int> opt_int = { 10 };
     // std::cout << "opt_int.has_value() = " << opt_int.has_value() << std::endl;
     std::cout << "opt_int.consume() = " << opt_int.consume() << std::endl;
     // opt_int = i; // No copy
@@ -221,12 +221,12 @@ void opt_str(){
     std::cout << "opt_int.consume() = " << opt_int.consume() << std::endl;
 
     Str str {10, 'x'};
-    // Opt<Str> opt_str_copy = str; // No copy
-    // Opt<Str> opt_str = Str(10, 'b');
-    // Opt<Str> opt_str_list = Str(10, 'b') ;
-    // Opt<Str> opt_str_list = str; // implicit move not ok
-    Opt<Str> opt_str_list = std::move(str);
-    // std::cout << "opt_str.has_value() = " << opt_str_copy.has_value() << std::endl;
+    // OptMove<Str> opt_str_copy = str; // No copy
+    // OptMove<Str> opt_move_str = Str(10, 'b');
+    // OptMove<Str> opt_str_list = Str(10, 'b') ;
+    // OptMove<Str> opt_str_list = str; // implicit move not ok
+    OptMove<Str> opt_str_list = std::move(str);
+    // std::cout << "opt_move_str.has_value() = " << opt_str_copy.has_value() << std::endl;
     Str opt_str_list_value = opt_str_list.consume();
     Str opt_str_list_value_consumed_again = opt_str_list.consume();
     std::cout << "value.consume() = " << opt_str_list_value.to_std_string() << std::endl;
@@ -273,6 +273,83 @@ void substr(){
     std::cout << "str        = "; str.println();
 }
 
+struct Timer {
+    std::chrono::system_clock::time_point start_tp;
+    std::chrono::system_clock::time_point stop_tp;
+    std::chrono::nanoseconds duration_ns;
+
+    std::chrono::_V2::system_clock::rep reps;
+
+    void start(){
+        start_tp = std::chrono::system_clock::now();
+    }
+    void stop(){
+        stop_tp = std::chrono::system_clock::now();
+
+        duration_ns = stop_tp - start_tp;
+        reps = duration_ns.count();
+    }
+    std::chrono::nanoseconds get_duration(){
+        return duration_ns;
+    }
+    void print_duration(Str str_msg){
+        str_msg.print();
+        std::cout << " " << reps << std::endl;
+    }
+
+};
+
+void str_perf(){
+
+    Timer timer;
+    
+    // Str.time() / std::string.time()
+    //
+    // c_str construction ~ 3
+    // substr ~ <1
+    // copy   ~ 2-3
+    // move   ~ 5-6
+
+    // Str
+    timer.start();
+    for(size_t i = 0; i < 1000; i++){
+        // Str str = "This is a short string made for testing purposes.";
+
+        // Str str {10, '3'};
+        // str.substr(0, 10);
+        // str.substr(0, 9);
+
+        Str str0 = "copy|move";
+        for (size_t i = 0; i < 1000; i++){
+            Str str_cpy = str0;
+            // Str str_cpy = std::move(str0);
+        }
+        
+    }
+    timer.stop();
+    timer.print_duration("Duration Str         [ns]: ");
+
+    // std::string
+    timer.start();
+    for(size_t i = 0; i < 1000; i++){
+
+        // std::string std_string = "This is a short string made for testing purposes.";
+
+        // std::string std_string  {10, '3'};
+        // std_string.substr(0, 10);
+        // std_string.substr(0, 9);
+
+        std::string str0 = "copy|move";
+        for (size_t i = 0; i < 1000; i++){
+            std::string str_cpy = str0;
+            // std::string str_cpy = std::move(str0);
+        }
+    }
+    timer.stop();
+    timer.print_duration("Duration std::string [ns]: ");
+
+}
+
 int main(){
     std::cout << "Str main." << std::endl << std::endl;
 
@@ -284,11 +361,13 @@ int main(){
     // free_delete();
     // str_c_and_std_interface();
     
-    // opt_str();
+    // opt_move_str();
     // res_str();
 
     // concat();
-    substr();
+    // substr();
+
+    str_perf();
 
 
     std::cout << "Str End" << std::endl << std::endl;

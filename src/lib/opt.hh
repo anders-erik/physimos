@@ -4,33 +4,26 @@
 
 /** A move-only optional container. */
 template <typename T>
-class Opt {
+class OptMove {
 
-    T *t; // object owned by Opt
+    T *t; // object owned by OptMove
     bool value = false;
 
 public:
-    Opt(Opt const& other)   = delete;
-    Opt(Opt&& other)        = delete;
+    OptMove(OptMove const& other)   = delete;
+    OptMove(OptMove&& other)        = delete;
 
-    Opt() {
-        std::cout << "Opt constructed without value." << std::endl;
+    OptMove() {
+        std::cout << "OptMove constructed without value." << std::endl;
     };
-   ~Opt() {
+   ~OptMove() {
         if(value)
             deallocate_T();
     };
-    
-    
-    // Opt(const T& _t){
-    //     std::cout << "Opt constructed by T copy." << std::endl;
-    //     t = _t;
-    //     value = true;
-    // };
 
     // Only constructed by moving 
-    Opt(T&& _t){
-        std::cout << "Opt constructed by T move." << std::endl;
+    OptMove(T&& _t){
+        std::cout << "OptMove constructed by T move." << std::endl;
         // t = std::move(_t);
         allocate_T();
         *t = std::move(_t);
@@ -39,23 +32,14 @@ public:
         
     };
 
-
-
-    // Opt& operator=(const T& _t) {
-    //     std::cout << "Opt got new value by Copy." << std::endl;
-    //     t = _t;
-    //     value = true;
-    //     return *this;
-    // }
-    Opt& operator=(T&& _t) {
-        std::cout << "Opt got new value by Move." << std::endl;
+    OptMove& operator=(T&& _t) {
+        std::cout << "OptMove got new value by Move." << std::endl;
         allocate_T();
         *t = std::move(_t);
         value = true;
         // t = std::move(_t);
         return *this;
     }
-
 
 
     [[nodiscard]] T&& consume(){
@@ -74,5 +58,51 @@ private:
     void deallocate_T(){
         delete t;
     }
+};
+
+
+/** A copy-only optional container. */
+template <typename T>
+class OptCopy {
+
+    alignas(T) std::byte buffer[sizeof(T)];
+    T t; // object owned by OptCopy
+    bool value = false;
+
+public:
+
+    OptCopy(OptCopy const& other)   = delete;
+    OptCopy(OptCopy&& other)        = delete;
+
+    OptCopy() noexcept {
+        std::cout << "OptCopy constructed without value." << std::endl;
+    };
+    ~OptCopy()                      = default;
+    
+    
+    OptCopy(const T& _t){
+        std::cout << "OptCopy constructed by T copy." << std::endl;
+        new (buffer) T(value);
+        value = true;
+    };
+
+
+    // OptCopy& operator=(const T& _t) {
+    //     std::cout << "OptCopy got new value by Copy." << std::endl;
+    //     t = _t;
+    //     value = true;
+    //     return *this;
+    // }
+
+
+
+    [[nodiscard]] T consume(){
+        if (!value) throw std::runtime_error("No value");
+        return t;
+    };
+    bool has_value(){
+        return value;
+    }
+
 };
 
