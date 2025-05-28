@@ -62,6 +62,8 @@ struct f2 {
     f2&& operator+(const f2& rhs);
     f2 operator-(const f2& rhs);
 
+    i2 to_i2();
+
     void print(std::string prefix);
 };
 

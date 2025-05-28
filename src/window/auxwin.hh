@@ -137,6 +137,7 @@ class Auxwin {
 
 
         Auxwin() {};
+        Auxwin(f2 new_window_size);
 
         void init(i2 window_size);
         void init(f2 window_size);
@@ -144,6 +145,8 @@ class Auxwin {
         void init();
         
         void make_current();
+        
+        void bind_framebuffer();
         
         // new frame GL-calls & retrieves all new events
         std::vector<InputEvent> new_frame();

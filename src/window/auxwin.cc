@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "opengl/texture.hh"
 
 #include "auxwin.hh"
 
@@ -47,7 +48,9 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 
 
 
-// Auxwin::Auxwin(int width, int height){
+Auxwin::Auxwin(f2 new_window_size){
+    init(new_window_size);
+}
 
 
         // void init(int width, int height);
@@ -162,11 +165,17 @@ void Auxwin::opengl_init(){
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    opengl::textures_init();
 }
 
 
 void Auxwin::make_current(){
     glfwMakeContextCurrent(glfw_window);
+}
+void Auxwin::bind_framebuffer(){
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0, current_window_size_i.x, current_window_size_i.y);
+    
 }
 void Auxwin::close(){
     glfwSetWindowShouldClose(glfw_window, true);
@@ -261,9 +270,10 @@ void Auxwin::add_input_event(InputEvent event){
 }
 
 void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
-    std::cout << "auxwin->framebuffer_callback" << std::endl;
+    // std::cout << "auxwin->framebuffer_callback" << std::endl;
 
     current_window_size_f = {(float) _width, (float) _height};
+    current_window_size_i = {_width, _height};
     cursor.window_dims = current_window_size_f;
     
     reload_coordinate_constants_using_glfw();

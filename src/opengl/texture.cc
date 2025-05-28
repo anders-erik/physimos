@@ -173,6 +173,10 @@ void TextureFrameBufferMultisample::blit(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+unsigned int TextureFrameBufferMultisample::get_resolved_texture(){
+    return resolvedTexture;
+}
+
 
 TextureFrameBuffer::TextureFrameBuffer(i2 _size)
     : texture { Texture(_size) }

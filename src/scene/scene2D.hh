@@ -55,7 +55,9 @@ class Scene2D {
     std::vector<ShapeS2D> lines;
     std::vector<ShapeS2D> shapes;
 
+
 public:
+    opengl::TextureFrameBufferMultisample framebuffer;
 
 
     Scene2D(f2 _window_size);
@@ -66,7 +68,9 @@ public:
 
     void handle_input(window::InputEvent input_event);
     void update();
+
     void render_window();
+    unsigned int render_texture();
 
 
     void add_quad(ShapeS2D& quad_);

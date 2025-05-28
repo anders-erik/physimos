@@ -110,17 +110,22 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 	Handles events and decides which root scene will recieve input events.
 */
 class Win2D {
+	window::Auxwin auxwin;
+
+	scene::Camera2D camera_root; // Always displays the root scene filling the window
+	opengl::Scene2DRenderer renderer;
+	// std::vector<scene::ShapeS2D> quads;
+	scene::QuadS2D quad0;
 
 	f2 window_size_f;
 	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
-	window::Auxwin auxwin;
 	std::vector<window::InputEvent> input_events;
 
 public:
 
 	Win2D(f2 window_size);
 
-	scene::Scene2D& add_scene(f2 pos_normalized, f2 size_normalized);
+	scene::Scene2D& add_subscene(f2 pos_normalized, f2 size_normalized);
 	void set_window_size(f2 size);
 
 	// launch window and transfer control
@@ -129,6 +134,9 @@ public:
 
 	void process_input(InputEvent & event);
 
+private:
+	void reload_camera_root();
+	void render_root();
 };
 
 
@@ -136,22 +144,28 @@ public:
 
 
 
-Win2D::Win2D(f2 window_size_f) {
+Win2D::Win2D(f2 window_size_f) 
+	: auxwin {window_size_f} 
+{
 
 	this->window_size_f = window_size_f;
 
-	auxwin.init(window_size_f);
+	reload_camera_root();
 
 	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
-	opengl::textures_init();
+
 
 }
 
 
-scene::Scene2D& Win2D::add_scene(f2 pos_normalized, f2 size_normalized){
+scene::Scene2D& Win2D::add_subscene(f2 pos_normalized, f2 size_normalized){
 
 	scene::Scene2D& scene = scenes.emplace_back(window_size_f);
 	scene.set_window_norm_box(pos_normalized, size_normalized);
+
+	// quad0.set_dims({10.0f, 10.0f}, {100.0f, 100.0f});
+	quad0.set_dims({50.0f, 400.0f}, {window_size_f.x/5.0f, window_size_f.y/5.0f});
+	renderer.create_context_quad_t(quad0.get_rendering_context(), quad0.get_verts());
 
 	return scene;
 }
@@ -167,7 +181,6 @@ void Win2D::open(){
 
 	while (auxwin.end_frame()){
 		start_frame();
-		
 
 		scene::Scene2D& scene = scenes[0];
 
@@ -175,7 +188,15 @@ void Win2D::open(){
 		scene.update();
 
 		// RENDER
-		scene.render_window();
+		quad0.set_texture_id(scene.render_texture());
+
+		auxwin.bind_framebuffer();
+		// scene.set_window_size(window_size_f);
+		// scene.render_window();
+
+		
+		
+		render_root();
 	}
 
 	auxwin.destroy();
@@ -190,7 +211,9 @@ void Win2D::process_input(InputEvent& event){
         switch (event.type){
 
         case EventType::WindowResize:
-                scene.set_window_size(event.window_resize.size_f);
+				window_size_f = event.window_resize.size_f;
+				reload_camera_root();
+                // scene.set_window_size(event.window_resize.size_f);
                 break;
 
         case EventType::MouseMove:
@@ -215,6 +238,19 @@ void Win2D::start_frame(){
 
 }
 
+void Win2D::reload_camera_root(){
+	renderer.activate();
+	camera_root.set_window_size_px(window_size_f);
+	camera_root.set_width(window_size_f.x);
+	renderer.set_camera(camera_root.get_matrix());
+}
+void Win2D::render_root(){
+	auxwin.bind_framebuffer();
+	renderer.activate();
+	renderer.set_model(quad0.get_matrix());
+	renderer.render_quad(quad0.get_rendering_context());
+}
+
 
 int main()
 {
@@ -222,7 +258,7 @@ int main()
 
 	Win2D win2D ({800, 600});
 
-	scene::Scene2D& root_scene_0 = win2D.add_scene({0.05f, 0.05f}, {0.9f, 0.9f});
+	scene::Scene2D& root_scene_0 = win2D.add_subscene({0.05f, 0.05f}, {0.9f, 0.9f});
 
 	// Add stuff to scene
 

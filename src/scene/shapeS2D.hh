@@ -56,5 +56,27 @@ struct ShapeS2D {
 };
 
 
+struct QuadS2D {
+    m3f3 M_m_s;
+    opengl::ShapeS2DRenderContext render_context;
+
+    std::array<opengl::Vertex2DT, 6> verts_6;
+
+
+    QuadS2D();
+
+    m3f3 get_matrix();
+    opengl::ShapeS2DRenderContext& get_rendering_context();
+    std::array<opengl::Vertex2DT, 6>& get_verts();
+
+    void set_dims(f2 pos, f2 size);
+    void set_texture(opengl::Textures texture);
+    void set_texture_id(unsigned int id);
+
+    static std::array<opengl::Vertex2DT, 6> generate_quad();
+
+};
+
+
 
 }

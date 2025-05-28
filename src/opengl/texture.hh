@@ -72,6 +72,7 @@ struct TextureFrameBufferMultisample {
     void multisample_fbo_clear();
     void blit(); /** copy multisampled frambuffer data to resolved framebuffer  */
 
+    unsigned int get_resolved_texture();
 };
 
 struct TextureFrameBuffer {

@@ -166,4 +166,85 @@ std::array<Vertex2DT, 6> ShapeS2D::generate_quad(){
     return verts;
 }
 
+
+
+
+
+
+QuadS2D::QuadS2D(){
+
+    verts_6 = QuadS2D::generate_quad();
+
+}
+
+m3f3 QuadS2D::get_matrix(){
+    return M_m_s;
+}
+
+void QuadS2D::set_dims(f2 pos, f2 size){
+    M_m_s.x.z = pos.x;
+    M_m_s.y.z = pos.y;
+
+    M_m_s.x.x = size.x;
+    M_m_s.y.y = size.y;
+}
+
+void QuadS2D::set_texture(opengl::Textures texture){
+    render_context.texture = opengl::texture_get_id(texture);
+}
+
+void QuadS2D::set_texture_id(unsigned int id){
+    render_context.texture = id;
+}
+opengl::ShapeS2DRenderContext& QuadS2D::get_rendering_context(){
+    return render_context;
+}
+
+std::array<opengl::Vertex2DT,6>& QuadS2D::get_verts(){
+    return verts_6;
+}
+
+std::array<Vertex2DT, 6> QuadS2D::generate_quad(){
+    std::array<Vertex2DT, 6> verts;
+
+    Vertex2DT v0;  // Lower left
+    v0.pos.x = 0.0f;
+    v0.pos.y = 0.0f;
+    v0.pos.z = 0.0f;
+    v0.tex.x = 0.0f;
+    v0.tex.y = 0.0f;
+
+    Vertex2DT v1;  // Lower right
+    v1.pos.x = 1.0f;
+    v1.pos.y = 0.0f;
+    v1.pos.z = 0.0f;
+    v1.tex.x = 1.0f;
+    v1.tex.y = 0.0f;
+
+    Vertex2DT v2;  // Upper right
+    v2.pos.x = 1.0f;
+    v2.pos.y = 1.0f;
+    v2.pos.z = 0.0f;
+    v2.tex.x = 1.0f;
+    v2.tex.y = 1.0f;
+
+    Vertex2DT v3;  // Upper left
+    v3.pos.x = 0.0f;
+    v3.pos.y = 1.0f;
+    v3.pos.z = 0.0f;
+    v3.tex.x = 0.0f;
+    v3.tex.y = 1.0f;
+
+    // Low Right triangle
+    verts[0] = v0;
+    verts[1] = v1;
+    verts[2] = v2;
+    // Upper left triangle
+    verts[3] = v0;
+    verts[4] = v2;
+    verts[5] = v3;
+
+    return verts;
+}
+
 }

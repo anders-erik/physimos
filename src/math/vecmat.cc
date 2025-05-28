@@ -15,6 +15,9 @@ f2&& f2::operator+(const f2& rhs){
 f2 f2::operator-(const f2& rhs){
     return f2 {this->x - rhs.x, this->y - rhs.y};
 }
+i2 f2::to_i2(){
+return i2{(int)x, (int)y};
+}
 void f2::print(std::string prefix){
     std::cout << prefix <<  ": x = " << x << ", y = " << y << std::endl;
 }

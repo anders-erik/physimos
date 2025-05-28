@@ -20,7 +20,9 @@ void CursorScene2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
 
 
 
-Scene2D::Scene2D(f2 _window_size) {
+Scene2D::Scene2D(f2 _window_size) 
+    : framebuffer { opengl::TextureFrameBufferMultisample(_window_size.to_i2(), 4) }
+{
 
     set_window_size(_window_size);
 
@@ -94,6 +96,32 @@ void Scene2D::render_window(){
         renderer2D.render_point(point.render_context);
     }
 
+}
+
+
+unsigned int Scene2D::render_texture(){
+
+    framebuffer.multisample_fbo_bind();
+    framebuffer.multisample_fbo_clear_red();
+
+
+    renderer2D.activate();
+    // renderer2D.set_camera(camera.transform.matrix);
+    renderer2D.set_camera(camera.get_matrix());
+
+    for(scene::ShapeS2D& _quad : quads){
+        renderer2D.set_model(_quad.transform_2d.matrix);
+        renderer2D.render_quad(_quad.render_context);
+    }
+
+    for(scene::ShapeS2D& point : points){
+        renderer2D.set_model(point.get_matrix());
+        renderer2D.render_point(point.render_context);
+    }
+
+    framebuffer.blit();
+
+    return framebuffer.get_resolved_texture();
 }
 
 
