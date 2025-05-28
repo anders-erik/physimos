@@ -148,12 +148,14 @@ struct m4f4 {
     f4 z;
     f4 w;
 
-    m4f4& operator=(m4f4& rhs);
+    m4f4& operator=(const m4f4& rhs);
 
     void translate(f3 transl);
     void rotate_x(float angle);
     void rotate_y(float angle);
     void rotate_z(float angle);
+
+    float* pointer();
 
     void perspective(float fov, float width, float height, float zn, float zf);
 

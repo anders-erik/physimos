@@ -250,11 +250,11 @@ void update_window(PhysWin physimos_window) {
     );
 
     // RELOAD ROOT COMPONENTS
-    topbar->uiTransform.size_has_been_changed = true;
-    main_view->uiTransform.size_has_been_changed = true;
-    left_panel->uiTransform.size_has_been_changed = true;
-    right_panel->uiTransform.size_has_been_changed = true;
-    workbench->uiTransform.size_has_been_changed = true;
+    topbar->uiTransform.size_changed = true;
+    main_view->uiTransform.size_changed = true;
+    left_panel->uiTransform.size_changed = true;
+    right_panel->uiTransform.size_changed = true;
+    workbench->uiTransform.size_changed = true;
 }
 
 

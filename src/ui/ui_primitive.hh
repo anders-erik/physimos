@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "math/vecmat.hh"
 
 #include "ui/ui_shader_texture.hh"
 #include "ui/ui_shader_color.hh"
@@ -29,9 +30,16 @@ enum PrimitiveState {
     Selected = 3,
 };
 
-enum Unit {
+enum class Unit {
     Pixel = 0,
     Percent = 1
+};
+
+struct Units {
+    Unit x = Unit::Pixel;
+    Unit y = Unit::Pixel;
+
+    Units(Unit initial_units) : x {initial_units}, y{initial_units} {};
 };
 
 enum class VertRef {
@@ -52,61 +60,57 @@ enum class HoriRef {
     Right = 2,
 };
 
+/**  Vertical and horizontal reference position. */
+class RefPos {
+
+    VertRef vert = VertRef::Bottom;
+    HoriRef hori = HoriRef::Left;
+
+public:
+
+    void set_vert(VertRef new_vert) {vert = new_vert;};
+    void set_hori(HoriRef new_hori) {hori = new_hori;};
+    VertRef get_vert() {return vert;};
+    HoriRef get_hori() {return hori;};
+
+    bool vert_is(VertRef vert_to_query) { return vert_to_query == vert ? true : false;};
+    bool hori_is(HoriRef hori_to_query) { return hori_to_query == hori ? true : false;};
+};
+
 
 /** Specifies the full transform state of UI primitive: size, position, render transform, size change flags.  */
-typedef struct Transform {
+struct Transform {
+
+    // Reload-flags
+
     /** Intially set to true for full update during first render. */
-    bool size_has_been_changed = true;
-    std::string h_input_string = "";
-    std::string w_input_string = "";
-    int h_input = 100;
-    int h_offset_input = 0;
-    int w_input = 100;
-    int w_offset_input = 0;
-    Unit h_unit = Unit::Percent;
-    Unit w_unit = Unit::Percent;
-    int w_min = 0;
-    int h_min = 0;
-    int w_max = INT32_MAX;
-    int h_max = INT32_MAX;
-    int h_real = 0;
-    int w_real = 0;
+    bool size_changed = true;
+    bool x_pos_changed = true;
+    bool y_pos_changed = true;
 
+    Units unit_size;
+    Units unit_pos;
+    RefPos ref_pos;
 
+    // sizes and positions
+    i2 input_size = {100, 100}; // Unit-independent input size
+    i2 input_pos = {0, 0};      // Unit-independent input position
+    i2 input_offset = {0, 0};   // Fixed offset distance following optional 'o' in input str
+    i2 real_pos = {0, 0};   // position (px) : bottom left window to bottom left primitive.
+    i2 real_size = {0, 0};  // size (px).
+    
+    // Limits
+    i2 min_size = {0, 0}; // prevent primitive from shrinking below zero
+    i2 max_size = {INT32_MAX, INT32_MAX};
 
-    // Input string
-    std::string x_input_string = "";
-    // Raw input value parsed from string
-    int x_input = 0;
-    int y_input = 0;
-    // 2025-02-17/18
-    // input values converted to pixels
-    bool x_has_been_changed = true;
-    bool y_has_been_changed = true;
-    // int x_input_px = 0;
-    // int y_input_px = 0;
-    // int x_input_percent_window = 0;
-    // int y_input_percent_window = 0;
+    // Model-to-scene matrix for rendering
+    m4f4 M_m_s;
 
-    // Units of the x/y input values
-    Unit x_unit = Unit::Pixel;
-    Unit y_unit = Unit::Pixel;
-    // x/y is measured from where?
-    HoriRef horiRef = HoriRef::Left;
-    VertRef vertRef = VertRef::Bottom;
+    Transform() 
+        :   unit_size {Unit::Percent},
+            unit_pos  {Unit::Pixel} {};
 
-    /// x window coordinate of primitive's bottom left corner, relative to bottom left of window.
-    int x_real = 0;
-    /// y window coordinate of primitive's bottom left corner, relative to bottom left of window.
-    int y_real = 0;
-
-    // Transformation matrix for shading
-    float uiPrimitiveTransform16[16] = {    1, 0, 0, 0,
-                                            0, 1, 0, 0,
-                                            0, 0, 1, 0,
-                                            0, 0, 0, 1, };
-
-} Transform;
+};
 
 
 

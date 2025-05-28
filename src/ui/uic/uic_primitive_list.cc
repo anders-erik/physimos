@@ -61,7 +61,7 @@ UiResult UIC_PrimitiveList::scroll(double y_change){
     std::cout << "SCROLL LIST"  << std::endl;
 
     // Only enable scroll if necessary
-    if(listObjects.size()*list_item_stride_px < uiTransform.h_real)
+    if(listObjects.size()*list_item_stride_px < uiTransform.real_size.y)
         return UiResult();
 
     for(UIC_PrimitiveColor& color_editor : listObjects){
@@ -93,7 +93,7 @@ void UIC_PrimitiveList::new_list_object(){
     new_color_editor.set_y("^" + std::to_string(new_y_from_top) + "x");
 
     // this->children.push_back(&new_color_editor);
-    this->uiTransform.size_has_been_changed = true;
+    this->uiTransform.size_changed = true;
 
 }
 

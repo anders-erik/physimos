@@ -280,6 +280,10 @@ void m4f4::rotate_z(float angle){
     mat_mul(*this, rot_z_matrix);
 }
 
+float * m4f4::pointer(){
+    return (float*) this;
+}
+
 
 void m4f4::perspective(float fov, float width, float height, float zn, float zf){
     float aspect = width / height;
@@ -295,7 +299,7 @@ void m4f4::perspective(float fov, float width, float height, float zn, float zf)
 
 }
 
-m4f4& m4f4::operator=(m4f4& rhs){
+m4f4& m4f4::operator=(const m4f4& rhs){
     x.x = rhs.x.x;
     x.y = rhs.x.y;
     x.z = rhs.x.z;
