@@ -1,9 +1,21 @@
 #pragma once
 
+#ifdef  PH_WINDOWS
+    #include <windows.h>
+#elif   PH_LINUX
+    #include <fcntl.h>     // open
+    #include <unistd.h>    // read, close
+    #include <iostream>    // std::cerr
+    #include <cstring>     // strerror
+    #include <errno.h>     // errno
+#endif
+
+#include <iostream>
+
 #include <string>
 
-#include "lib/process.hh"
-#include "lib/log.hh"
+#include "process.hh"
+#include "log.hh"
 
 #include <filesystem>
 
@@ -41,6 +53,64 @@ struct File {
         successful_read = false;
         file_contents = cat_file_as_string();
         return file_contents;
+    }
+
+    static void read_file_xplat(std::string path_str) {
+
+        std::string return_string;
+
+        const char* file_path = path_str.c_str();
+
+        char buffer[1024];
+
+    #ifdef PH_WINDOWS
+
+        HANDLE hFile = CreateFileA(
+            file_path,
+            GENERIC_READ,           // desired access
+            FILE_SHARE_READ,        // share mode
+            nullptr,                // security attributes
+            OPEN_EXISTING,          // creation disposition
+            FILE_ATTRIBUTE_NORMAL,  // flags and attributes
+            nullptr                 // template file handle
+        );
+
+        if (hFile == INVALID_HANDLE_VALUE) {
+            std::cerr << "CreateFile failed: " << GetLastError() << '\n';
+            return 1;
+        }
+
+        DWORD bytesRead;
+
+        while (ReadFile(hFile, buffer, sizeof(buffer), &bytesRead, nullptr) && bytesRead > 0) {
+            DWORD bytesWritten;
+            WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), buffer, bytesRead, &bytesWritten, nullptr);
+        }
+
+        CloseHandle(hFile);
+
+    #elif  PH_LINUX
+
+        int fd = open(file_path, O_RDONLY);
+        if (fd == -1) {
+            std::cerr << "open failed: " << strerror(errno) << '\n';
+            return 1;
+        }
+
+        ssize_t bytesRead;
+        while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0) {
+            write(STDOUT_FILENO, buffer, bytesRead); // write to stdout
+        }
+
+        if (bytesRead == -1) {
+            std::cerr << "read failed: " << strerror(errno) << '\n';
+        }
+
+        close(fd);
+
+    #endif
+
+
     }
 
 private:
