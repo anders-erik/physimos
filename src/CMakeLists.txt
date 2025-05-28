@@ -1,18 +1,18 @@
 
-add_subdirectory(res)
-add_subdirectory(simulator)
-add_subdirectory(math)
-add_subdirectory(render)
-add_subdirectory(logger)
-add_subdirectory(ui)
-add_subdirectory(model)
-add_subdirectory(image)
-add_subdirectory(lib)
-add_subdirectory(scene)
 add_subdirectory(draw)
+add_subdirectory(file_format)
+add_subdirectory(image)
+add_subdirectory(logger)
+add_subdirectory(lib)
+add_subdirectory(math)
+add_subdirectory(model)
 add_subdirectory(opengl)
 add_subdirectory(phont)
 add_subdirectory(physics)
+add_subdirectory(render)
+add_subdirectory(scene)
+add_subdirectory(simulator)
+add_subdirectory(ui)
 add_subdirectory(window)
 
 
@@ -40,7 +40,7 @@ else()
 endif()
 
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src)
-target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/res)
+target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/file_format)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/scene)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/ui)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/simulator)
@@ -54,5 +54,5 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)
 
 
-target_link_libraries(source opengl uic_draw res simulator render scene lib)
+target_link_libraries(source opengl uic_draw file_format simulator render scene lib)
 

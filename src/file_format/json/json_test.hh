@@ -111,7 +111,7 @@ void JsonTest::print_test_verbose(
 void JsonTest::conforms_not(std::string& file_path_str){
 
     // Try read file
-    Phile phile {file_path_str};
+    File phile {file_path_str};
     std::string json_source = phile.copy_as_string_cwd();
     if(!phile.successful_read){
         print_test_verbose(

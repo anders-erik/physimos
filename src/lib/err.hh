@@ -13,7 +13,7 @@ enum class err_l {
 
 /** Which physimos module. */
 enum class err_m {
-    Phile,
+    File,
     Dir,
 };
 

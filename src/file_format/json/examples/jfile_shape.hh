@@ -9,15 +9,15 @@
 #include "../physon_types.hh"
 
 #include "math/geometry/shape.hh"
-#include "jphile.hh"
+#include "jfile.hh"
 
 
-class JPhileShape : JPhile {
+class JFileShape : JsonFile {
 
     std::vector<Shape> shapes;
 
     // Log Messages
-    std::string log_base = "JPhileShape: ";
+    std::string log_base = "JFileShape: ";
     std::string root_not_array_msg  = log_base + "root json value not array.";
     std::string msg_entry_not_object = log_base + "shape entry is not object.";
     std::string msg_entry_type_not_shape = log_base + "shape entry is not type shape.";
@@ -34,7 +34,7 @@ class JPhileShape : JPhile {
 
 public:
 
-    JPhileShape(std::string str_path) :  JPhile(str_path){
+    JFileShape(std::string str_path) :  JsonFile(str_path){
 
         JsonVar& root_var = json.get_root();
         
@@ -50,7 +50,7 @@ public:
 
 };
 
-std::string JPhileShape::serialize_shape(Shape& shape){
+std::string JFileShape::serialize_shape(Shape& shape){
 
     JsonVar shape_object = json_object_variants();
     shape_object.push_to_object( {"type", json_string("shape") } );
@@ -83,7 +83,7 @@ std::string JPhileShape::serialize_shape(Shape& shape){
 }
 
 
-void JPhileShape::loop_shape_array(json_array_variants& root_array){
+void JFileShape::loop_shape_array(json_array_variants& root_array){
 
     // Iterate over shapes
     for (JsonVar& shape_entry : root_array){
@@ -120,7 +120,7 @@ void JPhileShape::loop_shape_array(json_array_variants& root_array){
 
         }
         if(points.size() >= max_point_count)
-            std::cout << "WARNING: Maximum number of allowed points was parsed in JPhileShape." << std::endl;
+            std::cout << "WARNING: Maximum number of allowed points was parsed in JFileShape." << std::endl;
         // std::cout << "Points found: " << points.size() << std::endl;
         
 
@@ -142,7 +142,7 @@ void JPhileShape::loop_shape_array(json_array_variants& root_array){
 }
 
 
-f2 JPhileShape::extract_point_from_array_2d(JsonVar& json_var){
+f2 JFileShape::extract_point_from_array_2d(JsonVar& json_var){
 
     json_array_variants& point_array_var = json_var.get_array();
 

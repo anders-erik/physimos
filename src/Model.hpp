@@ -8,7 +8,7 @@
 #include <string>
 
 // #include "object_types.hh"
-#include "res/resources.hh"
+#include "file_format/resources.hh"
 
 namespace objects {
 

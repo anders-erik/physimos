@@ -5,7 +5,7 @@
 #include <iostream>
 #include <filesystem>
 
-#include "lib/phile.hh"
+#include "lib/file.hh"
 
 
 namespace fs = std::filesystem;
@@ -35,12 +35,12 @@ public:
         process_dir();
     }
 
-    std::vector<Phile> get_philes_with_extension(std::string ext){
-        std::vector<Phile> philes;
+    std::vector<File> get_philes_with_extension(std::string ext){
+        std::vector<File> philes;
         std::vector<std::string> file_path_str = get_file_paths_with_extension(ext);
 
         for(std::string& path_str : file_path_str){
-            Phile phile {path_str};
+            File phile {path_str};
             philes.push_back(phile);
         }
 

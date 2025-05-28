@@ -6,7 +6,7 @@
 #include "lib/string.hh"
 
 #include "render/shader.hpp"
-#include "res/bmp_loader.hpp"
+#include "file_format/bmp_loader.hpp"
 
 #include "ui_primitive.hh"
 #include "ui_globals.hh"

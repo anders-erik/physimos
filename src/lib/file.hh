@@ -8,7 +8,7 @@
 #include <filesystem>
 
 
-struct Phile {
+struct File {
 
     std::string physimos_core_path;
     std::string relative_path;
@@ -18,7 +18,7 @@ struct Phile {
     std::string file_contents;
     bool successful_read = false;
 
-    Phile(std::string relative_path) : relative_path {relative_path} {
+    File(std::string relative_path) : relative_path {relative_path} {
 
         std::string physiomos_dir = physimos_root_dir_or_die();
         physimos_core_path = physiomos_dir + "/" + relative_path;
@@ -58,7 +58,7 @@ private:
             _ifstream.open(relative_path);
         
         if(!_ifstream.is_open()){
-            std::string error_msg = "Phile: cat_file_as_string. Path: " + physimos_core_path;
+            std::string error_msg = "File: cat_file_as_string. Path: " + physimos_core_path;
             plib::plog_error("CONFIG", "OPEN_FILE", error_msg);
             return string;
         }
@@ -71,7 +71,7 @@ private:
         }
         catch(const std::exception& e)
         {
-            std::string error_msg = "Phile: cat_file_as_string. Path: " + physimos_core_path;
+            std::string error_msg = "File: cat_file_as_string. Path: " + physimos_core_path;
             plib::plog_error("CONFIG", "READ_FILE", error_msg);
         }
         

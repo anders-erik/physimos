@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 
-#include "examples/jphile_shape.hh"
+#include "examples/jfile_shape.hh"
 
 #include "physon_types.hh"
 
@@ -13,7 +13,6 @@
 #include "json_test.hh"
 
 // #include "json_union.hh"
-
 
 
 std::string load_file(std::string path) {
@@ -83,13 +82,13 @@ int main (int argc, char **argv) {
         }
         else if(flag == json_flag::json_shape){
 
-            // Phile file ("src/lib/json/data/shapes.json");
-            // JPhileShape shape_config (file);
+            // File file ("src/lib/json/data/shapes.json");
+            // JFileShape shape_config (file);
 
-            JPhileShape shape_config ("src/lib/json/data/shapes.json");
+            JFileShape shape_config ("src/lib/json/data/shapes.json");
 
             Shape line = { {0.03, 0.2}, {11.01, 12.343444}};
-            std::string shape_string = JPhileShape::serialize_shape(line);
+            std::string shape_string = JFileShape::serialize_shape(line);
             std::cout << shape_string << std::endl;
             
 

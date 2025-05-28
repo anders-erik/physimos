@@ -5,7 +5,7 @@
 
 #include "lib/process.hh"
 #include "lib/log.hh"
-#include "lib/phile.hh"
+#include "lib/file.hh"
 
 #include "../physon.hh"
 #include "../physon_types.hh"
@@ -19,11 +19,11 @@
   The primary json config tool. Intended to be used exclusively as a base class.
   A new Derived class is created for each confuration type.
 */
-class JPhile {
+class JsonFile {
 
 
 protected:
-    Phile file;
+    File file;
     Json json;
 
     bool verify_type_array(JsonVar& array, std::string error_msg);
@@ -32,13 +32,13 @@ protected:
 
 
 public:
-    JPhile(std::string& str_path) : file {Phile(str_path)}, json {file.copy_as_string_cwd()} {
+    JsonFile(std::string& str_path) : file {File(str_path)}, json {file.copy_as_string_cwd()} {
         json.lex_parse();
         // std::cout << json.serialize() << std::endl;
         
     };
 
-    JPhile(Phile& _file) : file {_file}, json {file.copy_as_string_cwd()} {
+    JsonFile(File& _file) : file {_file}, json {file.copy_as_string_cwd()} {
         json.lex_parse();
         // std::cout << json.serialize() << std::endl;
         
@@ -47,7 +47,7 @@ public:
 };
 
 
-bool JPhile::verify_type_array(JsonVar& array, std::string error_msg){
+bool JsonFile::verify_type_array(JsonVar& array, std::string error_msg){
     if(!array.is_array()){
         std::string msg = error_msg + " File: " + file.physimos_core_path;
         plib::plog_error("JPHILE", "json_format", msg);
@@ -56,7 +56,7 @@ bool JPhile::verify_type_array(JsonVar& array, std::string error_msg){
     return true;
 }
 
-bool JPhile::verify_type_object(JsonVar& object, std::string error_msg){
+bool JsonFile::verify_type_object(JsonVar& object, std::string error_msg){
     if(!object.is_object()){
         std::string msg = error_msg + " File: " + file.physimos_core_path;
         plib::plog_error("JPHILE", "json_format", msg);
@@ -66,9 +66,9 @@ bool JPhile::verify_type_object(JsonVar& object, std::string error_msg){
 }
 
 
-bool JPhile::json_equals_string(JsonVar& json_var_str, std::string target, std::string error_msg){
+bool JsonFile::json_equals_string(JsonVar& json_var_str, std::string target, std::string error_msg){
     if(json_var_str.get_string() != target){
-        std::string msg = "JPhileShape: array entry is not of type shape. File: " +  file.physimos_core_path;
+        std::string msg = "JFileShape: array entry is not of type shape. File: " +  file.physimos_core_path;
         plib::plog_error("JPHILE", "json_format", msg);
         return false;
     }
