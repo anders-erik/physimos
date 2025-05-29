@@ -60,6 +60,7 @@ public:
 
     Scene2D(f2 _window_size);
 
+    f2 get_window_size();
     void set_window_size(f2 size);
     void set_window_norm_box(f2 pos_normalized, f2 size_normalized);
 

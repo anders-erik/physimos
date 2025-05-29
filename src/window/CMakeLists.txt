@@ -6,6 +6,8 @@ endif()
 set(WINDOW 
     auxwin.cc
     auxkey.cc
+
+    win2D.cc
 )
 
 
@@ -20,5 +22,6 @@ target_include_directories(window PUBLIC
 
 target_link_libraries( window
     lib
+    scene
 )
 

@@ -81,7 +81,9 @@
 		"thread": "cpp",
 		"xdg-shell-client-protocol.h": "c",
 		"stdlib.h": "c",
-		"wayland-client.h": "c"
+		"wayland-client.h": "c",
+		"queue": "cpp",
+		"any": "cpp"
 	},
 	"makefile.configureOnOpen": false,
 	"debug.showVariableTypes": true

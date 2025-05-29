@@ -28,6 +28,10 @@ Scene2D::Scene2D(f2 _window_size)
 }
 
 
+f2 Scene2D::get_window_size(){
+    return window_size_f;
+}
+
 void Scene2D::set_window_size(f2 size){
     window_size_f = size;
 

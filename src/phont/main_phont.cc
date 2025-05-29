@@ -1,15 +1,15 @@
+#include <stdexcept>
 #include <iostream>
 #include <queue>
 #include <map>
+#include <string>
+#include <any>
 
-#include "window/auxwin.hh"
 
-#include "scene/scene2D.hh"
-#include "scene/shapeS2D.hh"
+#include "window/win2D.hh"
 
 #include "phont.hh"
 
-using namespace window;
 
 
 const unsigned int WINDOW_WIDTH = 800;
@@ -104,196 +104,50 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 
 
+// Borrow checker (runtime)
+class BC {
 
-/** 
-	Owns a window and root 2D scenes.
-	Handles events and decides which root scene will recieve input events.
-*/
-class Win2D {
-	window::Auxwin auxwin;
-
-	scene::Camera2D camera_root; // Always displays the root scene filling the window
-	opengl::Scene2DRenderer renderer;
-	// std::vector<scene::ShapeS2D> quads;
-	scene::QuadS2D quad0;
-
-	// To be replaced with Lender tag
-	scene::Scene2D* cursor_owner = nullptr;
-
-	f2 window_size_f;
-	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
-	std::vector<window::InputEvent> input_events;
+	std::map<unsigned int, std::any> scene_map;
+	unsigned int scene_id_count = 0;
+	bool scene_is_locked = false;
 
 public:
+	enum Type {
+		scene,
+	};
+	struct Tag {
+		unsigned int id;
+		Type type;
+		std::string label;
 
-	Win2D(f2 window_size);
+		Tag(unsigned int id, Type type,std::string label) : id {id}, type {type}, label{label} {};
+	};
 
-	scene::Scene2D& add_subscene(f2 pos_normalized, f2 size_normalized);
-	void set_window_size(f2 size);
 
-	// transfer control to Win2D by entering main rendering loop
-	void start_loop();
-    // Set up new frame and handle input
-	void start_frame();
+	Tag new_scene(std::string label){
+		scene_map[scene_id_count++] = scene::Scene2D {{0,0}};
+		return Tag{scene_id_count-1, Type::scene, label};
+	}
 
-	void input_scroll(InputEvent& event);
-	void input_mouse_move(InputEvent& event);
-	void process_input(InputEvent & event);
+	scene::Scene2D& borrow_scene(Tag tag){
+		scene::Scene2D& scene = std::any_cast<scene::Scene2D&>(scene_map[tag.id]); 
 
-private:
-	void reload_camera_root();
-	void render_root();
+		if(scene_is_locked)
+			throw std::runtime_error("BC: Tried to get scene during scene lock.");
+
+		scene_is_locked = true;
+
+		return scene;
+	}
+
+	void return_scene(Tag tag){
+
+		scene_is_locked = false;
+	}
+
 };
 
 
-
-
-
-
-Win2D::Win2D(f2 window_size_f) 
-	: auxwin {window_size_f} 
-{
-
-	this->window_size_f = window_size_f;
-
-	reload_camera_root();
-
-	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
-
-
-}
-
-
-scene::Scene2D& Win2D::add_subscene(f2 pos_normalized, f2 size_normalized){
-
-	scene::Scene2D& scene = scenes.emplace_back(window_size_f);
-	scene.set_window_norm_box(pos_normalized, size_normalized);
-
-	// quad0.set_dims({10.0f, 10.0f}, {100.0f, 100.0f});
-	quad0.set_box({50.0f, 200.0f}, {window_size_f.x/3.0f, window_size_f.y/3.0f});
-	renderer.create_context_quad_t(quad0.get_rendering_context(), quad0.get_verts());
-
-	return scene;
-}
-
-
-void Win2D::set_window_size(f2 size){
-	for(scene::Scene2D& scene : scenes)
-		scene.set_window_size(size);
-}
-
-
-void Win2D::start_loop(){
-
-	while (auxwin.end_frame()){
-		start_frame();
-
-		scene::Scene2D& scene = scenes[0];
-		
-		// scene.print();
-
-		// UPDATE
-		scene.update();
-
-		// RENDER
-		quad0.set_texture_id(scene.render_texture());
-
-		auxwin.bind_framebuffer();
-		// scene.set_window_size(window_size_f);
-		// scene.render_window();
-
-		
-		
-		render_root();
-	}
-
-	auxwin.destroy();
-}
-
-
-
-void Win2D::input_scroll(InputEvent & event){
-	MouseScrollEvent& scroll_event = event.mouse_scroll;
-	// Only one scene at the moment
-	scene::Scene2D& scene = scenes[0];
-	if(quad0.contains_cursor(event.cursor.sane)){
-		// std::cout << "SCROLL IN SCENE" << std::endl;
-		scene.handle_scroll(scroll_event.delta);
-	}
-	// camera.zoom(event.mouse_scroll.delta);
-
-}
-
-void Win2D::input_mouse_move(InputEvent & event){
-	// MouseMoveEvent& mouse_movement = event.mouse_movement;
-	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
-	CursorPosition& cursor = event.cursor;
-
-	scene::Scene2D& scene = scenes[0];
-
-	if(quad0.contains_cursor(cursor.sane)){
-
-		// Convert to normalized quad coordinates (= normal. subscene coords.)
-		scene::PointerMovement2D pointer_movement;
-		pointer_movement.pos_prev = quad0.get_normalized_from_point(cursor_prev.sane);
-		pointer_movement.pos_curr = quad0.get_normalized_from_point(cursor.sane);
-
-		scene.handle_pointer_move( pointer_movement );
-	}
-}
-
-
-void Win2D::process_input(InputEvent& event){
-		
-	// Only one scene at the moment
-	scene::Scene2D& scene = scenes[0];
-
-	switch (event.type){
-
-	case EventType::WindowResize:
-		window_size_f = event.window_resize.size_f;
-		reload_camera_root();
-		// scene.set_window_size(event.window_resize.size_f);
-		break;
-
-	case EventType::MouseMove:
-		input_mouse_move(event);
-		break;
-
-	case EventType::MouseScroll:
-		input_scroll(event);
-		break;
-	
-	default:
-		// std::cout << "WARN: unhandled input event" << std::endl;
-		scene.handle_input(event);
-		break;
-	}
-
-}
-
-
-void Win2D::start_frame(){
-
-	input_events = auxwin.new_frame();
-
-	for(InputEvent& event : input_events)
-		process_input(event);
-
-}
-
-void Win2D::reload_camera_root(){
-	renderer.activate();
-	camera_root.set_window_size_px(window_size_f);
-	camera_root.set_width(window_size_f.x);
-	renderer.set_camera(camera_root.get_matrix());
-}
-void Win2D::render_root(){
-	auxwin.bind_framebuffer();
-	renderer.activate();
-	renderer.set_model(quad0.get_matrix());
-	renderer.render_quad(quad0.get_rendering_context());
-}
 
 
 int main()
@@ -313,7 +167,24 @@ int main()
 	add_glyph_quads_to_scene(root_scene_0);
 
 
+
+	BC bc;
+
+	BC::Tag tag_scene_0 = bc.new_scene("Scene0");
+	scene::Scene2D& borrowed_scene_0 = bc.borrow_scene(tag_scene_0);
+	// scene::Scene2D& borrowed_scene_0_again = bc.borrow_scene(tag_scene_0); // not returned!
+	// Change value
+	borrowed_scene_0.get_window_size().print("Initial window size: ");
+	borrowed_scene_0.set_window_size({100, 100});
+	bc.return_scene(tag_scene_0);
+
+	// Read value change
+	scene::Scene2D& borrowed_scene_0_again = bc.borrow_scene(tag_scene_0);
+	borrowed_scene_0_again.get_window_size().print("Updated window size: ");
+	bc.return_scene(tag_scene_0);
 	
+
+
 	win2D.start_loop();
 
 	return 0;
