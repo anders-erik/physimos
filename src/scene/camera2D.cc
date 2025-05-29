@@ -27,15 +27,14 @@ void Camera2D::matrix_reload(){
     // Reload values dependent on window size and box.x
     AR = window_size_px.x / window_size_px.y;
     box.size.y = box.size.x / AR;
-    scene_per_sane = box.size.x / window_size_px.x;
 
+    // scene -> camera/view
     t_M_s_c.x.z = -box.pos.x;
     t_M_s_c.y.z = -box.pos.y;
 
+    // camera/view -> ndc
     t_M_c_ndc.x.z = -1.0f;
     t_M_c_ndc.y.z = -1.0f;
-
-    // camera coords. -> ndc
     s_M_c_ndc.x.x = 2 / box.size.x;
     s_M_c_ndc.y.y = 2 * AR / box.size.x;
 
@@ -48,8 +47,8 @@ void Camera2D::matrix_reload(){
     // | order of these two? |
     M_s_ndc.mult_left(t_M_c_ndc);
 
-    
 }
+
 m3f3 Camera2D::get_matrix(){
     return M_s_ndc;
 }
@@ -81,8 +80,8 @@ void Camera2D::zoom(float delta){
 
 void Camera2D::pan(f2 delta_sane){
 
-    box.pos.x -= scene_per_sane * delta_sane.x;
-    box.pos.y -= scene_per_sane * delta_sane.y;
+    box.pos.x -= delta_sane.x;
+    box.pos.y -= delta_sane.y;
 
     matrix_reload();
 }

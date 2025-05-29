@@ -10,14 +10,6 @@
 namespace scene {
 
 
-void CursorScene2D::set_cursor_pos(f2 pos_px, f2 pos_norm, Box2D camera_box){
-    viewport_sane = pos_px;
-    viewport_norm = pos_norm;
-
-    scene.x = camera_box.pos.x + (viewport_norm.x * camera_box.size.x) ;
-    scene.y = camera_box.pos.y + (viewport_norm.y * camera_box.size.y) ;
-}
-
 
 
 Scene2D::Scene2D(f2 _window_size) 
@@ -143,7 +135,7 @@ void Scene2D::handle_input(window::InputEvent event){
     }
     else if(event.type == window::EventType::MouseScroll){
 
-        camera.zoom(event.mouse_scroll.delta);
+        
 
     }
 
@@ -153,15 +145,15 @@ void Scene2D::handle_input(window::InputEvent event){
         // event.mouse_movement.cursor.print();
 
         // Scene can be panned
-        if(panable)
-            camera.pan(event.mouse_movement.delta.sane);
+        // if(panable)
+        //     camera.pan(event.mouse_movement.delta.sane);
 
         
         // camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
-        cursor_scene.set_cursor_pos(  event.mouse_movement.cursor.sane, 
-                                        event.mouse_movement.cursor.normalized,
-                                        camera.get_box()
-        );
+        // cursor_scene.set_cursor_pos(  event.cursor.sane, 
+        //                                 event.cursor.normalized,
+        //                                 camera.get_box()
+        // );
 
     }
 
@@ -187,7 +179,7 @@ void Scene2D::handle_input(window::InputEvent event){
         // std::cout << "camera.cursor_viewport_norm  = " << camera.cursor_viewport_norm.x << " " << camera.cursor_viewport_norm.y << std::endl;
         // std::cout << "camera.cursor_viewport_scene = " << camera.cursor_viewport_scene.x << " " << camera.cursor_viewport_scene.y << std::endl;
         
-        std::cout << "cursor_scene.scene = " << cursor_scene.scene.x << " " << cursor_scene.scene.y << std::endl;
+        // std::cout << "cursor_scene.scene = " << cursor_scene.scene.x << " " << cursor_scene.scene.y << std::endl;
         
         // scene_2d.camera_2d.transform_2d.matrix.print();
         // std::cout << "panable = " << panable << std::endl;
@@ -195,5 +187,41 @@ void Scene2D::handle_input(window::InputEvent event){
     }
 }
 
+void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
+
+    f2 delta_normalized = pointer_movement.pos_curr - pointer_movement.pos_prev;
+    Box2D camera_box = camera.get_box();
+
+    f2 delta_scene = {
+        delta_normalized.x * camera_box.size.x, 
+        delta_normalized.y * camera_box.size.y
+    };
+
+    if(panable)
+        camera.pan(delta_scene);
+    
+
+    // PRINT POINTER POSITIONS
+
+    // pointer_movement.pos_curr.print("Pointer [norm]:");
+    // f2 pos_scene = {
+    //     camera_box.pos.x + pointer_movement.pos_curr.x * camera_box.size.x, 
+    //     camera_box.pos.y + pointer_movement.pos_curr.y * camera_box.size.y
+    // };
+    // pos_scene.print("Pointer [scene]:");
+}
+
+void Scene2D::handle_scroll(float delta){
+    camera.zoom(delta);
+}
+
+
+void Scene2D::print(){
+
+    std::cout << "Scene:" << std::endl;
+
+    
+    
+}
 
 }

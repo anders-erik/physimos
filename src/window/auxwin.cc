@@ -281,7 +281,7 @@ void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
     EventType event_type = EventType::WindowResize;
     // i2 size (_width, _height);
     WindowResizeEvent win_resize_event (i2(_width, _height)) ;
-    input_events.emplace(glfw_window, event_type, win_resize_event);
+    input_events.emplace(glfw_window, event_type, win_resize_event, cursor);
 
     cursor.window_dims.x = (float) _width;
     cursor.window_dims.y = (float) _height;
@@ -314,14 +314,14 @@ void Auxwin::mouse_button_callback(GLFWwindow *window, int button, int action, i
 
     }
     
-    input_events.emplace(window, event_type, mouse_button_event);
+    input_events.emplace(window, event_type, mouse_button_event, cursor);
 }
 
 void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
 
-    f2 input ((float) xpos, (float) ypos);
-
     CursorPosition cursor_prev = cursor;
+
+    f2 input ((float) xpos, (float) ypos);
 
     // Update current cursor
     cursor.input = input;
@@ -330,22 +330,14 @@ void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double yp
     cursor.normalized = coord_transformer.s_n(cursor.sane);
     cursor.millimeters = coord_transformer.s_m(cursor.sane);
 
-    CursorPosition delta;
-    delta.input = cursor.input - cursor_prev.input;
-    delta.sane = cursor.sane - cursor_prev.sane; // delta is translation inedependent
-    delta.pixels = coord_transformer.s_p(delta.sane);
-    delta.normalized = coord_transformer.s_n(delta.sane);
-    delta.millimeters = coord_transformer.s_m(delta.sane);
-
-    // f2 delta_input = cursor.input - cursor_prev.input;
 
     EventType       event_type = EventType::MouseMove;
     MouseMoveEvent   mouse_movement (
-                                        cursor,
-                                        delta
+                                        cursor_prev,
+                                        cursor
                                     );
 
-    input_events.emplace(window, event_type, mouse_movement);
+    input_events.emplace(window, event_type, mouse_movement, cursor);
 
 }
 void Auxwin::scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
@@ -354,7 +346,7 @@ void Auxwin::scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     EventType       event_type = EventType::MouseScroll;
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
-    input_events.emplace(window, event_type, mouse_scroll);
+    input_events.emplace(window, event_type, mouse_scroll, cursor);
 }
 void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
 
@@ -393,7 +385,7 @@ void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
     }
 
 
-    input_events.emplace(window, event_type, keystroke_event);
+    input_events.emplace(window, event_type, keystroke_event, cursor);
 }
 
 }

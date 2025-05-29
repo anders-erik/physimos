@@ -24,13 +24,12 @@ struct GLFWWindow;
 namespace scene {
 
 
-
-
-struct CursorScene2D {
-    f2 viewport_sane; // [0,window_width]x[0,window_height] [pixels]
-    f2 viewport_norm; // [0,1]x[0,1] [unitless]
-    f2 scene; // [box.left,box.right]x[box.bottom, box.top] [scene_units]
-    void set_cursor_pos(f2 pos_sane, f2 pos_norm, Box2D camera_box);
+/** Cursor movement event in normalized viewport coordinated. Usually recieved from over of scene.
+    [0,1]x[0,1] [unitless]
+ */
+struct PointerMovement2D {
+    f2 pos_prev; // Position of the cursor during previous frame
+    f2 pos_curr; // Current cursor position
 };
 
 
@@ -45,7 +44,6 @@ class Scene2D {
     
     Camera2D camera;
 
-    CursorScene2D cursor_scene;
     bool panable = false; // Scene can be panned, usually with middle mouse button pressed
 
     opengl::Scene2DRenderer renderer2D;
@@ -67,6 +65,9 @@ public:
 
 
     void handle_input(window::InputEvent input_event);
+    void handle_pointer_move(PointerMovement2D cursor_event);
+    void handle_scroll(float delta);
+
     void update();
 
     void render_window();
@@ -76,6 +77,7 @@ public:
     void add_quad(ShapeS2D& quad_);
     void add_shape(Shape& shape);
 
+    void print();
 };
 
 

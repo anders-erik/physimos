@@ -32,8 +32,6 @@ Box2D box; // Camera size and offset in scene coordinates.
 
 float AR = 1.0f; // Aspect Ratio
 float zoom_factor = 1.1f;   // Rate at which scrolling change zoom level
-float scene_per_sane = 0.0f; // Number of scene units per sane window units.
-
 
 public:
 

@@ -117,6 +117,9 @@ class Win2D {
 	// std::vector<scene::ShapeS2D> quads;
 	scene::QuadS2D quad0;
 
+	// To be replaced with Lender tag
+	scene::Scene2D* cursor_owner = nullptr;
+
 	f2 window_size_f;
 	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
 	std::vector<window::InputEvent> input_events;
@@ -128,10 +131,13 @@ public:
 	scene::Scene2D& add_subscene(f2 pos_normalized, f2 size_normalized);
 	void set_window_size(f2 size);
 
-	// launch window and transfer control
-	void open();
-        void start_frame();
+	// transfer control to Win2D by entering main rendering loop
+	void start_loop();
+    // Set up new frame and handle input
+	void start_frame();
 
+	void input_scroll(InputEvent& event);
+	void input_mouse_move(InputEvent& event);
 	void process_input(InputEvent & event);
 
 private:
@@ -164,7 +170,7 @@ scene::Scene2D& Win2D::add_subscene(f2 pos_normalized, f2 size_normalized){
 	scene.set_window_norm_box(pos_normalized, size_normalized);
 
 	// quad0.set_dims({10.0f, 10.0f}, {100.0f, 100.0f});
-	quad0.set_dims({50.0f, 400.0f}, {window_size_f.x/5.0f, window_size_f.y/5.0f});
+	quad0.set_box({50.0f, 200.0f}, {window_size_f.x/3.0f, window_size_f.y/3.0f});
 	renderer.create_context_quad_t(quad0.get_rendering_context(), quad0.get_verts());
 
 	return scene;
@@ -177,12 +183,14 @@ void Win2D::set_window_size(f2 size){
 }
 
 
-void Win2D::open(){
+void Win2D::start_loop(){
 
 	while (auxwin.end_frame()){
 		start_frame();
 
 		scene::Scene2D& scene = scenes[0];
+		
+		// scene.print();
 
 		// UPDATE
 		scene.update();
@@ -203,28 +211,64 @@ void Win2D::open(){
 }
 
 
+
+void Win2D::input_scroll(InputEvent & event){
+	MouseScrollEvent& scroll_event = event.mouse_scroll;
+	// Only one scene at the moment
+	scene::Scene2D& scene = scenes[0];
+	if(quad0.contains_cursor(event.cursor.sane)){
+		// std::cout << "SCROLL IN SCENE" << std::endl;
+		scene.handle_scroll(scroll_event.delta);
+	}
+	// camera.zoom(event.mouse_scroll.delta);
+
+}
+
+void Win2D::input_mouse_move(InputEvent & event){
+	// MouseMoveEvent& mouse_movement = event.mouse_movement;
+	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
+	CursorPosition& cursor = event.cursor;
+
+	scene::Scene2D& scene = scenes[0];
+
+	if(quad0.contains_cursor(cursor.sane)){
+
+		// Convert to normalized quad coordinates (= normal. subscene coords.)
+		scene::PointerMovement2D pointer_movement;
+		pointer_movement.pos_prev = quad0.get_normalized_from_point(cursor_prev.sane);
+		pointer_movement.pos_curr = quad0.get_normalized_from_point(cursor.sane);
+
+		scene.handle_pointer_move( pointer_movement );
+	}
+}
+
+
 void Win2D::process_input(InputEvent& event){
+		
+	// Only one scene at the moment
+	scene::Scene2D& scene = scenes[0];
 
-        // Only one scene at the moment
-        scene::Scene2D& scene = scenes[0];
+	switch (event.type){
 
-        switch (event.type){
+	case EventType::WindowResize:
+		window_size_f = event.window_resize.size_f;
+		reload_camera_root();
+		// scene.set_window_size(event.window_resize.size_f);
+		break;
 
-        case EventType::WindowResize:
-				window_size_f = event.window_resize.size_f;
-				reload_camera_root();
-                // scene.set_window_size(event.window_resize.size_f);
-                break;
+	case EventType::MouseMove:
+		input_mouse_move(event);
+		break;
 
-        case EventType::MouseMove:
-                scene.handle_input(event);
-                break;
-        
-        default:
-                // std::cout << "WARN: unhandled input event" << std::endl;
-                scene.handle_input(event);
-                break;
-        }
+	case EventType::MouseScroll:
+		input_scroll(event);
+		break;
+	
+	default:
+		// std::cout << "WARN: unhandled input event" << std::endl;
+		scene.handle_input(event);
+		break;
+	}
 
 }
 
@@ -233,8 +277,8 @@ void Win2D::start_frame(){
 
 	input_events = auxwin.new_frame();
 
-        for(InputEvent& event : input_events)
-                process_input(event);
+	for(InputEvent& event : input_events)
+		process_input(event);
 
 }
 
@@ -270,7 +314,7 @@ int main()
 
 
 	
-	win2D.open();
+	win2D.start_loop();
 
 	return 0;
 }
