@@ -356,9 +356,9 @@
             "options": {
                 "cwd": 
                 
-                // "${workspaceFolder}",
+                "${workspaceFolder}",
                 // "${workspaceFolder}/src/lib",
-                "${workspaceFolder}/src/file_format/json",
+                // "${workspaceFolder}/src/file_format/json",
 
 
                 "env": {

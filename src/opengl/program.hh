@@ -16,6 +16,10 @@ namespace opengl {
 
         Texture2D,
 
+        ui_color,
+        ui_string,
+        ui_texture,
+
         ModelColor,
         ModelTexture,
         Axes,

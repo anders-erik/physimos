@@ -283,6 +283,9 @@ void m4f4::rotate_z(float angle){
 float * m4f4::pointer(){
     return (float*) this;
 }
+const float * m4f4::pointer_const() const{
+    return (float const*) this;
+}
 
 
 void m4f4::perspective(float fov, float width, float height, float zn, float zf){

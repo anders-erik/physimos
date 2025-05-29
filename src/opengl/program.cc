@@ -15,6 +15,10 @@ unsigned int program_vector;
 unsigned int program_texture_2d;
 unsigned int program_ndc_black;
 
+unsigned int program_ui_color;
+unsigned int program_ui_string;
+unsigned int program_ui_texture;
+
 
 
 void gpu_use_program(Programs program_enum){
@@ -43,6 +47,16 @@ void gpu_use_program(Programs program_enum){
 
         case Programs::Vector:
             glUseProgram(program_vector);
+            break;
+
+        case Programs::ui_color:
+            glUseProgram(program_ui_color);
+            break;
+        case Programs::ui_string:
+            glUseProgram(program_ui_string);
+            break;
+        case Programs::ui_texture:
+            glUseProgram(program_ui_texture);
             break;
         
         default:
@@ -74,6 +88,16 @@ unsigned int gpu_get_program(Programs program_enum){
 
         case Programs::Vector:
             program = program_vector;
+            break;
+
+        case Programs::ui_color:
+            program = program_ui_color;
+            break;
+        case Programs::ui_string:
+            program = program_ui_string;
+            break;
+        case Programs::ui_texture:
+            program = program_ui_texture;
             break;
         
         default:
@@ -158,6 +182,26 @@ unsigned int build_program_vert_frag(Programs program_enum){
         frag_str = physimos_root_dir + "/src/opengl/shaders/vector.frag";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_vector = new_program;
+        break;
+
+
+    case Programs::ui_color :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/color_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/color_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        program_ui_color = new_program;
+        break;
+    case Programs::ui_string :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/color_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/color_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        program_ui_string = new_program;
+        break;
+    case Programs::ui_texture :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/texture_vert.glsl";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/texture_frag.glsl";
+        new_program = build_program_vert_frag(vert_str, frag_str);
+        program_ui_texture = new_program;
         break;
 
 
