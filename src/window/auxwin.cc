@@ -294,25 +294,26 @@ void Auxwin::mouse_button_callback(GLFWwindow *window, int button, int action, i
     EventType event_type = EventType::MouseButton;
     MouseButtonEvent mouse_button_event;
 
-
-    if(button == GLFW_MOUSE_BUTTON_MIDDLE){
-
+    if(action == GLFW_PRESS)
+        mouse_button_event.action = ButtonAction::Press;
+    else if (action == GLFW_RELEASE)
+        mouse_button_event.action = ButtonAction::Release;
+    
+    if(button == GLFW_MOUSE_BUTTON_MIDDLE)
         mouse_button_event.button = MouseButton::Middle;
+    else if (button == GLFW_MOUSE_BUTTON_LEFT)
+        mouse_button_event.button = MouseButton::Left;
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+        mouse_button_event.button = MouseButton::Right;
 
-        if(action == GLFW_PRESS){
-            
+    // CURSOR IMAGE
+    if(mouse_button_event.button == MouseButton::Middle){
+        if(mouse_button_event.action == ButtonAction::Press)
             glfwSetCursor(window, pan_cursor);
-
-            mouse_button_event.action = ButtonAction::Press;
-        }
-        else if (action == GLFW_RELEASE){
-
+        else if (mouse_button_event.action == ButtonAction::Release)
             glfwSetCursor(window, default_cursor);
-
-            mouse_button_event.action = ButtonAction::Release;
-        }
-
     }
+
     
     input_events.emplace(window, event_type, mouse_button_event, cursor);
 }

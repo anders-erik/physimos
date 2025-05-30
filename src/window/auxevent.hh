@@ -60,6 +60,17 @@ enum ButtonAction {
 struct MouseButtonEvent {
     MouseButton button;
     ButtonAction action;
+
+    bool is_middle_down(){
+        if(button == MouseButton::Middle && action == ButtonAction::Press)
+            return true;
+        return false;
+    }
+    bool is_middle_up(){
+        if(button == MouseButton::Middle && action == ButtonAction::Release)
+            return true;
+        return false;
+    }
 };
 
 

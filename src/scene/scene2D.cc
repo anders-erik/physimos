@@ -40,10 +40,6 @@ void Scene2D::set_window_size(f2 size){
     camera.set_window_size_px(size);
 }
 
-void Scene2D::set_window_norm_box(f2 pos_normalized, f2 size_normalized){
-    window_norm_box_pos = pos_normalized;
-    window_norm_box_size = size_normalized;
-}
 
 void Scene2D::init_frame(){
     frame.verts = ShapeS2D::generate_quad_line_frame_verts_0505(opengl::texture_get_color_coordinate(opengl::TextureColors::Green));
@@ -51,7 +47,7 @@ void Scene2D::init_frame(){
 }
 
 
-void Scene2D::add_quad(scene::ShapeS2D& quad_){
+void Scene2D::add_shape_quad(scene::ShapeS2D& quad_){
     renderer2D.create_context_quad_t(quad_.render_context, quad_.verts_6);
     quads.push_back(quad_);
 }
@@ -241,6 +237,17 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
     };
 
     // pos_scene.print("Pointer [scene]:");
+}
+
+void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
+
+    window::MouseButtonEvent button_event = pointer_click.button_event;
+
+    if(!panable && button_event.is_middle_down())
+        panable = true;
+    else if(panable && button_event.is_middle_up())
+        panable = false;
+    
 }
 
 void Scene2D::handle_scroll(float delta){

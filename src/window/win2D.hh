@@ -4,6 +4,7 @@
 #include "window/auxwin.hh"
 
 #include "scene/scene2D.hh"
+#include "scene/subscene2D.hh"
 #include "scene/shapeS2D.hh"
 
 
@@ -15,25 +16,24 @@ using namespace window;
 */
 class Win2D {
 	window::Auxwin auxwin;
+	f2 window_size_f;
 
 	scene::Camera2D camera_root; // Always displays the root scene filling the window
 	opengl::Scene2DRenderer renderer;
+	
+	std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Win2D
+	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
 	// std::vector<scene::ShapeS2D> quads;
 	scene::QuadS2D quad0;
 
 	// To be replaced with BC tag
 	scene::Scene2D* cursor_owner = nullptr;
 
-	f2 window_size_f;
-	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
 	std::vector<window::InputEvent> input_events;
 
 public:
 
 	Win2D(f2 window_size);
-
-	scene::Scene2D& add_subscene(f2 pos_normalized, f2 size_normalized);
-	void set_window_size(f2 size);
 
 	// transfer control to Win2D by entering main rendering loop
 	void start_loop();
@@ -42,10 +42,19 @@ public:
 
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);
+	void input_mouse_button(InputEvent& event);
 	void process_input(InputEvent & event);
+	
+	void set_window_size(f2 size);
+
+	scene::SubScene2D& add_subscene(f2 pos_normalized, f2 size_normalized);
+
 
 private:
 	void reload_camera_root();
 	void render_root();
+
+	f2 transform_normalized_to_window(f2 normalized);
+	f2 transform_window_to_normalized(f2 window);
 };
 

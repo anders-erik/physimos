@@ -31,6 +31,10 @@ struct PointerMovement2D {
     f2 pos_prev; // Position of the cursor during previous frame
     f2 pos_curr; // Current cursor position
 };
+struct PointerClick2D {
+    f2 pos_scene_normal; // Position of the cursor during previous frame
+    window::MouseButtonEvent button_event;
+};
 
 
 /** Represents a wireframe used to highlight scene objects. */
@@ -48,9 +52,6 @@ public:
 class Scene2D {
 
     f2 window_size_f;
-
-    f2 window_norm_box_pos;
-    f2 window_norm_box_size;
     
     Camera2D camera;
 
@@ -78,11 +79,10 @@ public:
 
     f2 get_window_size();
     void set_window_size(f2 size);
-    void set_window_norm_box(f2 pos_normalized, f2 size_normalized);
-
 
     void handle_input(window::InputEvent input_event);
     void handle_pointer_move(PointerMovement2D cursor_event);
+    void handle_pointer_click(PointerClick2D pointer_click);
     void handle_scroll(float delta);
 
     void update();
@@ -93,7 +93,7 @@ public:
     // Create the initial frame rendering conetxt
     void init_frame();
 
-    void add_quad(ShapeS2D& quad_);
+    void add_shape_quad(ShapeS2D& quad_);
     void add_shape(Shape& shape);
 
     void print();
