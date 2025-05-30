@@ -59,7 +59,7 @@ void add_glyph_quads_to_scene(scene::Scene2D& scene){
 
 	phont::Glyph A_multi { phont::Glyph( 'A', {15, 24} ) };;
 	scene::ShapeS2D quad_A_multi;
-		
+
 	A_multi.generate_multisample();
 	// renderer2D.create_context(quad_A_multi);
 	quad_A_multi.render_context.texture = A_multi.text_framebuff_multi.resolvedTexture;
@@ -163,6 +163,12 @@ int main()
 	Shape point_to_draw = Shape::create(shape_t::point);
 	point_to_draw.move(f2{8.0f, 4.0f});
 	root_scene_0.add_shape(point_to_draw);
+
+	Shape line_to_draw = Shape::create(shape_t::line);
+	line_to_draw.move(f2{6.0f, 6.0f});
+	root_scene_0.add_shape(line_to_draw);
+
+
 
 	add_glyph_quads_to_scene(root_scene_0);
 

@@ -1,14 +1,13 @@
 
-add_subdirectory(
-    geometry
-)
-
 add_library(math
     vec3.cc
     Math.cc
 
     vecmat.cc
     transform.cc
+
+    shape.cc
+    box2D.cc
 )
 
 target_include_directories(math PUBLIC 

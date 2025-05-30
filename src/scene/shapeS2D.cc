@@ -13,7 +13,7 @@ using namespace opengl;
 ShapeS2D::ShapeS2D() : shape {Shape::create(shape_t::triangle)}{
 
 
-    verts_6 = generate_quad();
+    verts_6 = generate_quad_verts_c05();
 
 
     // float width_pixels  = 20.0f;
@@ -24,9 +24,9 @@ ShapeS2D::ShapeS2D() : shape {Shape::create(shape_t::triangle)}{
     
 }
 
-ShapeS2D::ShapeS2D(Shape& shape) : shape {shape} {
-    
-    Vertex2DT v_tmp;
+ShapeS2D::ShapeS2D(Shape& shape) 
+    : shape {shape} 
+{
     
     std::vector<f2>& shape_points = shape.get_points();
     
@@ -34,25 +34,45 @@ ShapeS2D::ShapeS2D(Shape& shape) : shape {shape} {
 
     // Create vertices
     if(shape.is(shape_t::point))
-        create_point(shape_points[0]);
+        create_point_vertices(shape_points[0]);
     else if(shape.is(shape_t::line))
-        create_line(shape_points[0], shape_points[1]);
+        create_line_vertices(shape_points[0], shape_points[1]);
     else
-        create_fan(shape_points);
+        create_fan_vertices(shape_points);
 
 }
 
-void ShapeS2D::create_point(f2 point){
-    Vertex2DT v_tmp = {{point.x, point.y, 0.0f}, this->text_coord};
-    verts.push_back(v_tmp);
+void ShapeS2D::create_point_vertices(f2 point){
+
+    std::array<Vertex2DT, 6> quad_verts = generate_quad_verts_c0(point, 0.1, this->text_coord);
+
+    verts_render.push_back(quad_verts[0]);
+    verts_render.push_back(quad_verts[1]);
+    verts_render.push_back(quad_verts[2]);
+    verts_render.push_back(quad_verts[3]);
+    verts_render.push_back(quad_verts[4]);
+    verts_render.push_back(quad_verts[5]);
+
+    // Vertex2DT v_lower_left = {{point.x-0.5, point.y-0.5, 0.0f}, this->text_coord};
+    // verts_render.push_back(v_lower_left);
+    // Vertex2DT v_lower_right = {{point.x+0.5, point.y-0.5, 0.0f}, this->text_coord};
+    // verts_render.push_back(v_lower_right);
+    
+    // Vertex2DT v_upper_left = {{point.x-0.5, point.y+0.5, 0.0f}, this->text_coord};
+    // verts_render.push_back(v_upper_left);
+    // Vertex2DT v_upper_right = {{point.x+0.5, point.y+0.5, 0.0f}, this->text_coord};
+    // verts_render.push_back(v_upper_right);
+    
 }
-void ShapeS2D::create_line(f2 p1, f2 p2){
-    Vertex2DT v1 = {{p1.x, p1.y, 0.0f}, {0.0f, 0.0f}};
-    verts.push_back(v1);
-    Vertex2DT v2 = {{p2.x, p2.y, 0.0f}, {0.0f, 0.0f}};
-    verts.push_back(v2);
+void ShapeS2D::create_line_vertices(f2 p1, f2 p2){
+
+    Vertex2DT v1 = {{p1.x, p1.y, 0.0f}, this->text_coord};
+    Vertex2DT v2 = {{p2.x, p2.y, 0.0f}, this->text_coord};
+    verts_render.push_back(v1);
+    verts_render.push_back(v2);
+    
 }
-void ShapeS2D::create_fan(std::vector<f2>& points){
+void ShapeS2D::create_fan_vertices(std::vector<f2>& points){
 
     Vertex2DT v0 = {{points[0].x, points[0].y, 0.0f}, {0.0f, 0.0f}};
 
@@ -62,9 +82,9 @@ void ShapeS2D::create_fan(std::vector<f2>& points){
         Vertex2DT v_i =  {{points[i].x, points[i].y, 0.0f}, {0.0f, 0.0f}};
         Vertex2DT v_ip1 =  {{points[i+1].x, points[i+1].y, 0.0f}, {0.0f, 0.0f}};
         
-        verts.push_back(v0);
-        verts.push_back(v_i);
-        verts.push_back(v_ip1);
+        verts_render.push_back(v0);
+        verts_render.push_back(v_i);
+        verts_render.push_back(v_ip1);
     }
 
 }
@@ -123,7 +143,8 @@ void ShapeS2D::set_dims(float window_width, float window_height, float width_pix
     
 }
 
-std::array<Vertex2DT, 6> ShapeS2D::generate_quad(){
+std::array<opengl::Vertex2DT, 6> ShapeS2D::generate_quad_verts_c05(){
+
     std::array<Vertex2DT, 6> verts;
 
     Vertex2DT v0;  // Lower left
@@ -165,7 +186,93 @@ std::array<Vertex2DT, 6> ShapeS2D::generate_quad(){
 
     return verts;
 }
+std::array<opengl::Vertex2DT, 6> ShapeS2D::generate_quad_verts_c0(f2 center, float scale, f2 texture_coord){
 
+    std::array<Vertex2DT, 6> verts;
+
+    Vertex2DT v0;  // Lower left
+    v0.pos.x = center.x - 0.5*scale;
+    v0.pos.y = center.y - 0.5f*scale;
+    v0.pos.z = 0.0f;
+    v0.tex = texture_coord;
+
+    Vertex2DT v1;  // Lower right
+    v1.pos.x = center.x + 0.5f*scale;
+    v1.pos.y = center.y - 0.5f*scale;
+    v1.pos.z = 0.0f;
+    v1.tex = texture_coord;
+
+    Vertex2DT v2;  // Upper right
+    v2.pos.x = center.x + 0.5f*scale;
+    v2.pos.y = center.y + 0.5f*scale;
+    v2.pos.z = 0.0f;
+    v2.tex = texture_coord;
+
+    Vertex2DT v3;  // Upper left
+    v3.pos.x = center.x - 0.5f*scale;
+    v3.pos.y = center.y + 0.5f*scale;
+    v3.pos.z = 0.0f;
+    v3.tex = texture_coord;
+
+    // Low Right triangle
+    verts[0] = v0;
+    verts[1] = v1;
+    verts[2] = v2;
+    // Upper left triangle
+    verts[3] = v0;
+    verts[4] = v2;
+    verts[5] = v3;
+
+    return verts;
+}
+
+std::array<opengl::Vertex2DT,8> ShapeS2D::generate_quad_line_frame_verts_0505(f2 texture_coord){
+
+    std::array<Vertex2DT, 8> verts;
+
+    f2 center = {0.0f, 0.0f};
+    float scale = 1;
+
+    Vertex2DT v0;  // Lower left
+    v0.pos.x = center.x - 0.5*scale;
+    v0.pos.y = center.y - 0.5f*scale;
+    v0.pos.z = 0.0f;
+    v0.tex = texture_coord;
+
+    Vertex2DT v1;  // Lower right
+    v1.pos.x = center.x + 0.5f*scale;
+    v1.pos.y = center.y - 0.5f*scale;
+    v1.pos.z = 0.0f;
+    v1.tex = texture_coord;
+
+    Vertex2DT v2;  // Upper right
+    v2.pos.x = center.x + 0.5f*scale;
+    v2.pos.y = center.y + 0.5f*scale;
+    v2.pos.z = 0.0f;
+    v2.tex = texture_coord;
+
+    Vertex2DT v3;  // Upper left
+    v3.pos.x = center.x - 0.5f*scale;
+    v3.pos.y = center.y + 0.5f*scale;
+    v3.pos.z = 0.0f;
+    v3.tex = texture_coord;
+
+    
+
+    verts[0] = v0;
+    verts[1] = v1;
+
+    verts[2] = v1;
+    verts[3] = v2;
+    
+    verts[4] = v2;
+    verts[5] = v3;
+
+    verts[6] = v3;
+    verts[7] = v0;
+
+    return verts;
+}
 
 
 
@@ -173,7 +280,7 @@ std::array<Vertex2DT, 6> ShapeS2D::generate_quad(){
 
 QuadS2D::QuadS2D(){
 
-    verts_6 = QuadS2D::generate_quad();
+    verts_6 = QuadS2D::generate_quad_verts_c05();
 
 }
 
@@ -233,7 +340,7 @@ f2 QuadS2D::get_normalized_from_point(f2 cursor_pos_scene_coords){
     return normalized_coords;
 }
 
-std::array<Vertex2DT, 6> QuadS2D::generate_quad(){
+std::array<Vertex2DT, 6> QuadS2D::generate_quad_verts_c05(){
     std::array<Vertex2DT, 6> verts;
 
     Vertex2DT v0;  // Lower left

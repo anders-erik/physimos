@@ -49,7 +49,7 @@ void Win2D::start_loop(){
 		scene.update();
 
 		// RENDER
-		quad0.set_texture_id(scene.render_texture());
+		quad0.set_texture_id(scene.render_to_texture());
 
 		auxwin.bind_framebuffer();
 		// scene.set_window_size(window_size_f);

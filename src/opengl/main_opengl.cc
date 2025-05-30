@@ -11,7 +11,7 @@
 #include "opengl/texture.hh"
 #include "opengl/renderer2D.hh"
 
-#include "math/geometry/shape.hh"
+#include "math/shape.hh"
 
 
 window::InputEvent input_event;

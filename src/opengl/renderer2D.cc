@@ -51,6 +51,31 @@ void Scene2DRenderer::create_shape_context_t(ShapeS2DRenderContext& render_conte
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void Scene2DRenderer::create_wire_quad_context_t(ShapeS2DRenderContext & render_context, std::array<Vertex2DT,8> verts){
+
+    render_context.texture = opengl::texture_get_id(opengl::Textures::Colors);
+
+	glGenVertexArrays(1, &render_context.VAO);
+	glGenBuffers(1, &render_context.VBO);
+
+	glBindVertexArray(render_context.VAO);
+
+
+    size_t buffer_size = verts.size() *sizeof(Vertex2DT);
+	glBindBuffer(GL_ARRAY_BUFFER, render_context.VBO);
+    glBufferData(GL_ARRAY_BUFFER, buffer_size, verts.data(), GL_STATIC_DRAW);
+    
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex2DT), (void *)0);
+	glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2DT), (void *)(sizeof(f3)));
+	glEnableVertexAttribArray(1);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 void Scene2DRenderer::create_context_quad_t(ShapeS2DRenderContext& render_context, std::array<Vertex2DT, 6> verts){
 
     // unsigned int render_context.VAO, VBO, EBO;
@@ -98,12 +123,45 @@ void Scene2DRenderer::render_point(ShapeS2DRenderContext context){
     this->activate();
 
     glPointSize(10);
+    glLineWidth(3);
 
     glBindTexture(GL_TEXTURE_2D, context.texture);
     
     glBindVertexArray(context.VAO);
 
-    glDrawArrays(GL_POINTS, 0, 1);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    // glDrawArrays(GL_LINES, 0, 6);
+    // glDrawArrays(GL_POINTS, 0, 6);
+}
+
+void Scene2DRenderer::render_line(ShapeS2DRenderContext context){
+    this->activate();
+
+    glPointSize(10);
+    glLineWidth(3);
+
+    glBindTexture(GL_TEXTURE_2D, context.texture);
+    
+    glBindVertexArray(context.VAO);
+
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_LINES, 0, 2);
+    // glDrawArrays(GL_POINTS, 0, 6);
+}
+
+void Scene2DRenderer::render_frame(ShapeS2DRenderContext frame_context){
+    this->activate();
+
+    glPointSize(10);
+    glLineWidth(3);
+
+    glBindTexture(GL_TEXTURE_2D, frame_context.texture);
+    
+    glBindVertexArray(frame_context.VAO);
+
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_LINES, 0, 8);
+    // glDrawArrays(GL_POINTS, 0, 6);
 }
 
 

@@ -10,17 +10,13 @@
 #include "window/auxwin.hh"
 
 #include "math/vecmat.hh"
-#include "math/geometry/shape.hh"
+#include "math/shape.hh"
+#include "math/box2D.hh"
 
 #include "scene/camera2D.hh"
 
 #include "phont/phont.hh"
 
-
-struct Box2D {
-    f2 pos;
-    f2 size;
-};
 
 
 namespace scene {
@@ -28,7 +24,7 @@ namespace scene {
 
 struct ShapeS2D {
     m3f3 M_m_s;
-    std::vector<opengl::Vertex2DT> verts;
+    std::vector<opengl::Vertex2DT> verts_render;
     Shape shape;
     opengl::TextureColors texture_color = opengl::TextureColors::LightGray;
     f2 text_coord; // Texture coordinate for coloring texture
@@ -42,9 +38,9 @@ struct ShapeS2D {
     ShapeS2D();
     ShapeS2D(Shape &shape);
 
-    void create_point(f2 point);
-    void create_line(f2 p1, f2 p2);
-    void create_fan(std::vector<f2>& points);
+    void create_point_vertices(f2 point); // Create unit square around point
+    void create_line_vertices(f2 p1, f2 p2);
+    void create_fan_vertices(std::vector<f2>& points);
 
     bool is_point();
     bool is_line();
@@ -56,7 +52,11 @@ struct ShapeS2D {
 
     void set_dims(float window_width, float window_height, float width_pixels, float height_pixels);
 
-    static std::array<opengl::Vertex2DT, 6> generate_quad();
+    // Unit Quad verts centered at 0.5. ([0,1]x[0,1])
+    static std::array<opengl::Vertex2DT, 6> generate_quad_verts_c05();
+    // Generate unit square centered at zero and scale and shift according to parameters.
+    static std::array<opengl::Vertex2DT,6> generate_quad_verts_c0(f2 center, float scale, f2 texture_coord);
+    static std::array<opengl::Vertex2DT,8> generate_quad_line_frame_verts_0505(f2 texture_coord);
 
 };
 
@@ -84,7 +84,7 @@ struct QuadS2D {
     void set_texture(opengl::Textures texture);
     void set_texture_id(unsigned int id);
 
-    static std::array<opengl::Vertex2DT, 6> generate_quad();
+    static std::array<opengl::Vertex2DT, 6> generate_quad_verts_c05();
 
 };
 

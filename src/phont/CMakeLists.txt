@@ -1,9 +1,7 @@
 
-
 set(PHONT 
     phont.cc
 )
-
 
 
 add_library(phont ${PHONT})
@@ -26,7 +24,6 @@ target_link_libraries(main_phont
 
     window
     math
-    geometry
 
     lib
     opengl

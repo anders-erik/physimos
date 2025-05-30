@@ -59,6 +59,7 @@ struct f2 {
     f2() = default;
 
     void operator+=(const f2& rhs);
+    void operator+=(float scalar);
     f2&& operator+(const f2& rhs);
     f2 operator-(const f2& rhs);
 

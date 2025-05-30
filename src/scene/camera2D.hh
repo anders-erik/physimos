@@ -4,34 +4,28 @@
 
 #include "math/vecmat.hh"
 #include "math/transform.hh"
+#include "math/box2D.hh"
 
 
 namespace scene {
 
 
-struct Box2D {
-    f2 pos;
-    f2 size;
-
-    void print();
-};
-
 
 /** Captures [0, 1]x[0, 1/AR]x[-1, 1] by default. */
 class Camera2D {
 
-m3f3 M_s_ndc;   // Complete matrix: from scene coordinate to NDC. Constructed by the M's below
+    m3f3 M_s_ndc;   // Complete matrix: from scene coordinate to NDC. Constructed by the M's below
 
-m3f3 t_M_s_c;   // translate: scene to camera
-m3f3 s_M_c_ndc; // scale: camera to NDC
-m3f3 t_M_c_ndc; // translate: camera to NDC
+    m3f3 t_M_s_c;   // translate: scene to camera
+    m3f3 s_M_c_ndc; // scale: camera to NDC
+    m3f3 t_M_c_ndc; // translate: camera to NDC
 
 
-f2 window_size_px;
-Box2D box; // Camera size and offset in scene coordinates.
+    f2 window_size_px;
+    Box2D box; // Camera size and offset in scene coordinates.
 
-float AR = 1.0f; // Aspect Ratio
-float zoom_factor = 1.1f;   // Rate at which scrolling change zoom level
+    float AR = 1.0f; // Aspect Ratio
+    float zoom_factor = 1.1f;   // Rate at which scrolling change zoom level
 
 public:
 

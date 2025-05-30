@@ -10,7 +10,7 @@
 #include "window/auxwin.hh"
 
 #include "math/vecmat.hh"
-#include "math/geometry/shape.hh"
+#include "math/shape.hh"
 
 #include "scene/camera2D.hh"
 #include "scene/shapeS2D.hh"
@@ -33,6 +33,16 @@ struct PointerMovement2D {
 };
 
 
+/** Represents a wireframe used to highlight scene objects. */
+class BoxFrame2D : Box2D {
+
+public:
+    m3f3 M_m_s;
+    std::array<opengl::Vertex2DT, 8> verts; // Vertices for wireframe highlighting
+    opengl::ShapeS2DRenderContext render_context;  // Rendering context for wireframe highlighting
+
+};
+
 
 
 class Scene2D {
@@ -47,6 +57,12 @@ class Scene2D {
     bool panable = false; // Scene can be panned, usually with middle mouse button pressed
 
     opengl::Scene2DRenderer renderer2D;
+
+    /** Represents a wireframe used to highlight scene objects. */
+    BoxFrame2D frame;
+    ShapeS2D* current_target;
+    
+
     std::vector<ShapeS2D> quads;
 
     std::vector<ShapeS2D> points;
@@ -72,8 +88,10 @@ public:
     void update();
 
     void render_window();
-    unsigned int render_texture();
+    unsigned int render_to_texture();
 
+    // Create the initial frame rendering conetxt
+    void init_frame();
 
     void add_quad(ShapeS2D& quad_);
     void add_shape(Shape& shape);

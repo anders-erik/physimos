@@ -18,6 +18,8 @@ Scene2D::Scene2D(f2 _window_size)
 
     set_window_size(_window_size);
 
+    // FRAME
+    init_frame();
 
     camera.set_window_size_px(window_size_f);
     camera.set_width(10.0f);
@@ -43,6 +45,11 @@ void Scene2D::set_window_norm_box(f2 pos_normalized, f2 size_normalized){
     window_norm_box_size = size_normalized;
 }
 
+void Scene2D::init_frame(){
+    frame.verts = ShapeS2D::generate_quad_line_frame_verts_0505(opengl::texture_get_color_coordinate(opengl::TextureColors::Green));
+    renderer2D.create_wire_quad_context_t(frame.render_context, frame.verts);
+}
+
 
 void Scene2D::add_quad(scene::ShapeS2D& quad_){
     renderer2D.create_context_quad_t(quad_.render_context, quad_.verts_6);
@@ -53,7 +60,7 @@ void Scene2D::add_shape(Shape& shape){
 
     scene::ShapeS2D new_shape_S2D = scene::ShapeS2D{shape};
 
-    renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts);
+    renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
 
     if(shape.is(shape_t::point))
         points.push_back(new_shape_S2D);
@@ -72,6 +79,9 @@ void Scene2D::update(){
 
     for(scene::ShapeS2D& point : points)
         point.transform_2d.set_matrix_model();
+
+    // for(scene::ShapeS2D& line : lines)
+    //     line.transform_2d.set_matrix_model();
 
 }
 
@@ -95,7 +105,7 @@ void Scene2D::render_window(){
 }
 
 
-unsigned int Scene2D::render_texture(){
+unsigned int Scene2D::render_to_texture(){
 
     framebuffer.multisample_fbo_bind();
     framebuffer.multisample_fbo_clear_red();
@@ -114,6 +124,21 @@ unsigned int Scene2D::render_texture(){
         renderer2D.set_model(point.get_matrix());
         renderer2D.render_point(point.render_context);
     }
+
+    for(scene::ShapeS2D& line : lines){
+        renderer2D.set_model(line.get_matrix());
+        renderer2D.render_line(line.render_context);
+    }
+
+    // FRAME
+    frame.M_m_s.x.x = 2.0f;
+    frame.M_m_s.y.y = 1.0f;
+    frame.M_m_s.x.z = 7.0f;
+    frame.M_m_s.y.z = 6.0f;
+
+    renderer2D.set_model(frame.M_m_s);
+    renderer2D.render_frame(frame.render_context);
+
 
     framebuffer.blit();
 
@@ -208,10 +233,13 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
     // PRINT POINTER POSITIONS
 
     // pointer_movement.pos_curr.print("Pointer [norm]:");
-    // f2 pos_scene = {
-    //     camera_box.pos.x + pointer_movement.pos_curr.x * camera_box.size.x, 
-    //     camera_box.pos.y + pointer_movement.pos_curr.y * camera_box.size.y
-    // };
+    
+    // Current position of cursor in scene coordinates
+    f2 pos_scene = {
+        camera_box.pos.x + pointer_movement.pos_curr.x * camera_box.size.x, 
+        camera_box.pos.y + pointer_movement.pos_curr.y * camera_box.size.y
+    };
+
     // pos_scene.print("Pointer [scene]:");
 }
 

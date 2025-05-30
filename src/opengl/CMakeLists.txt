@@ -26,7 +26,6 @@ target_link_libraries(opengl
     model
     math
     window
-    geometry
 )
 
 add_executable(main_opengl
