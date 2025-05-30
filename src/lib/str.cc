@@ -102,6 +102,23 @@ Str& Str::operator+=(Str&& rhs){
     return *this;
 }
 
+Str& Str::operator+=(Str & rhs){
+    this->append(rhs);
+    return *this;
+}
+
+Str Str::operator+(Str&& rhs){
+    Str new_str = *this;
+    new_str.append(rhs);
+    return new_str;
+}
+
+Str Str::operator+(Str& rhs){
+    Str new_str = *this;
+    new_str.append(rhs);
+    return new_str;
+}
+
 
 Str& Str::operator=(const Str& other) // = delete; // {
 {

@@ -42,7 +42,7 @@ opengl::Texture Glyph::get_texture(){
 
 void Glyph::generate(){
 
-    opengl::gpu_use_program(opengl::Programs::ndc_black);
+    opengl::gpu_use_program(opengl::ProgramName::ndc_black);
 
     render_context.vertex_count = mesh_glyph.faces.size() * 3;
 
@@ -76,7 +76,7 @@ void Glyph::generate(){
 
 void Glyph::generate_multisample(){
 
-    opengl::gpu_use_program(opengl::Programs::ndc_black);
+    opengl::gpu_use_program(opengl::ProgramName::ndc_black);
 
     render_context.vertex_count = mesh_glyph.faces.size() * 3;
 

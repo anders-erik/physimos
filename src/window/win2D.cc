@@ -11,7 +11,7 @@ Win2D::Win2D(f2 window_size_f)
 
 	reload_camera_root();
 
-	opengl::build_program_vert_frag(opengl::Programs::ndc_black);
+	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
 
 
 }

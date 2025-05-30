@@ -13,7 +13,7 @@ namespace opengl {
 void RendererModelTexture::init(){
     // program = opengl::
     // opengl::build_program_vert_frag(Programs::Model)
-    program = opengl::build_program_vert_frag(Programs::ModelTexture);
+    program = opengl::build_program_vert_frag(ProgramName::ModelTexture);
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -34,7 +34,7 @@ void RendererModelTexture::init(){
 
 void RendererModelTexture::set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat){
     // glUseProgram(program);
-    opengl::gpu_use_program(Programs::ModelTexture);
+    opengl::gpu_use_program(ProgramName::ModelTexture);
 
     glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_TRUE, (float*) &persective_mat);
     glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, (float*) &view_mat);

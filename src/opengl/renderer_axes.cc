@@ -25,9 +25,9 @@ namespace opengl {
 
 void RendererAxes::init(){
 
-    opengl::build_program_vert_frag(opengl::Programs::Axes);
+    opengl::build_program_vert_frag(opengl::ProgramName::Axes);
 
-    unsigned int program = opengl::gpu_get_program(opengl::Programs::Axes);
+    unsigned int program = opengl::gpu_get_program(opengl::ProgramName::Axes);
     glUseProgram(program);
 
     transform_location = glGetUniformLocation(program, "transform");
@@ -74,7 +74,7 @@ void RendererAxes::init(){
 }
 void RendererAxes::set_uniforms(m4f4 transform_mat, m4f4 view_mat, m4f4 pers_mat){
 
-    opengl::gpu_use_program(opengl::Programs::Axes);
+    opengl::gpu_use_program(opengl::ProgramName::Axes);
 
     glUniformMatrix4fv(transform_location, 1, GL_TRUE, (float*) &transform_mat);
     glUniformMatrix4fv(view_location, 1, GL_TRUE, (float*) &view_mat);
@@ -83,7 +83,7 @@ void RendererAxes::set_uniforms(m4f4 transform_mat, m4f4 view_mat, m4f4 pers_mat
 }
 void RendererAxes::render(){
 
-    opengl::gpu_use_program(opengl::Programs::Axes);
+    opengl::gpu_use_program(opengl::ProgramName::Axes);
 
     glBindVertexArray(vao);
 

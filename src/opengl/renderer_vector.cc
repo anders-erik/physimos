@@ -18,7 +18,7 @@ void RendererVector::init() {
 
 
 
-    program = build_program_vert_frag(Programs::Vector);
+    program = build_program_vert_frag(ProgramName::Vector);
 
 
     glUseProgram(program);
@@ -99,7 +99,7 @@ void RendererVector::set_project_view_matrix(m4f4 project_mat, m4f4 view_mat){
 void RendererVector::render(f3 vector, f3 translation){
 
     // PROGRAM
-    opengl::gpu_use_program(Programs::Vector);
+    opengl::gpu_use_program(ProgramName::Vector);
 
     // UNIFORMS
     glUniform3fv(glGetUniformLocation(program, "vector"), 3, (float*) &vector);

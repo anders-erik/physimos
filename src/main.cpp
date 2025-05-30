@@ -7,6 +7,8 @@
 #include "lib/process.hh"
 #include "conductor.hh"
 
+#include "opengl/shader.hh"
+#include "opengl/program.hh"
 
 
 int main()
@@ -28,6 +30,14 @@ int main()
 
 
 	conductor_rouse();
+
+	// opengl::Shader ui_color_vert {"ui/color.vert"};
+	// ui_color_vert.compile();
+	// opengl::Shader ui_color_frag {"ui/color.frag"};
+	// ui_color_frag.compile();
+
+	opengl::Program ui_color = {"ui/color"};
+	
 	conductor_conduct();
 	
 

@@ -26,7 +26,7 @@ struct RenderContextModelColor {
 
 
 struct RendererModelColor {
-    opengl::Programs renderer_program = opengl::Programs::ModelColor;
+    opengl::ProgramName renderer_program = opengl::ProgramName::ModelColor;
     
 
     unsigned int transform_location;

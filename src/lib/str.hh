@@ -20,7 +20,7 @@ struct Str {
 
     Str();
     Str(unsigned int string_size);
-    Str(char * str_mem, unsigned int string_size);
+    // Str(char * str_mem, unsigned int string_size);
     Str(unsigned int string_size, char initialization_value);
     Str(const char *c_str);
 
@@ -32,6 +32,9 @@ struct Str {
     char operator[](size_t index);
 
     Str& operator+=(Str&& rhs);
+    Str& operator+=(Str& rhs);
+    Str operator+(Str&& rhs);
+    Str operator+(Str& rhs);
 
     Str& operator=(const Str& other);
     Str& operator=(Str&& other);

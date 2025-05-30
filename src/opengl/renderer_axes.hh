@@ -21,7 +21,7 @@ struct AxesVertex {
 };
 
 struct RendererAxes {
-    opengl::Programs renderer_program = opengl::Programs::Axes;
+    opengl::ProgramName renderer_program = opengl::ProgramName::Axes;
 
     unsigned int vao;
     unsigned int vbo;

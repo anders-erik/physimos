@@ -1,5 +1,6 @@
 
 add_library(opengl
+    shader.cc
     program.cc
     texture.cc
     error.cc
@@ -26,6 +27,8 @@ target_link_libraries(opengl
     model
     math
     window
+    glad
+    ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
 )
 
 add_executable(main_opengl

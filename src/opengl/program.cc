@@ -19,43 +19,105 @@ unsigned int program_ui_color;
 unsigned int program_ui_string;
 unsigned int program_ui_texture;
 
+// ProgramPaths ui_color_ = {"ui/color"};
 
 
-void gpu_use_program(Programs program_enum){
+Program::Program(Str name_str) 
+    :   name_str {name_str}
+{
+
+    shader_vert.type = Shader::Type::Vertex;
+    shader_frag.type = Shader::Type::Fragment;
+    
+    Str vert_path = core_path + name_str + ".vert";
+    Str frag_path = core_path + name_str + ".frag";
+    
+    shader_vert.set_full_core_path(vert_path);
+    shader_frag.set_full_core_path(frag_path);
+
+    build();
+
+}
+unsigned int Program::build(){
+    
+    shader_vert.compile();
+    shader_frag.compile();
+
+    link();
+
+    shader_vert.delete_shader_id();
+    shader_frag.delete_shader_id();
+    
+    return id;
+}
+
+unsigned int Program::link(){
+    
+    // shader Program
+    id = glCreateProgram(); //Creates a program object
+    glAttachShader(id, shader_vert.get_shader_id());
+    glAttachShader(id, shader_frag.get_shader_id());
+    glLinkProgram(id);
+    check_link_error();
+
+    
+    return id;
+}
+void Program::check_link_error(){
+
+    int success;
+    char infoLog[1024];
+
+    glGetProgramiv(id, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(id, 1024, NULL, infoLog);
+        plib::plog_error("DRAW ", "SHADER_PROGRAM ", "Failed to link DrawShader program. : InfoLog = " + std::string(infoLog));
+    }
+}
+
+unsigned int Program::get_program_id(){
+    return id;
+}
+void Program::use(){
+    glUseProgram(id);
+}
+
+
+void gpu_use_program(ProgramName program_enum){
 
     switch (program_enum){
 
-        case Programs::ModelColor:
+        case ProgramName::ModelColor:
             glUseProgram(program_model_color);
             break;
         
-        case Programs::ModelTexture:
+        case ProgramName::ModelTexture:
             glUseProgram(program_model_texture);
             break;
         
-        case Programs::Texture2D:
+        case ProgramName::Texture2D:
             glUseProgram(program_texture_2d);
             break;
         
-        case Programs::ndc_black:
+        case ProgramName::ndc_black:
             glUseProgram(program_ndc_black);
             break;
 
-        case Programs::Axes:
+        case ProgramName::Axes:
             glUseProgram(program_axes);
             break;
 
-        case Programs::Vector:
+        case ProgramName::Vector:
             glUseProgram(program_vector);
             break;
 
-        case Programs::ui_color:
+        case ProgramName::ui_color:
             glUseProgram(program_ui_color);
             break;
-        case Programs::ui_string:
+        case ProgramName::ui_string:
             glUseProgram(program_ui_string);
             break;
-        case Programs::ui_texture:
+        case ProgramName::ui_texture:
             glUseProgram(program_ui_texture);
             break;
         
@@ -65,38 +127,38 @@ void gpu_use_program(Programs program_enum){
     
 }
 
-unsigned int gpu_get_program(Programs program_enum){
+unsigned int gpu_get_program(ProgramName program_enum){
     unsigned int program;
 
     switch (program_enum){
 
-        case Programs::ModelColor:
+        case ProgramName::ModelColor:
             program = program_model_color;
             break;
         
-        case Programs::ModelTexture:
+        case ProgramName::ModelTexture:
             program = program_model_texture;
             break;
 
-        case Programs::Texture2D:
+        case ProgramName::Texture2D:
             program = program_texture_2d;
             break;
 
-        case Programs::Axes:
+        case ProgramName::Axes:
             program = program_axes;
             break;
 
-        case Programs::Vector:
+        case ProgramName::Vector:
             program = program_vector;
             break;
 
-        case Programs::ui_color:
+        case ProgramName::ui_color:
             program = program_ui_color;
             break;
-        case Programs::ui_string:
+        case ProgramName::ui_string:
             program = program_ui_string;
             break;
-        case Programs::ui_texture:
+        case ProgramName::ui_texture:
             program = program_ui_texture;
             break;
         
@@ -107,7 +169,7 @@ unsigned int gpu_get_program(Programs program_enum){
     return program;
 }
 
-unsigned int build_program_vert_frag(Programs program_enum){
+unsigned int build_program_vert_frag(ProgramName program_enum){
 
     unsigned int new_program;
 
@@ -119,65 +181,65 @@ unsigned int build_program_vert_frag(Programs program_enum){
     switch (program_enum)
     {
 
-    case Programs::phont_texture :
+    case ProgramName::phont_texture :
         vert_str = physimos_root_dir + "/src/phont/shaders/phont_texture_vert.glsl";
         frag_str = physimos_root_dir + "/src/phont/shaders/phont_texture_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
-    case Programs::phont_char :
+    case ProgramName::phont_char :
         vert_str = physimos_root_dir + "/src/phont/shaders/phont_char_vert.glsl";
         frag_str = physimos_root_dir + "/src/phont/shaders/phont_char_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
-    case Programs::Texture2D :
+    case ProgramName::Texture2D :
         vert_str = physimos_root_dir + "/src/opengl/shaders/2D/texture_vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/2D/texture_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
-    case Programs::ndc_texture :
+    case ProgramName::ndc_texture :
         vert_str = physimos_root_dir + "/src/opengl/shaders/ndc/texture_vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/ndc/texture_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
-    case Programs::ndc_black :
+    case ProgramName::ndc_black :
         vert_str = physimos_root_dir + "/src/opengl/shaders/ndc/vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/ndc/black_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_ndc_black = new_program;
         break;
 
-    case Programs::ndc_white :
+    case ProgramName::ndc_white :
         vert_str = physimos_root_dir + "/src/opengl/shaders/ndc/vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/ndc/white_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
-    case Programs::ModelColor :
+    case ProgramName::ModelColor :
         vert_str = physimos_root_dir + "/src/opengl/shaders/model_editor_vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/model_editor_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_model_color = new_program;
         break;
 
-    case Programs::ModelTexture :
+    case ProgramName::ModelTexture :
         vert_str = physimos_root_dir + "/src/opengl/shaders/model_texture_vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/model_texture_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_model_texture = new_program;
         break;
 
-    case Programs::Axes :
+    case ProgramName::Axes :
         vert_str = physimos_root_dir + "/src/opengl/shaders/axes_vert.glsl";
         frag_str = physimos_root_dir + "/src/opengl/shaders/axes_frag.glsl";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_axes = new_program;
         break;
 
-    case Programs::Vector :
+    case ProgramName::Vector :
         vert_str = physimos_root_dir + "/src/opengl/shaders/vector.vert";
         frag_str = physimos_root_dir + "/src/opengl/shaders/vector.frag";
         new_program = build_program_vert_frag(vert_str, frag_str);
@@ -185,21 +247,21 @@ unsigned int build_program_vert_frag(Programs program_enum){
         break;
 
 
-    case Programs::ui_color :
-        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/color_vert.glsl";
-        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/color_frag.glsl";
+    case ProgramName::ui_color :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/color.vert";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/color.frag";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_ui_color = new_program;
         break;
-    case Programs::ui_string :
-        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/color_vert.glsl";
-        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/color_frag.glsl";
+    case ProgramName::ui_string :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/color.vert";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/color.frag";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_ui_string = new_program;
         break;
-    case Programs::ui_texture :
-        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/texture_vert.glsl";
-        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/texture_frag.glsl";
+    case ProgramName::ui_texture :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/ui/texture.vert";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/ui/texture.frag";
         new_program = build_program_vert_frag(vert_str, frag_str);
         program_ui_texture = new_program;
         break;

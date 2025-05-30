@@ -23,6 +23,8 @@
 #include "ui/uic/uic_primitive_list.hh"
 #include "ui/uic/uic_primitive_list_editor.hh"
 
+#include "opengl/rendererUI.hh"
+
 
 #include "Input.hpp"
 #include "Windowing.hpp"
@@ -226,6 +228,14 @@ void update_window(PhysWin physimos_window) {
 
     viewport_width = physimos_window.logical.w;
     viewport_height = physimos_window.logical.h;
+
+    opengl::RendererUI& renderer_ui = opengl::get_renderer_ui();
+    renderer_ui.set_window_info(
+        physimos_window.raw.w,
+        physimos_window.raw.h,
+        physimos_window.xscale,
+        physimos_window.yscale
+    );
     
     // SHADER TRANSFORM
     shader::texture_shader.set_window_info(

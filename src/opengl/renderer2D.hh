@@ -34,7 +34,7 @@ struct ShapeS2DRenderContext {
 
 
 class Scene2DRenderer {
-    opengl::Programs shader = opengl::Programs::Texture2D;
+    opengl::ProgramName shader = opengl::ProgramName::Texture2D;
     unsigned int program; // opengl id for renderer
 
 public:

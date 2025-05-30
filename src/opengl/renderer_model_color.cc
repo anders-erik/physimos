@@ -13,9 +13,9 @@ namespace opengl {
 void RendererModelColor::init(){
     // gpu_build_vert_frag_program(shader_enum);
 
-    opengl::build_program_vert_frag(opengl::Programs::ModelColor);
+    opengl::build_program_vert_frag(opengl::ProgramName::ModelColor);
 
-    unsigned int program = gpu_get_program(opengl::Programs::ModelColor);
+    unsigned int program = gpu_get_program(opengl::ProgramName::ModelColor);
 
     transform_location = glGetUniformLocation(program, "transform");
     view_location = glGetUniformLocation(program, "view");
@@ -56,7 +56,7 @@ void RendererModelColor::create_render_context(RenderContextModelColor& context,
 
 void RendererModelColor::set_camera_uniforms(m4f4 view_mat, m4f4 pers_mat){
 
-    gpu_use_program(opengl::Programs::ModelColor);
+    gpu_use_program(opengl::ProgramName::ModelColor);
 
     // unsigned int program = gpu_get_program(Shader::Model);
 

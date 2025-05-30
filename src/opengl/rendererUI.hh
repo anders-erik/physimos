@@ -24,11 +24,7 @@ enum UIType {
 };
 
 
-struct UIColorProgram {
-
-    UIType type = UIType::Color;
-    opengl::Programs name = opengl::Programs::ui_color;
-    unsigned int id;
+class UIColorProgram : public Program {
 
     unsigned int vao;
     unsigned int vbo;
@@ -39,21 +35,34 @@ struct UIColorProgram {
     unsigned char color4Loc;
     unsigned char darknessShiftLoc;
 
-    m4f4 viewport_transform;
+public:
+
+    UIColorProgram() : Program("ui/color") {};
+
+    UIType type = UIType::Color;
+
+    void init();
+    void set_viewport_transform(m4f4 _viewport_transform);
+
+
+    void draw() const;
+    void set(float* primitive_transform_4x4, float _darkness_shift, UI::Color color4) const;
 };
 
 
 
 class RendererUI {
 
+    // Shared matrix across ui shader programs
+    m4f4 viewport_transform;
 
-    UIColorProgram color_program;
+    UIColorProgram program_color;
 
 
-    opengl::Programs program_string = opengl::Programs::ui_string;
+    opengl::ProgramName program_string = opengl::ProgramName::ui_string;
     unsigned int program_string_id;
 
-    opengl::Programs program_texture = opengl::Programs::ui_texture;
+    opengl::ProgramName program_texture = opengl::ProgramName::ui_texture;
     unsigned int program_texture_id;
 
 
@@ -62,14 +71,14 @@ public:
     RendererUI();
 
     void activate(UIType type);
+    void set_window_info(float width, float height, float _xscale, float _yscale);
 
+
+    // COLOR
     void color_set(float* primitive_transform_4x4, float _darkness_shift, UI::Color color4) const;
     void color_draw() const;
 
 
-private:
-
-    void init_color();
 
 };
 

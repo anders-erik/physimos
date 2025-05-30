@@ -16,7 +16,9 @@
 
 #include "process.hh"
 #include "log.hh"
+#include "str.hh"
 
+#include <fstream>
 #include <filesystem>
 
 
@@ -24,6 +26,8 @@ struct File {
 
     std::string physimos_core_path;
     std::string relative_path;
+
+    Str relative_path_str;
 
     bool use_core_path = false;
 
@@ -39,6 +43,34 @@ struct File {
         // std::cout << file_contents << std::endl;
         
     };
+
+    File() = default;
+    File(Str relative_path_str) : relative_path_str {relative_path_str} {
+
+        std::string physiomos_dir = physimos_root_dir_or_die();
+
+        relative_path = relative_path_str.to_std_string();
+
+        physimos_core_path = physiomos_dir + "/" + relative_path;
+        
+    };
+    Str copy_as_str_core(){
+
+        use_core_path = true;
+        successful_read = false;
+
+        std::string std_string = cat_file_as_string();
+
+        return Str{std_string.c_str()};
+    }
+    void set_path_core(Str& path_str){
+        relative_path_str = path_str;
+        std::string physiomos_dir = physimos_root_dir_or_die();
+        relative_path = relative_path_str.to_std_string();
+        physimos_core_path = physiomos_dir + "/" + relative_path;
+    }
+
+
 
     std::string copy_as_string_core(){
         use_core_path = true;
@@ -59,9 +91,9 @@ struct File {
 
         std::string return_string;
 
-        const char* file_path = path_str.c_str();
+        // const char* file_path = path_str.c_str();
 
-        char buffer[1024];
+        // char buffer[1024];
 
     #ifdef PH_WINDOWS
 
