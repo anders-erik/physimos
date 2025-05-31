@@ -37,20 +37,21 @@ public:
 
     SubScene2D(f2 framebuffer_size) : scene {Scene2D(framebuffer_size)} {};
 
+    QuadS2D& get_quad();
+
     // QUAD CALLS
     void set_box(f2 pos, f2 size);
     bool contains_cursor(f2 pos_scene);
     f2 get_normalized_from_point(f2 pos_scene);
     m3f3 get_matrix();
-    opengl::ShapeS2DRenderContext& get_rendering_context();
-    std::array<opengl::Vertex2DT, 6>& get_verts();
+    opengl::RenderContextQuadS2D& get_rendering_context();
     void set_texture_id(unsigned int id);
 
     // SCENE CALLS
-    void add_shape(Shape& shape);
-    void add_shape_quad(ShapeS2D& quad);
+    ShapeS2D& add_shape(Shape& shape);
+    void add_quad(scene::QuadS2D& quad);
     void update();
-    unsigned int render_to_texture();
+    unsigned int render();
     void handle_scroll(float delta);
     void handle_pointer_move(scene::PointerMovement2D pointer_movement);
     void handle_pointer_click(PointerClick2D pointer_click);

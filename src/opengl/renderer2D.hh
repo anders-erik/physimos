@@ -10,49 +10,86 @@
 #include "opengl/program.hh"
 
 
+namespace scene {
+
+class QuadS2D;
+
+}
+
 namespace opengl {
 
 
-struct Vertex2DT {
+struct VertexQuad2D {
     f3 pos;
     f2 tex;
 };
 
-struct ShapeS2DRenderContext {
+class RenderContextQuadS2D {
+
+    void init();
+
+public:
+
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
 
     unsigned int texture;
 
+    void delete_contents();
+
+    RenderContextQuadS2D();
+    RenderContextQuadS2D(unsigned int texture_id);
+
+    void set_texture_id(unsigned int texture_id);
+
+    // Quad as two triangles of unit dimensions ( [0,1]x[0,1] ), thus center at (0.5, 0.5).
+    static std::array<opengl::VertexQuad2D, 6> generate_quad_verts_c05();
+};
+
+
+struct RenderContextShapeS2D {
+    unsigned int VAO;
+    unsigned int VBO;
+
+    unsigned int texture;
+    f2 tex_coord;
+
     int element_count;
 
-    void delete_contents();
 };
 
 
 
 
 class Scene2DRenderer {
-    opengl::ProgramName shader = opengl::ProgramName::Texture2D;
-    unsigned int program; // opengl id for renderer
+
+    opengl::ProgramName program_name_enum = opengl::ProgramName::Texture2D;
+    unsigned int program; // opengl id for renderer -- only one program currently
 
 public:
+
     Scene2DRenderer();
 
-    void create_context_quad_t(ShapeS2DRenderContext& render_context, std::array<Vertex2DT, 6> verts);
-    void create_shape_context_t(ShapeS2DRenderContext& render_context, std::vector<Vertex2DT> verts);
-    void create_wire_quad_context_t(ShapeS2DRenderContext& render_context, std::array<Vertex2DT, 8> verts);
+    void create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts);
+    void create_wire_quad_context_t(RenderContextQuadS2D& render_context, std::array<VertexQuad2D, 8> verts);
+
 
     void activate();
     void set_camera(m3f3 camera);
     void set_model(m3f3 model_mat);
 
-    void render_quad(ShapeS2DRenderContext context);
-    void render_point(ShapeS2DRenderContext context);
-    void render_line(ShapeS2DRenderContext context);
-    void render_frame(ShapeS2DRenderContext frame_context);
-    void render_multisample_texture(ShapeS2DRenderContext context);
+    // Render real quads
+    void render_quad(scene::QuadS2D& quad);
+
+
+    void render_point(RenderContextQuadS2D context);
+    void render_line(RenderContextQuadS2D context);
+
+    void render_frame(RenderContextQuadS2D frame_context);
+
+    // OLD UNUSED
+    void render_multisample_texture(RenderContextQuadS2D context);
     
 };
 

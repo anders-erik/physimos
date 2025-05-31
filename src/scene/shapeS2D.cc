@@ -12,14 +12,6 @@ using namespace opengl;
 
 ShapeS2D::ShapeS2D() : shape {Shape::create(shape_t::triangle)}{
 
-
-    verts_6 = generate_quad_verts_c05();
-
-
-    // float width_pixels  = 20.0f;
-    // float height_pixels = 30.0f;
-
-    // set_dims(window_width, window_height, width_pixels, height_pixels);
     
     
 }
@@ -44,7 +36,7 @@ ShapeS2D::ShapeS2D(Shape& shape)
 
 void ShapeS2D::create_point_vertices(f2 point){
 
-    std::array<Vertex2DT, 6> quad_verts = generate_quad_verts_c0(point, 0.1, this->text_coord);
+    std::array<VertexQuad2D, 6> quad_verts = generate_quad_verts_c0(point, 0.1, this->text_coord);
 
     verts_render.push_back(quad_verts[0]);
     verts_render.push_back(quad_verts[1]);
@@ -66,21 +58,21 @@ void ShapeS2D::create_point_vertices(f2 point){
 }
 void ShapeS2D::create_line_vertices(f2 p1, f2 p2){
 
-    Vertex2DT v1 = {{p1.x, p1.y, 0.0f}, this->text_coord};
-    Vertex2DT v2 = {{p2.x, p2.y, 0.0f}, this->text_coord};
+    VertexQuad2D v1 = {{p1.x, p1.y, 0.0f}, this->text_coord};
+    VertexQuad2D v2 = {{p2.x, p2.y, 0.0f}, this->text_coord};
     verts_render.push_back(v1);
     verts_render.push_back(v2);
     
 }
 void ShapeS2D::create_fan_vertices(std::vector<f2>& points){
 
-    Vertex2DT v0 = {{points[0].x, points[0].y, 0.0f}, {0.0f, 0.0f}};
+    VertexQuad2D v0 = {{points[0].x, points[0].y, 0.0f}, {0.0f, 0.0f}};
 
     // create triangles with v0 as the connecting vertex
     for(size_t i = 1; i < points.size(); i++){
 
-        Vertex2DT v_i =  {{points[i].x, points[i].y, 0.0f}, {0.0f, 0.0f}};
-        Vertex2DT v_ip1 =  {{points[i+1].x, points[i+1].y, 0.0f}, {0.0f, 0.0f}};
+        VertexQuad2D v_i =  {{points[i].x, points[i].y, 0.0f}, {0.0f, 0.0f}};
+        VertexQuad2D v_ip1 =  {{points[i+1].x, points[i+1].y, 0.0f}, {0.0f, 0.0f}};
         
         verts_render.push_back(v0);
         verts_render.push_back(v_i);
@@ -97,118 +89,49 @@ bool ShapeS2D::is_line(){
 }
 
 
-void ShapeS2D::set_texture(f2 text_coord){
-
-
+void ShapeS2D::set_texture(unsigned int texture_id){
+    render_context.texture = texture_id;
 }
 
 m3f3 ShapeS2D::get_matrix(){
     return M_m_s;
 }
 
-
-void ShapeS2D::set_dims(float window_width, float window_height, float width_pixels, float height_pixels){
-
-
-
-    float x_center_ndc = 0.0f;
-    float y_center_ndc = 0.0f;
-
-    float width_ndc_per_pixel = (2.0f / window_width);
-    float height_ndc_per_pixel = (2.0f / window_height);
-
-    float width_ndc = width_pixels * width_ndc_per_pixel;
-    float height_ndc = height_pixels * height_ndc_per_pixel;
-
-
-    // Lower left
-    verts_6[0].pos.x = x_center_ndc - width_ndc / 2;
-    verts_6[0].pos.y = y_center_ndc - height_ndc / 2;
-    // Lower right
-    verts_6[1].pos.x = x_center_ndc + width_ndc / 2;
-    verts_6[1].pos.y = y_center_ndc - height_ndc / 2;
-    // Upper right
-    verts_6[2].pos.x = x_center_ndc + width_ndc / 2;
-    verts_6[2].pos.y = y_center_ndc + height_ndc / 2;
-
-    // Lower left
-    verts_6[3].pos.x = x_center_ndc - width_ndc / 2;
-    verts_6[3].pos.y = y_center_ndc - height_ndc / 2;
-    // Upper right
-    verts_6[4].pos.x = x_center_ndc + width_ndc / 2;
-    verts_6[4].pos.y = y_center_ndc + height_ndc / 2;
-    // Upper left
-    verts_6[5].pos.x = x_center_ndc - width_ndc / 2;
-    verts_6[5].pos.y = y_center_ndc + height_ndc / 2;
-    
+void ShapeS2D::set_pos(f2 pos){
+    M_m_s.x.z = pos.x;
+    M_m_s.y.z = pos.y;
 }
 
-std::array<opengl::Vertex2DT, 6> ShapeS2D::generate_quad_verts_c05(){
-
-    std::array<Vertex2DT, 6> verts;
-
-    Vertex2DT v0;  // Lower left
-    v0.pos.x = 0.0f;
-    v0.pos.y = 0.0f;
-    v0.pos.z = 0.0f;
-    v0.tex.x = 0.0f;
-    v0.tex.y = 0.0f;
-
-    Vertex2DT v1;  // Lower right
-    v1.pos.x = 1.0f;
-    v1.pos.y = 0.0f;
-    v1.pos.z = 0.0f;
-    v1.tex.x = 1.0f;
-    v1.tex.y = 0.0f;
-
-    Vertex2DT v2;  // Upper right
-    v2.pos.x = 1.0f;
-    v2.pos.y = 1.0f;
-    v2.pos.z = 0.0f;
-    v2.tex.x = 1.0f;
-    v2.tex.y = 1.0f;
-
-    Vertex2DT v3;  // Upper left
-    v3.pos.x = 0.0f;
-    v3.pos.y = 1.0f;
-    v3.pos.z = 0.0f;
-    v3.tex.x = 0.0f;
-    v3.tex.y = 1.0f;
-
-    // Low Right triangle
-    verts[0] = v0;
-    verts[1] = v1;
-    verts[2] = v2;
-    // Upper left triangle
-    verts[3] = v0;
-    verts[4] = v2;
-    verts[5] = v3;
-
-    return verts;
+void ShapeS2D::set_size(f2 size){
+    M_m_s.x.x = size.x;
+    M_m_s.y.y = size.y;
 }
-std::array<opengl::Vertex2DT, 6> ShapeS2D::generate_quad_verts_c0(f2 center, float scale, f2 texture_coord){
 
-    std::array<Vertex2DT, 6> verts;
 
-    Vertex2DT v0;  // Lower left
+
+std::array<opengl::VertexQuad2D, 6> ShapeS2D::generate_quad_verts_c0(f2 center, float scale, f2 texture_coord){
+
+    std::array<VertexQuad2D, 6> verts;
+
+    VertexQuad2D v0;  // Lower left
     v0.pos.x = center.x - 0.5*scale;
     v0.pos.y = center.y - 0.5f*scale;
     v0.pos.z = 0.0f;
     v0.tex = texture_coord;
 
-    Vertex2DT v1;  // Lower right
+    VertexQuad2D v1;  // Lower right
     v1.pos.x = center.x + 0.5f*scale;
     v1.pos.y = center.y - 0.5f*scale;
     v1.pos.z = 0.0f;
     v1.tex = texture_coord;
 
-    Vertex2DT v2;  // Upper right
+    VertexQuad2D v2;  // Upper right
     v2.pos.x = center.x + 0.5f*scale;
     v2.pos.y = center.y + 0.5f*scale;
     v2.pos.z = 0.0f;
     v2.tex = texture_coord;
 
-    Vertex2DT v3;  // Upper left
+    VertexQuad2D v3;  // Upper left
     v3.pos.x = center.x - 0.5f*scale;
     v3.pos.y = center.y + 0.5f*scale;
     v3.pos.z = 0.0f;
@@ -226,32 +149,32 @@ std::array<opengl::Vertex2DT, 6> ShapeS2D::generate_quad_verts_c0(f2 center, flo
     return verts;
 }
 
-std::array<opengl::Vertex2DT,8> ShapeS2D::generate_quad_line_frame_verts_0505(f2 texture_coord){
+std::array<opengl::VertexQuad2D,8> ShapeS2D::generate_quad_line_frame_verts_0505(f2 texture_coord){
 
-    std::array<Vertex2DT, 8> verts;
+    std::array<VertexQuad2D, 8> verts;
 
     f2 center = {0.0f, 0.0f};
     float scale = 1;
 
-    Vertex2DT v0;  // Lower left
+    VertexQuad2D v0;  // Lower left
     v0.pos.x = center.x - 0.5*scale;
     v0.pos.y = center.y - 0.5f*scale;
     v0.pos.z = 0.0f;
     v0.tex = texture_coord;
 
-    Vertex2DT v1;  // Lower right
+    VertexQuad2D v1;  // Lower right
     v1.pos.x = center.x + 0.5f*scale;
     v1.pos.y = center.y - 0.5f*scale;
     v1.pos.z = 0.0f;
     v1.tex = texture_coord;
 
-    Vertex2DT v2;  // Upper right
+    VertexQuad2D v2;  // Upper right
     v2.pos.x = center.x + 0.5f*scale;
     v2.pos.y = center.y + 0.5f*scale;
     v2.pos.z = 0.0f;
     v2.tex = texture_coord;
 
-    Vertex2DT v3;  // Upper left
+    VertexQuad2D v3;  // Upper left
     v3.pos.x = center.x - 0.5f*scale;
     v3.pos.y = center.y + 0.5f*scale;
     v3.pos.z = 0.0f;
@@ -276,111 +199,5 @@ std::array<opengl::Vertex2DT,8> ShapeS2D::generate_quad_line_frame_verts_0505(f2
 
 
 
-
-
-QuadS2D::QuadS2D(){
-
-    verts_6 = QuadS2D::generate_quad_verts_c05();
-
-}
-
-m3f3 QuadS2D::get_matrix(){
-    return M_m_s;
-}
-
-void QuadS2D::set_box(f2 pos, f2 size){
-    box.pos = {pos.x, pos.y};
-    box.size = {size.x, size.y};
-
-    M_m_s.x.z = pos.x;
-    M_m_s.y.z = pos.y;
-
-    M_m_s.x.x = size.x;
-    M_m_s.y.y = size.y;
-}
-
-void QuadS2D::set_texture(opengl::Textures texture){
-    render_context.texture = opengl::texture_get_id(texture);
-}
-
-void QuadS2D::set_texture_id(unsigned int id){
-    render_context.texture = id;
-}
-opengl::ShapeS2DRenderContext& QuadS2D::get_rendering_context(){
-    return render_context;
-}
-
-std::array<opengl::Vertex2DT,6>& QuadS2D::get_verts(){
-    return verts_6;
-}
-
-bool QuadS2D::contains_cursor(f2 cursor_pos_scene_coords){
-    // using cursor_p = cursor_pos_scene_coords;
-    
-    // Managable name
-    f2 cursor_pos = cursor_pos_scene_coords;
-
-    bool x_passed = cursor_pos.x > box.pos.x && cursor_pos.x < (box.pos.x + box.size.x);
-
-    bool y_passed = cursor_pos.y > box.pos.y && (cursor_pos.y < (box.pos.y + box.size.y));
-
-    if(x_passed && y_passed)
-            return true;
-
-    return false;
-}
-
-f2 QuadS2D::get_normalized_from_point(f2 cursor_pos_scene_coords){
-    
-    f2 normalized_coords;
-
-    normalized_coords.x = (cursor_pos_scene_coords.x - M_m_s.x.z) / M_m_s.x.x;
-    normalized_coords.y = (cursor_pos_scene_coords.y - M_m_s.y.z) / M_m_s.y.y;
-        
-    return normalized_coords;
-}
-
-std::array<Vertex2DT, 6> QuadS2D::generate_quad_verts_c05(){
-    std::array<Vertex2DT, 6> verts;
-
-    Vertex2DT v0;  // Lower left
-    v0.pos.x = 0.0f;
-    v0.pos.y = 0.0f;
-    v0.pos.z = 0.0f;
-    v0.tex.x = 0.0f;
-    v0.tex.y = 0.0f;
-
-    Vertex2DT v1;  // Lower right
-    v1.pos.x = 1.0f;
-    v1.pos.y = 0.0f;
-    v1.pos.z = 0.0f;
-    v1.tex.x = 1.0f;
-    v1.tex.y = 0.0f;
-
-    Vertex2DT v2;  // Upper right
-    v2.pos.x = 1.0f;
-    v2.pos.y = 1.0f;
-    v2.pos.z = 0.0f;
-    v2.tex.x = 1.0f;
-    v2.tex.y = 1.0f;
-
-    Vertex2DT v3;  // Upper left
-    v3.pos.x = 0.0f;
-    v3.pos.y = 1.0f;
-    v3.pos.z = 0.0f;
-    v3.tex.x = 0.0f;
-    v3.tex.y = 1.0f;
-
-    // Low Right triangle
-    verts[0] = v0;
-    verts[1] = v1;
-    verts[2] = v2;
-    // Upper left triangle
-    verts[3] = v0;
-    verts[4] = v2;
-    verts[5] = v3;
-
-    return verts;
-}
 
 }

@@ -13,6 +13,7 @@ set(SCENE_OBJS
     scene2D.cc
     camera2D.cc
     shapeS2D.cc
+    quadS2D.cc
     subscene2D.cc
 )
 

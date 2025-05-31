@@ -11,6 +11,12 @@
 namespace scene {
 
 
+QuadS2D & SubScene2D::get_quad(){
+    return quad;
+}
+
+
+
 // QUAD CALLS
 void SubScene2D::set_box(f2 pos, f2 size){
     quad.set_box(pos, size);
@@ -24,11 +30,8 @@ f2 SubScene2D::get_normalized_from_point(f2 pos_scene){
 m3f3 SubScene2D::get_matrix(){
     return quad.get_matrix();
 }
-opengl::ShapeS2DRenderContext& SubScene2D::get_rendering_context(){
+opengl::RenderContextQuadS2D& SubScene2D::get_rendering_context(){
     return quad.get_rendering_context();
-}
-std::array<opengl::Vertex2DT, 6>& SubScene2D::get_verts(){
-    return quad.get_verts();
 }
 void SubScene2D::set_texture_id(unsigned int id){
     quad.set_texture_id(id);
@@ -36,16 +39,16 @@ void SubScene2D::set_texture_id(unsigned int id){
 
 
 
-void SubScene2D::add_shape(Shape& shape){
-    scene.add_shape(shape);
+ShapeS2D& SubScene2D::add_shape(Shape& shape){
+    return scene.add_shape(shape);
 }
-void SubScene2D::add_shape_quad(ShapeS2D& quad){
-    scene.add_shape_quad(quad);
+void SubScene2D::add_quad(scene::QuadS2D& quad){
+    scene.add_quad(quad);
 }
 void SubScene2D::update(){
     scene.update();
 }
-unsigned int SubScene2D::render_to_texture(){
+unsigned int SubScene2D::render(){
     return scene.render_to_texture();
 }
 void SubScene2D::handle_scroll(float delta){

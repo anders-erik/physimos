@@ -34,11 +34,6 @@ scene::SubScene2D& Win2D::add_subscene(f2 pos_normalized, f2 size_normalized){
 	scene::SubScene2D& new_subscene = subscenes.emplace_back(size_window);
 	new_subscene.set_box(pos_window, size_window);
 
-	renderer.create_context_quad_t(
-		new_subscene.get_rendering_context(), 
-		new_subscene.get_verts()
-	);
-
 	return new_subscene;
 }
 
@@ -65,7 +60,7 @@ void Win2D::start_loop(){
 
 		// RENDER
 		// quad0.set_texture_id(scene.render_to_texture());
-		subscenes[0].set_texture_id(subscenes[0].render_to_texture());
+		subscenes[0].set_texture_id(subscenes[0].render());
 
 		auxwin.bind_framebuffer();
 		// scene.set_window_size(window_size_f);
@@ -179,10 +174,9 @@ void Win2D::reload_camera_root(){
 }
 void Win2D::render_root(){
 	auxwin.bind_framebuffer();
+
 	renderer.activate();
-	// renderer.set_model(quad0.get_matrix());
-	// renderer.render_quad(quad0.get_rendering_context());
-	renderer.set_model(subscenes[0].get_matrix());
-	renderer.render_quad(subscenes[0].get_rendering_context());
+	renderer.render_quad(subscenes[0].get_quad());
+
 }
 

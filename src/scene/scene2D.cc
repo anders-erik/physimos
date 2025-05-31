@@ -47,34 +47,46 @@ void Scene2D::init_frame(){
 }
 
 
-void Scene2D::add_shape_quad(scene::ShapeS2D& quad_){
-    renderer2D.create_context_quad_t(quad_.render_context, quad_.verts_6);
-    quads.push_back(quad_);
+void Scene2D::add_quad(scene::QuadS2D& quad){
+
+    // renderer2D.create_context_quad_t(quad.get_rendering_context(), quad.get_verts());
+    quads.push_back(quad);
+    
 }
 
-void Scene2D::add_shape(Shape& shape){
 
-    scene::ShapeS2D new_shape_S2D = scene::ShapeS2D{shape};
+ShapeS2D& Scene2D::add_shape(Shape& shape){
 
-    renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
+    // scene::ShapeS2D new_shape_S2D = scene::ShapeS2D{shape};
 
-    if(shape.is(shape_t::point))
-        points.push_back(new_shape_S2D);
-    else if(shape.is(shape_t::line))
-        lines.push_back(new_shape_S2D);
-    else
-        shapes.push_back(new_shape_S2D);
+    // renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
+
+    if(shape.is(shape_t::point)){
+        scene::ShapeS2D& new_shape_S2D = points.emplace_back(shape);
+        renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
+        return new_shape_S2D;
+    }
+    else if(shape.is(shape_t::line)){
+        scene::ShapeS2D& new_shape_S2D = lines.emplace_back(shape);
+        renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
+        return new_shape_S2D;
+    }
+    else {
+        scene::ShapeS2D& new_shape_S2D = shapes.emplace_back(shape);
+        renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
+        return new_shape_S2D;
+    }
 
 }
 
 
 void Scene2D::update(){
 
-    for(scene::ShapeS2D& _quad : quads)
-        _quad.transform_2d.set_matrix_model();
+    // for(scene::ShapeS2D& _quad : quads)
+    //     _quad.transform_2d.set_matrix_model();
 
-    for(scene::ShapeS2D& point : points)
-        point.transform_2d.set_matrix_model();
+    // for(scene::ShapeS2D& point : points)
+    //     point.transform_2d.set_matrix_model();
 
     // for(scene::ShapeS2D& line : lines)
     //     line.transform_2d.set_matrix_model();
@@ -88,10 +100,10 @@ void Scene2D::render_window(){
     // renderer2D.set_camera(camera.transform.matrix);
     renderer2D.set_camera(camera.get_matrix());
 
-    for(scene::ShapeS2D& _quad : quads){
-        renderer2D.set_model(_quad.transform_2d.matrix);
-        renderer2D.render_quad(_quad.render_context);
-    }
+    // for(scene::ShapeS2D& _quad : quad_shapes){
+    //     renderer2D.set_model(_quad.transform_2d.matrix);
+    //     renderer2D.render_quad(_quad.render_context);
+    // }
 
     for(scene::ShapeS2D& point : points){
         renderer2D.set_model(point.get_matrix());
@@ -111,10 +123,9 @@ unsigned int Scene2D::render_to_texture(){
     // renderer2D.set_camera(camera.transform.matrix);
     renderer2D.set_camera(camera.get_matrix());
 
-    for(scene::ShapeS2D& _quad : quads){
-        renderer2D.set_model(_quad.transform_2d.matrix);
-        renderer2D.render_quad(_quad.render_context);
-    }
+    
+    for(scene::QuadS2D& quad : quads)
+        renderer2D.render_quad(quad);
 
     for(scene::ShapeS2D& point : points){
         renderer2D.set_model(point.get_matrix());

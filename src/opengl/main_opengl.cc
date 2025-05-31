@@ -32,24 +32,24 @@ int main(){
 
 
 
-    scene::ShapeS2D quad;
-    // opengl::ShapeS2DRenderContext quad_render_context;
-    opengl::Scene2DRenderer quad_renderer;
+    // scene::ShapeS2D quad;
+    // // opengl::ShapeS2DRenderContext quad_render_context;
+    // opengl::Scene2DRenderer quad_renderer;
 
-    quad.set_dims(800, 600, 100, 100);
+    // quad.set_dims(800, 600, 100, 100);
 
-    // quad.transform_2d.scale = {1.0f, 1.0f};
-    quad.transform_2d.set_pos(0.0f, 0.0f);
-	quad.transform_2d.set_scale(1.0f, 1.0f);
+    // // quad.transform_2d.scale = {1.0f, 1.0f};
+    // quad.transform_2d.set_pos(0.0f, 0.0f);
+	// quad.transform_2d.set_scale(1.0f, 1.0f);
 
-    // opengl::Texture texture (100, 100);
-    quad_renderer.create_context_quad_t(quad.render_context, quad.verts_6);
-    opengl::set_texture_checker_2x2(quad.render_context.texture);
+    // // opengl::Texture texture (100, 100);
+    // quad_renderer.create_context_quad_t(quad.render_context, quad.verts_6);
+    // opengl::set_texture_checker_2x2(quad.render_context.texture);
 
 
-    camera.set_window_size_px({800, 600});
-    // camera.set_width(0.2f);
-    camera.set_zoom_factor(1.2f);
+    // camera.set_window_size_px({800, 600});
+    // // camera.set_width(0.2f);
+    // camera.set_zoom_factor(1.2f);
     // camera.pan({ -400.0f, -300.0f}); // Half of window size
 
 

@@ -14,6 +14,7 @@
 
 #include "scene/camera2D.hh"
 #include "scene/shapeS2D.hh"
+#include "scene/quadS2D.hh"
 
 #include "phont/phont.hh"
 
@@ -42,8 +43,8 @@ class BoxFrame2D : Box2D {
 
 public:
     m3f3 M_m_s;
-    std::array<opengl::Vertex2DT, 8> verts; // Vertices for wireframe highlighting
-    opengl::ShapeS2DRenderContext render_context;  // Rendering context for wireframe highlighting
+    std::array<opengl::VertexQuad2D, 8> verts; // Vertices for wireframe highlighting
+    opengl::RenderContextQuadS2D render_context;  // Rendering context for wireframe highlighting
 
 };
 
@@ -63,8 +64,7 @@ class Scene2D {
     BoxFrame2D frame;
     ShapeS2D* current_target;
     
-
-    std::vector<ShapeS2D> quads;
+    std::vector<QuadS2D> quads; // Actual quads
 
     std::vector<ShapeS2D> points;
     std::vector<ShapeS2D> lines;
@@ -93,8 +93,8 @@ public:
     // Create the initial frame rendering conetxt
     void init_frame();
 
-    void add_shape_quad(ShapeS2D& quad_);
-    void add_shape(Shape& shape);
+    void add_quad(scene::QuadS2D& quad);
+    ShapeS2D& add_shape(Shape& shape);
 
     void print();
 };
