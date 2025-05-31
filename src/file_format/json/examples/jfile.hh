@@ -49,7 +49,7 @@ public:
 
 bool JsonFile::verify_type_array(JsonVar& array, std::string error_msg){
     if(!array.is_array()){
-        std::string msg = error_msg + " File: " + file.physimos_core_path;
+        std::string msg = error_msg + " File: " + file.physimos_core_path_;
         plib::plog_error("JPHILE", "json_format", msg);
         return false;
     }
@@ -58,7 +58,7 @@ bool JsonFile::verify_type_array(JsonVar& array, std::string error_msg){
 
 bool JsonFile::verify_type_object(JsonVar& object, std::string error_msg){
     if(!object.is_object()){
-        std::string msg = error_msg + " File: " + file.physimos_core_path;
+        std::string msg = error_msg + " File: " + file.physimos_core_path_;
         plib::plog_error("JPHILE", "json_format", msg);
         return false;
     }
@@ -68,7 +68,7 @@ bool JsonFile::verify_type_object(JsonVar& object, std::string error_msg){
 
 bool JsonFile::json_equals_string(JsonVar& json_var_str, std::string target, std::string error_msg){
     if(json_var_str.get_string() != target){
-        std::string msg = "JFileShape: array entry is not of type shape. File: " +  file.physimos_core_path;
+        std::string msg = "JFileShape: array entry is not of type shape. File: " +  file.physimos_core_path_;
         plib::plog_error("JPHILE", "json_format", msg);
         return false;
     }

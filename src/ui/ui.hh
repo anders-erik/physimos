@@ -6,6 +6,10 @@
 #include "Windowing.hpp"
 #include "Input.hpp"
 
+#include "math/vecmat.hh"
+
+#include "ui/render/renderer_primitive.hh"
+
 #include "conductor_common.hh"
 #include "conductor_viewport.hh"
 
@@ -13,6 +17,14 @@
 
 namespace UI {
 
+    class PUI {
+    public:
+        UI::RendererPrimitive renderer_ui;
+
+        PUI() {
+            renderer_ui = UI::RendererPrimitive();
+        };
+    };
 
     // PUBLIC 
 

@@ -128,6 +128,13 @@ std::string physimos_root_dir_or_die(){
     exit(1);
 }
 
+Str physimos_root_dir_or_die_str()
+{
+    // std::string physimos_root = physimos_root_dir_or_die();
+    // Str physimos_root_str { physimos_root };
+    return Str( physimos_root_dir_or_die().c_str() );
+}
+
 plib::Result get_physimos_root_dir(){
 
     std::string tmp_physimos_root_dir = "";

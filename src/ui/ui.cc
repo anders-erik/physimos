@@ -23,7 +23,7 @@
 #include "ui/uic/uic_primitive_list.hh"
 #include "ui/uic/uic_primitive_list_editor.hh"
 
-#include "opengl/rendererUI.hh"
+#include "ui/render/renderer_primitive.hh"
 
 
 #include "Input.hpp"
@@ -36,6 +36,9 @@
 
 
 namespace UI {
+
+
+PUI* pui;
 
 
 /** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
@@ -119,6 +122,8 @@ void state_main_set(StateMain new_state_main){
 }
 
 void init(){
+
+    pui = new PUI();
 
     PhysWin new_window = get_initial_physimos_window();
     viewport_width = new_window.width / new_window.xscale;
@@ -229,13 +234,13 @@ void update_window(PhysWin physimos_window) {
     viewport_width = physimos_window.logical.w;
     viewport_height = physimos_window.logical.h;
 
-    opengl::RendererUI& renderer_ui = opengl::get_renderer_ui();
-    renderer_ui.set_window_info(
-        physimos_window.raw.w,
-        physimos_window.raw.h,
-        physimos_window.xscale,
-        physimos_window.yscale
+    // RENDERER
+    UI::RendererPrimitive& renderer_prim = UI::get_renderer_ui();
+    renderer_prim.set_window_info(
+        { (float) physimos_window.raw.w, (float) physimos_window.raw.h} ,
+        { physimos_window.xscale, physimos_window.yscale }
     );
+
     
     // SHADER TRANSFORM
     shader::texture_shader.set_window_info(

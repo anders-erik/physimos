@@ -11,7 +11,7 @@ add_library(lib
     process.cc
 
     str.cc
-    # file.cc
+    file.cc
 )
 
 

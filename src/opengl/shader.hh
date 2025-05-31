@@ -8,27 +8,45 @@
 
 namespace opengl {
 
-struct Shader {
+class Shader {
+
+    unsigned int shader_id;
+
+    Str shaders_dir_path = "src/opengl/shaders/";
+    Str program_name_str; // Path inside shaders directory
+
+    Str path_core_full = "";
+    
+    File file;
+
+
+public:
+
     enum Type {
         Vertex,
         Fragment,
-    };
-    unsigned int shader_id;
-    Type type;
-    Str path_base;
-    Str path_core_full;
-    File file;
+    } type;
+
+    
 
     Shader() {};
-    Shader(Str path_base);
+    Shader(Str program_name);
 
-    void set_full_core_path(Str& path);
+    void set_shader_type(Type type);
+    void set_program_name(Str program_name);
 
-    /** Compile single vertex and fragment shader, links program, and returns program name. */
+    /** Compiles shader and returns shader id. */
     unsigned int compile();
     unsigned int get_shader_id();
     void delete_shader_id();
+
+
+private:
+
+    void assemble_core_path();
+
     void check_error();
+
 };
 
 

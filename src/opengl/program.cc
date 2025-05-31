@@ -22,22 +22,21 @@ unsigned int program_ui_texture;
 // ProgramPaths ui_color_ = {"ui/color"};
 
 
-Program::Program(Str name_str) 
-    :   name_str {name_str}
+Program::Program(Str program_name) 
+    :   program_name_str {program_name}
 {
 
-    shader_vert.type = Shader::Type::Vertex;
-    shader_frag.type = Shader::Type::Fragment;
-    
-    Str vert_path = core_path + name_str + ".vert";
-    Str frag_path = core_path + name_str + ".frag";
-    
-    shader_vert.set_full_core_path(vert_path);
-    shader_frag.set_full_core_path(frag_path);
+    shader_vert.set_shader_type(Shader::Type::Vertex);
+    shader_frag.set_shader_type(Shader::Type::Fragment);
+
+    shader_vert.set_program_name(program_name_str);
+    shader_frag.set_program_name(program_name_str);
 
     build();
 
 }
+
+
 unsigned int Program::build(){
     
     shader_vert.compile();
@@ -51,6 +50,7 @@ unsigned int Program::build(){
     return id;
 }
 
+
 unsigned int Program::link(){
     
     // shader Program
@@ -63,6 +63,8 @@ unsigned int Program::link(){
     
     return id;
 }
+
+
 void Program::check_link_error(){
 
     int success;
@@ -71,16 +73,29 @@ void Program::check_link_error(){
     glGetProgramiv(id, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(id, 1024, NULL, infoLog);
-        plib::plog_error("DRAW ", "SHADER_PROGRAM ", "Failed to link DrawShader program. : InfoLog = " + std::string(infoLog));
+        plib::plog_error("OPENGL ", "SHADER_PROGRAM ", "Failed to link program. : InfoLog = " + std::string(infoLog));
     }
 }
+
 
 unsigned int Program::get_program_id(){
     return id;
 }
+
+
 void Program::use(){
     glUseProgram(id);
 }
+
+
+
+
+
+
+// OLD BELOW
+
+
+
 
 
 void gpu_use_program(ProgramName program_enum){

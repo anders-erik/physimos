@@ -36,6 +36,7 @@ elseif(APPLE)
     message("Platform:            APPLE")
 elseif(UNIX)
     set(LINUX TRUE)
+    add_definitions(-DPH_LINUX)
     message("Platform:            LINUX")
 endif()
 # print compiler

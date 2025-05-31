@@ -11,7 +11,6 @@ add_library(opengl
     renderer_vector.cc
 
     renderer2D.cc
-    rendererUI.cc
 )
 
 target_include_directories(opengl PUBLIC 

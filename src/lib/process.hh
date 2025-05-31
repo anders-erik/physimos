@@ -4,6 +4,7 @@
 #include <string>
 
 #include "result.hh"
+#include "str.hh"
 
 typedef struct Process {
     int pid;
@@ -21,5 +22,6 @@ std::string extern installed_root_dir_linux;
 std::string getGitRepoRootDir();
 plib::Result get_physimos_root_dir();
 std::string physimos_root_dir_or_die();
+Str physimos_root_dir_or_die_str();
 
 #endif

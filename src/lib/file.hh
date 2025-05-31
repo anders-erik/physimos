@@ -24,34 +24,32 @@
 
 struct File {
 
-    std::string physimos_core_path;
-    std::string relative_path;
 
-    Str relative_path_str;
+    std::string physimos_core_path_;
+    std::string relative_path_;
+    std::string file_contents_;
+    File(std::string relative_path) : relative_path_ {relative_path} {
+        std::string physiomos_dir = physimos_root_dir_or_die();
+        physimos_core_path_ = physiomos_dir + "/" + relative_path;
+    };
+
+
 
     bool use_core_path = false;
-
-    std::string file_contents;
     bool successful_read = false;
 
-    File(std::string relative_path) : relative_path {relative_path} {
+    Str absolute_core_path;
 
-        std::string physiomos_dir = physimos_root_dir_or_die();
-        physimos_core_path = physiomos_dir + "/" + relative_path;
+    Str physimos_root_dir;
+    Str relative_path_str;
 
-        // file_contents = cat_file_as_string();
-        // std::cout << file_contents << std::endl;
-        
-    };
+    Str file_contents_str;
 
     File() = default;
     File(Str relative_path_str) : relative_path_str {relative_path_str} {
 
-        std::string physiomos_dir = physimos_root_dir_or_die();
-
-        relative_path = relative_path_str.to_std_string();
-
-        physimos_core_path = physiomos_dir + "/" + relative_path;
+        Str physimos_root_dir = physimos_root_dir_or_die_str();
+        absolute_core_path = physimos_root_dir + "/" + relative_path_str;
         
     };
     Str copy_as_str_core(){
@@ -59,15 +57,31 @@ struct File {
         use_core_path = true;
         successful_read = false;
 
-        std::string std_string = cat_file_as_string();
+        Str str = cat_file_as_str();
+        // Str str = cat_core_file_xplat();
 
-        return Str{std_string.c_str()};
+        return str;
+    }
+    void make_core(){
+        use_core_path = true;
+    }
+    void make_cwd(){
+        use_core_path = false;
+    }
+    void update_core_path(){
+
     }
     void set_path_core(Str& path_str){
+
+        // Str
         relative_path_str = path_str;
-        std::string physiomos_dir = physimos_root_dir_or_die();
-        relative_path = relative_path_str.to_std_string();
-        physimos_core_path = physiomos_dir + "/" + relative_path;
+        physimos_root_dir = physimos_root_dir_or_die_str();
+        absolute_core_path = physimos_root_dir + "/" + relative_path_str;
+
+        // std::string
+        std::string physimos_root_dir = physimos_root_dir_or_die();
+        relative_path_ = relative_path_str.to_std_string();
+        physimos_core_path_ = physimos_root_dir + "/" + relative_path_;
     }
 
 
@@ -83,102 +97,25 @@ struct File {
     }
     std::string& ref_as_string_cwd(){
         successful_read = false;
-        file_contents = cat_file_as_string();
-        return file_contents;
+        file_contents_ = cat_file_as_string();
+        return file_contents_;
     }
 
-    static void read_file_xplat(std::string path_str) {
 
-        std::string return_string;
+    Str cat_core_file_xplat();
 
-        // const char* file_path = path_str.c_str();
-
-        // char buffer[1024];
-
-    #ifdef PH_WINDOWS
-
-        HANDLE hFile = CreateFileA(
-            file_path,
-            GENERIC_READ,           // desired access
-            FILE_SHARE_READ,        // share mode
-            nullptr,                // security attributes
-            OPEN_EXISTING,          // creation disposition
-            FILE_ATTRIBUTE_NORMAL,  // flags and attributes
-            nullptr                 // template file handle
-        );
-
-        if (hFile == INVALID_HANDLE_VALUE) {
-            std::cerr << "CreateFile failed: " << GetLastError() << '\n';
-            return 1;
-        }
-
-        DWORD bytesRead;
-
-        while (ReadFile(hFile, buffer, sizeof(buffer), &bytesRead, nullptr) && bytesRead > 0) {
-            DWORD bytesWritten;
-            WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), buffer, bytesRead, &bytesWritten, nullptr);
-        }
-
-        CloseHandle(hFile);
-
-    #elif  PH_LINUX
-
-        int fd = open(file_path, O_RDONLY);
-        if (fd == -1) {
-            std::cerr << "open failed: " << strerror(errno) << '\n';
-            return 1;
-        }
-
-        ssize_t bytesRead;
-        while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0) {
-            write(STDOUT_FILENO, buffer, bytesRead); // write to stdout
-        }
-
-        if (bytesRead == -1) {
-            std::cerr << "read failed: " << strerror(errno) << '\n';
-        }
-
-        close(fd);
-
-    #endif
-
-
-    }
 
 private:
 
-    std::string cat_file_as_string(){
+#ifdef  PH_WINDOWS
+    Str cat_core_file_windows();
+#elif   PH_LINUX
+    Str cat_core_file_linux();
+#endif
 
-        std::string string;
-        std::ifstream _ifstream;
 
-        
+    std::string cat_file_as_string();
+    Str cat_file_as_str();
 
-        if(use_core_path)
-            _ifstream.open(physimos_core_path);
-        else
-            _ifstream.open(relative_path);
-        
-        if(!_ifstream.is_open()){
-            std::string error_msg = "File: cat_file_as_string. Path: " + physimos_core_path;
-            plib::plog_error("CONFIG", "OPEN_FILE", error_msg);
-            return string;
-        }
-
-        try
-        {
-            std::stringstream buffer;
-            buffer << _ifstream.rdbuf();
-            string = buffer.str();
-        }
-        catch(const std::exception& e)
-        {
-            std::string error_msg = "File: cat_file_as_string. Path: " + physimos_core_path;
-            plib::plog_error("CONFIG", "READ_FILE", error_msg);
-        }
-        
-        successful_read = true;
-        return string;
-    }
 };
 

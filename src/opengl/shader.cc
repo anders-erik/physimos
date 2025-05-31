@@ -9,27 +9,40 @@
 namespace opengl {
 
 
-Shader::Shader(Str path_base)
-    :   path_base {path_base}, 
-        file {File(path_base)}
-{
-    path_core_full  = "src/opengl/shaders/";
-    path_core_full += path_base;
+Shader::Shader(Str program_name){
+
+    program_name_str = program_name;
+    assemble_core_path();
+
+}
+
+
+void Shader::set_shader_type(Type type){
+    this->type = type;
+}
+
+void Shader::set_program_name(Str program_name){
+    program_name_str = program_name;
+    assemble_core_path();
+}
+
+void Shader::assemble_core_path(){
+
+    path_core_full = "";
+    path_core_full += shaders_dir_path;
+    path_core_full += program_name_str;
 
     if(type == Type::Fragment)
         path_core_full += ".frag";
     if(type == Type::Vertex)
         path_core_full += ".vert";
-
-    file.set_path_core(path_core_full);
-}
-
-void Shader::set_full_core_path(Str & path){
-    path_core_full = path;
-    file.set_path_core(path_core_full);
+    
 }
 
 unsigned int Shader::compile(){
+
+    // Update file
+    file.set_path_core(path_core_full);
 
     Str source = file.copy_as_str_core();
     // source.print();

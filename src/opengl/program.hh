@@ -4,31 +4,12 @@
 #include <string>
 
 #include <lib/str.hh>
-#include <lib/file.hh>
 
 #include "shader.hh"
 
 
 namespace opengl {
 
-// struct ProgramPaths {
-//     Str vert;
-//     Str frag;
-
-//     ProgramPaths(Str vert, Str frag)
-//         :   vert {vert},
-//             frag {frag} {};
-// };
-
-
-// struct ProgramSources {
-//     Str vert;
-//     Str frag;
-
-//     ProgramSources(Str vert, Str frag)
-//         :   vert {vert},
-//             frag {frag} {};
-// };
 
 enum class ProgramName {
     phont_texture,
@@ -55,11 +36,7 @@ enum class ProgramName {
 
 class Program {
 
-    
-    // ProgramName name;
-    Str core_path = "src/opengl/shaders/";
-
-    Str name_str;
+    Str program_name_str;
     
     Shader shader_vert;
     Shader shader_frag;
@@ -71,7 +48,7 @@ public:
     unsigned int id;
 
     // The program attempts to compile shaders and link program during construction.
-    Program(Str name_str);
+    Program(Str program_name);
 
     unsigned int build();
     unsigned int link();
@@ -79,6 +56,7 @@ public:
 
     unsigned int get_program_id();
     void use();
+
 };
 
 

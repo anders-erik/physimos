@@ -13,7 +13,7 @@
 #include "ui/ui_texture.hh"
 #include "ui/ui_font.hh"
 
-#include "opengl/rendererUI.hh"
+#include "ui/render/renderer_primitive.hh"
 
 namespace UI {
 
@@ -673,13 +673,10 @@ shader::VertexTexture charVertex[6] = {
             uiTransform.y_pos_changed = false;
         }
 
-        opengl::RendererUI& renderer = opengl::get_renderer_ui();
+        UI::RendererPrimitive& renderer = UI::get_renderer_ui();
 
         // RENDER BASE COLOR
-        renderer.color_set(uiTransform.M_m_s.pointer(), darkness_shift, color);
-        renderer.color_draw();
-        // color_shader->set(uiTransform.M_m_s.pointer(), darkness_shift, color);
-        // color_shader->draw();
+        renderer.draw_color_primitive(*this);
     
         // If scrollable, then we need to check children AABBs, and discard all regions of children
         if(scrollable){
@@ -706,8 +703,9 @@ shader::VertexTexture charVertex[6] = {
             string_shader->draw();
         }
         else if(has_texture){
-            texture_shader->set(uiTransform.M_m_s.pointer(), renderedTexture);
-            texture_shader->draw();  
+            renderer.draw_texture_primitive(*this);
+            // texture_shader->set(uiTransform.M_m_s.pointer(), renderedTexture);
+            // texture_shader->draw();  
         }
 
     }
