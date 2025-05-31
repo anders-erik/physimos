@@ -1,4 +1,23 @@
 
+#ifdef  PH_LINUX
+    #include <fcntl.h>     // open
+    #include <unistd.h>    // read, close, write
+    #include <iostream>    // std::cerr
+    #include <cstring>     // strerror
+    #include <errno.h>     // errno
+#elif  PH_WINDOWS
+    #include <windows.h>
+#else
+    #error lib/file.cc/hh is not supported on current OS.
+#endif
+
+
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+
+#include "log.hh"
+
 #include "file.hh"
 
 

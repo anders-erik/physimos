@@ -68,7 +68,7 @@ struct Str {
     const char* to_c_str();
 
 
-    void print();
+    // void print();
     void println();
     void println_quotes();
 

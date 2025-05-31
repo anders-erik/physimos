@@ -12,6 +12,9 @@ add_library(lib
 
     str.cc
     file.cc
+
+    alloc.cc
+    print.cc
 )
 
 

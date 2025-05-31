@@ -4,6 +4,8 @@
 
 #include "str.hh"
 #include "opt.hh"
+#include "print.hh"
+
 // #include "res.hh"
 
 
@@ -41,12 +43,15 @@ void constructors(){
 
     {
     Str str_10c (10, 'c');
-    str_10c.print();
-    str_10c.println();
+    print(str_10c);
+    println(str_10c);
+    // str_10c.print();
+    // str_10c.println();
     // str_10c.~Str(); // double free
 
     Str str_c ("hola");
-    str_c.println();
+    // str_c.println();
+    println(str_c);
     // str_c.~Str(); // double free
     // str_c[1];
 
@@ -243,11 +248,20 @@ void res_str(){
 void concat(){
     Str str_lval {5, 'z'};
     Str str = "123";
-    str.println_quotes();
+    // str.println_quotes();
+    println(Str("\"") + str + Str("\""));
     str += "456";
     str.println_quotes();
     str += "789";
     str.println_quotes();
+
+    bool test = true;
+    if(test)
+        str += "asdf";
+    else
+        str += "fdsa";
+    str.println();
+
     // str += str_lval;
     // str.println_quotes();
 
@@ -293,7 +307,8 @@ struct Timer {
         return duration_ns;
     }
     void print_duration(Str str_msg){
-        str_msg.print();
+        // str_msg.print();
+        print(str_msg);
         std::cout << " " << reps << std::endl;
     }
 
@@ -350,7 +365,23 @@ void str_perf(){
 
 }
 
+
+void print_hh(){
+    Str str = "STRING TO PRINT";
+
+    println(str);
+    print(str);
+    print("\n");
+
+    println_e(str);
+    print_e(str);
+    print_e("\n");
+
+}
+
+
 int main(){
+
     std::cout << "Str main." << std::endl << std::endl;
 
 
@@ -367,7 +398,9 @@ int main(){
     // concat();
     // substr();
 
-    str_perf();
+    // str_perf();
+
+    print_hh();
 
 
     std::cout << "Str End" << std::endl << std::endl;

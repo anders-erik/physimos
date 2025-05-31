@@ -1,12 +1,16 @@
 
 #include "str.hh"
+#include "alloc.hh"
+#include "print.hh"
 
 // #define VERBOSE_STR
-// #define NEW_ALLOCATION
 
 
 Str::Str() {
 #ifdef VERBOSE_STR
+    // println("Str default constructor"); // Can't use because member function clashing
+    Print::line("Str default constructor");
+    
     std::cout << "Str default constructor" << std::endl;
 #endif
 };
@@ -164,46 +168,37 @@ Str& Str::operator=(Str&& other){
 void Str::allocate(unsigned int size_to_alloc){
     size_alloc = size_to_alloc;
 
-#ifdef NEW_ALLOCATION
-    mem = static_cast<char*>(::operator new(size_alloc));
-#else
-    mem = (char*) std::malloc(size_to_alloc * sizeof(char));
-#endif
+    mem = Alloc::allocate_bytes(size_to_alloc);
 
     allocated = true;
 }
-void Str::reallocate(unsigned int new_size_alloc){
-    
 
-#ifdef NEW_ALLOCATION
-    char* new_mem = static_cast<char*>(::operator new(size_alloc));
-    memcpy(new_mem, mem, size_alloc);
-    delete[] mem;
-    mem = new_mem;
-#else
-    mem = (char*) std::realloc(mem , new_size_alloc * sizeof(char));
-#endif
+
+void Str::reallocate(unsigned int new_size_alloc){
+
+    mem = Alloc::reallocate_bytes(mem, size_alloc, new_size_alloc);
 
     size_alloc = new_size_alloc;
 
 #ifdef VERBOSE_STR
-    std::cout << "Realloc to size " << size_alloc << std::endl;
+    std::cout << "Realloc to size " << size_alloc << std::endl; 
 #endif
+
 }
+
+
 void Str::release_mem(){
-    if(allocated){
-#ifdef NEW_ALLOCATION
-        delete[] mem;
-#else
-        free(mem);
-#endif
-    }
+
+    if(allocated)
+        Alloc::deallocate_bytes(mem);
+
+    mem = nullptr;
     size_alloc = 0;
     size_str = 0;
     allocated = false;
     initialized = false;
 }
-// Ownership moved. Robbed of all assets. No mem release.
+
 void Str::rob(){
     mem = nullptr;
     size_alloc = 0;
@@ -232,7 +227,8 @@ unsigned int Str::alloc_size() const {
 }
 
 bool Str::is_allocated() const {
-    return allocated;
+    // return allocated;
+    return (mem == nullptr) ? false : true;
 }
 bool Str::is_initialized() const {
     return initialized;
@@ -273,21 +269,17 @@ Str Str::substr(unsigned int start_index, unsigned int size){
 
 std::string Str::to_std_string(){
 
-    // Ok to ignore null-termination??
-    // std::string std_str = std::string(mem);
 
-    std::string std_str;
-
-    if(mem == nullptr){
+    if(!is_allocated()){
         std::cout << "WARN: returning std string with mem == nullptr" << std::endl;
-        std_str = "";
-    }
-    else {
-        std_str = std::string(mem, size_str); // specify the size of current Str allocation
+        return std::string();
     }
 
-    return std_str;
+    // specify the size of current Str allocation
+    return std::string(mem, size_str); 
+
 }
+
 /** Reference-like string without copying. */
 std::string_view Str::to_std_string_view(){
 
@@ -305,16 +297,16 @@ const char* Str::to_c_str(){
     return mem;
 }
 
-void Str::print(){
+// void Str::print(){
     
-    if(!initialized)
-        throw std::runtime_error("Tried to print uninitialized Str");
+//     if(!initialized)
+//         throw std::runtime_error("Tried to print uninitialized Str");
     
-    for(size_t i = 0; i < size_str; i++)
-        std::cout <<  (*this)[i];
+//     for(size_t i = 0; i < size_str; i++)
+//         std::cout <<  (*this)[i];
 
-    std::cout << std::flush;
-}
+//     std::cout << std::flush;
+// }
 void Str::println(){
     
     if(!initialized)

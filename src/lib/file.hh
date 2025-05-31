@@ -1,25 +1,10 @@
 #pragma once
 
-#ifdef  PH_WINDOWS
-    #include <windows.h>
-#elif   PH_LINUX
-    #include <fcntl.h>     // open
-    #include <unistd.h>    // read, close
-    #include <iostream>    // std::cerr
-    #include <cstring>     // strerror
-    #include <errno.h>     // errno
-#endif
-
-#include <iostream>
-
 #include <string>
 
 #include "process.hh"
-#include "log.hh"
 #include "str.hh"
 
-#include <fstream>
-#include <filesystem>
 
 
 struct File {
