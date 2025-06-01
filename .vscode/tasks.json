@@ -348,6 +348,7 @@
             "command": 
             "${workspaceFolder}/build/debug_linux/physimos",
             // "${workspaceFolder}/build/debug_linux/src/lib/main_str",
+            // "${workspaceRoot}/build/debug_linux/src/lib/main_file",
             // "${workspaceFolder}/build/debug_linux/src/file_format/json/main_json",
             // "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
             // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",

@@ -44,7 +44,7 @@ unsigned int Shader::compile(){
     // Update file
     file.set_path_core(path_core_full);
 
-    Str source = file.copy_as_str_core();
+    Str source = file.cat_as_str_core();
     // source.print();
 
     const char* source_c = source.to_c_str();

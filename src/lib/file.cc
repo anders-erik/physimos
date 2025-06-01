@@ -5,6 +5,7 @@
     #include <iostream>    // std::cerr
     #include <cstring>     // strerror
     #include <errno.h>     // errno
+    #include <sys/stat.h>
 #elif  PH_WINDOWS
     #include <windows.h>
 #else
@@ -71,8 +72,31 @@ Str File::cat_file_as_str(){
 
 
 
-Str File::cat_core_file_xplat() {
+const char* File::get_current_path_c_str(){
 
+    if(path_type == path_t::core)
+        return absolute_core_path.to_c_str();
+    else
+        return relative_path.to_c_str();
+    
+}
+
+void File::update_absolute_path(){
+
+    physimos_root_dir = physimos_root_dir_or_die_str();
+    absolute_core_path = physimos_root_dir + "/" + relative_path;
+
+}
+
+
+void File::set_path(Str & path_str){
+    relative_path = path_str;
+}
+
+Str File::cat_as_str_core_xplat() {
+
+    path_type = path_t::core;
+    update_absolute_path();
 
 #ifdef PH_WINDOWS
 
@@ -80,10 +104,19 @@ Str File::cat_core_file_xplat() {
 
 #elif  PH_LINUX
 
-    return cat_core_file_linux();
+    return cat_file_linux();
 
 #endif
 
+
+}
+
+
+Str File::cat_as_str_core_xplat(Str & path_str){
+
+    File file (path_str);
+
+    return file.cat_as_str_core_xplat();
 
 }
 
@@ -133,11 +166,14 @@ Str File::cat_core_file_windows()
 #elif  PH_LINUX
 
 
-Str File::cat_core_file_linux()
+Str File::cat_file_linux()
 {
-    const char* file_path = absolute_core_path.to_c_str();
+    struct stat st;
+    
+    const char* file_path = get_current_path_c_str();
 
     char buffer[10024];
+
 
     int fd = open(file_path, O_RDONLY);
     if (fd == -1) {
@@ -145,9 +181,16 @@ Str File::cat_core_file_linux()
         return Str();
     }
 
+    
+    if (stat(file_path, &st) == 0) {
+        std::cout << "File size: " << st.st_size << " bytes" << std::endl;
+    } else {
+        perror("stat failed");
+    }
+
     ssize_t bytesRead;
     while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0) {
-        write(STDOUT_FILENO, buffer, bytesRead); // write to stdout
+        // write(STDOUT_FILENO, buffer, bytesRead); // write to stdout
     }
 
     if (bytesRead == -1) {
@@ -157,7 +200,8 @@ Str File::cat_core_file_linux()
 
     close(fd);
 
-    return Str ( (const char*) buffer );
+    Str new_str = (const char*) buffer;
+    return new_str.cut_to_substr(0, (unsigned int) st.st_size);
 }
 #endif
 

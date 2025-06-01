@@ -27,7 +27,9 @@ target_include_directories(lib PUBLIC
 add_executable(main_str
     main_str.cc
 )
-
-target_link_libraries(main_str
-    lib
+add_executable(main_file
+    main_file.cc
 )
+
+target_link_libraries(main_str  lib)
+target_link_libraries(main_file lib)

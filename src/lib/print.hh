@@ -7,6 +7,7 @@ struct Str;
 
 void print(const Str& str);
 void println(const Str& str);
+void println();
 
 void print_e(const Str& str);
 void println_e(const Str& str);

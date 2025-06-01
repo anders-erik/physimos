@@ -11,8 +11,34 @@
 #include "process.hh"
 #include "log.hh"
 
+#include "print.hh"
 
 extern std::string physimos_root_dir;
+
+
+
+void log_error(Str scope, Str error_type, Str message){
+
+    Str base = "[ERROR] ";
+    Str full_log_string = base + scope + error_type + message;
+    println(full_log_string);
+
+    // std::string main_log_spath = "logs/main.log";
+    // std::string full_log_path = physimos_root_dir + "/" + main_log_spath;
+
+    // std::string time_string = get_current_timestring();
+    // std::string scope_string = "_" + scope + "_ ";
+    // std::string type_string = "_" + error_type + "_ ";
+    // std::string message_string = "\"" + message + "\"";
+
+    // std::string full_log_string = "[ERROR] " + time_string + scope_string + type_string + message_string;
+
+    // plib::fs_echo_append(full_log_path, full_log_string);
+    // std::cout << full_log_string << std::endl;
+
+}
+
+
 
 namespace plib {
 std::string get_current_timestring(){
@@ -203,3 +229,4 @@ void plog_error(std::string scope, std::string error_type, std::string message){
 }
 
 }
+

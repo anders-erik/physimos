@@ -16,6 +16,11 @@
 #include "process.hh"
 #include "string.hh"
 
+#include "str.hh"
+
+
+Str physimos_root_dir_str = "";
+
 std::string physimos_root_dir = "";
 std::string installed_root_dir_linux = "~/.cache/physimos/";
 
@@ -132,7 +137,17 @@ Str physimos_root_dir_or_die_str()
 {
     // std::string physimos_root = physimos_root_dir_or_die();
     // Str physimos_root_str { physimos_root };
-    return Str( physimos_root_dir_or_die().c_str() );
+    if(physimos_root_dir_str.alloc_size() > 0)
+        return physimos_root_dir_str;
+
+    char* PHYSIMOS_ROOT_DIR = std::getenv("PHYSIMOS_ROOT_DIR");
+    if (!plib::cstr_is_empty_or_null(PHYSIMOS_ROOT_DIR)){
+        physimos_root_dir_str = PHYSIMOS_ROOT_DIR;
+        return physimos_root_dir_str;
+    }
+
+    std::cout << "UNABLE TO FIND physimos_root_dir. Exiting" << std::endl;
+    return Str(  );
 }
 
 plib::Result get_physimos_root_dir(){

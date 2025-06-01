@@ -38,6 +38,10 @@ void println(const Str & str){
     print("\n");
 }
 
+void println(){
+    print("\n");
+}
+
 
 void print_e(const Str & str){
 

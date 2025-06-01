@@ -3,6 +3,11 @@
 
 #include <string>
 
+#include "str.hh"
+
+// Currently only prints to stdout
+void log_error(Str scope, Str error_type, Str message);
+
 namespace plib {
 
 std::string get_current_timestring();
