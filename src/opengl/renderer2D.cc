@@ -118,6 +118,8 @@ void RenderContextQuadS2D::set_texture_id(unsigned int texture_id){
 Scene2DRenderer::Scene2DRenderer(){
     // program = opengl::build_program_vert_frag(opengl::Programs::phont_texture);
     program = opengl::build_program_vert_frag(program_name_enum);
+
+    init_frame_wire_quad_context_t();
 }
 
 void Scene2DRenderer::create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts){
@@ -145,30 +147,6 @@ void Scene2DRenderer::create_shape_context_t(RenderContextQuadS2D& render_contex
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Scene2DRenderer::create_wire_quad_context_t(RenderContextQuadS2D & render_context, std::array<VertexQuad2D,8> verts){
-
-    render_context.texture = opengl::texture_get_id(opengl::Textures::Colors);
-
-	glGenVertexArrays(1, &render_context.VAO);
-	glGenBuffers(1, &render_context.VBO);
-
-	glBindVertexArray(render_context.VAO);
-
-
-    size_t buffer_size = verts.size() *sizeof(VertexQuad2D);
-	glBindBuffer(GL_ARRAY_BUFFER, render_context.VBO);
-    glBufferData(GL_ARRAY_BUFFER, buffer_size, verts.data(), GL_STATIC_DRAW);
-    
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexQuad2D), (void *)0);
-	glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexQuad2D), (void *)(sizeof(f3)));
-	glEnableVertexAttribArray(1);
-
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
 
 
 void Scene2DRenderer::activate(){
@@ -213,21 +191,6 @@ void Scene2DRenderer::render_line(RenderContextQuadS2D context){
     // glDrawArrays(GL_POINTS, 0, 6);
 }
 
-void Scene2DRenderer::render_frame(RenderContextQuadS2D frame_context){
-    this->activate();
-
-    glPointSize(10);
-    glLineWidth(3);
-
-    glBindTexture(GL_TEXTURE_2D, frame_context.texture);
-    
-    glBindVertexArray(frame_context.VAO);
-
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
-    glDrawArrays(GL_LINES, 0, 8);
-    // glDrawArrays(GL_POINTS, 0, 6);
-}
-
 
 
 
@@ -263,5 +226,105 @@ void Scene2DRenderer::render_multisample_texture(RenderContextQuadS2D context){
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
+
+
+
+void Scene2DRenderer::init_frame_wire_quad_context_t(){
+
+    std::array<VertexQuad2D, 8> verts;
+    f2 frame_color_coords = opengl::texture_get_color_coordinate(opengl::TextureColors::Green);
+    verts = generate_quad_line_frame_verts_0101(frame_color_coords);
+
+    render_context_frame.texture = opengl::texture_get_id(opengl::Textures::Colors);
+
+	glGenVertexArrays(1, &render_context_frame.VAO);
+	glGenBuffers(1, &render_context_frame.VBO);
+
+	glBindVertexArray(render_context_frame.VAO);
+
+
+    size_t buffer_size = verts.size() *sizeof(VertexQuad2D);
+	glBindBuffer(GL_ARRAY_BUFFER, render_context_frame.VBO);
+    glBufferData(GL_ARRAY_BUFFER, buffer_size, verts.data(), GL_STATIC_DRAW);
+    
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexQuad2D), (void *)0);
+	glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexQuad2D), (void *)(sizeof(f3)));
+	glEnableVertexAttribArray(1);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+
+void Scene2DRenderer::render_frame(m3f3 M_m_s){
+    this->activate();
+
+    glPointSize(10);
+    glLineWidth(3);
+
+    set_model(M_m_s);
+
+    glBindTexture(GL_TEXTURE_2D, render_context_frame.texture);
+    
+    glBindVertexArray(render_context_frame.VAO);
+
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_LINES, 0, 8);
+    // glDrawArrays(GL_POINTS, 0, 6);
+}
+
+std::array<opengl::VertexQuad2D,8> Scene2DRenderer::generate_quad_line_frame_verts_0101(f2 texture_coord){
+
+    std::array<VertexQuad2D, 8> verts;
+
+    f2 center = {0.5f, 0.5f};
+    float scale = 1;
+
+    VertexQuad2D v0;  // Lower left
+    v0.pos.x = center.x - 0.5*scale;
+    v0.pos.y = center.y - 0.5f*scale;
+    v0.pos.z = 0.0f;
+    v0.tex = texture_coord;
+
+    VertexQuad2D v1;  // Lower right
+    v1.pos.x = center.x + 0.5f*scale;
+    v1.pos.y = center.y - 0.5f*scale;
+    v1.pos.z = 0.0f;
+    v1.tex = texture_coord;
+
+    VertexQuad2D v2;  // Upper right
+    v2.pos.x = center.x + 0.5f*scale;
+    v2.pos.y = center.y + 0.5f*scale;
+    v2.pos.z = 0.0f;
+    v2.tex = texture_coord;
+
+    VertexQuad2D v3;  // Upper left
+    v3.pos.x = center.x - 0.5f*scale;
+    v3.pos.y = center.y + 0.5f*scale;
+    v3.pos.z = 0.0f;
+    v3.tex = texture_coord;
+
+    
+
+    verts[0] = v0;
+    verts[1] = v1;
+
+    verts[2] = v1;
+    verts[3] = v2;
+    
+    verts[4] = v2;
+    verts[5] = v3;
+
+    verts[6] = v3;
+    verts[7] = v0;
+
+    return verts;
+}
+
+
 
 }

@@ -47,7 +47,12 @@ void Win2D::set_window_size(f2 size){
 void Win2D::start_loop(){
 
 	while (auxwin.end_frame()){
-		start_frame();
+
+		input_events = auxwin.new_frame();
+
+		for(InputEvent& event : input_events)
+			process_input(event);
+
 
 		// scene::Scene2D& scene = scenes[0];
 		scene::SubScene2D& subscene = subscenes[0];
@@ -114,9 +119,10 @@ void Win2D::input_mouse_button(InputEvent & event){
 	
 	if(subscenes[0].contains_cursor(cursor.sane)){
 
-		scene::PointerClick2D pointer_click;
-		pointer_click.pos_scene_normal = event.cursor.sane;
-		pointer_click.button_event = mouse_button_event;
+		scene::PointerClick2D pointer_click {
+			pointer_click.pos_scene_normal = subscenes[0].get_normalized_from_point(cursor.sane),
+			pointer_click.button_event = mouse_button_event 
+		};
 		
 		subscenes[0].handle_pointer_click( pointer_click );
 	}
@@ -147,7 +153,7 @@ void Win2D::process_input(InputEvent& event){
 	case EventType::MouseButton:
 		input_mouse_button(event);
 		break;
-	
+
 	default:
 		// std::cout << "WARN: unhandled input event" << std::endl;
 		scene.handle_input(event);
@@ -157,14 +163,6 @@ void Win2D::process_input(InputEvent& event){
 }
 
 
-void Win2D::start_frame(){
-
-	input_events = auxwin.new_frame();
-
-	for(InputEvent& event : input_events)
-		process_input(event);
-
-}
 
 void Win2D::reload_camera_root(){
 	renderer.activate();

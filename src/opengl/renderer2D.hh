@@ -14,10 +14,20 @@ namespace scene {
 
 class QuadS2D;
 
+
 }
 
 namespace opengl {
 
+/** Represents a wireframe used to highlight scene objects. */
+// class BoxFrame2D : Box2D {
+
+// public:
+//     m3f3 M_m_s;
+//     std::array<opengl::VertexQuad2D, 8> verts; // Vertices for wireframe highlighting
+//     opengl::RenderContextQuadS2D render_context;  // Rendering context for wireframe highlighting
+
+// };
 
 struct VertexQuad2D {
     f3 pos;
@@ -67,12 +77,13 @@ class Scene2DRenderer {
     opengl::ProgramName program_name_enum = opengl::ProgramName::Texture2D;
     unsigned int program; // opengl id for renderer -- only one program currently
 
+    opengl::RenderContextQuadS2D render_context_frame; // frame context does not need updating
+
 public:
 
     Scene2DRenderer();
 
     void create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts);
-    void create_wire_quad_context_t(RenderContextQuadS2D& render_context, std::array<VertexQuad2D, 8> verts);
 
 
     void activate();
@@ -86,11 +97,17 @@ public:
     void render_point(RenderContextQuadS2D context);
     void render_line(RenderContextQuadS2D context);
 
-    void render_frame(RenderContextQuadS2D frame_context);
+    void render_frame(m3f3 M_m_s);
 
     // OLD UNUSED
     void render_multisample_texture(RenderContextQuadS2D context);
-    
+
+private:
+
+    // Frame
+    void init_frame_wire_quad_context_t();
+    static std::array<opengl::VertexQuad2D,8> generate_quad_line_frame_verts_0101(f2 texture_coord);
+
 };
 
 

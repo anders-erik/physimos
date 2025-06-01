@@ -4,6 +4,7 @@
 #include "math/vecmat.hh"
 
 #include "scene/camera2D.hh"
+#include "camera2D.hh"
 
 
 
@@ -75,6 +76,23 @@ void Camera2D::pan(f2 delta_sane){
 
     matrix_reload();
 }
+
+
+f2 Camera2D::normalized_to_scene_coords(f2 normalized)
+{
+    return f2 {
+        box.pos.x + box.size.x * normalized.x, 
+        box.pos.y + box.size.y * normalized.y
+    };
+}
+f2 Camera2D::normalized_to_scene_delta(f2 normalized)
+{
+    return f2 {
+        box.size.x * normalized.x, 
+        box.size.y * normalized.y
+    };
+}
+
 
 Box2D Camera2D::get_box(){
     return box;

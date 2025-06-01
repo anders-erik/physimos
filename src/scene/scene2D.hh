@@ -35,24 +35,20 @@ struct PointerMovement2D {
 struct PointerClick2D {
     f2 pos_scene_normal; // Position of the cursor during previous frame
     window::MouseButtonEvent button_event;
+    
+    PointerClick2D(f2 pos_scene_normal, window::MouseButtonEvent button_event)
+        :   pos_scene_normal    {pos_scene_normal},
+            button_event        {button_event} {};
 };
 
-
-/** Represents a wireframe used to highlight scene objects. */
-class BoxFrame2D : Box2D {
-
-public:
-    m3f3 M_m_s;
-    std::array<opengl::VertexQuad2D, 8> verts; // Vertices for wireframe highlighting
-    opengl::RenderContextQuadS2D render_context;  // Rendering context for wireframe highlighting
-
-};
 
 
 
 class Scene2D {
 
     f2 window_size_f;
+    f2 cursor_pos_scene;
+    f2 cursor_pos_normal;
     
     Camera2D camera;
 
@@ -60,9 +56,10 @@ class Scene2D {
 
     opengl::Scene2DRenderer renderer2D;
 
-    /** Represents a wireframe used to highlight scene objects. */
-    BoxFrame2D frame;
+    m3f3 frame_M_m_s; // dummy frame matrix for testing
     ShapeS2D* current_target;
+    QuadS2D* quad_current_hover = nullptr;
+    QuadS2D* quad_current_selected = nullptr;
     
     std::vector<QuadS2D> quads; // Actual quads
 
@@ -80,7 +77,11 @@ public:
     f2 get_window_size();
     void set_window_size(f2 size);
 
-    void handle_input(window::InputEvent input_event);
+    // Check if position is within the bounding box of a quad
+    QuadS2D* try_match_cursor_to_quad(f2 pos_scene);
+
+    void handle_input(window::InputEvent input_event); // OLD
+
     void handle_pointer_move(PointerMovement2D cursor_event);
     void handle_pointer_click(PointerClick2D pointer_click);
     void handle_scroll(float delta);
@@ -90,13 +91,10 @@ public:
     void render_window();
     unsigned int render_to_texture();
 
-    // Create the initial frame rendering conetxt
-    void init_frame();
-
     void add_quad(scene::QuadS2D& quad);
     ShapeS2D& add_shape(Shape& shape);
 
-    void print();
+    void print_info();
 };
 
 

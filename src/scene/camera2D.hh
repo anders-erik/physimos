@@ -43,6 +43,9 @@ public:
     // Change camera position
     void pan(f2 delta_px);
 
+    f2 normalized_to_scene_coords(f2 normalized);
+    f2 normalized_to_scene_delta(f2 normalized);
+
     Box2D get_box();
     
     void print();

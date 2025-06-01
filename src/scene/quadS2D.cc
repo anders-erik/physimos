@@ -13,6 +13,16 @@ using namespace opengl;
 
 
 
+void QuadS2D::set_name(Str new_name)
+{
+    name = new_name;
+}
+
+Str & QuadS2D::get_name()
+{
+return name;
+}
+
 m3f3 QuadS2D::get_matrix(){
     return M_m_s;
 }

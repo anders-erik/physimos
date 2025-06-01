@@ -33,6 +33,7 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 	scene::QuadS2D quad_F_1;
 	quad_F_1.set_box({3.0f, 3.0f}, {2.0f, 3.0f});
 	quad_F_1.set_texture_id(glyph_F_1.text_framebuff_multi.resolvedTexture);
+	quad_F_1.set_name("quad_F_1");
 
 
 
@@ -43,6 +44,7 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 	scene::QuadS2D quad_F_2;
 	quad_F_2.set_box( {0.0f, 0.0f}, {2.0f, 3.0f} );
     quad_F_2.set_texture_id(F_10_16.text_framebuff_multi.resolvedTexture);
+	quad_F_2.set_name("quad_F_2");
 
 
 
@@ -53,7 +55,7 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 	scene::QuadS2D quad_A_1;
 	quad_A_1.set_box( {2.0f, 0.0f}, {2.0f, 3.0f} );
 	quad_A_1.set_texture_id(A_200_320.get_texture().id_gl);
-
+	quad_A_1.set_name("quad_A_1");
 
 
 
@@ -63,7 +65,7 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 	scene::QuadS2D quad_A_multi;
 	quad_A_multi.set_texture_id(A_multi.text_framebuff_multi.resolvedTexture);
 	quad_A_multi.set_box( {6.0f, 0.0f}, {2.0f, 3.0f} );
-
+	quad_A_multi.set_name("quad_A_multi");
 
 
 
@@ -90,7 +92,7 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 	// unsigned char *pixel = opengl::Texture::get_pixel({2, 2}, quad_Triangle.render_context.texture);
 
 	quad_Triangle.set_box({4.0f, 0.0f}, {2.0f, 3.0f});
-
+	quad_Triangle.set_name("quad_Triangle");
 
 
 
@@ -167,9 +169,9 @@ int main()
 	// scene_point.
 
 	Shape line_to_draw = Shape::create(shape_t::line);
-	line_to_draw.move(f2{6.0f, 6.0f});
+	// line_to_draw.move(f2{6.0f, 6.0f});
 	scene::ShapeS2D& scene_line = subscene_0.add_shape(line_to_draw);
-
+	scene_line.set_pos( {6.0f, 6.0f} );
 
 
 	add_glyph_quads_to_scene(subscene_0);

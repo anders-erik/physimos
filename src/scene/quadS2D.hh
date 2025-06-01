@@ -32,10 +32,14 @@ class QuadS2D {
 
     opengl::RenderContextQuadS2D render_context;
 
+
 public:
 
     QuadS2D() = default;
 
+    Str name;
+    void set_name(Str new_name);
+    Str& get_name();
 
     // GET
     m3f3 get_matrix();

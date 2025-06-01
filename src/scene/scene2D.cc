@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include "lib/str.hh"
+#include "lib/print.hh"
+
 #include "phont/phont.hh"
 #include "math/vecmat.hh"
 
@@ -18,8 +21,12 @@ Scene2D::Scene2D(f2 _window_size)
 
     set_window_size(_window_size);
 
-    // FRAME
-    init_frame();
+    // FRAME INIT
+    frame_M_m_s.x.x = 2.0f;
+    frame_M_m_s.y.y = 1.0f;
+    frame_M_m_s.x.z = 7.0f;
+    frame_M_m_s.y.z = 6.0f;
+
 
     camera.set_window_size_px(window_size_f);
     camera.set_width(10.0f);
@@ -40,11 +47,77 @@ void Scene2D::set_window_size(f2 size){
     camera.set_window_size_px(size);
 }
 
+QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
+{
 
-void Scene2D::init_frame(){
-    frame.verts = ShapeS2D::generate_quad_line_frame_verts_0505(opengl::texture_get_color_coordinate(opengl::TextureColors::Green));
-    renderer2D.create_wire_quad_context_t(frame.render_context, frame.verts);
+    for(QuadS2D& quad : quads){
+
+        if(quad.contains_cursor(pos_scene))
+            return &quad;
+
+    }
+
+    return nullptr;
 }
+
+
+
+void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
+
+    // update cursor position in scene
+    cursor_pos_normal = pointer_movement.pos_curr;
+    cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
+
+    // Get move deltas
+    f2 delta_normalized = pointer_movement.pos_curr - pointer_movement.pos_prev;
+    f2 delta_scene = camera.normalized_to_scene_delta(delta_normalized);
+
+    if(panable)
+        camera.pan(delta_scene);
+    
+
+    QuadS2D* quad_ptr = try_match_cursor_to_quad(cursor_pos_scene);
+    if(quad_ptr == nullptr)
+        quad_current_hover = nullptr;
+    else
+        quad_current_hover = quad_ptr;
+
+}
+
+void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
+    
+    // Update scene cursor
+    cursor_pos_normal = pointer_click.pos_scene_normal;
+    cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
+
+
+    window::MouseButtonEvent button_event = pointer_click.button_event;
+
+    // Toggle Pan
+    if(!panable && button_event.is_middle_down())
+        panable = true;
+    else if(panable && button_event.is_middle_up())
+        panable = false;
+    
+
+
+    // Left Click
+    if(button_event.is_left_down()){
+
+        quad_current_selected = try_match_cursor_to_quad(cursor_pos_scene);
+        if(quad_current_selected != nullptr){
+            print("New quad selected: ");
+            quad_current_selected->get_name().println();
+        }
+    
+    }
+}
+
+void Scene2D::handle_scroll(float delta){
+    camera.zoom(delta);
+}
+
+
 
 
 void Scene2D::add_quad(scene::QuadS2D& quad){
@@ -137,14 +210,12 @@ unsigned int Scene2D::render_to_texture(){
         renderer2D.render_line(line.render_context);
     }
 
-    // FRAME
-    frame.M_m_s.x.x = 2.0f;
-    frame.M_m_s.y.y = 1.0f;
-    frame.M_m_s.x.z = 7.0f;
-    frame.M_m_s.y.z = 6.0f;
-
-    renderer2D.set_model(frame.M_m_s);
-    renderer2D.render_frame(frame.render_context);
+    // FRAMES
+    renderer2D.render_frame(frame_M_m_s);
+    if(quad_current_hover != nullptr)
+        renderer2D.render_frame(quad_current_hover->get_matrix());
+    if(quad_current_selected != nullptr)
+        renderer2D.render_frame(quad_current_selected->get_matrix());
 
 
     framebuffer.blit();
@@ -223,55 +294,13 @@ void Scene2D::handle_input(window::InputEvent event){
     }
 }
 
-void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
 
-    f2 delta_normalized = pointer_movement.pos_curr - pointer_movement.pos_prev;
-    Box2D camera_box = camera.get_box();
-
-    f2 delta_scene = {
-        delta_normalized.x * camera_box.size.x, 
-        delta_normalized.y * camera_box.size.y
-    };
-
-    if(panable)
-        camera.pan(delta_scene);
-    
-
-    // PRINT POINTER POSITIONS
-
-    // pointer_movement.pos_curr.print("Pointer [norm]:");
-    
-    // Current position of cursor in scene coordinates
-    f2 pos_scene = {
-        camera_box.pos.x + pointer_movement.pos_curr.x * camera_box.size.x, 
-        camera_box.pos.y + pointer_movement.pos_curr.y * camera_box.size.y
-    };
-
-    // pos_scene.print("Pointer [scene]:");
-}
-
-void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
-
-    window::MouseButtonEvent button_event = pointer_click.button_event;
-
-    if(!panable && button_event.is_middle_down())
-        panable = true;
-    else if(panable && button_event.is_middle_up())
-        panable = false;
-    
-}
-
-void Scene2D::handle_scroll(float delta){
-    camera.zoom(delta);
-}
-
-
-void Scene2D::print(){
+void Scene2D::print_info(){
 
     std::cout << "Scene:" << std::endl;
 
-    
-    
+    cursor_pos_scene.print("Cursor [scene]:");
+    cursor_pos_normal.print("Cursor [norm]:");
 }
 
 }
