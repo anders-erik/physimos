@@ -177,6 +177,10 @@ class Primitive {
         /** Set the 4x4 transformation matrix that will be set as shader uniform */
         void updateTransformationMatrix();
         
+        /** Before each render: 
+            - dimension change flags are checked. If set, we update primitive and its descendants. */
+        void try_update_box_recursive();
+
         /** Render current state of primitive */
         void render();
         /** Render current state of primitive and making this same call to all its children

@@ -4,11 +4,13 @@ add_subdirectory(render)
 add_library(ui
 
     ui.cc
+    font_bitmap.cc
     ui_primitive.cc
     ui_globals.cc
     ui_texture.cc
+    
+    # dependencies removed
     ui_font.cc
-
     ui_shader_texture.cc
     ui_shader_color.cc
     ui_shader_string.cc

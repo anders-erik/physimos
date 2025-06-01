@@ -6,10 +6,6 @@
 
 #include "opengl/program.hh"
 
-#include "ui/ui_globals.hh" // UI::Color
-#include "ui/ui_primitive.hh" // UI::Primtiive
-
-// #include "renderer_primitive.hh"
 
 namespace UI {
 

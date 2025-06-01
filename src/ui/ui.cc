@@ -152,6 +152,7 @@ void init(){
     shader::string_shader.set_texture(font::get_font_texture());
 
 
+
     topbar      = new UI::component::UIC_Root_Topbar();
     main_view   = new UI::component::UIC_Root_MainView();
     left_panel  = new UI::component::UIC_Root_LeftPanel();

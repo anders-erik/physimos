@@ -6,14 +6,16 @@
 
 #include "opengl/program.hh"
 
-#include "ui/ui_globals.hh" // UI::Color
-#include "ui/ui_primitive.hh" // UI::Primtiive
+#include "ui/font_bitmap.hh"
 
 #include "ui/render/program_primitive_color.hh"
 #include "ui/render/program_primitive_texture.hh"
+#include "ui/render/program_primitive_string.hh"
 
 
 namespace UI {
+
+struct Primitive;
 
 
 // BOOTSTRAP FOR INITIAL TRANSITION TO RENDERER - 2025-05-29
@@ -29,12 +31,11 @@ class RendererPrimitive {
     m4f4 viewport_transform;
 
     ProgramPrimitiveColor program_color;
-    ProgramPrimitiveTexture program_texture_;
+    ProgramPrimitiveTexture program_texture;
 
-
-    opengl::ProgramName program_string = opengl::ProgramName::ui_string;
-    unsigned int program_string_id;
-
+    ProgramPrimitiveString program_string;
+    std::vector<VertexFontBitmap> char_verts;
+    FontBitmap font_bitmap;
 
 
 public:
@@ -43,11 +44,15 @@ public:
 
     void set_window_info(f2 size, f2 scale);
 
+    void draw(UI::Primitive& primitive);
 
-    // COLOR
-    void draw_color_primitive(UI::Primitive& primitive);
-    void draw_texture_primitive(UI::Primitive& primitive);
 
+private:
+
+
+    void draw_primitive_color(UI::Primitive& primitive);
+    void draw_primitive_texture(UI::Primitive& primitive);
+    void draw_primitive_string(UI::Primitive& primitive);
 
 };
 

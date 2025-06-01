@@ -6,6 +6,11 @@
 #include <iostream>
 #include <cmath>
 
+
+#include "ui/ui_globals.hh" // UI::Color
+#include "ui/ui_primitive.hh" // UI::Primtiive
+#include "ui/ui_font.hh"
+
 #include "renderer_primitive.hh"
 
 
@@ -20,6 +25,7 @@ const unsigned int SCREEN_INIT_HEIGHT = 800;
 // BOOTSTRAP FOR INITIAL TESTING - 2025-05-29
 bool renderer_created = false;
 RendererPrimitive* renderer_ui;
+/** Get extern renderer. First call initalizes; subsequent calls grab pointer. */
 RendererPrimitive& get_renderer_ui(){
     if(!renderer_created){
         renderer_ui = new RendererPrimitive();
@@ -40,12 +46,13 @@ RendererPrimitive::RendererPrimitive(){
     program_color.init();
     program_color.set_viewport_transform(viewport_transform);
 
-    program_texture_.init();
-    program_texture_.set_viewport_transform(viewport_transform);
+    program_texture.init();
+    program_texture.set_viewport_transform(viewport_transform);
 
+    program_string.init();
+    program_string.set_viewport_transform(viewport_transform);
+    program_string.set_texture(font_bitmap.get_font_texture());
 
-    // Init others
-    program_string_id = opengl::build_program_vert_frag(program_string);
 }
 
 
@@ -56,12 +63,27 @@ void RendererPrimitive::set_window_info(f2 size , f2 scale){
     viewport_transform.y.y = 2.0f * scale.y / size.y;
 
     program_color.set_viewport_transform(viewport_transform);
-    program_texture_.set_viewport_transform(viewport_transform);
+    program_texture.set_viewport_transform(viewport_transform);
+    program_string.set_viewport_transform(viewport_transform);
 
 }
 
 
-void RendererPrimitive::draw_color_primitive(UI::Primitive& primitive){
+void RendererPrimitive::draw(UI::Primitive & primitive){
+
+    // Always draw the primitive base color first
+    draw_primitive_color(primitive);
+
+    // Check if string first, as string might have texture!
+    if(primitive.str != "")
+        draw_primitive_string(primitive);
+    else if(primitive.has_texture)
+        draw_primitive_texture(primitive);
+
+}
+
+
+void RendererPrimitive::draw_primitive_color(UI::Primitive& primitive){
 
     program_color.set(
         primitive.uiTransform.M_m_s.pointer(), 
@@ -73,14 +95,40 @@ void RendererPrimitive::draw_color_primitive(UI::Primitive& primitive){
 
 }
 
-void RendererPrimitive::draw_texture_primitive(UI::Primitive & primitive){
+void RendererPrimitive::draw_primitive_texture(UI::Primitive & primitive){
 
-    program_texture_.set(
+    program_texture.set(
         primitive.uiTransform.M_m_s.pointer(), 
         primitive.renderedTexture
     );
 
-    program_texture_.draw();  
+    program_texture.draw();  
+
+}
+
+
+// shader::VertexTexture charVert[6] = {
+//     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   30.0f},   // bottom-left
+//     {1.0f, 1.0f, 0.0f, 1.0f, 0.01f,  30.0f},   // top-right
+//     {0.0f, 1.0f, 0.0f, 0.0f, 0.01f,  30.0f},   // top-left
+//     {1.0f, 1.0f, 0.0f, 1.0f, 0.01f,  30.0f},   // top-right
+//     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f,   30.0f},   // bottom-left
+//     {1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   30.0f},   // bottom-right
+// };
+
+
+void RendererPrimitive::draw_primitive_string(UI::Primitive & primitive){
+
+    program_string.set_primitive_transform(
+        primitive.uiTransform.M_m_s.pointer()
+    );
+
+    // font::string_to_texture_vertex_list(char_verts, primitive.str);
+    font_bitmap.string_to_texture_vertex_list(char_verts, primitive.str);
+
+    program_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(VertexFontBitmap));
+
+    program_string.draw();
 
 }
 

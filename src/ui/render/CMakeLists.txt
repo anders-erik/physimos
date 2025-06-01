@@ -4,6 +4,7 @@ add_library(ui_render
     renderer_primitive.cc
     program_primitive_color.cc
     program_primitive_texture.cc
+    program_primitive_string.cc
 
 )
 
