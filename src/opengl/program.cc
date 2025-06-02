@@ -75,6 +75,9 @@ void Program::check_link_error(){
         glGetProgramInfoLog(id, 1024, NULL, infoLog);
         plib::plog_error("OPENGL ", "SHADER_PROGRAM ", "Failed to link program. : InfoLog = " + std::string(infoLog));
     }
+    else {
+        std::cout << program_name_str.to_std_string() << " linked succesfully." << std::endl;
+    }
 }
 
 

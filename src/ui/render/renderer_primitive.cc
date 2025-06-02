@@ -71,6 +71,9 @@ void RendererPrimitive::set_window_info(f2 size , f2 scale){
 
 void RendererPrimitive::draw(UI::Primitive & primitive){
 
+    // This will only be set once during future instancing
+    glDisable(GL_DEPTH_TEST);
+
     // Always draw the primitive base color first
     draw_primitive_color(primitive);
 

@@ -679,6 +679,24 @@ namespace UI {
 
     }
 
+    void Primitive::render(RendererPrimitive& renderer) {
+
+        // WARN: Does update happen when rendereding turned on?
+        // YES? sinze the change flags will remain untouched and then all updates will take place prior to next render!
+        if(!render_enabled) 
+            return;
+
+
+        try_update_box_recursive();
+
+
+        // If scrollable, then we need to check children AABBs, and discard all regions of children
+        if(scrollable){}
+
+        renderer.draw(*this);
+
+    }
+
     
 
 

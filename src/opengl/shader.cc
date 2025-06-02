@@ -90,6 +90,10 @@ void Shader::check_error(){
         glGetShaderInfoLog(shader_id, 1024, NULL, infoLog);
         plib::plog_error("DRAW ", "SHADER_" + shader_type + " ", "Failed to build DrawShader shader[" + path_full_string + "]. : InfoLog = " + std::string(infoLog));
     }
+    else {
+        // std::cout << path_core_full.to_std_string() << " compiled succesfully." << std::endl;
+        
+    }
 }
 
 

@@ -38,7 +38,7 @@
 namespace UI {
 
 
-PUI* pui;
+
 
 
 /** Returned primitive from finding primitive target during left click. Is reset to nullptr on left release. */
@@ -123,7 +123,7 @@ void state_main_set(StateMain new_state_main){
 
 void init(){
 
-    pui = new PUI();
+
 
     PhysWin new_window = get_initial_physimos_window();
     viewport_width = new_window.width / new_window.xscale;

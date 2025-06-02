@@ -15,7 +15,9 @@
 
 namespace UI {
 
-class Primitive; // forward declare
+// forward declare
+class Primitive; 
+class RendererPrimitive;
 
 
 typedef enum class PrimitiveType {
@@ -183,6 +185,8 @@ class Primitive {
 
         /** Render current state of primitive */
         void render();
+        /** Render primitive with specific renderer. */
+        void render(RendererPrimitive& renderer);
         /** Render current state of primitive and making this same call to all its children
          *  Very useful for ui branches that does not need updating or component behavior, such as the string primitives of the fixed sized buttons in the topbar.
          */

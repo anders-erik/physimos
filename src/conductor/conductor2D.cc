@@ -10,6 +10,9 @@ Conductor2D::Conductor2D(f2 window_size_f)
 
 	this->window_size_f = window_size_f;
 
+	// TODO: get content scale parameter
+	pui.set_window_info(window_size_f, {1,1});
+
 	reload_camera_root();
 
 	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
@@ -68,7 +71,7 @@ void Conductor2D::start_main_loop(){
 		if(root_scene_opt.has_value()){
 			scene::Scene2D& root_scene_tmp = root_scene_opt.get_ref();
 			root_scene_tmp.update();
-			root_scene_tmp.render();
+			// root_scene_tmp.render();
 		}
 		BC::return_scene(root_scene_tag);
 
@@ -83,6 +86,8 @@ void Conductor2D::start_main_loop(){
 			renderer.render_frame(subscene_current_hover->get_matrix());
 		
 		render_root();
+
+		pui.render();
 	}
 
 	auxwin.destroy();
@@ -153,6 +158,7 @@ void Conductor2D::process_input(InputEvent& event){
 	case EventType::WindowResize:
 		window_size_f = event.window_resize.size_f;
 		reload_camera_root();
+		pui.set_window_info(window_size_f, {1.0f,1.0f});
 		// scene.set_window_size(event.window_resize.size_f);
 		break;
 

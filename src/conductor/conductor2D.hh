@@ -4,7 +4,7 @@
 
 #include "window/auxwin.hh"
 
-#include "ui/ui.hh"
+#include "ui/pui.hh"
 
 #include "scene/bc.hh"
 #include "scene/scene2D.hh"
@@ -40,7 +40,7 @@ class Conductor2D {
 public:
 	scene::Scene2D root_scene;
 	BC::Tag root_scene_tag;
-	PUI pui;
+	UI::PUI pui;
 
 
 	Conductor2D(f2 window_size);
