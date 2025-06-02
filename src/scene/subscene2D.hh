@@ -38,6 +38,7 @@ public:
     SubScene2D(f2 framebuffer_size) : scene {Scene2D(framebuffer_size)} {};
 
     QuadS2D& get_quad();
+    Scene2D& get_scene();
 
     // QUAD CALLS
     void set_box(f2 pos, f2 size);

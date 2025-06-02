@@ -4,7 +4,8 @@
 
 
 Win2D::Win2D(f2 window_size_f) 
-	: auxwin {window_size_f}
+	: 	auxwin {window_size_f},
+		root_scene {window_size_f}
 {
 
 	this->window_size_f = window_size_f;
@@ -54,24 +55,32 @@ void Win2D::start_loop(){
 			process_input(event);
 
 
-		// scene::Scene2D& scene = scenes[0];
-		scene::SubScene2D& subscene = subscenes[0];
 		
-		// scene.print();
-
-		// UPDATE
-		// scene.update();
+		// SUBSCENE
 		subscenes[0].update();
-
-		// RENDER
-		// quad0.set_texture_id(scene.render_to_texture());
 		subscenes[0].set_texture_id(subscenes[0].render());
 
-		auxwin.bind_framebuffer();
+
+		auxwin.bind_window_framebuffer();
+
+		// Root Scene
+		auto root_scene_opt = BC::borrow_scene(root_scene_tag);
+		if(root_scene_opt.has_value()){
+			scene::Scene2D& root_scene_tmp = root_scene_opt.get_ref();
+			root_scene_tmp.update();
+			root_scene_tmp.render();
+		}
+		BC::return_scene(root_scene_tag);
+
+		
+		root_scene.update();
+		root_scene.render();
+
 		// scene.set_window_size(window_size_f);
 		// scene.render_window();
 
-		
+		if(subscene_current_hover != nullptr)
+			renderer.render_frame(subscene_current_hover->get_matrix());
 		
 		render_root();
 	}
@@ -102,12 +111,17 @@ void Win2D::input_mouse_move(InputEvent & event){
 
 	if(subscenes[0].contains_cursor(cursor.sane)){
 
+		subscene_current_hover = &subscenes[0];
+
 		// Convert to normalized quad coordinates (= normal. subscene coords.)
 		scene::PointerMovement2D pointer_movement;
 		pointer_movement.pos_prev = subscenes[0].get_normalized_from_point(cursor_prev.sane);
 		pointer_movement.pos_curr = subscenes[0].get_normalized_from_point(cursor.sane);
 
 		subscenes[0].handle_pointer_move( pointer_movement );
+	}
+	else {
+		subscene_current_hover = nullptr;
 	}
 }
 
@@ -171,7 +185,7 @@ void Win2D::reload_camera_root(){
 	renderer.set_camera(camera_root.get_matrix());
 }
 void Win2D::render_root(){
-	auxwin.bind_framebuffer();
+	auxwin.bind_window_framebuffer();
 
 	renderer.activate();
 	renderer.render_quad(subscenes[0].get_quad());

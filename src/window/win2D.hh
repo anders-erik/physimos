@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "scene/bc.hh"
+
 #include "window/auxwin.hh"
 
 #include "scene/scene2D.hh"
@@ -21,6 +23,8 @@ class Win2D {
 	scene::Camera2D camera_root; // Always displays the root scene filling the window
 	opengl::Scene2DRenderer renderer;
 	
+
+	scene::SubScene2D* subscene_current_hover = nullptr;
 	std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Win2D
 	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
 	// std::vector<scene::ShapeS2D> quads;
@@ -32,13 +36,14 @@ class Win2D {
 	std::vector<window::InputEvent> input_events;
 
 public:
+	scene::Scene2D root_scene;
+	BC::Tag root_scene_tag;
+
 
 	Win2D(f2 window_size);
 
 	// transfer control to Win2D by entering main rendering loop
 	void start_loop();
-    // Set up new frame and handle input
-	void start_frame();
 
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);
@@ -47,7 +52,7 @@ public:
 	
 	void set_window_size(f2 size);
 
-	scene::SubScene2D& add_subscene(f2 pos_normalized, f2 size_normalized);
+	scene::SubScene2D& add_subscene(f2 pos_scene, f2 size_scene);
 
 
 private:

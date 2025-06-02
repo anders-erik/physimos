@@ -18,11 +18,12 @@
 
 #include "phont/phont.hh"
 
+
 struct GLFWWindow;
 
 
-
 namespace scene {
+
 
 
 /** Cursor movement event in normalized viewport coordinated. Usually recieved from over of scene.
@@ -44,7 +45,12 @@ struct PointerClick2D {
 
 
 
+struct Scene2D;
+struct SubScene2D;
+
 class Scene2D {
+
+    size_t tag_id;
 
     f2 window_size_f;
     f2 cursor_pos_scene;
@@ -67,12 +73,18 @@ class Scene2D {
     std::vector<ShapeS2D> lines;
     std::vector<ShapeS2D> shapes;
 
+    // std::vector<SubScene2D> subscenes;
+    std::vector<Scene2D> scenes;
+
 
 public:
     opengl::TextureFrameBufferMultisample framebuffer;
 
 
     Scene2D(f2 _window_size);
+
+    void set_tag_id(size_t id);
+    size_t get_tag_id();
 
     f2 get_window_size();
     void set_window_size(f2 size);
@@ -88,11 +100,14 @@ public:
 
     void update();
 
-    void render_window();
+    void render();
     unsigned int render_to_texture();
 
     void add_quad(scene::QuadS2D& quad);
     ShapeS2D& add_shape(Shape& shape);
+    void add_subscene(f2 pos_scene, f2 size_scene);
+    // SubScene2D* add_subscene(f2 pos_scene, f2 size_scene);
+    // void add_subscene(f2 pos_scene, f2 size_scene);
 
     void print_info();
 };

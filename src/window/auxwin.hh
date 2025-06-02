@@ -146,7 +146,7 @@ class Auxwin {
         
         void make_current();
         
-        void bind_framebuffer();
+        void bind_window_framebuffer();
         
         // new frame GL-calls & retrieves all new events
         std::vector<InputEvent> new_frame();

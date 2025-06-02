@@ -15,6 +15,8 @@ set(SCENE_OBJS
     shapeS2D.cc
     quadS2D.cc
     subscene2D.cc
+
+    bc.cc
 )
 
 

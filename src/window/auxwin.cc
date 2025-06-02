@@ -172,7 +172,7 @@ void Auxwin::opengl_init(){
 void Auxwin::make_current(){
     glfwMakeContextCurrent(glfw_window);
 }
-void Auxwin::bind_framebuffer(){
+void Auxwin::bind_window_framebuffer(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0,0, current_window_size_i.x, current_window_size_i.y);
     

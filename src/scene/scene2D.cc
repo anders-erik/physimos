@@ -5,10 +5,10 @@
 
 #include "phont/phont.hh"
 #include "math/vecmat.hh"
-
-#include "scene/scene2D.hh"
 #include "math/transform.hh"
+
 #include "scene2D.hh"
+#include "subscene2D.hh"
 
 namespace scene {
 
@@ -34,6 +34,14 @@ Scene2D::Scene2D(f2 _window_size)
     // camera.pan({ -400.0f, -300.0f}); // Half of window size
     camera.pan({ 0.0f, 0.0f});
 
+}
+
+void Scene2D::set_tag_id(size_t id){
+    tag_id = id;
+}
+
+size_t Scene2D::get_tag_id(){
+    return tag_id;
 }
 
 
@@ -152,6 +160,17 @@ ShapeS2D& Scene2D::add_shape(Shape& shape){
 
 }
 
+SubScene2D* ss;
+
+// SubScene2D& Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
+// SubScene2D* add_subscene(f2 pos_scene, f2 size_scene){
+void Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
+    ss = new SubScene2D(size_scene);
+    // return ss;
+    // return *ss;
+    // return subscenes.emplace_back(size_scene);
+}
+
 
 void Scene2D::update(){
 
@@ -167,30 +186,7 @@ void Scene2D::update(){
 }
 
 
-void Scene2D::render_window(){
-
-    renderer2D.activate();
-    // renderer2D.set_camera(camera.transform.matrix);
-    renderer2D.set_camera(camera.get_matrix());
-
-    // for(scene::ShapeS2D& _quad : quad_shapes){
-    //     renderer2D.set_model(_quad.transform_2d.matrix);
-    //     renderer2D.render_quad(_quad.render_context);
-    // }
-
-    for(scene::ShapeS2D& point : points){
-        renderer2D.set_model(point.get_matrix());
-        renderer2D.render_point(point.render_context);
-    }
-
-}
-
-
-unsigned int Scene2D::render_to_texture(){
-
-    framebuffer.multisample_fbo_bind();
-    framebuffer.multisample_fbo_clear_red();
-
+void Scene2D::render(){
 
     renderer2D.activate();
     // renderer2D.set_camera(camera.transform.matrix);
@@ -216,6 +212,16 @@ unsigned int Scene2D::render_to_texture(){
         renderer2D.render_frame(quad_current_hover->get_matrix());
     if(quad_current_selected != nullptr)
         renderer2D.render_frame(quad_current_selected->get_matrix());
+
+}
+
+
+unsigned int Scene2D::render_to_texture(){
+
+    framebuffer.multisample_fbo_bind();
+    framebuffer.multisample_fbo_clear_red();
+
+    render();
 
 
     framebuffer.blit();

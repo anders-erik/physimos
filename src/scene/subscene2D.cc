@@ -15,6 +15,10 @@ QuadS2D & SubScene2D::get_quad(){
     return quad;
 }
 
+Scene2D & SubScene2D::get_scene(){
+    return scene;
+}
+
 
 
 // QUAD CALLS

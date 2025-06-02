@@ -2,6 +2,37 @@
 
 // #include <optional>
 
+/** A an optional pointer object to enforce nullptr check before use. */
+template <typename T>
+class OptPtr {
+
+    T *t = nullptr;
+
+public:
+
+    OptPtr() = default;
+ 
+    OptPtr(T* t) : t {t} {};
+
+    [[nodiscard]] inline T& get_ref(){
+        return *t;
+    };
+    [[nodiscard]] inline T& get_ptr(){
+        return t;
+    };
+    [[nodiscard]] inline bool is_null(){
+        return t == nullptr ? true : false;
+    }
+    [[nodiscard]] inline bool has_value(){
+        return t == nullptr ? false : true;
+    }
+
+};
+
+
+
+
+
 /** A move-only optional container. */
 template <typename T>
 class OptMove {

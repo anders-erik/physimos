@@ -6,6 +6,8 @@
 #include <any>
 
 
+#include "bc.hh"
+
 #include "window/win2D.hh"
 
 #include "phont.hh"
@@ -106,48 +108,6 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 
 
 
-// Borrow checker (runtime)
-class BC {
-
-	std::map<unsigned int, std::any> scene_map;
-	unsigned int scene_id_count = 0;
-	bool scene_is_locked = false;
-
-public:
-	enum Type {
-		scene,
-	};
-	struct Tag {
-		unsigned int id;
-		Type type;
-		std::string label;
-
-		Tag(unsigned int id, Type type,std::string label) : id {id}, type {type}, label{label} {};
-	};
-
-
-	Tag new_scene(std::string label){
-		scene_map[scene_id_count++] = scene::Scene2D {{0,0}};
-		return Tag{scene_id_count-1, Type::scene, label};
-	}
-
-	scene::Scene2D& borrow_scene(Tag tag){
-		scene::Scene2D& scene = std::any_cast<scene::Scene2D&>(scene_map[tag.id]); 
-
-		if(scene_is_locked)
-			throw std::runtime_error("BC: Tried to get scene during scene lock.");
-
-		scene_is_locked = true;
-
-		return scene;
-	}
-
-	void return_scene(Tag tag){
-
-		scene_is_locked = false;
-	}
-
-};
 
 
 
@@ -157,6 +117,27 @@ int main()
 	std::cout << "PHONT MAIN"  << std::endl;
 
 	Win2D win2D ({800, 600});
+
+
+	// Quad for root scene
+	scene::QuadS2D root_scene_quad_1;
+	root_scene_quad_1.set_box( {0.0f, 0.0f}, {2.0f, 3.0f} );
+    root_scene_quad_1.set_texture_id(opengl::texture_get_id(opengl::Textures::Grass));
+	root_scene_quad_1.set_name("root_scene_quad_1");
+
+	// Create root scene and add quad
+
+	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_root = BC::new_scene("Root scene");
+	win2D.root_scene_tag = tag_scene_root.XX;
+	if(tag_scene_root.YY.is_null())
+		throw std::runtime_error("Unable to create root scene in win2D");
+
+	scene::Scene2D& root_scene = tag_scene_root.YY.get_ref();
+	root_scene.add_quad(root_scene_quad_1);
+
+	BC::return_scene(win2D.root_scene_tag);
+
+
 
 	// scene::Scene2D& root_scene_0 = win2D.add_subscene({0.1f, 0.4f}, {0.5f, 0.5f});
 	scene::SubScene2D& subscene_0 = win2D.add_subscene({0.1f, 0.4f}, {0.5f, 0.5f});
@@ -178,22 +159,36 @@ int main()
 
 
 
-	BC bc;
 
-	BC::Tag tag_scene_0 = bc.new_scene("Scene0");
-	scene::Scene2D& borrowed_scene_0 = bc.borrow_scene(tag_scene_0);
+
+
+	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_0 = BC::new_scene("Scene0");
+
+	if(tag_scene_0.YY.is_null())
+		throw std::runtime_error("EMPTY SCENE OPT PTR");
+
+	scene::Scene2D& borrowed_scene_0 = tag_scene_0.YY.get_ref();
+
 	// scene::Scene2D& borrowed_scene_0_again = bc.borrow_scene(tag_scene_0); // not returned!
-	// Change value
+	
+	// Change values
 	borrowed_scene_0.get_window_size().print("Initial window size: ");
 	borrowed_scene_0.set_window_size({100, 100});
-	bc.return_scene(tag_scene_0);
+	BC::return_scene(tag_scene_0.XX);
+
 
 	// Read value change
-	scene::Scene2D& borrowed_scene_0_again = bc.borrow_scene(tag_scene_0);
-	borrowed_scene_0_again.get_window_size().print("Updated window size: ");
-	bc.return_scene(tag_scene_0);
-	
+	OptPtr<scene::Scene2D> borrowed_scene_0_again_opt = BC::borrow_scene(tag_scene_0.XX);
+	if(borrowed_scene_0_again_opt.is_null())
+		throw std::runtime_error("EMPTY SCENE OPT PTR");
 
+	scene::Scene2D& borrowed_scene_0_again = borrowed_scene_0_again_opt.get_ref();
+	borrowed_scene_0_again.get_window_size().print("Updated window size: ");
+
+	BC::return_scene(tag_scene_0.XX);
+	
+	BC::obj obj;
+	obj.scenesss.push_back(scene::SubScene2D( {0,0} ));
 
 	win2D.start_loop();
 
