@@ -1,4 +1,6 @@
 
+#include <stdexcept>
+
 #include "str.hh"
 #include "alloc.hh"
 #include "print.hh"
@@ -176,6 +178,11 @@ void Str::allocate(unsigned int size_to_alloc){
 
 void Str::reallocate(unsigned int new_size_alloc){
 
+    // No need to reallocate
+    if(size_alloc == new_size_alloc)
+        return;
+        // throw std::runtime_error("Tried to reallocate Str to current size.");
+
     mem = Alloc::reallocate_bytes(mem, size_alloc, new_size_alloc);
 
     size_alloc = new_size_alloc;
@@ -247,22 +254,38 @@ void Str::append(const Str& str_to_append){
     size_str = combined_str_size;
 }
 
-Str& Str::cut_to_substr(unsigned int start_index, unsigned int size){
+Str& Str::cut_to_substr(unsigned int pos, unsigned int new_size){
 
-    if(start_index > size_str || start_index+size > size_str){
-        std::cout << "Error: unable to cut Str from substring. Substring beyond string size. " << std::endl;
+    if(pos > size_str)
+        throw std::out_of_range("Str::cut_to_substr: pos > size_str.");
+    
+
+    unsigned int new_size_bounded = new_size;
+    if(pos + new_size > size_str)
+        new_size_bounded = size_str - pos;
+
+
+    if(new_size_bounded == size_str)
         return *this;
-    }
-        
-    memmove(mem, mem+start_index, size);
-    reallocate(size);
-    size_str = size;
+
+
+    // ok substring here
+
+
+    // not memcpy as src and dest overlap
+    memmove(mem, mem+pos, new_size_bounded);
+
+    // shrink allocation size and null-terminate
+    reallocate(new_size_bounded+1);
+    *(mem+new_size_bounded) = 0x0; 
+
+    size_str = new_size_bounded;
 
     return *this;
 }
-Str Str::substr(unsigned int start_index, unsigned int size){
+Str Str::substr(unsigned int pos, unsigned int new_size){
     Str copy = *this;
-    return copy.cut_to_substr(start_index, size);
+    return copy.cut_to_substr(pos, new_size);
 }
 
 
@@ -290,10 +313,10 @@ std::string_view Str::to_std_string_view(){
 const char* Str::to_c_str(){
 
     // make sure null-termination fits
-    if(size_alloc <= size_str )
+    if( size_alloc == size_str )
         reallocate(size_str+1);
 
-    *(mem+size_str) = 0x0; 
+    *(mem+size_str) = 0x0;
     return mem;
 }
 

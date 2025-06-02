@@ -4,8 +4,17 @@
 #include "str.hh"
 
 
-/** Level. */
-enum class err_l {
+// struct err_s {
+//     enum {
+//         Critical,
+//         Error,
+//         Warn,
+//     } type = Error;
+
+// };
+
+/** Severity. */
+enum class err_s {
     Critical,
     Error,
     Warn,
@@ -13,8 +22,7 @@ enum class err_l {
 
 /** Which physimos module. */
 enum class err_m {
-    File,
-    Dir,
+    Lib,
 };
 
 /** Type of error.  */
@@ -27,13 +35,24 @@ enum class err_t {
 
 /** Error info wrapper. */
 struct Err {
-    err_l   level = err_l::Error; // Error level
+    err_s   severity = err_s::Error; // Error level
     err_m   module; // Which module the error took place in
     err_t   type; // error type
     Str     message; // error message
 
+    Str     file; // File path in which the error took place
+
     int ERRNO = 0; // store ERRNO from C APIs
 
     Err() = default;
-    Err(err_m module, err_t type, Str message): module{module}, type{type}, message{message} {};
+    Err(err_m module, err_t type, Str message)
+        :   module  {module}, 
+            type    {type}, 
+            message {message} 
+    {
+    };
+
+
+    Str err_s_to_str();
+
 };

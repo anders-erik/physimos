@@ -58,9 +58,9 @@ struct Str {
     /** Append chars to first string. realloc if necessary */
     void append(const Str& str_to_append);
     /** Shrink the string to specified starting index and size. Returns itself in cut state. */
-    Str& cut_to_substr(unsigned int start_index, unsigned int size);
+    Str& cut_to_substr(unsigned int pos, unsigned int new_size);
     /** Returns new Str as specified substring. */
-    Str substr(unsigned int start_index, unsigned int size);
+    Str substr(unsigned int pos, unsigned int new_size);
 
     std::string to_std_string();
     /** Reference-like string without copying. */

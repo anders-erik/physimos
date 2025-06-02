@@ -6,7 +6,7 @@
 #include "alloc.hh"
 
 
-#define ALLOCATE_WITH_NEW
+// #define ALLOCATE_WITH_NEW
 
 
 namespace Alloc {
@@ -22,15 +22,25 @@ char* allocate_bytes(unsigned int byte_count){
     
 }
 
-char* reallocate_bytes(char * old_pointer, unsigned int old_size, unsigned int new_size){
+char* reallocate_bytes(char * current_pointer, unsigned int current_size, unsigned int new_size){
+
 
     #ifdef ALLOCATE_WITH_NEW
+
         char* new_mem = static_cast<char*>(::operator new(new_size));
-        memcpy(new_mem, old_pointer, old_size);
-        delete[] old_pointer;
+
+        if(new_size > current_size)
+            memcpy(new_mem, current_pointer, current_size); // Copy all current data
+        else
+            memcpy(new_mem, current_pointer, new_size); // Copy only new size
+
+        delete[] current_pointer;
         return new_mem;
+
     #else
-        return (char*) std::realloc(old_pointer, new_size * sizeof(char));
+
+        return (char*) std::realloc(current_pointer, new_size * sizeof(char));
+
     #endif
 
 }

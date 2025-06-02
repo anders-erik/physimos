@@ -4,9 +4,11 @@
 #include <string>
 
 #include "str.hh"
+#include "err.hh"
 
 // Currently only prints to stdout
 void log_error(Str scope, Str error_type, Str message);
+void log_error(Err& error);
 
 namespace plib {
 

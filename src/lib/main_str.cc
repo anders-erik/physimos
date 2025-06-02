@@ -285,6 +285,11 @@ void substr(){
     
     str.cut_to_substr(3, 3);
     std::cout << "str        = "; str.println();
+
+    Str bounds = "abc";
+    bounds.cut_to_substr(0, 20000);
+    std::cout << bounds.to_std_string() << std::endl;
+    
 }
 
 struct Timer {
@@ -396,11 +401,11 @@ int main(){
     // res_str();
 
     // concat();
-    // substr();
+    substr();
 
     // str_perf();
 
-    print_hh();
+    // print_hh();
 
 
     std::cout << "Str End" << std::endl << std::endl;

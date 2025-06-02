@@ -20,7 +20,9 @@ extern std::string physimos_root_dir;
 void log_error(Str scope, Str error_type, Str message){
 
     Str base = "[ERROR] ";
-    Str full_log_string = base + scope + error_type + message;
+    Str scope_string = Str(" _") + scope + "_ ";
+
+    Str full_log_string = base + scope_string + error_type + " " + message;
     println(full_log_string);
 
     // std::string main_log_spath = "logs/main.log";
@@ -36,6 +38,19 @@ void log_error(Str scope, Str error_type, Str message){
     // plib::fs_echo_append(full_log_path, full_log_string);
     // std::cout << full_log_string << std::endl;
 
+}
+
+void log_error(Err & error){
+    
+    Str full_log_string;
+
+    full_log_string += "[ERROR] _";
+    full_log_string += error.err_s_to_str();
+
+    full_log_string += error.file;
+    full_log_string += error.message;
+
+    println(full_log_string);
 }
 
 

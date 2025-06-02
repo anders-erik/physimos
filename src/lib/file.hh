@@ -30,6 +30,10 @@ public:
         : relative_path {relative_path_str} {};
 
     void set_path(Str& path_str);
+    Str get_current_path();
+
+    void echo_str_core_xplat(Str str);
+
     Str cat_as_str_core_xplat();
     static Str cat_as_str_core_xplat(Str& path_str);
 
@@ -38,10 +42,11 @@ private:
     const char* get_current_path_c_str();
     void update_absolute_path();
 
-#ifdef  PH_WINDOWS
-    Str cat_core_file_windows();
-#elif   PH_LINUX
+#ifdef  PH_LINUX
     Str cat_file_linux();
+    void echo_file_linux(Str str);
+#elif   PH_WINDOWS
+    Str cat_core_file_windows();
 #endif
 
 

@@ -15,6 +15,8 @@ add_library(lib
 
     alloc.cc
     print.cc
+
+    err.cc
 )
 
 
