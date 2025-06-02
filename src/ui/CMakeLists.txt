@@ -23,4 +23,5 @@ target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include)
 
 target_link_libraries(ui 
     ui_render
+    image
 )

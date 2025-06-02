@@ -1,9 +1,9 @@
 
-#include "win2D.hh"
+#include "conductor2D.hh"
 
 
 
-Win2D::Win2D(f2 window_size_f) 
+Conductor2D::Conductor2D(f2 window_size_f) 
 	: 	auxwin {window_size_f},
 		root_scene {window_size_f}
 {
@@ -17,17 +17,17 @@ Win2D::Win2D(f2 window_size_f)
 
 }
 
-f2 Win2D::transform_normalized_to_window(f2 normalized){
+f2 Conductor2D::transform_normalized_to_window(f2 normalized){
 	return { normalized.x * window_size_f.x, normalized.y * window_size_f.y};
 }
 
-f2 Win2D::transform_window_to_normalized(f2 window){
+f2 Conductor2D::transform_window_to_normalized(f2 window){
 	return { window.x / window_size_f.x, window.y / window_size_f.y};
 }
 
 
 
-scene::SubScene2D& Win2D::add_subscene(f2 pos_normalized, f2 size_normalized){
+scene::SubScene2D& Conductor2D::add_subscene(f2 pos_normalized, f2 size_normalized){
 
 	f2 pos_window = transform_normalized_to_window(pos_normalized);
 	f2 size_window = transform_normalized_to_window(size_normalized);
@@ -39,13 +39,13 @@ scene::SubScene2D& Win2D::add_subscene(f2 pos_normalized, f2 size_normalized){
 }
 
 
-void Win2D::set_window_size(f2 size){
+void Conductor2D::set_window_size(f2 size){
 	for(scene::Scene2D& scene : scenes)
 		scene.set_window_size(size);
 }
 
 
-void Win2D::start_loop(){
+void Conductor2D::start_main_loop(){
 
 	while (auxwin.end_frame()){
 
@@ -90,7 +90,7 @@ void Win2D::start_loop(){
 
 
 
-void Win2D::input_scroll(InputEvent & event){
+void Conductor2D::input_scroll(InputEvent & event){
 	MouseScrollEvent& scroll_event = event.mouse_scroll;
 	// Only one scene at the moment
 	scene::Scene2D& scene = scenes[0];
@@ -102,7 +102,7 @@ void Win2D::input_scroll(InputEvent & event){
 
 }
 
-void Win2D::input_mouse_move(InputEvent & event){
+void Conductor2D::input_mouse_move(InputEvent & event){
 	// MouseMoveEvent& mouse_movement = event.mouse_movement;
 	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
 	CursorPosition& cursor = event.cursor;
@@ -125,7 +125,7 @@ void Win2D::input_mouse_move(InputEvent & event){
 	}
 }
 
-void Win2D::input_mouse_button(InputEvent & event){
+void Conductor2D::input_mouse_button(InputEvent & event){
 	
 	CursorPosition& cursor = event.cursor;
 	window::MouseButtonEvent mouse_button_event = event.mouse_button;
@@ -143,7 +143,7 @@ void Win2D::input_mouse_button(InputEvent & event){
 }
 
 
-void Win2D::process_input(InputEvent& event){
+void Conductor2D::process_input(InputEvent& event){
 		
 	// Only one scene at the moment
 	scene::Scene2D& scene = scenes[0];
@@ -178,13 +178,13 @@ void Win2D::process_input(InputEvent& event){
 
 
 
-void Win2D::reload_camera_root(){
+void Conductor2D::reload_camera_root(){
 	renderer.activate();
 	camera_root.set_window_size_px(window_size_f);
 	camera_root.set_width(window_size_f.x);
 	renderer.set_camera(camera_root.get_matrix());
 }
-void Win2D::render_root(){
+void Conductor2D::render_root(){
 	auxwin.bind_window_framebuffer();
 
 	renderer.activate();

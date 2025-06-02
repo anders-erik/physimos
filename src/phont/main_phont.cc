@@ -8,7 +8,7 @@
 
 #include "bc.hh"
 
-#include "window/win2D.hh"
+#include "conductor/conductor2D.hh"
 
 #include "phont.hh"
 
@@ -116,7 +116,7 @@ int main()
 {
 	std::cout << "PHONT MAIN"  << std::endl;
 
-	Win2D win2D ({800, 600});
+	Conductor2D conductor2D ({800, 600});
 
 
 	// Quad for root scene
@@ -128,19 +128,19 @@ int main()
 	// Create root scene and add quad
 
 	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_root = BC::new_scene("Root scene");
-	win2D.root_scene_tag = tag_scene_root.XX;
+	conductor2D.root_scene_tag = tag_scene_root.XX;
 	if(tag_scene_root.YY.is_null())
-		throw std::runtime_error("Unable to create root scene in win2D");
+		throw std::runtime_error("Unable to create root scene in conductor2D");
 
 	scene::Scene2D& root_scene = tag_scene_root.YY.get_ref();
 	root_scene.add_quad(root_scene_quad_1);
 
-	BC::return_scene(win2D.root_scene_tag);
+	BC::return_scene(conductor2D.root_scene_tag);
 
 
 
-	// scene::Scene2D& root_scene_0 = win2D.add_subscene({0.1f, 0.4f}, {0.5f, 0.5f});
-	scene::SubScene2D& subscene_0 = win2D.add_subscene({0.1f, 0.4f}, {0.5f, 0.5f});
+	// scene::Scene2D& root_scene_0 = conductor2D.add_subscene({0.1f, 0.4f}, {0.5f, 0.5f});
+	scene::SubScene2D& subscene_0 = conductor2D.add_subscene({0.1f, 0.4f}, {0.5f, 0.5f});
 
 	// Add stuff to scene
 
@@ -190,7 +190,7 @@ int main()
 	BC::obj obj;
 	obj.scenesss.push_back(scene::SubScene2D( {0,0} ));
 
-	win2D.start_loop();
+	conductor2D.start_main_loop();
 
 	return 0;
 }

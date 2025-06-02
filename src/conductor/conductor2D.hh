@@ -1,10 +1,12 @@
 
 #pragma once
 
-#include "scene/bc.hh"
 
 #include "window/auxwin.hh"
 
+#include "ui/ui.hh"
+
+#include "scene/bc.hh"
 #include "scene/scene2D.hh"
 #include "scene/subscene2D.hh"
 #include "scene/shapeS2D.hh"
@@ -16,7 +18,7 @@ using namespace window;
 	Owns a window and root 2D scenes.
 	Handles events and decides which root scene will recieve input events.
 */
-class Win2D {
+class Conductor2D {
 	window::Auxwin auxwin;
 	f2 window_size_f;
 
@@ -25,8 +27,8 @@ class Win2D {
 	
 
 	scene::SubScene2D* subscene_current_hover = nullptr;
-	std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Win2D
-	std::vector<scene::Scene2D> scenes; // Root scenes owned by Win2D
+	std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Conductor2D
+	std::vector<scene::Scene2D> scenes; // Root scenes owned by Conductor2D
 	// std::vector<scene::ShapeS2D> quads;
 	scene::QuadS2D quad0;
 
@@ -38,12 +40,13 @@ class Win2D {
 public:
 	scene::Scene2D root_scene;
 	BC::Tag root_scene_tag;
+	PUI pui;
 
 
-	Win2D(f2 window_size);
+	Conductor2D(f2 window_size);
 
-	// transfer control to Win2D by entering main rendering loop
-	void start_loop();
+	// transfer control to Conductor2D by entering main rendering loop
+	void start_main_loop();
 
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);

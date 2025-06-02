@@ -15,16 +15,18 @@
 
 #include "ui/ui_globals.hh"
 
+
+class PUI {
+public:
+    UI::RendererPrimitive renderer_ui;
+
+    PUI() {
+        renderer_ui = UI::RendererPrimitive();
+    };
+};
+
 namespace UI {
 
-    class PUI {
-    public:
-        UI::RendererPrimitive renderer_ui;
-
-        PUI() {
-            renderer_ui = UI::RendererPrimitive();
-        };
-    };
 
     // PUBLIC 
 

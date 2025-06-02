@@ -22,6 +22,9 @@ add_executable(main_phont
 target_link_libraries(main_phont
     phont
 
+    conductor
+    ui
+    image
     window
     math
 

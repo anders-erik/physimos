@@ -6,8 +6,6 @@ endif()
 set(WINDOW 
     auxwin.cc
     auxkey.cc
-
-    win2D.cc
 )
 
 
