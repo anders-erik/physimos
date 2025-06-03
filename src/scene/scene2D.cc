@@ -186,6 +186,28 @@ void Scene2D::update(){
 }
 
 
+
+void Scene2D::render_to_window(){
+
+    camera.set_width(window_size_f.x);
+
+    render();
+}
+
+
+unsigned int Scene2D::render_to_texture(){
+
+    framebuffer.multisample_fbo_bind();
+    framebuffer.multisample_fbo_clear_red();
+
+    render();
+
+
+    framebuffer.blit();
+
+    return framebuffer.get_resolved_texture();
+}
+
 void Scene2D::render(){
 
     renderer2D.activate();
@@ -215,19 +237,6 @@ void Scene2D::render(){
 
 }
 
-
-unsigned int Scene2D::render_to_texture(){
-
-    framebuffer.multisample_fbo_bind();
-    framebuffer.multisample_fbo_clear_red();
-
-    render();
-
-
-    framebuffer.blit();
-
-    return framebuffer.get_resolved_texture();
-}
 
 
 

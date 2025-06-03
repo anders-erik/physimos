@@ -24,7 +24,7 @@ struct GLFWWindow;
 
 namespace scene {
 
-
+struct SubScene2D;
 
 /** Cursor movement event in normalized viewport coordinated. Usually recieved from over of scene.
     [0,1]x[0,1] [unitless]
@@ -100,8 +100,9 @@ public:
 
     void update();
 
-    void render();
+    void render_to_window();
     unsigned int render_to_texture();
+    void render();
 
     void add_quad(scene::QuadS2D& quad);
     ShapeS2D& add_shape(Shape& shape);

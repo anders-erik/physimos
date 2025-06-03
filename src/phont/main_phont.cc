@@ -97,12 +97,12 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 	quad_Triangle.set_name("quad_Triangle");
 
 
-
-	subscene.add_quad(quad_F_1);
-	subscene.add_quad(quad_F_2);
-	subscene.add_quad(quad_A_1);
-	subscene.add_quad(quad_A_multi);
-	subscene.add_quad(quad_Triangle);
+	
+	subscene.scene.add_quad(quad_F_1);
+	subscene.scene.add_quad(quad_F_2);
+	subscene.scene.add_quad(quad_A_1);
+	subscene.scene.add_quad(quad_A_multi);
+	subscene.scene.add_quad(quad_Triangle);
 
 }
 
@@ -116,24 +116,30 @@ int main()
 {
 	std::cout << "PHONT MAIN"  << std::endl;
 
-	Conductor2D conductor2D ({800, 600});
+	f2 conductor_window_size = {800.0f, 600.0f};
+
+	Conductor2D conductor2D (conductor_window_size);
 
 
 	// Quad for root scene
 	scene::QuadS2D root_scene_quad_1;
-	root_scene_quad_1.set_box( {0.0f, 0.0f}, {2.0f, 3.0f} );
+	root_scene_quad_1.set_box( {0.0f, 0.0f}, {30.0f, 30.0f} );
     root_scene_quad_1.set_texture_id(opengl::texture_get_id(opengl::Textures::Grass));
 	root_scene_quad_1.set_name("root_scene_quad_1");
 
 	// Create root scene and add quad
 
-	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_root = BC::new_scene("Root scene");
+	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_root = BC::new_scene_with_lock(
+		"Root scene"
+	);
 	conductor2D.root_scene_tag = tag_scene_root.XX;
 	if(tag_scene_root.YY.is_null())
 		throw std::runtime_error("Unable to create root scene in conductor2D");
 
-	scene::Scene2D& root_scene = tag_scene_root.YY.get_ref();
-	root_scene.add_quad(root_scene_quad_1);
+	scene::Scene2D& root_scene_tmp = tag_scene_root.YY.get_ref();
+	
+	root_scene_tmp.set_window_size(conductor_window_size);
+	root_scene_tmp.add_quad(root_scene_quad_1);
 
 	BC::return_scene(conductor2D.root_scene_tag);
 
@@ -146,12 +152,12 @@ int main()
 
 	Shape point_to_draw = Shape::create(shape_t::point);
 	point_to_draw.move(f2{8.0f, 4.0f});
-	scene::ShapeS2D& scene_point = subscene_0.add_shape(point_to_draw);
+	scene::ShapeS2D& scene_point = subscene_0.scene.add_shape(point_to_draw);
 	// scene_point.
 
 	Shape line_to_draw = Shape::create(shape_t::line);
 	// line_to_draw.move(f2{6.0f, 6.0f});
-	scene::ShapeS2D& scene_line = subscene_0.add_shape(line_to_draw);
+	scene::ShapeS2D& scene_line = subscene_0.scene.add_shape(line_to_draw);
 	scene_line.set_pos( {6.0f, 6.0f} );
 
 
@@ -162,7 +168,7 @@ int main()
 
 
 
-	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_0 = BC::new_scene("Scene0");
+	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_0 = BC::new_scene_with_lock("Scene0");
 
 	if(tag_scene_0.YY.is_null())
 		throw std::runtime_error("EMPTY SCENE OPT PTR");
@@ -190,7 +196,7 @@ int main()
 	BC::obj obj;
 	obj.scenesss.push_back(scene::SubScene2D( {0,0} ));
 
-	conductor2D.start_main_loop();
+	conductor2D.main_loop();
 
 	return 0;
 }

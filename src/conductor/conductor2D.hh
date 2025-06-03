@@ -19,7 +19,9 @@ using namespace window;
 	Handles events and decides which root scene will recieve input events.
 */
 class Conductor2D {
+
 	window::Auxwin auxwin;
+	std::vector<window::InputEvent> input_events;
 	f2 window_size_f;
 
 	scene::Camera2D camera_root; // Always displays the root scene filling the window
@@ -28,32 +30,30 @@ class Conductor2D {
 
 	scene::SubScene2D* subscene_current_hover = nullptr;
 	std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Conductor2D
-	std::vector<scene::Scene2D> scenes; // Root scenes owned by Conductor2D
-	// std::vector<scene::ShapeS2D> quads;
-	scene::QuadS2D quad0;
 
 	// To be replaced with BC tag
 	scene::Scene2D* cursor_owner = nullptr;
 
-	std::vector<window::InputEvent> input_events;
+	UI::PUI pui;
 
 public:
-	scene::Scene2D root_scene;
 	BC::Tag root_scene_tag;
-	UI::PUI pui;
 
 
 	Conductor2D(f2 window_size);
 
-	// transfer control to Conductor2D by entering main rendering loop
-	void start_main_loop();
 
+	void input_window_change(InputEvent& event);
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);
 	void input_mouse_button(InputEvent& event);
 	void process_input(InputEvent & event);
 	
-	void set_window_size(f2 size);
+	void update_subscenes();
+	void update_root_scene();
+
+	// transfer control to Conductor2D by entering main rendering loop
+	void main_loop();
 
 	scene::SubScene2D& add_subscene(f2 pos_scene, f2 size_scene);
 

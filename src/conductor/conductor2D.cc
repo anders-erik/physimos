@@ -4,8 +4,7 @@
 
 
 Conductor2D::Conductor2D(f2 window_size_f) 
-	: 	auxwin {window_size_f},
-		root_scene {window_size_f}
+	: 	auxwin {window_size_f}
 {
 
 	this->window_size_f = window_size_f;
@@ -34,63 +33,38 @@ scene::SubScene2D& Conductor2D::add_subscene(f2 pos_normalized, f2 size_normaliz
 
 	f2 pos_window = transform_normalized_to_window(pos_normalized);
 	f2 size_window = transform_normalized_to_window(size_normalized);
-
+	
 	scene::SubScene2D& new_subscene = subscenes.emplace_back(size_window);
-	new_subscene.set_box(pos_window, size_window);
+	new_subscene.quad.set_box(pos_window, size_window);
 
 	return new_subscene;
 }
 
 
-void Conductor2D::set_window_size(f2 size){
-	for(scene::Scene2D& scene : scenes)
-		scene.set_window_size(size);
-}
+void Conductor2D::input_window_change(InputEvent& event){
+
+	WindowResizeEvent& resize_event = event.window_resize;
+
+	window_size_f = resize_event.size_f;
 
 
-void Conductor2D::start_main_loop(){
 
-	while (auxwin.end_frame()){
+	reload_camera_root();
 
-		input_events = auxwin.new_frame();
+	pui.set_window_info(window_size_f, {1.0f,1.0f});
 
-		for(InputEvent& event : input_events)
-			process_input(event);
-
-
-		
-		// SUBSCENE
-		subscenes[0].update();
-		subscenes[0].set_texture_id(subscenes[0].render());
-
-
-		auxwin.bind_window_framebuffer();
-
-		// Root Scene
-		auto root_scene_opt = BC::borrow_scene(root_scene_tag);
-		if(root_scene_opt.has_value()){
-			scene::Scene2D& root_scene_tmp = root_scene_opt.get_ref();
-			root_scene_tmp.update();
-			// root_scene_tmp.render();
-		}
+	// ROOT SCENE
+	OptPtr<scene::Scene2D> root_scene_opt = BC::borrow_scene(root_scene_tag);
+	if(root_scene_opt.has_value()){
+		scene::Scene2D& _root_scene = root_scene_opt.get_ref();
+		_root_scene.set_window_size(window_size_f);
 		BC::return_scene(root_scene_tag);
-
-		
-		root_scene.update();
-		root_scene.render();
-
-		// scene.set_window_size(window_size_f);
-		// scene.render_window();
-
-		if(subscene_current_hover != nullptr)
-			renderer.render_frame(subscene_current_hover->get_matrix());
-		
-		render_root();
-
-		pui.render();
 	}
 
-	auxwin.destroy();
+	// scene.set_window_size(event.window_resize.size_f);
+
+	// for(scene::Scene2D& scene : scenes)
+	// 	scene.set_window_size(size);
 }
 
 
@@ -98,10 +72,10 @@ void Conductor2D::start_main_loop(){
 void Conductor2D::input_scroll(InputEvent & event){
 	MouseScrollEvent& scroll_event = event.mouse_scroll;
 	// Only one scene at the moment
-	scene::Scene2D& scene = scenes[0];
-	if(subscenes[0].contains_cursor(event.cursor.sane)){
+	// scene::Scene2D& scene = scenes[0];
+	if(subscenes[0].quad.contains_cursor(event.cursor.sane)){
 		// std::cout << "SCROLL IN SCENE" << std::endl;
-		subscenes[0].handle_scroll(scroll_event.delta);
+		subscenes[0].scene.handle_scroll(scroll_event.delta);
 	}
 	// camera.zoom(event.mouse_scroll.delta);
 
@@ -112,18 +86,18 @@ void Conductor2D::input_mouse_move(InputEvent & event){
 	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
 	CursorPosition& cursor = event.cursor;
 
-	scene::Scene2D& scene = scenes[0];
+	// scene::Scene2D& scene = scenes[0];
 
-	if(subscenes[0].contains_cursor(cursor.sane)){
+	if(subscenes[0].quad.contains_cursor(cursor.sane)){
 
 		subscene_current_hover = &subscenes[0];
 
 		// Convert to normalized quad coordinates (= normal. subscene coords.)
 		scene::PointerMovement2D pointer_movement;
-		pointer_movement.pos_prev = subscenes[0].get_normalized_from_point(cursor_prev.sane);
-		pointer_movement.pos_curr = subscenes[0].get_normalized_from_point(cursor.sane);
+		pointer_movement.pos_prev = subscenes[0].quad.get_normalized_from_point(cursor_prev.sane);
+		pointer_movement.pos_curr = subscenes[0].quad.get_normalized_from_point(cursor.sane);
 
-		subscenes[0].handle_pointer_move( pointer_movement );
+		subscenes[0].scene.handle_pointer_move( pointer_movement );
 	}
 	else {
 		subscene_current_hover = nullptr;
@@ -136,14 +110,14 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 	window::MouseButtonEvent mouse_button_event = event.mouse_button;
 	// mouse_button_event.button
 	
-	if(subscenes[0].contains_cursor(cursor.sane)){
+	if(subscenes[0].quad.contains_cursor(cursor.sane)){
 
 		scene::PointerClick2D pointer_click {
-			pointer_click.pos_scene_normal = subscenes[0].get_normalized_from_point(cursor.sane),
+			pointer_click.pos_scene_normal = subscenes[0].quad.get_normalized_from_point(cursor.sane),
 			pointer_click.button_event = mouse_button_event 
 		};
 		
-		subscenes[0].handle_pointer_click( pointer_click );
+		subscenes[0].scene.handle_pointer_click( pointer_click );
 	}
 }
 
@@ -151,15 +125,12 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 void Conductor2D::process_input(InputEvent& event){
 		
 	// Only one scene at the moment
-	scene::Scene2D& scene = scenes[0];
+	// scene::Scene2D& scene = scenes[0];
 
 	switch (event.type){
 
 	case EventType::WindowResize:
-		window_size_f = event.window_resize.size_f;
-		reload_camera_root();
-		pui.set_window_info(window_size_f, {1.0f,1.0f});
-		// scene.set_window_size(event.window_resize.size_f);
+		input_window_change(event);
 		break;
 
 	case EventType::MouseMove:
@@ -176,11 +147,80 @@ void Conductor2D::process_input(InputEvent& event){
 
 	default:
 		// std::cout << "WARN: unhandled input event" << std::endl;
-		scene.handle_input(event);
+		// scene.handle_input(event);
 		break;
 	}
 
 }
+
+void Conductor2D::update_subscenes(){
+
+	// SUBSCENE
+	subscenes[0].scene.update();
+	subscenes[0].quad.set_texture_id(subscenes[0].scene.render_to_texture());
+
+	auxwin.bind_window_framebuffer();
+
+	renderer.activate();
+	renderer.render_quad(subscenes[0].quad);
+
+
+	if(subscene_current_hover != nullptr)
+		renderer.render_frame(subscene_current_hover->quad.get_matrix());
+
+}
+
+void Conductor2D::update_root_scene(){
+
+	// old_root_scene.update();
+	// old_root_scene.render();
+
+
+	auto root_scene_opt = BC::get_scene(root_scene_tag);
+	if(root_scene_opt.is_null())
+		return;
+
+	scene::Scene2D& root_scene_tmp = root_scene_opt.get_ref();
+
+	root_scene_tmp.update();
+	root_scene_tmp.render_to_window();
+
+}
+
+
+
+void Conductor2D::main_loop(){
+
+	while (auxwin.end_frame()){
+
+		input_events = auxwin.new_frame();
+
+		for(InputEvent& event : input_events)
+			process_input(event);
+
+
+		
+		update_subscenes();
+
+
+		auxwin.bind_window_framebuffer();
+
+		// Root Scene
+		update_root_scene();
+		
+
+		// scene.set_window_size(window_size_f);
+		// scene.render_window();
+
+		
+		// render_root();
+
+		pui.render();
+	}
+
+	auxwin.destroy();
+}
+
 
 
 
@@ -191,10 +231,7 @@ void Conductor2D::reload_camera_root(){
 	renderer.set_camera(camera_root.get_matrix());
 }
 void Conductor2D::render_root(){
-	auxwin.bind_window_framebuffer();
-
-	renderer.activate();
-	renderer.render_quad(subscenes[0].get_quad());
+	
 
 }
 
