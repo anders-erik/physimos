@@ -307,6 +307,7 @@
             "program": 
             // LINUX
             "${workspaceRoot}/build/debug_linux/physimos",
+            // "${workspaceRoot}/build/debug_linux/src/lib/main_lib",
             // "${workspaceRoot}/build/debug_linux/src/lib/main_str",
             // "${workspaceRoot}/build/debug_linux/src/lib/main_file",
             // "${workspaceRoot}/build/debug_linux/src/file_format/json/main_json",
