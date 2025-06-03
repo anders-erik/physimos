@@ -16,6 +16,54 @@ namespace UI {
     extern unsigned int viewport_height;
 
 
+    enum class Unit {
+        Pixel = 0,
+        Percent = 1
+    };
+
+    struct Units {
+        Unit x = Unit::Pixel;
+        Unit y = Unit::Pixel;
+
+        Units(Unit initial_units) : x {initial_units}, y{initial_units} {};
+    };
+
+    enum class VertRef {
+        /** Distance will be measured from parent top to primitive top */
+        Top = 0,
+        /** Distance from primitive top to parent top will be equal to the distance from primitive bottom to parent bottom. */
+        Center = 1,
+        /** Distance will be measured from parent bottom to primitive bottom */
+        Bottom = 2,
+    };
+
+    enum class HoriRef {
+        /** Distance will be measured from parent left edge to primitive left edge */
+        Left = 0,
+        /** Distance from primitive left to parent left will be equal to the distance from primitive right to parent right. */
+        Center = 1,
+        /** Distance will be measured from parent right edge to primitive right edge */
+        Right = 2,
+    };
+
+    /**  Vertical and horizontal reference position. */
+    class RefPos {
+
+        VertRef vert = VertRef::Bottom;
+        HoriRef hori = HoriRef::Left;
+
+    public:
+
+        void set_vert(VertRef new_vert) {vert = new_vert;};
+        void set_hori(HoriRef new_hori) {hori = new_hori;};
+        VertRef get_vert() {return vert;};
+        HoriRef get_hori() {return hori;};
+
+        bool vert_is(VertRef vert_to_query) { return vert_to_query == vert ? true : false;};
+        bool hori_is(HoriRef hori_to_query) { return hori_to_query == hori ? true : false;};
+    };
+
+
     /** Pixel hieght of full char bitmap */
     typedef enum FontSize {
         f15 = 15,

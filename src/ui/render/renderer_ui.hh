@@ -8,6 +8,8 @@
 
 #include "ui/font_bitmap.hh"
 
+#include "ui/render/program_base.hh"
+
 #include "ui/render/program_primitive_color.hh"
 #include "ui/render/program_primitive_texture.hh"
 #include "ui/render/program_primitive_string.hh"
@@ -15,20 +17,23 @@
 
 namespace UI {
 
+struct Base;
 struct Primitive;
 
 
 // BOOTSTRAP FOR INITIAL TRANSITION TO RENDERER - 2025-05-29
-struct RendererPrimitive;
-RendererPrimitive& get_renderer_ui();
+struct RendererUI;
+RendererUI& get_renderer_ui();
 
 
 
 
-class RendererPrimitive {
+class RendererUI {
 
     // Shared matrix across ui shader programs
     m4f4 viewport_transform;
+
+    ProgramBase program_base;
 
     ProgramPrimitiveColor program_color;
     ProgramPrimitiveTexture program_texture;
@@ -40,12 +45,13 @@ class RendererPrimitive {
 
 public:
 
-    RendererPrimitive();
+    RendererUI();
 
     void set_window_info(f2 size, f2 scale);
 
     void draw(UI::Primitive& primitive);
 
+    void draw_base(UI::Base& base);
 
 private:
 

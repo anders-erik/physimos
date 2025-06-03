@@ -9,6 +9,7 @@ add_library(ui
     ui_primitive.cc
     ui_globals.cc
     ui_texture.cc
+    base.cc
     
     # dependencies removed
     ui_font.cc

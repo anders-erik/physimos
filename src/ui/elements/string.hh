@@ -29,7 +29,7 @@ struct String : public Primitive {
 
     }
 
-    void render_string(UI::RendererPrimitive& renderer){
+    void render_string(UI::RendererUI& renderer){
         render(renderer);
         string_prim.render(renderer);
     }

@@ -86,6 +86,8 @@ void Conductor2D::input_mouse_move(InputEvent & event){
 	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
 	CursorPosition& cursor = event.cursor;
 
+	cursor_pos = cursor;
+
 	// scene::Scene2D& scene = scenes[0];
 
 	if(subscenes[0].quad.contains_cursor(cursor.sane)){
@@ -195,10 +197,16 @@ void Conductor2D::main_loop(){
 
 		input_events = auxwin.new_frame();
 
+		// Before any event -- try match with ui elements
+		UI::BaseQuery query_base = pui.try_find_base(cursor_pos.sane);
+		if(query_base.success){
+			// std::cout << "BASE HOVER" << std::endl;
+			query_base.base->set_hover();
+		}
+
+
 		for(InputEvent& event : input_events)
 			process_input(event);
-
-
 		
 		update_subscenes();
 

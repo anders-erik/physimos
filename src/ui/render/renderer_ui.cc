@@ -11,7 +11,9 @@
 #include "ui/ui_primitive.hh" // UI::Primtiive
 #include "ui/ui_font.hh"
 
-#include "renderer_primitive.hh"
+#include "ui/base.hh"
+
+#include "renderer_ui.hh"
 
 
 namespace UI {
@@ -24,24 +26,26 @@ const unsigned int SCREEN_INIT_HEIGHT = 800;
 
 // BOOTSTRAP FOR INITIAL TESTING - 2025-05-29
 bool renderer_created = false;
-RendererPrimitive* renderer_ui;
+RendererUI* renderer_ui;
 /** Get extern renderer. First call initalizes; subsequent calls grab pointer. */
-RendererPrimitive& get_renderer_ui(){
+RendererUI& get_renderer_ui(){
     if(!renderer_created){
-        renderer_ui = new RendererPrimitive();
+        renderer_ui = new RendererUI();
             renderer_created = true;
     }
     return *renderer_ui;
 }
 
 
-RendererPrimitive::RendererPrimitive(){
+RendererUI::RendererUI(){
 
     viewport_transform.x.x = 2.0f / (float)SCREEN_INIT_WIDTH;
     viewport_transform.y.y = 2.0f / (float)SCREEN_INIT_HEIGHT;
     viewport_transform.x.w = -1.0f;
     viewport_transform.y.w = -1.0f;
 
+    program_base.init();
+    program_base.set_viewport_transform(viewport_transform);
 
     program_color.init();
     program_color.set_viewport_transform(viewport_transform);
@@ -57,10 +61,12 @@ RendererPrimitive::RendererPrimitive(){
 
 
 
-void RendererPrimitive::set_window_info(f2 size , f2 scale){
+void RendererUI::set_window_info(f2 size , f2 scale){
 
     viewport_transform.x.x = 2.0f * scale.x / size.x;
     viewport_transform.y.y = 2.0f * scale.y / size.y;
+
+    program_base.set_viewport_transform(viewport_transform);
 
     program_color.set_viewport_transform(viewport_transform);
     program_texture.set_viewport_transform(viewport_transform);
@@ -69,7 +75,7 @@ void RendererPrimitive::set_window_info(f2 size , f2 scale){
 }
 
 
-void RendererPrimitive::draw(UI::Primitive & primitive){
+void RendererUI::draw(UI::Primitive & primitive){
 
     // This will only be set once during future instancing
     glDisable(GL_DEPTH_TEST);
@@ -85,8 +91,34 @@ void RendererPrimitive::draw(UI::Primitive & primitive){
 
 }
 
+void RendererUI::draw_base(UI::Base& base){
 
-void RendererPrimitive::draw_primitive_color(UI::Primitive& primitive){
+    glDisable(GL_DEPTH_TEST);
+
+    
+
+    float darkness_shift = 0.0f;
+
+    if(base.is_hovered()){
+        base.unset_hover();
+        darkness_shift = -0.2f;
+    }
+
+    Color color = active_pallete.base1;
+
+
+    program_base.set(
+        base.get_M_m_s().pointer(), 
+        darkness_shift, 
+        color
+    );
+
+    program_base.draw();
+
+}
+
+
+void RendererUI::draw_primitive_color(UI::Primitive& primitive){
 
     program_color.set(
         primitive.uiTransform.M_m_s.pointer(), 
@@ -98,7 +130,7 @@ void RendererPrimitive::draw_primitive_color(UI::Primitive& primitive){
 
 }
 
-void RendererPrimitive::draw_primitive_texture(UI::Primitive & primitive){
+void RendererUI::draw_primitive_texture(UI::Primitive & primitive){
 
     program_texture.set(
         primitive.uiTransform.M_m_s.pointer(), 
@@ -120,7 +152,7 @@ void RendererPrimitive::draw_primitive_texture(UI::Primitive & primitive){
 // };
 
 
-void RendererPrimitive::draw_primitive_string(UI::Primitive & primitive){
+void RendererUI::draw_primitive_string(UI::Primitive & primitive){
 
     program_string.set_primitive_transform(
         primitive.uiTransform.M_m_s.pointer()

@@ -6,7 +6,7 @@
 
 #include "math/vecmat.hh"
 
-#include "ui/render/renderer_primitive.hh"
+#include "ui/render/renderer_ui.hh"
 
 #include "conductor_common.hh"
 #include "conductor_viewport.hh"
@@ -15,6 +15,7 @@
 #include "ui/ui_texture.hh"
 
 #include "ui/ui_primitive.hh"
+#include "ui/base.hh"
 
 #include "ui/elements/string.hh"
 
@@ -26,7 +27,9 @@ class PUI {
 
 public:
 
-    UI::RendererPrimitive renderer_ui;
+    UI::RendererUI renderer_ui;
+
+    UI::Base base_0;
 
     UI::Primitive prim_0;
     UI::Primitive prim_texture;
@@ -41,6 +44,10 @@ public:
         // UI::font::init_font();
         UI::texture::init_static_color_textures();
         UI::texture::init_static_icon_textures();
+
+
+        base_0.set_pos({100, 100});
+        base_0.set_size({100, 100});
 
         // renderer_ui = UI::RendererPrimitive();
         // renderer_ui.set_window_info({},{});
@@ -77,7 +84,19 @@ public:
         renderer_ui.set_window_info(size, scale);
     }
 
+    BaseQuery try_find_base(f2 cursor_pos_win_sane){
+
+        // Manually query each available base objects for now
+        BaseQuery base_query = base_0.containsPoint(cursor_pos_win_sane);
+        if(base_query.success)
+            return base_query;
+        
+        return BaseQuery();
+    }
+
     void render(){
+
+        base_0.render(renderer_ui);
 
         prim_0.render(renderer_ui);
         prim_texture.render(renderer_ui);

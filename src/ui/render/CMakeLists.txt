@@ -1,7 +1,10 @@
 
 add_library(ui_render
 
-    renderer_primitive.cc
+    renderer_ui.cc
+    
+    program_base.cc
+
     program_primitive_color.cc
     program_primitive_texture.cc
     program_primitive_string.cc

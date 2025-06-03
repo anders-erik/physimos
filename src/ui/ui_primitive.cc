@@ -13,7 +13,7 @@
 #include "ui/ui_texture.hh"
 #include "ui/ui_font.hh"
 
-#include "ui/render/renderer_primitive.hh"
+#include "ui/render/renderer_ui.hh"
 
 namespace UI {
 
@@ -674,12 +674,12 @@ namespace UI {
         if(scrollable){}
 
 
-        UI::RendererPrimitive& renderer = UI::get_renderer_ui();
+        UI::RendererUI& renderer = UI::get_renderer_ui();
         renderer.draw(*this);
 
     }
 
-    void Primitive::render(RendererPrimitive& renderer) {
+    void Primitive::render(RendererUI& renderer) {
 
         // WARN: Does update happen when rendereding turned on?
         // YES? sinze the change flags will remain untouched and then all updates will take place prior to next render!

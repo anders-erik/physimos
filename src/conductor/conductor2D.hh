@@ -35,6 +35,7 @@ class Conductor2D {
 	scene::Scene2D* cursor_owner = nullptr;
 
 	UI::PUI pui;
+	CursorPosition cursor_pos;
 
 public:
 	BC::Tag root_scene_tag;
