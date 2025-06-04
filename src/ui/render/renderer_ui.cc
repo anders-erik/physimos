@@ -99,10 +99,15 @@ void RendererUI::draw_base(UI::Base& base){
 
     float darkness_shift = 0.0f;
 
-    if(base.is_hovered()){
+    if(base.mouse_is_down()){
+        // base.mouse_up();
+        darkness_shift = -0.4f;
+    }
+    else if(base.is_hovered()){
         base.unset_hover();
         darkness_shift = -0.2f;
     }
+    
 
     Color color = active_pallete.base1;
 

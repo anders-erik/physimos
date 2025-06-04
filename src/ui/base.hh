@@ -41,6 +41,7 @@ class Base {
     UI::Box box;
 
     bool flag_hover = false;
+    bool flag_mouse_down = false;
 
 public:
 
@@ -58,6 +59,10 @@ public:
     void set_hover();
     void unset_hover();
     bool is_hovered();
+
+    void mouse_down();
+    void mouse_up();
+    bool mouse_is_down();
 
     void render(RendererUI& renderer);
 

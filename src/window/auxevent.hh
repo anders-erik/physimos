@@ -66,6 +66,11 @@ struct MouseButtonEvent {
             return true;
         return false;
     }
+    bool is_left_up(){
+        if(button == MouseButton::Left && action == ButtonAction::Release)
+            return true;
+        return false;
+    }
 
     bool is_middle_down(){
         if(button == MouseButton::Middle && action == ButtonAction::Press)

@@ -67,6 +67,18 @@ bool Base::is_hovered(){
 }
 
 
+void Base::mouse_down()
+{
+    flag_mouse_down = true;
+}
+void Base::mouse_up()
+{
+    flag_mouse_down = false;
+}
+bool Base::mouse_is_down()
+{
+    return flag_mouse_down;
+}
 
 void Base::render(RendererUI& renderer) {
 

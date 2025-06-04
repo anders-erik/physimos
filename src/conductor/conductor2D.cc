@@ -89,31 +89,48 @@ void Conductor2D::input_scroll(InputEvent & event){
 }
 
 void Conductor2D::input_mouse_move(InputEvent & event){
-	// MouseMoveEvent& mouse_movement = event.mouse_movement;
+	MouseMoveEvent& mouse_movement = event.mouse_movement;
 	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
-	CursorPosition& cursor = event.cursor;
+	CursorPosition& cursor_new = event.cursor;
 
-	cursor_pos = cursor;
+	// cursor_pos = cursor;
 
-	// scene::Scene2D& scene = scenes[0];
+	cursor_new.print();
+	mouse_movement.delta.sane.print("Delta [sane]: ");
 
-	if(subscenes[0].quad.contains_cursor(cursor.sane)){
+	// targeting_ui = pui.find_new_target(cursor_pos.sane);
 
-		scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+	// Pass move event recursively
+	if(targeting_ui){
 
-		subscene_current_hover = &subscenes[0];
-
-		// Convert to normalized quad coordinates (= normal. subscene coords.)
-		scene::PointerMovement2D pointer_movement;
-		pointer_movement.pos_prev = subscenes[0].quad.get_normalized_from_point(cursor_prev.sane);
-		pointer_movement.pos_curr = subscenes[0].quad.get_normalized_from_point(cursor.sane);
-
-		// subscenes[0].scene.handle_pointer_move( pointer_movement );
-		subscene_0_scene->handle_pointer_move( pointer_movement );
+		pui.move_event(mouse_movement.delta.sane);
+		
 	}
-	else {
-		subscene_current_hover = nullptr;
+	else { // Scene
+
+		if(subscenes[0].quad.contains_cursor(cursor_new.sane)){
+
+			scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+
+			subscene_current_hover = &subscenes[0];
+
+			// Convert to normalized quad coordinates (= normal. subscene coords.)
+			scene::PointerMovement2D pointer_movement;
+			pointer_movement.pos_prev = subscenes[0].quad.get_normalized_from_point(cursor_prev.sane);
+			pointer_movement.pos_curr = subscenes[0].quad.get_normalized_from_point(cursor_new.sane);
+
+			// subscenes[0].scene.handle_pointer_move( pointer_movement );
+			subscene_0_scene->handle_pointer_move( pointer_movement );
+		}
+		else {
+			subscene_current_hover = nullptr;
+		}
+
+
 	}
+
+	cursor_pos = cursor_new;
+
 }
 
 void Conductor2D::input_mouse_button(InputEvent & event){
@@ -121,18 +138,30 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 	CursorPosition& cursor = event.cursor;
 	window::MouseButtonEvent mouse_button_event = event.mouse_button;
 	// mouse_button_event.button
-	
-	if(subscenes[0].quad.contains_cursor(cursor.sane)){
 
-		scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
-
-		scene::PointerClick2D pointer_click {
-			pointer_click.pos_scene_normal = subscenes[0].quad.get_normalized_from_point(cursor.sane),
-			pointer_click.button_event = mouse_button_event 
-		};
+	if(targeting_ui){
 		
-		// subscenes[0].scene.handle_pointer_click( pointer_click );
-		subscene_0_scene->handle_pointer_click(pointer_click);
+		if(mouse_button_event.is_left_down())
+			pui.event_mouse_down_current_target();
+		else if(mouse_button_event.is_left_up())
+			pui.event_mouse_up_current_target();
+
+	}
+	else{
+	
+		if(subscenes[0].quad.contains_cursor(cursor.sane)){
+
+			scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+
+			scene::PointerClick2D pointer_click {
+				pointer_click.pos_scene_normal = subscenes[0].quad.get_normalized_from_point(cursor.sane),
+				pointer_click.button_event = mouse_button_event 
+			};
+			
+			// subscenes[0].scene.handle_pointer_click( pointer_click );
+			subscene_0_scene->handle_pointer_click(pointer_click);
+		}
+
 	}
 }
 
@@ -145,19 +174,19 @@ void Conductor2D::process_input(InputEvent& event){
 	switch (event.type){
 
 	case EventType::WindowResize:
-		input_window_change(event);
+		// input_window_change(event);
 		break;
 
 	case EventType::MouseMove:
-		input_mouse_move(event);
+		// input_mouse_move(event);
 		break;
 
 	case EventType::MouseScroll:
-		input_scroll(event);
+		// input_scroll(event);
 		break;
 
 	case EventType::MouseButton:
-		input_mouse_button(event);
+		// input_mouse_button(event);
 		break;
 
 	default:
@@ -210,24 +239,82 @@ void Conductor2D::update_root_scene(){
 
 }
 
+void Conductor2D::new_frame(){
+
+	auxwin.end_frame();
+	input_events = auxwin.new_frame();
+
+}
+
+void Conductor2D::update_current_target(){
+
+	// Always start out with trying to figure out what were currently targeting
+	if(pui.has_grabbed_target()){
+		targeting_ui = true; // as we've grabbed ui base -> targeting ui
+	}
+	else {
+		pui.try_find_new_target(cursor_pos.sane);
+		targeting_ui = pui.has_target();
+	}
+
+}
+
+void Conductor2D::process_user_input(){
+
+
+	// Handle mouse movement first
+	for(InputEvent& event : input_events){
+		if(event.is_type(window::EventType::MouseMove)){
+			input_mouse_move(event);
+			// break;
+		}
+	}
+
+	
+	// Now that we know what subsystem we are targeting, we can process other inputs
+	for(InputEvent& event : input_events){
+
+		if(event.is_type(window::EventType::MouseScroll)){
+			input_scroll(event);
+		}
+		else if(event.is_type(window::EventType::MouseButton)){
+			input_mouse_button(event);
+		}
+
+	}
+
+
+}
+
+void Conductor2D::process_framebuffer_events(){
+
+	// Resize later in loop
+	for(InputEvent& event : input_events){
+		if(event.is_type(window::EventType::WindowResize)){
+			input_window_change(event);
+			break;
+		}
+	}
+
+}
 
 
 void Conductor2D::main_loop(){
 
-	while (auxwin.end_frame()){
+	
+	while (auxwin.is_open()){
 
-		input_events = auxwin.new_frame();
-
-		// Before any event -- try match with ui elements
-		UI::BaseQuery query_base = pui.try_find_base(cursor_pos.sane);
-		if(query_base.success){
-			// std::cout << "BASE HOVER" << std::endl;
-			query_base.base->set_hover();
-		}
+		new_frame();
 
 
-		for(InputEvent& event : input_events)
-			process_input(event);
+		update_current_target();
+		
+
+		process_user_input();
+		
+
+		// for(InputEvent& event : input_events)
+		// 	process_input(event);
 		
 		update_subscenes();
 
@@ -242,10 +329,13 @@ void Conductor2D::main_loop(){
 		// scene.render_window();
 
 		
-		// render_root();
 
 		auxwin.bind_window_framebuffer();
 		pui.render();
+
+
+		process_framebuffer_events();
+		
 	}
 
 	auxwin.destroy();
@@ -260,8 +350,5 @@ void Conductor2D::reload_camera_root(){
 	camera_root.set_width(window_size_f.x);
 	renderer.set_camera(camera_root.get_matrix());
 }
-void Conductor2D::render_root(){
-	
 
-}
 

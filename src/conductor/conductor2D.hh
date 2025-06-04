@@ -36,6 +36,7 @@ class Conductor2D {
 
 	UI::PUI pui;
 	CursorPosition cursor_pos;
+	bool targeting_ui = false;
 
 public:
 	BC::Tag root_scene_tag;
@@ -53,15 +54,25 @@ public:
 	void update_subscenes();
 	void update_root_scene();
 
-	// transfer control to Conductor2D by entering main rendering loop
+	/** Swap buffers, set up new frame, and load input event into conductor. */
+	void new_frame();
+	/** Makes sure that we know what subsystem we are currently targeting before handling events */
+	void update_current_target();
+
+	/** Mouse and keyboard input. */
+	void process_user_input();
+	/** Window resize, content scale, etc. */
+	void process_framebuffer_events();
+
+	/** transfer control to Conductor2D by entering main rendering loop */
 	void main_loop();
 
 	scene::SubScene2D& add_subscene(f2 pos_scene, f2 size_scene);
 
 
 private:
+
 	void reload_camera_root();
-	void render_root();
 
 	f2 transform_normalized_to_window(f2 normalized);
 	f2 transform_window_to_normalized(f2 window);

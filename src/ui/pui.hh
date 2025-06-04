@@ -29,6 +29,8 @@ public:
 
     UI::RendererUI renderer_ui;
 
+    UI::Base* current_target = nullptr;
+
     UI::Base base_0;
 
     UI::Primitive prim_0;
@@ -83,6 +85,65 @@ public:
     void set_window_info(f2 size, f2 scale){
         renderer_ui.set_window_info(size, scale);
     }
+
+    bool has_target(){
+
+        return current_target != nullptr ? true : false;
+
+    }
+
+    bool has_grabbed_target(){
+
+        if(current_target != nullptr)
+            return current_target->mouse_is_down();
+
+        return false;
+    }
+
+    /** Queries the ui for a Base matching input pos. Caches the found base as current target. */
+    bool try_find_new_target(f2 cursor_pos_win_sane){
+        
+        BaseQuery base_query = base_0.containsPoint(cursor_pos_win_sane);
+        
+        if(base_query.success){
+            current_target = &base_0;
+            current_target->set_hover();
+            return true;
+        }
+
+        // clear current target
+        if(current_target != nullptr){
+            current_target->mouse_up();
+            current_target->unset_hover();
+            current_target = nullptr;
+        }
+
+        return false;
+    }
+
+    void hover_current_target(){
+        if(current_target != nullptr)
+            current_target->set_hover();
+    }
+    void event_mouse_down_current_target(){
+        if(current_target != nullptr)
+            current_target->mouse_down();
+    }
+    void event_mouse_up_current_target(){
+        if(current_target != nullptr)
+            current_target->mouse_up();
+    }
+    void move_event(f2 cursor_delta){
+        if(current_target != nullptr){
+            
+            if(current_target->mouse_is_down()){
+                Box box = current_target->get_box();
+                box.pos += cursor_delta;
+                current_target->set_box(box);
+            }
+        }
+    }
+
 
     BaseQuery try_find_base(f2 cursor_pos_win_sane){
 
