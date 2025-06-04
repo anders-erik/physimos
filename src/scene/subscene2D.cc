@@ -12,7 +12,7 @@
 
 namespace scene {
 SubScene2D::SubScene2D(f2 framebuffer_size)
-    : scene {Scene2D(framebuffer_size)}
+    // : scene {Scene2D(framebuffer_size)}
 {
     auto tag_scene_pair = BC::new_scene(framebuffer_size);
     
@@ -36,9 +36,9 @@ QuadS2D & SubScene2D::get_quad(){
     return quad;
 }
 
-Scene2D & SubScene2D::get_scene(){
-    return scene;
-}
+// Scene2D & SubScene2D::get_scene(){
+//     return scene;
+// }
 
 
 
@@ -75,25 +75,25 @@ OptPtr<ShapeS2D> SubScene2D::add_shape(Shape& shape){
     return &_scene.add_shape(shape);
 }
 
-void SubScene2D::add_quad(scene::QuadS2D& quad){
+// void SubScene2D::add_quad(scene::QuadS2D& quad){
     
-    scene.add_quad(quad);
-}
-void SubScene2D::update(){
-    scene.update();
-}
-unsigned int SubScene2D::render(){
-    return scene.render_to_texture();
-}
-void SubScene2D::handle_scroll(float delta){
-    scene.handle_scroll(delta);
-}
-void SubScene2D::handle_pointer_move(scene::PointerMovement2D pointer_movement){
-    scene.handle_pointer_move(pointer_movement);
-}
-void SubScene2D::handle_pointer_click(PointerClick2D pointer_click){
-    scene.handle_pointer_click(pointer_click);
-}
+//     scene.add_quad(quad);
+// }
+// void SubScene2D::update(){
+//     scene.update();
+// }
+// unsigned int SubScene2D::render(){
+//     return scene.render_to_texture();
+// }
+// void SubScene2D::handle_scroll(float delta){
+//     scene.handle_scroll(delta);
+// }
+// void SubScene2D::handle_pointer_move(scene::PointerMovement2D pointer_movement){
+//     scene.handle_pointer_move(pointer_movement);
+// }
+// void SubScene2D::handle_pointer_click(PointerClick2D pointer_click){
+//     scene.handle_pointer_click(pointer_click);
+// }
 
 
 }

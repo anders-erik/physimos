@@ -16,6 +16,8 @@
 #include "scene/shapeS2D.hh"
 #include "scene/quadS2D.hh"
 
+#include "scene/subscene2D.hh"
+
 #include "phont/phont.hh"
 
 
@@ -73,8 +75,7 @@ class Scene2D {
     std::vector<ShapeS2D> lines;
     std::vector<ShapeS2D> shapes;
 
-    // std::vector<SubScene2D> subscenes;
-    std::vector<Scene2D> scenes;
+    std::vector<SubScene2D> subscenes;
 
 
 public:
@@ -100,13 +101,16 @@ public:
 
     void update();
 
+    void render_subscene_textures();
+
     void render_to_window();
     unsigned int render_to_texture();
     void render();
 
     void add_quad(scene::QuadS2D& quad);
     ShapeS2D& add_shape(Shape& shape);
-    void add_subscene(f2 pos_scene, f2 size_scene);
+    /** Add subscene at position and with size. This is dimensions in current scene coord.  */
+    SubScene2D& add_subscene(f2 pos_scene, f2 size_scene);
     // SubScene2D* add_subscene(f2 pos_scene, f2 size_scene);
     // void add_subscene(f2 pos_scene, f2 size_scene);
 

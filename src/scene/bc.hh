@@ -49,6 +49,7 @@ struct Tag {
 };
 
 static inline OptPtr<scene::Scene2D> try_find_scene(Tag tag);
+scene::Scene2D* try_find_scene(size_t id);
 
 /** Returns new scene, and immediately borrows the scene. */
 [[nodiscard]] Pair<BC::Tag, OptPtr<scene::Scene2D>> new_scene_with_lock(std::string label);
@@ -63,6 +64,7 @@ void return_scene(Tag tag); /** Lift borrow lock */
 /** Get scene without lock.  */
 [[nodiscard]] OptPtr<scene::Scene2D> get_scene(Tag tag);
 
+[[nodiscard]] scene::Scene2D* get_scene(size_t id);
 
 
 };

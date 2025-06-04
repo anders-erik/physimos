@@ -73,9 +73,16 @@ void Conductor2D::input_scroll(InputEvent & event){
 	MouseScrollEvent& scroll_event = event.mouse_scroll;
 	// Only one scene at the moment
 	// scene::Scene2D& scene = scenes[0];
+
+	scene::Scene2D* root_scene = BC::get_scene(root_scene_tag.id);
+
+	root_scene->handle_scroll(scroll_event.delta);
+
 	if(subscenes[0].quad.contains_cursor(event.cursor.sane)){
 		// std::cout << "SCROLL IN SCENE" << std::endl;
-		subscenes[0].scene.handle_scroll(scroll_event.delta);
+		// subscenes[0].scene.handle_scroll(scroll_event.delta);
+		scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+		subscene_0_scene->handle_scroll(scroll_event.delta);
 	}
 	// camera.zoom(event.mouse_scroll.delta);
 
@@ -92,6 +99,8 @@ void Conductor2D::input_mouse_move(InputEvent & event){
 
 	if(subscenes[0].quad.contains_cursor(cursor.sane)){
 
+		scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+
 		subscene_current_hover = &subscenes[0];
 
 		// Convert to normalized quad coordinates (= normal. subscene coords.)
@@ -99,7 +108,8 @@ void Conductor2D::input_mouse_move(InputEvent & event){
 		pointer_movement.pos_prev = subscenes[0].quad.get_normalized_from_point(cursor_prev.sane);
 		pointer_movement.pos_curr = subscenes[0].quad.get_normalized_from_point(cursor.sane);
 
-		subscenes[0].scene.handle_pointer_move( pointer_movement );
+		// subscenes[0].scene.handle_pointer_move( pointer_movement );
+		subscene_0_scene->handle_pointer_move( pointer_movement );
 	}
 	else {
 		subscene_current_hover = nullptr;
@@ -114,12 +124,15 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 	
 	if(subscenes[0].quad.contains_cursor(cursor.sane)){
 
+		scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+
 		scene::PointerClick2D pointer_click {
 			pointer_click.pos_scene_normal = subscenes[0].quad.get_normalized_from_point(cursor.sane),
 			pointer_click.button_event = mouse_button_event 
 		};
 		
-		subscenes[0].scene.handle_pointer_click( pointer_click );
+		// subscenes[0].scene.handle_pointer_click( pointer_click );
+		subscene_0_scene->handle_pointer_click(pointer_click);
 	}
 }
 
@@ -157,9 +170,14 @@ void Conductor2D::process_input(InputEvent& event){
 
 void Conductor2D::update_subscenes(){
 
-	// SUBSCENE
-	subscenes[0].scene.update();
-	subscenes[0].quad.set_texture_id(subscenes[0].scene.render_to_texture());
+	// Render subscenes to textures and bind to quad
+	scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+	subscene_0_scene->update();
+	subscenes[0].quad.set_texture_id(subscene_0_scene->render_to_texture());
+	// subscenes[0].scene.update();
+	// subscenes[0].quad.set_texture_id(subscenes[0].scene.render_to_texture());
+
+
 
 	auxwin.bind_window_framebuffer();
 
@@ -185,6 +203,9 @@ void Conductor2D::update_root_scene(){
 	scene::Scene2D& root_scene_tmp = root_scene_opt.get_ref();
 
 	root_scene_tmp.update();
+	root_scene_tmp.render_subscene_textures();
+
+	auxwin.bind_window_framebuffer();
 	root_scene_tmp.render_to_window();
 
 }
@@ -223,6 +244,7 @@ void Conductor2D::main_loop(){
 		
 		// render_root();
 
+		auxwin.bind_window_framebuffer();
 		pui.render();
 	}
 

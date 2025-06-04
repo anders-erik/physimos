@@ -38,7 +38,8 @@ class SubScene2D {
 public:
     QuadS2D quad;
     BC::Tag scene_tag;
-    Scene2D scene;
+    // size_t scene_id;
+    // Scene2D scene;
 
 
     SubScene2D(f2 framebuffer_size);
@@ -61,12 +62,12 @@ public:
     // SCENE TAG - CALLS
 
     OptPtr<ShapeS2D> add_shape(Shape& shape);
-    void add_quad(scene::QuadS2D& quad);
-    void update();
-    unsigned int render();
-    void handle_scroll(float delta);
-    void handle_pointer_move(scene::PointerMovement2D pointer_movement);
-    void handle_pointer_click(PointerClick2D pointer_click);
+    // void add_quad(scene::QuadS2D& quad);
+    // void update();
+    // unsigned int render();
+    // void handle_scroll(float delta);
+    // void handle_pointer_move(scene::PointerMovement2D pointer_movement);
+    // void handle_pointer_click(PointerClick2D pointer_click);
 
 
 };

@@ -17,7 +17,7 @@ public:
     [[nodiscard]] inline T& get_ref(){
         return *t;
     };
-    [[nodiscard]] inline T& get_ptr(){
+    [[nodiscard]] inline T* get_ptr(){
         return t;
     };
     [[nodiscard]] inline bool is_null(){

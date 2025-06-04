@@ -196,11 +196,12 @@ void Scene2DRenderer::render_line(RenderContextQuadS2D context){
 
 void Scene2DRenderer::render_quad(scene::QuadS2D& quad){
 
+    glUseProgram(program);
+    
     this->set_model(quad.get_matrix());
 
     RenderContextQuadS2D context = quad.get_rendering_context();
 
-    glUseProgram(program);
 
     glBindTexture(GL_TEXTURE_2D, context.texture);
 

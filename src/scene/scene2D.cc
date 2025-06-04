@@ -50,9 +50,16 @@ f2 Scene2D::get_window_size(){
 }
 
 void Scene2D::set_window_size(f2 size){
+    
     window_size_f = size;
-
     camera.set_window_size_px(size);
+
+    // Subscenes do not need to be updated as their quads are fixed
+    // for( scene::SubScene2D& subscene : subscenes){
+    //     scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+    //     subscene_scene->set_window_size(size);
+    // }
+
 }
 
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
@@ -122,6 +129,13 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
 }
 
 void Scene2D::handle_scroll(float delta){
+
+    for( scene::SubScene2D& subscene : subscenes){
+    //     if(subscene.quad.contains_cursor();
+    //     scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+        
+    }
+    
     camera.zoom(delta);
 }
 
@@ -164,11 +178,16 @@ SubScene2D* ss;
 
 // SubScene2D& Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
 // SubScene2D* add_subscene(f2 pos_scene, f2 size_scene){
-void Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
-    ss = new SubScene2D(size_scene);
+SubScene2D& Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
+    
+    scene::SubScene2D& new_subscene = subscenes.emplace_back(size_scene);
+	new_subscene.quad.set_box(pos_scene, size_scene);
+    
+    // ss = new SubScene2D(size_scene);
     // return ss;
     // return *ss;
     // return subscenes.emplace_back(size_scene);
+    return new_subscene;
 }
 
 
@@ -186,6 +205,17 @@ void Scene2D::update(){
 }
 
 
+void Scene2D::render_subscene_textures(){
+
+    for( scene::SubScene2D& subscene : subscenes){
+        scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+        // recursively render descendants before itself
+        subscene_scene->render_subscene_textures();
+        subscenes[0].quad.set_texture_id(subscene_scene->render_to_texture());
+    }
+
+}
+
 
 void Scene2D::render_to_window(){
 
@@ -196,6 +226,8 @@ void Scene2D::render_to_window(){
 
 
 unsigned int Scene2D::render_to_texture(){
+
+    render_subscene_textures();
 
     framebuffer.multisample_fbo_bind();
     framebuffer.multisample_fbo_clear_red();
@@ -227,6 +259,11 @@ void Scene2D::render(){
         renderer2D.set_model(line.get_matrix());
         renderer2D.render_line(line.render_context);
     }
+
+    for( scene::SubScene2D& subscene : subscenes){
+        renderer2D.render_quad(subscene.quad);
+    }
+
 
     // FRAMES
     renderer2D.render_frame(frame_M_m_s);

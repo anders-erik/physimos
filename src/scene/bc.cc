@@ -1,3 +1,4 @@
+#include <list>
 
 #include "bc.hh"
 
@@ -10,9 +11,10 @@ namespace BC {
 
 
 
-size_t id_count = 0;
+size_t id_count = 0; // Global index count
 
-std::vector<scene::Scene2D> scenes;
+// std::vector<scene::Scene2D> scenes;
+std::list<scene::Scene2D> scenes;
 bool scene_is_locked = false;
 
 // std::map<unsigned int, std::any> scene_map;
@@ -28,6 +30,15 @@ static OptPtr<scene::Scene2D> inline try_find_scene(Tag tag)
             return {&scene};
     
     return {};
+}
+
+scene::Scene2D * try_find_scene(size_t id){
+
+    for(scene::Scene2D& scene : scenes)
+        if(scene.get_tag_id() == id)
+            return &scene;
+    
+    return nullptr;
 }
 
 Pair<BC::Tag, OptPtr<scene::Scene2D>> new_scene_with_lock(std::string label){
@@ -87,7 +98,7 @@ Pair<BC::Tag, OptPtr<scene::Scene2D>> new_scene(scene::Scene2D & _scene){
 
 Pair<BC::Tag,OptPtr<scene::Scene2D>> new_scene(f2 framebuffer_size)
 {
-    scene::Scene2D& new_scene = scenes.emplace_back( f2{100, 100} );
+    scene::Scene2D& new_scene = scenes.emplace_back( framebuffer_size );
 
     new_scene.set_tag_id(id_count);
 
@@ -99,6 +110,11 @@ Pair<BC::Tag,OptPtr<scene::Scene2D>> new_scene(f2 framebuffer_size)
 OptPtr<scene::Scene2D> get_scene(Tag tag)
 {
     return try_find_scene(tag);
+}
+
+scene::Scene2D* get_scene(size_t id)
+{
+    return try_find_scene(id);
 }
 
 
