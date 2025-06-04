@@ -29,12 +29,24 @@ void cat(){
 void echo(){
 
     Str path_core = "logs/test.txt";
+    // Str path_core = "logs/main.log";
 
     File file;
-    file.set_path_core(path_core);
-    file.echo_str_core_xplat("Hola");
+    // file.set_path_core(path_core);
+    file.set_rel_path(path_core);
+
+    println(path_core);
+    
+    if(file.core_exists())
+        println("EXISTS");
+    else
+        println("NOT EXISTS");
+
+
+    file.file_echo_overwrite_first_strsize_chars("HolaHola");
 
 }
+
 
 int main(){
     print("Starting: ");

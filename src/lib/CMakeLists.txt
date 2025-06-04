@@ -17,6 +17,9 @@ add_library(lib
     print.cc
 
     err.cc
+
+    fs/linux.cc
+    fs/windows.cc
 )
 
 

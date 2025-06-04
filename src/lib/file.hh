@@ -26,13 +26,13 @@ class File {
 public:
 
     File() = default;
-    File(Str relative_path_str) 
-        : relative_path {relative_path_str} {};
+    File(Str relative_path_str);
 
-    void set_path(Str& path_str);
-    Str get_current_path();
+    void set_rel_path(Str& path_str);
+    Str& get_current_path();
+    bool core_exists();
 
-    void echo_str_core_xplat(Str str);
+    void file_echo_overwrite_first_strsize_chars(Str str);
 
     Str cat_as_str_core_xplat();
     static Str cat_as_str_core_xplat(Str& path_str);
@@ -42,12 +42,6 @@ private:
     const char* get_current_path_c_str();
     void update_absolute_path();
 
-#ifdef  PH_LINUX
-    Str cat_file_linux();
-    void echo_file_linux(Str str);
-#elif   PH_WINDOWS
-    Str cat_core_file_windows();
-#endif
 
 
 
@@ -66,6 +60,7 @@ public:
     std::string physimos_core_path_;
     std::string relative_path_;
     std::string file_contents_;
+    
     File(std::string relative_path) : relative_path_ {relative_path} {
         std::string physiomos_dir = physimos_root_dir_or_die();
         physimos_core_path_ = physiomos_dir + "/" + relative_path;
@@ -83,12 +78,6 @@ public:
 
         return str;
     }
-    void make_core(){
-        use_core_path = true;
-    }
-    void make_cwd(){
-        use_core_path = false;
-    }
     void set_path_core(Str& path_str){
 
         // Str
@@ -104,19 +93,9 @@ public:
 
 
 
-    std::string copy_as_string_core(){
-        use_core_path = true;
-        successful_read = false;
-        return cat_file_as_string();
-    }
     std::string copy_as_string_cwd(){
         successful_read = false;
         return cat_file_as_string();
-    }
-    std::string& ref_as_string_cwd(){
-        successful_read = false;
-        file_contents_ = cat_file_as_string();
-        return file_contents_;
     }
 
 
