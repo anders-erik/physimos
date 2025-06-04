@@ -355,6 +355,8 @@
             // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
             // "${workspaceFolder}/build/debug_linux/src/model/main_editor",
 
+            // "${workspaceFolder}/build/debug_linux/src/lib/test_str",
+
             "options": {
                 "cwd": 
                 

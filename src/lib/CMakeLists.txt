@@ -38,7 +38,13 @@ add_executable(main_str
 add_executable(main_file
     main_file.cc
 )
-
 target_link_libraries(main_lib  lib)
 target_link_libraries(main_str  lib)
 target_link_libraries(main_file lib)
+
+
+
+add_executable(test_str
+    test/test_str.cc
+)
+target_link_libraries(test_str lib)

@@ -313,6 +313,9 @@
             // "${workspaceRoot}/build/debug_linux/src/file_format/json/main_json",
             // "${workspaceRoot}/build/debug_linux/src/phont/main_phont",
             // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
+
+            // "${workspaceFolder}/build/debug_linux/src/lib/test_str",
+
             // WINDOWS
             
             "args": [],
