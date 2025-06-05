@@ -11,7 +11,7 @@ namespace UI {
 
 
 
-class ProgramBaseTexture : public opengl::Program {
+class ProgramTexture : public opengl::Program {
 
     unsigned int vao;
     unsigned int vbo;
@@ -24,9 +24,7 @@ class ProgramBaseTexture : public opengl::Program {
 
 public:
 
-    // TODO: Figure out why the new shader is not working, despite exactly the same source
-    // ProgramBaseTexture() : Program("ui/texture") {};
-    ProgramBaseTexture() : Program("ui/base_texture") {};
+    ProgramTexture() : Program("ui/base_texture") {};
 
     void init();
     void set_viewport_transform(m4f4 _viewport_transform);

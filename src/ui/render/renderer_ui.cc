@@ -51,18 +51,18 @@ RendererUI::RendererUI()
     program_base.init();
     program_base.set_viewport_transform(viewport_transform);
     
-    program_base_texture.init();
-    program_base_texture.set_viewport_transform(viewport_transform);
-
-    program_color.init();
-    program_color.set_viewport_transform(viewport_transform);
-
     program_texture.init();
     program_texture.set_viewport_transform(viewport_transform);
 
-    program_string.init();
-    program_string.set_viewport_transform(viewport_transform);
-    program_string.set_texture(font_bitmap.get_font_texture());
+    program_primitive_color.init();
+    program_primitive_color.set_viewport_transform(viewport_transform);
+
+    program_primitive_texture.init();
+    program_primitive_texture.set_viewport_transform(viewport_transform);
+
+    program_primitive_string.init();
+    program_primitive_string.set_viewport_transform(viewport_transform);
+    program_primitive_string.set_texture(font_bitmap.get_font_texture());
 
 }
 
@@ -74,11 +74,11 @@ void RendererUI::set_window_info(f2 size , f2 scale){
     viewport_transform.y.y = 2.0f * scale.y / size.y;
 
     program_base.set_viewport_transform(viewport_transform);
-    program_base_texture.set_viewport_transform(viewport_transform);
-
-    program_color.set_viewport_transform(viewport_transform);
     program_texture.set_viewport_transform(viewport_transform);
-    program_string.set_viewport_transform(viewport_transform);
+
+    program_primitive_color.set_viewport_transform(viewport_transform);
+    program_primitive_texture.set_viewport_transform(viewport_transform);
+    program_primitive_string.set_viewport_transform(viewport_transform);
 
 }
 
@@ -136,36 +136,36 @@ void RendererUI::draw_base_texture(UI::BaseTexture& base_texture){
 
     unsigned int texture_id = opengl::texture_get_id(opengl::Textures::Colors);
 
-    program_base_texture.set(
+    program_texture.set(
         base_texture.get_M_m_s().pointer(), 
         texture_id
     );
 
-    program_base_texture.draw();  
+    program_texture.draw();  
 
 }
 
 
 void RendererUI::draw_primitive_color(UI::Primitive& primitive){
 
-    program_color.set(
+    program_primitive_color.set(
         primitive.uiTransform.M_m_s.pointer(), 
         primitive.darkness_shift, 
         primitive.color
     );
 
-    program_color.draw();
+    program_primitive_color.draw();
 
 }
 
 void RendererUI::draw_primitive_texture(UI::Primitive & primitive){
 
-    program_texture.set(
+    program_primitive_texture.set(
         primitive.uiTransform.M_m_s.pointer(), 
         primitive.renderedTexture
     );
 
-    program_texture.draw();  
+    program_primitive_texture.draw();  
 
 }
 
@@ -182,16 +182,16 @@ void RendererUI::draw_primitive_texture(UI::Primitive & primitive){
 
 void RendererUI::draw_primitive_string(UI::Primitive & primitive){
 
-    program_string.set_primitive_transform(
+    program_primitive_string.set_primitive_transform(
         primitive.uiTransform.M_m_s.pointer()
     );
 
     // font::string_to_texture_vertex_list(char_verts, primitive.str);
     font_bitmap.string_to_texture_vertex_list(char_verts, primitive.str);
 
-    program_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(VertexFontBitmap));
+    program_primitive_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(VertexFontBitmap));
 
-    program_string.draw();
+    program_primitive_string.draw();
 
 }
 

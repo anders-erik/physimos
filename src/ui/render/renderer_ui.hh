@@ -37,13 +37,13 @@ class RendererUI {
     m4f4 viewport_transform;
 
     ProgramBase program_base;
-    ProgramBaseTexture program_base_texture;
+    ProgramTexture program_texture;
 
 
-    ProgramPrimitiveColor program_color;
-    ProgramPrimitiveTexture program_texture;
+    ProgramPrimitiveColor program_primitive_color;
+    ProgramPrimitiveTexture program_primitive_texture;
 
-    ProgramPrimitiveString program_string;
+    ProgramPrimitiveString program_primitive_string;
     std::vector<VertexFontBitmap> char_verts;
     FontBitmap font_bitmap;
 

@@ -28,7 +28,7 @@ float baseTextureSquareVertices[30] = {
 };
 
 
-void ProgramBaseTexture::init(){
+void ProgramTexture::init(){
 
     glUseProgram(id);
 
@@ -55,7 +55,7 @@ void ProgramBaseTexture::init(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
-void ProgramBaseTexture::set_viewport_transform(m4f4 _viewport_transform){
+void ProgramTexture::set_viewport_transform(m4f4 _viewport_transform){
 
     glUseProgram(id);
 
@@ -65,7 +65,7 @@ void ProgramBaseTexture::set_viewport_transform(m4f4 _viewport_transform){
 }
 
 
-void ProgramBaseTexture::set(float* primitiveTransform_mat, unsigned int texture) const {
+void ProgramTexture::set(float* primitiveTransform_mat, unsigned int texture) const {
     
     glUseProgram(id);
     
@@ -76,7 +76,7 @@ void ProgramBaseTexture::set(float* primitiveTransform_mat, unsigned int texture
 }
 
 
-void ProgramBaseTexture::draw() const {
+void ProgramTexture::draw() const {
 
     glUseProgram(id);
 
