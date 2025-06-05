@@ -8,28 +8,28 @@
 #include "scene2D.hh"
 #include "subscene2D.hh"
 
-#include "scene/bc.hh"
+#include "scene/manager.hh"
 
 namespace scene {
 SubScene2D::SubScene2D(f2 framebuffer_size)
-    // : scene {Scene2D(framebuffer_size)}
 {
-    auto tag_scene_pair = BC::new_scene(framebuffer_size);
-    
-    scene_tag = tag_scene_pair.XX;
-    auto new_scene_opt = tag_scene_pair.YY;
+    scene::Scene2D* new_scene = ManagerScene::new_scene(framebuffer_size);
 
-    if(new_scene_opt.is_null())
-        scene_tag.type = BC::none;
+    if(new_scene == nullptr){
+        scene_id = 0;
+        std::cout << "New scene in subscene constructor is nullptr. " << std::endl;
+        return;
+    }
 
-    // scene::Scene2D& new_scene = new_scene_opt.get_ref();
+    scene_id = new_scene->get_id();;
+
 }
 
 
 
-bool SubScene2D::tag_is_valid(){
-    auto scene_opt =  BC::get_scene(scene_tag);
-    return scene_opt.is_null() ? false : true;
+bool SubScene2D::has_scene(){
+    scene::Scene2D* scene =  ManagerScene::get_scene(scene_id);
+    return scene == nullptr ? false : true;
 }
 
 QuadS2D & SubScene2D::get_quad(){
@@ -66,13 +66,11 @@ QuadS2D & SubScene2D::get_quad(){
 
 OptPtr<ShapeS2D> SubScene2D::add_shape(Shape& shape){
     
-    auto scene_opt =  BC::get_scene(scene_tag);
-    if(scene_opt.is_null() )
+    scene::Scene2D* scene =  ManagerScene::get_scene(scene_id);
+    if(scene == nullptr )
         return {};
     
-    auto _scene = scene_opt.get_ref();
-
-    return &_scene.add_shape(shape);
+    return {&scene->add_shape(shape)};
 }
 
 // void SubScene2D::add_quad(scene::QuadS2D& quad){

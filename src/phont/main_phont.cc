@@ -6,7 +6,7 @@
 #include <any>
 
 
-#include "bc.hh"
+#include "manager.hh"
 
 #include "conductor/conductor2D.hh"
 
@@ -25,7 +25,7 @@ InputEvent event;
 
 
 // void add_glyph_quads_to_scene(scene::Scene2D& scene){
-void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
+void add_glyph_quads_to_scene(scene::Scene2D* scene){
 
 
 	// Glyph F 1
@@ -98,18 +98,12 @@ void add_glyph_quads_to_scene(scene::SubScene2D& subscene){
 
 
 	
-	// subscene.scene.add_quad(quad_F_1);
-	// subscene.scene.add_quad(quad_F_2);
-	// subscene.scene.add_quad(quad_A_1);
-	// subscene.scene.add_quad(quad_A_multi);
-	// subscene.scene.add_quad(quad_Triangle);
 
-	scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
-	subscene_scene->add_quad(quad_F_1);
-	subscene_scene->add_quad(quad_F_2);
-	subscene_scene->add_quad(quad_A_1);
-	subscene_scene->add_quad(quad_A_multi);
-	subscene_scene->add_quad(quad_Triangle);
+	scene->add_quad(quad_F_1);
+	scene->add_quad(quad_F_2);
+	scene->add_quad(quad_A_1);
+	scene->add_quad(quad_A_multi);
+	scene->add_quad(quad_Triangle);
 
 }
 
@@ -128,98 +122,34 @@ int main()
 	Conductor2D conductor2D (conductor_window_size);
 
 
-	
 
-	// CONDUCTOR SUBSCENE
+	scene::Scene2D* root_scene = ManagerScene::new_scene(conductor_window_size);
+	conductor2D.root_scene_id     = root_scene->get_id();
 
-	// scene::Scene2D& root_scene_0 = conductor2D.add_subscene({0.1f, 0.4f}, {0.5f, 0.5f});
-	scene::SubScene2D& subscene_0 = conductor2D.add_subscene({0.01f, 0.4f}, {0.5f, 0.5f});
-	scene::Scene2D* subscene_0_scene = BC::get_scene(subscene_0.scene_tag.id);
-
-	// Add stuff
-
-	Shape point_to_draw = Shape::create(shape_t::point);
-	point_to_draw.move(f2{8.0f, 4.0f});
-	subscene_0_scene->add_shape(point_to_draw);
-
-	Shape line_to_draw = Shape::create(shape_t::line);
-	scene::ShapeS2D& scene_line_bc = subscene_0_scene->add_shape(line_to_draw);
-	scene_line_bc.set_pos( {6.0f, 6.0f} );
-	add_glyph_quads_to_scene(subscene_0);
-
-
-
-
-	// CONDUCTOR ROOT SCENE
-
-	// Create
-	Pair<BC::Tag, OptPtr<scene::Scene2D>>
-	tag_scene_root = BC::new_scene_with_lock("Root scene");
-
-	conductor2D.root_scene_tag = tag_scene_root.XX;
-	if(tag_scene_root.YY.is_null())
-		throw std::runtime_error("Unable to create root scene in conductor2D");
-
-	// scene::Scene2D& root_scene_tmp = tag_scene_root.YY.get_ref();
-	scene::Scene2D* root_scene_tmp = tag_scene_root.YY.get_ptr();
-	root_scene_tmp->set_window_size(conductor_window_size);
-
-
-	// GREEN QUAD
+	// ADD GREEN QUAD TO ROOT SCENE
 	scene::QuadS2D root_scene_quad_1;
 	root_scene_quad_1.set_box( {0.0f, 0.0f}, {30.0f, 30.0f} );
     root_scene_quad_1.set_texture_id(opengl::texture_get_id(opengl::Textures::Grass));
 	root_scene_quad_1.set_name("root_scene_quad_1");
-	root_scene_tmp->add_quad(root_scene_quad_1);
-
-	// SUBSCENE
-	scene::SubScene2D& root_scene_subscene = root_scene_tmp->add_subscene({450, 300}, {320, 240});
-	scene::Scene2D* root_scene_subscene_scene = BC::get_scene(root_scene_subscene.scene_tag.id);
+	root_scene->add_quad(root_scene_quad_1);
 
 
-	root_scene_subscene_scene->add_shape(point_to_draw);
-	scene::ShapeS2D& root_scene_subscene_scene_line = root_scene_subscene_scene->add_shape(line_to_draw);
-	root_scene_subscene_scene_line.set_pos( {6.0f, 6.0f} );
-	add_glyph_quads_to_scene(root_scene_subscene);
+	// NEW SUBSCENE ADDED TO ROOT SCENE
+	scene::SubScene2D& subscene_1 = root_scene->add_subscene({450, 300}, {320, 240});
+	scene::Scene2D* subscene_1_scene = ManagerScene::get_scene(subscene_1.scene_id);
 
-
-	BC::return_scene(conductor2D.root_scene_tag);
-
-
-
-
-
-
-	// BC TESTS
-
-
-	Pair<BC::Tag, OptPtr<scene::Scene2D>> tag_scene_0 = BC::new_scene_with_lock("Scene0");
-
-	if(tag_scene_0.YY.is_null())
-		throw std::runtime_error("EMPTY SCENE OPT PTR");
-
-	scene::Scene2D& borrowed_scene_0 = tag_scene_0.YY.get_ref();
-
-	// scene::Scene2D& borrowed_scene_0_again = bc.borrow_scene(tag_scene_0); // not returned!
+	// ADD SHAPES TO SUBSCENE
+	Shape point_to_draw = Shape::create(shape_t::point);
+	point_to_draw.move(f2{8.0f, 4.0f});
+	Shape line_to_draw = Shape::create(shape_t::line);
+	subscene_1_scene->add_shape(point_to_draw);
+	scene::ShapeS2D& subscene_1_line = subscene_1_scene->add_shape(line_to_draw);
+	subscene_1_line.set_pos( {6.0f, 6.0f} );
 	
-	// Change values
-	borrowed_scene_0.get_window_size().print("Initial window size: ");
-	borrowed_scene_0.set_window_size({100, 100});
-	BC::return_scene(tag_scene_0.XX);
+	// ADD GLYPHS TO SUBSCENE
+	add_glyph_quads_to_scene(subscene_1_scene);
 
 
-	// Read value change
-	OptPtr<scene::Scene2D> borrowed_scene_0_again_opt = BC::borrow_scene(tag_scene_0.XX);
-	if(borrowed_scene_0_again_opt.is_null())
-		throw std::runtime_error("EMPTY SCENE OPT PTR");
-
-	scene::Scene2D& borrowed_scene_0_again = borrowed_scene_0_again_opt.get_ref();
-	borrowed_scene_0_again.get_window_size().print("Updated window size: ");
-
-	BC::return_scene(tag_scene_0.XX);
-	
-	BC::obj obj;
-	obj.scenesss.push_back(scene::SubScene2D( {0,0} ));
 
 	conductor2D.main_loop();
 

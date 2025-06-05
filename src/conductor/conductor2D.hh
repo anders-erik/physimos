@@ -6,7 +6,7 @@
 
 #include "ui/pui.hh"
 
-#include "scene/bc.hh"
+#include "scene/manager.hh"
 #include "scene/scene2D.hh"
 #include "scene/subscene2D.hh"
 #include "scene/shapeS2D.hh"
@@ -29,7 +29,7 @@ class Conductor2D {
 	
 
 	scene::SubScene2D* subscene_current_hover = nullptr;
-	std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Conductor2D
+	// std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Conductor2D
 
 
 	UI::PUI pui;
@@ -37,7 +37,8 @@ class Conductor2D {
 	bool targeting_ui = false;
 
 public:
-	BC::Tag root_scene_tag;
+	// ManagerScene::Tag root_scene_tag;
+	size_t root_scene_id;
 	scene::Scene2D* current_scene_target = nullptr;
 
 
@@ -49,7 +50,6 @@ public:
 	void input_mouse_move(InputEvent& event);
 	void input_mouse_button(InputEvent& event);
 	
-	void update_subscenes();
 	void update_root_scene();
 
 	/** Swap buffers, set up new frame, and load input event into conductor. */
@@ -65,14 +65,11 @@ public:
 	/** transfer control to Conductor2D by entering main rendering loop */
 	void main_loop();
 
-	scene::SubScene2D& add_subscene(f2 pos_scene, f2 size_scene);
 
 
 private:
 
 	void reload_camera_root();
 
-	f2 transform_normalized_to_window(f2 normalized);
-	f2 transform_window_to_normalized(f2 window);
 };
 

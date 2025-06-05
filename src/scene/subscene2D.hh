@@ -16,7 +16,7 @@
 #include "scene/camera2D.hh"
 #include "scene/shapeS2D.hh"
 
-#include "scene/bc.hh"
+#include "scene/manager.hh"
 
 #include "phont/phont.hh"
 
@@ -36,15 +36,15 @@ class SubScene2D {
 
 
 public:
+    /** The quad rendered by parent scene using the texture from accompanying scene. */
     QuadS2D quad;
-    BC::Tag scene_tag;
-    // size_t scene_id;
-    // Scene2D scene;
+    /** Unique object id from manager. A value of 0 means that it has no valid object. */
+    size_t scene_id;
 
 
     SubScene2D(f2 framebuffer_size);
     
-    bool tag_is_valid();
+    bool has_scene();
 
     QuadS2D& get_quad();
     Scene2D& get_scene();
@@ -71,5 +71,6 @@ public:
 
 
 };
+
 
 }

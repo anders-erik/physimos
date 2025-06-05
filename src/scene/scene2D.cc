@@ -36,11 +36,11 @@ Scene2D::Scene2D(f2 _window_size)
 
 }
 
-void Scene2D::set_tag_id(size_t id){
+void Scene2D::set_id(size_t id){
     tag_id = id;
 }
 
-size_t Scene2D::get_tag_id(){
+size_t Scene2D::get_id(){
     return tag_id;
 }
 
@@ -93,7 +93,7 @@ Scene2D * Scene2D::try_find_current_scene(f2 normalized)
 
             subscene_current_target = &subscene;
 
-			scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+			scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
 
             f2 pos_subscene_normalized = subscene.quad.get_normalized_from_point(pos_current_scene);
 
@@ -130,7 +130,7 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
                 subscene.quad.get_normalized_from_point(cursor_pos_scene),
             };
 
-            scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+            scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
             subscene_scene->handle_pointer_move(subscene_pointer_move);
 
             // Event is handled by subscene
@@ -175,7 +175,7 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
                 pointer_click.button_event,
             };
 
-            scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+            scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
             subscene_scene->handle_pointer_click(subscene_pointer_click);
 
             // Event is handled by subscene
@@ -288,7 +288,7 @@ void Scene2D::update(){
 void Scene2D::render_subscene_textures(){
 
     for( scene::SubScene2D& subscene : subscenes){
-        scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+        scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
         // recursively render descendants before itself
         subscene_scene->render_subscene_textures();
         subscenes[0].quad.set_texture_id(subscene_scene->render_to_texture());

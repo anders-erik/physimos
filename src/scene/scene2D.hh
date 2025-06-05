@@ -84,8 +84,8 @@ public:
 
     Scene2D(f2 _window_size);
 
-    void set_tag_id(size_t id);
-    size_t get_tag_id();
+    void set_id(size_t id);
+    size_t get_id();
 
     f2 get_window_size();
     void set_window_size(f2 size);
