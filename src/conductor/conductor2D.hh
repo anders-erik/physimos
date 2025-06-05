@@ -31,8 +31,6 @@ class Conductor2D {
 	scene::SubScene2D* subscene_current_hover = nullptr;
 	std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Conductor2D
 
-	// To be replaced with BC tag
-	scene::Scene2D* cursor_owner = nullptr;
 
 	UI::PUI pui;
 	CursorPosition cursor_pos;
@@ -40,6 +38,7 @@ class Conductor2D {
 
 public:
 	BC::Tag root_scene_tag;
+	scene::Scene2D* current_scene_target = nullptr;
 
 
 	Conductor2D(f2 window_size);
@@ -49,7 +48,6 @@ public:
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);
 	void input_mouse_button(InputEvent& event);
-	void process_input(InputEvent & event);
 	
 	void update_subscenes();
 	void update_root_scene();

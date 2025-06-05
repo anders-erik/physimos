@@ -76,6 +76,40 @@ QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 }
 
 
+f2 Scene2D::normalized_to_scene_conversion(f2 normalized)
+{
+    return {normalized.x * window_size_f.x, normalized.y * window_size_f.y};
+}
+
+
+Scene2D * Scene2D::try_find_current_scene(f2 normalized)
+{
+    f2 pos_current_scene = normalized_to_scene_conversion(normalized);
+
+    for(scene::SubScene2D& subscene : subscenes){
+    
+        // Recursive match
+        if(subscene.quad.contains_cursor(pos_current_scene)){
+
+            subscene_current_target = &subscene;
+
+			scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+
+            f2 pos_subscene_normalized = subscene.quad.get_normalized_from_point(pos_current_scene);
+
+            return subscene_scene->try_find_current_scene(pos_subscene_normalized);
+
+		}
+    
+    }
+
+    // Found no subscene that captured the cursor
+    subscene_current_target = nullptr;
+
+    // No subscenes that matched the cursor position
+    return this;
+}
+
 
 void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
 
@@ -83,7 +117,32 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
     cursor_pos_normal = pointer_movement.pos_curr;
     cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
 
-    // Get move deltas
+    f2 cursor_pos_scene_prev = camera.normalized_to_scene_coords(pointer_movement.pos_prev);
+
+
+    for(scene::SubScene2D& subscene : subscenes){
+    
+        // Check if position before move is within subscene
+        if(subscene.quad.contains_cursor(cursor_pos_scene_prev)){
+
+            PointerMovement2D subscene_pointer_move = {
+                subscene.quad.get_normalized_from_point(cursor_pos_scene_prev),
+                subscene.quad.get_normalized_from_point(cursor_pos_scene),
+            };
+
+            scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+            subscene_scene->handle_pointer_move(subscene_pointer_move);
+
+            // Event is handled by subscene
+            return;
+            
+        }
+    
+    }
+
+    // As no other subscenes have captured the movement, we now can handle the event logic
+
+    // Get move deltas in current scene
     f2 delta_normalized = pointer_movement.pos_curr - pointer_movement.pos_prev;
     f2 delta_scene = camera.normalized_to_scene_delta(delta_normalized);
 
@@ -104,6 +163,27 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
     // Update scene cursor
     cursor_pos_normal = pointer_click.pos_scene_normal;
     cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
+
+
+    for(scene::SubScene2D& subscene : subscenes){
+    
+        // Check if position before move is within subscene
+        if(subscene.quad.contains_cursor(cursor_pos_scene)){
+
+            PointerClick2D subscene_pointer_click = {
+                subscene.quad.get_normalized_from_point(cursor_pos_scene),
+                pointer_click.button_event,
+            };
+
+            scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
+            subscene_scene->handle_pointer_click(subscene_pointer_click);
+
+            // Event is handled by subscene
+            return;
+            
+        }
+    
+    }
 
 
     window::MouseButtonEvent button_event = pointer_click.button_event;
@@ -263,14 +343,19 @@ void Scene2D::render(){
     for( scene::SubScene2D& subscene : subscenes){
         renderer2D.render_quad(subscene.quad);
     }
+    // Highlight subscene that is capturing cursor
+    if(subscene_current_target != nullptr)
+		renderer2D.render_frame(subscene_current_target->quad.get_matrix());
 
-
+    
     // FRAMES
     renderer2D.render_frame(frame_M_m_s);
+
     if(quad_current_hover != nullptr)
         renderer2D.render_frame(quad_current_hover->get_matrix());
     if(quad_current_selected != nullptr)
         renderer2D.render_frame(quad_current_selected->get_matrix());
+
 
 }
 

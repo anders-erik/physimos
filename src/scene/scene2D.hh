@@ -28,7 +28,7 @@ namespace scene {
 
 struct SubScene2D;
 
-/** Cursor movement event in normalized viewport coordinated. Usually recieved from over of scene.
+/** Cursor movement event in normalized viewport coordinated. Usually recieved from owner of scene.
     [0,1]x[0,1] [unitless]
  */
 struct PointerMovement2D {
@@ -76,7 +76,7 @@ class Scene2D {
     std::vector<ShapeS2D> shapes;
 
     std::vector<SubScene2D> subscenes;
-
+    scene::SubScene2D* subscene_current_target = nullptr;
 
 public:
     opengl::TextureFrameBufferMultisample framebuffer;
@@ -95,6 +95,9 @@ public:
 
     void handle_input(window::InputEvent input_event); // OLD
 
+    f2 normalized_to_scene_conversion(f2 normalized);
+    /** Try find which scene that captures the cursor */
+    Scene2D* try_find_current_scene(f2 normalized);
     void handle_pointer_move(PointerMovement2D cursor_event);
     void handle_pointer_click(PointerClick2D pointer_click);
     void handle_scroll(float delta);

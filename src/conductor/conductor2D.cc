@@ -74,29 +74,39 @@ void Conductor2D::input_scroll(InputEvent & event){
 	// Only one scene at the moment
 	// scene::Scene2D& scene = scenes[0];
 
-	scene::Scene2D* root_scene = BC::get_scene(root_scene_tag.id);
-
-	root_scene->handle_scroll(scroll_event.delta);
-
-	if(subscenes[0].quad.contains_cursor(event.cursor.sane)){
-		// std::cout << "SCROLL IN SCENE" << std::endl;
-		// subscenes[0].scene.handle_scroll(scroll_event.delta);
-		scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
-		subscene_0_scene->handle_scroll(scroll_event.delta);
+	if(targeting_ui){
+	
 	}
-	// camera.zoom(event.mouse_scroll.delta);
+	else {
+	
+		if(current_scene_target != nullptr)
+			current_scene_target->handle_scroll(scroll_event.delta);
+
+		// SUBSCENE - LEGACY
+		// scene::Scene2D* root_scene = BC::get_scene(root_scene_tag.id);
+		// root_scene->handle_scroll(scroll_event.delta);
+
+		if(subscenes[0].quad.contains_cursor(event.cursor.sane)){
+			// std::cout << "SCROLL IN SCENE" << std::endl;
+			// subscenes[0].scene.handle_scroll(scroll_event.delta);
+			scene::Scene2D* subscene_0_scene = BC::get_scene(subscenes[0].scene_tag.id);
+			subscene_0_scene->handle_scroll(scroll_event.delta);
+		}
+		// camera.zoom(event.mouse_scroll.delta);
+	}
+
 
 }
 
 void Conductor2D::input_mouse_move(InputEvent & event){
 	MouseMoveEvent& mouse_movement = event.mouse_movement;
-	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
 	CursorPosition& cursor_new = event.cursor;
+	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
 
 	// cursor_pos = cursor;
 
-	cursor_new.print();
-	mouse_movement.delta.sane.print("Delta [sane]: ");
+	// cursor_new.print();
+	// mouse_movement.delta.sane.print("Delta [sane]: ");
 
 	// targeting_ui = pui.find_new_target(cursor_pos.sane);
 
@@ -107,6 +117,19 @@ void Conductor2D::input_mouse_move(InputEvent & event){
 		
 	}
 	else { // Scene
+
+		
+			// current_scene_target->handle_pointer_move(scroll_event.delta);
+
+		scene::Scene2D* root_scene = BC::get_scene(root_scene_tag.id);
+		
+		scene::PointerMovement2D scene_pointer_move;
+		scene_pointer_move.pos_prev = cursor_prev.normalized;
+		scene_pointer_move.pos_curr = cursor_new.normalized;
+
+		root_scene->handle_pointer_move(scene_pointer_move);
+
+		// LAGACY FOR RAW SUBSCENES
 
 		if(subscenes[0].quad.contains_cursor(cursor_new.sane)){
 
@@ -148,6 +171,18 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 
 	}
 	else{
+
+		scene::Scene2D* root_scene = BC::get_scene(root_scene_tag.id);
+		
+		scene::PointerClick2D pointer_click = {
+			cursor.normalized,
+			mouse_button_event
+		};
+
+		root_scene->handle_pointer_click(pointer_click);
+
+
+		// LEGACY FOR RAW SUBSCENES
 	
 		if(subscenes[0].quad.contains_cursor(cursor.sane)){
 
@@ -166,36 +201,6 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 }
 
 
-void Conductor2D::process_input(InputEvent& event){
-		
-	// Only one scene at the moment
-	// scene::Scene2D& scene = scenes[0];
-
-	switch (event.type){
-
-	case EventType::WindowResize:
-		// input_window_change(event);
-		break;
-
-	case EventType::MouseMove:
-		// input_mouse_move(event);
-		break;
-
-	case EventType::MouseScroll:
-		// input_scroll(event);
-		break;
-
-	case EventType::MouseButton:
-		// input_mouse_button(event);
-		break;
-
-	default:
-		// std::cout << "WARN: unhandled input event" << std::endl;
-		// scene.handle_input(event);
-		break;
-	}
-
-}
 
 void Conductor2D::update_subscenes(){
 
@@ -249,13 +254,23 @@ void Conductor2D::new_frame(){
 void Conductor2D::update_current_target(){
 
 	// Always start out with trying to figure out what were currently targeting
+
+	// if we are currently grabbing an element, nothing to do
 	if(pui.has_grabbed_target()){
-		targeting_ui = true; // as we've grabbed ui base -> targeting ui
+		targeting_ui = true; 
+		return;
 	}
-	else {
-		pui.try_find_new_target(cursor_pos.sane);
-		targeting_ui = pui.has_target();
-	}
+
+	pui.try_find_new_target(cursor_pos.sane);
+	targeting_ui = pui.has_target();
+	if(targeting_ui)
+		return;
+
+
+	// Query scenes
+	scene::Scene2D* root_scene = BC::get_scene(root_scene_tag.id);
+	current_scene_target = root_scene->try_find_current_scene(cursor_pos.normalized);
+
 
 }
 
