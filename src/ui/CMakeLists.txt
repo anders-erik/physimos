@@ -1,4 +1,4 @@
-add_subdirectory(elements)
+
 add_subdirectory(uic)
 add_subdirectory(render)
 
@@ -10,6 +10,8 @@ add_library(ui
     ui_globals.cc
     ui_texture.cc
     base.cc
+    texture.cc
+    pui.cc
     
     # dependencies removed
     ui_font.cc
@@ -25,7 +27,6 @@ target_include_directories(ui PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include)
 
 target_link_libraries(ui 
     ui_render
-    ui_elements
 
     image
 )

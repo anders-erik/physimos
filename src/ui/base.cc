@@ -45,12 +45,13 @@ void Base::set_size(f2 size){
 }
 
 
-BaseQuery Base::containsPoint(f2 point) {
+Base* Base::containsPoint(f2 point) {
 
     bool x_pass = point.x > box.pos.x && point.x < box.pos.x + box.size.x;
     bool y_pass = point.y > box.pos.y && point.y < box.pos.y + box.size.y;
 
-    return x_pass && y_pass ? BaseQuery(this) : BaseQuery();
+    // return x_pass && y_pass ? BaseQuery(this) : BaseQuery();
+    return x_pass && y_pass ? this : nullptr;
 
 }
 
@@ -80,11 +81,24 @@ bool Base::mouse_is_down()
     return flag_mouse_down;
 }
 
-void Base::render(RendererUI& renderer) {
+void Base::scroll(float delta)
+{
+    float scaled_delta = delta * 10;
 
+    box.size.x += scaled_delta;
+    box.size.y += scaled_delta;
 
-    renderer.draw_base(*this);
+    if(box.size.x < 10.0f || box.size.y < 10.0f)
+    {
+        box.size.x -= scaled_delta;
+        box.size.y -= scaled_delta;
+    }
 
+}
+
+void Base::clear_state_flags(){
+    flag_mouse_down = false;
+    flag_hover = false;
 }
 
     

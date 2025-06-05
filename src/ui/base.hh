@@ -48,13 +48,17 @@ public:
     Base() = default;
 
 
+    // Box
+
     void set_pos(f2 pos);
     void set_size(f2 size);
     void set_box(const UI::Box& box);
     UI::Box& get_box();
     m4f4 get_M_m_s();
-    BaseQuery containsPoint(f2 point);
+    Base* containsPoint(f2 point);
 
+
+    // Events
 
     void set_hover();
     void unset_hover();
@@ -64,7 +68,10 @@ public:
     void mouse_up();
     bool mouse_is_down();
 
-    void render(RendererUI& renderer);
+    void scroll(float delta);
+
+    void clear_state_flags();
+
 
 };
 

@@ -41,26 +41,24 @@ public:
 	size_t root_scene_id;
 	scene::Scene2D* current_scene_target = nullptr;
 
-
 	Conductor2D(f2 window_size);
 
-
-	void input_window_change(InputEvent& event);
+	// Input
+	/** Makes sure that we know what subsystem we are currently targeting. (Scene or UI)*/
+	void update_current_target();
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);
 	void input_mouse_button(InputEvent& event);
-	
-	void update_root_scene();
-
-	/** Swap buffers, set up new frame, and load input event into conductor. */
-	void new_frame();
-	/** Makes sure that we know what subsystem we are currently targeting before handling events */
-	void update_current_target();
-
+	void input_window_change(InputEvent& event);
 	/** Mouse and keyboard input. */
 	void process_user_input();
 	/** Window resize, content scale, etc. */
 	void process_framebuffer_events();
+	
+
+	/** Swap buffers, set up new frame, and load input event into conductor. */
+	void new_frame();
+
 
 	/** transfer control to Conductor2D by entering main rendering loop */
 	void main_loop();

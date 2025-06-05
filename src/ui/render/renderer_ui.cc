@@ -12,6 +12,7 @@
 #include "ui/ui_font.hh"
 
 #include "ui/base.hh"
+#include "ui/texture.hh"
 
 #include "renderer_ui.hh"
 
@@ -37,7 +38,10 @@ RendererUI& get_renderer_ui(){
 }
 
 
-RendererUI::RendererUI(){
+RendererUI::RendererUI()
+{
+
+    // opengl::textures_init();
 
     viewport_transform.x.x = 2.0f / (float)SCREEN_INIT_WIDTH;
     viewport_transform.y.y = 2.0f / (float)SCREEN_INIT_HEIGHT;
@@ -46,6 +50,9 @@ RendererUI::RendererUI(){
 
     program_base.init();
     program_base.set_viewport_transform(viewport_transform);
+    
+    program_base_texture.init();
+    program_base_texture.set_viewport_transform(viewport_transform);
 
     program_color.init();
     program_color.set_viewport_transform(viewport_transform);
@@ -67,6 +74,7 @@ void RendererUI::set_window_info(f2 size , f2 scale){
     viewport_transform.y.y = 2.0f * scale.y / size.y;
 
     program_base.set_viewport_transform(viewport_transform);
+    program_base_texture.set_viewport_transform(viewport_transform);
 
     program_color.set_viewport_transform(viewport_transform);
     program_texture.set_viewport_transform(viewport_transform);
@@ -119,6 +127,21 @@ void RendererUI::draw_base(UI::Base& base){
     );
 
     program_base.draw();
+
+}
+
+void RendererUI::draw_base_texture(UI::BaseTexture& base_texture){
+
+    // glDisable(GL_DEPTH_TEST);
+
+    unsigned int texture_id = opengl::texture_get_id(opengl::Textures::Colors);
+
+    program_base_texture.set(
+        base_texture.get_M_m_s().pointer(), 
+        texture_id
+    );
+
+    program_base_texture.draw();  
 
 }
 

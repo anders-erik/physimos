@@ -9,6 +9,7 @@
 #include "ui/font_bitmap.hh"
 
 #include "ui/render/program_base.hh"
+#include "ui/render/program_texture.hh"
 
 #include "ui/render/program_primitive_color.hh"
 #include "ui/render/program_primitive_texture.hh"
@@ -18,6 +19,8 @@
 namespace UI {
 
 struct Base;
+struct BaseTexture;
+
 struct Primitive;
 
 
@@ -34,6 +37,8 @@ class RendererUI {
     m4f4 viewport_transform;
 
     ProgramBase program_base;
+    ProgramBaseTexture program_base_texture;
+
 
     ProgramPrimitiveColor program_color;
     ProgramPrimitiveTexture program_texture;
@@ -52,6 +57,7 @@ public:
     void draw(UI::Primitive& primitive);
 
     void draw_base(UI::Base& base);
+    void draw_base_texture(UI::BaseTexture& base_texture);
 
 private:
 
