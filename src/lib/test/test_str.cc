@@ -1,4 +1,10 @@
 
+// Segfault handler
+#include <iostream>
+#include <csignal>
+#include <cstdlib>
+#include <unistd.h>
+
 #include <string>
 #include <vector>
 #include <functional>
@@ -25,14 +31,19 @@ std::vector<std::function<int()>> fns = {
 };
 
 
-
+#ifdef PH_LINUX
+/** Linux */
+void segfault_handler(int signal) {
+    const char msg[] = "Segmentation fault!.\n";
+    write(STDERR_FILENO, msg, sizeof(msg) - 1); // write() for async-signal-safety
+    _exit(1);
+}
+#endif
 
 struct TestInfo {
     std::string description;
     bool passed = false;
 
-    // TestInfo() = default;
-    // TestInfo(std::string description) : description {description} {};
     TestInfo(std::string description, bool passed) : description {description}, passed {passed} {};
 };
 
@@ -49,14 +60,9 @@ std::vector<std::function<TestInfo()>> test_functions = {
 
     []() -> TestInfo {
         test_name = "Default constructor.";
-        try_
-            Str str;
-            return TestInfo(test_name, true);
-        catch_
-            return TestInfo(test_name, false);
-        end_
+        Str str;
+        return TestInfo(test_name, true);
     },
-
 
     []() -> TestInfo { 
         Str str {};
@@ -73,12 +79,32 @@ std::vector<std::function<TestInfo()>> test_functions = {
         return TestInfo("Default constructor list with assignment.", true);
     },
 
+    []() -> TestInfo {
+        Str str = "";
+        return TestInfo("Constructor: empty c string.", true);
+    },
+
+    []() -> TestInfo {
+        test_name = "Constructor: integer 123456.";
+        Str str = 123456;
+
+        if( str.size() == 6 && str[0] == '1' &&  str[1] == '2' &&  str[2] == '3' &&
+            str[3] == '4' &&  str[4] == '5' &&  str[5] == '6' )
+            return TestInfo(test_name, true);
+        else
+            return TestInfo(test_name, false);
+    },
+
 
 };
 
 
 
 int main(){
+
+
+    // Signal handler
+    signal(SIGSEGV, segfault_handler);
 
 
     // lol();
@@ -89,25 +115,53 @@ int main(){
 
     println("\nStarting Str tests.\n");
 
-    size_t test_count = test_functions.size();
-    size_t pass_count = 0;
 
-    for(std::function<TestInfo()> function : test_functions){
+    struct TestContext {
+        size_t total_test_count = test_functions.size();
 
-        TestInfo info = function();
+        size_t tests_completed = 0;
+        size_t pass_count = 0;
 
-        if(info.passed)
-            ++pass_count;
+        TestInfo previous_test_info {"initial test info", false};
 
+    } context;
+    
 
-        // if(info.passed)
-        //     std::cout << info.description << ": PASS" << std::endl;
-        // else
-        //     std::cout << info.description << ": FAIL" << std::endl;
+    try_
+
+        for(std::function<TestInfo()> function : test_functions){
+
+            TestInfo test_info = function();
             
-    }
+            ++context.tests_completed;
 
-    std::cout << "Test Str done: passed " << pass_count << "/" << test_count << "\n\n";
+            if(test_info.passed)
+                ++context.pass_count;
+
+
+            context.previous_test_info = test_info;
+
+            // if(test_info.passed)
+            //     std::cout << test_info.description << ": PASS" << std::endl;
+            // else
+            //     std::cout << test_info.description << ": FAIL" << std::endl;
+                
+        }
+
+        std::cout << "Test Str : passed " << context.pass_count << "/" << context.total_test_count << "\n";
+
+    catch_
+
+        std::cout << "Uncatch error in test_str.cc" << std::endl;
+        std::cout << "Last successful test description: " << context.previous_test_info.description << std::endl;
+        std::cout << "Tests Str : completed " << context.tests_completed << "/" << context.total_test_count << "\n\n";
+        std::cout << "Test Str : passed " << context.pass_count << "/" << context.total_test_count << "\n";
+
+    end_
+    
+    
+
+    
     
     // print("Test Str: 0/0 \n");
 

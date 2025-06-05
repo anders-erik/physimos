@@ -7,6 +7,12 @@
 #include <cstring>
 #include <new>
 
+struct Str;
+
+/** Get single character as string */
+Str Char(char ch);
+/** Integer to Str */
+Str int_to_str(int integer);
 
 
 struct Str {
@@ -19,10 +25,12 @@ struct Str {
     char* mem = nullptr;
 
     Str();
-    Str(unsigned int string_size);
     // Str(char * str_mem, unsigned int string_size);
     Str(unsigned int string_size, char initialization_value);
     Str(const char *c_str);
+    
+    /** Create string representation of integer. E.g. 123 -> "123" */
+    Str(int integer);
 
     Str(const Str& other);
     Str(Str&& other);

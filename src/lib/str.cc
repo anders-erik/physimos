@@ -8,6 +8,47 @@
 // #define VERBOSE_STR
 
 
+Str Char(char ch)
+{
+    return Str {1, ch};
+}
+
+Str int_to_str(int integer)
+{
+    size_t max_chars_int = 10;
+    char chars[max_chars_int + 1];
+    int divisor = 1000000000;
+
+    for(size_t i = 0; i < max_chars_int; i++){
+        // Extract currently largest digit
+        int res =  integer / divisor;
+        // remove that digit
+        integer -= divisor * res;
+        // append as ascii
+        chars[i] = res + 0x30;
+        // Prepare for next digit
+        divisor /= 10;
+    }
+    chars[max_chars_int] = 0x0;
+
+    Str new_str = chars;
+
+    size_t leading_zero_count = 0;
+    for (size_t i = 0; i < max_chars_int; i++)
+    {
+        if(chars[i] != '0')
+            break;
+        leading_zero_count++;
+    }
+
+    new_str.cut_to_substr(leading_zero_count, new_str.size());
+
+    return new_str;
+}
+
+
+
+
 Str::Str() {
 #ifdef VERBOSE_STR
     // println("Str default constructor"); // Can't use because member function clashing
@@ -16,13 +57,13 @@ Str::Str() {
     std::cout << "Str default constructor" << std::endl;
 #endif
 };
-Str::Str(unsigned int string_size) {
+Str::Str(int integer) {
 #ifdef VERBOSE_STR
-    std::cout << "Str size constructor" << std::endl;
+    std::cout << "Integer constructor" << std::endl;
 #endif
-    
-    this->size_str = string_size;
-    allocate(this->size_str);
+
+    *this = std::move(int_to_str(integer));
+
 };
 
 Str::Str(unsigned int string_size, char initialization_value) {
@@ -350,3 +391,4 @@ void Str::println_quotes(){
 }
 
 void Str::busy() {}
+

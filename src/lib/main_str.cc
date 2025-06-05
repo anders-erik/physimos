@@ -62,7 +62,7 @@ void constructors(){
     // Str str_5b (5, 'b');             // OK - initialization_value constructor
     // Str str_5b = { 5, 'b' };         // OK - initialization_value constructor
     // Str str_5b = Str(5, 'b');        // OK - initialization_value constructor
-    Str str_5b = 5;                 // OK - Str size constructor
+    // Str str_5b = 5;                 // OK - Str size constructor
     // Str str_5b = (5, 'b');       // OK - Str size constructor (comma operator, 5 is discarded and 'b' is passed to the matching Str-constructor! Thus 98 chars will be allocated but no initialized)
 
 
@@ -70,11 +70,11 @@ void constructors(){
     // Hypothesis: {...} or Str(...) always calls the appropriate constructor first, returns object(reference?), then uses that object accordingly. If constructor is called implicity (...) then it will never move, and just construct that object normally, even inside move (std::move((...))). I guess implicit construction only works for single argument construction...
 
     str_5a = Str(5, 'a'); // Str size constructor + MOVE OPERATOR + destructor of "aaaaa"
-    str_5a = std::move(str_5b); // MOVE ASSIGNMENT OPERATOR 
+    // str_5a = std::move(str_5b); // MOVE ASSIGNMENT OPERATOR 
     // Str new_str ({5, 'c'}); // initialization_value constructor = Str new_str {5, 'c'};
     // Str new_str = std::move((5, 'c')); // Str size constructor
     // Str new_str (std::move((5))); // Str size constructor
-    Str new_str (std::move((5))); // // initialization_value cons + Move cons + ~Str
+    // Str new_str (std::move((5))); // // initialization_value cons + Move cons + ~Str
     // Str new_str (std::move(Str(5, 'c'))); // initialization_value cons + Move cons + ~Str
     // Str new_str (std::move(str_5a)); // MOVE CONSTRUCTOR
 
@@ -120,8 +120,8 @@ void string_vector(){
     // std::cout << strings.capacity() << std::endl;
 
     
-    Str str1 (1);
-    str1 = std::move(str1);
+    // Str str1 (1);
+    // str1 = std::move(str1);
     // Str str20 (20);
     // Str str30 (30);
 
@@ -130,16 +130,16 @@ void string_vector(){
     vec.pop_back();
 
     {
-    Str& str10 = strings.emplace_back(10);  // 1st elem : allocates 1 when executed
-    Str& str20 = strings.emplace_back(20);  // 2nd elem : allocates 2, moves 1
-    Str& str30 = strings.emplace_back(30);  // 3rd elem : allocates 4, moves 2
-    Str& str40 = strings.emplace_back(40);
-    Str& str50 = strings.emplace_back(50);  // 5th elem : allocates 8, moves 4
-    Str& str60 = strings.emplace_back(60);
-    Str& str70 = strings.emplace_back(80);
-    Str& str90 = strings.emplace_back(90); 
-    Str& str100 = strings.emplace_back(100); // 9th elem : allocates 16, moves 8
-    Str& str110 = strings.emplace_back(110);
+    Str& str10 = strings.emplace_back(10, 'a');  // 1st elem : allocates 1 when executed
+    Str& str20 = strings.emplace_back(20, 'a');  // 2nd elem : allocates 2, moves 1
+    Str& str30 = strings.emplace_back(30, 'a');  // 3rd elem : allocates 4, moves 2
+    Str& str40 = strings.emplace_back(40, 'a');
+    Str& str50 = strings.emplace_back(50, 'a');  // 5th elem : allocates 8, moves 4
+    Str& str60 = strings.emplace_back(60, 'a');
+    Str& str70 = strings.emplace_back(80, 'a');
+    Str& str90 = strings.emplace_back(90, 'a'); 
+    Str& str100 = strings.emplace_back(100, 'a'); // 9th elem : allocates 16, moves 8
+    Str& str110 = strings.emplace_back(110, 'a');
 
     std::cout << strings.capacity() << std::endl;
 

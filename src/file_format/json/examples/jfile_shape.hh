@@ -160,5 +160,5 @@ f2 JFileShape::extract_point_from_array_2d(JsonVar& json_var){
     json_float& y_fl = y_var.get_float();
 
 
-    return {x_fl, y_fl};
+    return {(float)x_fl, (float)y_fl};
 }

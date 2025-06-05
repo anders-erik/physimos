@@ -13,7 +13,7 @@ void prints(){
 
     println_any(str);
     println_any("hola");
-    println_any(std::move(Str{"hola"}));
+    // println_any(std::move(Str{"hola"}));
 
     println("");
 
