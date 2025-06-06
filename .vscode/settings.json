@@ -83,7 +83,8 @@
 		"stdlib.h": "c",
 		"wayland-client.h": "c",
 		"queue": "cpp",
-		"any": "cpp"
+		"any": "cpp",
+		"csignal": "cpp"
 	},
 	"makefile.configureOnOpen": false,
 	"debug.showVariableTypes": true

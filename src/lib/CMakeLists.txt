@@ -44,7 +44,7 @@ target_link_libraries(main_file lib)
 
 
 
-add_executable(test_str
-    test/test_str.cc
+add_executable(test_lib
+    test/test_lib.cc
 )
-target_link_libraries(test_str lib)
+target_link_libraries(test_lib lib)
