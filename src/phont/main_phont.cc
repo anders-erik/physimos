@@ -61,7 +61,7 @@ void add_glyph_quads_to_scene(scene::Scene2D* scene){
 
 
 
-	phont::Glyph A_multi { phont::Glyph( 'A', {15, 24} ) };;
+	phont::Glyph A_multi { phont::Glyph( 'A', {10, 16} ) };;
 	A_multi.generate_multisample();
 
 	scene::QuadS2D quad_A_multi;
@@ -121,10 +121,8 @@ int main()
 
 	Conductor2D conductor2D (conductor_window_size);
 
+	scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 
-
-	scene::Scene2D* root_scene = ManagerScene::new_scene(conductor_window_size);
-	conductor2D.root_scene_id     = root_scene->get_id();
 
 	// ADD GREEN QUAD TO ROOT SCENE
 	scene::QuadS2D root_scene_quad_1;

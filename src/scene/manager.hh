@@ -12,27 +12,32 @@
 
 
 
-// FORWARD DECLARES
-
+// Forward declares
 namespace scene {
-
-struct Scene2D;
-struct SubScene2D;
-
+    struct Scene2D;
 }
 
 
 
-// Runtime Borrow checker
+/** Scene Owner and manager module. */
 namespace ManagerScene {
 
 size_t new_unique_id();
 
 scene::Scene2D* try_find_scene(size_t id);
 
-[[nodiscard]] scene::Scene2D* new_scene(scene::Scene2D& _scene);
-[[nodiscard]] scene::Scene2D* new_scene(f2 framebuffer_size);
+/** Initializes manager and creates the root scene. The root scene is returned. */
+scene::Scene2D* init(f2 window_size);
+
+
+scene::Scene2D* new_scene(scene::Scene2D& _scene);
+scene::Scene2D* new_scene(f2 framebuffer_size);
+
+[[nodiscard]] scene::Scene2D* get_root_scene();
 [[nodiscard]] scene::Scene2D* get_scene(size_t id);
 
+void update_current_target(f2 cursor_pos_window_normalized);
+void clear_current_target();
+scene::Scene2D* get_current_target();
 
 };

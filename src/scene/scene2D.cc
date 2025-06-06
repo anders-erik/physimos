@@ -15,6 +15,12 @@ namespace scene {
 
 
 
+void Scene2D::clear_hovers()
+{
+    subscene_current_hover = nullptr;
+    quad_current_hover = nullptr;
+}
+
 Scene2D::Scene2D(f2 _window_size) 
     : framebuffer { opengl::TextureFrameBufferMultisample(_window_size.to_i2(), 4) }
 {
@@ -37,11 +43,17 @@ Scene2D::Scene2D(f2 _window_size)
 }
 
 void Scene2D::set_id(size_t id){
-    tag_id = id;
+    this->id = id;
+}
+size_t Scene2D::get_id(){
+    return id;
 }
 
-size_t Scene2D::get_id(){
-    return tag_id;
+void Scene2D::set_parent_id(size_t parent_id){
+    this->parent_id = parent_id;
+}
+size_t Scene2D::get_parent_id(){
+    return parent_id;
 }
 
 
@@ -60,6 +72,11 @@ void Scene2D::set_window_size(f2 size){
     //     subscene_scene->set_window_size(size);
     // }
 
+}
+
+void Scene2D::set_camera_width(float width)
+{
+    camera.set_width(width);
 }
 
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
@@ -82,29 +99,35 @@ f2 Scene2D::normalized_to_scene_conversion(f2 normalized)
 }
 
 
-Scene2D * Scene2D::try_find_current_scene(f2 normalized)
+Scene2D * Scene2D::try_find_target_scene(f2 normalized)
 {
-    f2 pos_current_scene = normalized_to_scene_conversion(normalized);
+    f2 pos_current_scene = camera.normalized_to_scene_coords(normalized);
+    // f2 pos_current_scene = normalized_to_scene_conversion(normalized);
 
     for(scene::SubScene2D& subscene : subscenes){
     
         // Recursive match
+        // TODO: Clear hover on ALL subscenes. Currently we return immediately after matching
         if(subscene.quad.contains_cursor(pos_current_scene)){
 
-            subscene_current_target = &subscene;
+            subscene_current_hover = &subscene;
 
 			scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
 
             f2 pos_subscene_normalized = subscene.quad.get_normalized_from_point(pos_current_scene);
 
-            return subscene_scene->try_find_current_scene(pos_subscene_normalized);
+            return subscene_scene->try_find_target_scene(pos_subscene_normalized);
 
 		}
+        else {
+            scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
+            subscene_scene->clear_hovers();
+        }
     
     }
 
     // Found no subscene that captured the cursor
-    subscene_current_target = nullptr;
+    subscene_current_hover = nullptr;
 
     // No subscenes that matched the cursor position
     return this;
@@ -262,6 +285,9 @@ SubScene2D& Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
     
     scene::SubScene2D& new_subscene = subscenes.emplace_back(size_scene);
 	new_subscene.quad.set_box(pos_scene, size_scene);
+
+    scene::Scene2D* subscene_scene = ManagerScene::get_scene(new_subscene.scene_id);
+    subscene_scene->set_parent_id(id);
     
     // ss = new SubScene2D(size_scene);
     // return ss;
@@ -299,7 +325,7 @@ void Scene2D::render_subscene_textures(){
 
 void Scene2D::render_to_window(){
 
-    camera.set_width(window_size_f.x);
+    // camera.set_width(window_size_f.x);
 
     render();
 }
@@ -344,8 +370,8 @@ void Scene2D::render(){
         renderer2D.render_quad(subscene.quad);
     }
     // Highlight subscene that is capturing cursor
-    if(subscene_current_target != nullptr)
-		renderer2D.render_frame(subscene_current_target->quad.get_matrix());
+    if(subscene_current_hover != nullptr)
+		renderer2D.render_frame(subscene_current_hover->quad.get_matrix());
 
     
     // FRAMES

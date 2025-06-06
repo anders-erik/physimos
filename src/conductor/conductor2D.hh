@@ -15,37 +15,35 @@
 using namespace window;
 
 /** 
-	Owns a window and root 2D scenes.
+	Owns an auxwin, pui, and a scene manager.
 	Handles events and decides which root scene will recieve input events.
 */
 class Conductor2D {
 
 	window::Auxwin auxwin;
-	std::vector<window::InputEvent> input_events;
-	f2 window_size_f;
 
-	scene::Camera2D camera_root; // Always displays the root scene filling the window
-	opengl::Scene2DRenderer renderer;
-	
+	// True conductor states
 
-	scene::SubScene2D* subscene_current_hover = nullptr;
-	// std::vector<scene::SubScene2D> subscenes; // sub-scenes owned by Conductor2D
-
-
-	UI::PUI pui;
 	CursorPosition cursor_pos;
 	bool targeting_ui = false;
 
+	opengl::Scene2DRenderer renderer;
+
+	// Move to InputManager - split into separate event arrays / separate auxwin calls
+	std::vector<window::InputEvent> input_events;
+
+
+	UI::PUI pui;
+
+
 public:
-	// ManagerScene::Tag root_scene_tag;
-	size_t root_scene_id;
-	scene::Scene2D* current_scene_target = nullptr;
 
 	Conductor2D(f2 window_size);
 
-	// Input
 	/** Makes sure that we know what subsystem we are currently targeting. (Scene or UI)*/
 	void update_current_target();
+
+	// Input
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);
 	void input_mouse_button(InputEvent& event);
@@ -55,19 +53,12 @@ public:
 	/** Window resize, content scale, etc. */
 	void process_framebuffer_events();
 	
-
 	/** Swap buffers, set up new frame, and load input event into conductor. */
 	void new_frame();
-
 
 	/** transfer control to Conductor2D by entering main rendering loop */
 	void main_loop();
 
-
-
-private:
-
-	void reload_camera_root();
 
 };
 

@@ -52,7 +52,8 @@ struct SubScene2D;
 
 class Scene2D {
 
-    size_t tag_id;
+    size_t id;
+    size_t parent_id = 0;
 
     f2 window_size_f;
     f2 cursor_pos_scene;
@@ -65,9 +66,7 @@ class Scene2D {
     opengl::Scene2DRenderer renderer2D;
 
     m3f3 frame_M_m_s; // dummy frame matrix for testing
-    ShapeS2D* current_target;
-    QuadS2D* quad_current_hover = nullptr;
-    QuadS2D* quad_current_selected = nullptr;
+    // ShapeS2D* current_target;
     
     std::vector<QuadS2D> quads; // Actual quads
 
@@ -76,19 +75,27 @@ class Scene2D {
     std::vector<ShapeS2D> shapes;
 
     std::vector<SubScene2D> subscenes;
-    scene::SubScene2D* subscene_current_target = nullptr;
 
 public:
     opengl::TextureFrameBufferMultisample framebuffer;
 
+    QuadS2D* quad_current_hover = nullptr;
+    QuadS2D* quad_current_selected = nullptr;
+    scene::SubScene2D* subscene_current_hover = nullptr;
+    scene::SubScene2D* subscene_current_selected = nullptr;
+    void clear_hovers();
+
 
     Scene2D(f2 _window_size);
 
-    void set_id(size_t id);
+    void   set_id(size_t id);
     size_t get_id();
+    void   set_parent_id(size_t id);
+    size_t get_parent_id();
 
     f2 get_window_size();
     void set_window_size(f2 size);
+    void set_camera_width(float width);
 
     // Check if position is within the bounding box of a quad
     QuadS2D* try_match_cursor_to_quad(f2 pos_scene);
@@ -97,7 +104,7 @@ public:
 
     f2 normalized_to_scene_conversion(f2 normalized);
     /** Try find which scene that captures the cursor */
-    Scene2D* try_find_current_scene(f2 normalized);
+    Scene2D* try_find_target_scene(f2 normalized);
     void handle_pointer_move(PointerMovement2D cursor_event);
     void handle_pointer_click(PointerClick2D pointer_click);
     void handle_scroll(float delta);

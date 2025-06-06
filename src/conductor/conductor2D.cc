@@ -7,14 +7,16 @@ Conductor2D::Conductor2D(f2 window_size_f)
 	: 	auxwin {window_size_f}
 {
 
-	this->window_size_f = window_size_f;
-
 	// TODO: get content scale parameter
 	pui.set_window_info(window_size_f, {1,1});
 
-	reload_camera_root();
+	// reload_camera_root();
 
-	// Phont renderer
+	// First scene added to scene manager becomes root
+	scene::Scene2D* root_scene = ManagerScene::init(window_size_f);
+	root_scene->set_camera_width(window_size_f.x);
+
+	// Phont rendering program
 	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
 
 }
@@ -26,14 +28,20 @@ void Conductor2D::update_current_target(){
 	// UI
 	pui.update_current_targets(cursor_pos.sane);
 	// Scenes
-	scene::Scene2D* root_scene = ManagerScene::get_scene(root_scene_id);
+	scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 
 	targeting_ui = pui.has_target() ? true : false;
 
 	if(!targeting_ui)
-		current_scene_target = root_scene->try_find_current_scene(cursor_pos.normalized);
-	else
-		current_scene_target = nullptr;
+	{
+		// current_scene_target = root_scene->try_find_target_scene(cursor_pos.normalized);
+		ManagerScene::update_current_target(cursor_pos.normalized);
+	}
+	else 
+	{
+		ManagerScene::clear_current_target();
+		// current_scene_target = nullptr;
+	}
 }
 
 
@@ -46,9 +54,13 @@ void Conductor2D::input_scroll(InputEvent & event){
 		pui.event_scroll(scroll_event.delta);
 	}
 	else {
-	
-		if(current_scene_target != nullptr)
-			current_scene_target->handle_scroll(scroll_event.delta);
+
+		scene::Scene2D* current_target = ManagerScene::get_current_target();
+		if(current_target != nullptr)
+			current_target->handle_scroll(scroll_event.delta);
+
+		// if(current_scene_target != nullptr)
+		// 	current_scene_target->handle_scroll(scroll_event.delta);
 
 	}
 
@@ -69,19 +81,23 @@ void Conductor2D::input_mouse_move(InputEvent & event){
 
 		pui.event_move(mouse_movement.delta.sane);
 
-		current_scene_target = nullptr;
+		// current_scene_target = nullptr;
 	}
 	else // Scene
 	{
 
 		// current_scene_target->handle_pointer_move(scroll_event.delta);
 
-		scene::Scene2D* root_scene = ManagerScene::get_scene(root_scene_id);
+		scene::Scene2D* current_target = ManagerScene::get_current_target();
+		if(current_target == nullptr)
+			return;
+		
 		
 		scene::PointerMovement2D scene_pointer_move;
 		scene_pointer_move.pos_prev = cursor_prev.normalized;
 		scene_pointer_move.pos_curr = cursor_new.normalized;
 
+		scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 		root_scene->handle_pointer_move(scene_pointer_move);
 
 	}
@@ -105,7 +121,7 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 	}
 	
 
-	scene::Scene2D* root_scene = ManagerScene::get_scene(root_scene_id);
+	scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 	
 	scene::PointerClick2D pointer_click = {
 		cursor.normalized,
@@ -122,21 +138,9 @@ void Conductor2D::input_window_change(InputEvent& event){
 
 	WindowResizeEvent& resize_event = event.window_resize;
 
-	window_size_f = resize_event.size_f;
+	pui.set_window_info(resize_event.size_f, {1.0f,1.0f});
 
-
-	reload_camera_root();
-
-	pui.set_window_info(window_size_f, {1.0f,1.0f});
-
-	// ROOT SCENE
-	scene::Scene2D* root_scene = ManagerScene::get_scene(root_scene_id);
-	if(root_scene == nullptr)
-		return;
-
-	root_scene->set_window_size(window_size_f);
-	
-
+	ManagerScene::get_root_scene()->set_window_size(resize_event.size_f);
 
 }
 
@@ -207,10 +211,8 @@ void Conductor2D::main_loop(){
 		process_user_input();
 
 
-		// Update and render root scene
-		scene::Scene2D* root_scene = ManagerScene::get_scene(root_scene_id);
-		if(root_scene == nullptr)
-			throw std::runtime_error("Root scene is nullptr");
+		
+		scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 
 		
 		root_scene->update();
@@ -220,6 +222,7 @@ void Conductor2D::main_loop(){
 		// Render To Window
 		auxwin.bind_window_framebuffer();
 		root_scene->render_to_window();
+
 		// UI
 		pui.render();
 
@@ -232,12 +235,5 @@ void Conductor2D::main_loop(){
 
 
 
-
-void Conductor2D::reload_camera_root(){
-	renderer.activate();
-	camera_root.set_window_size_px(window_size_f);
-	camera_root.set_width(window_size_f.x);
-	renderer.set_camera(camera_root.get_matrix());
-}
 
 
