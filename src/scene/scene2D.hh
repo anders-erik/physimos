@@ -68,7 +68,6 @@ class Scene2D {
     m3f3 frame_M_m_s; // dummy frame matrix for testing
     // ShapeS2D* current_target;
     
-    std::vector<QuadS2D> quads; // Actual quads
 
     std::vector<ShapeS2D> points;
     std::vector<ShapeS2D> lines;
@@ -77,6 +76,10 @@ class Scene2D {
     std::vector<SubScene2D> subscenes;
 
 public:
+    // UI INTERFACE
+    Str name;
+    std::vector<QuadS2D> quads; // Actual quads
+
     opengl::TextureFrameBufferMultisample framebuffer;
 
     QuadS2D* quad_current_hover = nullptr;
@@ -84,6 +87,7 @@ public:
     scene::SubScene2D* subscene_current_hover = nullptr;
     scene::SubScene2D* subscene_current_selected = nullptr;
     void clear_hovers();
+
 
 
     Scene2D(f2 _window_size);

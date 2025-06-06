@@ -122,14 +122,17 @@ int main()
 	Conductor2D conductor2D (conductor_window_size);
 
 	scene::Scene2D* root_scene = ManagerScene::get_root_scene();
+	root_scene->name = "Forever Root";
 
-
-	// ADD GREEN QUAD TO ROOT SCENE
-	scene::QuadS2D root_scene_quad_1;
-	root_scene_quad_1.set_box( {0.0f, 0.0f}, {30.0f, 30.0f} );
-    root_scene_quad_1.set_texture_id(opengl::texture_get_id(opengl::Textures::Grass));
-	root_scene_quad_1.set_name("root_scene_quad_1");
-	root_scene->add_quad(root_scene_quad_1);
+	// ADD GREEN QUADS TO ROOT SCENE
+	scene::QuadS2D root_scene_quad;
+	root_scene_quad.set_box( {0.0f, 0.0f}, {30.0f, 30.0f} );
+    root_scene_quad.set_texture_id(opengl::texture_get_id(opengl::Textures::Grass));
+	root_scene_quad.set_name("root_scene_quad_1");
+	root_scene->add_quad(root_scene_quad);
+	root_scene_quad.set_box( {60.0f, 0.0f}, {30.0f, 30.0f} );
+	root_scene_quad.set_name("quad_2");
+	root_scene->add_quad(root_scene_quad);
 
 
 	// NEW SUBSCENE ADDED TO ROOT SCENE

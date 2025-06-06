@@ -19,8 +19,8 @@ PUI::PUI()
     base_texture.set_pos({110, 50});
     base_texture.set_size({50, 50});
 
+    base_string.set_str("Hola");
     base_string.set_pos({170, 50});
-    base_string.set_size({50, 50});
 
 
 };
@@ -136,6 +136,7 @@ void PUI::render(){
     base_texture.render_texture(renderer_base);
     base_string.render_string(renderer_base);
 
+    widget_root_scene.render(renderer_base);
 
 }
 

@@ -1,7 +1,7 @@
 
 add_library(ui_render
 
-    renderer_ui.cc
+    renderer_base.cc
     renderer_primitive.cc
     
     program_base.cc

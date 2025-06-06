@@ -129,8 +129,9 @@ void RendererPrimitive::draw_primitive_string(UI::Primitive & primitive){
         primitive.uiTransform.M_m_s.pointer()
     );
 
+    Str str = Str(primitive.str.c_str());
     // font::string_to_texture_vertex_list(char_verts, primitive.str);
-    font_bitmap.string_to_texture_vertex_list(char_verts, primitive.str);
+    font_bitmap.string_to_texture_vertex_list(char_verts, str);
 
     program_primitive_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(VertexFontBitmap));
 

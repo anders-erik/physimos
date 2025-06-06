@@ -7,6 +7,7 @@
 #include "image/bitmap.hh"
 #include "image/bmp.hh"
 
+struct Str;
 
 namespace UI {
 
@@ -40,7 +41,7 @@ public:
     /** Create a list of texture vertices to be passed to the string renderer.  */
     void string_to_texture_vertex_list(
         std::vector<VertexFontBitmap>& list_to_populate, 
-        std::string stringToRender
+        Str& stringToRender
     );
 
 

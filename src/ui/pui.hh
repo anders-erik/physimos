@@ -6,7 +6,7 @@
 
 #include "math/vecmat.hh"
 
-#include "ui/render/renderer_ui.hh"
+#include "ui/render/renderer_base.hh"
 
 #include "conductor_common.hh"
 #include "conductor_viewport.hh"
@@ -19,6 +19,7 @@
 #include "ui/texture.hh"
 #include "ui/string.hh"
 
+#include "ui/widget_root_scene.hh"
 
 namespace UI {
 
@@ -38,6 +39,8 @@ class PUI {
     UI::Base new_quad_in_root_scene;
     UI::BaseTexture base_texture;
     UI::BaseString base_string;
+
+    UI::WidgetRootScene widget_root_scene;
 
 
 public:

@@ -5,6 +5,8 @@
 
 #include "opengl/texture.hh"
 
+#include "str.hh"
+
 #include "math/vecmat.hh"
 
 #include "ui/ui_globals.hh" // UI::Color
@@ -15,7 +17,7 @@
 #include "ui/string.hh"
 
 
-#include "renderer_ui.hh"
+#include "renderer_base.hh"
 
 
 namespace UI {
@@ -116,8 +118,8 @@ void RendererBase::draw_base_texture(UI::BaseTexture& base_texture){
 
 void RendererBase::draw_base_string(UI::BaseString & base_string)
 {
-
-    font_bitmap.string_to_texture_vertex_list(char_verts, "primitivestr");
+    
+    font_bitmap.string_to_texture_vertex_list(char_verts, base_string.str);
 
     program_string.set_base_transform(
         base_string.get_M_m_s().pointer()

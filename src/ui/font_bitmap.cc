@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <vector>
 
+#include "lib/str.hh"
+
 #include "image/bitmap.hh"
 #include "image/bmp.hh"
 
@@ -59,7 +61,7 @@ unsigned int FontBitmap::get_font_texture(){
 
 
 
-void FontBitmap::string_to_texture_vertex_list(std::vector<VertexFontBitmap>& list_to_populate, std::string stringToRender) {
+void FontBitmap::string_to_texture_vertex_list(std::vector<VertexFontBitmap>& list_to_populate, Str& stringToRender) {
 
     while(list_to_populate.size() > 0)
         list_to_populate.pop_back();
