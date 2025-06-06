@@ -8,7 +8,7 @@
 
 #include "math/vecmat.hh"
 
-#include "ui/render/renderer_ui.hh"
+#include "ui/render/renderer_primitive.hh"
 
 #include "conductor_common.hh"
 #include "conductor_viewport.hh"

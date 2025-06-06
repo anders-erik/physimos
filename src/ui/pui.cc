@@ -6,12 +6,8 @@ namespace UI {
 
 PUI::PUI() 
 {
-    // renderer_ui = UI::RendererPrimitive();
-    // renderer_ui.set_window_info({},{});
-
-    // UI::font::init_font();
-    UI::texture::init_static_color_textures();
-    UI::texture::init_static_icon_textures();
+    // renderer_base = UI::RendererPrimitive();
+    // renderer_base.set_window_info({},{});
 
 
     base_0.set_pos({100, 100});
@@ -23,29 +19,15 @@ PUI::PUI()
     base_texture.set_pos({110, 50});
     base_texture.set_size({50, 50});
 
-    prim_color.set_w("200x");
-    prim_color.set_h("200x");
-    prim_color.set_x("<400x");
-    prim_color.set_y("_100x");
+    base_string.set_pos({170, 50});
+    base_string.set_size({50, 50});
 
-    prim_texture.set_w("20x");
-    prim_texture.set_h("20x");
-    prim_texture.set_x("<20x");
-    prim_texture.set_y("_20x");
-    prim_texture.set_texture(texture::get_icon(Icon::Right));
-
-
-    prim_string.str_setFontSize(FontSize::f18);
-    prim_string.str_setString("HOLA!");
-    prim_string.set_x("<200x");
-    prim_string.set_y("_20x");
-    prim_string.set_color( {0.0f, 0.0f, 0.0f, 0.5f} );
 
 };
 
 
 void PUI::set_window_info(f2 size, f2 scale){
-    renderer_ui.set_window_info(size, scale);
+    renderer_base.set_window_info(size, scale);
 }
 
 bool PUI::has_target(){
@@ -147,16 +129,13 @@ void PUI::event_scroll(float delta)
 
 void PUI::render(){
 
-    renderer_ui.draw_base(base_0);
-    renderer_ui.draw_base(new_quad_in_root_scene);
+    renderer_base.draw_base(base_0);
+    renderer_base.draw_base(new_quad_in_root_scene);
 
-    // renderer_ui.draw_base_texture(base_texture);
-    base_texture.render_texture(renderer_ui);
+    // renderer_base.draw_base_texture(base_texture);
+    base_texture.render_texture(renderer_base);
+    base_string.render_string(renderer_base);
 
-    // PRIMITIVES
-    prim_color.render(renderer_ui);
-    prim_texture.render(renderer_ui);
-    prim_string.render(renderer_ui);
 
 }
 

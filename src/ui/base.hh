@@ -16,7 +16,7 @@ namespace UI {
 
 // forward declare
 class Base; 
-class RendererUI;
+class RendererBase;
 
 
 typedef struct BaseQuery {

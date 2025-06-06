@@ -23,7 +23,7 @@
 #include "ui/uic/uic_primitive_list.hh"
 #include "ui/uic/uic_primitive_list_editor.hh"
 
-#include "ui/render/renderer_ui.hh"
+#include "ui/render/renderer_primitive.hh"
 
 
 #include "Input.hpp"
@@ -236,7 +236,7 @@ void update_window(PhysWin physimos_window) {
     viewport_height = physimos_window.logical.h;
 
     // RENDERER
-    UI::RendererUI& renderer_prim = UI::get_renderer_ui();
+    UI::RendererPrimitive& renderer_prim = UI::get_renderer_primitive();
     renderer_prim.set_window_info(
         { (float) physimos_window.raw.w, (float) physimos_window.raw.h} ,
         { physimos_window.xscale, physimos_window.yscale }

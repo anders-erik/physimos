@@ -12,12 +12,13 @@
 #include "conductor_viewport.hh"
 
 #include "ui/ui_globals.hh"
-#include "ui/ui_texture.hh"
 
 #include "ui/ui_primitive.hh"
-#include "ui/base.hh"
 
+#include "ui/base.hh"
 #include "ui/texture.hh"
+#include "ui/string.hh"
+
 
 namespace UI {
 
@@ -25,7 +26,7 @@ namespace UI {
 /** Physimos UI. */
 class PUI {
 
-    UI::RendererUI renderer_ui;
+    UI::RendererBase renderer_base;
 
     /** Grab target across frames. */
     UI::Base* grabbed_base = nullptr;
@@ -36,10 +37,7 @@ class PUI {
     UI::Base base_0;
     UI::Base new_quad_in_root_scene;
     UI::BaseTexture base_texture;
-
-    UI::Primitive prim_color;
-    UI::Primitive prim_texture;
-    UI::Primitive prim_string;
+    UI::BaseString base_string;
 
 
 public:

@@ -13,7 +13,7 @@ struct BaseTexture : public Base {
 
     BaseTexture() {}
 
-    void render_texture(UI::RendererUI& renderer){
+    void render_texture(UI::RendererBase& renderer){
         renderer.draw_base_texture(*this);
     }
 
