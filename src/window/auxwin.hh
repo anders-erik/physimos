@@ -109,7 +109,15 @@ class Auxwin {
     private:
         f2 current_window_size_f;
         i2 current_window_size_i;
-        Key close_key = Key::Esc; // The key that will trigger auxwin to close.
+
+        
+        // Internal window closing logic -- two quick escape-presses for now
+        Key close_key = Key::Esc; // The key that will trigger auxwin to close twice in quick succession
+        double time_of_last_close_key = -1.0; // Time at which the most recent close keystrok was registered. GlfwGetTime()
+        double dt_to_close = 0.5; // delta time to which compare successive close-button strokes
+        /** Check close condition. If met then the 'close()' method is invoked. */
+        void try_close();
+
 
         /** Required input for coordinate transformation constants.  */
         PWCoordinatesInput coords_input;

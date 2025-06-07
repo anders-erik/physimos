@@ -51,7 +51,8 @@ public:
     /** has_grabbed_target || has_non_grabbed_target */
     bool has_target();
     bool has_grabbed_target();
-    /** Queries the ui for a Base matching the position of input in window coords. */
+    bool has_hover_target();
+    /** Does nothing on in grabbed state. Otherwise queries the ui for a Base matching the cursor pos in window coords. */
     void update_current_targets(f2 cursor_pos_win_sane);
 
     void event_mouse_down();

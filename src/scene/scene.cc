@@ -178,13 +178,13 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
 
     case window::EventType::Keystroke:
 
-        if(input_event.key_stroke.action == window::ButtonAction::Hold){
+        if(input_event.keystroke.action == window::ButtonAction::Hold){
             // std::cout << "KEY HOLD" << std::endl;
         }
-        else if(input_event.key_stroke.action == window::ButtonAction::Press){
+        else if(input_event.keystroke.action == window::ButtonAction::Press){
             // std::cout << "KEY PRESS" << std::endl;
         
-            switch (input_event.key_stroke.key){
+            switch (input_event.keystroke.key){
 
             case window::Key::p :
                 // std::cout << "camera.rho    = " << camera.rho << std::endl;
@@ -203,7 +203,7 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
             }
         
         }
-        else if(input_event.key_stroke.action == window::ButtonAction::Release){
+        else if(input_event.keystroke.action == window::ButtonAction::Release){
             // std::cout << "KEY RELEASE" << std::endl;
         }
 

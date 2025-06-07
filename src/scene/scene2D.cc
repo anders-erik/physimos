@@ -20,6 +20,10 @@ void Scene2D::clear_hovers()
     subscene_current_hover = nullptr;
     quad_current_hover = nullptr;
 }
+void Scene2D::clear_grab()
+{
+    panable = false;
+}
 
 Scene2D::Scene2D(f2 _window_size) 
     : framebuffer { opengl::TextureFrameBufferMultisample(_window_size.to_i2(), 4) }
@@ -429,7 +433,7 @@ void Scene2D::handle_input(window::InputEvent event){
 
 
 
-    if(event.key_stroke.key == window::Key::p && event.key_stroke.action == window::ButtonAction::Press){
+    if(event.keystroke.key == window::Key::p && event.keystroke.action == window::ButtonAction::Press){
         // quad.transform_2d.matrix.print();
         // camera.transform.matrix.print();
 

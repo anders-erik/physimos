@@ -87,6 +87,7 @@ public:
     scene::SubScene2D* subscene_current_hover = nullptr;
     scene::SubScene2D* subscene_current_selected = nullptr;
     void clear_hovers();
+    void clear_grab();
 
 
 

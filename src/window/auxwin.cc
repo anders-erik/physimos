@@ -177,6 +177,16 @@ void Auxwin::bind_window_framebuffer(){
     glViewport(0,0, current_window_size_i.x, current_window_size_i.y);
     
 }
+void Auxwin::try_close()
+{
+    double current_time = glfwGetTime();
+    double dt = current_time - time_of_last_close_key;
+
+    if(dt < dt_to_close)
+        close();
+    else
+        time_of_last_close_key = current_time;
+}
 void Auxwin::close(){
     glfwSetWindowShouldClose(glfw_window, true);
     open = false;
@@ -358,9 +368,6 @@ void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
     // KEY
     keystroke_event.key = get_key_from_glfw_key(key);
 
-    // CHECK CLOSE KEY
-    if(keystroke_event.key == close_key)
-        close();
 
     // BUTTON ACTION
     if(action == GLFW_PRESS)
@@ -384,6 +391,11 @@ void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
     
     default: keystroke_event.modifier = KeyModifier::none           ;   break;
     }
+
+
+    // CHECK CLOSE KEY
+    if(keystroke_event.is(close_key) && keystroke_event.is(ButtonAction::Press))
+        try_close();
 
 
     input_events.emplace(window, event_type, keystroke_event, cursor);

@@ -23,25 +23,32 @@ Conductor2D::Conductor2D(f2 window_size_f)
 
 
 
-void Conductor2D::update_current_target(){
-
-	// UI
+void Conductor2D::update_current_target()
+{
 	pui.update_current_targets(cursor_pos.sane);
-	// Scenes
-	scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 
-	targeting_ui = pui.has_target() ? true : false;
-
-	if(!targeting_ui)
+	// Grabbed states takes precedence
+	if(pui.has_grabbed_target())
 	{
-		// current_scene_target = root_scene->try_find_target_scene(cursor_pos.normalized);
+		targeting_ui = true;
+		ManagerScene::clear_current_target();
+	}
+	else if(ManagerScene::has_grabbed_target())
+	{
+		targeting_ui = false;
 		ManagerScene::update_current_target(cursor_pos.normalized);
 	}
-	else 
+	else if(pui.has_hover_target())
 	{
+		targeting_ui = true;
 		ManagerScene::clear_current_target();
-		// current_scene_target = nullptr;
 	}
+	else // if no grab nor ui target -> must be targeting a scene
+	{
+		targeting_ui = false;
+		ManagerScene::update_current_target(cursor_pos.normalized);
+	}
+
 }
 
 
@@ -50,64 +57,30 @@ void Conductor2D::input_scroll(InputEvent & event){
 
 	MouseScrollEvent& scroll_event = event.mouse_scroll;
 
-	if(targeting_ui){
+	if(targeting_ui)
 		pui.event_scroll(scroll_event.delta);
-	}
-	else {
-
-		scene::Scene2D* current_target = ManagerScene::get_current_target();
-		if(current_target != nullptr)
-			current_target->handle_scroll(scroll_event.delta);
-
-		// if(current_scene_target != nullptr)
-		// 	current_scene_target->handle_scroll(scroll_event.delta);
-
-	}
-
+	else
+		ManagerScene::event_scroll(event);
 
 }
 
 void Conductor2D::input_mouse_move(InputEvent & event){
 
 	MouseMoveEvent& mouse_movement = event.mouse_movement;
-	CursorPosition& cursor_new = event.cursor;
-	CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
 
-	cursor_pos = cursor_new;
+	cursor_pos = event.cursor;
 
-	// Pass move event recursively
 	if(targeting_ui)
-	{
-
 		pui.event_move(mouse_movement.delta.sane);
-
-		// current_scene_target = nullptr;
-	}
-	else // Scene
-	{
-
-		// current_scene_target->handle_pointer_move(scroll_event.delta);
-
-		scene::Scene2D* current_target = ManagerScene::get_current_target();
-		if(current_target == nullptr)
-			return;
-		
-		
-		scene::PointerMovement2D scene_pointer_move;
-		scene_pointer_move.pos_prev = cursor_prev.normalized;
-		scene_pointer_move.pos_curr = cursor_new.normalized;
-
-		scene::Scene2D* root_scene = ManagerScene::get_root_scene();
-		root_scene->handle_pointer_move(scene_pointer_move);
-
-	}
-
+	else 
+		ManagerScene::event_move(event);
 
 }
 
-void Conductor2D::input_mouse_button(InputEvent & event){
-	
-	CursorPosition& cursor = event.cursor;
+
+void Conductor2D::
+input_mouse_button(InputEvent & event)
+{
 	window::MouseButtonEvent mouse_button_event = event.mouse_button;
 
 	if(targeting_ui){
@@ -119,28 +92,30 @@ void Conductor2D::input_mouse_button(InputEvent & event){
 		
 		return;
 	}
-	
+	else
+		ManagerScene::event_mouse_button(event);
 
-	scene::Scene2D* root_scene = ManagerScene::get_root_scene();
-	
-	scene::PointerClick2D pointer_click = {
-		cursor.normalized,
-		mouse_button_event
-	};
+}
 
-	root_scene->handle_pointer_click(pointer_click);
-
-	
+void Conductor2D::input_keystroke(InputEvent & event)
+{
+	if(targeting_ui){
+		return;
+	}
+	else
+		ManagerScene::event_keystroke(event);
 }
 
 
-void Conductor2D::input_window_change(InputEvent& event){
+
+void Conductor2D::input_window_change(InputEvent& event)
+{
 
 	WindowResizeEvent& resize_event = event.window_resize;
 
 	pui.set_window_info(resize_event.size_f, {1.0f,1.0f});
 
-	ManagerScene::get_root_scene()->set_window_size(resize_event.size_f);
+	ManagerScene::event_window_resize(event);
 
 }
 
@@ -161,22 +136,28 @@ void Conductor2D::process_user_input(){
 
 
 	// Handle mouse movement first
-	for(InputEvent& event : input_events){
-		if(event.is_type(window::EventType::MouseMove)){
+	for(InputEvent& event : input_events)
+	{
+		if(event.is_type(window::EventType::MouseMove))
 			input_mouse_move(event);
-			// break;
-		}
 	}
 
 	
 	// Now that we know what subsystem we are targeting, we can process other inputs
-	for(InputEvent& event : input_events){
+	for(InputEvent& event : input_events)
+	{
 
-		if(event.is_type(window::EventType::MouseScroll)){
+		if(event.is_type(window::EventType::MouseScroll))
+		{
 			input_scroll(event);
 		}
-		else if(event.is_type(window::EventType::MouseButton)){
+		else if(event.is_type(window::EventType::MouseButton))
+		{
 			input_mouse_button(event);
+		}
+		else if(event.is_type(window::EventType::Keystroke))
+		{
+			input_keystroke(event);
 		}
 
 	}

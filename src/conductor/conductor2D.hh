@@ -47,6 +47,7 @@ public:
 	void input_scroll(InputEvent& event);
 	void input_mouse_move(InputEvent& event);
 	void input_mouse_button(InputEvent& event);
+	void input_keystroke(InputEvent& event);
 	void input_window_change(InputEvent& event);
 	/** Mouse and keyboard input. */
 	void process_user_input();

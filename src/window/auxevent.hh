@@ -111,10 +111,23 @@ struct KeyStrokeEvent {
     KeyModifier modifier;
     ButtonAction action;
 
-    KeyStrokeEvent(Key _key, KeyModifier _modifier, ButtonAction _action) : key         {_key},
-                                                                            modifier    {_modifier},
-                                                                            action      {_action} {};
+    KeyStrokeEvent(Key _key, KeyModifier _modifier, ButtonAction _action) 
+        :   key         {_key},
+            modifier    {_modifier},
+            action      {_action} 
+    {
+    };
     KeyStrokeEvent() = default;
+
+    bool is(Key key) {
+        return this->key == key ? true : false;
+    }
+    bool is(ButtonAction button_action) {
+        return this->action == button_action ? true : false;
+    }
+    bool has(KeyModifier key_modifier) {
+        return this->modifier == key_modifier ? true : false;
+    }
 };
 
 struct WindowResizeEvent {
@@ -134,7 +147,7 @@ struct InputEvent {
     MouseButtonEvent mouse_button;
     MouseMoveEvent mouse_movement;
     MouseScrollEvent mouse_scroll;
-    KeyStrokeEvent key_stroke;
+    KeyStrokeEvent keystroke;
     WindowResizeEvent window_resize;
 
     CursorPosition cursor; // Most recent registered cursor position
@@ -142,7 +155,7 @@ struct InputEvent {
     InputEvent(GLFWwindow* _glfw_window, EventType _type, MouseButtonEvent _mouse_button, CursorPosition _cursor) :  glfw_window {_glfw_window}, type {_type}, mouse_button {_mouse_button}, cursor {_cursor}    {};
     InputEvent(GLFWwindow* _glfw_window, EventType _type, MouseMoveEvent _mouse_movement, CursorPosition _cursor) :  glfw_window {_glfw_window}, type {_type}, mouse_movement {_mouse_movement}, cursor {_cursor}{};
     InputEvent(GLFWwindow* _glfw_window, EventType _type, MouseScrollEvent _mouse_scroll, CursorPosition _cursor) :  glfw_window {_glfw_window}, type {_type}, mouse_scroll { _mouse_scroll}, cursor {_cursor}   {};
-    InputEvent(GLFWwindow* _glfw_window, EventType _type, KeyStrokeEvent _key_stroke, CursorPosition _cursor)     :  glfw_window {_glfw_window}, type {_type}, key_stroke { _key_stroke}, cursor {_cursor}       {};
+    InputEvent(GLFWwindow* _glfw_window, EventType _type, KeyStrokeEvent _key_stroke, CursorPosition _cursor)     :  glfw_window {_glfw_window}, type {_type}, keystroke { _key_stroke}, cursor {_cursor}       {};
     InputEvent(GLFWwindow* _glfw_window, EventType _type, WindowResizeEvent _window_resize, CursorPosition _cursor): glfw_window {_glfw_window}, type {_type}, window_resize { _window_resize}, cursor {_cursor} {};
     InputEvent() : type { EventType::None} {};
 

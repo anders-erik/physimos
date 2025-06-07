@@ -34,7 +34,7 @@ bool PUI::has_target(){
 
     if(has_grabbed_target())
         return true;
-    if(targeted_base != nullptr)
+    if(has_hover_target())
         return true;
     return false;
 
@@ -43,6 +43,12 @@ bool PUI::has_target(){
 bool PUI::has_grabbed_target(){
 
     return grabbed_base == nullptr ? false : true;
+
+}
+
+bool PUI::has_hover_target(){
+
+    return targeted_base == nullptr ? false : true;
 
 }
 
