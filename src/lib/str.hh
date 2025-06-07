@@ -31,13 +31,15 @@ struct Str {
     
     /** Create string representation of integer. E.g. 123 -> "123" */
     Str(int integer);
+    /** String representatin of float. Max decimal value is 8. */
+    Str(float _float, unsigned char decimals);
 
     Str(const Str& other);
     Str(Str&& other);
 
     ~Str();
 
-    char operator[](size_t index);
+    char operator[](size_t index) const;
 
     Str& operator+=(Str&& rhs);
     Str& operator+=(Str& rhs);
@@ -46,6 +48,8 @@ struct Str {
 
     Str& operator=(const Str& other);
     Str& operator=(Str&& other);
+
+    bool operator==(const Str& other) const;
 
 
     unsigned int size() const;

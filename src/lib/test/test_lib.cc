@@ -56,6 +56,7 @@ int main(){
     unit_tests_run("Str Constructors", constructors);
     unit_tests_run("Str Equality    ", equality);
     unit_tests_run("Str concat      ", concat);
+    unit_tests_run("Str substr      ", substr);
     
     
     println("\nEnd Lib tests.\n");

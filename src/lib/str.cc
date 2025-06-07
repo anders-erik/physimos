@@ -1,6 +1,8 @@
 
 #include <stdexcept>
 
+#include <cstdio>  // snprintf - float constructor
+
 #include "str.hh"
 #include "alloc.hh"
 #include "print.hh"
@@ -64,7 +66,29 @@ Str::Str(int integer) {
 
     *this = std::move(int_to_str(integer));
 
-};
+}
+Str::Str(float _float, unsigned char decimals)
+{
+    // Get actual number of decimal points
+    // max 2^3
+    unsigned char decimal_max8 = decimals << 5;
+    decimal_max8 = decimal_max8 >> 5;
+    char decimals_char = decimal_max8 + 0x30;
+    
+    char format[5];
+    format[0] = '%';
+    format[1] = '.';
+    format[2] = decimals_char;
+    format[3] = 'f';
+    format[4] = 0x0;
+
+    char buffer[32];
+    memset(buffer, 0x0, 32);
+    snprintf(buffer, sizeof(buffer), format, _float);  // 6 digits after decimal
+
+    *this = Str{buffer};
+
+}
 
 Str::Str(unsigned int string_size, char initialization_value) {
 #ifdef VERBOSE_STR
@@ -137,7 +161,7 @@ Str::~Str(){
 
 
 
-char Str::operator[](size_t index){
+char Str::operator[](size_t index) const{
     if(index > size_str-1)
         throw std::runtime_error("Str: index access out of bounds.");
 
@@ -205,7 +229,22 @@ Str& Str::operator=(Str&& other){
     other.rob();
 
     return *this;
-};
+}
+
+bool Str::operator==(const Str & other) const
+{
+    if(this->size() != other.size())
+        return false;
+
+    for(size_t i = 0; i < this->size(); i++)
+    {
+        if(this->operator[](i) != other[i])
+            return false;
+    }
+
+    return true;
+}
+
 
 
 void Str::allocate(unsigned int size_to_alloc){

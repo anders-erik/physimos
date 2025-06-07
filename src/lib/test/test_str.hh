@@ -63,6 +63,44 @@ std::vector<UnitTest> constructors = {
             return test_info.fail();
     },
 
+    []() -> InfoUnitTest {
+        InfoUnitTest test_info = "Constructor: float.";
+        
+        Str str;
+        Str target;
+
+        str = {1.1f, 1};
+        target = "1.1";
+        if( str != target )
+            return test_info.fail();
+        
+        str = {55.7f, 1};
+        target = "55.7";
+        if( str != target )
+            return test_info.fail();
+
+        str = {55.789f, 2};
+        target = "55.79";
+        if( str != target )
+            return test_info.fail();
+        
+        return test_info.pass();
+    },
+
+
+    []() -> InfoUnitTest {
+        InfoUnitTest test_info = "Constructor: initalization char.";
+
+        Str str = Str(5, 'a');
+        Str str_c = "aaaaa";
+
+        if( str != str_c )
+            return test_info.fail();
+        else
+            return test_info.pass();
+
+    },
+
 
 };
 
@@ -78,6 +116,31 @@ UnitTestCollection equality = {
         Str str = chars;
 
         if(str.size() != 2 || str[0] != chars[0] || str[1] != chars[1])
+            return test_info.fail();
+
+        return test_info.pass();
+    },
+
+
+    []() -> InfoUnitTest {
+        InfoUnitTest test_info = "equality: equal to itself.";
+
+        Str str = "str";
+
+        for(size_t i = 1; i < 10; i++)
+        {
+            str += "str";
+            if(str != str)
+                return test_info.fail();
+        }
+
+        Str str_empty_shrunk = "asdfasdfasdlja lskdfjalsdkdfalskd 1111000";
+        str_empty_shrunk = "";
+        if(str_empty_shrunk != str_empty_shrunk)
+            return test_info.fail();
+
+        Str str_empty_constructed = "";
+        if(str_empty_constructed != str_empty_shrunk)
             return test_info.fail();
 
         return test_info.pass();
@@ -112,6 +175,57 @@ UnitTestCollection concat = {
             return test_info.pass();
 
         return test_info.fail();
+    },
+
+
+    []() -> InfoUnitTest {
+        InfoUnitTest test_info = "concat: first plus second == manual paste.";
+
+        // construct Str
+        Str str_first  = "first_half ";
+        Str str_second = "second_half";
+        Str str_concat = str_first + str_second;
+        Str str_manual_concat = "first_half second_half";
+
+        
+        if(str_concat != str_manual_concat)
+            return test_info.fail();
+
+        return test_info.pass();
+    },
+
+};
+
+
+
+
+UnitTestCollection substr = {
+
+
+    []() -> InfoUnitTest {
+        InfoUnitTest test_info = "substr: random cuts to substr.";
+
+        Str str = "";
+
+        Str str_aaa = "aaa";
+
+        for(size_t i = 0; i < 10; i++)
+        {
+            unsigned int rand_var = (unsigned int) rand() % 100;
+            str = Str{rand_var, 'a'};
+
+            if(str.size() != rand_var)
+                return test_info.fail();
+
+            str.cut_to_substr(0, 3);
+
+            if(str != str_aaa)
+                return test_info.fail();
+        }
+        
+        return test_info.pass();
+
+        
     },
 
 
