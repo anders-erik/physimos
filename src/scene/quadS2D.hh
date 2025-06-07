@@ -37,6 +37,10 @@ public:
 
     QuadS2D() = default;
 
+    size_t id; // index of 0 = no quad exists for this id
+    void set_id(size_t new_id);
+    size_t get_id();
+
     Str name;
     void set_name(Str new_name);
     Str& get_name();

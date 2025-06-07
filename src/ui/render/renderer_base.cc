@@ -118,6 +118,8 @@ void RendererBase::draw_base_texture(UI::BaseTexture& base_texture){
 
 void RendererBase::draw_base_string(UI::BaseString & base_string)
 {
+    UI::Base base_copy = (Base)base_string;
+    draw_base(base_copy);
     
     font_bitmap.string_to_texture_vertex_list(char_verts, base_string.str);
 

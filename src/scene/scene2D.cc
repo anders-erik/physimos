@@ -7,6 +7,8 @@
 #include "math/vecmat.hh"
 #include "math/transform.hh"
 
+#include "scene/quadS2D.hh"
+
 #include "scene2D.hh"
 #include "subscene2D.hh"
 
@@ -86,10 +88,14 @@ void Scene2D::set_camera_width(float width)
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 {
 
-    for(QuadS2D& quad : quads){
-
-        if(quad.contains_cursor(pos_scene))
-            return &quad;
+    for(size_t quad_id : quad_ids)
+    {
+        auto* quad = quad_manager.get_quad(quad_id);
+        if(quad == nullptr)
+            continue;
+        
+        if(quad->contains_cursor(pos_scene))
+            return quad;
 
     }
 
@@ -264,8 +270,9 @@ void Scene2D::handle_scroll(float delta){
 void Scene2D::add_quad(scene::QuadS2D& quad){
 
     // renderer2D.create_context_quad_t(quad.get_rendering_context(), quad.get_verts());
-    quads.push_back(quad);
-    
+    // quads.push_back(quad);
+
+    quad_ids.push_back(quad_manager.add_quad(quad));
 }
 
 
@@ -369,8 +376,14 @@ void Scene2D::render(){
     renderer2D.set_camera(camera.get_matrix());
 
     
-    for(scene::QuadS2D& quad : quads)
-        renderer2D.render_quad(quad);
+    // for(scene::QuadS2D& quad : quads)
+    //     renderer2D.render_quad(quad);
+    for(size_t quad_id : quad_ids)
+    {
+        scene::QuadS2D* quad_p = quad_manager.get_quad(quad_id);
+        if(quad_p != nullptr)
+            renderer2D.render_quad(*quad_p);
+    }
 
     for(scene::ShapeS2D& point : points){
         renderer2D.set_model(point.get_matrix());

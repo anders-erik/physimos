@@ -53,13 +53,19 @@ bool PUI::has_hover_target(){
 }
 
 
-void PUI::update_current_targets(f2 cursor_pos_win_sane){
+void PUI::reload_current_targets(f2 cursor_pos_win_sane){
 
     if(has_grabbed_target())
         return;
     
     Base* base;
 
+    base = widget_root_scene.containsPoint(cursor_pos_win_sane);
+    if(base != nullptr){
+        targeted_base = base;
+        targeted_base->set_hover();
+        return;
+    }
     base = base_0.containsPoint(cursor_pos_win_sane);
     if(base != nullptr){
         targeted_base = &base_0;
@@ -133,6 +139,10 @@ void PUI::event_scroll(float delta)
 }
 
 
+void PUI::update(){
+    widget_root_scene.populate();
+}
+
 void PUI::render(){
 
     renderer_base.draw_base(base_0);
@@ -142,6 +152,7 @@ void PUI::render(){
     base_texture.render_texture(renderer_base);
     base_string.render_string(renderer_base);
 
+    // widget_root_scene.populate();
     widget_root_scene.render(renderer_base);
 
 }

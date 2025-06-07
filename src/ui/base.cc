@@ -63,7 +63,8 @@ void Base::unset_hover(){
     flag_hover = false;
 }
 
-bool Base::is_hovered(){
+bool Base::is_hovered() const
+{
     return flag_hover;
 }
 
@@ -76,7 +77,7 @@ void Base::mouse_up()
 {
     flag_mouse_down = false;
 }
-bool Base::mouse_is_down()
+bool Base::mouse_is_down() const
 {
     return flag_mouse_down;
 }

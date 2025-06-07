@@ -62,11 +62,11 @@ public:
 
     void set_hover();
     void unset_hover();
-    bool is_hovered();
+    bool is_hovered() const;
 
     void mouse_down();
     void mouse_up();
-    bool mouse_is_down();
+    bool mouse_is_down() const;
 
     void scroll(float delta);
 

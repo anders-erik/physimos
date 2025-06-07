@@ -52,13 +52,20 @@ public:
     bool has_target();
     bool has_grabbed_target();
     bool has_hover_target();
-    /** Does nothing on in grabbed state. Otherwise queries the ui for a Base matching the cursor pos in window coords. */
-    void update_current_targets(f2 cursor_pos_win_sane);
+
 
     void event_mouse_down();
     void event_mouse_up();
     void event_move(f2 cursor_delta);
     void event_scroll(float delta);
+
+    /** Update the active widgets to contain the current scene data. */
+    void update();
+    /** Queries the ui for a Base matching the cursor pos in window coords.
+        Does nothing in grabbed state. 
+        Targets remain valid until another update() is issued. 
+     */
+    void reload_current_targets(f2 cursor_pos_win_sane);
 
     void render();
 

@@ -14,37 +14,70 @@ namespace UI {
 /** Stateless widget -- constructs the widget, renders, and destroys on each render call */
 struct WidgetRootScene {
 
+    Box2D box = {
+        {10.0f, 500.0f},
+        {100.0f, 200.0f}
+    };
+
+    BaseString scene_name_base;
+
+    std::vector<BaseString> quad_base_strings;
+
+public:
 
     WidgetRootScene() {}
 
-    void render(RendererBase& renderer){
+    void populate(){
 
         scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 
-        f2 pos = {10.0f, 500.0f};
-
         // Name
         Str name_str = root_scene->name;
-        BaseString name_base;
-        name_base.set_pos( {10.0f, 500.0f} );
-        name_base.set_str(name_str);
-        renderer.draw_base_string(name_base);
+        scene_name_base.set_pos( box.pos );
+        scene_name_base.set_size( {10.0f, 10.0f} );
+        scene_name_base.set_str(name_str);
 
 
         // Quads
-        float offset = 0.0f;
+        quad_base_strings.clear();
+        float offset_current = 0.0f;
         float offset_delta = -20.0f;
+        float indent_pos = box.pos.x + 10.0f;
 
-        for(auto& quad : root_scene->quads){
-            offset += offset_delta;
+        for(size_t quad_id : root_scene->quad_ids)
+        {
+            auto* quad = root_scene->quad_manager.get_quad(quad_id);
+            if(quad == nullptr)
+                continue;
 
-            Str& name_str = quad.get_name();
-            BaseString name_base;
-            name_base.set_pos( {pos.x+10.0f, pos.y + offset} );
+            // Add offset after confirmed quad
+            offset_current += offset_delta;
+
+            Str& name_str = quad->get_name();
+            BaseString& name_base = quad_base_strings.emplace_back();
+            name_base.set_pos( {indent_pos, box.pos.y + offset_current} );
             name_base.set_str(name_str);
-            renderer.draw_base_string(name_base);
         }
         
+    }
+
+    Base* containsPoint(f2 point){
+        if(box.contains_point(point)){
+
+            return &scene_name_base;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    void render(RendererBase& renderer)
+    {
+        renderer.draw_base_string(scene_name_base);
+
+        for(auto& quad_string : quad_base_strings)
+            renderer.draw_base_string(quad_string);
     }
 
 };

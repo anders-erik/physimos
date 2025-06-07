@@ -11,7 +11,12 @@ namespace scene {
 using namespace opengl;
 
 
-
+void QuadS2D::set_id(size_t new_id){
+    id = new_id;
+}
+size_t QuadS2D::get_id(){
+    return id;
+}
 
 void QuadS2D::set_name(Str new_name)
 {

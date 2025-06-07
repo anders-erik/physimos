@@ -15,6 +15,7 @@
 #include "scene/scene2D.hh"
 #include "scene/camera2D.hh"
 #include "scene/shapeS2D.hh"
+#include "scene/quadS2D.hh"
 
 #include "scene/manager.hh"
 
@@ -25,6 +26,8 @@ struct GLFWWindow;
 
 
 namespace scene {
+
+struct QuadS2D;
 
 /** 
     A Scene2D and QuadS2D pair.

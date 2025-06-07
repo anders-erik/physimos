@@ -17,6 +17,7 @@ set(SCENE_OBJS
     subscene2D.cc
 
     manager.cc
+    quad_manager.cc
 
 )
 

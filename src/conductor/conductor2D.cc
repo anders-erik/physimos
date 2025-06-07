@@ -32,7 +32,7 @@ void Conductor2D::target_scenes(){
 
 void Conductor2D::update_current_target()
 {
-	pui.update_current_targets(cursor_pos.sane);
+	pui.reload_current_targets(cursor_pos.sane);
 
 	// Grab takes precedence over hover
 	if(pui.has_grabbed_target())
@@ -187,6 +187,8 @@ void Conductor2D::main_loop(){
 	while (auxwin.is_open()){
 
 		new_frame();
+
+		pui.update(); // reflect scene state changes form previous frame
 
 		// Always start out with trying to figure out what we're currently targeting
 		update_current_target();

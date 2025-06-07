@@ -18,7 +18,7 @@ struct BaseString : public Base {
         str = new_str;
     }
 
-    /** Temporary conveniens render method. BaseString owner should instead pass object directly to renderer. */
+    /** Temporary convenient render method. BaseString owner should instead pass object directly to renderer. */
     void render_string(UI::RendererBase& renderer){
         // renderer.draw_base((*(Base*)this));
         renderer.draw_base_string(*this);

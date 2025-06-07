@@ -29,6 +29,14 @@ Box2D Box2D::new_congruent_subbox(Box2D parent_box, Box2D child_box)
     return prop_sub_box;
 }
 
+bool Box2D::contains_point(f2 p)
+{
+    bool x_pass = p.x > pos.x && p.x < pos.x + size.x;
+    bool y_pass = p.y > pos.y && p.y < pos.y + size.y;
+
+    return x_pass && y_pass ? true : false;
+}
+
 void Box2D::print(){
     std::cout << "Box2D: " << std::endl;
     std::cout << "box.pos.x  = " << pos.x << std::endl;

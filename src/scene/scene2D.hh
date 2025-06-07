@@ -14,7 +14,8 @@
 
 #include "scene/camera2D.hh"
 #include "scene/shapeS2D.hh"
-#include "scene/quadS2D.hh"
+
+#include "scene/quad_manager.hh"
 
 #include "scene/subscene2D.hh"
 
@@ -26,7 +27,9 @@ struct GLFWWindow;
 
 namespace scene {
 
+struct QuadS2D;
 struct SubScene2D;
+
 
 /** Cursor movement event in normalized viewport coordinated. Usually recieved from owner of scene.
     [0,1]x[0,1] [unitless]
@@ -81,6 +84,8 @@ public:
     // UI INTERFACE
     Str name;
     std::vector<QuadS2D> quads; // Actual quads
+    std::vector<size_t> quad_ids; // quad manager ids
+    QuadManager quad_manager;
 
     opengl::TextureFrameBufferMultisample framebuffer;
 
