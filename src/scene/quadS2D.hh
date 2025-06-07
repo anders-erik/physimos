@@ -47,6 +47,7 @@ public:
 
     // SET
     void set_box(f2 pos, f2 size);
+    Box2D get_box();
     void set_texture_id(unsigned int id);
 
     // QUERY
@@ -54,7 +55,7 @@ public:
     // Compares provided point to Box2D of quad in scene coordinates.
     bool contains_cursor(f2 cursor_pos_scene_coords);
     // Converts provided scene-point to quad-coordinates. Quad domain = [0,0]x[1,1].
-    f2 get_normalized_from_point(f2 cursor_pos_scene_coords);
+    f2 scene_to_quad_normalized(f2 cursor_pos_scene_coords);
 
 };
 

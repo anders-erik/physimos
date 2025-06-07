@@ -56,6 +56,8 @@ class Scene2D {
     size_t parent_id = 0;
 
     f2 window_size_f;
+    float window_to_camera_ratio = 1.0f; // sane window width divided by camera width in scene coords
+    Box2D window_box; // The AABB of this scene as viewed from the window
     f2 cursor_pos_scene;
     f2 cursor_pos_normal;
     
@@ -108,8 +110,8 @@ public:
     void handle_input(window::InputEvent input_event); // OLD
 
     f2 normalized_to_scene_conversion(f2 normalized);
-    /** Try find which scene that captures the cursor */
-    Scene2D* try_find_target_scene(f2 normalized);
+    /** Try find which scene that captures the cursor. Updates the scenes window box. */
+    Scene2D* try_find_target_scene(f2 normalized, Box2D window_box);
     void handle_pointer_move(PointerMovement2D cursor_event);
     void handle_pointer_click(PointerClick2D pointer_click);
     void handle_scroll(float delta);

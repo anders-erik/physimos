@@ -37,6 +37,9 @@ void QuadS2D::set_box(f2 pos, f2 size){
     M_m_s.x.x = size.x;
     M_m_s.y.y = size.y;
 }
+Box2D QuadS2D::get_box(){
+    return box;
+}
 
 
 void QuadS2D::set_texture_id(unsigned int id){
@@ -64,7 +67,7 @@ bool QuadS2D::contains_cursor(f2 cursor_pos_scene_coords){
     return false;
 }
 
-f2 QuadS2D::get_normalized_from_point(f2 cursor_pos_scene_coords){
+f2 QuadS2D::scene_to_quad_normalized(f2 cursor_pos_scene_coords){
     
     f2 normalized_coords;
 

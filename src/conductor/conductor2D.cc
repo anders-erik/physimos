@@ -21,32 +21,35 @@ Conductor2D::Conductor2D(f2 window_size_f)
 
 }
 
-
+void Conductor2D::target_pui(){
+	targeting_ui = true;
+	ManagerScene::clear_current_target();
+}
+void Conductor2D::target_scenes(){
+	targeting_ui = false;
+	ManagerScene::update_current_target(cursor_pos.normalized);
+}
 
 void Conductor2D::update_current_target()
 {
 	pui.update_current_targets(cursor_pos.sane);
 
-	// Grabbed states takes precedence
+	// Grab takes precedence over hover
 	if(pui.has_grabbed_target())
 	{
-		targeting_ui = true;
-		ManagerScene::clear_current_target();
+		target_pui();
 	}
 	else if(ManagerScene::has_grabbed_target())
 	{
-		targeting_ui = false;
-		ManagerScene::update_current_target(cursor_pos.normalized);
+		target_scenes();
 	}
 	else if(pui.has_hover_target())
 	{
-		targeting_ui = true;
-		ManagerScene::clear_current_target();
+		target_pui();
 	}
 	else // if no grab nor ui target -> must be targeting a scene
 	{
-		targeting_ui = false;
-		ManagerScene::update_current_target(cursor_pos.normalized);
+		target_scenes();
 	}
 
 }

@@ -103,24 +103,36 @@ f2 Scene2D::normalized_to_scene_conversion(f2 normalized)
 }
 
 
-Scene2D * Scene2D::try_find_target_scene(f2 normalized)
+Scene2D * Scene2D::try_find_target_scene(f2 normalized, Box2D window_box)
 {
-    f2 pos_current_scene = camera.normalized_to_scene_coords(normalized);
+    this->window_box = window_box;
+    window_to_camera_ratio = window_box.size.x / camera.get_box().size.x;
+    // std::cout << window_to_camera_ratio << std::endl;
+    // std::cout << "scene width in window coords: " << window_box.size.x << std::endl;
+    // window_box.pos.print("window_box.pos  = ");
+    // window_box.size.print("window_box.size = ");
+
+
+    f2 cursor_pos_scene_coords = camera.normalized_to_scene_coords(normalized);
     // f2 pos_current_scene = normalized_to_scene_conversion(normalized);
 
     for(scene::SubScene2D& subscene : subscenes){
     
         // Recursive match
         // TODO: Clear hover on ALL subscenes. Currently we return immediately after matching
-        if(subscene.quad.contains_cursor(pos_current_scene)){
+        if(subscene.quad.contains_cursor(cursor_pos_scene_coords)){
 
             subscene_current_hover = &subscene;
 
 			scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
 
-            f2 pos_subscene_normalized = subscene.quad.get_normalized_from_point(pos_current_scene);
+            // The location of the cursor as measued in its own nrmalized coordinates
+            f2 cursor_pos_in_quad_norm = subscene.quad.scene_to_quad_normalized(cursor_pos_scene_coords);
 
-            return subscene_scene->try_find_target_scene(pos_subscene_normalized);
+            // creates a window box whose box-relationship is congruent to that of current camera & quad box
+            Box2D subscene_window_box = window_box.new_congruent_subbox(subscene.quad.get_box(), camera.get_box());
+
+            return subscene_scene->try_find_target_scene(cursor_pos_in_quad_norm, subscene_window_box);
 
 		}
         else {
@@ -153,8 +165,8 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement){
         if(subscene.quad.contains_cursor(cursor_pos_scene_prev)){
 
             PointerMovement2D subscene_pointer_move = {
-                subscene.quad.get_normalized_from_point(cursor_pos_scene_prev),
-                subscene.quad.get_normalized_from_point(cursor_pos_scene),
+                subscene.quad.scene_to_quad_normalized(cursor_pos_scene_prev),
+                subscene.quad.scene_to_quad_normalized(cursor_pos_scene),
             };
 
             scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
@@ -198,7 +210,7 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
         if(subscene.quad.contains_cursor(cursor_pos_scene)){
 
             PointerClick2D subscene_pointer_click = {
-                subscene.quad.get_normalized_from_point(cursor_pos_scene),
+                subscene.quad.scene_to_quad_normalized(cursor_pos_scene),
                 pointer_click.button_event,
             };
 

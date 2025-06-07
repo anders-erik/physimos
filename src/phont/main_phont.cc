@@ -136,7 +136,8 @@ int main()
 
 
 	// NEW SUBSCENE ADDED TO ROOT SCENE
-	scene::SubScene2D& subscene_1 = root_scene->add_subscene({450, 300}, {320, 240});
+	// scene::SubScene2D& subscene_1 = root_scene->add_subscene({450, 300}, {320, 240});
+	scene::SubScene2D& subscene_1 = root_scene->add_subscene({450, 150}, {320, 400});
 	scene::Scene2D* subscene_1_scene = ManagerScene::get_scene(subscene_1.scene_id);
 
 	// ADD SHAPES TO SUBSCENE

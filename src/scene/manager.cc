@@ -14,6 +14,7 @@ namespace ManagerScene {
 static size_t id_count = 2; // Global index count
 
 static bool is_grabbing_a_scene = false;
+static f2 window_size = {0.0f, 0.0f};
 
 static struct SceneState {
     const size_t root_id = 1; // root scene is created during init; is indestructable; id==1;
@@ -77,12 +78,14 @@ scene::Scene2D* new_scene(f2 framebuffer_size)
     return &new_scene;
 }
 
-scene::Scene2D* init(f2 window_size)
+scene::Scene2D* init(f2 _window_size)
 {
     if(scenes.size() > 1)
     {
         throw std::runtime_error("Can't init the scene manager twice");
     }
+
+    window_size = _window_size;
     
     scene::Scene2D& root_scene = scenes.emplace_back( window_size );
 
@@ -116,7 +119,8 @@ void update_current_target(f2 cursor_pos_window_normalized)
     if(is_grabbing_a_scene)
         return;
 
-    scene::Scene2D* current_scene_target = get_root_scene()->try_find_target_scene(cursor_pos_window_normalized);
+    f2 window_pos = {0.0f, 0.0f}; // window scene is always filling the whole window
+    scene::Scene2D* current_scene_target = get_root_scene()->try_find_target_scene(cursor_pos_window_normalized, { window_pos, window_size });
 
     state.cursor_target_id = current_scene_target->get_id();
 

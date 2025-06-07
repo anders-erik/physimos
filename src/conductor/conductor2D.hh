@@ -40,6 +40,8 @@ public:
 
 	Conductor2D(f2 window_size);
 
+	void target_pui();
+	void target_scenes();
 	/** Makes sure that we know what subsystem we are currently targeting. (Scene or UI)*/
 	void update_current_target();
 
@@ -62,4 +64,5 @@ public:
 
 
 };
+
 
