@@ -2,6 +2,24 @@
 #pragma once
 
 
+
+#include <unistd.h> // Segfault handler
+
+#include <csignal>
+#include <cstdlib>
+
+#include <iostream>
+#include <new>
+#include <string>
+#include <vector>
+#include <functional>
+
+#include "str.hh"
+#include "print.hh"
+
+
+
+
 #define trycatch(_x_) println("trycatch_x_");
 
 #define try_    try{
@@ -18,126 +36,246 @@ void segfault_handler(int signal) {
 }
 #endif
 
+void print_check(bool passed)
+{
+    if(passed)
+        std::cout << "✅  ";
+    else
+        std::cout << "❌  ";
+}
 
-/** Unit test information returned by completed test. */
-struct InfoUnitTest {
+void print_indent(int indent_count){
+    for(auto i = indent_count; i >= 0; i--)
+    {
+        std::cout << " ";
+    }
+}
 
-    std::string description;
+
+/** Unit test information returned by completed unit test. */
+class UnitTestInfo {
+
+    std::string name; // name of unit test
     bool pass_flag = false;
+    int print_indentation = 8;
+
+public:
+    
+    UnitTestInfo(const char* name) : name {std::string(name)} {};
+    UnitTestInfo(const char* name, bool passed) : name {std::string(name)}, pass_flag {passed} {};
+    UnitTestInfo(std::string name) : name {name}, pass_flag {false} {};
+    UnitTestInfo(std::string name, bool passed) : name {name}, pass_flag {passed} {};
+
 
     /** Set passed to true and return itself */
-    InfoUnitTest& pass(){
+    UnitTestInfo& pass()
+    {
         pass_flag = true;
         return *this;
     }
+
     /** Set passed to false and return itself */
-    InfoUnitTest& fail(){
+    UnitTestInfo& fail()
+    {
         pass_flag = false;
         return *this;
     }
-    bool is_passed(){ return pass_flag ? true : false;}
 
-    
-    InfoUnitTest(const char* description) : description {std::string(description)} {};
-    InfoUnitTest(const char* description, bool passed) : description {std::string(description)}, pass_flag {passed} {};
-    InfoUnitTest(std::string description) : description {description}, pass_flag {false} {};
-    InfoUnitTest(std::string description, bool passed) : description {description}, pass_flag {passed} {};
-
-
-    void print(){
-
-        if(pass_flag)
-            std::cout << "    " << description << ": PASS" << std::endl;
-        else
-            std::cout << "    " << description << ": FAIL" << std::endl;
+    /** Check if test passed. */
+    bool is_passed()
+    { 
+        return pass_flag ? true : false;
     }
+
+    /** Print */
+    void print()
+    {
+        print_indent(print_indentation);
+        print_check(pass_flag);
+        std::cout << name << std::endl;
+    }
+
+};
+typedef std::function<UnitTestInfo()> UnitTestFn;
+
+
+
+/** Collection of related unit tests. Usually all tests associated with a particular method of a class. */
+class UnitTestCollection
+{
+    std::string name;   // Name of collection
+    std::vector<UnitTestFn> unit_tests; // Tests to run
+    std::vector<UnitTestInfo> infos; // returned unit test info objects
+    int print_indentation = 4;
+
+public:
+    
+
+    UnitTestCollection(std::string collection_name, std::vector<UnitTestFn> unit_tests)
+        :   name {collection_name},
+            unit_tests {unit_tests} 
+    {
+    };
+    
+
+    std::string get_name()
+    {
+        return name;
+    }
+
+    bool all_passed()
+    {
+        for(auto& test_info : infos)
+        {
+            if(!test_info.is_passed())
+                return false;
+        }
+        return true;
+    }
+
+    size_t pass_count()
+    {
+        size_t count = 0;
+        for(auto& test_info : infos)
+        {
+            if(test_info.is_passed())
+                ++count;
+        }
+        return count;
+    }
+    size_t tests_completed()
+    {
+        return infos.size();
+    }
+    size_t total_test_count()
+    {
+        return unit_tests.size();
+    }
+
+    void print_failed_test_infos()
+    {
+        print_indent(print_indentation);
+        print_check(all_passed());
+        std::cout << "Collection: " << name  << " - " << pass_count() << "/" << total_test_count() << std::endl;
+        
+        for(auto& test_info : infos)
+        {
+            test_info.print();
+        }
+    }
+
+    void run_collection()
+    {
+        for(auto& unit_test : unit_tests)
+        {
+            UnitTestInfo test_info = unit_test();
+            infos.push_back(test_info);
+        }
+    }
+
+
 };
 
 
-/** Information about a module (collection of unit tests) test. */
-struct InfoUnitTestCollection {
 
-    std::string test_name;
+/** 
+    A collection of Unit test collections.
+    Usually represents all tests for a specific class or struct. 
+*/
+class TestModule
+{
+    std::vector<UnitTestCollection> unit_test_collections;
+    std::string name;
 
-    size_t total_test_count = 0;
+public:
 
-    size_t tests_completed = 0;
-    size_t pass_count = 0;
-
-    InfoUnitTest previous_test_info = {"initial test info", false};
-
-    InfoUnitTestCollection(    std::string test_name,
-                    std::vector<std::function<InfoUnitTest()>>& unit_test_collection
-                )
-        :   test_name {test_name},
-            total_test_count {unit_test_collection.size()} 
+    TestModule() = default;
+    TestModule(std::string name)
+        :   name {name} 
     {
     };
 
-    bool all_passed(){
-        return pass_count == total_test_count ? true : false;
+    void add_collection(const UnitTestCollection& collection)
+    {
+        unit_test_collections.push_back(collection);
     }
 
-    void print_check(){
-        if(all_passed())
-            std::cout << "✅  ";
-        else
-            std::cout << "❌  ";
+    size_t pass_count()
+    {
+        size_t count = 0;
+        for(auto& collection : unit_test_collections)
+        {
+            if(collection.all_passed())
+                ++count;
+        }
+        return count;
+    }
+    size_t total_test_count()
+    {
+        return unit_test_collections.size();
     }
 
-    void print_pass(){
-        print_check();
-        std::cout << test_name << ": passed " << pass_count << "/" << total_test_count << "\n";
+    bool all_passed()
+    {
+        for(auto& collection : unit_test_collections)
+        {
+            if(!collection.all_passed())
+            {
+                return false;
+            }
+        }    
+        return true;
     }
-    void print_unexpected_throw(){
-        print_check();
-        std::cout << "Uncatch error in test_str.cc" << std::endl;
-        std::cout << "Last successful unit test: " << previous_test_info.description << std::endl;
-        std::cout << test_name << ": completed " << tests_completed << "/" << total_test_count << "\n\n";
-        std::cout << test_name << ": passed " << pass_count << "/" << tests_completed << "\n";
+
+    void print_result() 
+    {
+        print_check(all_passed());
+        std::cout << name << ": " << pass_count() << "/" << total_test_count() << "\n";
+    }
+
+    void print_failed()
+    {
+        for(auto& collection : unit_test_collections)
+        {
+            if(!collection.all_passed())
+            {
+                collection.print_failed_test_infos();
+            }
+        }    
+    }
+
+    void print_unexpected_throw(UnitTestCollection& collection)
+    {
+        std::cout << "Uncatch error:" << std::endl;
+        std::cout << "        module    : " << name << std::endl;
+        std::cout << "        collection: " << collection.get_name() << std::endl;
+    }
+
+    void run()
+    {
+        // Signal handler for non-thrown errors
+        signal(SIGSEGV, segfault_handler);
+
+        
+        for(auto& unit_test_collection : unit_test_collections)
+        {
+            try_
+                unit_test_collection.run_collection();
+            catch_
+                print_unexpected_throw(unit_test_collection);
+            end_
+        }
+
+        print_result();
+        if(!all_passed())
+        {
+            print_failed();
+        }
     }
 
 };
 
-typedef std::function<InfoUnitTest()> UnitTest;
-typedef std::vector<UnitTest> UnitTestCollection;
 
-
-
-void unit_tests_run(std::string test_name, UnitTestCollection& unit_test_collection){
-
-
-    InfoUnitTestCollection info_collection {test_name, unit_test_collection};
-    
-    bool verbose = false;
-
-
-    try_
-
-        for(std::function<InfoUnitTest()> function : unit_test_collection){
-
-            InfoUnitTest test_info = function();
-            if(verbose)
-                test_info.print();
-            
-            if(test_info.is_passed())
-                ++info_collection.pass_count;
-
-            ++info_collection.tests_completed;
-
-            // Cache previous test for debugging if next test throws
-            info_collection.previous_test_info = test_info;
-        }
-
-        info_collection.print_pass();
-
-    catch_
-
-        info_collection.print_unexpected_throw();
-
-    end_
-
-}
 
 
 

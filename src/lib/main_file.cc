@@ -16,13 +16,13 @@ void cat(){
     // Object
     File file;
     file.set_path_core(path_core);
-    Str this_file_contents_object = file.cat_as_str_core_xplat();
+    ResMove<Str> this_file_contents_object = file.cat_as_str_core_xplat();
+    // println(this_file_contents_object);
 
     // Static
-    Str this_file_contents_static = File::cat_as_str_core_xplat(path_core);
-
-    // println(this_file_contents_object);
-    println(this_file_contents_static);
+    ResMove<Str> this_file_contents_static = File::cat_as_str_core_xplat(path_core);
+    if(this_file_contents_static.has_value())
+        println(this_file_contents_static.consume_value());
 
 }
 
@@ -54,8 +54,8 @@ int main(){
     println();
 
     
-    // cat();
-    echo();
+    cat();
+    // echo();
 
     println("\nmain_file end.");
 

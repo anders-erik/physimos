@@ -1,11 +1,7 @@
 
 #pragma once
 
-#include <new>
 
-#include <string>
-#include <vector>
-#include <functional>
 
 
 #include "str.hh"
@@ -27,11 +23,11 @@ bool str_equal_c_str_chars(Str str, const char* c_str){
 
 
 
-std::vector<UnitTest> constructors = {
+std::vector<UnitTestFn> constructors = {
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "Default constructors.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "Default.";
 
         Str str1;
         Str str2 {};
@@ -41,8 +37,8 @@ std::vector<UnitTest> constructors = {
     },
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "C string constructors.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "c-string.";
 
         Str str1 = "";
         Str str2 = "000";
@@ -51,8 +47,8 @@ std::vector<UnitTest> constructors = {
     },
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "Constructor: integer 123456.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "integer 123456.";
 
         Str str = 123456;
 
@@ -63,8 +59,8 @@ std::vector<UnitTest> constructors = {
             return test_info.fail();
     },
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "Constructor: float.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "float.";
         
         Str str;
         Str target;
@@ -88,8 +84,8 @@ std::vector<UnitTest> constructors = {
     },
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "Constructor: initalization char.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "initalization char.";
 
         Str str = Str(5, 'a');
         Str str_c = "aaaaa";
@@ -106,11 +102,11 @@ std::vector<UnitTest> constructors = {
 
 
 
-UnitTestCollection equality = {
+std::vector<UnitTestFn> equality = {
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "Equality: Str and source c string chars.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "Equality: Str and source c string chars.";
 
         const char* chars = "hi";
         Str str = chars;
@@ -122,8 +118,8 @@ UnitTestCollection equality = {
     },
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "equality: equal to itself.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "equality: equal to itself.";
 
         Str str = "str";
 
@@ -151,11 +147,11 @@ UnitTestCollection equality = {
 
 
 
-UnitTestCollection concat = {
+std::vector<UnitTestFn> concat = {
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "concat: compare to c_str using strcat().";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "concat: compare to c_str using strcat().";
 
         const char* first_half = "first_half ";
         const char* second_half = "second_half";
@@ -178,8 +174,8 @@ UnitTestCollection concat = {
     },
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "concat: first plus second == manual paste.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "concat: first plus second == manual paste.";
 
         // construct Str
         Str str_first  = "first_half ";
@@ -199,11 +195,11 @@ UnitTestCollection concat = {
 
 
 
-UnitTestCollection substr = {
+std::vector<UnitTestFn> substr = {
 
 
-    []() -> InfoUnitTest {
-        InfoUnitTest test_info = "substr: random cuts to substr.";
+    []() -> UnitTestInfo {
+        UnitTestInfo test_info = "substr: random cuts to substr.";
 
         Str str = "";
 

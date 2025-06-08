@@ -178,6 +178,13 @@ Str& Str::operator+=(Str & rhs){
     return *this;
 }
 
+Str& Str::operator+=(const char * c_str)
+{
+    Str rhs {c_str};
+    this->append(rhs);
+    return *this;
+}
+
 Str Str::operator+(Str&& rhs){
     Str new_str = *this;
     new_str.append(rhs);
@@ -186,6 +193,14 @@ Str Str::operator+(Str&& rhs){
 
 Str Str::operator+(Str& rhs){
     Str new_str = *this;
+    new_str.append(rhs);
+    return new_str;
+}
+
+Str Str::operator+(const char * c_str)
+{
+    Str new_str = *this;
+    Str rhs = Str(c_str);
     new_str.append(rhs);
     return new_str;
 }

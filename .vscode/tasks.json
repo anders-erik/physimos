@@ -1,6 +1,47 @@
 {
     "version": "2.0.0",
-    "tasks": [
+    "tasks": 
+    [
+        {
+            "label": "run",
+            "detail": "Custom run task",
+            "type": "process",
+
+            "command": 
+            "${workspaceFolder}/build/debug_linux/physimos",
+            // "${workspaceFolder}/build/debug_linux/src/lib/main_lib",
+            // "${workspaceFolder}/build/debug_linux/src/lib/main_str",
+            // "${workspaceRoot}/build/debug_linux/src/lib/main_file",
+            // "${workspaceFolder}/build/debug_linux/src/file_format/json/main_json",
+            // "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
+            // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
+            // "${workspaceFolder}/build/debug_linux/src/model/main_editor",
+
+            // "${workspaceFolder}/build/debug_linux/src/lib/test_lib",
+
+            "options": {
+                "cwd": 
+                
+                "${workspaceFolder}",
+                // "${workspaceFolder}/src/lib",
+                // "${workspaceFolder}/src/file_format/json",
+
+
+                "env": {
+                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
+                }
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "Debug build"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+                "close": false
+            }
+        },
         {
             "label": "Build & Run [debug]",
             "type": "shell",
@@ -339,46 +380,6 @@
                 "command": "cmake --build --preset=debug_linux --target main_physics"
             },
             "problemMatcher": []
-        },
-        {
-            "label": "run",
-            "detail": "Custom run task",
-            "type": "process",
-
-            "command": 
-            "${workspaceFolder}/build/debug_linux/physimos",
-            // "${workspaceFolder}/build/debug_linux/src/lib/main_lib",
-            // "${workspaceFolder}/build/debug_linux/src/lib/main_str",
-            // "${workspaceRoot}/build/debug_linux/src/lib/main_file",
-            // "${workspaceFolder}/build/debug_linux/src/file_format/json/main_json",
-            // "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
-            // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
-            // "${workspaceFolder}/build/debug_linux/src/model/main_editor",
-
-            // "${workspaceFolder}/build/debug_linux/src/lib/test_lib",
-
-            "options": {
-                "cwd": 
-                
-                "${workspaceFolder}",
-                // "${workspaceFolder}/src/lib",
-                // "${workspaceFolder}/src/file_format/json",
-
-
-                "env": {
-                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
-                }
-            },
-            "problemMatcher": [],
-            "dependsOn": [
-                "Debug build"
-            ],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "panel": "shared",
-                "close": false
-            }
         },
         {
             "label": "build",

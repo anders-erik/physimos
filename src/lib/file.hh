@@ -4,6 +4,7 @@
 
 #include "process.hh"
 #include "str.hh"
+#include "res.hh"
 
 #include "err.hh"
 
@@ -34,8 +35,10 @@ public:
 
     void file_echo_overwrite_first_strsize_chars(Str str);
 
-    Str cat_as_str_core_xplat();
-    static Str cat_as_str_core_xplat(Str& path_str);
+    /** Read whole file as a Str. */
+    ResMove<Str> cat_as_str_core_xplat();
+    /** Static: Read whole file as a Str. */
+    static ResMove<Str> cat_as_str_core_xplat(Str& path_str);
 
 private:
 

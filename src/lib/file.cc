@@ -93,24 +93,31 @@ void File::file_echo_overwrite_first_strsize_chars(Str str){
 
 }
 
-Str File::cat_as_str_core_xplat() {
+ResMove<Str> File::cat_as_str_core_xplat() {
 
     path_type = path_t::core;
     update_absolute_path();
 
     // return cat_file_linux();
     // return OS::file_cat_as_str(get_current_path_c_str());
-    return OS::file_cat_as_str(get_current_path().to_c_str());
-
+    ResMove<Str> os_cat = OS::file_cat_as_str(get_current_path().to_c_str());
+    if(os_cat.has_value())
+        return os_cat.consume_value();
+    else
+        return os_cat.consume_error();
 }
 
 
-Str File::cat_as_str_core_xplat(Str & path_str){
+ResMove<Str> File::cat_as_str_core_xplat(Str & path_str){
 
     File file (path_str);
 
-    return file.cat_as_str_core_xplat();
+    ResMove<Str> static_cat = file.cat_as_str_core_xplat();
 
+    if(static_cat.has_value())
+        return static_cat.consume_value();
+    else
+        return static_cat.consume_error();
 }
 
 

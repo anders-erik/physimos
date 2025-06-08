@@ -1,6 +1,9 @@
 #pragma once
 
 // #include <optional>
+#include <iostream>
+
+#define MV std::move
 
 /** A an optional pointer object to enforce nullptr check before use. */
 template <typename T>
@@ -35,60 +38,52 @@ public:
 
 /** A move-only optional container. */
 template <typename T>
-class OptMove {
-
-    T *t; // object owned by OptMove
+class OptMove
+{
+    T *t = nullptr; // object owned by OptMove
     bool value = false;
 
 public:
+
+    OptMove()                       = default;
     OptMove(OptMove const& other)   = delete;
     OptMove(OptMove&& other)        = delete;
-
-    OptMove() {
-        std::cout << "OptMove constructed without value." << std::endl;
+    OptMove(T&& _t)
+    {
+        t = new T;
+        *t = MV(_t);
+        value = true;
     };
-   ~OptMove() {
+    ~OptMove() 
+    {
         if(value)
-            deallocate_T();
+        {
+            delete t;
+        }
     };
 
-    // Only constructed by moving 
-    OptMove(T&& _t){
-        std::cout << "OptMove constructed by T move." << std::endl;
-        // t = std::move(_t);
-        allocate_T();
-        *t = std::move(_t);
-        // t = &_t;
+    OptMove& 
+    operator=(T&& _t)
+    {
+        t = new T;
+        *t = MV(_t);
         value = true;
-        
-    };
-
-    OptMove& operator=(T&& _t) {
-        std::cout << "OptMove got new value by Move." << std::endl;
-        allocate_T();
-        *t = std::move(_t);
-        value = true;
-        // t = std::move(_t);
         return *this;
     }
 
-
-    [[nodiscard]] T&& consume(){
+    [[nodiscard]] T&& 
+    consume()
+    {
         value = false;
-        return std::move(*t);
+        return MV(*t);
     };
-    bool has_value(){
+
+    bool 
+    has_value()
+    {
         return value;
     }
 
-private:
-
-    void allocate_T(){
-        t = new T;
-    }
-    void deallocate_T(){
-        delete t;
-    }
 };
 
 

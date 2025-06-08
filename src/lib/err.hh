@@ -45,10 +45,20 @@ struct Err {
     int ERRNO = 0; // store ERRNO from C APIs
 
     Err() = default;
-    Err(err_m module, err_t type, Str message)
-        :   module  {module}, 
+    Err(err_s severity, err_m module, err_t type, Str message)
+        :   severity {severity},
+            module  {module}, 
             type    {type}, 
             message {message} 
+    {
+    };
+    /** With ERRNO */
+    Err(err_s severity, err_m module, err_t type, int ERRNO, Str message)
+        :   severity {severity},
+            module  {module}, 
+            type    {type},
+            ERRNO   {ERRNO},
+            message {message}
     {
     };
 

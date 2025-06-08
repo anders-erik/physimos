@@ -43,8 +43,10 @@ struct Str {
 
     Str& operator+=(Str&& rhs);
     Str& operator+=(Str& rhs);
+    Str& operator+=(const char* c_str);
     Str operator+(Str&& rhs);
     Str operator+(Str& rhs);
+    Str operator+(const char* c_str);
 
     Str& operator=(const Str& other);
     Str& operator=(Str&& other);
