@@ -16,5 +16,7 @@ struct Box2D {
 
     bool contains_point(f2 p);
 
+    m3f3 get_matrix_m3f3();
+
     void print();
 };

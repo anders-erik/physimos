@@ -113,7 +113,7 @@ void gpu_use_program(ProgramName program_enum){
             glUseProgram(program_model_texture);
             break;
         
-        case ProgramName::Texture2D:
+        case ProgramName::Quad2D:
             glUseProgram(program_texture_2d);
             break;
         
@@ -158,7 +158,7 @@ unsigned int gpu_get_program(ProgramName program_enum){
             program = program_model_texture;
             break;
 
-        case ProgramName::Texture2D:
+        case ProgramName::Quad2D:
             program = program_texture_2d;
             break;
 
@@ -211,9 +211,9 @@ unsigned int build_program_vert_frag(ProgramName program_enum){
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 
-    case ProgramName::Texture2D :
-        vert_str = physimos_root_dir + "/src/opengl/shaders/2D/texture_vert.glsl";
-        frag_str = physimos_root_dir + "/src/opengl/shaders/2D/texture_frag.glsl";
+    case ProgramName::Quad2D :
+        vert_str = physimos_root_dir + "/src/opengl/shaders/2D/quad.vert";
+        frag_str = physimos_root_dir + "/src/opengl/shaders/2D/quad.frag";
         new_program = build_program_vert_frag(vert_str, frag_str);
         break;
 

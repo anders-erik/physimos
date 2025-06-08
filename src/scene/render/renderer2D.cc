@@ -1,15 +1,20 @@
 
+#include <iostream>
+#include <cmath>
+
+#include "glad/glad.h"
+
 #include "math/vecmat.hh"
-#include "renderer2D.hh"
+
 #include "opengl/texture.hh"
 
 #include "scene/quadS2D.hh"
 
-#include "glad/glad.h"
-#include <iostream>
-#include <cmath>
+#include "renderer2D.hh"
 
-namespace opengl {
+#include "program_quad2D.hh"
+
+namespace scene {
 
 
 
@@ -115,14 +120,17 @@ void RenderContextQuadS2D::set_texture_id(unsigned int texture_id){
 
 
 
-Scene2DRenderer::Scene2DRenderer(){
+RendererScene2D::RendererScene2D(){
+
+    program_quad_2D.init();
+
     // program = opengl::build_program_vert_frag(opengl::Programs::phont_texture);
     program = opengl::build_program_vert_frag(program_name_enum);
 
     init_frame_wire_quad_context_t();
 }
 
-void Scene2DRenderer::create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts){
+void RendererScene2D::create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts){
 
     render_context.texture = opengl::texture_get_id(opengl::Textures::Colors);
 
@@ -149,18 +157,23 @@ void Scene2DRenderer::create_shape_context_t(RenderContextQuadS2D& render_contex
 
 
 
-void Scene2DRenderer::activate(){
+void RendererScene2D::activate(){
     glUseProgram(program);
 }
-void Scene2DRenderer::set_camera(m3f3 camera){
+void RendererScene2D::set_camera(m3f3 camera){
+
+    program_quad_2D.set_camera_matrix(camera);
+
+    glUseProgram(program);
     glUniformMatrix3fv(glGetUniformLocation(program, "camera2D_mat"), 1, GL_TRUE, (float*) &camera);
 }
-void Scene2DRenderer::set_model(m3f3 model_mat){
+void RendererScene2D::set_model(m3f3 model_mat){
+    glUseProgram(program);
     glUniformMatrix3fv(glGetUniformLocation(program, "model_mat"), 1, GL_TRUE, (float*) &model_mat);
 }
 
 
-void Scene2DRenderer::render_point(RenderContextQuadS2D context){
+void RendererScene2D::render_point(RenderContextQuadS2D context){
 
     this->activate();
 
@@ -176,7 +189,7 @@ void Scene2DRenderer::render_point(RenderContextQuadS2D context){
     // glDrawArrays(GL_POINTS, 0, 6);
 }
 
-void Scene2DRenderer::render_line(RenderContextQuadS2D context){
+void RendererScene2D::render_line(RenderContextQuadS2D context){
     this->activate();
 
     glPointSize(10);
@@ -194,30 +207,21 @@ void Scene2DRenderer::render_line(RenderContextQuadS2D context){
 
 
 
-void Scene2DRenderer::render_quad(scene::QuadS2D& quad){
-
-    glUseProgram(program);
-    
-    this->set_model(quad.get_matrix());
-
-    RenderContextQuadS2D context = quad.get_rendering_context();
+void RendererScene2D::render_quad(scene::QuadS2D& quad){
 
 
-    glBindTexture(GL_TEXTURE_2D, context.texture);
+    program_quad_2D.set_model_texture(quad.get_model_matrix(), quad.get_texture_id());
+    program_quad_2D.draw();
 
-    // Visualize the actual rendered pixels of glyphs
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    
 
-    glBindVertexArray(context.VAO); 
+    return;
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+
 }
 
 
 
-void Scene2DRenderer::render_multisample_texture(RenderContextQuadS2D context){
+void RendererScene2D::render_multisample_texture(RenderContextQuadS2D context){
 
     glUseProgram(program);
 
@@ -231,7 +235,7 @@ void Scene2DRenderer::render_multisample_texture(RenderContextQuadS2D context){
 
 
 
-void Scene2DRenderer::init_frame_wire_quad_context_t(){
+void RendererScene2D::init_frame_wire_quad_context_t(){
 
     std::array<VertexQuad2D, 8> verts;
     f2 frame_color_coords = opengl::texture_get_color_coordinate(opengl::TextureColors::Green);
@@ -261,7 +265,7 @@ void Scene2DRenderer::init_frame_wire_quad_context_t(){
 
 }
 
-void Scene2DRenderer::render_frame(m3f3 M_m_s){
+void RendererScene2D::render_frame(m3f3 M_m_s){
     this->activate();
 
     glPointSize(10);
@@ -278,7 +282,7 @@ void Scene2DRenderer::render_frame(m3f3 M_m_s){
     // glDrawArrays(GL_POINTS, 0, 6);
 }
 
-std::array<opengl::VertexQuad2D,8> Scene2DRenderer::generate_quad_line_frame_verts_0101(f2 texture_coord){
+std::array<VertexQuad2D,8> RendererScene2D::generate_quad_line_frame_verts_0101(f2 texture_coord){
 
     std::array<VertexQuad2D, 8> verts;
 

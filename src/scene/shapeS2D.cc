@@ -109,7 +109,7 @@ void ShapeS2D::set_size(f2 size){
 
 
 
-std::array<opengl::VertexQuad2D, 6> ShapeS2D::generate_quad_verts_c0(f2 center, float scale, f2 texture_coord){
+std::array<VertexQuad2D, 6> ShapeS2D::generate_quad_verts_c0(f2 center, float scale, f2 texture_coord){
 
     std::array<VertexQuad2D, 6> verts;
 
@@ -149,7 +149,7 @@ std::array<opengl::VertexQuad2D, 6> ShapeS2D::generate_quad_verts_c0(f2 center, 
     return verts;
 }
 
-std::array<opengl::VertexQuad2D,8> ShapeS2D::generate_quad_line_frame_verts_0505(f2 texture_coord){
+std::array<VertexQuad2D,8> ShapeS2D::generate_quad_line_frame_verts_0505(f2 texture_coord){
 
     std::array<VertexQuad2D, 8> verts;
 

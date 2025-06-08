@@ -9,7 +9,7 @@
 #include "scene/shapeS2D.hh"
 
 #include "opengl/texture.hh"
-#include "opengl/renderer2D.hh"
+#include "scene/render/renderer2D.hh"
 
 #include "math/shape.hh"
 
@@ -34,7 +34,7 @@ int main(){
 
     // scene::ShapeS2D quad;
     // // opengl::ShapeS2DRenderContext quad_render_context;
-    // opengl::Scene2DRenderer quad_renderer;
+    // opengl::RendererScene2D quad_renderer;
 
     // quad.set_dims(800, 600, 100, 100);
 

@@ -119,7 +119,7 @@ struct m3f3 {
     f3 y;
     f3 z;
 
-    m3f3& operator=(m3f3& rhs);
+    m3f3& operator=(const m3f3& rhs);
     /** copy = this x rhs 
         this = copy
     */
@@ -130,8 +130,10 @@ struct m3f3 {
     void mult_left(m3f3& lhs);
     f2 mult_vec(f2 _f2); /** Translate, rotate, and scale f2 using the set m3f3 values. */
     void translate(f2 transl);
-    void rotate(float angle);
     void scale(f2 scale);
+    void rotate(float angle);
+
+    float* pointer();
 
     void set_to_identity();
 

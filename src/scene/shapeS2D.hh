@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "opengl/program.hh"
-#include "opengl/renderer2D.hh"
+#include "scene/render/renderer2D.hh"
 #include "opengl/texture.hh"
 
 #include "window/auxwin.hh"
@@ -39,14 +39,14 @@ public: // Keep this while moving objects to private above
     opengl::TextureColors texture_color = opengl::TextureColors::LightGray;
     f2 text_coord; // Texture coordinate for coloring texture
 
-    std::vector<opengl::VertexQuad2D> verts_render; // Render vertices
-    std::array<opengl::VertexQuad2D, 6> verts_6;   // Old quad verts
+    std::vector<VertexQuad2D> verts_render; // Render vertices
+    std::array<VertexQuad2D, 6> verts_6;   // Old quad verts
     Transform2D transform_2d;
 
 
 
 public:
-    opengl::RenderContextQuadS2D render_context;
+    RenderContextQuadS2D render_context;
 
     ShapeS2D();
     ShapeS2D(Shape &shape);
@@ -64,8 +64,8 @@ public:
 
 
     // Generate unit square centered at zero and scale and shift according to parameters.
-    static std::array<opengl::VertexQuad2D,6> generate_quad_verts_c0(f2 center, float scale, f2 texture_coord);
-    static std::array<opengl::VertexQuad2D,8> generate_quad_line_frame_verts_0505(f2 texture_coord);
+    static std::array<VertexQuad2D,6> generate_quad_verts_c0(f2 center, float scale, f2 texture_coord);
+    static std::array<VertexQuad2D,8> generate_quad_line_frame_verts_0505(f2 texture_coord);
 
 };
 

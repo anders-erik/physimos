@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "opengl/program.hh"
-#include "opengl/renderer2D.hh"
+#include "scene/render/renderer2D.hh"
 #include "opengl/texture.hh"
 
 #include "window/auxwin.hh"

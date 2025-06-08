@@ -58,7 +58,7 @@ void m2f2::print(){
 }
 
 
-m3f3& m3f3::operator=(m3f3& rhs){
+m3f3& m3f3::operator=(const m3f3& rhs){
     x = rhs.x;
     y = rhs.y;
     z = rhs.z;
@@ -137,6 +137,10 @@ void m3f3::rotate(float angle){
 
 
     // return matrix;
+}
+
+float* m3f3::pointer(){
+    return (float*) this;
 }
 
 void m3f3::set_to_identity(){

@@ -10,7 +10,6 @@ add_library(opengl
     renderer_axes.cc
     renderer_vector.cc
 
-    renderer2D.cc
 )
 
 target_include_directories(opengl PUBLIC 

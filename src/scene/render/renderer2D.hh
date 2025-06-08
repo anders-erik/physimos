@@ -9,6 +9,7 @@
 
 #include "opengl/program.hh"
 
+#include "scene/render/program_quad2D.hh"
 
 namespace scene {
 
@@ -17,7 +18,7 @@ class QuadS2D;
 
 }
 
-namespace opengl {
+namespace scene {
 
 /** Represents a wireframe used to highlight scene objects. */
 // class BoxFrame2D : Box2D {
@@ -29,10 +30,7 @@ namespace opengl {
 
 // };
 
-struct VertexQuad2D {
-    f3 pos;
-    f2 tex;
-};
+
 
 class RenderContextQuadS2D {
 
@@ -54,7 +52,7 @@ public:
     void set_texture_id(unsigned int texture_id);
 
     // Quad as two triangles of unit dimensions ( [0,1]x[0,1] ), thus center at (0.5, 0.5).
-    static std::array<opengl::VertexQuad2D, 6> generate_quad_verts_c05();
+    static std::array<VertexQuad2D, 6> generate_quad_verts_c05();
 };
 
 
@@ -72,16 +70,21 @@ struct RenderContextShapeS2D {
 
 
 
-class Scene2DRenderer {
+class RendererScene2D {
 
-    opengl::ProgramName program_name_enum = opengl::ProgramName::Texture2D;
+
+    ProgramQuad2D program_quad_2D;
+
+
+    // Old enum for quad shader program -- only instance of specific program
+    opengl::ProgramName program_name_enum = opengl::ProgramName::Quad2D;
     unsigned int program; // opengl id for renderer -- only one program currently
 
-    opengl::RenderContextQuadS2D render_context_frame; // frame context does not need updating
+    RenderContextQuadS2D render_context_frame; // frame context does not need updating
 
 public:
 
-    Scene2DRenderer();
+    RendererScene2D();
 
     void create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts);
 
@@ -106,7 +109,7 @@ private:
 
     // Frame
     void init_frame_wire_quad_context_t();
-    static std::array<opengl::VertexQuad2D,8> generate_quad_line_frame_verts_0101(f2 texture_coord);
+    static std::array<VertexQuad2D,8> generate_quad_line_frame_verts_0101(f2 texture_coord);
 
 };
 

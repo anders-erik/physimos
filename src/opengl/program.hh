@@ -19,7 +19,7 @@ enum class ProgramName {
     ndc_black,
     ndc_white,
 
-    Texture2D,
+    Quad2D,
 
     ui_color,
     ui_string,

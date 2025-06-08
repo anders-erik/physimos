@@ -11,6 +11,8 @@
 #include "scene/subscene2D.hh"
 #include "scene/shapeS2D.hh"
 
+#include "scene/render/renderer2D.hh"
+
 
 using namespace window;
 
@@ -27,7 +29,7 @@ class Conductor2D {
 	CursorPosition cursor_pos; // Current cursor copy from most recent mouse move event
 	bool targeting_ui = false;
 
-	opengl::Scene2DRenderer renderer;
+	scene::RendererScene2D renderer;
 
 	// Move to InputManager - split into separate event arrays / separate auxwin calls
 	std::vector<window::InputEvent> input_events;

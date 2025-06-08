@@ -92,7 +92,6 @@ void Scene2D::set_camera_width(float width)
 
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 {
-
     for(size_t quad_id : quad_ids)
     {
         auto* quad = quad_manager.get_quad(quad_id);
@@ -120,6 +119,8 @@ Scene2D * Scene2D::try_find_target_scene(f2 normalized, Box2D window_box)
 
     this->window_box = window_box;
 
+    // This updates the cursor position in scenes
+    cursor_pos_normal = normalized;
     cursor_pos_scene = camera.normalized_to_scene_coords(normalized);
 
 
@@ -166,14 +167,9 @@ Scene2D * Scene2D::try_find_target_scene(f2 normalized, Box2D window_box)
 
 void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement)
 {
-    // update cursor positions in scene
-    cursor_pos_normal = pointer_movement.pos_norm_curr;
-    cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
-
     // Get move deltas in current scene
     f2 delta_normalized = pointer_movement.pos_norm_curr - pointer_movement.pos_norm_prev;
     f2 delta_scene = camera.normalized_to_scene_delta(delta_normalized);
-
 
     if(panable)
     {
@@ -184,11 +180,6 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement)
 
 void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
     
-    // Update scene cursor
-    cursor_pos_normal = pointer_click.pos_scene_normal;
-    cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
-
-
     window::MouseButtonEvent button_event = pointer_click.button_event;
 
     // Toggle Pan
@@ -197,7 +188,6 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
     else if(button_event.is_middle_up())
         panable = false;
     
-
 
     // Left Click
     if(button_event.is_left_down()){
@@ -352,16 +342,16 @@ void Scene2D::render(){
     }
     // Highlight subscene that is capturing cursor
     if(subscene_current_hover != nullptr)
-		renderer2D.render_frame(subscene_current_hover->quad.get_matrix());
+		renderer2D.render_frame(subscene_current_hover->quad.get_model_matrix());
 
     
     // FRAMES
     renderer2D.render_frame(frame_M_m_s);
 
     if(quad_current_hover != nullptr)
-        renderer2D.render_frame(quad_current_hover->get_matrix());
+        renderer2D.render_frame(quad_current_hover->get_model_matrix());
     if(quad_current_selected != nullptr)
-        renderer2D.render_frame(quad_current_selected->get_matrix());
+        renderer2D.render_frame(quad_current_selected->get_model_matrix());
 
 
 }

@@ -44,6 +44,19 @@ bool Box2D::contains_point(f2 p)
     return x_pass && y_pass ? true : false;
 }
 
+m3f3 Box2D::get_matrix_m3f3()
+{
+    m3f3 M;
+
+    M.x.z = pos.x;
+    M.y.z = pos.y;
+
+    M.x.x = size.x;
+    M.y.y = size.y;
+
+    return M;
+}
+
 void Box2D::print(){
     std::cout << "Box2D: " << std::endl;
     std::cout << "box.pos.x  = " << pos.x << std::endl;
