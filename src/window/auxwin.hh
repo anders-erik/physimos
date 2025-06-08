@@ -123,6 +123,7 @@ class Auxwin {
         PWCoordinatesInput coords_input;
         /** Provides coordinate tranformations of 2D points.  */
         PWCoordinateTransformer coord_transformer;
+
          /**    Queries glfw for coordinate system values, then reloads the coord object. 
                 Depends on current_window_size_f.
          */
@@ -165,6 +166,12 @@ class Auxwin {
         // Will trigger the window to close on next end of frame call.
         void close();
         void destroy();
+
+
+        f2 get_monitor_size_px();
+        f2 get_monitor_size_mm();
+        f2 get_monitor_content_scale();
+        
 
         std::queue<InputEvent> get_input_events();
         InputEvent get_input_event();

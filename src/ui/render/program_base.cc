@@ -76,13 +76,13 @@ void ProgramBase::draw() const {
     glDisable(GL_BLEND);
 }
 
-void ProgramBase::set(float* primitive_transform_4x4, float _darkness_shift, UI::Color color4) const {
+void ProgramBase::set(float* primitive_transform_4x4, float _darkness_shift, f4 color4) const {
     
     glUseProgram(id);
 
     glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitive_transform_4x4);
     glUniform1f(darknessShiftLoc, _darkness_shift);
-    glUniform4f(color4Loc, color4.R, color4.G, color4.B, color4.A);
+    glUniform4f(color4Loc, color4.x, color4.y, color4.z, color4.w);
     
 }
 

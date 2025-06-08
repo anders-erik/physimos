@@ -20,10 +20,10 @@ namespace UI {
 
 
 
-void Base::set_box(const UI::Box & box){
+void Base::set_box(const Box2D & box){
     this->box = box;
 }
-UI::Box& Base::get_box(){
+Box2D& Base::get_box(){
     return box;
 }
 m4f4 Base::get_M_m_s(){
@@ -31,28 +31,43 @@ m4f4 Base::get_M_m_s(){
     M_m_s.x.w = box.pos.x;
     M_m_s.y.w = box.pos.y;
     M_m_s.x.x = box.size.x;
-    M_m_s.y.y = box.size.x;
+    M_m_s.y.y = box.size.y;
     return M_m_s;
 }
 
-void Base::set_pos(f2 pos){
-
+void Base::set_pos(f2 pos)
+{
     box.pos = pos;
-
 }
-void Base::set_size(f2 size){
+void Base::set_size(f2 size)
+{
     box.size = size;
 }
 
 
-Base* Base::containsPoint(f2 point) {
+Base* Base::containsPoint(f2 point) 
+{
+    return box.contains_point(point) ? this : nullptr;
+}
 
-    bool x_pass = point.x > box.pos.x && point.x < box.pos.x + box.size.x;
-    bool y_pass = point.y > box.pos.y && point.y < box.pos.y + box.size.y;
+void Base::set_rgba_color(unsigned int rgba_color)
+{
+    this->rgba_color = rgba_color;
+}
 
-    // return x_pass && y_pass ? BaseQuery(this) : BaseQuery();
-    return x_pass && y_pass ? this : nullptr;
+unsigned int Base::get_rgba_color() const
+{
+    return rgba_color;
+}
 
+f4 Base::get_f4_color() const
+{
+    float A = ((float) ((rgba_color << 24) >> 24)) / 256.0f;
+    float B = ((float) ((rgba_color << 16) >> 24)) / 256.0f;
+    float G = ((float) ((rgba_color <<  8) >> 24)) / 256.0f;
+    float R = ((float) ((rgba_color <<  0) >> 24)) / 256.0f;
+
+    return {R, G, B, A};
 }
 
 
@@ -69,17 +84,17 @@ bool Base::is_hovered() const
 }
 
 
-void Base::mouse_down()
+void Base::click()
 {
-    flag_mouse_down = true;
+    flag_click = true;
 }
-void Base::mouse_up()
+void Base::unclick()
 {
-    flag_mouse_down = false;
+    flag_click = false;
 }
-bool Base::mouse_is_down() const
+bool Base::is_clicked() const
 {
-    return flag_mouse_down;
+    return flag_click;
 }
 
 void Base::scroll(float delta)
@@ -98,7 +113,7 @@ void Base::scroll(float delta)
 }
 
 void Base::clear_state_flags(){
-    flag_mouse_down = false;
+    flag_click = false;
     flag_hover = false;
 }
 

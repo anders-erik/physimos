@@ -5,13 +5,25 @@
 
 
 
-void f2::operator+=(const f2& rhs){
+f2& f2::operator+=(const f2& rhs){
     this->x += rhs.x;
     this->y += rhs.y;
+    return *this;
 }
-void f2::operator+=(float scalar){
+f2& f2::operator+=(float scalar){
     this->x += scalar;
     this->y += scalar;
+    return *this;
+}
+f2& f2::operator-=(const f2& rhs){
+    this->x -= rhs.x;
+    this->y -= rhs.y;
+    return *this;
+}
+f2& f2::operator-=(float scalar){
+    this->x -= scalar;
+    this->y -= scalar;
+    return *this;
 }
 f2&& f2::operator+(const f2& rhs){
     return {this->x + rhs.x, this->y + rhs.y};

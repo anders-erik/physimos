@@ -9,7 +9,6 @@
 
 #include "math/vecmat.hh"
 
-#include "ui/ui_globals.hh" // UI::Color
 #include "ui/ui_texture.hh" // old ui texture module
 
 #include "ui/base.hh"
@@ -20,7 +19,8 @@
 #include "renderer_base.hh"
 
 
-namespace UI {
+namespace UI 
+{
 
 
 const unsigned int SCREEN_INIT_WIDTH = 1200;
@@ -70,15 +70,14 @@ void RendererBase::set_window_info(f2 size , f2 scale){
 
 
 
-void RendererBase::draw_base(UI::Base& base){
-
-    glDisable(GL_DEPTH_TEST);
-
-    
+void RendererBase::
+draw_base(UI::Base& base)
+{
+    glDisable(GL_DEPTH_TEST);   
 
     float darkness_shift = 0.0f;
 
-    if(base.mouse_is_down()){
+    if(base.is_clicked()){
         // base.mouse_up();
         darkness_shift = -0.4f;
     }
@@ -86,10 +85,8 @@ void RendererBase::draw_base(UI::Base& base){
         base.unset_hover();
         darkness_shift = -0.2f;
     }
-    
 
-    Color color = active_pallete.base1;
-
+    f4 color = base.get_f4_color();
 
     program_base.set(
         base.get_M_m_s().pointer(), 
@@ -98,8 +95,8 @@ void RendererBase::draw_base(UI::Base& base){
     );
 
     program_base.draw();
-
 }
+
 
 void RendererBase::draw_base_texture(UI::BaseTexture& base_texture){
 
@@ -118,7 +115,9 @@ void RendererBase::draw_base_texture(UI::BaseTexture& base_texture){
 
 void RendererBase::draw_base_string(UI::BaseString & base_string)
 {
+    // Draw base with distinct string-color
     UI::Base base_copy = (Base)base_string;
+    base_copy.set_rgba_color(0xff0000ff);
     draw_base(base_copy);
     
     font_bitmap.string_to_texture_vertex_list(char_verts, base_string.str);

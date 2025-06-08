@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "math/vecmat.hh"
+#include "math/box2D.hh"
 
 #include "ui/ui_shader_texture.hh"
 #include "ui/ui_shader_color.hh"
@@ -38,10 +39,13 @@ struct Box {
 
 class Base {
 
-    UI::Box box;
+    // UI::Box box;
+    Box2D box;
 
     bool flag_hover = false;
-    bool flag_mouse_down = false;
+    bool flag_click = false;
+
+    unsigned int rgba_color = 0x000000ff;
 
 public:
 
@@ -52,11 +56,15 @@ public:
 
     void set_pos(f2 pos);
     void set_size(f2 size);
-    void set_box(const UI::Box& box);
-    UI::Box& get_box();
+    void set_box(const Box2D& box);
+    Box2D& get_box();
     m4f4 get_M_m_s();
     Base* containsPoint(f2 point);
 
+    // Color
+    void set_rgba_color(unsigned int rgba_color);
+    unsigned int get_rgba_color() const;
+    f4 get_f4_color() const;
 
     // Events
 
@@ -64,9 +72,9 @@ public:
     void unset_hover();
     bool is_hovered() const;
 
-    void mouse_down();
-    void mouse_up();
-    bool mouse_is_down() const;
+    void click();
+    void unclick();
+    bool is_clicked() const;
 
     void scroll(float delta);
 

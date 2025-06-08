@@ -1,25 +1,15 @@
 #pragma once
 
-
-#include "Windowing.hpp"
-#include "Input.hpp"
-
 #include "math/vecmat.hh"
 
 #include "ui/render/renderer_base.hh"
-
-#include "conductor_common.hh"
-#include "conductor_viewport.hh"
-
-#include "ui/ui_globals.hh"
-
-#include "ui/ui_primitive.hh"
 
 #include "ui/base.hh"
 #include "ui/texture.hh"
 #include "ui/string.hh"
 
 #include "ui/widget_root_scene.hh"
+
 
 namespace UI {
 
@@ -40,32 +30,43 @@ class PUI {
     UI::BaseTexture base_texture;
     UI::BaseString base_string;
 
+    UI::WidgetRootScene* widget_cursor_grab = nullptr;   // widget that has grabbed the cursor
+    UI::WidgetRootScene* widget_cursor_target = nullptr; // currently targeted widget
     UI::WidgetRootScene widget_root_scene;
 
 
+    /** has_grabbed_target || has_non_grabbed_target */
+    bool is_targeting_base();
+    bool is_grabbing_base();
+    bool is_hovering_base();
+
+    bool is_targeting_widget();
+    bool is_hovering_widget();
+    bool is_grabbing_widget();
+
 public:
 
-    PUI();
-
-    void set_window_info(f2 size, f2 scale);
-    /** has_grabbed_target || has_non_grabbed_target */
-    bool has_target();
-    bool has_grabbed_target();
-    bool has_hover_target();
+    PUI(f2 window_size_f, f2 content_scale);
 
 
-    void event_mouse_down();
-    void event_mouse_up();
-    void event_move(f2 cursor_delta);
-    void event_scroll(float delta);
+    void event_mouse_move(window::InputEvent& event);
+    void event_mouse_button(window::InputEvent& event);
+    void event_mouse_scroll(window::InputEvent& event);
+    void event_keystroke(window::InputEvent& event);
+    void event_window_resize(window::InputEvent& event);
 
-    /** Update the active widgets to contain the current scene data. */
-    void update();
-    /** Queries the ui for a Base matching the cursor pos in window coords.
-        Does nothing in grabbed state. 
-        Targets remain valid until another update() is issued. 
+
+    /** Reloads the UI to reflect the most up-to-date data from scenes. */
+    void reload();
+    /** Queries the ui for a matching element in which the cursor is contained.
+        Targets remain valid until another reload() is issued. 
      */
-    void reload_current_targets(f2 cursor_pos_win_sane);
+    void reload_cursor_target(f2 cursor_pos_win_sane);
+    /** If cursor is grabbed OR hovering over UI. */
+    bool is_targeted_by_cursor();
+    /** Ignores cursor location and only indicates whether cursor is grabbed */
+    bool is_grabbing_cursor();
+
 
     void render();
 

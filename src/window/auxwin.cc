@@ -81,28 +81,15 @@ void Auxwin::init(){
     opengl_init();
 }
 
-void Auxwin::reload_coordinate_constants_using_glfw(){
 
-    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
-
-    const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
-    coords_input.monitor_size_px.x = mode->width;
-    coords_input.monitor_size_px.y = mode->height;
-
-    int width_mm, height_mm;
-    glfwGetMonitorPhysicalSize(primary_monitor, &width_mm, &height_mm);
-    coords_input.monitor_size_mm.x = width_mm;
-    coords_input.monitor_size_mm.y = height_mm;
-
-    float xscale, yscale;
-    glfwGetMonitorContentScale(primary_monitor, &xscale, &yscale);
-    coords_input.content_scale.x = xscale;
-    coords_input.content_scale.y = yscale;
-
+void Auxwin::reload_coordinate_constants_using_glfw()
+{
+    coords_input.monitor_size_px = get_monitor_size_px();
+    coords_input.monitor_size_mm = get_monitor_size_mm();
+    coords_input.content_scale = get_monitor_content_scale();
     coords_input.window_size_sc = current_window_size_f;
 
     coord_transformer.set_constants(coords_input);
-    
 }
 
 void Auxwin::glfw_window_hints(){
@@ -235,6 +222,37 @@ void Auxwin::destroy(){
 }
 
 
+
+f2 Auxwin::get_monitor_content_scale()
+{
+    f2 content_scale;
+
+    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+    glfwGetMonitorContentScale(primary_monitor, &content_scale.x, &content_scale.y);
+
+    return content_scale;
+}
+
+f2 Auxwin::get_monitor_size_px()
+{
+    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
+
+    return f2{ (float)mode->width, (float)mode->height };
+}
+
+f2 Auxwin::get_monitor_size_mm()
+{
+    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+
+    int width_mm, height_mm;
+    glfwGetMonitorPhysicalSize(primary_monitor, &width_mm, &height_mm);
+
+    return f2 { (float)width_mm, (float)height_mm };
+}
+
+
+
 std::queue<InputEvent> Auxwin::get_input_events(){
     std::queue<InputEvent> tmp_queue = input_events;
 
@@ -290,7 +308,10 @@ void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
 
     EventType event_type = EventType::WindowResize;
     // i2 size (_width, _height);
-    WindowResizeEvent win_resize_event (i2(_width, _height)) ;
+    WindowResizeEvent win_resize_event { 
+        i2(_width, _height),
+        get_monitor_content_scale()
+    };
     input_events.emplace(glfw_window, event_type, win_resize_event, cursor);
 
     cursor.window_dims.x = (float) _width;

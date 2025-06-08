@@ -125,7 +125,7 @@ public:
     void handle_scroll(float delta);
 
     void update();
-
+    /** Recursively render all subscenes */
     void render_subscene_textures();
 
     void render_to_window();

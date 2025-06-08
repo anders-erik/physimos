@@ -6,11 +6,10 @@
 
 #include "opengl/program.hh"
 
-#include "ui/ui_globals.hh" // UI::Color
 
 
-namespace UI {
-
+namespace UI 
+{
 
 
 class ProgramBase : public opengl::Program {
@@ -33,7 +32,7 @@ public:
 
 
     void draw() const;
-    void set(float* primitive_transform_4x4, float _darkness_shift, UI::Color color4) const;
+    void set(float* primitive_transform_4x4, float _darkness_shift, f4 color4) const;
 };
 
 
