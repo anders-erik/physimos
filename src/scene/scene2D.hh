@@ -35,8 +35,8 @@ struct SubScene2D;
     [0,1]x[0,1] [unitless]
  */
 struct PointerMovement2D {
-    f2 pos_prev; // Position of the cursor during previous frame
-    f2 pos_curr; // Current cursor position
+    f2 pos_norm_prev; // Position of the cursor during previous frame
+    f2 pos_norm_curr; // Current cursor position
 };
 struct PointerClick2D {
     f2 pos_scene_normal; // Position of the cursor during previous frame
@@ -59,7 +59,6 @@ class Scene2D {
     size_t parent_id = 0;
 
     f2 window_size_f;
-    float window_to_camera_ratio = 1.0f; // sane window width divided by camera width in scene coords
     Box2D window_box; // The AABB of this scene as viewed from the window
     f2 cursor_pos_scene;
     f2 cursor_pos_normal;
@@ -95,6 +94,8 @@ public:
     scene::SubScene2D* subscene_current_selected = nullptr;
     void clear_hovers();
     void clear_grab();
+
+    Box2D get_window_box();
 
 
 

@@ -11,6 +11,8 @@ struct Box2D {
 
     /** Returns a sub-box of proportial dimensions as the two passed. */
     Box2D new_congruent_subbox(Box2D parent_box, Box2D child_box);
+    /** Returns the passed point in normalized box coordinate. */
+    f2 to_normalized(f2 point);
 
     bool contains_point(f2 p);
 

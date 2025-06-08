@@ -24,7 +24,7 @@ class Conductor2D {
 
 	// True conductor states
 
-	CursorPosition cursor_pos;
+	CursorPosition cursor_pos; // Current cursor copy from most recent mouse move event
 	bool targeting_ui = false;
 
 	opengl::Scene2DRenderer renderer;

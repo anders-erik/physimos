@@ -29,6 +29,13 @@ Box2D Box2D::new_congruent_subbox(Box2D parent_box, Box2D child_box)
     return prop_sub_box;
 }
 
+f2 Box2D::to_normalized(f2 point)
+{
+    float x = ( point.x - pos.x ) / size.x;
+    float y = ( point.y - pos.y ) / size.y;
+    return f2(x, y);
+}
+
 bool Box2D::contains_point(f2 p)
 {
     bool x_pass = p.x > pos.x && p.x < pos.x + size.x;

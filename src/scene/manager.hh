@@ -18,6 +18,7 @@ namespace scene {
 }
 namespace window {
     struct InputEvent;
+    struct CursorPosition;
 }
 
 
@@ -39,8 +40,11 @@ scene::Scene2D* new_scene(f2 framebuffer_size);
 [[nodiscard]] scene::Scene2D* get_root_scene();
 [[nodiscard]] scene::Scene2D* get_scene(size_t id);
 
-/** Queries all scenes, starting with root (eventually window scene) and sets the scene which the cursor is currently targeting. */
-void update_current_target(f2 cursor_pos_window_normalized);
+/** 
+    Queries all scenes, starting with root (eventually window scene) and sets the scene which the cursor is currently targeting.
+    This query updates the current cursor position and the scenes window box.
+ */
+void update_current_target(window::CursorPosition& _cursor_pos);
 void clear_current_target();
 bool has_grabbed_target();
 scene::Scene2D* get_current_target();

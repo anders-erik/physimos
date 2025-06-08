@@ -27,7 +27,7 @@ void Conductor2D::target_pui(){
 }
 void Conductor2D::target_scenes(){
 	targeting_ui = false;
-	ManagerScene::update_current_target(cursor_pos.normalized);
+	ManagerScene::update_current_target(cursor_pos);
 }
 
 void Conductor2D::update_current_target()
@@ -67,11 +67,11 @@ void Conductor2D::input_scroll(InputEvent & event){
 
 }
 
-void Conductor2D::input_mouse_move(InputEvent & event){
+void Conductor2D::input_mouse_move(InputEvent & event)
+{
+	cursor_pos = event.cursor;
 
 	MouseMoveEvent& mouse_movement = event.mouse_movement;
-
-	cursor_pos = event.cursor;
 
 	if(targeting_ui)
 		pui.event_move(mouse_movement.delta.sane);
@@ -102,9 +102,8 @@ input_mouse_button(InputEvent & event)
 
 void Conductor2D::input_keystroke(InputEvent & event)
 {
-	if(targeting_ui){
+	if(targeting_ui)
 		return;
-	}
 	else
 		ManagerScene::event_keystroke(event);
 }
