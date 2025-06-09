@@ -36,5 +36,37 @@ QuadS2D* QuadManager::get_quad(size_t id)
 }
 
 
+void QuadManager::set_selected(size_t quad_id)
+{
+    selected_quad = quad_id;
+}
+
+QuadS2D* QuadManager::get_selected()
+{
+    return get_quad(selected_quad);
+}
+
+void QuadManager::clear_selection()
+{
+    selected_quad = 0;
+}
+
+
+void QuadManager::set_hovered(size_t quad_id)
+{
+    hovered_quad = quad_id;
+}
+
+QuadS2D* QuadManager::get_hovered()
+{
+    return get_quad(hovered_quad);
+}
+
+void QuadManager::clear_hovered()
+{
+    hovered_quad = 0;
+}
+
+
 
 }

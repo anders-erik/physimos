@@ -265,16 +265,27 @@ void RendererScene2D::init_frame_wire_quad_context_t(){
 
 }
 
-void RendererScene2D::render_frame(m3f3 M_m_s){
+void RendererScene2D::render_frame(m3f3 M_m_s, bool selected, int line_width){
     this->activate();
 
     glPointSize(10);
-    glLineWidth(3);
+
+    glLineWidth(line_width);
 
     set_model(M_m_s);
 
-    glBindTexture(GL_TEXTURE_2D, render_context_frame.texture);
     
+
+    if(selected)
+    {
+        render_context_frame.texture = opengl::texture_get_id(opengl::Textures::Colors);
+    }
+    else
+    {
+        opengl::set_texture_checker_2x2(render_context_frame.texture);
+    }
+    glBindTexture(GL_TEXTURE_2D, render_context_frame.texture);
+
     glBindVertexArray(render_context_frame.VAO);
 
     // glDrawArrays(GL_TRIANGLES, 0, 6);

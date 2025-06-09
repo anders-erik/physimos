@@ -19,8 +19,13 @@ namespace scene {
 
 void Scene2D::clear_hovers()
 {
+    quad_manager.clear_hovered();
     subscene_current_hover = nullptr;
-    quad_current_hover = nullptr;
+    // quad_current_hover = nullptr;
+}
+void Scene2D::clear_selections()
+{
+    quad_manager.clear_selection();
 }
 void Scene2D::clear_grab()
 {
@@ -143,6 +148,7 @@ Scene2D * Scene2D::try_find_target_scene(f2 normalized, Box2D window_box)
     
     }
 
+    quad_manager.clear_hovered();
     // Found no subscene that captured the cursor
     if(result == this)
     {
@@ -150,11 +156,16 @@ Scene2D * Scene2D::try_find_target_scene(f2 normalized, Box2D window_box)
 
         // Try regular quad instead of subscene
         QuadS2D* quad_ptr = try_match_cursor_to_quad(cursor_pos_scene);
-        quad_current_hover = nullptr;
+        // quad_current_hover = nullptr;
+
         if(quad_ptr != nullptr)
         {
-            quad_current_hover = quad_ptr;
-            quad_current_selected = quad_ptr;
+            // quad_manager.clear_hovered();
+            // quad_current_hover = quad_ptr;
+            // quad_current_selected = quad_ptr;
+            // quad_manager.set_selected(quad_ptr->get_quad_id());
+            quad_manager.set_hovered(quad_ptr->get_quad_id());
+
             if(quad_ptr->is_scene2D())
             {
                 auto* subscene_scene = ManagerScene::get_scene(quad_ptr->get_object_id());
@@ -202,10 +213,14 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
     // Left Click
     if(button_event.is_left_down()){
 
-        quad_current_selected = try_match_cursor_to_quad(cursor_pos_scene);
-        if(quad_current_selected != nullptr){
+
+        auto* quad_click_match = try_match_cursor_to_quad(cursor_pos_scene);
+        if(quad_click_match != nullptr)
+        {
+            quad_manager.set_selected(quad_click_match->get_quad_id());
+
             print("New quad selected: ");
-            quad_current_selected->get_name().print_line();
+            quad_click_match->get_name().print_line();
         }
     
     }
@@ -405,17 +420,25 @@ void Scene2D::render(){
     }
     // Highlight subscene that is capturing cursor
     if(subscene_current_hover != nullptr)
-		renderer2D.render_frame(subscene_current_hover->quad.get_model_matrix());
+		renderer2D.render_frame(subscene_current_hover->quad.get_model_matrix(), false, 2);
 
     
     // FRAMES
-    renderer2D.render_frame(frame_M_m_s);
+    renderer2D.render_frame(frame_M_m_s, false, 1);
 
-    if(quad_current_hover != nullptr)
-        renderer2D.render_frame(quad_current_hover->get_model_matrix());
-    if(quad_current_selected != nullptr)
-        renderer2D.render_frame(quad_current_selected->get_model_matrix());
+    // Hovered quad frame
+    auto* hovered_quad = quad_manager.get_hovered();
+    if(hovered_quad != nullptr)
+    {
+        renderer2D.render_frame(hovered_quad->get_model_matrix(), false, 4);
+    }
 
+    // Selected quad frame
+    auto* selected_quad = quad_manager.get_selected();
+    if(selected_quad != nullptr)
+    {
+        renderer2D.render_frame(selected_quad->get_model_matrix(), true, 2);
+    }
 
 }
 

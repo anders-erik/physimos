@@ -88,12 +88,13 @@ public:
 
     opengl::TextureFrameBufferMultisample framebuffer;
 
-    QuadS2D* quad_current_hover = nullptr;
-    QuadS2D* quad_current_selected = nullptr;
+    // QuadS2D* quad_current_hover = nullptr;
+    // QuadS2D* quad_current_selected = nullptr;
     scene::SubScene2D* subscene_current_hover = nullptr;
     scene::SubScene2D* subscene_current_selected = nullptr;
     void clear_hovers();
     void clear_grab();
+    void clear_selections();
 
     Box2D get_window_box();
 

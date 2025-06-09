@@ -11,37 +11,171 @@
 #include "scene/scene2D.hh"
 #include "scene/quadS2D.hh"
 
+#include "widget.hh"
 
 namespace UI {
 
-/** Stateless widget -- constructs the widget, renders, and destroys on each render call */
-struct WidgetRootScene {
+/** Lists root scene objects */
+struct WidgetRootScene : public Widget {
 
-    f2 cursor_sane; // cursor position at last successful cursor query
-    Base* base_hover_target = nullptr; // currently hovered base
-    Base* base_grab_target = nullptr; // currently grabbed base
-    Pair<size_t, Base*> hover_target = {0, nullptr}; // currently hovered base w id
-    Pair<size_t, Base*> grab_target = {0, nullptr}; // currently grabbed base w id
 
-    Box2D frame = {
-        {10.0f, 300.0f},
-        {200.0f, 200.0f}
-    };
-    Base frame_base;
+    using quad_base_pair = Pair<size_t, Base*>;
+    // quad_base_pair hover_target = {0, nullptr}; // currently hovered base w id
+    // quad_base_pair grab_target = {0, nullptr}; // currently grabbed base w id
+
+    // Box2D frame = {
+    //     {10.0f, 300.0f},
+    //     {200.0f, 200.0f}
+    // };
+    // Base frame_base;
+
+    // std::vector<Base> bases;
+
+    // std::vector<BaseString> strings;
+    std::vector<Pair<size_t, BaseString>> quad_pairs;
+
     BaseString scene_name_base;
-
-    std::vector<BaseString> quad_base_strings;
 
 public:
 
-    WidgetRootScene() {}
+    WidgetRootScene() = default;
+
+
+    // /** Resturn base matching set cursor pos or nullptr on no match */
+    // UI::Base* try_find_hovered_base()
+    // {
+    //     for(UI::BaseString& quad_string : strings)
+    //     {
+    //         if(quad_string.containsPoint(cursor_sane))
+    //         {
+    //             quad_string.set_hover();
+    //             return &quad_string;
+    //         }
+    //     }
+    //     return nullptr;
+    // }
+
+    // /** 
+    //     Check is point is within widget box or is currently grabbing cursor. 
+    //     Stores the cursor position for events. */
+    // bool has_cursor(f2 cursor_sane)
+    // {
+    //     if(grab_target.YY != nullptr)
+    //     {
+    //         // base_grab_target->click();
+    //         return true;
+    //     }
+        
+    //     if(!frame.contains_point(cursor_sane))
+    //         return false;
+
+    //     this->cursor_sane = cursor_sane;
+
+    //     // Try hover quad string
+    //     hover_target= {0, nullptr}; // reset for each frame, unless already grabbing
+    //     hover_target.YY = try_find_hovered_base();
+    //     if(hover_target.YY != nullptr)
+    //     {
+    //         // hover_target.XX = hover_target.YY
+    //         hover_target.YY->set_hover();
+    //     }
+    //     return true;
+    // }
+
+
+    // void scroll(float delta){
+    
+    //     println("Widget scroll");
+
+    //     scene_name_base.scroll(delta);
+
+    // }
+
+    // void mouse_left_down()
+    // {
+    //     if(hover_target.YY != nullptr)
+    //     {
+    //         hover_target.YY->click();
+    //         grab_target = hover_target;
+    //         println("quad string grab");
+    //         auto* root_scene = ManagerScene::get_root_scene();
+    //         root_scene->quad_manager.set_selected(hover_target.XX);
+    //     }
+    // }
+
+    // void mouse_left_up()
+    // {
+    //     // println("Widget release");
+    //     if(grab_target.YY != nullptr)
+    //     {
+    //         grab_target.YY->unclick();
+    //         grab_target = {0, nullptr};
+    //         println("quad string release");
+    //     }
+    // }
+
+
+    /** Resturn base matching set cursor pos or nullptr on no match */
+    size_t try_find_quad_id_at_cursor_location()
+    {
+        for(auto& quad_pair : quad_pairs)
+        {
+            if(quad_pair.YY.containsPoint(cursor_sane))
+            {
+                // quad_string.YY.set_hover();
+                return quad_pair.XX;
+            }
+        }
+        return 0;
+    }
+
+    EventResult event_handler(window::InputEvent& event)
+    {
+        using namespace window;
+
+        switch (event.type)
+        {
+
+        case EventType::MouseButton :
+            if(event.mouse_button.is_left_down())
+            {
+                println("RootScene widget mouse down!");
+                size_t quad_id = try_find_quad_id_at_cursor_location();
+                if(quad_id != 0)
+                {
+                    auto* root_scene = ManagerScene::get_root_scene();
+                    root_scene->quad_manager.set_selected(quad_id);
+                }
+                    
+                return EventResult::Grab;
+            }
+            else if(event.mouse_button.is_left_up())
+            {
+                println("RootScene widget mouse up!");
+                return EventResult::Release;
+            }
+            break;
+        
+
+        default:
+            break;
+
+        }
+
+        return {};
+    }
+
+
 
     /** Recreates the whole widget from scene data every call. */
-    void reload()
+    void reload(f2 widget_pos)
     {
         scene::Scene2D* root_scene = ManagerScene::get_root_scene();
+        
 
         // Frame
+        frame.pos = widget_pos;
+        frame.size = {200.0f, 200.0f};
         frame_base.set_box(frame);
 
         // Start top left
@@ -55,7 +189,7 @@ public:
         scene_name_base.set_str(name_str);
 
         // Quads
-        quad_base_strings.clear();
+        quad_pairs.clear();
         f2 quad_delta = { 0.0f, -20.0f };
         f2 quad_indent = {10.0f, 0.0f};
         
@@ -67,55 +201,16 @@ public:
                 continue;
 
             Str& name_str = quad->get_name();
-            BaseString& name_base = quad_base_strings.emplace_back();
-            name_base.set_pos(pos += quad_delta);
-            name_base.set_size( {20.0f, 10.0f} );
-            name_base.set_str(name_str);
+            Pair<size_t, BaseString> quad_id_base_pair = {quad_id, BaseString{}};
+            quad_id_base_pair.YY.set_pos(pos += quad_delta);
+            quad_id_base_pair.YY.set_size( {20.0f, 10.0f} );
+            quad_id_base_pair.YY.set_str(name_str);
+            quad_pairs.push_back(quad_id_base_pair);
         }
         pos -= quad_indent;
         
     }
 
-
-    /** Resturn base matching set cursor pos or nullptr on no match */
-    UI::Base* try_find_hovered_base()
-    {
-        for(UI::BaseString& quad_string : quad_base_strings)
-        {
-            if(quad_string.containsPoint(cursor_sane))
-            {
-                quad_string.set_hover();
-                return &quad_string;
-            }
-        }
-        return nullptr;
-    }
-
-    /** 
-        Check is point is within widget box or is currently grabbing cursor. 
-        Stores the cursor position for events. */
-    bool has_cursor(f2 cursor_sane)
-    {
-        if(base_grab_target != nullptr)
-        {
-            // base_grab_target->click();
-            return true;
-        }
-        
-        if(!frame.contains_point(cursor_sane))
-            return false;
-
-        this->cursor_sane = cursor_sane;
-
-        // Try hover quad string
-        base_hover_target = nullptr; // reset for each frame, unless already grabbing
-        base_hover_target = try_find_hovered_base();
-        if(base_hover_target != nullptr)
-        {
-            base_hover_target->set_hover();
-        }
-        return true;
-    }
 
     void render(RendererBase& renderer)
     {
@@ -123,41 +218,9 @@ public:
 
         renderer.draw_base_string(scene_name_base);
 
-        for(auto& quad_string : quad_base_strings)
-            renderer.draw_base_string(quad_string);
+        for(auto& quad_string : quad_pairs)
+            renderer.draw_base_string(quad_string.YY);
     }
-
-
-    void scroll(float delta){
-    
-        println("Widget scroll");
-
-        scene_name_base.scroll(delta);
-
-    }
-
-    void grab()
-    {
-        
-        if(base_hover_target != nullptr)
-        {
-            base_hover_target->click();
-            base_grab_target = base_hover_target;
-            println("quad string grab");
-        }
-    }
-
-    void release()
-    {
-        // println("Widget release");
-        if(base_grab_target != nullptr)
-        {
-            base_grab_target->unclick(); //
-            base_grab_target = nullptr;
-            println("quad string release");
-        }
-    }
-
 };
 
 

@@ -100,7 +100,7 @@ public:
     void render_point(RenderContextQuadS2D context);
     void render_line(RenderContextQuadS2D context);
 
-    void render_frame(m3f3 M_m_s);
+    void render_frame(m3f3 M_m_s, bool selected, int line_width);
 
     // OLD UNUSED
     void render_multisample_texture(RenderContextQuadS2D context);

@@ -9,9 +9,11 @@ add_library(ui
     ui_primitive.cc
     ui_globals.cc
     ui_texture.cc
+
+    pui.cc
     base.cc
     texture.cc
-    pui.cc
+    widget.cc
     
     # dependencies removed
     ui_font.cc

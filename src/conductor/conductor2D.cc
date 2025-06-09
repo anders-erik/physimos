@@ -122,7 +122,15 @@ void Conductor2D::process_user_input(){
 	for(InputEvent& event : input_events)
 	{
 		if(event.is_type(window::EventType::MouseMove))
-			input_mouse_move(event);
+		{
+			// input_mouse_move(event);
+			cursor_pos = event.cursor;
+
+			if(targeting_ui)
+				pui.event_all(event);
+			else 
+				ManagerScene::event_move(event);
+		}
 	}
 
 	
@@ -132,15 +140,27 @@ void Conductor2D::process_user_input(){
 
 		if(event.is_type(window::EventType::MouseScroll))
 		{
-			input_scroll(event);
+			// input_scroll(event);
+			if(targeting_ui)
+				pui.event_all(event);
+			else
+				ManagerScene::event_scroll(event);
 		}
 		else if(event.is_type(window::EventType::MouseButton))
 		{
-			input_mouse_button(event);
+			// input_mouse_button(event);
+			if(targeting_ui)
+				pui.event_all(event);
+			else
+				ManagerScene::event_mouse_button(event);
 		}
 		else if(event.is_type(window::EventType::Keystroke))
 		{
-			input_keystroke(event);
+			// input_keystroke(event);
+			if(targeting_ui)
+				pui.event_all(event);
+			else
+				ManagerScene::event_keystroke(event);
 		}
 
 	}

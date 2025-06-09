@@ -9,20 +9,17 @@
 #include "ui/string.hh"
 
 #include "ui/widget_root_scene.hh"
+#include "ui/widget_quad.hh"
 
 
 namespace UI {
 
 
 /** Physimos UI. */
-class PUI {
-
+class PUI 
+{
     UI::RendererBase renderer_base;
 
-    /** Grab target across frames. */
-    UI::Base* grabbed_base = nullptr;
-    /** The Base we are targeting after trying to find target. */
-    UI::Base* targeted_base = nullptr;
 
 
     UI::Base base_0;
@@ -30,24 +27,24 @@ class PUI {
     UI::BaseTexture base_texture;
     UI::BaseString base_string;
 
-    UI::WidgetRootScene* widget_cursor_grab = nullptr;   // widget that has grabbed the cursor
-    UI::WidgetRootScene* widget_cursor_target = nullptr; // currently targeted widget
+    UI::Widget* grabbed_widget = nullptr;   // widget that has grabbed the cursor
+    UI::Widget* hovered_widget = nullptr; // currently targeted widget
+
     UI::WidgetRootScene widget_root_scene;
+    UI::WidgetQuad widget_quad;
 
-
-    /** has_grabbed_target || has_non_grabbed_target */
-    bool is_targeting_base();
-    bool is_grabbing_base();
-    bool is_hovering_base();
 
     bool is_targeting_widget();
     bool is_hovering_widget();
     bool is_grabbing_widget();
+    bool is_grabbing(Widget* widget);
+    bool is_hovering(Widget* widget);
 
 public:
 
     PUI(f2 window_size_f, f2 content_scale);
 
+    void event_all(window::InputEvent& event);
 
     void event_mouse_move(window::InputEvent& event);
     void event_mouse_button(window::InputEvent& event);
