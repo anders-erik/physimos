@@ -415,33 +415,20 @@ const char* Str::to_c_str(){
     return mem;
 }
 
-// void Str::print(){
-    
-//     if(!initialized)
-//         throw std::runtime_error("Tried to print uninitialized Str");
-    
-//     for(size_t i = 0; i < size_str; i++)
-//         std::cout <<  (*this)[i];
-
-//     std::cout << std::flush;
-// }
-void Str::println(){
-    
-    if(!initialized)
-        throw std::runtime_error("Tried to print uninitialized Str");
-    
-    for(size_t i = 0; i < size_str; i++)
-        std::cout <<  (*this)[i];
-
-    std::cout << '\n' << std::flush;
+void Str::print_()
+{
+    print(*this);
 }
-void Str::println_quotes(){
-    std::cout << '"';
-    
-    for(size_t i = 0; i < size_str; i++)
-        std::cout <<  (*this)[i];
+void Str::print_line()
+{
+    println(*this);
+}
 
-    std::cout << '"' << '\n' << std::flush;
+void Str::print_line_quotes()
+{
+    print("\"");
+    print(*this);
+    println("\"");
 }
 
 void Str::busy() {}

@@ -54,9 +54,12 @@ struct f2 {
     float x = 0.0f;
     float y = 0.0f;
 
+    f2() = default;
     f2(float x, float y) : x {x}, y {y} {}; 
     f2(float xyz) : x {xyz}, y {xyz} {}; 
-    f2() = default;
+
+    f2(double x, double y) : x { (float)x}, y {(float)y} {}; 
+    f2(int x, int y) : x { (float)x}, y {(float)y} {}; 
 
     f2& operator+=(const f2& rhs);
     f2& operator+=(float scalar);
@@ -64,6 +67,7 @@ struct f2 {
     f2& operator-=(float scalar);
     f2&& operator+(const f2& rhs);
     f2 operator-(const f2& rhs);
+    f2 operator-();
 
     i2 to_i2();
 
@@ -125,11 +129,14 @@ struct m3f3 {
     /** copy = this x rhs 
         this = copy
     */
-    void mult_right(m3f3& rhs);
+    m3f3 mult_right(const m3f3& rhs);
     /** copy = lhs x this 
         this = copy
     */
-    void mult_left(m3f3& lhs);
+    m3f3 mult_left(const m3f3& lhs);
+    /** copy = this * rhs */
+    m3f3 operator*(const m3f3& rhs);
+
     f2 mult_vec(f2 _f2); /** Translate, rotate, and scale f2 using the set m3f3 values. */
     void translate(f2 transl);
     void scale(f2 scale);

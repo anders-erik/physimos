@@ -36,6 +36,22 @@ f2 Box2D::to_normalized(f2 point)
     return f2(x, y);
 }
 
+f2 Box2D::to_box(f2 normalized)
+{
+    return f2 {
+        pos.x + size.x * normalized.x, 
+        pos.y + size.y * normalized.y
+    };
+}
+
+f2 Box2D::to_box_delta(f2 normalized)
+{
+    return f2 {
+        size.x * normalized.x, 
+        size.y * normalized.y
+    };
+}
+
 bool Box2D::contains_point(f2 p)
 {
     bool x_pass = p.x > pos.x && p.x < pos.x + size.x;

@@ -58,12 +58,13 @@ class Scene2D {
     size_t id;
     size_t parent_id = 0;
 
-    f2 window_size_f;
+    f2 framebuffer_size_f;
     Box2D window_box; // The AABB of this scene as viewed from the window
     f2 cursor_pos_scene;  // updated during scene cursor update call
     f2 cursor_pos_normal; // updated during scene cursor update call
     
     Camera2D camera;
+    float zoom_factor = 1.2f;
 
     bool panable = false; // Scene can be panned, usually with middle mouse button pressed
 
@@ -82,7 +83,6 @@ class Scene2D {
 public:
     // UI INTERFACE
     Str name;
-    std::vector<QuadS2D> quads; // Actual quads
     std::vector<size_t> quad_ids; // quad manager ids
     QuadManager quad_manager;
 
@@ -102,20 +102,17 @@ public:
     Scene2D(f2 _window_size);
 
     void   set_id(size_t id);
-    size_t get_id();
+    size_t get_id() const ;
     void   set_parent_id(size_t id);
     size_t get_parent_id();
 
-    f2 get_window_size();
-    void set_window_size(f2 size);
+    f2 get_framebuffer_size();
+    void set_framebuffer_size(f2 size);
     void set_camera_width(float width);
+    void set_zoom_factor(float new_zoom_factor);
 
     // Check if position is within the bounding box of a quad in current scene
     QuadS2D* try_match_cursor_to_quad(f2 pos_scene);
-
-    void handle_input(window::InputEvent input_event); // OLD
-
-    f2 normalized_to_scene_conversion(f2 normalized);
     /** Try find which scene that captures the cursor. 
     Updates the scenes window box and cursor position. */
     Scene2D* try_find_target_scene(f2 normalized, Box2D window_box);
@@ -123,6 +120,17 @@ public:
     void handle_pointer_move(PointerMovement2D cursor_event);
     void handle_pointer_click(PointerClick2D pointer_click);
     void handle_scroll(float delta);
+
+
+    void add_quad(scene::QuadS2D& quad);
+    size_t add_quad_default();
+    ShapeS2D& add_shape(Shape& shape);
+    /** Add subscene at position and with size. This is dimensions in current scene coord.  */
+    SubScene2D& add_subscene(f2 pos_scene, f2 size_scene);
+    /** Add a quad subscene - returns quad id.  */
+    size_t add_subscene(Scene2D* new_scene);
+
+
 
     void update();
     /** Recursively render all subscenes */
@@ -132,14 +140,6 @@ public:
     unsigned int render_to_texture();
     void render();
 
-    void add_quad(scene::QuadS2D& quad);
-    ShapeS2D& add_shape(Shape& shape);
-    /** Add subscene at position and with size. This is dimensions in current scene coord.  */
-    SubScene2D& add_subscene(f2 pos_scene, f2 size_scene);
-    // SubScene2D* add_subscene(f2 pos_scene, f2 size_scene);
-    // void add_subscene(f2 pos_scene, f2 size_scene);
-
-    void print_info();
 };
 
 

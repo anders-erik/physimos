@@ -31,6 +31,14 @@ f2&& f2::operator+(const f2& rhs){
 f2 f2::operator-(const f2& rhs){
     return f2 {this->x - rhs.x, this->y - rhs.y};
 }
+f2 f2::operator-()
+{
+    return {
+        -this->x,
+        -this->y
+    };
+}
+
 i2 f2::to_i2(){
 return i2{(int)x, (int)y};
 }
@@ -78,7 +86,7 @@ m3f3& m3f3::operator=(const m3f3& rhs){
     return *this;
 }
 
-void m3f3::mult_right(m3f3& rhs){
+m3f3 m3f3::mult_right(const m3f3& rhs){
 
     m3f3 copy;
     copy = *this;
@@ -95,10 +103,11 @@ void m3f3::mult_right(m3f3& rhs){
     copy.z.y = z.x * rhs.x.y + z.y * rhs.y.y + z.z * rhs.z.y;
     copy.z.z = z.x * rhs.x.z + z.y * rhs.y.z + z.z * rhs.z.z;
 
-    *this = copy;
+    // *this = copy;
+    return copy;
 }
 
-void m3f3::mult_left(m3f3& lhs){
+m3f3 m3f3::mult_left(const m3f3& lhs){
 
     m3f3 copy;
 
@@ -116,7 +125,13 @@ void m3f3::mult_left(m3f3& lhs){
     copy.z.y = lhs.z.x * rhs.x.y + lhs.z.y * rhs.y.y + lhs.z.z * rhs.z.y;
     copy.z.z = lhs.z.x * rhs.x.z + lhs.z.y * rhs.y.z + lhs.z.z * rhs.z.z;
 
-    *this = copy;
+    // *this = copy;
+    return copy;
+}
+
+m3f3 m3f3::operator*(const m3f3& rhs)
+{
+    return this->mult_right(rhs);
 }
 
 f2 m3f3::mult_vec(f2 _f2){

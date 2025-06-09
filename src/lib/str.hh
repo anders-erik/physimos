@@ -81,10 +81,10 @@ struct Str {
     std::string_view to_std_string_view();
     const char* to_c_str();
 
-
-    // void print();
-    void println();
-    void println_quotes();
+    /** Underscape to prevent name-clash with global print function. */
+    void print_();
+    void print_line();
+    void print_line_quotes();
 
     void busy();
 };

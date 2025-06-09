@@ -13,16 +13,23 @@ namespace scene {
 
 
 size_t QuadManager::add_quad(QuadS2D& new_quad){
-    new_quad.set_id(++id_index);
+    new_quad.set_quad_id(++id_index);
     quads.push_back(new_quad);
     return id_index;
+}
+
+QuadS2D* QuadManager::new_quad(){
+    QuadS2D& new_quad = quads.emplace_back();
+    new_quad.set_name("lol");
+    new_quad.set_quad_id(++id_index);
+    return &new_quad;
 }
 
 QuadS2D* QuadManager::get_quad(size_t id)
 {
     for(auto& quad : quads)
     {
-        if(id == quad.get_id())
+        if(id == quad.get_quad_id())
             return &quad;
     }
     return nullptr;

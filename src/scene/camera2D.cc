@@ -13,96 +13,82 @@ namespace scene {
 
 
 
-void Camera2D::matrix_reload(){
+m3f3 Camera2D::get_matrix()
+{
+    m3f3 M_s_ndc; // Complete matrix from scene coords to ndc
 
-    // Reload values dependent on window size and box.x
-    AR = window_size_px.x / window_size_px.y;
-    box.size.y = box.size.x / AR;
+    
+    box.size.y = box.size.x / AR();
 
     // scene -> camera/view
+    m3f3 t_M_s_c;   // translate: scene to camera box
     t_M_s_c.x.z = -box.pos.x;
     t_M_s_c.y.z = -box.pos.y;
 
-    // camera/view -> ndc
+    m3f3 s_M_c_ndc; // scale: camera to NDC
+    s_M_c_ndc.x.x = 2 / box.size.x;
+    s_M_c_ndc.y.y = 2 * AR() / box.size.x;
+
+    m3f3 t_M_c_ndc; // translate: camera to NDC
     t_M_c_ndc.x.z = -1.0f;
     t_M_c_ndc.y.z = -1.0f;
-    s_M_c_ndc.x.x = 2 / box.size.x;
-    s_M_c_ndc.y.y = 2 * AR / box.size.x;
 
+    M_s_ndc = t_M_c_ndc * s_M_c_ndc * t_M_s_c;
 
-    M_s_ndc.set_to_identity();
-
-    M_s_ndc.mult_left(t_M_s_c);
-
-    M_s_ndc.mult_left(s_M_c_ndc);
-    // | order of these two? |
-    M_s_ndc.mult_left(t_M_c_ndc);
-
-}
-
-m3f3 Camera2D::get_matrix(){
     return M_s_ndc;
 }
 
-void Camera2D::set_window_size_px(f2 size){
-    window_size_px = size;
-    matrix_reload();
+void Camera2D::set_framebuffer_size(f2 size)
+{
+    framebuffer_size_scene = size;
+    reload_height();
 }
 
-void Camera2D::set_zoom_factor(float factor){
-    zoom_factor = factor;
+void Camera2D::reload_height()
+{
+    box.size.y = box.size.x / AR();
 }
 
-void Camera2D::set_width(float zoom){
-    box.size.x = zoom;
-    matrix_reload();
+void Camera2D::set_width(float new_width)
+{
+    box.size.x = new_width;
+    reload_height();
 }
 
-void Camera2D::zoom(float delta){
-
-    // only determine direction - each scroll event is equivalent distance
-    if(delta < 0)
-        box.size.x *= zoom_factor; // zoom out by increasing camera width
-    else
-        box.size.x *= 1.0f / zoom_factor;
-
-    matrix_reload();
+float Camera2D::get_width()
+{
+    return box.size.x;
 }
 
-void Camera2D::pan(f2 delta_sane){
+float Camera2D::AR()
+{
+    return framebuffer_size_scene.x / framebuffer_size_scene.y;
+}
 
-    box.pos.x -= delta_sane.x;
-    box.pos.y -= delta_sane.y;
 
-    matrix_reload();
+void Camera2D::pan(f2 delta_scene)
+{
+    // Subtract: I want to experience `dragging` the 2D scene.
+    // Therefore a mouse movement to the left should push the camera to the right in the scene.
+    box.pos -= delta_scene;
 }
 
 
 f2 Camera2D::normalized_to_scene_coords(f2 normalized)
 {
-    return f2 {
-        box.pos.x + box.size.x * normalized.x, 
-        box.pos.y + box.size.y * normalized.y
-    };
+    return box.to_box(normalized);
 }
+
 f2 Camera2D::normalized_to_scene_delta(f2 normalized)
 {
-    return f2 {
-        box.size.x * normalized.x, 
-        box.size.y * normalized.y
-    };
+    return box.to_box_delta(normalized);
 }
 
-
-Box2D Camera2D::get_box(){
+Box2D Camera2D::get_box()
+{
     return box;
 }
 
-void Camera2D::print(){
-
-    box.print();
-
-}
 
 
 

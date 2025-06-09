@@ -158,7 +158,9 @@ void event_scroll(window::InputEvent & event)
 {
     scene::Scene2D* current_target = ManagerScene::get_current_target();
     if(current_target != nullptr)
+    {
         current_target->handle_scroll(event.mouse_scroll.delta);
+    }
 }
 
 void event_move(window::InputEvent & event)
@@ -233,7 +235,7 @@ void event_window_resize(window::InputEvent & event)
     window_size = resize_event.size_f;
     
     // TODO: update the window scene?
-    ManagerScene::get_root_scene()->set_window_size(resize_event.size_f);
+    ManagerScene::get_root_scene()->set_framebuffer_size(resize_event.size_f);
 }
 
 

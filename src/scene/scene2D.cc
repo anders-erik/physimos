@@ -36,7 +36,7 @@ Scene2D::Scene2D(f2 _window_size)
     : framebuffer { opengl::TextureFrameBufferMultisample(_window_size.to_i2(), 4) }
 {
 
-    set_window_size(_window_size);
+    set_framebuffer_size(_window_size);
 
     // FRAME INIT
     frame_M_m_s.x.x = 2.0f;
@@ -44,10 +44,10 @@ Scene2D::Scene2D(f2 _window_size)
     frame_M_m_s.x.z = 7.0f;
     frame_M_m_s.y.z = 6.0f;
 
+    set_zoom_factor(1.2f);
 
-    camera.set_window_size_px(window_size_f);
+    camera.set_framebuffer_size(framebuffer_size_f);
     camera.set_width(10.0f);
-    camera.set_zoom_factor(1.2f);
     // camera.pan({ -400.0f, -300.0f}); // Half of window size
     camera.pan({ 0.0f, 0.0f});
 
@@ -56,7 +56,7 @@ Scene2D::Scene2D(f2 _window_size)
 void Scene2D::set_id(size_t id){
     this->id = id;
 }
-size_t Scene2D::get_id(){
+size_t Scene2D::get_id() const {
     return id;
 }
 
@@ -68,27 +68,27 @@ size_t Scene2D::get_parent_id(){
 }
 
 
-f2 Scene2D::get_window_size(){
-    return window_size_f;
+f2 Scene2D::get_framebuffer_size(){
+    return framebuffer_size_f;
 }
 
-void Scene2D::set_window_size(f2 size){
-    
-    window_size_f = size;
-    camera.set_window_size_px(size);
+void Scene2D::set_framebuffer_size(f2 size)
+{    
+    framebuffer_size_f = size;
+    camera.set_framebuffer_size(size);
 
     // Subscenes do not need to be updated as their quads are fixed
-    // for( scene::SubScene2D& subscene : subscenes){
-    //     scene::Scene2D* subscene_scene = BC::get_scene(subscene.scene_tag.id);
-    //     subscene_scene->set_window_size(size);
-    // }
-
 }
 
 void Scene2D::set_camera_width(float width)
 {
     camera.set_width(width);
 }
+void Scene2D::set_zoom_factor(float new_zoom_factor)
+{
+    zoom_factor = new_zoom_factor;
+}
+
 
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 {
@@ -106,11 +106,6 @@ QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
     return nullptr;
 }
 
-
-f2 Scene2D::normalized_to_scene_conversion(f2 normalized)
-{
-    return {normalized.x * window_size_f.x, normalized.y * window_size_f.y};
-}
 
 
 Scene2D * Scene2D::try_find_target_scene(f2 normalized, Box2D window_box)
@@ -155,10 +150,25 @@ Scene2D * Scene2D::try_find_target_scene(f2 normalized, Box2D window_box)
 
         // Try regular quad instead of subscene
         QuadS2D* quad_ptr = try_match_cursor_to_quad(cursor_pos_scene);
-        if(quad_ptr == nullptr)
-            quad_current_hover = nullptr;
-        else
+        quad_current_hover = nullptr;
+        if(quad_ptr != nullptr)
+        {
             quad_current_hover = quad_ptr;
+            quad_current_selected = quad_ptr;
+            if(quad_ptr->is_scene2D())
+            {
+                auto* subscene_scene = ManagerScene::get_scene(quad_ptr->get_object_id());
+
+                // The location of the cursor as measued in its own nrmalized coordinates
+                f2 cursor_pos_in_quad_norm = quad_ptr->scene_to_quad_normalized(cursor_pos_scene);
+
+                // creates a window box whose box-relationship is congruent to that of current camera & quad box
+                Box2D subscene_window_box = window_box.new_congruent_subbox(camera.get_box(), quad_ptr->get_box());
+
+                result = subscene_scene->try_find_target_scene(cursor_pos_in_quad_norm, subscene_window_box);
+                
+            }
+        }
     }
 
     return result;
@@ -195,7 +205,7 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
         quad_current_selected = try_match_cursor_to_quad(cursor_pos_scene);
         if(quad_current_selected != nullptr){
             print("New quad selected: ");
-            quad_current_selected->get_name().println();
+            quad_current_selected->get_name().print_line();
         }
     
     }
@@ -203,18 +213,45 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
 
 void Scene2D::handle_scroll(float delta)
 {
-    camera.zoom(delta);
+    // The raw set_width() will just scale the position, thus changing the cursor pos for user
+    if(delta > 0)
+    {
+        camera.set_width(camera.get_width() / zoom_factor);
+    }
+    else
+    {
+        camera.set_width(camera.get_width() * zoom_factor);
+    }
+
+    // Move camera to match cursor position
+    // TODO: Move this into a camera.zoom()-call?
+    
+    // The normalized cursor position is unaffected by camera size, so we get the position after zoom
+    f2 new_cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
+
+    // pan the difference between pre and post position
+    f2 scroll_induced_move = new_cursor_pos_scene - cursor_pos_scene;
+    camera.pan(scroll_induced_move);    
 }
 
 
 
 
-void Scene2D::add_quad(scene::QuadS2D& quad){
-
-    // renderer2D.create_context_quad_t(quad.get_rendering_context(), quad.get_verts());
-    // quads.push_back(quad);
-
+void Scene2D::add_quad(scene::QuadS2D& quad)
+{
     quad_ids.push_back(quad_manager.add_quad(quad));
+}
+
+size_t Scene2D::add_quad_default()
+{
+    scene::QuadS2D new_quad;
+    new_quad.set_box({0.5f, 3.0f}, {5.0f, 1.5f});
+    new_quad.set_bitmap_texture(0);
+
+    size_t new_quad_id = quad_manager.add_quad(new_quad);
+    quad_ids.push_back(new_quad_id);
+
+    return new_quad_id;
 }
 
 
@@ -242,23 +279,37 @@ ShapeS2D& Scene2D::add_shape(Shape& shape){
 
 }
 
-SubScene2D* ss;
 
-// SubScene2D& Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
-// SubScene2D* add_subscene(f2 pos_scene, f2 size_scene){
-SubScene2D& Scene2D::add_subscene(f2 pos_scene, f2 size_scene){
-    
-    scene::SubScene2D& new_subscene = subscenes.emplace_back(size_scene);
+SubScene2D& Scene2D::add_subscene(f2 pos_scene, f2 size_scene)
+{
+    scene::Scene2D* new_scene = ManagerScene::new_scene(size_scene);
+    if(new_scene == nullptr)
+        throw std::runtime_error("New subscene scene is nullptr");
+    new_scene->set_parent_id(id);
+
+    // Create quad with scene type and scene id
+    scene::SubScene2D& new_subscene = subscenes.emplace_back();
+    new_subscene.scene_id = new_scene->get_id();
 	new_subscene.quad.set_box(pos_scene, size_scene);
 
-    scene::Scene2D* subscene_scene = ManagerScene::get_scene(new_subscene.scene_id);
-    subscene_scene->set_parent_id(id);
-    
-    // ss = new SubScene2D(size_scene);
-    // return ss;
-    // return *ss;
-    // return subscenes.emplace_back(size_scene);
     return new_subscene;
+}
+
+size_t Scene2D::add_subscene(Scene2D* new_scene)
+{
+    new_scene->set_parent_id(id);
+    new_scene->add_quad_default();
+
+    scene::QuadS2D new_quad;
+    new_quad.set_box( {200.0f, 0.0f}, new_scene->get_framebuffer_size() );
+    new_quad.set_name("scene_quad_test");
+    new_quad.set_scene(new_scene);
+    new_quad.update_texture();
+
+    size_t quad_id = quad_manager.add_quad(new_quad);
+    quad_ids.push_back(quad_id);
+
+    return quad_id;
 }
 
 
@@ -276,7 +327,18 @@ void Scene2D::update(){
 }
 
 
-void Scene2D::render_subscene_textures(){
+void Scene2D::
+render_subscene_textures()
+{
+
+    for(size_t quad_id : quad_ids)
+    {
+        auto* quad = quad_manager.get_quad(quad_id);
+        if(quad == nullptr)
+            continue;
+        
+        quad->update_texture();
+    }
 
     for( scene::SubScene2D& subscene : subscenes){
         scene::Scene2D* subscene_scene = ManagerScene::get_scene(subscene.scene_id);
@@ -288,8 +350,9 @@ void Scene2D::render_subscene_textures(){
 }
 
 
-void Scene2D::render_to_window(){
-
+void Scene2D::
+render_to_window()
+{
     // camera.set_width(window_size_f.x);
 
     render();
@@ -357,84 +420,5 @@ void Scene2D::render(){
 }
 
 
-
-
-void Scene2D::handle_input(window::InputEvent event){
-
-    if(event.type == window::EventType::MouseButton){
-
-        // PAN
-        if(event.mouse_button.button == window::MouseButton::Middle) {
-    
-            if(event.mouse_button.action == window::ButtonAction::Press)
-                panable = true;
-            else if(event.mouse_button.action == window::ButtonAction::Release)
-                panable = false;
-
-        }
-
-    }
-    else if(event.type == window::EventType::MouseScroll){
-
-        
-
-    }
-
-    
-    if(event.type == window::EventType::MouseMove){
-    
-        // event.mouse_movement.cursor.print();
-
-        // Scene can be panned
-        // if(panable)
-        //     camera.pan(event.mouse_movement.delta.sane);
-
-        
-        // camera.set_cursor_pos(event.mouse_movement.pos_px, event.mouse_movement.pos_norm);
-        // cursor_scene.set_cursor_pos(  event.cursor.sane, 
-        //                                 event.cursor.normalized,
-        //                                 camera.get_box()
-        // );
-
-    }
-
-
-
-    if(event.keystroke.key == window::Key::p && event.keystroke.action == window::ButtonAction::Press){
-        // quad.transform_2d.matrix.print();
-        // camera.transform.matrix.print();
-
-        // std::cout << "camera.transform.pos   = " << camera.transform.pos.x << " " << camera.transform.pos.y << std::endl;
-        // std::cout << "camera.transform.scale = " << camera.transform.scale.x << " " << camera.transform.scale.y << std::endl;
-
-        // std::cout << "camera.view_width = " << camera.view_width  << std::endl;
-
-        camera.print();
-        
-
-        // std::cout << "camera.scene_per_sane = " << camera.scene_per_sane << std::endl;
-
-        // std::cout << "camera.window_size_px = " << camera.window_size_px.x << " " << camera.window_size_px.y << std::endl;
-
-        // std::cout << "camera.cursor_viewport_px    = " << camera.cursor_viewport_px.x << " " << camera.cursor_viewport_px.y << std::endl;
-        // std::cout << "camera.cursor_viewport_norm  = " << camera.cursor_viewport_norm.x << " " << camera.cursor_viewport_norm.y << std::endl;
-        // std::cout << "camera.cursor_viewport_scene = " << camera.cursor_viewport_scene.x << " " << camera.cursor_viewport_scene.y << std::endl;
-        
-        // std::cout << "cursor_scene.scene = " << cursor_scene.scene.x << " " << cursor_scene.scene.y << std::endl;
-        
-        // scene_2d.camera_2d.transform_2d.matrix.print();
-        // std::cout << "panable = " << panable << std::endl;
-        
-    }
-}
-
-
-void Scene2D::print_info(){
-
-    std::cout << "Scene:" << std::endl;
-
-    cursor_pos_scene.print("Cursor [scene]:");
-    cursor_pos_normal.print("Cursor [norm]:");
-}
 
 }

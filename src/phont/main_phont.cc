@@ -121,13 +121,14 @@ int main()
 
 	Conductor2D conductor2D (conductor_window_size);
 
+
+	// ROOT SCENE
 	scene::Scene2D* root_scene = ManagerScene::get_root_scene();
 	root_scene->name = "Forever Root";
-
 	// ADD GREEN QUADS TO ROOT SCENE
 	scene::QuadS2D root_scene_quad;
 	root_scene_quad.set_box( {0.0f, 0.0f}, {30.0f, 30.0f} );
-    root_scene_quad.set_texture_id(opengl::texture_get_id(opengl::Textures::Grass));
+    root_scene_quad.set_bitmap_texture(opengl::texture_get_id(opengl::Textures::Grass));
 	root_scene_quad.set_name("root_scene_quad_1");
 	root_scene->add_quad(root_scene_quad);
 	root_scene_quad.set_box( {60.0f, 0.0f}, {30.0f, 30.0f} );
@@ -135,22 +136,54 @@ int main()
 	root_scene->add_quad(root_scene_quad);
 
 
+
+	// SHAPES
+	Shape point_to_draw = Shape::create(shape_t::point);
+	point_to_draw.move(f2{8.0f, 4.0f});
+	Shape line_to_draw = Shape::create(shape_t::line);
+
+
+
 	// NEW SUBSCENE ADDED TO ROOT SCENE
 	// scene::SubScene2D& subscene_1 = root_scene->add_subscene({450, 300}, {320, 240});
-	scene::SubScene2D& subscene_1 = root_scene->add_subscene({450, 150}, {320, 400});
+	scene::SubScene2D& subscene_1 = root_scene->add_subscene({500, 200}, {240, 300});
 	scene::Scene2D* subscene_1_scene = ManagerScene::get_scene(subscene_1.scene_id);
 	subscene_1_scene->name = "Glyph_scene";
 
 	// ADD SHAPES TO SUBSCENE
-	Shape point_to_draw = Shape::create(shape_t::point);
-	point_to_draw.move(f2{8.0f, 4.0f});
-	Shape line_to_draw = Shape::create(shape_t::line);
 	subscene_1_scene->add_shape(point_to_draw);
 	scene::ShapeS2D& subscene_1_line = subscene_1_scene->add_shape(line_to_draw);
 	subscene_1_line.set_pos( {6.0f, 6.0f} );
-	
+
 	// ADD GLYPHS TO SUBSCENE
 	add_glyph_quads_to_scene(subscene_1_scene);
+
+
+
+	// QUAD SUBSCENE
+	scene::Scene2D * quad_subscene = ManagerScene::new_scene({100, 100});
+	quad_subscene->name = "100x100 test scene";
+	size_t quad_subscene_id = root_scene->add_subscene(quad_subscene);
+
+
+	// QUAD Glyph Subscene
+	scene::Scene2D* glyphscene = ManagerScene::new_scene({240, 300});
+	quad_subscene->name = "glyph scene";
+	size_t glyphscene_quad_id = root_scene->add_subscene(glyphscene);
+	scene::QuadS2D* glyphscene_quad = root_scene->quad_manager.get_quad(glyphscene_quad_id);
+	glyphscene_quad->set_name("glyph scene quad");
+	glyphscene_quad->set_box({250, 200}, {240, 300});
+
+	// Shapes
+	glyphscene->add_shape(point_to_draw);
+	scene::ShapeS2D& glyphscene_line = glyphscene->add_shape(line_to_draw);
+	glyphscene_line.set_pos( {6.0f, 6.0f} );
+	// Glyphs
+	add_glyph_quads_to_scene(glyphscene);
+
+
+
+	
 
 
 

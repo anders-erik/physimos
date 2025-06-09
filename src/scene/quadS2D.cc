@@ -1,19 +1,23 @@
 #include <iostream>
 
+#include "scene2D.hh"
+
 #include "quadS2D.hh"
+
+#include "manager.hh"
 
 
 namespace scene {
 
 
 
-void QuadS2D::set_id(size_t new_id)
+void QuadS2D::set_quad_id(size_t new_id)
 {
-    id = new_id;
+    quad_id = new_id;
 }
-size_t QuadS2D::get_id()
+size_t QuadS2D::get_quad_id()
 {
-    return id;
+    return quad_id;
 }
 
 void QuadS2D::set_name(Str new_name)
@@ -50,6 +54,11 @@ unsigned int QuadS2D::get_texture_id()
     return texture_id;
 }
 
+size_t QuadS2D::get_object_id()
+{
+    return object_id;
+}
+
 
 
 bool QuadS2D::contains_cursor(f2 cursor_pos_scene_coords)
@@ -63,5 +72,45 @@ f2 QuadS2D::scene_to_quad_normalized(f2 cursor_pos_scene_coords)
 }
 
 
+
+void QuadS2D::set_bitmap_texture(unsigned int opengl_texture_id)
+{
+    type = T::Bitmap;
+    this->texture_id = opengl_texture_id;
+}
+
+void QuadS2D::set_scene(const Scene2D* new_scene)
+{
+    type = T::Scene2D;
+    object_id = new_scene->get_id();
+}
+
+bool QuadS2D::is_bitmap()
+{
+    return type == T::Bitmap ? true : false;
+}
+
+bool QuadS2D::is_scene2D()
+{
+     return type == T::Scene2D ? true : false;
+}
+
+void QuadS2D::update_texture()
+{
+    if(is_bitmap())
+    {
+        // nothing to do
+    }
+    else if (is_scene2D())
+    {
+        scene::Scene2D* scene = ManagerScene::get_scene(object_id);
+        if(scene == nullptr)
+            return;
+
+        scene->render_subscene_textures();
+        texture_id = scene->render_to_texture();
+
+    }
+}
 
 }

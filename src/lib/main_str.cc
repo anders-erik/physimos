@@ -93,7 +93,7 @@ void double_free(){
     // Double free
     {
     Str str_A1 (10, 'A'); // fill ten chars with 'A'
-    str_A1.println();
+    str_A1.print_line();
 
     // Str str_A2 = str_A1;  // Make copy that also owns the string pointer
     // str_A2.println();
@@ -104,10 +104,10 @@ void double_free(){
     // NOT double free
     {
     Str str_A1 (10, 'A'); // fill ten chars with 'A'
-    str_A1.println();
+    str_A1.print_line();
 
     Str& str_A2 = str_A1;  // Make copy that also owns the string pointer
-    str_A2.println();
+    str_A2.print_line();
 
     }// NOT Double free as second object is reference. Does not call destruct!
 
@@ -251,16 +251,16 @@ void concat(){
     // str.println_quotes();
     println(Str("\"") + str + Str("\""));
     str += "456";
-    str.println_quotes();
+    str.print_line_quotes();
     str += "789";
-    str.println_quotes();
+    str.print_line_quotes();
 
     bool test = true;
     if(test)
         str += "asdf";
     else
         str += "fdsa";
-    str.println();
+    str.print_line();
 
     // str += str_lval;
     // str.println_quotes();
@@ -278,13 +278,13 @@ void substr(){
     Str str_abc = str.substr(0, 3);
     Str str_abcdef = str.substr(0, 6);
 
-    std::cout << "str        = "; str.println();
-    std::cout << "str_       = "; str_.println();
-    std::cout << "str_abc    = "; str_abc.println();
-    std::cout << "str_abcdef = "; str_abcdef.println();
+    std::cout << "str        = "; str.print_line();
+    std::cout << "str_       = "; str_.print_line();
+    std::cout << "str_abc    = "; str_abc.print_line();
+    std::cout << "str_abcdef = "; str_abcdef.print_line();
     
     str.cut_to_substr(3, 3);
-    std::cout << "str        = "; str.println();
+    std::cout << "str        = "; str.print_line();
 
     Str bounds = "abc";
     bounds.cut_to_substr(0, 20000);

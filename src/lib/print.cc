@@ -17,8 +17,10 @@
 
 void print(const Str & str){
 
-    if(!str.is_allocated())
-        throw std::runtime_error("Tried to print uninitialized Str");
+    if(str.size() == 0)
+    {
+        // throw std::runtime_error("Tried to print uninitialized Str");
+    }
 
 #ifdef PH_LINUX
 
