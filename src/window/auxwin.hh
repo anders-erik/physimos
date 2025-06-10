@@ -135,7 +135,11 @@ class Auxwin {
 
         CursorPosition cursor;
 
-        std::queue<InputEvent> input_events;
+
+        std::vector<InputEvent> events_other;
+        std::vector<InputEvent> events_resize;
+        std::vector<InputEvent> events_mouse_movement;
+
 
         GLFWcursor* default_cursor;
         GLFWcursor* pan_cursor;
@@ -153,14 +157,16 @@ class Auxwin {
         void init(int width, int height);
         void init();
         
+
+        /** Activate the associated glfw window */
         void make_current();
         
         void bind_window_framebuffer();
         
-        // new frame GL-calls & retrieves all new events
-        std::vector<InputEvent> new_frame();
-        // end frame + check if open
-        bool                    end_frame();  
+        /** Clear main framebuffer. */
+        void new_frame();
+        /** Swap buffers, poll events, and check if should close. */
+        bool end_frame();  
 
         bool is_open();
         // Will trigger the window to close on next end of frame call.
@@ -171,13 +177,12 @@ class Auxwin {
         f2 get_monitor_size_px();
         f2 get_monitor_size_mm();
         f2 get_monitor_content_scale();
-        
 
-        std::queue<InputEvent> get_input_events();
-        InputEvent get_input_event();
         /** Create an artificial event. */
         void add_input_event(InputEvent event);
-
+        std::vector<InputEvent> get_events_other();
+        std::vector<InputEvent> get_events_mouse_movement();
+        std::vector<InputEvent> get_events_window_resize();
 
         void framebuffer_callback(GLFWwindow* _window, int _width, int _height);
         void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);

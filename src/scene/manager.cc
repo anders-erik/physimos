@@ -91,6 +91,18 @@ scene::Scene2D& get_root_scene_mut()
     return *root_scene;
 }
 
+const scene::Scene2D& get_root_scene()
+{
+    scene::Scene2D* root_scene = try_find_scene(scenes_state.root_id);
+
+    // debug : if root scene, which should NEVER be null, is in fact null
+    if(root_scene == nullptr)
+			throw std::runtime_error("Root scene is nullptr");
+
+    return *root_scene;
+}
+
+
 scene::Scene2D* try_find_scene(size_t id)
 {
     for(scene::Scene2D& scene : scenes)

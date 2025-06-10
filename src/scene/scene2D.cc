@@ -119,7 +119,7 @@ void Scene2D::set_window_box(Box2D new_window_box)
 
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 {
-    for(QuadS2D& quad : quad_manager.get_quads())
+    for(QuadS2D& quad : quad_manager.get_quads_mut())
     {
         if(quad.contains_cursor(pos_scene))
             return &quad;
@@ -293,7 +293,7 @@ update()
 void Scene2D::
 render_subscene_textures()
 {
-    for(QuadS2D& quad : quad_manager.get_quads())
+    for(QuadS2D& quad : quad_manager.get_quads_mut())
         quad.update_texture();
 }
 
@@ -329,7 +329,7 @@ void Scene2D::render(){
     renderer2D.set_camera(camera.get_matrix());
 
     
-    for(QuadS2D& quad : quad_manager.get_quads())
+    for(QuadS2D& quad : quad_manager.get_quads_mut())
     {
         renderer2D.render_quad(quad);
     }

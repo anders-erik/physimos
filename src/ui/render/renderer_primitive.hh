@@ -6,7 +6,9 @@
 
 #include "opengl/program.hh"
 
-#include "ui/font_bitmap.hh"
+// #include "ui/font_bitmap.hh"
+#include "ui/ui_font.hh"
+#include "ui/ui_shader_string.hh"
 
 #include "ui/render/program_base.hh"
 #include "ui/render/program_texture.hh"
@@ -18,6 +20,16 @@
 
 
 namespace UI {
+
+/** Vertex for a bitmap glyph */
+typedef struct VertexFont {
+    float vx;
+    float vy;
+    float vz;
+    float tx;
+    float ty;
+    float x_offset;
+} VertexFont;
 
 struct Primitive;
 
@@ -38,8 +50,9 @@ class RendererPrimitive {
     ProgramPrimitiveTexture program_primitive_texture;
 
     ProgramPrimitiveString program_primitive_string;
-    std::vector<VertexFontBitmap> char_verts;
-    FontBitmap font_bitmap;
+    std::vector<shader::VertexTexture> char_verts;
+    // FontBitmap font_bitmap;
+    // std::vector<shader::VertexTexture> char_verts;
 
 
 public:

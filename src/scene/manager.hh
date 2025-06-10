@@ -31,6 +31,8 @@ size_t new_unique_id();
 /** Initializes manager and creates the root scene. The root scene is returned. */
 scene::Scene2D* init(f2 window_size);
 
+const scene::Scene2D& get_root_scene();
+
 /** After init(), this call should never fail. */
 [[nodiscard]] scene::Scene2D& get_root_scene_mut();
 

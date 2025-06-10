@@ -19,58 +19,7 @@ PUI::PUI(f2 window_size_f, f2 content_scale)
 
     base_string.set_str("Hola");
     base_string.set_pos({170, 50});
-
-
 }
-void PUI::event_all(window::InputEvent& event)
-{
-
-    if(is_grabbing_widget()){
-
-        if(is_grabbing(&widget_root_scene))
-        {
-            EventResult result = widget_root_scene.event_handler(event);
-            if(result.is_release())
-            {
-                grabbed_widget = nullptr;
-            }
-        }
-        if(is_grabbing(&widget_quad))
-        {
-            EventResult result = widget_quad.event_handler(event);
-            if(result.is_release())
-            {
-                grabbed_widget = nullptr;
-            }
-        }
-
-        return;
-    }
-
-    if(is_hovering_widget()){
-
-        if(is_hovering(&widget_root_scene))
-        {
-            EventResult result = widget_root_scene.event_handler(event);
-            if(result.is_grab())
-            {
-                grabbed_widget = &widget_root_scene;
-            }
-        }
-        if(is_hovering(&widget_quad))
-        {
-            EventResult result = widget_quad.event_handler(event);
-            if(result.is_grab())
-            {
-                grabbed_widget = &widget_quad;
-            }
-        }
-
-    }
-}
-
-
-
 
 bool PUI::
 is_targeting_widget()
@@ -80,6 +29,26 @@ is_targeting_widget()
     if(is_hovering_widget())
         return true;
     return false;
+}
+
+bool PUI::
+is_targeted_widget(Widget* widget)
+{
+    if(is_grabbing(widget))
+        return true;
+    if(is_hovering(widget))
+        return true;
+    return false;
+}
+
+void PUI::grab(Widget * widget)
+{
+    grabbed_widget = widget;
+}
+
+void PUI::hover(Widget * widget)
+{
+    hovered_widget = widget;
 }
 
 bool PUI::
@@ -105,31 +74,38 @@ bool PUI::is_hovering(Widget * widget)
     return hovered_widget == widget ? true : false;
 }
 
+void PUI::hover_clear()
+{
+    hovered_widget = nullptr;
+}
+
+void PUI::clear_grabbed_widget()
+{
+    grabbed_widget = nullptr;
+}
+
 
 
 void PUI::
-reload_cursor_target(f2 cursor_pos_win_sane){
-
+reload_cursor_target(f2 cursor_pos_win_sane)
+{
     if(is_grabbing_widget())
         return;
     
-    hovered_widget = nullptr;
+    hover_clear();
 
-
-    bool widget_quad_is_hovered = widget_quad.has_cursor(cursor_pos_win_sane);
-    if(widget_quad_is_hovered)
+    if(widget_quad.has_cursor(cursor_pos_win_sane))
     {
-        hovered_widget = &widget_quad;
+        hover(&widget_quad);
         return;
     }
 
-    // Query widgets first!
-    bool widget_is_targeted = widget_root_scene.has_cursor(cursor_pos_win_sane);
-    if(widget_is_targeted)
+    if(widget_root_scene.has_cursor(cursor_pos_win_sane))
     {
-        hovered_widget = &widget_root_scene;
+        hover(&widget_root_scene);
         return;
     }
+
 
 
     Base* base;
@@ -172,79 +148,6 @@ bool PUI::is_grabbing_cursor()
 
 
 
-void PUI::
-event_mouse_move(window::InputEvent& event)
-{
-    // if(grabbed_base != nullptr)
-    // {
-        
-    //     Box2D box = grabbed_base->get_box();
-    //     box.pos += event.mouse_movement.delta.sane;
-    //     grabbed_base->set_box(box);
-
-    // }
-}
-
-void PUI::
-event_mouse_button(window::InputEvent& event)
-{
-    // if(event.mouse_button.is_left_down())
-    // {
-        
-
-    //     if(is_targeting_base())
-    //     {
-    //         targeted_base->click();
-    //         grabbed_base = targeted_base;
-    //     }
-    //     if(is_targeting_widget())
-    //     {
-    //         hovered_widget->mouse_left_down();
-    //         grabbed_widget = hovered_widget;
-    //     }
-    // }
-    // else if(event.mouse_button.is_left_up())
-    // {
-    //     if(is_grabbing_base())
-    //     {
-    //         grabbed_base->unclick();
-    //         grabbed_base = nullptr;
-    //     }
-    //     if(is_targeting_widget())
-    //     {
-    //         hovered_widget->mouse_left_up();
-    //         grabbed_widget = nullptr;
-    //     }
-    // }
-}
-
-void PUI::
-event_mouse_scroll(window::InputEvent& event)
-{
-    // if(is_targeting_base())
-    // {
-    //     targeted_base->scroll(event.mouse_scroll.delta);
-    // }
-    // else if(is_targeting_widget())
-    // {
-    //     hovered_widget->scroll(event.mouse_scroll.delta);
-    // }
-}
-
-void PUI::
-event_keystroke(window::InputEvent& event)
-{
-
-}
-
-void PUI::
-event_window_resize(window::InputEvent& event)
-{
-    renderer_base.set_window_info(event.window_resize.size_f, event.window_resize.content_scale);
-}
-
-
-
 
 
 void PUI::
@@ -257,6 +160,49 @@ reload(){
     scene::QuadS2D* quad = ManagerScene::get_root_scene_mut().quad_manager.get_selected();
     widget_quad.reload(quad, {20.0f, 250.0f});
 }
+
+
+
+void PUI::event_all(window::InputEvent& event)
+{
+    if(is_targeted_widget(&widget_root_scene))
+    {
+        EventResult result = widget_root_scene.event_handler(event);
+        if(result.is_release())
+        {
+            clear_grabbed_widget();
+        }
+        if(result.is_grab())
+        {
+            grab(&widget_root_scene);
+        }
+    }
+
+    if(is_targeted_widget(&widget_quad))
+    {
+        EventResult result = widget_quad.event_handler(event);
+        if(result.is_release())
+        {
+            clear_grabbed_widget();
+        }
+        if(result.is_grab())
+        {
+            grab(&widget_root_scene);
+        }
+    }
+}
+
+
+
+void PUI::
+event_window_resize(window::InputEvent& event)
+{
+    renderer_base.set_window_info(
+        event.window_resize.size_f, 
+        event.window_resize.content_scale
+    );
+}
+
 
 
 void PUI::

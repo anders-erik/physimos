@@ -105,9 +105,9 @@ void ProgramPrimitiveString::set_texture(unsigned int new_texture){
 
 
 
-void ProgramPrimitiveString::set_vertex_data(VertexFontBitmap* vertex_data, unsigned int sizeof_vertex_data){
+void ProgramPrimitiveString::set_vertex_data(shader::VertexTexture* vertex_data, unsigned int sizeof_vertex_data){
 
-    vertex_count = sizeof_vertex_data / sizeof(VertexFontBitmap);
+    vertex_count = sizeof_vertex_data / sizeof(shader::VertexTexture);
 
     glUseProgram(id);
 

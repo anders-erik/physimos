@@ -31,8 +31,8 @@ float baseStringSquareVertices[30] = {
 
 
 
-void ProgramString::init(){
-
+void ProgramString::init()
+{
     glUseProgram(id);
 
     // GET UNIFORM LOCATIONS
@@ -58,61 +58,60 @@ void ProgramString::init(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
-void ProgramString::set_viewport_transform(m4f4 _viewport_transform){
 
+
+void ProgramString::set_viewport_transform(m4f4 _viewport_transform)
+{
     glUseProgram(id);
 
     // GL_TRUE : Transpose before loading into uniform!
     glUniformMatrix4fv(uiViewportTransformLoc, 1, GL_TRUE, _viewport_transform.pointer_const());
-
 }
 
 
-void ProgramString::set_base_transform(float * primitiveTransform_mat) const
+
+
+void ProgramString::set_base_transform(f2 base_location, f2 glyph_size) const
 {
     glUseProgram(id);
 
-    // We want the with of a char!
-    float orig_x = primitiveTransform_mat[0];
-    float orig_y = primitiveTransform_mat[5];
-    // offset for visibility
-    primitiveTransform_mat[7] -= 0;
+    m4f4 matrix;
 
-    primitiveTransform_mat[0] = 9;
-    primitiveTransform_mat[5] = 18;
+    matrix.x.x = glyph_size.x;
+    matrix.y.y = glyph_size.y;
 
+    matrix.x.w = base_location.x;
+    matrix.y.w = base_location.y;
 
-    glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitiveTransform_mat);
-
-
-    primitiveTransform_mat[0] = orig_x;
-    primitiveTransform_mat[5] = orig_y;
-
-    primitiveTransform_mat[7] += 0;
-
-    // this->texture = texture;
+    glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, matrix.pointer());
 }
 
 
-void ProgramString::set_texture(unsigned int new_texture){
+
+
+void ProgramString::set_texture(unsigned int new_texture)
+{
     glUseProgram(id);
 
     texture = new_texture;
 
     glBindTexture(GL_TEXTURE_2D, texture);
-
 }
 
 
 
-void ProgramString::set_vertex_data(VertexFontBitmap* vertex_data, unsigned int sizeof_vertex_data){
 
-    vertex_count = sizeof_vertex_data / sizeof(VertexFontBitmap);
+void ProgramString::set_glyph_data(std::vector<GlyphFontBitmap>& glyphs)
+{
+    glyph_count = glyphs.size();
+    // 6 verts per glyph
+    int data_size = glyph_count * verts_per_glyph * sizeof(VertexFontBitmap);
+    
 
     glUseProgram(id);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof_vertex_data, vertex_data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data_size, glyphs.data(), GL_STATIC_DRAW);
 
     glBindVertexArray(vao);
 
@@ -126,7 +125,6 @@ void ProgramString::set_vertex_data(VertexFontBitmap* vertex_data, unsigned int 
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 
 
@@ -138,7 +136,7 @@ void ProgramString::draw() const {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+    glDrawArrays(GL_TRIANGLES, 0, glyph_count * verts_per_glyph);
     glDisable(GL_BLEND);
 }
 

@@ -50,7 +50,8 @@ struct i3 {
     i3() = default;
 };
 
-struct f2 {
+struct f2 
+{
     float x = 0.0f;
     float y = 0.0f;
 
@@ -65,6 +66,7 @@ struct f2 {
     f2& operator+=(float scalar);
     f2& operator-=(const f2& rhs);
     f2& operator-=(float scalar);
+    f2& operator*=(float scalar);
     // f2&& operator+(const f2& rhs);
     f2 operator+(const f2& rhs);
     f2 operator-(const f2& rhs);

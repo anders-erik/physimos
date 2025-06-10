@@ -25,7 +25,7 @@ QuadS2D* QuadManager::new_quad(){
     return &new_quad;
 }
 
-QuadS2D* QuadManager::get_quad(size_t id)
+QuadS2D* QuadManager::get_quad_mut(size_t id)
 {
     for(auto& quad : quads)
     {
@@ -35,7 +35,12 @@ QuadS2D* QuadManager::get_quad(size_t id)
     return nullptr;
 }
 
-std::list<QuadS2D>& QuadManager::get_quads()
+const std::list<QuadS2D>& QuadManager::get_quads()
+{
+    return quads;
+}
+
+std::list<QuadS2D>& QuadManager::get_quads_mut()
 {
     return quads;
 }
@@ -48,7 +53,7 @@ void QuadManager::set_selected(size_t quad_id)
 
 QuadS2D* QuadManager::get_selected()
 {
-    return get_quad(selected_quad);
+    return get_quad_mut(selected_quad);
 }
 
 void QuadManager::clear_selection()
@@ -64,7 +69,7 @@ void QuadManager::set_hovered(size_t quad_id)
 
 QuadS2D* QuadManager::get_hovered()
 {
-    return get_quad(hovered_quad);
+    return get_quad_mut(hovered_quad);
 }
 
 void QuadManager::clear_hovered()

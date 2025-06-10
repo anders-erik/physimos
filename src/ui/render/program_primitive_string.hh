@@ -39,7 +39,7 @@ public:
     void set_texture(unsigned int new_texture);
 
 
-    void set_vertex_data(VertexFontBitmap* vertex_data, unsigned int sizeof_vertex_data);
+    void set_vertex_data(shader::VertexTexture* vertex_data, unsigned int sizeof_vertex_data);
 
 
     void set_primitive_transform(float* primitiveTransform_mat) const;

@@ -15,6 +15,11 @@ Conductor2D::Conductor2D(f2 window_size_f)
 	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
 }
 
+
+
+
+
+
 void Conductor2D::target_pui(){
 	targeting_ui = true;
 	ManagerScene::clear_cursor_highlighting();
@@ -24,9 +29,8 @@ void Conductor2D::target_scenes(){
 	ManagerScene::update_current_target(cursor_pos);
 }
 
-void Conductor2D::update_current_target()
+void Conductor2D::set_subsystem_target()
 {
-
 	// Grab takes precedence over hover
 	if(pui.is_grabbing_cursor())
 	{
@@ -44,176 +48,101 @@ void Conductor2D::update_current_target()
 	{
 		target_scenes();
 	}
-
 }
 
 
 
-void Conductor2D::
-input_scroll(InputEvent & event)
+
+
+
+void Conductor2D::process_mouse_movement()
 {
-	if(targeting_ui)
-		pui.event_mouse_scroll(event);
-	else
-		ManagerScene::event_scroll(event);
+	auto movement_events = auxwin.get_events_mouse_movement();
+
+	for(InputEvent& event : movement_events)
+	{
+		cursor_pos = event.cursor;
+
+		if(targeting_ui)
+			pui.event_all(event);
+		else 
+			ManagerScene::event_move(event);
+	}
 }
 
-
-void Conductor2D::
-input_mouse_move(InputEvent & event)
+void Conductor2D::process_other_events()
 {
-	cursor_pos = event.cursor;
+	auto events = auxwin.get_events_other();
 
 	if(targeting_ui)
-		pui.event_mouse_move(event);
-	else 
-		ManagerScene::event_move(event);
-}
-
-
-void Conductor2D::
-input_mouse_button(InputEvent & event)
-{
-	if(targeting_ui)
-		pui.event_mouse_button(event);
-	else
-		ManagerScene::event_mouse_button(event);
-}
-
-
-void Conductor2D::
-input_keystroke(InputEvent & event)
-{
-	if(targeting_ui)
+	{
+		for(InputEvent& event : events)
+		{
+			pui.event_all(event);
+		}
 		return;
-	else
-		ManagerScene::event_keystroke(event);
+	}
+
+	// As we are targeting a scene, we send the events to their appropriate handler
+	for(InputEvent& event : events)
+	{
+		if(event.is_mouse_scroll())
+		{
+			ManagerScene::event_scroll(event);
+		}
+		else if(event.is_mouse_button())
+		{
+			ManagerScene::event_mouse_button(event);
+		}
+		else if(event.is_keystroke())
+		{
+			ManagerScene::event_keystroke(event);
+		}
+	}
 }
 
-
-
-void Conductor2D::
-input_window_change(InputEvent& event)
+void Conductor2D::process_framebuffer_events()
 {
-	// All subsystems get the resize event
+	auto resize_events = auxwin.get_events_window_resize();
 
-	pui.event_window_resize(event);
-
-	ManagerScene::event_window_resize(event);
-}
-
-
-
-
-
-
-void Conductor2D::new_frame(){
-
-	auxwin.end_frame();
-	input_events = auxwin.new_frame();
-
-}
-
-
-void Conductor2D::process_user_input(){
-
-
-	// Handle mouse movement first
-	for(InputEvent& event : input_events)
+	for(InputEvent& event : resize_events)
 	{
-		if(event.is_type(window::EventType::MouseMove))
-		{
-			// input_mouse_move(event);
-			cursor_pos = event.cursor;
-
-			if(targeting_ui)
-				pui.event_all(event);
-			else 
-				ManagerScene::event_move(event);
-		}
+		// All subsystems get the resize event
+		pui.event_window_resize(event);
+		ManagerScene::event_window_resize(event);
 	}
+}
 
+
+void Conductor2D::main_loop()
+{
 	
-	// Now that we know what subsystem we are targeting, we can process other inputs
-	for(InputEvent& event : input_events)
+	while (auxwin.is_open())
 	{
+		auxwin.new_frame();
 
-		if(event.is_type(window::EventType::MouseScroll))
-		{
-			// input_scroll(event);
-			if(targeting_ui)
-				pui.event_all(event);
-			else
-				ManagerScene::event_scroll(event);
-		}
-		else if(event.is_type(window::EventType::MouseButton))
-		{
-			// input_mouse_button(event);
-			if(targeting_ui)
-				pui.event_all(event);
-			else
-				ManagerScene::event_mouse_button(event);
-		}
-		else if(event.is_type(window::EventType::Keystroke))
-		{
-			// input_keystroke(event);
-			if(targeting_ui)
-				pui.event_all(event);
-			else
-				ManagerScene::event_keystroke(event);
-		}
+		// Set the target that will recieve all events during this frame
+		// This query will use the cached mouse position from most recent movement event
+		// Start out with this call to get stable access to objects that might have move at end of frame cleanup
+		set_subsystem_target();
 
-	}
+		process_mouse_movement();
+		process_framebuffer_events();
+		process_other_events();
 
-
-}
-
-void Conductor2D::process_framebuffer_events(){
-
-	// Resize later in loop
-	for(InputEvent& event : input_events){
-		if(event.is_type(window::EventType::WindowResize)){
-			input_window_change(event);
-			break;
-		}
-	}
-
-}
-
-
-void Conductor2D::main_loop(){
-
-	
-	while (auxwin.is_open()){
-
-		new_frame();
-
-		pui.reload(); // reflect scene state changes form previous frame
-		pui.reload_cursor_target(cursor_pos.sane);
-
-		// Always start out with trying to figure out which subsystem we're currently targeting
-		update_current_target();
-		
-		// Now we know what we're targeting, we send the new input events
-		process_user_input();
-
-
-		
+		// Root scene (to become window scene)
 		scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
-
 		root_scene.update();
-
 		root_scene.render_subscene_textures();
-
-		// Render To Window
 		auxwin.bind_window_framebuffer();
 		root_scene.render_to_window();
 
-		// UI
+		pui.reload(); // reflect scene state changes
+		pui.reload_cursor_target(cursor_pos.sane);
+		// Render ui after all scenes are rendered
 		pui.render();
 
-		process_framebuffer_events();
-		
+		auxwin.end_frame();
 	}
 
 	auxwin.destroy();

@@ -12,6 +12,7 @@
 #include "scene/quadS2D.hh"
 
 #include "widget.hh"
+#include "widget_quad.hh"
 
 namespace UI {
 
@@ -32,6 +33,7 @@ struct WidgetRootScene : public Widget {
     // std::vector<Base> bases;
 
     // std::vector<BaseString> strings;
+    std::vector<WidgetQuad> quad_widgets;
     std::vector<Pair<size_t, BaseString>> quad_pairs;
 
     BaseString scene_name_base;
@@ -131,12 +133,17 @@ public:
 
     EventResult event_handler(window::InputEvent& event)
     {
-        using namespace window;
 
-        switch (event.type)
+        for(auto& quad_widget : quad_widgets)
         {
+            if(quad_widget.has_cursor(cursor_sane))
+            {
+                quad_widget.event_handler(event);
+            }
+        }
 
-        case EventType::MouseButton :
+        if(event.is_mouse_button())
+        {
             if(event.mouse_button.is_left_down())
             {
                 println("RootScene widget mouse down!");
@@ -146,7 +153,6 @@ public:
                     auto& root_scene = ManagerScene::get_root_scene_mut();
                     root_scene.quad_manager.set_selected(quad_id);
                 }
-                    
                 return EventResult::Grab;
             }
             else if(event.mouse_button.is_left_up())
@@ -154,14 +160,7 @@ public:
                 println("RootScene widget mouse up!");
                 return EventResult::Release;
             }
-            break;
-        
-
-        default:
-            break;
-
         }
-
         return {};
     }
 
@@ -190,11 +189,11 @@ public:
 
         // Quads
         quad_pairs.clear();
-        f2 quad_delta = { 0.0f, -20.0f };
+        f2 quad_delta = { 0.0f, -18.0f };
         f2 quad_indent = {10.0f, 0.0f};
         
         pos += quad_indent;
-        for(const auto& quad : root_scene.quad_manager.get_quads())
+        for(const auto& quad : root_scene.quad_manager.get_quads_mut())
         {
             const Str& name_str = quad.get_name();
             Pair<size_t, BaseString> quad_id_base_pair = {quad.get_id(), BaseString{}};
@@ -204,6 +203,19 @@ public:
             quad_pairs.push_back(quad_id_base_pair);
         }
         pos -= quad_indent;
+
+
+        // Quad Widgets
+        quad_widgets.clear();
+
+        f2 quad_w_delta = { 0.0f, -32.0f };
+
+        for(auto& quad : root_scene.quad_manager.get_quads_mut())
+        {
+            WidgetQuad quad_widget;
+            quad_widget.reload(&quad, pos += quad_w_delta);
+            quad_widgets.push_back(quad_widget);
+        }
         
     }
 
@@ -216,6 +228,9 @@ public:
 
         for(auto& quad_string : quad_pairs)
             renderer.draw_base_string(quad_string.YY);
+
+        for(auto& quad_widget : quad_widgets)
+            quad_widget.render(renderer);
     }
 };
 

@@ -39,6 +39,9 @@ struct Box {
 
 class Base {
 
+
+protected:
+
     // UI::Box box;
     Box2D box;
 

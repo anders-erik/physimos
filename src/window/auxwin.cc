@@ -52,9 +52,6 @@ Auxwin::Auxwin(f2 new_window_size){
     init(new_window_size);
 }
 
-
-        // void init(int width, int height);
-
 void Auxwin::init(int width, int height){
     current_window_size_f = { (float) width, (float) height};
     current_window_size_i = { width, height};
@@ -156,10 +153,12 @@ void Auxwin::opengl_init(){
 }
 
 
-void Auxwin::make_current(){
+void Auxwin::make_current()
+{
     glfwMakeContextCurrent(glfw_window);
 }
-void Auxwin::bind_window_framebuffer(){
+void Auxwin::bind_window_framebuffer()
+{
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0,0, current_window_size_i.x, current_window_size_i.y);
     
@@ -184,7 +183,7 @@ bool Auxwin::is_open(){
 }
 
 
-std::vector<InputEvent> Auxwin::new_frame(){
+void Auxwin::new_frame(){
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.1f, 0.3f, 0.3f, 1.0f);
@@ -193,15 +192,18 @@ std::vector<InputEvent> Auxwin::new_frame(){
     // glEnable(GL_CULL_FACE);
 
 
-    std::vector<InputEvent> return_arr;
 
-    // move all event in current queue to return array
-    while(input_events.size() > 0){
-        return_arr.push_back(input_events.front());
-        input_events.pop();
-    }
+    // // move all event in current queue to return array
+    // while(other_input_events.size() > 0){
+    //     return_arr.push_back(other_input_events.front());
+    //     other_input_events.pop();
+    // }
 
-    return return_arr;
+
+    // std::vector<InputEvent> return_arr = events_other;
+    // events_other.clear();
+
+    // return return_arr;
 
 }
 bool Auxwin::end_frame(){
@@ -253,48 +255,35 @@ f2 Auxwin::get_monitor_size_mm()
 
 
 
-std::queue<InputEvent> Auxwin::get_input_events(){
-    std::queue<InputEvent> tmp_queue = input_events;
-
-    while(input_events.size() > 0)
-        input_events.pop();
-
-    return tmp_queue;
-
+void Auxwin::add_input_event(InputEvent event)
+{
+    if(event.is_window_resize())
+        events_resize.push_back(event);
+    else if(event.is_mouse_movement())
+        events_mouse_movement.push_back(event);
+    else
+        events_other.push_back(event);
 }
 
-InputEvent Auxwin::get_input_event(){
-    InputEvent input_event;
-
-    // std::queue<InputEvent> input_events = get_input_events_(glfw_window);
-
-    if(input_events.size() == 0){
-        input_event.type = EventType::None;
-    }
-    else {
-
-        // loop until 
-        // 1) an event matching current glfw window
-        // 2) event of type none, meaning that the queue is empty
-        while(true){
-            input_event = input_events.front();
-
-            if(input_event.glfw_window == glfw_window){
-                input_events.pop();
-                break;
-            }
-            else if (input_event.type == EventType::None){
-                break;
-            }
-
-        }
-    }
-
-    return input_event;
+std::vector<InputEvent> Auxwin::get_events_other()
+{
+    auto return_vector = events_other;
+    events_other.clear();
+    return return_vector;
 }
 
-void Auxwin::add_input_event(InputEvent event){
-    input_events.push(event);
+std::vector<InputEvent> Auxwin::get_events_mouse_movement()
+{
+    auto return_vector = events_mouse_movement;
+    events_mouse_movement.clear();
+    return return_vector;
+}
+
+std::vector<InputEvent> Auxwin::get_events_window_resize()
+{
+    auto return_vector = events_resize;
+    events_resize.clear();
+    return return_vector;
 }
 
 void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
@@ -312,7 +301,7 @@ void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
         i2(_width, _height),
         get_monitor_content_scale()
     };
-    input_events.emplace(glfw_window, event_type, win_resize_event, cursor);
+    events_resize.emplace_back(glfw_window, event_type, win_resize_event, cursor);
 
     cursor.window_dims.x = (float) _width;
     cursor.window_dims.y = (float) _height;
@@ -346,7 +335,7 @@ void Auxwin::mouse_button_callback(GLFWwindow *window, int button, int action, i
     }
 
     
-    input_events.emplace(window, event_type, mouse_button_event, cursor);
+    events_other.emplace_back(window, event_type, mouse_button_event, cursor);
 }
 
 void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
@@ -369,7 +358,7 @@ void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double yp
                                         cursor
                                     );
 
-    input_events.emplace(window, event_type, mouse_movement, cursor);
+    events_mouse_movement.emplace_back(window, event_type, mouse_movement, cursor);
 
 }
 void Auxwin::scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
@@ -378,7 +367,7 @@ void Auxwin::scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     EventType       event_type = EventType::MouseScroll;
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
-    input_events.emplace(window, event_type, mouse_scroll, cursor);
+    events_other.emplace_back(window, event_type, mouse_scroll, cursor);
 }
 void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
 
@@ -419,7 +408,7 @@ void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
         try_close();
 
 
-    input_events.emplace(window, event_type, keystroke_event, cursor);
+    events_other.emplace_back(window, event_type, keystroke_event, cursor);
 }
 
 }

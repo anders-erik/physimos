@@ -21,7 +21,7 @@ struct WidgetQuad : public Widget
 {
     size_t quad_id;
     scene::QuadS2D* quad;
-    f2 size = {180.0f, 20.0f};
+    f2 size = {180.0f, 30.0f};
 
     BaseString quad_name;
 
@@ -37,12 +37,15 @@ public:
         case EventType::MouseButton :
             if(event.mouse_button.is_left_down())
             {
-                println("WidgetQuad mouse down!");
+                // println("WidgetQuad mouse down!");
+                auto& root_scene = ManagerScene::get_root_scene_mut();
+                root_scene.quad_manager.set_selected(quad_id);
+
                 return EventResult::Grab;
             }
             else if(event.mouse_button.is_left_up())
             {
-                println("WidgetQuad mouse up!");
+                // println("WidgetQuad mouse up!");
                 return EventResult::Release;
             }
             break;
@@ -61,9 +64,11 @@ public:
     {
         if(_quad == nullptr)
             return;
-        
+
         // Update quad
         quad = _quad;
+        if(quad != nullptr)
+            quad_id = quad->get_id();
 
         // Frame
         frame.pos = new_pos;
@@ -72,7 +77,7 @@ public:
         frame_base.set_rgba_color(0x444444ff);
 
         // Name
-        f2 name_delta = { 0.0f, 0.0f };
+        f2 name_delta = { 5.0f, 6.0f };
         Str name_str = quad->get_name();
         quad_name.set_pos(frame.pos + name_delta);
         quad_name.set_str(name_str);

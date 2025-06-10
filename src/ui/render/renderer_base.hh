@@ -34,7 +34,7 @@ class RendererBase {
     ProgramString program_string;
 
     // String 
-    std::vector<VertexFontBitmap> char_verts;
+    std::vector<GlyphFontBitmap> glyphs_tmp; // temporarily holds all glyphs for sending to gpu
     FontBitmap font_bitmap;
 
 

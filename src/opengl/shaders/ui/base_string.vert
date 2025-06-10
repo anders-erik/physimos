@@ -10,18 +10,14 @@ uniform mat4 primitiveTransform;
 out vec2 TexCoord;
 
 
+mat4 primitiveTransform_shifted = primitiveTransform; // uniform is read only
+
 void main()
 {
-    
-    mat4 primitiveTransform_shifted = primitiveTransform;
-
-    // Shift the given char offset in the positive x direction
     // NOTE: Column major!
     primitiveTransform_shifted[3].x += xOffset;
 
     gl_Position = viewportTransform * primitiveTransform_shifted * vec4(posIn, 1.0);
 
-    // aTexCoord.x += 0.05;
-
-    TexCoord = vec2(aTexCoord.x, aTexCoord.y+0.05);
+    TexCoord = aTexCoord;
 }

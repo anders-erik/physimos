@@ -113,22 +113,23 @@ void RendererBase::draw_base_texture(UI::BaseTexture& base_texture){
 
 }
 
-void RendererBase::draw_base_string(UI::BaseString & base_string)
+void RendererBase::draw_base_string(UI::BaseString& base_string)
 {
-    // Draw base with distinct string-color
-    UI::Base base_copy = (Base)base_string;
-    base_copy.set_rgba_color(0xff0000ff);
-    draw_base(base_copy);
+    // Draw the base background color
+    draw_base((Base&)base_string);
     
-    font_bitmap.string_to_texture_vertex_list(char_verts, base_string.str);
-
-    program_string.set_base_transform(
-        base_string.get_M_m_s().pointer()
+    // Generate all glyphs
+    font_bitmap.str_to_bitmap_glyphs(
+        glyphs_tmp, 
+        base_string.str, 
+        base_string.glyph_size.x
     );
 
-    // program_string.set_texture(font_bitmap.get_font_texture()); // set in renderer constructor
+    program_string.set_base_transform(base_string.get_box().pos, base_string.glyph_size);
 
-    program_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(VertexFontBitmap));
+    program_string.set_texture(font_bitmap.get_font_texture()); // double set in renderer constructor
+
+    program_string.set_glyph_data(glyphs_tmp);
 
     program_string.draw();
 }

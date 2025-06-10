@@ -34,8 +34,9 @@ public:
     /** Add transfer ownership and get a stable quad id back. */
     QuadS2D* add_quad(QuadS2D& new_quad);
     QuadS2D* new_quad();
-    QuadS2D* get_quad(size_t id);
-    std::list<QuadS2D>& get_quads();
+    QuadS2D* get_quad_mut(size_t id);
+    const std::list<QuadS2D>& get_quads();
+    std::list<QuadS2D>& get_quads_mut();
 
     void set_selected(size_t quad_id);
     QuadS2D* get_selected();

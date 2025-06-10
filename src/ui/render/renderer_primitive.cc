@@ -40,6 +40,7 @@ RendererPrimitive::RendererPrimitive()
 {
 
     // opengl::textures_init();
+    UI::font::init_font();
 
     viewport_transform.x.x = 2.0f / (float)SCREEN_INIT_WIDTH;
     viewport_transform.y.y = 2.0f / (float)SCREEN_INIT_HEIGHT;
@@ -54,7 +55,7 @@ RendererPrimitive::RendererPrimitive()
 
     program_primitive_string.init();
     program_primitive_string.set_viewport_transform(viewport_transform);
-    program_primitive_string.set_texture(font_bitmap.get_font_texture());
+    program_primitive_string.set_texture(UI::font::get_font_texture());
 
 }
 
@@ -130,8 +131,8 @@ void RendererPrimitive::draw_primitive_string(UI::Primitive & primitive){
     );
 
     Str str = Str(primitive.str.c_str());
-    // font::string_to_texture_vertex_list(char_verts, primitive.str);
-    font_bitmap.string_to_texture_vertex_list(char_verts, str);
+    font::string_to_texture_vertex_list(char_verts, primitive.str);
+    // .string_to_bitmap_glyphs(char_verts, str);
 
     program_primitive_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(VertexFontBitmap));
 

@@ -53,10 +53,13 @@ int main(){
     // camera.pan({ -400.0f, -300.0f}); // Half of window size
 
 
-    std::vector<window::InputEvent> input_events = auxwin.new_frame();
+    // std::vector<window::InputEvent> input_events = auxwin.new_frame();
+    auxwin.new_frame();
+
 
     while (auxwin.end_frame()){
-        input_events = auxwin.new_frame();
+        auxwin.new_frame();
+        std::vector<window::InputEvent> input_events = auxwin.get_events_other();
 
         for(auto& event : input_events){}
 

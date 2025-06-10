@@ -40,6 +40,7 @@ struct Widget
 {
     f2 cursor_sane; // cursor position at last successful cursor query
 
+    // To be included using future Base inheritence
     Box2D frame;
     Base frame_base;
 

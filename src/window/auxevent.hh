@@ -164,6 +164,12 @@ struct InputEvent {
     InputEvent() : type { EventType::None} {};
 
     bool is_type(EventType _type) { return _type == type ? true : false;}
+
+    bool is_mouse_button() {return type == EventType::MouseButton ? true : false;};
+    bool is_mouse_movement() {return type == EventType::MouseMove ? true : false;};
+    bool is_mouse_scroll() {return type == EventType::MouseScroll ? true : false;};
+    bool is_keystroke() {return type == EventType::Keystroke ? true : false;};
+    bool is_window_resize() {return type == EventType::WindowResize ? true : false;};
 };
 
 
