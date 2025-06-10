@@ -10,23 +10,18 @@
 namespace scene {
 
 
-
-void QuadS2D::set_quad_id(size_t new_id)
+const size_t QuadS2D::get_id() const
 {
-    quad_id = new_id;
-}
-size_t QuadS2D::get_quad_id()
-{
-    return quad_id;
+    return id;
 }
 
 void QuadS2D::set_name(Str new_name)
 {
     name = new_name;
 }
-Str & QuadS2D::get_name()
+const Str& QuadS2D::get_name() const
 {
-return name;
+    return name;
 }
 
 
@@ -103,7 +98,7 @@ void QuadS2D::update_texture()
     }
     else if (is_scene2D())
     {
-        scene::Scene2D* scene = ManagerScene::get_scene(object_id);
+        scene::Scene2D* scene = ManagerScene::try_find_scene(object_id);
         if(scene == nullptr)
             return;
 

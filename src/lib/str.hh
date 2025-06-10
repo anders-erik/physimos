@@ -83,7 +83,7 @@ struct Str {
 
     /** Underscape to prevent name-clash with global print function. */
     void print_();
-    void print_line();
+    void print_line() const;
     void print_line_quotes();
 
     void busy();

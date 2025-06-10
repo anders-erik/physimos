@@ -419,7 +419,7 @@ void Str::print_()
 {
     print(*this);
 }
-void Str::print_line()
+void Str::print_line() const
 {
     println(*this);
 }

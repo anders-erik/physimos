@@ -36,7 +36,7 @@ public:
 
 private:
 
-    size_t quad_id; // index of 0 = no quad exists for this id
+
     T type = T::Bitmap;
     Str name; // given name
 
@@ -49,13 +49,16 @@ private:
 
 public:
 
+    size_t id; // index of 0 = no quad exists for this id
+    // QuadS2D(size_t id): id {id} {};
+    
     QuadS2D() = default;
 
-    void set_quad_id(size_t new_id);
-    size_t get_quad_id();
+    /** Quad id. Read only. */
+    const size_t get_id() const;
 
     void set_name(Str new_name);
-    Str& get_name();
+    const Str& get_name() const;
 
     void set_box(f2 pos, f2 size);
     Box2D get_box();

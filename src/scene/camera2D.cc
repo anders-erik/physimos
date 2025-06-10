@@ -44,6 +44,18 @@ void Camera2D::set_framebuffer_size(f2 size)
     reload_height();
 }
 
+void Camera2D::zoom_cursor_fixed(float size_factor, f2 cursor_pos_normalized)
+{
+    // As the resizing will not change the normalized position in the viewbox, the scene delta induced is trivial to find
+
+    f2 cursor_pos_scene = normalized_to_scene_coords(cursor_pos_normalized);
+    set_width(get_width() * size_factor);
+    f2 new_cursor_pos_scene = normalized_to_scene_coords(cursor_pos_normalized);
+
+    f2 scroll_induced_move = new_cursor_pos_scene - cursor_pos_scene;
+    pan(scroll_induced_move); 
+}
+
 void Camera2D::reload_height()
 {
     box.size.y = box.size.x / AR();

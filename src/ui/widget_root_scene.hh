@@ -143,8 +143,8 @@ public:
                 size_t quad_id = try_find_quad_id_at_cursor_location();
                 if(quad_id != 0)
                 {
-                    auto* root_scene = ManagerScene::get_root_scene();
-                    root_scene->quad_manager.set_selected(quad_id);
+                    auto& root_scene = ManagerScene::get_root_scene_mut();
+                    root_scene.quad_manager.set_selected(quad_id);
                 }
                     
                 return EventResult::Grab;
@@ -170,7 +170,7 @@ public:
     /** Recreates the whole widget from scene data every call. */
     void reload(f2 widget_pos)
     {
-        scene::Scene2D* root_scene = ManagerScene::get_root_scene();
+        scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
         
 
         // Frame
@@ -183,7 +183,7 @@ public:
 
         // Name
         f2 name_delta = { 0.0f, -20.0f };
-        Str name_str = root_scene->name;
+        Str name_str = root_scene.get_name();
         scene_name_base.set_pos( pos += name_delta );
         // scene_name_base.set_size( offset );
         scene_name_base.set_str(name_str);
@@ -194,14 +194,10 @@ public:
         f2 quad_indent = {10.0f, 0.0f};
         
         pos += quad_indent;
-        for(size_t quad_id : root_scene->quad_ids)
+        for(const auto& quad : root_scene.quad_manager.get_quads())
         {
-            auto* quad = root_scene->quad_manager.get_quad(quad_id);
-            if(quad == nullptr)
-                continue;
-
-            Str& name_str = quad->get_name();
-            Pair<size_t, BaseString> quad_id_base_pair = {quad_id, BaseString{}};
+            const Str& name_str = quad.get_name();
+            Pair<size_t, BaseString> quad_id_base_pair = {quad.get_id(), BaseString{}};
             quad_id_base_pair.YY.set_pos(pos += quad_delta);
             quad_id_base_pair.YY.set_size( {20.0f, 10.0f} );
             quad_id_base_pair.YY.set_str(name_str);

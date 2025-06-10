@@ -32,9 +32,10 @@ public:
     QuadManager() = default;
 
     /** Add transfer ownership and get a stable quad id back. */
-    size_t add_quad(QuadS2D& new_quad);
+    QuadS2D* add_quad(QuadS2D& new_quad);
     QuadS2D* new_quad();
     QuadS2D* get_quad(size_t id);
+    std::list<QuadS2D>& get_quads();
 
     void set_selected(size_t quad_id);
     QuadS2D* get_selected();

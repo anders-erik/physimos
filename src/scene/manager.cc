@@ -19,12 +19,11 @@ static Box2D target_window_box;
 
 static window::CursorPosition cursor_pos; // Copy from most recent cursor move event
 
-static struct SceneState {
+static struct ScenesState {
     const size_t root_id = 1; // root scene is created during init; is indestructable; id==1;
     size_t window_id = 1; // the scene renedered to the main framebuffer
-    size_t active_id = 1; // Currently selected scene by mouse click event; recieves non mouse input events
-    size_t cursor_target_id = 1; // scene curently hovered by cursor - recieves mouse click and movement events
-} state;
+    size_t cursor_id = 1; // scene curently hovered by, or is grabbing, cursor - recieves mouse click and movement events
+} scenes_state;
 
 // std::vector<scene::Scene2D> scenes;
 static std::list<scene::Scene2D> scenes;
@@ -46,40 +45,7 @@ size_t new_unique_id()
     return id_count;
 }
 
-scene::Scene2D * try_find_scene(size_t id){
 
-    for(scene::Scene2D& scene : scenes)
-        if(scene.get_id() == id)
-            return &scene;
-    
-    return nullptr;
-
-}
-
-scene::Scene2D* new_scene(scene::Scene2D & _scene){
-    
-    size_t new_id = new_unique_id();
-
-    _scene.set_id(new_id);
-
-    scenes.push_back( _scene );
-
-
-    scene::Scene2D* new_scene = try_find_scene(new_id);
-
-    return new_scene;
-
-}
-
-scene::Scene2D* new_scene(f2 framebuffer_size)
-{
-    scene::Scene2D& new_scene = scenes.emplace_back( framebuffer_size );
-
-    size_t new_id = new_unique_id();
-    new_scene.set_id(new_id);
-    
-    return &new_scene;
-}
 
 scene::Scene2D* init(f2 _window_size)
 {
@@ -92,29 +58,50 @@ scene::Scene2D* init(f2 _window_size)
     
     scene::Scene2D& root_scene = scenes.emplace_back( window_size );
 
-    root_scene.set_id(state.root_id);
+    root_scene.set_id(scenes_state.root_id);
 
-    state.window_id = state.root_id;
-    state.active_id = state.root_id;
-    state.cursor_target_id = 0;
+    scenes_state.window_id = scenes_state.root_id;
+    scenes_state.cursor_id = 0;
 
     return &root_scene;
 }
 
-scene::Scene2D* get_root_scene()
+
+size_t push_scene(scene::Scene2D& _scene){
+    
+    size_t new_id = new_unique_id();
+
+    _scene.set_id(new_id);
+
+    scenes.push_back( _scene );
+
+    return new_id;
+}
+
+
+
+scene::Scene2D& get_root_scene_mut()
 {
-    scene::Scene2D* root_scene = try_find_scene(state.root_id);
+    scene::Scene2D* root_scene = try_find_scene(scenes_state.root_id);
+
     // debug : if root scene, which should NEVER be null, is in fact null
     if(root_scene == nullptr)
 			throw std::runtime_error("Root scene is nullptr");
 
-    return root_scene;
+    return *root_scene;
 }
 
-scene::Scene2D* get_scene(size_t id)
+scene::Scene2D* try_find_scene(size_t id)
 {
-    return try_find_scene(id);
+    for(scene::Scene2D& scene : scenes)
+        if(scene.get_id() == id)
+            return &scene;
+
+    return nullptr;
 }
+
+
+
 
 void update_current_target(window::CursorPosition& _cursor_pos)
 {
@@ -125,34 +112,57 @@ void update_current_target(window::CursorPosition& _cursor_pos)
         return;
 
     f2 window_pos = {0.0f, 0.0f}; // window scene is always filling the whole window
-    scene::Scene2D* current_scene_target = get_root_scene()->try_find_target_scene(cursor_pos.normalized, { window_pos, window_size });
+    Box2D window_box = {
+        window_pos,
+        window_size,
+    };
+    
+    // TODO: Root scene is currently always the window scene
+    auto* window_scene = &get_root_scene_mut();
 
-    state.cursor_target_id = current_scene_target->get_id();
+    window_scene->set_cursor_pos(cursor_pos.normalized);
+    window_scene->set_window_box(window_box); // This is superfluous -- size should already match window!
+    window_scene->try_hover_quad();
+
+    auto* current_scene_target = window_scene->try_find_window_subscene();
+
+    if(current_scene_target == nullptr)
+        throw std::runtime_error("Try find current scene target was nullptr.");
+
+    
+
+    scenes_state.cursor_id = current_scene_target->get_id();
+    current_scene_target->try_hover_quad();
     target_window_box = current_scene_target->get_window_box();
-
 }
 
-bool has_grabbed_target()
+bool is_grabbing_cursor()
 {
     return is_grabbing_a_scene;
 }
 
-void clear_current_target()
+void clear_cursor_highlighting()
 {
-    // clear all scenes highlighting (not quad selection still)
-    for(scene::Scene2D& scene : scenes)
-    {
-        scene.clear_hovers();
-        scene.clear_grab();
-    }
+    // TODO: Implement this for a window scene that might not be the root scene
 
-    state.cursor_target_id = 0;
+    auto& root_scene = get_root_scene_mut();
+    
+    root_scene.clear_quad_hovers();
+    root_scene.clear_cursor_grab();
+
+    scenes_state.cursor_id = 1;
 }
 
 scene::Scene2D * get_current_target()
 {
-    return get_scene(state.cursor_target_id);
+    return try_find_scene(scenes_state.cursor_id);
 }
+
+
+
+
+
+
 
 void event_scroll(window::InputEvent & event)
 {
@@ -197,6 +207,15 @@ void event_mouse_button(window::InputEvent & event)
 
     current_target->handle_pointer_click(pointer_click);
 
+
+    // select the subscene quad in window scene
+    if(mouse_button_event.is_left_down())
+    {
+        auto* window_scene = ManagerScene::try_find_scene(scenes_state.window_id);
+        window_scene->try_select_quad();
+    }
+
+
     if(mouse_button_event.is_middle_down())
     {
         is_grabbing_a_scene = true;
@@ -204,7 +223,7 @@ void event_mouse_button(window::InputEvent & event)
     else if(mouse_button_event.is_middle_up())
     {
         is_grabbing_a_scene = false;
-        clear_current_target();
+        clear_cursor_highlighting();
     }
 
 }
@@ -235,7 +254,7 @@ void event_window_resize(window::InputEvent & event)
     window_size = resize_event.size_f;
     
     // TODO: update the window scene?
-    ManagerScene::get_root_scene()->set_framebuffer_size(resize_event.size_f);
+    ManagerScene::get_root_scene_mut().set_framebuffer_size(resize_event.size_f);
 }
 
 

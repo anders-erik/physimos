@@ -14,7 +14,7 @@ namespace scene {
 class Camera2D 
 {
     f2 framebuffer_size_scene;
-    Box2D box; // Camera size and offset in scene coordinates.
+    Box2D box; // Camera viewbox: size and offset in scene coordinates.
 
 public:
 
@@ -27,9 +27,11 @@ public:
     
     /** Framebuffer size should have an aspect ratio equal to the set gl-viewport. */
     void set_framebuffer_size(f2 size);
-    /** Camera width in scene coordinates */
+    /** Change the dimensions of the camera viewbox, then set position to keep cursor at same scene location. */
+    void zoom_cursor_fixed(float size_factor, f2 cursor_pos_normalized);
+    /** Camera width in scene coordinates. Also reloads height to maintain fixed aspect ratio. */
     void set_width(float new_width);
-    /** Current camera with in scene coordinates. */
+    /** Current camera width in scene coordinates. */
     float get_width();
     /** Aspect ratio of camera view. Should match gl-viewport AR. */
     float AR();

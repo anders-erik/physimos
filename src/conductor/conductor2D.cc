@@ -9,7 +9,7 @@ Conductor2D::Conductor2D(f2 window_size_f)
 {
 	// First scene added to scene manager becomes root
 	scene::Scene2D* root_scene = ManagerScene::init(window_size_f);
-	root_scene->set_camera_width(window_size_f.x);
+	root_scene->set_viewbox_width(window_size_f.x);
 
 	// Phont rendering program
 	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
@@ -17,7 +17,7 @@ Conductor2D::Conductor2D(f2 window_size_f)
 
 void Conductor2D::target_pui(){
 	targeting_ui = true;
-	ManagerScene::clear_current_target();
+	ManagerScene::clear_cursor_highlighting();
 }
 void Conductor2D::target_scenes(){
 	targeting_ui = false;
@@ -32,7 +32,7 @@ void Conductor2D::update_current_target()
 	{
 		target_pui();
 	}
-	else if(ManagerScene::has_grabbed_target())
+	else if(ManagerScene::is_grabbing_cursor())
 	{
 		target_scenes();
 	}
@@ -199,15 +199,15 @@ void Conductor2D::main_loop(){
 
 
 		
-		scene::Scene2D* root_scene = ManagerScene::get_root_scene();
+		scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
 
-		root_scene->update();
+		root_scene.update();
 
-		root_scene->render_subscene_textures();
+		root_scene.render_subscene_textures();
 
 		// Render To Window
 		auxwin.bind_window_framebuffer();
-		root_scene->render_to_window();
+		root_scene.render_to_window();
 
 		// UI
 		pui.render();
