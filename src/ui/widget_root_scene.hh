@@ -187,36 +187,21 @@ public:
         // scene_name_base.set_size( offset );
         scene_name_base.set_str(name_str);
 
-        // Quads
-        quad_pairs.clear();
-        f2 quad_delta = { 0.0f, -18.0f };
-        f2 quad_indent = {10.0f, 0.0f};
-        
-        pos += quad_indent;
-        for(const auto& quad : root_scene.quad_manager.get_quads_mut())
-        {
-            const Str& name_str = quad.get_name();
-            Pair<size_t, BaseString> quad_id_base_pair = {quad.get_id(), BaseString{}};
-            quad_id_base_pair.YY.set_pos(pos += quad_delta);
-            quad_id_base_pair.YY.set_size( {20.0f, 10.0f} );
-            quad_id_base_pair.YY.set_str(name_str);
-            quad_pairs.push_back(quad_id_base_pair);
-        }
-        pos -= quad_indent;
-
 
         // Quad Widgets
         quad_widgets.clear();
 
         f2 quad_w_delta = { 0.0f, -32.0f };
-
+        f2 quad_indent = {10.0f, 0.0f};
+        
+        pos += quad_indent;
         for(auto& quad : root_scene.quad_manager.get_quads_mut())
         {
             WidgetQuad quad_widget;
             quad_widget.reload(&quad, pos += quad_w_delta);
             quad_widgets.push_back(quad_widget);
         }
-        
+        pos -= quad_indent;
     }
 
 

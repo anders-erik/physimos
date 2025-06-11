@@ -122,7 +122,8 @@ void RendererBase::draw_base_string(UI::BaseString& base_string)
     font_bitmap.str_to_bitmap_glyphs(
         glyphs_tmp, 
         base_string.str, 
-        base_string.glyph_size.x
+        base_string.glyph_size.x,
+        base_string.max_width
     );
 
     program_string.set_base_transform(base_string.get_box().pos, base_string.glyph_size);

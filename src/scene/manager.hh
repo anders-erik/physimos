@@ -52,8 +52,9 @@ size_t push_scene(scene::Scene2D& _scene);
     If match found that subscene is the new target; else the window scene;
     This query updates the current cursor position and the scenes window box.
  */
-void update_current_target(window::CursorPosition& _cursor_pos);
-void clear_cursor_highlighting();
+void set_cursor_pos_bypass_grab(window::CursorPosition& _cursor_pos);
+void clear_cursor_hovers();
+void clear_cursor_selections();
 bool is_grabbing_cursor();
 scene::Scene2D* get_current_target();
 

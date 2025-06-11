@@ -11,6 +11,7 @@
 #include "ui/widget_root_scene.hh"
 #include "ui/widget_quad.hh"
 
+#include "ui/pui_cursor.hh"
 
 namespace UI {
 
@@ -27,23 +28,11 @@ class PUI
     UI::BaseTexture base_texture;
     UI::BaseString base_string;
 
-    UI::Widget* grabbed_widget = nullptr;   // widget that has grabbed the cursor
-    UI::Widget* hovered_widget = nullptr; // currently targeted widget
 
     UI::WidgetRootScene widget_root_scene;
     UI::WidgetQuad widget_quad;
 
-
-    bool is_targeting_widget();
-    bool is_hovering_widget();
-    bool is_grabbing_widget();
-    void hover_clear();
-    void clear_grabbed_widget();
-    bool is_grabbing(Widget* widget);
-    bool is_hovering(Widget* widget);
-    bool is_targeted_widget(Widget* widget);
-    void grab(Widget* widget);
-    void hover(Widget* widget);
+    PUICursor cursor;
 
 public:
 
@@ -58,12 +47,14 @@ public:
     /** 
         Queries the ui for a matching element in which the cursor is contained.
         Targets remain valid until another reload() is issued.
-        If no grabbet targets available, the hovered target is always reset.
+        If grabbet target, the hovered target is no requeried.
      */
-    void reload_cursor_target(f2 cursor_pos_win_sane);
+    void set_cursor_pos_bypass_grab(f2 cursor_pos_win_sane);
+
+    void clear_cursor_target();
 
     /** Reloads the UI to reflect the most up-to-date data from scenes. */
-    void reload();
+    void update();
 
     void event_all(window::InputEvent& event);
     void event_window_resize(window::InputEvent& event);

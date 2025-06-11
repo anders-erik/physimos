@@ -20,37 +20,54 @@ Conductor2D::Conductor2D(f2 window_size_f)
 
 
 
-void Conductor2D::target_pui(){
+void Conductor2D::
+target_pui()
+{
 	targeting_ui = true;
-	ManagerScene::clear_cursor_highlighting();
-}
-void Conductor2D::target_scenes(){
-	targeting_ui = false;
-	ManagerScene::update_current_target(cursor_pos);
+	
 }
 
-void Conductor2D::set_subsystem_target()
+
+void Conductor2D::
+target_scenes()
+{
+	targeting_ui = false;
+	pui.clear_cursor_target();
+}
+
+
+void Conductor2D::
+set_subsystem_target()
 {
 	// Grab takes precedence over hover
 	if(pui.is_grabbing_cursor())
 	{
 		target_pui();
+		return;
 	}
 	else if(ManagerScene::is_grabbing_cursor())
 	{
 		target_scenes();
+		return;
 	}
-	else if(pui.is_targeted_by_cursor())
+
+	// Cold queries as no system is grabbing
+	ManagerScene::clear_cursor_hovers();
+	pui.clear_cursor_target();
+
+	// Check is there is a pui match
+	pui.set_cursor_pos_bypass_grab(cursor_pos.sane);
+	if(pui.is_targeted_by_cursor())
 	{
-		target_pui();
+		targeting_ui = true;
+		return;
 	}
-	else // if no grab nor ui target -> must be targeting a scene
-	{
-		target_scenes();
-	}
+
+	// By process of elimination, scene is targeted
+
+	targeting_ui = false;
+	ManagerScene::set_cursor_pos_bypass_grab(cursor_pos);
 }
-
-
 
 
 
@@ -116,10 +133,11 @@ void Conductor2D::process_framebuffer_events()
 
 void Conductor2D::main_loop()
 {
-	
 	while (auxwin.is_open())
 	{
+		process_framebuffer_events(); // change framebuffer size before clearing
 		auxwin.new_frame();
+
 
 		// Set the target that will recieve all events during this frame
 		// This query will use the cached mouse position from most recent movement event
@@ -127,21 +145,22 @@ void Conductor2D::main_loop()
 		set_subsystem_target();
 
 		process_mouse_movement();
-		process_framebuffer_events();
 		process_other_events();
 
-		// Root scene (to become window scene)
+		// UPDATE
 		scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
 		root_scene.update();
 		root_scene.render_subscene_textures();
+
+		pui.update(); // reflect scene state changes
+		
+
+		// RENDER
+
 		auxwin.bind_window_framebuffer();
 		root_scene.render_to_window();
-
-		pui.reload(); // reflect scene state changes
-		pui.reload_cursor_target(cursor_pos.sane);
-		// Render ui after all scenes are rendered
-		pui.render();
-
+		pui.render(); // Render ui on top of scenes
+		
 		auxwin.end_frame();
 	}
 

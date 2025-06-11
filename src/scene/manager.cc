@@ -115,13 +115,13 @@ scene::Scene2D* try_find_scene(size_t id)
 
 
 
-void update_current_target(window::CursorPosition& _cursor_pos)
+void set_cursor_pos_bypass_grab(window::CursorPosition& _cursor_pos)
 {
     // cursor_pos = _cursor_pos;
 
     // maintain most recent target
-    if(is_grabbing_a_scene)
-        return;
+    // if(is_grabbing_a_scene)
+    //     return;
 
     f2 window_pos = {0.0f, 0.0f}; // window scene is always filling the whole window
     Box2D window_box = {
@@ -153,7 +153,7 @@ bool is_grabbing_cursor()
     return is_grabbing_a_scene;
 }
 
-void clear_cursor_highlighting()
+void clear_cursor_hovers()
 {
     // TODO: Implement this for a window scene that might not be the root scene
 
@@ -161,9 +161,30 @@ void clear_cursor_highlighting()
     
     // root_scene.clear_quad_hovers();
     root_scene.quad_manager.clear_hovered();
-    root_scene.clear_cursor_grab();
+    // root_scene.quad_manager.clear_selection();
+    // root_scene.clear_cursor_grab();
+
+    for(auto& quad : root_scene.quad_manager.get_quads_mut())
+    {
+        if(quad.is_scene2D())
+        {
+            auto* scene = ManagerScene::try_find_scene(quad.get_object_id());
+            if(scene != nullptr)
+            {
+                scene->quad_manager.clear_hovered();
+                // scene->clear_cursor_grab();
+                // scene->quad_manager.clear_selection();
+            }
+        }
+        
+    }
 
     scenes_state.cursor_id = 1;
+}
+
+void clear_cursor_selections()
+{
+
 }
 
 scene::Scene2D * get_current_target()
@@ -241,7 +262,7 @@ event_mouse_button(window::InputEvent& event)
     else if(mouse_button_event.is_middle_up())
     {
         is_grabbing_a_scene = false;
-        clear_cursor_highlighting();
+        clear_cursor_hovers();
     }
 
 }

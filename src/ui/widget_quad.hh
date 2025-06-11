@@ -34,19 +34,19 @@ public:
         switch (event.type)
         {
 
-        case EventType::MouseButton :
+        case EventType::MouseButton:
             if(event.mouse_button.is_left_down())
             {
                 // println("WidgetQuad mouse down!");
                 auto& root_scene = ManagerScene::get_root_scene_mut();
                 root_scene.quad_manager.set_selected(quad_id);
 
-                return EventResult::Grab;
+                // return EventResult::Grab;
             }
             else if(event.mouse_button.is_left_up())
             {
                 // println("WidgetQuad mouse up!");
-                return EventResult::Release;
+                // return EventResult::Release;
             }
             break;
         

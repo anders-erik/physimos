@@ -15,11 +15,6 @@ namespace UI {
 
 /** Vertex for a bitmap glyph */
 typedef struct VertexFontBitmap {
-    // float vx;
-    // float vy;
-    // float vz;
-    // float tx;
-    // float ty;
     f3 pos;
     f2 tex;
     float x_offset;
@@ -34,6 +29,7 @@ struct GlyphFontBitmap {
     VertexFontBitmap v4;
     VertexFontBitmap v5;
 
+    /** Set which char we grab from texture */
     void set_texture_y(float tex_coord_offset)
     {
         v0.tex.y += tex_coord_offset;
@@ -44,6 +40,23 @@ struct GlyphFontBitmap {
         v5.tex.y += tex_coord_offset;
     }
 
+    /** Set the glyph texture sampling width as a fraction of the normal width (which is 1). */
+    void set_texture_x_width(float sampled_width)
+    {
+        v1.tex.x *= sampled_width;
+        v3.tex.x *= sampled_width;
+        v5.tex.x *= sampled_width;
+    }
+
+    /** Set the glyph width as a fraction of the default vertex width */
+    void set_normalized_width(float normalized_width)
+    {
+        v1.pos.x *= normalized_width;
+        v3.pos.x *= normalized_width;
+        v5.pos.x *= normalized_width;
+    }
+
+    /** Shift the vertex horizontally based on index in string. */
     void set_x_offset(float pos_x_offset)
     {
         v0.x_offset += pos_x_offset;
@@ -84,7 +97,8 @@ public:
     void str_to_bitmap_glyphs(
         std::vector<GlyphFontBitmap>& str_glyphs, 
         Str& str_to_extract,
-        float glyph_width
+        float glyph_width,
+        float max_width
     );
 
 

@@ -21,88 +21,27 @@ PUI::PUI(f2 window_size_f, f2 content_scale)
     base_string.set_pos({170, 50});
 }
 
-bool PUI::
-is_targeting_widget()
-{
-    if(is_grabbing_widget())
-        return true;
-    if(is_hovering_widget())
-        return true;
-    return false;
-}
-
-bool PUI::
-is_targeted_widget(Widget* widget)
-{
-    if(is_grabbing(widget))
-        return true;
-    if(is_hovering(widget))
-        return true;
-    return false;
-}
-
-void PUI::grab(Widget * widget)
-{
-    grabbed_widget = widget;
-}
-
-void PUI::hover(Widget * widget)
-{
-    hovered_widget = widget;
-}
-
-bool PUI::
-is_hovering_widget()
-{
-    return hovered_widget == nullptr ? false : true;
-}
-
-bool PUI::
-is_grabbing_widget()
-{
-    return grabbed_widget == nullptr ? false : true;
-}
-
-bool PUI::
-is_grabbing(Widget* widget)
-{
-    return grabbed_widget == widget ? true : false;
-}
-
-bool PUI::is_hovering(Widget * widget)
-{
-    return hovered_widget == widget ? true : false;
-}
-
-void PUI::hover_clear()
-{
-    hovered_widget = nullptr;
-}
-
-void PUI::clear_grabbed_widget()
-{
-    grabbed_widget = nullptr;
-}
 
 
 
 void PUI::
-reload_cursor_target(f2 cursor_pos_win_sane)
+set_cursor_pos_bypass_grab(f2 cursor_pos_win_sane)
 {
-    if(is_grabbing_widget())
-        return;
+    // if(cursor.is_grabbing_widget())
+    //     return;
     
-    hover_clear();
+    cursor.clear_grabbed_widget();
+    cursor.clear_hover();
 
     if(widget_quad.has_cursor(cursor_pos_win_sane))
     {
-        hover(&widget_quad);
+        cursor.hover(&widget_quad);
         return;
     }
 
     if(widget_root_scene.has_cursor(cursor_pos_win_sane))
     {
-        hover(&widget_root_scene);
+        cursor.hover(&widget_root_scene);
         return;
     }
 
@@ -128,20 +67,24 @@ reload_cursor_target(f2 cursor_pos_win_sane)
 
 }
 
-bool PUI::is_targeted_by_cursor()
+void PUI::
+clear_cursor_target()
 {
-    if(is_targeting_widget())
-        return true;
-
-    return false;
+    cursor.clear_all();
 }
 
-bool PUI::is_grabbing_cursor()
-{
-    if(is_grabbing_widget())
-        return true;
 
-    return false;
+bool PUI::
+is_targeted_by_cursor()
+{
+    return cursor.is_targeted_by_cursor();
+}
+
+
+bool PUI::
+is_grabbing_cursor()
+{
+    return cursor.is_grabbing_cursor();
 }
 
 
@@ -151,7 +94,8 @@ bool PUI::is_grabbing_cursor()
 
 
 void PUI::
-reload(){
+update()
+{
     widget_root_scene.reload({10.0f, 300.0f});
 
     // delete widget_quad;
@@ -159,36 +103,25 @@ reload(){
     // widget_quad->reload();
     scene::QuadS2D* quad = ManagerScene::get_root_scene_mut().quad_manager.get_selected();
     widget_quad.reload(quad, {20.0f, 250.0f});
+
+
+    // 
 }
 
 
 
 void PUI::event_all(window::InputEvent& event)
 {
-    if(is_targeted_widget(&widget_root_scene))
+    if(cursor.is_targeted_widget(&widget_root_scene))
     {
         EventResult result = widget_root_scene.event_handler(event);
-        if(result.is_release())
-        {
-            clear_grabbed_widget();
-        }
-        if(result.is_grab())
-        {
-            grab(&widget_root_scene);
-        }
+        cursor.handle_event_result(result, &widget_root_scene);
     }
 
-    if(is_targeted_widget(&widget_quad))
+    if(cursor.is_targeted_widget(&widget_quad))
     {
         EventResult result = widget_quad.event_handler(event);
-        if(result.is_release())
-        {
-            clear_grabbed_widget();
-        }
-        if(result.is_grab())
-        {
-            grab(&widget_root_scene);
-        }
+        cursor.handle_event_result(result, &widget_quad);
     }
 }
 

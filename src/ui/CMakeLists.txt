@@ -11,6 +11,7 @@ add_library(ui
     ui_texture.cc
 
     pui.cc
+    pui_cursor.cc
     base.cc
     texture.cc
     widget.cc
