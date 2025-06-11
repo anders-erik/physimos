@@ -159,7 +159,8 @@ void clear_cursor_highlighting()
 
     auto& root_scene = get_root_scene_mut();
     
-    root_scene.clear_quad_hovers();
+    // root_scene.clear_quad_hovers();
+    root_scene.quad_manager.clear_hovered();
     root_scene.clear_cursor_grab();
 
     scenes_state.cursor_id = 1;
@@ -176,18 +177,20 @@ scene::Scene2D * get_current_target()
 
 
 
-void event_scroll(window::InputEvent & event)
+void event_scroll(window::InputEvent& event)
 {
     scene::Scene2D* current_target = ManagerScene::get_current_target();
     if(current_target != nullptr)
     {
-        current_target->handle_scroll(event.mouse_scroll.delta);
+        current_target->handle_scroll(event);
     }
 }
 
-void event_move(window::InputEvent & event)
+
+void 
+event_move(window::InputEvent& event)
 {
-    cursor_pos = event.cursor;
+    cursor_pos = event.mouse_movement.cursor_new;
 	window::CursorPosition& cursor_prev = event.mouse_movement.cursor_prev;
 
     scene::Scene2D* current_target = ManagerScene::get_current_target();
@@ -200,11 +203,14 @@ void event_move(window::InputEvent & event)
     scene::PointerMovement2D scene_pointer_move;
     scene_pointer_move.pos_norm_prev = _target_window_box.to_normalized(cursor_prev.sane);
     scene_pointer_move.pos_norm_curr = _target_window_box.to_normalized(cursor_pos.sane);
+    scene_pointer_move.event = event;
 
     current_target->handle_pointer_move(scene_pointer_move);
 }
 
-void event_mouse_button(window::InputEvent & event)
+
+void 
+event_mouse_button(window::InputEvent& event)
 {
 	window::MouseButtonEvent mouse_button_event = event.mouse_button;
     
@@ -214,7 +220,7 @@ void event_mouse_button(window::InputEvent & event)
 	
 	scene::PointerClick2D pointer_click = {
         current_target->get_window_box().to_normalized(cursor_pos.sane),
-		mouse_button_event
+		event
 	};
 
     current_target->handle_pointer_click(pointer_click);
@@ -240,7 +246,7 @@ void event_mouse_button(window::InputEvent & event)
 
 }
 
-void event_keystroke(window::InputEvent & event)
+void event_keystroke(window::InputEvent& event)
 {
     using namespace window;
 
@@ -253,13 +259,13 @@ void event_keystroke(window::InputEvent & event)
         
     }
 
-    if(event.keystroke.has(KeyModifier::ctl))
+    if(event.keystroke.has(KeyModifierState::ctl))
         std::cout << "CTRL is down" << std::endl;
         
         
 }
 
-void event_window_resize(window::InputEvent & event)
+void event_window_resize(window::InputEvent& event)
 {
     window::WindowResizeEvent& resize_event = event.window_resize;
 

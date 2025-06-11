@@ -10,6 +10,9 @@ add_library(opengl
     renderer_axes.cc
     renderer_vector.cc
 
+    texture_fb.cc
+    texture_framebuffer_multi.cc
+
 )
 
 target_include_directories(opengl PUBLIC 

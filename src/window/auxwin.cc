@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "print.hh"
+
 #include "opengl/texture.hh"
 
 #include "auxwin.hh"
@@ -286,7 +288,10 @@ std::vector<InputEvent> Auxwin::get_events_window_resize()
     return return_vector;
 }
 
-void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
+
+void Auxwin::
+framebuffer_callback(GLFWwindow* _window, int _width, int _height)
+{
     // std::cout << "auxwin->framebuffer_callback" << std::endl;
 
     current_window_size_f = {(float) _width, (float) _height};
@@ -301,7 +306,7 @@ void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
         i2(_width, _height),
         get_monitor_content_scale()
     };
-    events_resize.emplace_back(glfw_window, event_type, win_resize_event, cursor);
+    events_resize.emplace_back(glfw_window, event_type, win_resize_event, modifiers_current);
 
     cursor.window_dims.x = (float) _width;
     cursor.window_dims.y = (float) _height;
@@ -309,7 +314,9 @@ void Auxwin::framebuffer_callback(GLFWwindow* _window, int _width, int _height){
     glViewport(0, 0, _width, _height);
 }
 
-void Auxwin::mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
+
+void Auxwin::
+mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
     
     EventType event_type = EventType::MouseButton;
     MouseButtonEvent mouse_button_event;
@@ -335,10 +342,13 @@ void Auxwin::mouse_button_callback(GLFWwindow *window, int button, int action, i
     }
 
     
-    events_other.emplace_back(window, event_type, mouse_button_event, cursor);
+    events_other.emplace_back(window, event_type, mouse_button_event, modifiers_current);
 }
 
-void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
+
+void Auxwin::
+cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+{
 
     CursorPosition cursor_prev = cursor;
 
@@ -358,18 +368,26 @@ void Auxwin::cursor_position_callback(GLFWwindow *window, double xpos, double yp
                                         cursor
                                     );
 
-    events_mouse_movement.emplace_back(window, event_type, mouse_movement, cursor);
+    events_mouse_movement.emplace_back(window, event_type, mouse_movement, modifiers_current);
 
 }
-void Auxwin::scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
+
+
+void Auxwin::
+scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
     // f2 delta ((float)xpos, (float)ypos);
 
     EventType       event_type = EventType::MouseScroll;
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
-    events_other.emplace_back(window, event_type, mouse_scroll, cursor);
+    events_other.emplace_back(window, event_type, mouse_scroll, modifiers_current);
 }
-void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
+
+
+void Auxwin::
+key_callback(GLFWwindow *window, int key, int action, int mods)
+{
 
     KeyStrokeEvent keystroke_event;
 
@@ -388,19 +406,52 @@ void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
         keystroke_event.action = ButtonAction::Hold;
 
     // MODIFIER KEY
-    switch (mods){
-
-    case 0: keystroke_event.modifier = KeyModifier::none            ;   break;
-    case 1: keystroke_event.modifier = KeyModifier::shift           ;   break;
-    case 2: keystroke_event.modifier = KeyModifier::ctl             ;   break;
-    case 3: keystroke_event.modifier = KeyModifier::ctl_shift       ;   break;
-    case 4: keystroke_event.modifier = KeyModifier::alt             ;   break;
-    case 5: keystroke_event.modifier = KeyModifier::alt_shift       ;   break;
-    case 6: keystroke_event.modifier = KeyModifier::alt_ctrl        ;   break;
-    case 7: keystroke_event.modifier = KeyModifier::alt_ctl_shift   ;   break;
+    switch (mods)
+    {
+    case 0: modifier_current_state = KeyModifierState::none            ;   break;
+    case 1: modifier_current_state = KeyModifierState::shift           ;   break;
+    case 2: modifier_current_state = KeyModifierState::ctl             ;   break;
+    case 3: modifier_current_state = KeyModifierState::ctl_shift       ;   break;
+    case 4: modifier_current_state = KeyModifierState::alt             ;   break;
+    case 5: modifier_current_state = KeyModifierState::alt_shift       ;   break;
+    case 6: modifier_current_state = KeyModifierState::alt_ctrl        ;   break;
+    case 7: modifier_current_state = KeyModifierState::alt_ctl_shift   ;   break;
     
-    default: keystroke_event.modifier = KeyModifier::none           ;   break;
+    default: modifier_current_state = KeyModifierState::none           ;   break;
     }
+    
+    switch (key)
+    {
+    case GLFW_KEY_LEFT_SHIFT:
+    case GLFW_KEY_RIGHT_SHIFT:
+        if(action == GLFW_PRESS)
+            modifiers_current.set_shift();
+        if(action == GLFW_RELEASE)
+            modifiers_current.unset_shift();
+        break;
+    
+    case GLFW_KEY_LEFT_CONTROL:
+    case GLFW_KEY_RIGHT_CONTROL:
+        if(action == GLFW_PRESS)
+            modifiers_current.set_ctrl();
+        if(action == GLFW_RELEASE)
+            modifiers_current.unset_ctrl();
+        break;
+
+    case GLFW_KEY_LEFT_ALT:
+    case GLFW_KEY_RIGHT_ALT:
+        if(action == GLFW_PRESS)
+            modifiers_current.set_alt();
+        if(action == GLFW_RELEASE)
+            modifiers_current.unset_alt();
+        break;
+    
+    default:
+        break;
+    }
+    
+
+    keystroke_event.modifier = modifier_current_state;
 
 
     // CHECK CLOSE KEY
@@ -408,7 +459,7 @@ void Auxwin::key_callback(GLFWwindow *window, int key, int action, int mods){
         try_close();
 
 
-    events_other.emplace_back(window, event_type, keystroke_event, cursor);
+    events_other.emplace_back(window, event_type, keystroke_event, modifiers_current);
 }
 
 }

@@ -3,23 +3,20 @@
 
 #include <vector>
 
-#include "opengl/program.hh"
-#include "scene/render/renderer2D.hh"
-#include "opengl/texture.hh"
+#include "window/auxevent.hh"
 
-#include "window/auxwin.hh"
+#include "opengl/program.hh"
+#include "opengl/texture.hh"
+#include "opengl/texture_fb.hh"
+#include "opengl/texture_framebuffer_multi.hh"
 
 #include "math/vecmat.hh"
 #include "math/shape.hh"
 
-#include "scene/camera2D.hh"
+#include "scene/render/renderer2D.hh"
 #include "scene/shapeS2D.hh"
-
+#include "scene/camera2D.hh"
 #include "scene/quad_manager.hh"
-
-#include "scene/subscene2D.hh"
-
-#include "phont/phont.hh"
 
 
 struct GLFWWindow;
@@ -28,33 +25,34 @@ struct GLFWWindow;
 namespace scene {
 
 struct QuadS2D;
-struct SubScene2D;
 
 
 /** Cursor movement event in normalized viewport coordinated. Usually recieved from owner of scene.
     [0,1]x[0,1] [unitless]
  */
-struct PointerMovement2D {
+struct PointerMovement2D 
+{
     f2 pos_norm_prev; // Position of the cursor during previous frame
     f2 pos_norm_curr; // Current cursor position
+    window::InputEvent event;
 };
-struct PointerClick2D {
+
+
+struct PointerClick2D 
+{
     f2 pos_scene_normal; // Position of the cursor during previous frame
-    window::MouseButtonEvent button_event;
+    window::InputEvent event;
     
-    PointerClick2D(f2 pos_scene_normal, window::MouseButtonEvent button_event)
+    PointerClick2D(f2 pos_scene_normal, window::InputEvent event)
         :   pos_scene_normal    {pos_scene_normal},
-            button_event        {button_event} {};
+            event               {event} {};
 };
 
 
 
 
-struct Scene2D;
-struct SubScene2D;
-
-class Scene2D {
-
+class Scene2D 
+{
     size_t id; // id from manager during creation
     size_t parent_id = 0; // If the scene is not a root scene it has a valid parent id
 
@@ -64,20 +62,30 @@ class Scene2D {
     Box2D window_box;       // The AABB of this scene as viewed from the window
     f2 cursor_pos_scene;    // updated during scene cursor update call
     f2 cursor_pos_normal;   // updated during scene cursor update call
-    
+
     Camera2D camera;
     float zoom_factor = 1.2f;
-    bool panable = false; // Scene can be panned, usually with middle mouse button pressed
+    bool scene_grab = false; // Scene can be panned, usually with middle mouse button pressed
+    bool quad_grab = false;
+
 
     RendererScene2D renderer2D; // each scene owns a renderer
-    opengl::TextureFrameBufferMultisample framebuffer;
+    bool multisample_flag = false; // will render to multisampled framebuffer when set
+    opengl::TextureFrameBufferMultisample framebuffer_multisample;
+    opengl::TextureFB framebuffer;
 
     m3f3 frame_M_m_s; // dummy frame matrix for testing
-    
+
 
     std::vector<ShapeS2D> points;
     std::vector<ShapeS2D> lines;
     std::vector<ShapeS2D> shapes;
+
+    void try_grab_quad();
+    void grab_scene();
+    void release_grabs();
+    void try_resize_hovered_quad(float size_factor);
+
 
 public:
     QuadManager quad_manager;
@@ -90,9 +98,7 @@ public:
     Str& get_name();
     void set_name(const Str& new_name);
 
-    void clear_quad_hovers();
     void clear_cursor_grab();
-    void clear_quad_selections();
 
     Box2D get_window_box();
 
@@ -101,6 +107,10 @@ public:
     size_t get_id() const ;
     void   set_parent_id(size_t id);
     size_t get_parent_id();
+
+    bool is_multisampled();
+    void enable_multisample();
+    void disable_multisample();
 
     f2 get_framebuffer_size();
     void set_framebuffer_size(f2 size);
@@ -114,19 +124,19 @@ public:
 
     // Check if position is within the bounding box of a quad in current scene
     QuadS2D* try_match_cursor_to_quad(f2 pos_scene);
-    
+
     /** Highlights if a quad is located at currently set cursor position. */
     void try_hover_quad();
     /** Selects quad if located at currently set cursor position. */
     void try_select_quad();
-    
+
     /** Try find which scene that captures the cursor. 
     Updates the scenes window box and cursor position. */
     Scene2D* try_find_window_subscene();
     /** Does NOT update cursor position, as this is done when finding current traget at the beginning of each frame. */
     void handle_pointer_move(PointerMovement2D cursor_event);
     void handle_pointer_click(PointerClick2D pointer_click);
-    void handle_scroll(float delta);
+    void handle_scroll(window::InputEvent scroll_event);
 
 
     void push_quad(scene::QuadS2D& quad);
@@ -144,7 +154,6 @@ public:
     void render_to_window();
     unsigned int render_to_texture();
     void render();
-
 };
 
 

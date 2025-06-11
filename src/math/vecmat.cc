@@ -37,6 +37,10 @@ f2 f2::operator+(const f2& rhs){
 f2 f2::operator-(const f2& rhs){
     return f2 {this->x - rhs.x, this->y - rhs.y};
 }
+f2 f2::operator*(float scalar)
+{
+    return f2(this->x * scalar, this->y * scalar);
+}
 f2 f2::operator-()
 {
     return {

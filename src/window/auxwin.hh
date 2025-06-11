@@ -135,6 +135,8 @@ class Auxwin {
 
         CursorPosition cursor;
 
+        KeyModifierState modifier_current_state;
+        KeyModifiers modifiers_current;
 
         std::vector<InputEvent> events_other;
         std::vector<InputEvent> events_resize;

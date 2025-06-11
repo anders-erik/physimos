@@ -14,7 +14,6 @@ set(SCENE_OBJS
     camera2D.cc
     shapeS2D.cc
     quadS2D.cc
-    subscene2D.cc
 
     manager.cc
     quad_manager.cc

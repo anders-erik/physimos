@@ -8,7 +8,7 @@
 #include "math/shape.hh"
 #include "math/box2D.hh"
 
-
+#include "quadS2D.hh"
 
 
 namespace scene {

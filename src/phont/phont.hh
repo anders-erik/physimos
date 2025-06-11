@@ -9,6 +9,9 @@
 #include "math/transform.hh"
 
 #include "opengl/texture.hh"
+#include "opengl/texture_fb.hh"
+#include "opengl/texture_framebuffer_multi.hh"
+
 #include "scene/render/renderer2D.hh"
 
 
@@ -36,7 +39,7 @@ struct Glyph {
     char char_value = 0x0;
     GlyphMesh mesh_glyph;
     GlyphRenderContext render_context;
-    opengl::TextureFrameBuffer text_framebuff;
+    opengl::TextureFB text_framebuff;
 
     opengl::TextureFrameBufferMultisample text_framebuff_multi;
 

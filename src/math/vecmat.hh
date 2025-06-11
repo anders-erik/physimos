@@ -70,6 +70,7 @@ struct f2
     // f2&& operator+(const f2& rhs);
     f2 operator+(const f2& rhs);
     f2 operator-(const f2& rhs);
+    f2 operator*(float scalar);
     f2 operator-();
 
     i2 to_i2();

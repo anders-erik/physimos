@@ -4,19 +4,15 @@
 #include <vector>
 
 #include "opengl/program.hh"
-#include "scene/render/renderer2D.hh"
 #include "opengl/texture.hh"
 
-#include "window/auxwin.hh"
 
 #include "math/vecmat.hh"
 #include "math/shape.hh"
 #include "math/box2D.hh"
 
-#include "scene/camera2D.hh"
 
-#include "phont/phont.hh"
-
+#include "scene/render/renderer2D.hh"
 
 
 namespace scene {

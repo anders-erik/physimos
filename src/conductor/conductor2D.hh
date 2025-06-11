@@ -8,7 +8,6 @@
 
 #include "scene/manager.hh"
 #include "scene/scene2D.hh"
-#include "scene/subscene2D.hh"
 #include "scene/shapeS2D.hh"
 
 #include "scene/render/renderer2D.hh"

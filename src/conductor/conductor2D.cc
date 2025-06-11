@@ -61,7 +61,7 @@ void Conductor2D::process_mouse_movement()
 
 	for(InputEvent& event : movement_events)
 	{
-		cursor_pos = event.cursor;
+		cursor_pos = event.mouse_movement.cursor_new;
 
 		if(targeting_ui)
 			pui.event_all(event);

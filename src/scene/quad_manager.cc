@@ -5,7 +5,7 @@
 
 #include "math/transform.hh"
 
-#include "quadS2D.hh"
+
 #include "quad_manager.hh"
 
 namespace scene {

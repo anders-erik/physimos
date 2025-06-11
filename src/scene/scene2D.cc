@@ -9,25 +9,20 @@
 
 #include "scene/quadS2D.hh"
 
+#include "scene/manager.hh"
+
 #include "scene2D.hh"
-#include "subscene2D.hh"
+
 
 namespace scene {
 
 
 
 
-void Scene2D::clear_quad_hovers()
-{
-    quad_manager.clear_hovered();
-}
-void Scene2D::clear_quad_selections()
-{
-    quad_manager.clear_selection();
-}
+
 void Scene2D::clear_cursor_grab()
 {
-    panable = false;
+    scene_grab = false;
 }
 
 
@@ -36,9 +31,52 @@ Box2D Scene2D::get_window_box()
     return window_box;
 }
 
-Scene2D::Scene2D(f2 _framebuffer_size) 
-    : framebuffer { opengl::TextureFrameBufferMultisample(_framebuffer_size.to_i2(), 4) }
+void Scene2D::try_grab_quad()
 {
+    auto* quad_hovered = quad_manager.get_hovered();
+    if(quad_hovered != nullptr)
+    {
+        quad_grab = true;
+    }
+}
+
+void Scene2D::grab_scene()
+{
+    scene_grab = true;
+}
+
+void Scene2D::release_grabs()
+{
+    quad_grab = false;
+    scene_grab = false;
+}
+
+void Scene2D::try_resize_hovered_quad(float size_factor)
+{
+    auto* quad_hovered = quad_manager.get_hovered();
+    if(quad_hovered != nullptr)
+    {
+        if(quad_hovered->is_bitmap())
+        {
+            Box2D current_quad_box = quad_hovered->get_box();
+            f2 new_pos = current_quad_box.pos;
+            f2 new_size = current_quad_box.size * size_factor;
+            quad_hovered->set_box(new_pos, new_size);
+        }
+        if(quad_hovered->is_scene2D())
+        {
+            println("Scale scene quad");
+        }
+    }
+}
+
+Scene2D::Scene2D(f2 _framebuffer_size) 
+{
+
+    // For now each scene always have both framebuffers available
+    framebuffer_multisample.reload(_framebuffer_size.to_i2(), 4);
+    framebuffer.reload(_framebuffer_size.to_i2().x, _framebuffer_size.to_i2().y);
+
 
     set_framebuffer_size(_framebuffer_size);
 
@@ -70,6 +108,28 @@ void Scene2D::set_parent_id(size_t parent_id){
 size_t Scene2D::get_parent_id(){
     return parent_id;
 }
+
+
+bool Scene2D::
+is_multisampled()
+{
+    return multisample_flag;
+}
+
+
+void Scene2D::
+enable_multisample()
+{
+    multisample_flag = true;
+}
+
+
+void Scene2D::
+disable_multisample()
+{
+    multisample_flag = false;
+}
+
 
 Str& Scene2D::get_name()
 {
@@ -145,7 +205,11 @@ void Scene2D::try_select_quad()
     QuadS2D* quad = try_match_cursor_to_quad(cursor_pos_scene);
 
     if(quad != nullptr)
+    {
         quad_manager.set_selected(quad->get_id());
+        print("New quad selected: ");
+        quad->get_name().print_line();
+    }
 }
 
 Scene2D* Scene2D::try_find_window_subscene()
@@ -181,44 +245,68 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement)
     f2 delta_normalized = pointer_movement.pos_norm_curr - pointer_movement.pos_norm_prev;
     f2 delta_scene = camera.normalized_to_scene_delta(delta_normalized);
 
-    if(panable)
+    if(quad_grab)
+    {
+        auto* quad_hovered = quad_manager.get_hovered();
+        if(quad_hovered != nullptr)
+        {
+            Box2D box = quad_hovered->get_box();
+            f2 new_pos = box.pos + delta_scene;
+            f2 new_size = box.size;
+            quad_hovered->set_box(new_pos, new_size);
+        }
+        return;
+    }
+
+    if(scene_grab)
     {
         camera.pan(delta_scene);
     }
     
 }
 
-void Scene2D::handle_pointer_click(PointerClick2D pointer_click){
-    
-    window::MouseButtonEvent button_event = pointer_click.button_event;
+void Scene2D::handle_pointer_click(PointerClick2D pointer_click)
+{    
+    window::MouseButtonEvent button_event = pointer_click.event.mouse_button;
 
-    // Toggle Pan
-    if(!panable && button_event.is_middle_down())
-        panable = true;
-    else if(button_event.is_middle_up())
-        panable = false;
-    
+    // PAN / MOVE
+    if(button_event.is_middle_down())
+    {
+        if(pointer_click.event.modifiers.is_ctrl_shift())
+            try_grab_quad();
+        else
+            grab_scene();
+    }
+
+    if(button_event.is_middle_up())
+    {
+        release_grabs();
+    }
+
 
     // Left Click
     if(button_event.is_left_down())
     {
-        auto* quad_click_match = try_match_cursor_to_quad(cursor_pos_scene);
-        if(quad_click_match != nullptr)
-        {
-            quad_manager.set_selected(quad_click_match->id);
-            print("New quad selected: ");
-            quad_click_match->get_name().print_line();
-        }
-        else
-        {
-            clear_quad_selections();
-        }
+        try_select_quad();
     }
 }
 
-void Scene2D::handle_scroll(float delta)
+void Scene2D::handle_scroll(window::InputEvent scroll_event)
 {
-    if(delta > 0)
+    // Resize quad
+    if(scroll_event.modifiers.is_ctrl_shift())
+    {
+        float size_factor = 1.1;
+        if(scroll_event.mouse_scroll.delta < 0)
+            size_factor = 1 / size_factor;
+
+        try_resize_hovered_quad(size_factor);
+
+        return;
+    }
+
+
+    if(scroll_event.mouse_scroll.delta > 0)
     {
         float size_factor = 1 / zoom_factor;
         camera.zoom_cursor_fixed(size_factor, cursor_pos_normal);
@@ -309,22 +397,33 @@ render_to_window()
 
 unsigned int Scene2D::render_to_texture()
 {
-
     render_subscene_textures();
 
-    framebuffer.multisample_fbo_bind();
-    framebuffer.multisample_fbo_clear_red();
+    if(multisample_flag)
+    {
+        framebuffer_multisample.multisample_fbo_bind();
+        framebuffer_multisample.multisample_fbo_clear_red();
 
-    render();
+        render();
 
-    framebuffer.blit();
+        framebuffer_multisample.blit();
 
-    return framebuffer.get_resolved_texture();
+        return framebuffer_multisample.get_resolved_texture();
+    }
+    else
+    {
+        framebuffer.framebuffer_bind();
+        framebuffer.clear_with({0.5f, 0.5f, 0.5f, 1.0f});
+
+        render();
+
+        return framebuffer.get_texture_id();
+    }
 }
 
 
-void Scene2D::render(){
-
+void Scene2D::render()
+{
     renderer2D.activate();
     renderer2D.set_camera(camera.get_matrix());
 
