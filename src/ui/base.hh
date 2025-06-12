@@ -1,40 +1,12 @@
 #pragma once
 
-#include <string>
-#include <vector>
 
 #include "math/vecmat.hh"
 #include "math/box2D.hh"
 
-#include "ui/ui_shader_texture.hh"
-#include "ui/ui_shader_color.hh"
-#include "ui/ui_shader_string.hh"
 
-#include "ui/ui_globals.hh"
-#include "ui/ui_font.hh"
-
-namespace UI {
-
-// forward declare
-class Base; 
-class RendererBase;
-
-
-typedef struct BaseQuery {
-    bool success = false;
-    Base* base = nullptr;
-    
-    BaseQuery() = default;
-    BaseQuery(Base* base) : success {true}, base {base} {};
-} BaseQuery;
-
-
-
-struct Box {
-    f2 pos;
-    f2 size;
-};
-
+namespace UI 
+{
 
 
 class Base {

@@ -101,11 +101,11 @@ void ProgramString::set_texture(unsigned int new_texture)
 
 
 
-void ProgramString::set_glyph_data(std::vector<GlyphFontBitmap>& glyphs)
+void ProgramString::set_glyph_data(const std::vector<UI::Font::GlyphFontBitmap>& glyphs)
 {
     glyph_count = glyphs.size();
     // 6 verts per glyph
-    int data_size = glyph_count * verts_per_glyph * sizeof(VertexFontBitmap);
+    int data_size = glyph_count * verts_per_glyph * sizeof(UI::Font::VertexFontBitmap);
     
 
     glUseProgram(id);

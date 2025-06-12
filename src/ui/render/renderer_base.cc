@@ -15,6 +15,7 @@
 #include "ui/texture.hh"
 #include "ui/string.hh"
 
+#include "ui/font/font.hh"
 
 #include "renderer_base.hh"
 
@@ -50,7 +51,8 @@ RendererBase::RendererBase()
 
     program_string.init();
     program_string.set_viewport_transform(viewport_transform);
-    program_string.set_texture(font_bitmap.get_font_texture());
+    // program_string.set_texture(font_bitmap.get_font_texture());
+    // program_string.set_texture(font_texture.get_texture_id());
 
 }
 
@@ -118,19 +120,17 @@ void RendererBase::draw_base_string(UI::BaseString& base_string)
     // Draw the base background color
     draw_base((Base&)base_string);
     
-    // Generate all glyphs
-    font_bitmap.str_to_bitmap_glyphs(
-        glyphs_tmp, 
-        base_string.str, 
-        base_string.glyph_size.x,
-        base_string.max_width
-    );
-
+    program_string.set_texture(opengl::ui__get_font_bitmap_texture_id());
     program_string.set_base_transform(base_string.get_box().pos, base_string.glyph_size);
 
-    program_string.set_texture(font_bitmap.get_font_texture()); // double set in renderer constructor
-
-    program_string.set_glyph_data(glyphs_tmp);
+    // Glyphs
+    UI::Font::GlyphString glyph_string;
+    glyph_string.set_str(base_string.str);
+    glyph_string.set_max_width(base_string.max_width);
+    glyph_string.set_glyph_size(base_string.glyph_size);
+    glyph_string.generate_glyphs();
+    
+    program_string.set_glyph_data(glyph_string.get_glyphs());
 
     program_string.draw();
 }

@@ -6,7 +6,8 @@
 
 #include "opengl/program.hh"
 
-#include "ui/font_bitmap.hh"
+
+#include "ui/font/font.hh"
 
 #include "ui/render/program_base.hh"
 #include "ui/render/program_texture.hh"
@@ -34,8 +35,7 @@ class RendererBase {
     ProgramString program_string;
 
     // String 
-    std::vector<GlyphFontBitmap> glyphs_tmp; // temporarily holds all glyphs for sending to gpu
-    FontBitmap font_bitmap;
+    std::vector<UI::Font::GlyphFontBitmap> glyphs_tmp; // temporarily holds all glyphs for sending to gpu
 
 
 public:

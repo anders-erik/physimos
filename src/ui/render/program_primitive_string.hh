@@ -6,7 +6,7 @@
 
 #include "opengl/program.hh"
 
-#include "ui/font_bitmap.hh"
+#include "ui/font/font_bitmap.hh"
 
 #include "ui/ui_shader_string.hh" // VertexTexture
 

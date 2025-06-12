@@ -144,7 +144,7 @@ int main()
     root_scene_quad.set_bitmap_texture(opengl::texture_get_id(opengl::Textures::Grass));
 	root_scene_quad.set_name("root_scene_quad_1");
 	root_scene.push_quad(root_scene_quad);
-	root_scene_quad.set_box( {60.0f, 0.0f}, {30.0f, 30.0f} );
+	root_scene_quad.set_box( {550.0f, 100.0f}, {200.0f, 150.0f} );
 	root_scene_quad.set_name("quad_2");
 	root_scene.push_quad(root_scene_quad);
 

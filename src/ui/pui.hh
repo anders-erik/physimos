@@ -2,14 +2,17 @@
 
 #include "math/vecmat.hh"
 
+#include "pui_event.hh"
+
 #include "ui/render/renderer_base.hh"
 
 #include "ui/base.hh"
 #include "ui/texture.hh"
 #include "ui/string.hh"
 
-#include "ui/widget_root_scene.hh"
-#include "ui/widget_quad.hh"
+#include "ui/widgets/w_root_scene.hh"
+#include "ui/widgets/w_quad_s.hh"
+#include "ui/widgets/w_quad_l.hh"
 
 #include "ui/pui_cursor.hh"
 
@@ -29,8 +32,8 @@ class PUI
     UI::BaseString base_string;
 
 
-    UI::WidgetRootScene widget_root_scene;
-    UI::WidgetQuad widget_quad;
+    UI::W::RootScene w_root_scene;
+    UI::W::Quad2DLarge w_quad2D_large;
 
     PUICursor cursor;
 

@@ -31,6 +31,13 @@ enum class Axis {
     nz,
 };
 
+
+struct s2 {
+    size_t x;
+    size_t y;
+};
+
+
 struct i2 {
     int x = 0;
     int y = 0;
@@ -56,7 +63,7 @@ struct f2
     float y = 0.0f;
 
     f2() = default;
-    f2(float x, float y) : x {x}, y {y} {}; 
+    constexpr f2(float x, float y) : x {x}, y {y} {}; 
     f2(float xyz) : x {xyz}, y {xyz} {}; 
 
     f2(double x, double y) : x { (float)x}, y {(float)y} {}; 
@@ -89,7 +96,7 @@ struct f3 {
     void matmul(m4f4 matrix);
     void matmul(m3f3 matrix);
 
-    f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
+    constexpr f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
     f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
     // f3() : x {0.0f}, y {0.0f}, z {0.0f} {}; 
     f3() = default;

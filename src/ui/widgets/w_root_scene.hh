@@ -12,12 +12,14 @@
 #include "scene/quadS2D.hh"
 
 #include "widget.hh"
-#include "widget_quad.hh"
+
+#include "widgets/w_quad_s.hh"
 
 namespace UI {
+namespace W {
 
 /** Lists root scene objects */
-struct WidgetRootScene : public Widget {
+struct RootScene : public Widget {
 
 
     using quad_base_pair = Pair<size_t, Base*>;
@@ -33,14 +35,14 @@ struct WidgetRootScene : public Widget {
     // std::vector<Base> bases;
 
     // std::vector<BaseString> strings;
-    std::vector<WidgetQuad> quad_widgets;
+    std::vector<W::Quad2DSmall> quad_widgets;
     std::vector<Pair<size_t, BaseString>> quad_pairs;
 
     BaseString scene_name_base;
 
 public:
 
-    WidgetRootScene() = default;
+    RootScene() = default;
 
 
     // /** Resturn base matching set cursor pos or nullptr on no match */
@@ -197,7 +199,7 @@ public:
         pos += quad_indent;
         for(auto& quad : root_scene.quad_manager.get_quads_mut())
         {
-            WidgetQuad quad_widget;
+            W::Quad2DSmall quad_widget;
             quad_widget.reload(&quad, pos += quad_w_delta);
             quad_widgets.push_back(quad_widget);
         }
@@ -220,5 +222,5 @@ public:
 };
 
 
-
+}
 }

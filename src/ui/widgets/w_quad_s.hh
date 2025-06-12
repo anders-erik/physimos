@@ -15,9 +15,10 @@
 
 
 namespace UI {
+namespace W {
 
 /** Widget reflecting the state of a specific quad */
-struct WidgetQuad : public Widget
+struct Quad2DSmall : public Widget
 {
     size_t quad_id;
     scene::QuadS2D* quad;
@@ -97,5 +98,5 @@ public:
 };
 
 
-
+}
 }

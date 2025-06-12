@@ -11,6 +11,7 @@
 #include "ui/ui_primitive.hh" // UI::Primtiive
 #include "ui/ui_font.hh"
 
+#include "ui/font/font.hh"
 
 #include "renderer_primitive.hh"
 
@@ -134,7 +135,7 @@ void RendererPrimitive::draw_primitive_string(UI::Primitive & primitive){
     font::string_to_texture_vertex_list(char_verts, primitive.str);
     // .string_to_bitmap_glyphs(char_verts, str);
 
-    program_primitive_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(VertexFontBitmap));
+    program_primitive_string.set_vertex_data(char_verts.data(), char_verts.size() * sizeof(UI::Font::VertexFontBitmap));
 
     program_primitive_string.draw();
 

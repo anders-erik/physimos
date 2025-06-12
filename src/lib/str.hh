@@ -10,7 +10,7 @@
 struct Str;
 
 /** Get single character as string */
-Str Char(char ch);
+Str to_str(char ch);
 /** Integer to Str */
 Str int_to_str(int integer);
 
@@ -39,7 +39,6 @@ struct Str {
 
     ~Str();
 
-    char operator[](size_t index) const;
 
     Str& operator+=(Str&& rhs);
     Str& operator+=(Str& rhs);
@@ -52,6 +51,10 @@ struct Str {
     Str& operator=(Str&& other);
 
     bool operator==(const Str& other) const;
+
+    char& operator[](size_t index); // mutable char
+    const char operator[](size_t index) const; // read only
+
 
 
     char* data() const;
@@ -85,5 +88,9 @@ struct Str {
     void print_line_quotes();
 
     void busy();
+
+    static Str to_str_char(char ch);
+    static Str to_str_int(int integer);
+    static Str to_str_float(float fl, int decimals);
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lib/str.hh"
+#include "lib/minmax.hh"
 
 #include "ui/base.hh"
 #include "ui/render/renderer_base.hh"
@@ -19,6 +20,8 @@ public:
     // float max_width = 150.0f; // index out of bounds
     // float max_width = 200.0f; // OK
 
+    float actual_width; // minimum of: 1) sum of all char-widths in str OR, 2) max width
+
     // this f2 determines the size of ALL glyphs rendered
     f2 glyph_size = {
         9.0f,
@@ -35,9 +38,9 @@ public:
     {
         str = new_str;
 
-        float total_str_width = glyph_size.x * ( (float) str.size());
+        float width_sum_all_chars = glyph_size.x * ( (float) str.size());
 
-        float actual_width = total_str_width < max_width ? total_str_width : max_width;
+        actual_width = min(width_sum_all_chars, max_width);
 
         box.size = {actual_width, glyph_size.y};
     }

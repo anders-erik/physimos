@@ -30,15 +30,15 @@ contains_point(f2 cursor_pos_win_sane)
     cursor.clear_grabbed_widget();
     cursor.clear_hover();
 
-    if(widget_quad.has_cursor(cursor_pos_win_sane))
+    if(w_quad2D_large.has_cursor(cursor_pos_win_sane))
     {
-        cursor.hover(&widget_quad);
+        cursor.hover(&w_quad2D_large);
         return true;
     }
 
-    if(widget_root_scene.has_cursor(cursor_pos_win_sane))
+    if(w_root_scene.has_cursor(cursor_pos_win_sane))
     {
-        cursor.hover(&widget_root_scene);
+        cursor.hover(&w_root_scene);
         return true;
     }
 
@@ -92,13 +92,13 @@ is_grabbing_cursor()
 void PUI::
 update()
 {
-    widget_root_scene.reload({10.0f, 300.0f});
+    w_root_scene.reload({10.0f, 300.0f});
 
     // delete widget_quad;
     // widget_quad = new WidgetQuad();
     // widget_quad->reload();
     scene::QuadS2D* quad = ManagerScene::get_root_scene_mut().quad_manager.get_selected();
-    widget_quad.reload(quad, {20.0f, 250.0f});
+    w_quad2D_large.reload(quad, {600.0f, 450.0f});
 
 
     // 
@@ -108,16 +108,16 @@ update()
 
 void PUI::event_all(window::InputEvent& event)
 {
-    if(cursor.is_targeted_widget(&widget_root_scene))
+    if(cursor.is_targeted_widget(&w_root_scene))
     {
-        EventResult result = widget_root_scene.event_handler(event);
-        cursor.handle_event_result(result, &widget_root_scene);
+        EventResult result = w_root_scene.event_handler(event);
+        cursor.handle_event_result(result, &w_root_scene);
     }
 
-    if(cursor.is_targeted_widget(&widget_quad))
+    if(cursor.is_targeted_widget(&w_quad2D_large))
     {
-        EventResult result = widget_quad.event_handler(event);
-        cursor.handle_event_result(result, &widget_quad);
+        EventResult result = w_quad2D_large.event_handler(event);
+        cursor.handle_event_result(result, &w_quad2D_large);
     }
 }
 
@@ -145,9 +145,9 @@ render(){
     base_string.render_string(renderer_base);
 
     // widget_root_scene.populate();
-    widget_root_scene.render(renderer_base);
+    w_root_scene.render(renderer_base);
 
-    widget_quad.render(renderer_base);
+    w_quad2D_large.render(renderer_base);
 
 }
 

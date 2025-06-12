@@ -7,46 +7,8 @@
 #include "alloc.hh"
 #include "print.hh"
 
-// #define VERBOSE_STR
 
-
-Str Char(char ch)
-{
-    return Str {1, ch};
-}
-
-Str int_to_str(int integer)
-{
-    size_t max_chars_int = 10;
-    char chars[max_chars_int + 1];
-    int divisor = 1000000000;
-
-    for(size_t i = 0; i < max_chars_int; i++){
-        // Extract currently largest digit
-        int res =  integer / divisor;
-        // remove that digit
-        integer -= divisor * res;
-        // append as ascii
-        chars[i] = res + 0x30;
-        // Prepare for next digit
-        divisor /= 10;
-    }
-    chars[max_chars_int] = 0x0;
-
-    Str new_str = chars;
-
-    size_t leading_zero_count = 0;
-    for (size_t i = 0; i < max_chars_int; i++)
-    {
-        if(chars[i] != '0')
-            break;
-        leading_zero_count++;
-    }
-
-    new_str.cut_to_substr(leading_zero_count, new_str.size());
-
-    return new_str;
-}
+// #define VERBOSE_STR // Prints string info throughout its lifetime
 
 
 
@@ -62,39 +24,26 @@ Str::Str()
 };
 
 
-Str::Str(int integer) 
+Str::
+Str(int integer) 
 {
 #ifdef VERBOSE_STR
     std::cout << "Integer constructor" << std::endl;
 #endif
 
-    *this = std::move(int_to_str(integer));
-
+    *this = std::move(Str::to_str_int(integer));
 }
-Str::Str(float _float, unsigned char decimals)
+
+
+Str::
+Str(float _float, unsigned char decimals)
 {
-    // Get actual number of decimal points
-    // max 2^3
-    unsigned char decimal_max8 = decimals << 5;
-    decimal_max8 = decimal_max8 >> 5;
-    char decimals_char = decimal_max8 + 0x30;
-    
-    char format[5];
-    format[0] = '%';
-    format[1] = '.';
-    format[2] = decimals_char;
-    format[3] = 'f';
-    format[4] = 0x0;
-
-    char buffer[32];
-    memset(buffer, 0x0, 32);
-    snprintf(buffer, sizeof(buffer), format, _float);  // 6 digits after decimal
-
-    *this = Str{buffer};
-
+    *this = std::move(Str::to_str_float(_float, decimals));
 }
 
-Str::Str(unsigned int string_size, char initialization_value) 
+
+Str::
+Str(unsigned int string_size, char initialization_value) 
 {
 #ifdef VERBOSE_STR
     std::cout << "Str initialization_value constructor" << std::endl;
@@ -106,7 +55,9 @@ Str::Str(unsigned int string_size, char initialization_value)
     memset(mem, initialization_value, size());
 };
 
-Str::Str(const char *c_str) 
+
+Str::
+Str(const char *c_str) 
 {
 #ifdef VERBOSE_STR
     std::cout << "Str c_str constructor" << std::endl;
@@ -119,7 +70,8 @@ Str::Str(const char *c_str)
 }
 
 
-Str::Str(const Str& other) 
+Str::
+Str(const Str& other) 
 {
 #ifdef VERBOSE_STR
     std::cout << "Str Copy Constructor" << std::endl;
@@ -130,7 +82,10 @@ Str::Str(const Str& other)
     size_str = other.size();
 };
 
-Str::Str(Str&& other) {
+
+Str::
+Str(Str&& other) 
+{
 #ifdef VERBOSE_STR
     std::cout << "Str move constructor" << std::endl;
 #endif
@@ -143,7 +98,9 @@ Str::Str(Str&& other) {
 
 
 
-Str::~Str(){
+Str::
+~Str()
+{
 #ifdef VERBOSE_STR
     std::cout << "Str destructor with content = \"" << to_std_string() << "\"" << std::endl;
 #endif
@@ -152,44 +109,68 @@ Str::~Str(){
 
 
 
+char& Str::
+operator[](size_t index)
+{
+    return *(mem+index);
+}
 
-char Str::operator[](size_t index) const{
+const char Str::
+operator[](size_t index) const
+{
     if(index > size_str-1)
         throw std::runtime_error("Str: index access out of bounds.");
 
     return *(mem+index);
 }
 
-Str& Str::operator+=(Str&& rhs){
+
+
+Str& Str::
+operator+=(Str&& rhs)
+{
     this->append(rhs);
     return *this;
 }
 
-Str& Str::operator+=(Str & rhs){
+
+Str& Str::
+operator+=(Str & rhs)
+{
     this->append(rhs);
     return *this;
 }
 
-Str& Str::operator+=(const char * c_str)
+
+Str& Str::
+operator+=(const char * c_str)
 {
     Str rhs {c_str};
     this->append(rhs);
     return *this;
 }
 
-Str Str::operator+(Str&& rhs){
+
+Str Str::
+operator+(Str&& rhs)
+{
     Str new_str = *this;
     new_str.append(rhs);
     return new_str;
 }
 
-Str Str::operator+(Str& rhs){
+
+Str Str::
+operator+(Str& rhs)
+{
     Str new_str = *this;
     new_str.append(rhs);
     return new_str;
 }
 
-Str Str::operator+(const char * c_str)
+
+Str Str::
+operator+(const char * c_str)
 {
     Str new_str = *this;
     Str rhs = Str(c_str);
@@ -213,7 +194,9 @@ operator=(const Str& other)
 }
 
 
-Str& Str::operator=(Str&& other){
+Str& Str::
+operator=(Str&& other)
+{
 #ifdef VERBOSE_STR
     std::cout << "Str move assignment op" << std::endl;
 #endif
@@ -426,4 +409,74 @@ void Str::print_line_quotes()
 }
 
 void Str::busy() {}
+
+
+
+
+Str 
+to_str_char(char ch)
+{
+    Str str = " ";
+    return str[0] = ch;
+}
+
+
+Str Str::
+to_str_int(int integer)
+{
+    size_t max_chars_int = 10;
+    char chars[max_chars_int + 1];
+    int divisor = 1000000000;
+
+    for(size_t i = 0; i < max_chars_int; i++){
+        // Extract currently largest digit
+        int res =  integer / divisor;
+        // remove that digit
+        integer -= divisor * res;
+        // append as ascii
+        chars[i] = res + 0x30;
+        // Prepare for next digit
+        divisor /= 10;
+    }
+    chars[max_chars_int] = 0x0;
+
+    Str new_str = chars;
+
+    size_t leading_zero_count = 0;
+    for (size_t i = 0; i < max_chars_int; i++)
+    {
+        if(chars[i] != '0')
+            break;
+        leading_zero_count++;
+    }
+
+    new_str.cut_to_substr(leading_zero_count, new_str.size());
+
+    return new_str;
+}
+
+
+
+Str Str::
+to_str_float(float fl, int decimals)
+{
+    // Get actual number of decimal points
+    // max 2^3
+    unsigned char decimal_max8 = decimals << 5;
+    decimal_max8 = decimal_max8 >> 5;
+    char decimals_char = decimal_max8 + 0x30;
+    
+    char format[5];
+    format[0] = '%';
+    format[1] = '.';
+    format[2] = decimals_char;
+    format[3] = 'f';
+    format[4] = 0x0;
+
+    char buffer[32];
+    memset(buffer, 0x0, 32);
+    snprintf(buffer, sizeof(buffer), format, fl);  // 6 digits after decimal
+
+    return Str{buffer};
+}
 

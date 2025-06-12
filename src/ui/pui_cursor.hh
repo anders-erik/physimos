@@ -1,15 +1,8 @@
 #pragma once
 
-#include "math/vecmat.hh"
+#include "ui/pui_event.hh"
+#include "ui/widget.hh"
 
-#include "ui/render/renderer_base.hh"
-
-#include "ui/base.hh"
-#include "ui/texture.hh"
-#include "ui/string.hh"
-
-#include "ui/widget_root_scene.hh"
-#include "ui/widget_quad.hh"
 
 
 namespace UI {
@@ -23,7 +16,7 @@ class PUICursor
 public:
 
     UI::Widget* grabbed_widget = nullptr;   // widget that has grabbed the cursor
-    UI::Widget* hovered_widget = nullptr; // currently targeted widget
+    UI::Widget* hovered_widget = nullptr;   // currently targeted widget
 
     bool is_targeting_widget();
     bool is_hovering_widget();

@@ -3,35 +3,13 @@
 
 #include "lib/pair.hh"
 
-#include "ui/render/renderer_base.hh"
+#include "ui/pui_event.hh"
 
 #include "ui/string.hh"
 
-#include "scene/manager.hh"
-#include "scene/scene2D.hh"
-#include "scene/quadS2D.hh"
 
-#include <functional>
-
-namespace UI {
-
-
-/** Return status of the event handler of a widget.
-    Purpose is to indicate cursor grab/release.
- */
-struct EventResult {
-    enum Type {
-        Grab,
-        Release,
-    } type = Release;
-
-    EventResult() = default;
-    EventResult(Type type): type {type} {};
-
-    // inline bool is_none(){return type == None ? true : false;}
-    inline bool is_grab(){return type == Grab ? true : false;}
-    inline bool is_release(){return type == Release ? true : false;}
-};
+namespace UI
+{
 
 
 /** Widget containing only base-objects.  */
