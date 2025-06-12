@@ -96,7 +96,7 @@ f2 Camera2D::normalized_to_scene_delta(f2 normalized)
     return box.to_box_delta(normalized);
 }
 
-Box2D Camera2D::get_box()
+Box2D Camera2D::get_viewbox()
 {
     return box;
 }

@@ -9,24 +9,34 @@
 namespace opengl {
 
 
-Shader::Shader(Str program_name){
 
+Shader::Shader(Str program_name)
+{
     program_name_str = program_name;
     assemble_core_path();
-
 }
 
 
-void Shader::set_shader_type(Type type){
+
+void Shader::
+set_shader_type(Type type)
+{
     this->type = type;
 }
 
-void Shader::set_program_name(Str program_name){
+
+void Shader::
+set_program_name(Str program_name)
+{
     program_name_str = program_name;
     assemble_core_path();
 }
 
-void Shader::assemble_core_path(){
+
+
+void Shader::
+assemble_core_path()
+{
 
     path_core_full = "";
     path_core_full += shaders_dir_path;
@@ -39,7 +49,10 @@ void Shader::assemble_core_path(){
     
 }
 
-unsigned int Shader::compile(){
+
+unsigned int Shader::
+compile()
+{
 
     // Update file
     file.set_path_core(path_core_full);
@@ -62,16 +75,30 @@ unsigned int Shader::compile(){
     return shader_id;
 }
 
-unsigned int Shader::get_shader_id(){
+
+
+
+unsigned int Shader::
+get_shader_id()
+{
     return shader_id;
 }
 
-void Shader::delete_shader_id(){
+
+
+
+void Shader::
+delete_shader_id()
+{
     glDeleteShader(shader_id);
 }
 
-void Shader::check_error(){
 
+
+
+void Shader::
+check_error()
+{
     int success_flag;
     char infoLog[1024];
 

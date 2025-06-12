@@ -4,28 +4,12 @@
     [
         {
             "label": "run",
-            "detail": "Custom run task",
+            "detail": "Default build and run task.",
             "type": "process",
-
-            "command": 
-            "${workspaceFolder}/build/debug_linux/physimos",
-            // "${workspaceFolder}/build/debug_linux/src/lib/main_lib",
-            // "${workspaceFolder}/build/debug_linux/src/lib/main_str",
-            // "${workspaceRoot}/build/debug_linux/src/lib/main_file",
-            // "${workspaceFolder}/build/debug_linux/src/file_format/json/main_json",
-            // "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
-            // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
-            // "${workspaceFolder}/build/debug_linux/src/model/main_editor",
-
-            // "${workspaceFolder}/build/debug_linux/src/lib/test_lib",
-
-            "options": {
-                "cwd": 
-                
-                "${workspaceFolder}",
-                // "${workspaceFolder}/src/lib",
-                // "${workspaceFolder}/src/file_format/json",
-
+            "command": "${config:default_binary}",
+            "options": 
+            {
+                "cwd": "${config:default_cwd}",
 
                 "env": {
                     "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
@@ -42,6 +26,45 @@
                 "close": false
             }
         },
+        {
+            "label": "Valgrind - run",
+            "type": "shell",
+
+            // suppression: --suppressions=resources/debug/valgrind.supp
+
+            // tee output (stdout + stderr)
+            // "command": "valgrind --leak-check=yes ${config:default_binary} &> >(tee ${workspaceFolder}/tmp/valgrind.txt)",
+
+            "command": "valgrind --leak-check=yes ${config:default_binary} &> ${workspaceFolder}/tmp/valgrind.txt",
+
+            "args": [],
+            "options": {
+                "env": {
+                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}",
+                    // https://stackoverflow.com/questions/4254610/valgrind-reports-memory-possibly-lost-when-using-glib-data-types
+                    // "G_SLICE": "always-malloc",
+                    // "G_DEBUG": "gc-friendly",
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+            },
+            "dependsOn": [
+                "Debug build"
+            ]
+        },
+
+
+
+
+
         {
             "label": "Build & Run [debug]",
             "type": "shell",
@@ -147,23 +170,6 @@
                 "$gcc"
             ],
             "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "label": "Valgrind - run",
-            "type": "shell",
-            "command": "PHYSIMOS_ROOT_DIR=${workspaceFolder} valgrind --leak-check=yes ${workspaceFolder}/build/debug/physimos",
-            "args": [],
-            "options": {},
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "",
             "presentation": {
                 "echo": true,
                 "reveal": "always",

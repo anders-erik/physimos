@@ -24,25 +24,22 @@ PUI::PUI(f2 window_size_f, f2 content_scale)
 
 
 
-void PUI::
-set_cursor_pos_bypass_grab(f2 cursor_pos_win_sane)
+bool PUI::
+contains_point(f2 cursor_pos_win_sane)
 {
-    // if(cursor.is_grabbing_widget())
-    //     return;
-    
     cursor.clear_grabbed_widget();
     cursor.clear_hover();
 
     if(widget_quad.has_cursor(cursor_pos_win_sane))
     {
         cursor.hover(&widget_quad);
-        return;
+        return true;
     }
 
     if(widget_root_scene.has_cursor(cursor_pos_win_sane))
     {
         cursor.hover(&widget_root_scene);
-        return;
+        return true;
     }
 
 
@@ -52,25 +49,24 @@ set_cursor_pos_bypass_grab(f2 cursor_pos_win_sane)
     base = base_0.containsPoint(cursor_pos_win_sane);
     if(base != nullptr){
         // targeted_base->set_hover();
-        println("hover base 0");
-        return;
+        print("0");
+        return true;
     }
     base = new_quad_in_root_scene.containsPoint(cursor_pos_win_sane);
     if(base != nullptr){
         // targeted_base->set_hover();
-        println("hover second quad");
-        return;
+        print("1");
+        return true;
     }
 
 
-    return;
-
+    return false;
 }
 
 void PUI::
-clear_cursor_target()
+clear_hovers()
 {
-    cursor.clear_all();
+    cursor.clear_hover();
 }
 
 

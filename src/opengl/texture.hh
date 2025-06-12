@@ -22,6 +22,7 @@ enum class TextureColors : unsigned int {
 enum class Textures : unsigned int {
     Colors,
     Grass, 
+    Checker2x2,
 };
 
 struct ColorUC {
@@ -59,7 +60,7 @@ unsigned int texture_get_id(Textures texture);
 f2 texture_get_color_coordinate(TextureColors text_color);
 f2 texture_get_random_grass_color(int seed);
 
-
+/** Legacy : replaced by texture_get_id() */
 void set_texture_checker_2x2(unsigned int& texture_id);
 
 

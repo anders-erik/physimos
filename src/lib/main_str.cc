@@ -271,8 +271,8 @@ void concat(){
     
 }
 
-void substr(){
-
+void substr()
+{
     Str str = "abcdef";
     Str str_ = str.substr(0, 0);
     Str str_abc = str.substr(0, 3);
@@ -384,6 +384,15 @@ void print_hh(){
 
 }
 
+void valgrind()
+{
+    Str str = "valgrind";
+    // str.~Str();
+    Str val = str.substr(0, 3);
+    std::cout << val.to_c_str() << std::endl;
+    Str grind = str.substr(3, 5);
+    std::cout << grind.to_c_str() << std::endl;
+}
 
 int main(){
 
@@ -401,13 +410,14 @@ int main(){
     // res_str();
 
     // concat();
-    substr();
+    // substr();
 
     // str_perf();
 
     // print_hh();
 
+    valgrind();
 
-    std::cout << "Str End" << std::endl << std::endl;
+    // std::cout << "Str End" << std::endl << std::endl;
     return 0;
 }

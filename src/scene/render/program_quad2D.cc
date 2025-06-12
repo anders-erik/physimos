@@ -10,26 +10,14 @@
 
 
 
-namespace scene {
+namespace scene 
+{
 
 
-const unsigned int SCREEN_INIT_WIDTH = 1200;
-const unsigned int SCREEN_INIT_HEIGHT = 800;
 
-
-float baseTextureSquareVertices[30] = {
-    // Position         // texture coord
-    0.0f, 0.0f, 0.0f,   0.0f, 0.0f,   // bottom-left
-    1.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // top-right
-    0.0f, 1.0f, 0.0f,   0.0f, 1.0f,   // top-left
-    1.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // top-right
-    0.0f, 0.0f, 0.0f,   0.0f, 0.0f,   // bottom-left
-    1.0f, 0.0f, 0.0f,   1.0f, 0.0f,   // bottom-right
-};
-
-
-void ProgramQuad2D::init(){
-
+void ProgramQuad2D::
+init()
+{
     glUseProgram(id);
 
     // GET UNIFORM LOCATIONS
@@ -61,10 +49,9 @@ void ProgramQuad2D::init(){
 
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-
 }
+
+
 void ProgramQuad2D::set_camera_matrix(m3f3 _camera_matrix){
 
     glUseProgram(id);
@@ -103,7 +90,8 @@ void ProgramQuad2D::draw() const {
 
 
 
-std::array<VertexQuad2D, 6> ProgramQuad2D::generate_quad_verts_c05(){
+std::array<VertexQuad2D, 6> ProgramQuad2D::generate_quad_verts_c05()
+{
     std::array<VertexQuad2D, 6> verts;
 
     VertexQuad2D v0;  // Lower left

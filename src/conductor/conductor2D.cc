@@ -20,105 +20,54 @@ Conductor2D::Conductor2D(f2 window_size_f)
 
 
 
-void Conductor2D::
-target_pui()
-{
-	targeting_ui = true;
-	
-}
-
 
 void Conductor2D::
-target_scenes()
+process_user_input()
 {
-	targeting_ui = false;
-	pui.clear_cursor_target();
-}
+	auto events = auxwin.get_events_input();
 
-
-void Conductor2D::
-set_subsystem_target()
-{
-	// Grab takes precedence over hover
-	if(pui.is_grabbing_cursor())
-	{
-		target_pui();
-		return;
-	}
-	else if(ManagerScene::is_grabbing_cursor())
-	{
-		target_scenes();
-		return;
-	}
-
-	// Cold queries as no system is grabbing
-	ManagerScene::clear_cursor_hovers();
-	pui.clear_cursor_target();
-
-	// Check is there is a pui match
-	pui.set_cursor_pos_bypass_grab(cursor_pos.sane);
-	if(pui.is_targeted_by_cursor())
-	{
-		targeting_ui = true;
-		return;
-	}
-
-	// By process of elimination, scene is targeted
-
-	targeting_ui = false;
-	ManagerScene::set_cursor_pos_bypass_grab(cursor_pos);
-}
-
-
-
-
-void Conductor2D::process_mouse_movement()
-{
-	auto movement_events = auxwin.get_events_mouse_movement();
-
-	for(InputEvent& event : movement_events)
-	{
-		cursor_pos = event.mouse_movement.cursor_new;
-
-		if(targeting_ui)
-			pui.event_all(event);
-		else 
-			ManagerScene::event_move(event);
-	}
-}
-
-void Conductor2D::process_other_events()
-{
-	auto events = auxwin.get_events_other();
-
-	if(targeting_ui)
-	{
-		for(InputEvent& event : events)
-		{
-			pui.event_all(event);
-		}
-		return;
-	}
-
-	// As we are targeting a scene, we send the events to their appropriate handler
 	for(InputEvent& event : events)
 	{
-		if(event.is_mouse_scroll())
+		// Short circuit logic if grab flags are set
+		if(pui.is_grabbing_cursor())
 		{
-			ManagerScene::event_scroll(event);
+			ManagerScene::clear_cursor_hovers();
+			pui.event_all(event);
+			continue;
 		}
-		else if(event.is_mouse_button())
+		else if (ManagerScene::is_grabbing_cursor())
 		{
-			ManagerScene::event_mouse_button(event);
+			pui.clear_hovers();
+			ManagerScene::events_user_all(event);
+			continue;
 		}
-		else if(event.is_keystroke())
+
+
+		// Requeries 
+		if(pui.contains_point(cursor_pos.sane))
 		{
-			ManagerScene::event_keystroke(event);
+			ManagerScene::clear_cursor_hovers();
+			pui.event_all(event);
+		}
+		else
+		{
+			pui.clear_hovers();
+			ManagerScene::requery_cursor_target(cursor_pos);
+			ManagerScene::events_user_all(event);
+		}
+
+		
+		// Cache most up to date cursor position
+		if(event.is_mouse_movement())
+		{
+			cursor_pos = event.mouse_movement.cursor_new;
 		}
 	}
 }
 
-void Conductor2D::process_framebuffer_events()
+
+void Conductor2D::
+process_framebuffer_events()
 {
 	auto resize_events = auxwin.get_events_window_resize();
 
@@ -138,19 +87,12 @@ void Conductor2D::main_loop()
 		process_framebuffer_events(); // change framebuffer size before clearing
 		auxwin.new_frame();
 
-
-		// Set the target that will recieve all events during this frame
-		// This query will use the cached mouse position from most recent movement event
-		// Start out with this call to get stable access to objects that might have move at end of frame cleanup
-		set_subsystem_target();
-
-		process_mouse_movement();
-		process_other_events();
+		process_user_input();
 
 		// UPDATE
-		scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
-		root_scene.update();
-		root_scene.render_subscene_textures();
+		scene::Scene2D& window_scene = ManagerScene::get_window_scene_mut();
+		window_scene.update();
+		window_scene.render_subscene_textures();
 
 		pui.update(); // reflect scene state changes
 		
@@ -158,7 +100,7 @@ void Conductor2D::main_loop()
 		// RENDER
 
 		auxwin.bind_window_framebuffer();
-		root_scene.render_to_window();
+		window_scene.render_to_window();
 		pui.render(); // Render ui on top of scenes
 		
 		auxwin.end_frame();

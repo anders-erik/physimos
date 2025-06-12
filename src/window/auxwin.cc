@@ -261,25 +261,17 @@ void Auxwin::add_input_event(InputEvent event)
 {
     if(event.is_window_resize())
         events_resize.push_back(event);
-    else if(event.is_mouse_movement())
-        events_mouse_movement.push_back(event);
     else
-        events_other.push_back(event);
+        events_input.push_back(event);
 }
 
-std::vector<InputEvent> Auxwin::get_events_other()
+std::vector<InputEvent> Auxwin::get_events_input()
 {
-    auto return_vector = events_other;
-    events_other.clear();
+    auto return_vector = events_input;
+    events_input.clear();
     return return_vector;
 }
 
-std::vector<InputEvent> Auxwin::get_events_mouse_movement()
-{
-    auto return_vector = events_mouse_movement;
-    events_mouse_movement.clear();
-    return return_vector;
-}
 
 std::vector<InputEvent> Auxwin::get_events_window_resize()
 {
@@ -342,7 +334,7 @@ mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
     }
 
     
-    events_other.emplace_back(window, event_type, mouse_button_event, modifiers_current);
+    events_input.emplace_back(window, event_type, mouse_button_event, modifiers_current);
 }
 
 
@@ -368,7 +360,7 @@ cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
                                         cursor
                                     );
 
-    events_mouse_movement.emplace_back(window, event_type, mouse_movement, modifiers_current);
+    events_input.emplace_back(window, event_type, mouse_movement, modifiers_current);
 
 }
 
@@ -381,7 +373,7 @@ scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     EventType       event_type = EventType::MouseScroll;
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
-    events_other.emplace_back(window, event_type, mouse_scroll, modifiers_current);
+    events_input.emplace_back(window, event_type, mouse_scroll, modifiers_current);
 }
 
 
@@ -459,7 +451,7 @@ key_callback(GLFWwindow *window, int key, int action, int mods)
         try_close();
 
 
-    events_other.emplace_back(window, event_type, keystroke_event, modifiers_current);
+    events_input.emplace_back(window, event_type, keystroke_event, modifiers_current);
 }
 
 }

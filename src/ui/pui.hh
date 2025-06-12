@@ -46,12 +46,11 @@ public:
 
     /** 
         Queries the ui for a matching element in which the cursor is contained.
-        Targets remain valid until another reload() is issued.
-        If grabbet target, the hovered target is no requeried.
-     */
-    void set_cursor_pos_bypass_grab(f2 cursor_pos_win_sane);
+        Internal hover state is set appropriately. 
+    */
+    bool contains_point(f2 cursor_pos_win_sane);
 
-    void clear_cursor_target();
+    void clear_hovers();
 
     /** Reloads the UI to reflect the most up-to-date data from scenes. */
     void update();

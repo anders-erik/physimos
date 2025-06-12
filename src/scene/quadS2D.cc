@@ -98,7 +98,7 @@ void QuadS2D::update_texture()
     }
     else if (is_scene2D())
     {
-        scene::Scene2D* scene = ManagerScene::try_find_scene(object_id);
+        scene::Scene2D* scene = ManagerScene::search_scene_storage(object_id);
         if(scene == nullptr)
             return;
 

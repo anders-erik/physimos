@@ -17,8 +17,8 @@ Str int_to_str(int integer);
 
 struct Str {
 
-    bool allocated = false; /** memory allocated */
-    bool initialized = false; /** Allocated memory initialized */
+    // bool allocated = false; /** memory allocated */
+    // bool initialized = false; /** Allocated memory initialized */
     // size_t size = 0;
     unsigned int size_alloc = 0;
     unsigned int size_str = 0;
@@ -54,20 +54,18 @@ struct Str {
     bool operator==(const Str& other) const;
 
 
+    char* data() const;
     unsigned int size() const;
-    unsigned int alloc_size() const;
-    bool is_allocated() const;
-    bool is_initialized() const;
+    unsigned int capacity() const;
+    bool has_size() const;
+    bool has_capacity() const;
 
     void allocate(unsigned int size_to_alloc);
     void reallocate(unsigned int new_size_alloc);
     void release_mem();
     // Ownership moved. Robbed of all assets. No mem release.
     void rob();
-    void initalize(const char* new_mem_value);
-    void initalize(const char init_char);
 
-    char* get_pointer() const;
 
     /** Append chars to first string. realloc if necessary */
     void append(const Str& str_to_append);

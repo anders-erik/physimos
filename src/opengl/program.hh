@@ -41,10 +41,8 @@ class Program {
     Shader shader_vert;
     Shader shader_frag;
 
-protected:
-
-
 public:
+
     unsigned int id;
 
     // The program attempts to compile shaders and link program during construction.

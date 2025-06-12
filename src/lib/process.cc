@@ -137,7 +137,7 @@ Str physimos_root_dir_or_die_str()
 {
     // std::string physimos_root = physimos_root_dir_or_die();
     // Str physimos_root_str { physimos_root };
-    if(physimos_root_dir_str.alloc_size() > 0)
+    if(physimos_root_dir_str.capacity() > 0)
         return physimos_root_dir_str;
 
     char* PHYSIMOS_ROOT_DIR = std::getenv("PHYSIMOS_ROOT_DIR");

@@ -282,7 +282,8 @@ void RendererScene2D::render_frame(m3f3 M_m_s, bool selected, int line_width){
     }
     else
     {
-        opengl::set_texture_checker_2x2(render_context_frame.texture);
+        render_context_frame.texture = opengl::texture_get_id(opengl::Textures::Checker2x2);
+        // opengl::set_texture_checker_2x2(render_context_frame.texture);
     }
     glBindTexture(GL_TEXTURE_2D, render_context_frame.texture);
 

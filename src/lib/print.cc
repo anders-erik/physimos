@@ -27,7 +27,7 @@ void print(const Str & str){
     // write to stdout
     write(
         STDOUT_FILENO, 
-        str.get_pointer(), 
+        str.data(), 
         str.size()
     );
 
@@ -47,7 +47,7 @@ void println(){
 
 void print_e(const Str & str){
 
-    if(!str.is_allocated())
+    if(!str.has_size())
         throw std::runtime_error("Tried to print uninitialized Str");
 
 #ifdef PH_LINUX
@@ -55,7 +55,7 @@ void print_e(const Str & str){
     // write to stdout
     write(
         STDERR_FILENO, 
-        str.get_pointer(), 
+        str.data(), 
         str.size()
     );
 

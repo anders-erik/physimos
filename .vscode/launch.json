@@ -8,27 +8,11 @@
             "type": "cppdbg",
             "request": "launch",
 
-            "program": 
-            // LINUX
-            "${workspaceRoot}/build/debug_linux/physimos",
-            // "${workspaceRoot}/build/debug_linux/src/lib/main_lib",
-            // "${workspaceRoot}/build/debug_linux/src/lib/main_str",
-            // "${workspaceRoot}/build/debug_linux/src/lib/main_file",
-            // "${workspaceRoot}/build/debug_linux/src/file_format/json/main_json",
-            // "${workspaceRoot}/build/debug_linux/src/phont/main_phont",
-            // "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
-
-            // "${workspaceFolder}/build/debug_linux/src/lib/test_lib",
-
-            // WINDOWS
+            "program": "${config:default_binary}",
+            "cwd": "${config:default_cwd}",
             
             "args": [],
             "stopAtEntry": false,
-            
-            "cwd": 
-            "${workspaceFolder}",
-            // "${workspaceFolder}/src/lib",
-            // "${workspaceFolder}/src/lib/json",
             
             "environment": [
                 { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }

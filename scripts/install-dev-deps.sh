@@ -9,8 +9,12 @@ glfw(){
 wayland(){
   sudo apt install libwayland-dev wayland-protocols libdrm-dev
 }
+valgrind() {
+  sudo apt install valgrind
+}
 
 
 ninja
 glfw
 wayland
+valgrind

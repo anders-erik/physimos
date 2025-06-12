@@ -17,7 +17,7 @@ int main(){
         // auxwin.new_frame();
         auxwin.new_frame();
 
-        std::vector<window::InputEvent> events = auxwin.get_events_other();
+        std::vector<window::InputEvent> events = auxwin.get_events_input();
         for(window::InputEvent& event : events){
             // window::InputEvent event = events.back();
             

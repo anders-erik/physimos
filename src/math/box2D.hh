@@ -9,8 +9,9 @@ struct Box2D {
     f2 size;
 
 
-    /** Returns a sub-box of proportial dimensions as the two passed. */
-    Box2D new_congruent_subbox(Box2D parent_box, Box2D child_box);
+    /** Returns a congruent subbox using the two passed. */
+    Box2D subbox_to_normalized(Box2D parent_box, Box2D child_box);
+
     /** Returns the passed box point in normalized box coordinates. */
     f2 to_normalized(f2 point);
     /** Returns the passed normalized point in box coordinates. */
@@ -22,4 +23,9 @@ struct Box2D {
     m3f3 get_matrix_m3f3();
 
     void print();
+
+    /** Converts a subbox into normalized box coordinates. */
+    static Box2D to_normalized_box(const Box2D& box, const Box2D& subbox);
+    /** Converts a normalized subbox into box coordinates. */
+    static Box2D from_normalized_box(const Box2D & box, const Box2D & n_subbox);
 };

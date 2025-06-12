@@ -46,12 +46,12 @@ char* reallocate_bytes(char * current_pointer, unsigned int current_size, unsign
 }
 
 
-void deallocate_bytes(char * bytes){
+void deallocate_bytes(char* bytes){
 
     #ifdef ALLOCATE_WITH_NEW
         delete[] bytes;
     #else
-            free(bytes);
+        std::free(bytes);
     #endif
 
 }

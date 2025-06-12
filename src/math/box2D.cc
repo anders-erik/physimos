@@ -5,8 +5,15 @@
 
 
 
-Box2D Box2D::new_congruent_subbox(Box2D parent_box, Box2D child_box)
+Box2D Box2D::subbox_to_normalized(Box2D parent_box, Box2D child_box)
 {
+    // new
+    // f2 pos_norm = child_box.pos / parent_box.size;
+    // f2 size_norm = child_box.size / parent_box.size;
+    // Box2D congruent_subbox;
+    // congruent_subbox.pos = pos + pos_norm + size;
+    // congruent_subbox.size = size * size_norm;
+    // return congruent_subbox;
 
     float normalized_pos_x = child_box.pos.x / parent_box.size.x;
     float normalized_pos_y = child_box.pos.y / parent_box.size.y;
@@ -28,6 +35,7 @@ Box2D Box2D::new_congruent_subbox(Box2D parent_box, Box2D child_box)
 
     return prop_sub_box;
 }
+
 
 f2 Box2D::to_normalized(f2 point)
 {
@@ -80,4 +88,25 @@ void Box2D::print(){
     std::cout << "box.size.x = " << size.x << std::endl;
     std::cout << "box.size.y = " << size.y << std::endl;
     
+}
+
+Box2D Box2D::to_normalized_box(const Box2D & box, const Box2D & subbox)
+{
+    Box2D n_subbox;
+
+    n_subbox.size = subbox.size / box.size;
+    n_subbox.pos = (subbox.pos - box.pos) / box.size;
+
+    return n_subbox;
+}
+
+Box2D Box2D::from_normalized_box(const Box2D & box, const Box2D & n_subbox)
+{
+    Box2D subbox;
+
+    subbox.size = n_subbox.size * box.size;
+    subbox.pos  = n_subbox.pos * box.size;
+    subbox.pos  += box.pos;
+
+    return subbox;
 }

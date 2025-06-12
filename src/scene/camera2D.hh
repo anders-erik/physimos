@@ -19,7 +19,7 @@ class Camera2D
 public:
 
     /** Camera view in scene coordinates */
-    Box2D get_box();
+    Box2D get_viewbox();
     /** Matrix transforms camera box contents to match NDC size.
         e.g. [10, 30]x[10, 25] -> [-1, 1]x[-1, 1] (OpenGL : -> [0, 800]x[0, 600])
     */

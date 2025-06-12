@@ -138,9 +138,8 @@ class Auxwin {
         KeyModifierState modifier_current_state;
         KeyModifiers modifiers_current;
 
-        std::vector<InputEvent> events_other;
+        std::vector<InputEvent> events_input;
         std::vector<InputEvent> events_resize;
-        std::vector<InputEvent> events_mouse_movement;
 
 
         GLFWcursor* default_cursor;
@@ -182,8 +181,7 @@ class Auxwin {
 
         /** Create an artificial event. */
         void add_input_event(InputEvent event);
-        std::vector<InputEvent> get_events_other();
-        std::vector<InputEvent> get_events_mouse_movement();
+        std::vector<InputEvent> get_events_input();
         std::vector<InputEvent> get_events_window_resize();
 
         void framebuffer_callback(GLFWwindow* _window, int _width, int _height);

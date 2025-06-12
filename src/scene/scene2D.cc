@@ -72,11 +72,9 @@ void Scene2D::try_resize_hovered_quad(float size_factor)
 
 Scene2D::Scene2D(f2 _framebuffer_size) 
 {
-
-    // For now each scene always have both framebuffers available
+    // For now: each scene always have both framebuffers available
     framebuffer_multisample.reload(_framebuffer_size.to_i2(), 4);
     framebuffer.reload(_framebuffer_size.to_i2().x, _framebuffer_size.to_i2().y);
-
 
     set_framebuffer_size(_framebuffer_size);
 
@@ -155,6 +153,13 @@ void Scene2D::set_framebuffer_size(f2 size)
     // Subscenes do not need to be updated as their quad aspect ratios are fixed
 }
 
+
+
+Box2D Scene2D::get_camera_viewbox()
+{
+    return camera.get_viewbox();
+}
+
 void Scene2D::set_viewbox_width(float width)
 {
     camera.set_width(width);
@@ -177,6 +182,45 @@ void Scene2D::set_window_box(Box2D new_window_box)
 }
 
 
+void Scene2D::try_hover_quad()
+{
+    quad_manager.clear_hovered();
+
+    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    {
+        if(quad.contains_cursor(cursor_pos_scene))
+            return quad_manager.set_hovered(quad.get_id());
+    }
+}
+
+void Scene2D::try_select_quad()
+{
+    quad_manager.clear_selection();
+
+    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    {
+        if(quad.contains_cursor(cursor_pos_scene))
+        {
+            quad_manager.set_selected(quad.get_id());
+        }
+    }
+}
+
+std::vector<size_t> 
+Scene2D::get_subscene_ids()
+{
+    std::vector<size_t> quad_ids;
+
+    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    {
+        if(quad.is_scene2D())
+            quad_ids.push_back(quad.get_id());
+    }
+
+    return quad_ids;
+}
+
+
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 {
     for(QuadS2D& quad : quad_manager.get_quads_mut())
@@ -188,58 +232,35 @@ QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 }
 
 
-void Scene2D::try_hover_quad()
+
+
+Pair<size_t, Box2D> Scene2D::try_find_subscene(f2 viewbox_pos_normalized)
 {
-    quad_manager.clear_hovered();
+    set_cursor_pos(viewbox_pos_normalized);
 
-    QuadS2D* quad = try_match_cursor_to_quad(cursor_pos_scene);
-
-    if(quad != nullptr)
-        quad_manager.set_hovered(quad->get_id());
-}
-
-void Scene2D::try_select_quad()
-{
-    quad_manager.clear_selection();
-
-    QuadS2D* quad = try_match_cursor_to_quad(cursor_pos_scene);
-
-    if(quad != nullptr)
+    for(QuadS2D& quad : quad_manager.get_quads_mut())
     {
-        quad_manager.set_selected(quad->get_id());
-        print("New quad selected: ");
-        quad->get_name().print_line();
+        if(quad.is_scene2D())
+        {
+            if(quad.contains_cursor(cursor_pos_scene))
+            {
+                Box2D camera_viewbox = camera.get_viewbox();
+                
+                Box2D quadbox_in_scene_normal = Box2D::to_normalized_box(
+                    camera_viewbox, 
+                    quad.get_box()
+                );
+
+                return {quad.get_object_id(), quadbox_in_scene_normal};
+            }
+        }
     }
-}
-
-Scene2D* Scene2D::try_find_window_subscene()
-{
-    QuadS2D* quad = try_match_cursor_to_quad(cursor_pos_scene);
-
-    if(quad != nullptr && quad->is_scene2D())
-    {
-        auto* subscene  = ManagerScene::try_find_scene(quad->get_object_id());
-        if(subscene == nullptr)
-            return this;
-        
-
-        // Set cursor information for new targeted box
-        // TODO: Turn window box of target to be a returned structure instead of scene-tracked?
-        Box2D subscene_window_box = window_box.new_congruent_subbox(camera.get_box(), quad->get_box());
-        subscene->set_window_box(subscene_window_box);
-
-        // Cursor position is necessary for the scene to be able to handle envents
-        f2 cursor_subscene_normalized = quad->scene_to_quad_normalized(cursor_pos_scene);
-        subscene->set_cursor_pos(cursor_subscene_normalized);
-
-        return subscene;
-    }
-
-    return this;
+    return {0, Box2D()};
 }
 
 
-void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement)
+
+EventResultScene Scene2D::handle_pointer_move(PointerMovement2D pointer_movement)
 {
     // Get move deltas in current scene
     f2 delta_normalized = pointer_movement.pos_norm_curr - pointer_movement.pos_norm_prev;
@@ -255,17 +276,19 @@ void Scene2D::handle_pointer_move(PointerMovement2D pointer_movement)
             f2 new_size = box.size;
             quad_hovered->set_box(new_pos, new_size);
         }
-        return;
+        return {EventResultScene::Grab};
     }
 
     if(scene_grab)
     {
         camera.pan(delta_scene);
+        return {EventResultScene::Grab};
     }
     
+    return {};
 }
 
-void Scene2D::handle_pointer_click(PointerClick2D pointer_click)
+EventResultScene Scene2D::handle_pointer_click(PointerClick2D pointer_click)
 {    
     window::MouseButtonEvent button_event = pointer_click.event.mouse_button;
 
@@ -276,6 +299,8 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click)
             try_grab_quad();
         else
             grab_scene();
+        
+        return {EventResultScene::Grab};
     }
 
     if(button_event.is_middle_up())
@@ -289,10 +314,18 @@ void Scene2D::handle_pointer_click(PointerClick2D pointer_click)
     {
         try_select_quad();
     }
+
+    return {};
 }
 
-void Scene2D::handle_scroll(window::InputEvent scroll_event)
+EventResultScene Scene2D::handle_scroll(window::InputEvent scroll_event)
 {
+    // Disable scroll during grab
+    if(scene_grab || quad_grab)
+    {
+        return {EventResultScene::Grab};
+    }
+
     // Resize quad
     if(scroll_event.modifiers.is_ctrl_shift())
     {
@@ -302,7 +335,7 @@ void Scene2D::handle_scroll(window::InputEvent scroll_event)
 
         try_resize_hovered_quad(size_factor);
 
-        return;
+        return {};
     }
 
 
@@ -315,7 +348,9 @@ void Scene2D::handle_scroll(window::InputEvent scroll_event)
     {
         float size_factor = zoom_factor;
         camera.zoom_cursor_fixed(size_factor, cursor_pos_normal);
-    }  
+    }
+
+    return {};
 }
 
 
@@ -355,7 +390,7 @@ ShapeS2D& Scene2D::push_shape(Shape& shape){
 
 QuadS2D* Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
 {
-    auto* scene = ManagerScene::try_find_scene(scene_id);
+    auto* scene = ManagerScene::search_scene_storage(scene_id);
     scene->set_parent_id(id);
 
     scene::QuadS2D new_quad;
@@ -397,8 +432,7 @@ render_to_window()
 
 unsigned int Scene2D::render_to_texture()
 {
-    render_subscene_textures();
-
+    
     if(multisample_flag)
     {
         framebuffer_multisample.multisample_fbo_bind();

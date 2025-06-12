@@ -59,7 +59,7 @@ int main(){
 
     while (auxwin.end_frame()){
         auxwin.new_frame();
-        std::vector<window::InputEvent> input_events = auxwin.get_events_other();
+        std::vector<window::InputEvent> input_events = auxwin.get_events_input();
 
         for(auto& event : input_events){}
 

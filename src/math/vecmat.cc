@@ -25,21 +25,36 @@ f2& f2::operator-=(float scalar){
     this->y -= scalar;
     return *this;
 }
-f2& f2::operator*=(float scalar)
+f2& f2::operator*=(const f2& rhs)
 {
-    this->x *= scalar;
-    this->y *= scalar;
+    this->x *= rhs.x;
+    this->y *= rhs.y;
+    return *this;
+}
+f2& f2::operator/=(const f2 & rhs)
+{
+    this->x /= rhs.x;
+    this->y /= rhs.y;
     return *this;
 }
 f2 f2::operator+(const f2& rhs){
     return {this->x + rhs.x, this->y + rhs.y};
 }
-f2 f2::operator-(const f2& rhs){
+f2 f2::operator-(const f2& rhs) const
+{
     return f2 {this->x - rhs.x, this->y - rhs.y};
 }
 f2 f2::operator*(float scalar)
 {
     return f2(this->x * scalar, this->y * scalar);
+}
+f2 f2::operator*(const f2 & rhs) const
+{
+    return f2(this->x * rhs.x, this->y * rhs.y);
+}
+f2 f2::operator/(const f2 & rhs) const
+{
+    return f2(this->x / rhs.x, this->y / rhs.y);
 }
 f2 f2::operator-()
 {

@@ -114,10 +114,10 @@ void add_glyph_quads_to_scene(scene::Scene2D* scene){
 
 
 
+#include "opengl/program.hh"
 
 int main()
 {
-	std::cout << "PHONT MAIN"  << std::endl;
 
 	f2 conductor_window_size = {800.0f, 600.0f};
 

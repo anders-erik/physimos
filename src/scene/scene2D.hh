@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "lib/pair.hh"
+
 #include "window/auxevent.hh"
 
 #include "opengl/program.hh"
@@ -48,6 +50,17 @@ struct PointerClick2D
             event               {event} {};
 };
 
+struct EventResultScene {
+    enum Action {
+        Grab,
+        Release,
+    } action = Release;
+
+    EventResultScene() = default;
+    EventResultScene(Action action): action {action} {};
+
+    bool is_grab() { return action == Grab ? true : false;};
+};
 
 
 
@@ -114,6 +127,8 @@ public:
 
     f2 get_framebuffer_size();
     void set_framebuffer_size(f2 size);
+
+    Box2D get_camera_viewbox();
     /** Set the width of the viewbox. Preserves aspect ratio. */
     void set_viewbox_width(float width);
     /** The factor with which a scroll-event multiplies the viewbox size on zoom out, or divides by during zoom-in events. */
@@ -130,13 +145,20 @@ public:
     /** Selects quad if located at currently set cursor position. */
     void try_select_quad();
 
+    /** Loop through quads and identify the ones showing a scene */
+    std::vector<size_t> get_subscene_ids();
+
     /** Try find which scene that captures the cursor. 
     Updates the scenes window box and cursor position. */
     Scene2D* try_find_window_subscene();
+
+    /** Returns a found subscene id and the quadbox in normalized scene coordinates. */
+    Pair<size_t, Box2D> try_find_subscene(f2 viewbox_pos_normalized);
+
     /** Does NOT update cursor position, as this is done when finding current traget at the beginning of each frame. */
-    void handle_pointer_move(PointerMovement2D cursor_event);
-    void handle_pointer_click(PointerClick2D pointer_click);
-    void handle_scroll(window::InputEvent scroll_event);
+    EventResultScene handle_pointer_move(PointerMovement2D cursor_event);
+    EventResultScene handle_pointer_click(PointerClick2D pointer_click);
+    EventResultScene handle_scroll(window::InputEvent scroll_event);
 
 
     void push_quad(scene::QuadS2D& quad);
@@ -153,6 +175,7 @@ public:
 
     void render_to_window();
     unsigned int render_to_texture();
+    /** TODO: This is leaking ~1-2MB of memory per second.. */
     void render();
 };
 

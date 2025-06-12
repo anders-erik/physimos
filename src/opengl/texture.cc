@@ -11,6 +11,7 @@ namespace opengl {
 
 unsigned int colors_texture_id;
 unsigned int grass_texture_id;
+unsigned int checker_texture_id;
 
 Texture::Texture(i2 _size){
     size.x = _size.x;
@@ -149,6 +150,30 @@ void textures_init(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 
+
+
+    float checker_bitmap[16] = {    1.0f, 1.0f, 1.0f, 1.0f,
+                            0.0f, 0.0f, 0.0f, 1.0f,
+                            0.0f, 0.0f, 0.0f, 1.0f,
+                            1.0f, 1.0f, 1.0f, 1.0f,
+    };
+
+    
+    glGenTextures(1, &checker_texture_id);
+    glBindTexture(GL_TEXTURE_2D, checker_texture_id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // Not necessary
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_FLOAT, checker_bitmap);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 f2 texture_get_random_grass_color(int seed){
@@ -230,6 +255,9 @@ unsigned int texture_get_id(Textures texture) {
         case Textures::Grass:
             return grass_texture_id;
             break;
+        case Textures::Checker2x2:
+            return checker_texture_id;
+            break;
         default:
             return colors_texture_id;
             break;
@@ -237,40 +265,9 @@ unsigned int texture_get_id(Textures texture) {
 }
 
 
-
-
-void set_texture_checker_2x2(unsigned int& texture_id){
-
-    // unsigned char bitmap[16] = {255, 255, 255, 255,
-    //                             0,   0,   0,   255,
-    //                             0,   0,   0,   255,
-    //                             255, 255, 255, 255,
-    // };
-
-    float bitmap[16] = {    1.0f, 1.0f, 1.0f, 1.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f,
-                            1.0f, 1.0f, 1.0f, 1.0f,
-    };
-
-    
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // Not necessary
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_FLOAT, bitmap);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-
+void set_texture_checker_2x2(unsigned int& texture_id)
+{    
+    texture_id = checker_texture_id;
 }
 
 
