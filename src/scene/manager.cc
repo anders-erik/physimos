@@ -17,9 +17,11 @@ static size_t id_count = 2; // Global index count
 
 static bool is_grabbing_a_scene = false;
 static Box2D window_box; // The current window viewport box
-static Box2D cursor_scene_box;
+static Box2D cursor_scene_box; // the box of cursor scene in window coordinates
 
 static window::CursorPosition cursor_pos; // Copy from most recent cursor move event
+
+// static RendererScene2D renderer_scene;
 
 static struct ScenesState {
     const size_t root_id = 1; // root scene is created during init; is indestructable; id==1;
@@ -97,6 +99,11 @@ size_t push_scene(scene::Scene2D& _scene){
     scenes.push_back( _scene );
 
     return new_id;
+}
+
+void render_all_scene_framebuffers()
+{
+
 }
 
 
@@ -203,22 +210,32 @@ requery_cursor_target(window::CursorPosition& _cursor_pos)
 {
     auto& window_scene = get_window_scene_mut();
     
+    window_scene.try_hover_quad(); // ALWAYS highlight hovered quad in window scene
 
-    Pair<size_t, Box2D> subscene_query = window_scene.try_find_subscene(_cursor_pos.normalized); 
 
-    if(subscene_query.XX != 0)
+    QuadQuery quad_query = window_scene.try_find_quad_in_viewbox(_cursor_pos.normalized); 
+
+    if(quad_query.quad_id != 0)
     {
-        // Set up subscene as target
-        scenes_state.set_cursor_scene(subscene_query.XX);
+        auto* quad_p = ManagerScene::get_quad_manager().get_quad_mut(quad_query.quad_id);
+        if(quad_p == nullptr) return;
+        auto& quad = *quad_p;
+
+        if(!quad.is_scene2D()) 
+            return;
+
+        // Set up subscene as cursor scene
+        scenes_state.set_cursor_scene(quad.get_object_id());
 
         cursor_scene_box = Box2D::from_normalized_box(
             window_box,
-            subscene_query.YY
+            quad_query.normalized_viewbox_coords
         );
 
         auto& cursor_scene = get_cursor_scene_mut();
-        f2 subscene_normalized_cursor = cursor_scene_box.to_normalized(_cursor_pos.sane);
-        cursor_scene.set_cursor_pos(subscene_normalized_cursor);
+        // Viewboxes ONLY accepts normalized coordinate
+        f2 cursor_in_normalized_viewbox = cursor_scene_box.to_normalized(_cursor_pos.sane);
+        cursor_scene.set_cursor_pos(cursor_in_normalized_viewbox);
         cursor_scene.try_hover_quad();
     }
     else 
@@ -228,7 +245,6 @@ requery_cursor_target(window::CursorPosition& _cursor_pos)
         cursor_scene_box = window_box;
     }
 
-    window_scene.try_hover_quad(); // ALWAYS highlight hovered quad in window scene
 }
 
 
@@ -296,14 +312,8 @@ event_mouse_button(window::InputEvent& event)
 	auto& mouse_button_event = event.mouse_button;
     
     Scene2D& cursor_scene = ManagerScene::get_cursor_scene_mut();
-	
-	scene::PointerClick2D pointer_click = {
-        cursor_scene.get_window_box().to_normalized(cursor_pos.sane),
-		event
-	};
 
-    
-    auto event_result = cursor_scene.handle_pointer_click(pointer_click);
+    auto event_result = cursor_scene.handle_pointer_click(event);
     if(event_result.is_grab())
         is_grabbing_a_scene = true;
     else
@@ -313,8 +323,6 @@ event_mouse_button(window::InputEvent& event)
     // select the subscene quad in window scene
     if(mouse_button_event.is_left_down())
     {
-        // auto* window_scene = ManagerScene::search_scene_storage(scenes_state.window_id);
-        
         bool success = cursor_scene.try_select_quad();
     }
 

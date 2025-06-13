@@ -91,20 +91,7 @@ bool QuadS2D::is_scene2D()
 
 void QuadS2D::update_texture()
 {
-    if(is_bitmap())
-    {
-        // nothing to do
-    }
-    else if (is_scene2D())
-    {
-        scene::Scene2D* scene = ManagerScene::search_scene_storage(object_id);
-        if(scene == nullptr)
-            return;
-
-        // scene->render_subscene_textures();
-        texture_id = scene->render_to_texture();
-
-    }
+    
 }
 
 }

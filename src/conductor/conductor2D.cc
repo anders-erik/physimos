@@ -80,6 +80,45 @@ process_framebuffer_events()
 }
 
 
+
+void Conductor2D::
+render_quad_textures()
+{
+	auto& q_manager = ManagerScene::get_quad_manager();
+
+	for(QuadS2D& quad : q_manager.get_quads_mut())
+	{
+		if(quad.is_bitmap())
+		{
+			// nothing yet
+		}
+		else if (quad.is_scene2D())
+		{
+			// Get scene
+			size_t scene_id = quad.get_object_id();
+			scene::Scene2D* scene_p = ManagerScene::search_scene_storage(scene_id);
+			if(scene_p == nullptr) continue;
+			auto& scene = *scene_p;
+
+			if(scene.is_multisampled())
+			{
+				unsigned int text_id = renderer_scene.render_scene_FBMS(scene, scene.get_FBMS());
+				quad.set_texture_id(text_id);
+			}
+			else
+			{
+				unsigned int text_id = renderer_scene.render_scene_FBMS(scene, scene.get_FBMS());
+				quad.set_texture_id(text_id);
+				
+			}
+
+
+		}
+	}
+}
+
+
+
 void Conductor2D::main_loop()
 {
 	while (auxwin.is_open())
@@ -91,16 +130,17 @@ void Conductor2D::main_loop()
 
 		// UPDATE
 		scene::Scene2D& window_scene = ManagerScene::get_window_scene_mut();
-		window_scene.update();
-		window_scene.render_subscene_textures();
+		render_quad_textures();
 
-		pui.update(); // reflect scene state changes
 		
 
 		// RENDER
 
 		auxwin.bind_window_framebuffer();
-		window_scene.render_to_window();
+		renderer_scene.render_scene(window_scene);
+
+
+		pui.update(); // reflect scene state changes
 		pui.render(); // Render ui on top of scenes
 		
 		auxwin.end_frame();

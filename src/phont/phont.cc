@@ -16,7 +16,7 @@ namespace phont {
 
 Glyph::Glyph(char ch, i2 _size)
     :   text_framebuff { opengl::TextureFB(_size) },
-        text_framebuff_multi { opengl::TextureFrameBufferMultisample(_size, 8) }
+        text_framebuff_multi { opengl::TextureFBMS(_size, 8) }
 {
     set_char(ch);
     set_texture_size(_size);

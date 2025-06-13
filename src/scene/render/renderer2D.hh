@@ -11,24 +11,17 @@
 
 #include "scene/render/program_quad2D.hh"
 
-namespace scene {
-
-class QuadS2D;
-
-
+namespace opengl {
+    class TextureFB;
+    class TextureFBMS;
 }
 
 namespace scene {
+    class Scene2D;
+    class QuadS2D;
+}
 
-/** Represents a wireframe used to highlight scene objects. */
-// class BoxFrame2D : Box2D {
-
-// public:
-//     m3f3 M_m_s;
-//     std::array<opengl::VertexQuad2D, 8> verts; // Vertices for wireframe highlighting
-//     opengl::RenderContextQuadS2D render_context;  // Rendering context for wireframe highlighting
-
-// };
+namespace scene {
 
 
 
@@ -96,6 +89,9 @@ public:
     // Render real quads
     void render_quad(const scene::QuadS2D& quad);
 
+    void render_scene(scene::Scene2D& scene);
+    unsigned int render_scene_FB(scene::Scene2D& scene, opengl::TextureFB& framebuffer);
+    unsigned int render_scene_FBMS(scene::Scene2D& scene, opengl::TextureFBMS& framebuffer_ms);
 
     void render_point(RenderContextQuadS2D context);
     void render_line(RenderContextQuadS2D context);

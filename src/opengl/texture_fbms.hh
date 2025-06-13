@@ -7,7 +7,7 @@
 namespace opengl {
 
 
-struct TextureFrameBufferMultisample {
+struct TextureFBMS {
     f4 clear_color;
     i2 size;
     int samples;
@@ -19,8 +19,8 @@ struct TextureFrameBufferMultisample {
     unsigned int multisampleFBO;
     unsigned int resolvedFBO;
 
-    TextureFrameBufferMultisample() = default;
-    TextureFrameBufferMultisample(i2 _text_size, int _samples);
+    TextureFBMS() = default;
+    TextureFBMS(i2 _text_size, int _samples);
 
     void reload(i2 _text_size, int _samples);
 

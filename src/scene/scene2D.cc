@@ -20,47 +20,7 @@ namespace scene {
 
 
 
-void Scene2D::clear_cursor_grab()
-{
-    scene_grab = false;
-}
 
-
-Box2D Scene2D::get_window_box()
-{
-    return window_box;
-}
-
-
-
-
-
-void Scene2D::release_grabs()
-{
-    quad_grab = false;
-    scene_grab = false;
-}
-
-void Scene2D::try_resize_hovered_quad(float size_factor)
-{
-    auto& q_manager = ManagerScene::get_quad_manager();
-
-    auto* quad_hovered = q_manager.get_hovered();
-    if(quad_hovered != nullptr)
-    {
-        if(quad_hovered->is_bitmap())
-        {
-            Box2D current_quad_box = quad_hovered->get_box();
-            f2 new_pos = current_quad_box.pos;
-            f2 new_size = current_quad_box.size * size_factor;
-            quad_hovered->set_box(new_pos, new_size);
-        }
-        if(quad_hovered->is_scene2D())
-        {
-            println("Scale scene quad");
-        }
-    }
-}
 
 Scene2D::Scene2D(f2 _framebuffer_size) 
 {
@@ -120,6 +80,16 @@ disable_multisample()
     multisample_flag = false;
 }
 
+opengl::TextureFBMS & Scene2D::get_FBMS()
+{
+    return framebuffer_multisample;
+}
+
+opengl::TextureFB & Scene2D::get_FB()
+{
+    return framebuffer;
+}
+
 
 Str& Scene2D::get_name()
 {
@@ -147,9 +117,10 @@ void Scene2D::set_framebuffer_size(f2 size)
 
 
 
-Box2D Scene2D::get_camera_viewbox()
+
+Camera2D& Scene2D::get_camera()
 {
-    return camera.get_viewbox();
+    return camera;
 }
 
 void Scene2D::set_viewbox_width(float width)
@@ -168,10 +139,6 @@ void Scene2D::set_cursor_pos(f2 cursor_pos_normalized)
     cursor_pos_scene = camera.normalized_to_scene_coords(cursor_pos_normal);
 }
 
-void Scene2D::set_window_box(Box2D new_window_box)
-{
-    window_box = new_window_box;
-}
 
 
 void Scene2D::try_hover_quad()
@@ -186,6 +153,7 @@ void Scene2D::try_hover_quad()
     }
 }
 
+
 bool Scene2D::try_select_quad()
 {
     auto& q_manager = ManagerScene::get_quad_manager();
@@ -197,44 +165,16 @@ bool Scene2D::try_select_quad()
             q_manager.set_selected(quad->get_id());
             return true;
         }
-        
     }
     return false;
 }
 
-std::vector<size_t> 
-Scene2D::get_subscene_ids()
-{
-    auto& q_manager = ManagerScene::get_quad_manager();
-    
-    std::vector<size_t> quad_ids_found;
-
-    for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
-    {
-        if(quad->is_scene2D())
-            quad_ids_found.push_back(quad->get_id());
-    }
-
-    return quad_ids_found;
-}
-
-
-QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
-{
-    auto& q_manager = ManagerScene::get_quad_manager();
-
-    for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
-    {
-        if(quad->contains_cursor(pos_scene))
-            return quad;
-    }
-    return nullptr;
-}
 
 
 
 
-Pair<size_t, Box2D> Scene2D::try_find_subscene(f2 viewbox_pos_normalized)
+QuadQuery Scene2D::
+try_find_quad_in_viewbox(f2 viewbox_pos_normalized)
 {
     auto& q_manager = ManagerScene::get_quad_manager();
     set_cursor_pos(viewbox_pos_normalized);
@@ -245,27 +185,26 @@ Pair<size_t, Box2D> Scene2D::try_find_subscene(f2 viewbox_pos_normalized)
     {
         QuadS2D& quad = *quad_safe_ptr;
 
-        if(quad.is_scene2D())
+        if(quad.contains_cursor(cursor_pos_scene))
         {
-            if(quad.contains_cursor(cursor_pos_scene))
-            {
-                Box2D camera_viewbox = camera.get_viewbox();
-                
-                Box2D quadbox_in_scene_normal = Box2D::to_normalized_box(
-                    camera_viewbox, 
-                    quad.get_box()
-                );
+            Box2D camera_viewbox = camera.get_viewbox();
+            
+            Box2D quadbox_in_scene_normal = Box2D::to_normalized_box(
+                camera_viewbox, 
+                quad.get_box()
+            );
 
-                return {quad.get_object_id(), quadbox_in_scene_normal};
-            }
+            return {quad.get_id(), quadbox_in_scene_normal};
         }
+
     }
     return {0, Box2D()};
 }
 
 
 
-EventResultScene Scene2D::handle_pointer_move(PointerMovement2D pointer_movement)
+EventResultScene Scene2D::
+handle_pointer_move(PointerMovement2D pointer_movement)
 {
     // Get move deltas in current scene
     f2 delta_normalized = pointer_movement.pos_norm_curr - pointer_movement.pos_norm_prev;
@@ -302,14 +241,15 @@ EventResultScene Scene2D::handle_pointer_move(PointerMovement2D pointer_movement
     return {};
 }
 
-EventResultScene Scene2D::handle_pointer_click(PointerClick2D pointer_click)
+EventResultScene Scene2D::
+handle_pointer_click(window::InputEvent& event)
 {    
-    window::MouseButtonEvent button_event = pointer_click.event.mouse_button;
+    window::MouseButtonEvent button_event = event.mouse_button;
 
     // PAN / MOVE
     if(button_event.is_middle_down())
     {
-        if(pointer_click.event.modifiers.is_ctrl_shift())
+        if(event.modifiers.is_ctrl_shift())
         {
             bool selected = try_select_quad();
             if(selected)
@@ -343,7 +283,10 @@ EventResultScene Scene2D::handle_pointer_click(PointerClick2D pointer_click)
     return {};
 }
 
-EventResultScene Scene2D::handle_scroll(window::InputEvent scroll_event)
+
+
+EventResultScene Scene2D::
+handle_scroll(window::InputEvent& scroll_event)
 {
     // Disable scroll during grab
     if(scene_grab || quad_grab)
@@ -443,105 +386,32 @@ size_t Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
 
 
 
-void Scene2D::
-update()
-{
-
-}
-
-
-void Scene2D::
-render_subscene_textures()
-{
-    auto& q_manager = ManagerScene::get_quad_manager();
-    for(QuadS2D& quad : q_manager.get_quads_mut())
-        quad.update_texture();
-}
-
-
-void Scene2D::
-render_to_window()
-{
-    // camera.set_width(window_size_f.x);
-
-    render();
-}
-
-
-unsigned int Scene2D::render_to_texture()
-{
-    
-    if(multisample_flag)
-    {
-        framebuffer_multisample.multisample_fbo_bind();
-        framebuffer_multisample.multisample_fbo_clear_red();
-
-        render();
-
-        framebuffer_multisample.blit();
-
-        return framebuffer_multisample.get_resolved_texture();
-    }
-    else
-    {
-        framebuffer.framebuffer_bind();
-        framebuffer.clear_with({0.5f, 0.5f, 0.5f, 1.0f});
-
-        render();
-
-        return framebuffer.get_texture_id();
-    }
-}
-
-
-void Scene2D::render()
+void Scene2D::try_resize_hovered_quad(float size_factor)
 {
     auto& q_manager = ManagerScene::get_quad_manager();
 
-    renderer2D.activate();
-    renderer2D.set_camera(camera.get_matrix());
-
-
-    for(size_t quad_id : quad_ids)
+    auto* quad_hovered = q_manager.get_hovered();
+    if(quad_hovered != nullptr)
     {
-        auto* quad = q_manager.get_quad(quad_id);
-        if(quad == nullptr) continue;
-
-        renderer2D.render_quad(*quad);
-    }
-
-    for(scene::ShapeS2D& point : points){
-        renderer2D.set_model(point.get_matrix());
-        renderer2D.render_point(point.render_context);
-    }
-
-    for(scene::ShapeS2D& line : lines){
-        renderer2D.set_model(line.get_matrix());
-        renderer2D.render_line(line.render_context);
-    }
-    
-    // FRAMES
-    renderer2D.render_frame(frame_M_m_s, false, 1);
-
-
-    // Quad Frames
-    for(size_t quad_id : quad_ids)
-    {
-        if(q_manager.is_hover_id(quad_id))
+        if(quad_hovered->is_bitmap())
         {
-            auto* hovered_q = q_manager.get_hovered();
-            if(hovered_q != nullptr)
-                renderer2D.render_frame(hovered_q->get_model_matrix(), false, 4);
+            Box2D current_quad_box = quad_hovered->get_box();
+            f2 new_pos = current_quad_box.pos;
+            f2 new_size = current_quad_box.size * size_factor;
+            quad_hovered->set_box(new_pos, new_size);
         }
-
-        if(q_manager.is_selected_id(quad_id))
+        if(quad_hovered->is_scene2D())
         {
-            auto* selected_q = q_manager.get_selected();
-            if(selected_q != nullptr)
-                renderer2D.render_frame(selected_q->get_model_matrix(), true, 2);
+            println("Scale scene quad");
         }
-        
     }
+}
+
+
+void Scene2D::release_grabs()
+{
+    quad_grab = false;
+    scene_grab = false;
 }
 
 

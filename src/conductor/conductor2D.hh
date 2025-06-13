@@ -29,6 +29,8 @@ class Conductor2D
 	bool targeting_ui = false;
 	CursorPosition cursor_pos; // Copy from most recent mouse move event
 
+	scene::RendererScene2D renderer_scene;
+
 public:
 
 	Conductor2D(f2 window_size);
@@ -37,6 +39,8 @@ public:
 	void process_user_input();
 	/** Window resize, content scale, etc. */
 	void process_framebuffer_events();
+	/** Render all quad textures */
+	void render_quad_textures();
 
 	/** transfer control to Conductor2D by entering main rendering loop */
 	void main_loop();

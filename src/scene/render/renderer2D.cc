@@ -9,6 +9,8 @@
 #include "opengl/texture.hh"
 
 #include "scene/quadS2D.hh"
+#include "scene/scene2D.hh"
+#include "scene/manager.hh"
 
 #include "renderer2D.hh"
 
@@ -207,13 +209,93 @@ void RendererScene2D::render_line(RenderContextQuadS2D context){
 
 
 
-void RendererScene2D::render_quad(const scene::QuadS2D& quad)
+void RendererScene2D::
+render_quad(const scene::QuadS2D& quad)
 {
     program_quad_2D.set_model_texture(
         quad.get_model_matrix(), 
         quad.get_texture_id()
     );
     program_quad_2D.draw();
+}
+
+
+void RendererScene2D::
+render_scene(scene::Scene2D & scene)
+{
+    
+    auto& q_manager = ManagerScene::get_quad_manager();
+
+    activate();
+    set_camera(scene.get_camera().get_matrix());
+
+    
+    for(size_t quad_id : scene.quad_ids)
+    {
+        auto* quad = q_manager.get_quad(quad_id);
+        if(quad == nullptr) continue;
+
+        render_quad(*quad);
+    }
+
+    for(scene::ShapeS2D& point : scene.points){
+        set_model(point.get_matrix());
+        render_point(point.render_context);
+    }
+
+    for(scene::ShapeS2D& line : scene.lines){
+        set_model(line.get_matrix());
+        render_line(line.render_context);
+    }
+    
+    // FRAMES
+    render_frame(scene.frame_M_m_s, false, 1);
+
+
+    // Quad Frames
+    for(size_t quad_id : scene.quad_ids)
+    {
+        if(q_manager.is_hover_id(quad_id))
+        {
+            auto* hovered_q = q_manager.get_hovered();
+            if(hovered_q != nullptr)
+                render_frame(hovered_q->get_model_matrix(), false, 4);
+        }
+
+        if(q_manager.is_selected_id(quad_id))
+        {
+            auto* selected_q = q_manager.get_selected();
+            if(selected_q != nullptr)
+                render_frame(selected_q->get_model_matrix(), true, 2);
+        }
+        
+    }
+
+}
+
+unsigned int RendererScene2D::
+render_scene_FB(scene::Scene2D & scene, opengl::TextureFB & framebuffer)
+{
+    framebuffer.framebuffer_bind();
+    framebuffer.clear_with({0.5f, 0.5f, 0.5f, 1.0f});
+
+    render_scene(scene);
+
+    return framebuffer.get_texture_id();
+}
+
+
+unsigned int RendererScene2D::
+render_scene_FBMS(scene::Scene2D & scene, opengl::TextureFBMS & framebuffer_ms)
+{
+    framebuffer_ms.multisample_fbo_bind();
+    framebuffer_ms.multisample_fbo_clear_red();
+
+    render_scene(scene);
+
+    framebuffer_ms.blit();
+
+    return framebuffer_ms.get_resolved_texture();
 }
 
 

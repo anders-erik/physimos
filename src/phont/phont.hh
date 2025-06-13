@@ -10,7 +10,7 @@
 
 #include "opengl/texture.hh"
 #include "opengl/texture_fb.hh"
-#include "opengl/texture_framebuffer_multi.hh"
+#include "opengl/texture_fbms.hh"
 
 #include "scene/render/renderer2D.hh"
 
@@ -41,7 +41,7 @@ struct Glyph {
     GlyphRenderContext render_context;
     opengl::TextureFB text_framebuff;
 
-    opengl::TextureFrameBufferMultisample text_framebuff_multi;
+    opengl::TextureFBMS text_framebuff_multi;
 
     Glyph(char ch, i2 size);
     // GlyphTextureGenerator() = default;

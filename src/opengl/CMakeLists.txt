@@ -11,7 +11,7 @@ add_library(opengl
     renderer_vector.cc
 
     texture_fb.cc
-    texture_framebuffer_multi.cc
+    texture_fbms.cc
 
 )
 

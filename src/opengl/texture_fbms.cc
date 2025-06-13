@@ -5,19 +5,19 @@
 #include "glad/glad.h"
 
 
-#include "texture_framebuffer_multi.hh"
+#include "texture_fbms.hh"
 
 namespace opengl {
 
 
 
 
-TextureFrameBufferMultisample::TextureFrameBufferMultisample(i2 _text_size, int _samples)
+TextureFBMS::TextureFBMS(i2 _text_size, int _samples)
 {
     reload(_text_size, _samples);
 }
 
-void TextureFrameBufferMultisample::reload(i2 _text_size, int _samples)
+void TextureFBMS::reload(i2 _text_size, int _samples)
 {
     size = _text_size;
     samples = _samples;
@@ -33,7 +33,7 @@ void TextureFrameBufferMultisample::reload(i2 _text_size, int _samples)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TextureFrameBufferMultisample::init_gl_objects(){
+void TextureFBMS::init_gl_objects(){
 
 
     glGenTextures(1, &multisampleTexture);
@@ -58,26 +58,26 @@ void TextureFrameBufferMultisample::init_gl_objects(){
 
 }
 
-void TextureFrameBufferMultisample::multisample_fbo_bind(){
+void TextureFBMS::multisample_fbo_bind(){
     glViewport(0,0, size.x, size.y);
     glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
 }
-void TextureFrameBufferMultisample::multisample_fbo_unbind(){
+void TextureFBMS::multisample_fbo_unbind(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0,0, 800, 600);
 }
 
-void TextureFrameBufferMultisample::multisample_fbo_clear_red(){
+void TextureFBMS::multisample_fbo_clear_red(){
     glClearColor(1.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-void TextureFrameBufferMultisample::multisample_fbo_clear(){
+void TextureFBMS::multisample_fbo_clear(){
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
-void TextureFrameBufferMultisample::blit(){
+void TextureFBMS::blit(){
     glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFBO);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, resolvedFBO);
     glBlitFramebuffer(0, 0, size.x, size.y, 0, 0, size.x, size.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -85,7 +85,7 @@ void TextureFrameBufferMultisample::blit(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-unsigned int TextureFrameBufferMultisample::get_resolved_texture(){
+unsigned int TextureFBMS::get_resolved_texture(){
     return resolvedTexture;
 }
 

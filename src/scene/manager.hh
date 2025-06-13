@@ -59,6 +59,9 @@ scene::Scene2D* init(f2 window_size);
 size_t push_scene(scene::Scene2D& _scene);
 
 
+void render_all_scene_framebuffers();
+
+
 scene::QuadManager& get_quad_manager();
 
 

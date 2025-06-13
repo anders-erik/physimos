@@ -74,7 +74,7 @@ void add_glyph_quads_to_scene(scene::Scene2D* scene){
 	// TRIANGLE MULTISAMPLE TESTS
 
 	// opengl::TextureFrameBufferMultisample Triangle_text_buf_multi { opengl::TextureFrameBufferMultisample( {20, 32}, 4 ) };
-	opengl::TextureFrameBufferMultisample Triangle_text_buf_multi;
+	opengl::TextureFBMS Triangle_text_buf_multi;
 	Triangle_text_buf_multi.reload( {20, 32}, 4 );
 	scene::QuadS2D quad_Triangle;
 
