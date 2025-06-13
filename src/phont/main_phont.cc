@@ -123,6 +123,7 @@ int main()
 
 	Conductor2D conductor2D { conductor_window_size };
 
+	scene::QuadManager& q_manager = ManagerScene::get_quad_manager();
 
 	// Scene objects
 	Shape point_to_draw = Shape::create(shape_t::point);
@@ -140,10 +141,13 @@ int main()
 	root_scene.set_name("Forever Root");
 	// ADD GREEN QUADS TO ROOT SCENE
 	scene::QuadS2D root_scene_quad;
-	root_scene_quad.set_box( {0.0f, 0.0f}, {30.0f, 30.0f} );
+	root_scene_quad.set_box( {2.0f, 2.0f}, {60.0f, 60.0f} );
     root_scene_quad.set_bitmap_texture(opengl::texture_get_id(opengl::Textures::Grass));
 	root_scene_quad.set_name("root_scene_quad_1");
-	root_scene.push_quad(root_scene_quad);
+	// root_scene.push_quad(root_scene_quad);
+	size_t quad_id_0 = ManagerScene::get_quad_manager().push_quad(root_scene_quad);
+	root_scene.push_quad_id(quad_id_0);
+
 	root_scene_quad.set_box( {550.0f, 100.0f}, {200.0f, 150.0f} );
 	root_scene_quad.set_name("quad_2");
 	root_scene.push_quad(root_scene_quad);
@@ -174,9 +178,12 @@ int main()
 	size_t glyphscene_id = ManagerScene::push_scene(glyphscene);
 
 	// Add to ROOT SCENE
-	scene::QuadS2D* glyphscene_quad = root_scene.add_subscene2D(glyphscene_id, {350, 200});
-	glyphscene_quad->set_name("glyph scene quad");
-
+	size_t quad_id = root_scene.add_subscene2D(glyphscene_id, {350, 200});
+	auto* q_glyphscene = q_manager.get_quad_mut(quad_id);
+	if(q_glyphscene != nullptr)
+	{
+		q_glyphscene->set_name("glyph scene quad");
+	}
 
 
 

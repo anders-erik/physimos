@@ -49,8 +49,8 @@ public:
             {
                 if(quad_name.containsPoint(cursor_sane))
                 {
-                    auto& root_scene = ManagerScene::get_root_scene_mut();
-                    root_scene.quad_manager.set_selected(quad_id);
+                    auto& q_manager = ManagerScene::get_quad_manager();
+                    q_manager.set_selected(quad_id);
                 }
                 
 
@@ -70,8 +70,8 @@ public:
         
             if(quad_pos_x.containsPoint(cursor_sane))
             {
-                auto& root_scene = ManagerScene::get_root_scene_mut();
-                scene::QuadS2D* quad = root_scene.quad_manager.get_quad_mut(quad_id);
+                auto& q_manager = ManagerScene::get_quad_manager();
+                scene::QuadS2D* quad = q_manager.get_quad_mut(quad_id);
                 if(quad != nullptr)
                 {
                     Box2D updated_box = quad->get_box();

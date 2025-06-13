@@ -152,8 +152,8 @@ public:
                 size_t quad_id = try_find_quad_id_at_cursor_location();
                 if(quad_id != 0)
                 {
-                    auto& root_scene = ManagerScene::get_root_scene_mut();
-                    root_scene.quad_manager.set_selected(quad_id);
+                    auto& q_manager = ManagerScene::get_quad_manager();
+                    q_manager.set_selected(quad_id);
                 }
                 return EventResult::Grab;
             }
@@ -172,7 +172,7 @@ public:
     void reload(f2 widget_pos)
     {
         scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
-        
+        auto& q_manager = ManagerScene::get_quad_manager();
 
         // Frame
         frame.pos = widget_pos;
@@ -197,7 +197,7 @@ public:
         f2 quad_indent = {10.0f, 0.0f};
         
         pos += quad_indent;
-        for(auto& quad : root_scene.quad_manager.get_quads_mut())
+        for(auto& quad : q_manager.get_quads_mut())
         {
             W::Quad2DSmall quad_widget;
             quad_widget.reload(&quad, pos += quad_w_delta);

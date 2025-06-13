@@ -61,11 +61,11 @@ void ProgramQuad2D::set_camera_matrix(m3f3 _camera_matrix){
 }
 
 
-void ProgramQuad2D::set_model_texture(m3f3 model_matrix, unsigned int texture) const {
+void ProgramQuad2D::set_model_texture(const m3f3 model_matrix, const unsigned int texture) const {
     
     glUseProgram(id);
     
-    glUniformMatrix3fv(model_mat_LOC, 1, GL_TRUE, model_matrix.pointer());
+    glUniformMatrix3fv(model_mat_LOC, 1, GL_TRUE, model_matrix.pointer_const());
 
     glBindTexture(GL_TEXTURE_2D, texture);
 

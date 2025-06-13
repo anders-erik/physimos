@@ -111,6 +111,7 @@ m3f3& m3f3::operator=(const m3f3& rhs){
     return *this;
 }
 
+
 m3f3 m3f3::mult_right(const m3f3& rhs){
 
     m3f3 copy;
@@ -195,6 +196,11 @@ float* m3f3::pointer(){
     return (float*) this;
 }
 
+const float* m3f3::pointer_const() const
+{
+    return (const float*) this;
+}
+
 void m3f3::set_to_identity(){
     x.x = 1.0f;
     x.y = 0.0f;
@@ -213,6 +219,14 @@ void m3f3::print(){
     std::cout << x.x << " " << x.y << " " << x.z << " " << std::endl;
     std::cout << y.x << " " << y.y << " " << y.z << " " << std::endl;
     std::cout << z.x << " " << z.y << " " << z.z << " " << std::endl;
+}
+
+f3& f3::operator=(const f3 & rhs)
+{
+    this->x = rhs.x;
+    this->y = rhs.y;
+    this->z = rhs.z;
+    return *this;
 }
 
 void f3::matmul(m4f4 matrix){

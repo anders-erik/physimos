@@ -94,7 +94,7 @@ public:
     void set_model(m3f3 model_mat);
 
     // Render real quads
-    void render_quad(scene::QuadS2D& quad);
+    void render_quad(const scene::QuadS2D& quad);
 
 
     void render_point(RenderContextQuadS2D context);

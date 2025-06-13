@@ -31,19 +31,9 @@ Box2D Scene2D::get_window_box()
     return window_box;
 }
 
-void Scene2D::try_grab_quad()
-{
-    auto* quad_hovered = quad_manager.get_hovered();
-    if(quad_hovered != nullptr)
-    {
-        quad_grab = true;
-    }
-}
 
-void Scene2D::grab_scene()
-{
-    scene_grab = true;
-}
+
+
 
 void Scene2D::release_grabs()
 {
@@ -53,7 +43,9 @@ void Scene2D::release_grabs()
 
 void Scene2D::try_resize_hovered_quad(float size_factor)
 {
-    auto* quad_hovered = quad_manager.get_hovered();
+    auto& q_manager = ManagerScene::get_quad_manager();
+
+    auto* quad_hovered = q_manager.get_hovered();
     if(quad_hovered != nullptr)
     {
         if(quad_hovered->is_bitmap())
@@ -184,49 +176,57 @@ void Scene2D::set_window_box(Box2D new_window_box)
 
 void Scene2D::try_hover_quad()
 {
-    quad_manager.clear_hovered();
+    auto& q_manager = ManagerScene::get_quad_manager();
+    q_manager.clear_hovered();
 
-    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
     {
-        if(quad.contains_cursor(cursor_pos_scene))
-            return quad_manager.set_hovered(quad.get_id());
+        if(quad->contains_cursor(cursor_pos_scene))
+            return q_manager.set_hovered(quad->get_id());
     }
 }
 
-void Scene2D::try_select_quad()
+bool Scene2D::try_select_quad()
 {
-    quad_manager.clear_selection();
+    auto& q_manager = ManagerScene::get_quad_manager();
 
-    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
     {
-        if(quad.contains_cursor(cursor_pos_scene))
+        if(quad->contains_cursor(cursor_pos_scene))
         {
-            quad_manager.set_selected(quad.get_id());
+            q_manager.set_selected(quad->get_id());
+            return true;
         }
+        
     }
+    return false;
 }
 
 std::vector<size_t> 
 Scene2D::get_subscene_ids()
 {
-    std::vector<size_t> quad_ids;
+    auto& q_manager = ManagerScene::get_quad_manager();
+    
+    std::vector<size_t> quad_ids_found;
 
-    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
     {
-        if(quad.is_scene2D())
-            quad_ids.push_back(quad.get_id());
+        if(quad->is_scene2D())
+            quad_ids_found.push_back(quad->get_id());
     }
 
-    return quad_ids;
+    return quad_ids_found;
 }
 
 
 QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 {
-    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    auto& q_manager = ManagerScene::get_quad_manager();
+
+    for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
     {
-        if(quad.contains_cursor(pos_scene))
-            return &quad;
+        if(quad->contains_cursor(pos_scene))
+            return quad;
     }
     return nullptr;
 }
@@ -236,10 +236,15 @@ QuadS2D* Scene2D::try_match_cursor_to_quad(f2 pos_scene)
 
 Pair<size_t, Box2D> Scene2D::try_find_subscene(f2 viewbox_pos_normalized)
 {
+    auto& q_manager = ManagerScene::get_quad_manager();
     set_cursor_pos(viewbox_pos_normalized);
 
-    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    // q_manager.get_quads_mut(quad_ids);
+
+    for(QuadS2D* quad_safe_ptr : q_manager.get_quads_from_ids_mut(quad_ids))
     {
+        QuadS2D& quad = *quad_safe_ptr;
+
         if(quad.is_scene2D())
         {
             if(quad.contains_cursor(cursor_pos_scene))
@@ -266,17 +271,26 @@ EventResultScene Scene2D::handle_pointer_move(PointerMovement2D pointer_movement
     f2 delta_normalized = pointer_movement.pos_norm_curr - pointer_movement.pos_norm_prev;
     f2 delta_scene = camera.normalized_to_scene_delta(delta_normalized);
 
+    auto& q_manager = ManagerScene::get_quad_manager();
+
     if(quad_grab)
     {
-        auto* quad_hovered = quad_manager.get_hovered();
-        if(quad_hovered != nullptr)
+        auto* quad_hovered = q_manager.get_hovered();
+        if(quad_hovered == nullptr)
+            return {};
+        
+        for(size_t quad_id : quad_ids)
         {
+            if(quad_hovered->get_id() != quad_id)
+                continue;
             Box2D box = quad_hovered->get_box();
             f2 new_pos = box.pos + delta_scene;
             f2 new_size = box.size;
             quad_hovered->set_box(new_pos, new_size);
+            return {EventResultScene::Grab};
         }
-        return {EventResultScene::Grab};
+        
+        return {};
     }
 
     if(scene_grab)
@@ -296,10 +310,21 @@ EventResultScene Scene2D::handle_pointer_click(PointerClick2D pointer_click)
     if(button_event.is_middle_down())
     {
         if(pointer_click.event.modifiers.is_ctrl_shift())
-            try_grab_quad();
+        {
+            bool selected = try_select_quad();
+            if(selected)
+            {
+                quad_grab = true;
+            }
+            else
+            {
+                return {};
+            }
+        }
         else
-            grab_scene();
-        
+        {
+            scene_grab = true;
+        }
         return {EventResultScene::Grab};
     }
 
@@ -356,9 +381,16 @@ EventResultScene Scene2D::handle_scroll(window::InputEvent scroll_event)
 
 
 
+void Scene2D::push_quad_id(size_t quad_id)
+{
+    quad_ids.push_back(quad_id);
+}
+
 void Scene2D::push_quad(scene::QuadS2D& quad)
 {
-    quad_manager.add_quad(quad);
+    auto& q_manager = ManagerScene::get_quad_manager();
+    size_t quad_id = q_manager.push_quad(quad);
+    quad_ids.push_back(quad_id);
 }
 
 
@@ -388,7 +420,8 @@ ShapeS2D& Scene2D::push_shape(Shape& shape){
 }
 
 
-QuadS2D* Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
+
+size_t Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
 {
     auto* scene = ManagerScene::search_scene_storage(scene_id);
     scene->set_parent_id(id);
@@ -399,7 +432,11 @@ QuadS2D* Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
     new_quad.set_scene(scene);
     new_quad.update_texture();
 
-    return quad_manager.add_quad(new_quad);
+    auto& q_manager = ManagerScene::get_quad_manager();
+    size_t new_quad_id = q_manager.push_quad(new_quad);
+    quad_ids.push_back(q_manager.push_quad(new_quad));
+
+    return new_quad_id;
 }
 
 
@@ -416,7 +453,8 @@ update()
 void Scene2D::
 render_subscene_textures()
 {
-    for(QuadS2D& quad : quad_manager.get_quads_mut())
+    auto& q_manager = ManagerScene::get_quad_manager();
+    for(QuadS2D& quad : q_manager.get_quads_mut())
         quad.update_texture();
 }
 
@@ -458,13 +496,18 @@ unsigned int Scene2D::render_to_texture()
 
 void Scene2D::render()
 {
+    auto& q_manager = ManagerScene::get_quad_manager();
+
     renderer2D.activate();
     renderer2D.set_camera(camera.get_matrix());
 
-    
-    for(QuadS2D& quad : quad_manager.get_quads_mut())
+
+    for(size_t quad_id : quad_ids)
     {
-        renderer2D.render_quad(quad);
+        auto* quad = q_manager.get_quad(quad_id);
+        if(quad == nullptr) continue;
+
+        renderer2D.render_quad(*quad);
     }
 
     for(scene::ShapeS2D& point : points){
@@ -480,20 +523,25 @@ void Scene2D::render()
     // FRAMES
     renderer2D.render_frame(frame_M_m_s, false, 1);
 
-    // Hovered quad frame
-    auto* hovered_quad = quad_manager.get_hovered();
-    if(hovered_quad != nullptr)
-    {
-        renderer2D.render_frame(hovered_quad->get_model_matrix(), false, 4);
-    }
 
-    // Selected quad frame
-    auto* selected_quad = quad_manager.get_selected();
-    if(selected_quad != nullptr)
+    // Quad Frames
+    for(size_t quad_id : quad_ids)
     {
-        renderer2D.render_frame(selected_quad->get_model_matrix(), true, 2);
-    }
+        if(q_manager.is_hover_id(quad_id))
+        {
+            auto* hovered_q = q_manager.get_hovered();
+            if(hovered_q != nullptr)
+                renderer2D.render_frame(hovered_q->get_model_matrix(), false, 4);
+        }
 
+        if(q_manager.is_selected_id(quad_id))
+        {
+            auto* selected_q = q_manager.get_selected();
+            if(selected_q != nullptr)
+                renderer2D.render_frame(selected_q->get_model_matrix(), true, 2);
+        }
+        
+    }
 }
 
 

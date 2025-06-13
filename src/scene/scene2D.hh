@@ -94,14 +94,13 @@ class Scene2D
     std::vector<ShapeS2D> lines;
     std::vector<ShapeS2D> shapes;
 
-    void try_grab_quad();
-    void grab_scene();
     void release_grabs();
     void try_resize_hovered_quad(float size_factor);
 
 
 public:
-    QuadManager quad_manager;
+    // QuadManager quad_manager;
+    std::vector<size_t> quad_ids;
 
 public:
 
@@ -143,14 +142,10 @@ public:
     /** Highlights if a quad is located at currently set cursor position. */
     void try_hover_quad();
     /** Selects quad if located at currently set cursor position. */
-    void try_select_quad();
+    bool try_select_quad();
 
     /** Loop through quads and identify the ones showing a scene */
     std::vector<size_t> get_subscene_ids();
-
-    /** Try find which scene that captures the cursor. 
-    Updates the scenes window box and cursor position. */
-    Scene2D* try_find_window_subscene();
 
     /** Returns a found subscene id and the quadbox in normalized scene coordinates. */
     Pair<size_t, Box2D> try_find_subscene(f2 viewbox_pos_normalized);
@@ -160,12 +155,13 @@ public:
     EventResultScene handle_pointer_click(PointerClick2D pointer_click);
     EventResultScene handle_scroll(window::InputEvent scroll_event);
 
-
+    void push_quad_id(size_t quad_id);
     void push_quad(scene::QuadS2D& quad);
     ShapeS2D& push_shape(Shape& shape);
 
+    
     /** Add a quad subscene using an already manager-allocated scene.  */
-    QuadS2D* add_subscene2D(size_t scene_id, f2 quad_pos);
+    size_t add_subscene2D(size_t scene_id, f2 quad_pos);
 
 
 
@@ -175,7 +171,9 @@ public:
 
     void render_to_window();
     unsigned int render_to_texture();
-    /** TODO: This is leaking ~1-2MB of memory per second.. */
+
+private:
+    /** main render call */
     void render();
 };
 

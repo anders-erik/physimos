@@ -39,8 +39,8 @@ public:
             if(event.mouse_button.is_left_down())
             {
                 // println("WidgetQuad mouse down!");
-                auto& root_scene = ManagerScene::get_root_scene_mut();
-                root_scene.quad_manager.set_selected(quad_id);
+                auto& q_manager = ManagerScene::get_quad_manager();
+                q_manager.set_selected(quad_id);
 
                 // return EventResult::Grab;
             }

@@ -6,6 +6,8 @@
 
 #include "scene2D.hh"
 
+#include "quad_manager.hh"
+
 #include "manager.hh"
 
 namespace ManagerScene {
@@ -43,6 +45,7 @@ static struct ScenesState {
 
 // std::vector<scene::Scene2D> scenes;
 static std::list<scene::Scene2D> scenes;
+static QuadManager quad_manager;
 
 
 /** 
@@ -94,6 +97,13 @@ size_t push_scene(scene::Scene2D& _scene){
     scenes.push_back( _scene );
 
     return new_id;
+}
+
+
+scene::QuadManager& 
+get_quad_manager()
+{
+    return quad_manager;
 }
 
 
@@ -230,12 +240,13 @@ bool is_grabbing_cursor()
 
 void clear_cursor_hovers()
 {
+    auto& q_manager = ManagerScene::get_quad_manager();
     Scene2D& cursor_scene = get_cursor_scene_mut();
-    cursor_scene.quad_manager.clear_hovered();
+    q_manager.clear_hovered();
     scenes_state.set_window_as_cursor_scene();
 
     // make sure window, which is now cursor scene, is also clear
-    get_window_scene_mut().quad_manager.clear_hovered();
+    q_manager.clear_hovered();
 }
 
 
@@ -304,7 +315,7 @@ event_mouse_button(window::InputEvent& event)
     {
         // auto* window_scene = ManagerScene::search_scene_storage(scenes_state.window_id);
         
-        cursor_scene.try_select_quad();
+        bool success = cursor_scene.try_select_quad();
     }
 
 }

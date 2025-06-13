@@ -97,7 +97,7 @@ update()
     // delete widget_quad;
     // widget_quad = new WidgetQuad();
     // widget_quad->reload();
-    scene::QuadS2D* quad = ManagerScene::get_root_scene_mut().quad_manager.get_selected();
+    scene::QuadS2D* quad = ManagerScene::get_quad_manager().get_selected();
     w_quad2D_large.reload(quad, {600.0f, 450.0f});
 
 

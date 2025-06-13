@@ -207,16 +207,13 @@ void RendererScene2D::render_line(RenderContextQuadS2D context){
 
 
 
-void RendererScene2D::render_quad(scene::QuadS2D& quad){
-
-
-    program_quad_2D.set_model_texture(quad.get_model_matrix(), quad.get_texture_id());
+void RendererScene2D::render_quad(const scene::QuadS2D& quad)
+{
+    program_quad_2D.set_model_texture(
+        quad.get_model_matrix(), 
+        quad.get_texture_id()
+    );
     program_quad_2D.draw();
-
-
-    return;
-
-
 }
 
 

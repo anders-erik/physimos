@@ -33,10 +33,9 @@ Box2D QuadS2D::get_box()
 {
     return box;
 }
-m3f3 QuadS2D::get_model_matrix()
+m3f3 QuadS2D::get_model_matrix() const
 {
-    M_m_s = box.get_matrix_m3f3();
-    return M_m_s;
+    return box.get_matrix_m3f3();
 }
 
 
@@ -44,7 +43,7 @@ void QuadS2D::set_texture_id(unsigned int new_id)
 {
     texture_id = new_id;
 }
-unsigned int QuadS2D::get_texture_id()
+unsigned int QuadS2D::get_texture_id() const
 {
     return texture_id;
 }
@@ -102,7 +101,7 @@ void QuadS2D::update_texture()
         if(scene == nullptr)
             return;
 
-        scene->render_subscene_textures();
+        // scene->render_subscene_textures();
         texture_id = scene->render_to_texture();
 
     }

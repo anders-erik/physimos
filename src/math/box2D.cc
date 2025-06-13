@@ -68,7 +68,7 @@ bool Box2D::contains_point(f2 p)
     return x_pass && y_pass ? true : false;
 }
 
-m3f3 Box2D::get_matrix_m3f3()
+m3f3 Box2D::get_matrix_m3f3() const
 {
     m3f3 M;
 

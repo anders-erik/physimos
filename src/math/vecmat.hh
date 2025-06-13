@@ -88,19 +88,23 @@ struct f2
     void print(std::string prefix);
 };
 
-struct f3 {
+struct f3 
+{
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
 
-    void matmul(m4f4 matrix);
-    void matmul(m3f3 matrix);
-
+    f3() = default;
     constexpr f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
     f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
     // f3() : x {0.0f}, y {0.0f}, z {0.0f} {}; 
-    f3() = default;
+
+    f3& operator=(const f3& rhs);
+
+    void matmul(m4f4 matrix);
+    void matmul(m3f3 matrix);
 };
+
 
 struct f4 {
     float x = 0.0f;
@@ -157,6 +161,7 @@ struct m3f3 {
     void rotate(float angle);
 
     float* pointer();
+    const float* pointer_const() const;
 
     void set_to_identity();
 

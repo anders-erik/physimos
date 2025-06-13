@@ -31,7 +31,7 @@ public:
     void init();
     void set_camera_matrix(m3f3 _camera_matrix);
 
-    void set_model_texture(m3f3 model_matrix, unsigned int texture) const;
+    void set_model_texture(const m3f3 model_matrix, const unsigned int texture) const;
     void draw() const;
 
     // Quad as two triangles of unit dimensions ( [0,1]x[0,1] ), thus center at (0.5, 0.5).
