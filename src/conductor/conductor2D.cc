@@ -25,6 +25,9 @@ void Conductor2D::
 process_user_input()
 {
 	auto events = auxwin.get_events_input();
+	
+	// cursor_pos.print();
+	
 
 	for(InputEvent& event : events)
 	{

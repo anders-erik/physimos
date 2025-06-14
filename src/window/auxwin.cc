@@ -286,24 +286,29 @@ framebuffer_callback(GLFWwindow* _window, int _width, int _height)
 {
     // std::cout << "auxwin->framebuffer_callback" << std::endl;
 
-    current_window_size_f = {(float) _width, (float) _height};
-    current_window_size_i = {_width, _height};
+    f2 frambuffer_size_f = {(float) _width, (float) _height};
+    i2 frambuffer_size_i = {_width, _height};
+
+    f2 content_scale_f = get_monitor_content_scale();
+    i2 content_scale_i = {(int)content_scale_f.x, (int)content_scale_f.y};
+
+    current_window_size_f = frambuffer_size_f / content_scale_f;
+    current_window_size_i = frambuffer_size_i / content_scale_i;
+
     cursor.window_dims = current_window_size_f;
     
     reload_coordinate_constants_using_glfw();
 
     EventType event_type = EventType::WindowResize;
-    // i2 size (_width, _height);
+
     WindowResizeEvent win_resize_event { 
-        i2(_width, _height),
+        frambuffer_size_i,
         get_monitor_content_scale()
     };
+
     events_resize.emplace_back(glfw_window, event_type, win_resize_event, modifiers_current);
 
-    cursor.window_dims.x = (float) _width;
-    cursor.window_dims.y = (float) _height;
-
-    glViewport(0, 0, _width, _height);
+    glViewport(0, 0, frambuffer_size_i.x, frambuffer_size_i.y);
 }
 
 

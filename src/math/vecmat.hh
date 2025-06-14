@@ -45,6 +45,8 @@ struct i2 {
     i2(int x, int y) : x {x}, y {y} {}; 
     i2(int xy) : x {xy}, y {xy} {}; 
     i2() = default;
+
+    i2 operator/(const i2& rhs);
 };
 
 struct i3 {

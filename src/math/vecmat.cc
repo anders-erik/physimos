@@ -406,3 +406,8 @@ void m4f4::print(){
     std::cout << z.x << " " << z.y << " " << z.z << " " << z.w << std::endl;
     std::cout << w.x << " " << w.y << " " << w.z << " " << w.w << std::endl;
 }
+
+i2 i2::operator/(const i2 & rhs)
+{
+    return {this->x / rhs.x, this->y / rhs.y};
+}
