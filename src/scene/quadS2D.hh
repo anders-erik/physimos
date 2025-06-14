@@ -63,6 +63,8 @@ public:
     void set_box(f2 pos, f2 size);
     Box2D get_box();
     m3f3 get_model_matrix() const;
+    f2& get_pos_mut();
+    f2& get_size_mut();
 
     void set_texture_id(unsigned int new_id);
     unsigned int get_texture_id() const;

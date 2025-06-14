@@ -49,6 +49,7 @@ public:
 
     /** 
         Queries the ui for a matching element in which the cursor is contained.
+        This ignores grab, thus grabbing state is tracked elsewhere.  
         Internal hover state is set appropriately. 
     */
     bool contains_point(f2 cursor_pos_win_sane);

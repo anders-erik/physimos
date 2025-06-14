@@ -38,6 +38,16 @@ m3f3 QuadS2D::get_model_matrix() const
     return box.get_matrix_m3f3();
 }
 
+f2& QuadS2D::get_pos_mut()
+{
+    return box.pos;
+}
+
+f2& QuadS2D::get_size_mut()
+{
+    return box.size;
+}
+
 
 void QuadS2D::set_texture_id(unsigned int new_id)
 {

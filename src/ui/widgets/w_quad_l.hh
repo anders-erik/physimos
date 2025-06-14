@@ -13,6 +13,8 @@
 
 #include "widget.hh"
 
+#include "widgets/w_f2.hh"
+
 
 namespace UI 
 {
@@ -26,13 +28,15 @@ struct Quad2DLarge : public Widget
 {
     size_t quad_id;
     scene::QuadS2D* quad;
-    f2 size = {180.0f, 100.0f};
+    f2 size = {250.0f, 100.0f};
 
     BaseString quad_name;
     
     BaseString quad_pos_label;
     BaseString quad_pos_x;
     BaseString quad_pos_y;
+
+    W::F2 w_f2;
 
 public:
 
@@ -67,7 +71,12 @@ public:
             break;
         
         case EventType::MouseScroll:
-        
+
+            if(w_f2.has_cursor(cursor_sane))
+            {
+                w_f2.event_handler(event);
+            }
+
             if(quad_pos_x.containsPoint(cursor_sane))
             {
                 auto& q_manager = ManagerScene::get_quad_manager();
@@ -143,6 +152,10 @@ public:
         quad_pos_y.set_str(Str(box.pos.y, 1));
 
         offset -= box_indent;
+
+        // POS F2
+        f2 f2_delta = { 0.0f, -60.0f };
+        w_f2.reload(quad->get_pos_mut(), offset += f2_delta);
     }
 
 
@@ -155,6 +168,8 @@ public:
         renderer.draw_base_string(quad_pos_x);
         renderer.draw_base_string(quad_pos_y);
         renderer.draw_base_string(quad_pos_label);
+
+        w_f2.render(renderer);
     }
 
 };

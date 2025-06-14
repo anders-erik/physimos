@@ -15,6 +15,12 @@
 
 using namespace window;
 
+/** Subsystem types that can recieve input events. */
+enum class SubSys {
+	pui,
+	scenes,
+	quad,
+};
 
 /** 
 	Owns an auxwin, pui, and a scene manager.
