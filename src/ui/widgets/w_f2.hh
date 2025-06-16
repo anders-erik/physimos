@@ -39,7 +39,7 @@ struct F2 : public Widget
 public:
 
 
-    inline EventResult event_handler(window::InputEvent& event)
+    inline InputResponse event_handler(window::InputEvent& event)
     {
         using namespace window;
 

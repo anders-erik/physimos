@@ -12,15 +12,11 @@
 
 #include "scene/render/renderer2D.hh"
 
+#include "conductor2D_grabstate.hh"
+
 
 using namespace window;
 
-/** Subsystem types that can recieve input events. */
-enum class SubSys {
-	pui,
-	scenes,
-	quad,
-};
 
 /** 
 	Owns an auxwin, pui, and a scene manager.
@@ -33,6 +29,7 @@ class Conductor2D
 	UI::PUI pui;
 
 	bool targeting_ui = false;
+	GrabStateConductor grab_state;
 	CursorPosition cursor_pos; // Copy from most recent mouse move event
 
 	scene::RendererScene2D renderer_scene;

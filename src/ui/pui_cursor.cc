@@ -76,9 +76,9 @@ void PUICursor::clear_all()
     // TODO: clear grab in widget update if no grab reset event since last update!
 }
 
-void PUICursor::handle_event_result(EventResult event_result, Widget* widget)
+void PUICursor::handle_event_result(InputResponse event_result, Widget* widget)
 {
-    if(event_result.is_grab())
+    if(event_result.grabbed_mouse())
     {
         grab(widget);
     }

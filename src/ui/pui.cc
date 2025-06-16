@@ -70,21 +70,6 @@ clear_hovers()
 }
 
 
-bool PUI::
-is_targeted_by_cursor()
-{
-    return cursor.is_targeted_by_cursor();
-}
-
-
-bool PUI::
-is_grabbing_cursor()
-{
-    return cursor.is_grabbing_cursor();
-}
-
-
-
 
 
 
@@ -106,20 +91,29 @@ update()
 
 
 
-void PUI::event_all(window::InputEvent& event)
+
+InputResponse PUI::
+event_all(window::InputEvent& event)
 {
     if(cursor.is_targeted_widget(&w_root_scene))
     {
-        EventResult result = w_root_scene.event_handler(event);
+        InputResponse result = w_root_scene.event_handler(event);
         cursor.handle_event_result(result, &w_root_scene);
+        if(result.grabbed_mouse())
+            return InputResponse(InputResponse::MOUSE_GRAB);
     }
 
     if(cursor.is_targeted_widget(&w_quad2D_large))
     {
-        EventResult result = w_quad2D_large.event_handler(event);
+        InputResponse result = w_quad2D_large.event_handler(event);
         cursor.handle_event_result(result, &w_quad2D_large);
+        if(result.grabbed_mouse())
+            return InputResponse(InputResponse::MOUSE_GRAB);
     }
+
+    return InputResponse();
 }
+
 
 
 

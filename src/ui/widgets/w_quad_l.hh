@@ -41,41 +41,39 @@ struct Quad2DLarge : public Widget
 public:
 
 
-    inline EventResult event_handler(window::InputEvent& event)
+    inline InputResponse event_handler(window::InputEvent& event)
     {
         using namespace window;
+
+        if(w_f2.has_cursor(cursor_sane))
+        {
+            w_f2.event_handler(event);
+        }
 
         switch (event.type)
         {
 
         case EventType::MouseButton:
+
+            // Name label grabs mouse
             if(event.mouse_button.is_left_down())
             {
                 if(quad_name.containsPoint(cursor_sane))
                 {
                     auto& q_manager = ManagerScene::get_quad_manager();
                     q_manager.set_selected(quad_id);
+                    is_grabbing_mouse = true;
+                    return InputResponse::MOUSE_GRAB;
                 }
-                
-
-                // println("WidgetQuad mouse down!");
-                
-
-                // return EventResult::Grab;
             }
             else if(event.mouse_button.is_left_up())
-            {
-                // println("WidgetQuad mouse up!");
-                // return EventResult::Release;
+            {   
+                is_grabbing_mouse = false;
             }
             break;
+
         
         case EventType::MouseScroll:
-
-            if(w_f2.has_cursor(cursor_sane))
-            {
-                w_f2.event_handler(event);
-            }
 
             if(quad_pos_x.containsPoint(cursor_sane))
             {
@@ -98,6 +96,12 @@ public:
         default:
             break;
 
+        }
+
+
+        if(is_grabbing_mouse)
+        {   
+            return InputResponse::MOUSE_GRAB;
         }
 
         return {};

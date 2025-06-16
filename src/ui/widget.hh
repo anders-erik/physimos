@@ -3,8 +3,6 @@
 
 #include "lib/pair.hh"
 
-#include "ui/pui_event.hh"
-
 #include "ui/string.hh"
 
 
@@ -20,6 +18,8 @@ struct Widget
     // To be included using future Base inheritence
     Box2D frame;
     Base frame_base;
+
+    bool is_grabbing_mouse = false; // A widget need to cache if it is grabbing something to maintain grab
 
 public:
 

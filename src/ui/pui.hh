@@ -2,7 +2,7 @@
 
 #include "math/vecmat.hh"
 
-#include "pui_event.hh"
+#include "window/auxevent.hh"
 
 #include "ui/render/renderer_base.hh"
 
@@ -15,6 +15,7 @@
 #include "ui/widgets/w_quad_l.hh"
 
 #include "ui/pui_cursor.hh"
+
 
 namespace UI {
 
@@ -41,16 +42,9 @@ public:
 
     PUI(f2 window_size_f, f2 content_scale);
 
-    
-    /** If cursor is grabbed OR hovering over UI. */
-    bool is_targeted_by_cursor();
-    /** Ignores cursor location and only indicates whether cursor is grabbed */
-    bool is_grabbing_cursor();
-
     /** 
         Queries the ui for a matching element in which the cursor is contained.
-        This ignores grab, thus grabbing state is tracked elsewhere.  
-        Internal hover state is set appropriately. 
+        Cursor position is also copied for later event handling.
     */
     bool contains_point(f2 cursor_pos_win_sane);
 
@@ -59,7 +53,7 @@ public:
     /** Reloads the UI to reflect the most up-to-date data from scenes. */
     void update();
 
-    void event_all(window::InputEvent& event);
+    InputResponse event_all(window::InputEvent& event);
     void event_window_resize(window::InputEvent& event);
 
     void render();

@@ -31,39 +31,62 @@ process_user_input()
 
 	for(InputEvent& event : events)
 	{
-		// Short circuit logic if grab flags are set
-		if(pui.is_grabbing_cursor())
+
+		if(event.is_mouse())
 		{
-			ManagerScene::clear_cursor_hovers();
-			pui.event_all(event);
-			continue;
+			// mouse grab
+			if(grab_state.is_grabbing_mouse())
+			{
+				if(grab_state.pui())
+				{
+					ManagerScene::clear_cursor_hovers();
+					auto response = pui.event_all(event);
+					grab_state.update_conductor(GrabStateConductor::PUI, response);
+					if(!grab_state.is_grabbing_mouse())
+						std::cout << "release" << std::endl;
+
+					continue;
+				}
+				else if (ManagerScene::is_grabbing_cursor())
+				{
+					pui.clear_hovers();
+					ManagerScene::events_user_all(event);
+					continue;
+				}
+			}
+
+
+			// Requery subsystems
+
+			if(pui.contains_point(cursor_pos.sane))
+			{
+				auto response = pui.event_all(event);
+				grab_state.update_conductor(GrabStateConductor::PUI, response);
+				if(grab_state.is_grabbing_mouse())
+					std::cout << "grab" << std::endl;
+
+				ManagerScene::clear_cursor_hovers();
+			}
+			else
+			{
+				ManagerScene::requery_cursor_target(cursor_pos);
+				ManagerScene::events_user_all(event);
+
+				pui.clear_hovers();
+			}
+
+			// Cache most up to date cursor position
+			if(event.is_mouse_movement())
+			{
+				cursor_pos = event.mouse_movement.cursor_new;
+			}
 		}
-		else if (ManagerScene::is_grabbing_cursor())
+
+
+		// Currently only the scene recieved keyboard input
+		if(event.is_keystroke())
 		{
-			pui.clear_hovers();
 			ManagerScene::events_user_all(event);
-			continue;
-		}
-
-
-		// Requeries 
-		if(pui.contains_point(cursor_pos.sane))
-		{
-			ManagerScene::clear_cursor_hovers();
-			pui.event_all(event);
-		}
-		else
-		{
-			pui.clear_hovers();
-			ManagerScene::requery_cursor_target(cursor_pos);
-			ManagerScene::events_user_all(event);
-		}
-
-		
-		// Cache most up to date cursor position
-		if(event.is_mouse_movement())
-		{
-			cursor_pos = event.mouse_movement.cursor_new;
 		}
 	}
 }

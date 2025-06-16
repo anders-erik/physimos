@@ -133,7 +133,7 @@ public:
         return 0;
     }
 
-    EventResult event_handler(window::InputEvent& event)
+    InputResponse event_handler(window::InputEvent& event)
     {
 
         for(auto& quad_widget : quad_widgets)
@@ -155,12 +155,12 @@ public:
                     auto& q_manager = ManagerScene::get_quad_manager();
                     q_manager.set_selected(quad_id);
                 }
-                return EventResult::Grab;
+                return InputResponse::MOUSE_GRAB;
             }
             else if(event.mouse_button.is_left_up())
             {
                 println("RootScene widget mouse up!");
-                return EventResult::Release;
+                return InputResponse::MOUSE_RELEASE;
             }
         }
         return {};

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ui/pui_event.hh"
+#include "window/auxevent.hh"
+
 #include "ui/widget.hh"
 
 
@@ -11,7 +12,6 @@ namespace UI {
 /** Keeps track of hovered and grabbed objects. */
 class PUICursor
 {
-
 
 public:
 
@@ -35,7 +35,7 @@ public:
     void clear_all();
 
     /** Grab, and continue grabbing, only while still returned grab results. Default is release. */
-    void handle_event_result(EventResult event_result, Widget* widget);
+    void handle_event_result(InputResponse event_result, Widget* widget);
     
     /** If cursor is grabbed OR hovering over UI. */
     bool is_targeted_by_cursor();

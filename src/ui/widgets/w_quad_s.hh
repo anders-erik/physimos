@@ -28,7 +28,7 @@ struct Quad2DSmall : public Widget
 
 public:
 
-    EventResult event_handler(window::InputEvent& event)
+    InputResponse event_handler(window::InputEvent& event)
     {
         using namespace window;
 

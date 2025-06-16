@@ -17,7 +17,7 @@ static size_t id_count = 2; // Global index count
 
 static bool is_grabbing_a_scene = false;
 static Box2D window_box; // The current window viewport box
-static Box2D cursor_scene_box; // the box of cursor scene in window coordinates
+static Box2D quad_box; // the box of cursor scene in window coordinates
 
 static window::CursorPosition cursor_pos; // Copy from most recent cursor move event
 
@@ -227,14 +227,15 @@ requery_cursor_target(window::CursorPosition& _cursor_pos)
         // Set up subscene as cursor scene
         scenes_state.set_cursor_scene(quad.get_object_id());
 
-        cursor_scene_box = Box2D::from_normalized_box(
+        // Scale quad from normalized viewbox to actual window coords
+        quad_box = Box2D::from_normalized_box(
             window_box,
             quad_query.normalized_viewbox_coords
         );
 
         auto& cursor_scene = get_cursor_scene_mut();
         // Viewboxes ONLY accepts normalized coordinate
-        f2 cursor_in_normalized_viewbox = cursor_scene_box.to_normalized(_cursor_pos.sane);
+        f2 cursor_in_normalized_viewbox = quad_box.to_normalized(_cursor_pos.sane);
         cursor_scene.set_cursor_pos(cursor_in_normalized_viewbox);
         cursor_scene.try_hover_quad();
     }
@@ -242,7 +243,7 @@ requery_cursor_target(window::CursorPosition& _cursor_pos)
     {
         window_scene.set_cursor_pos(_cursor_pos.normalized);
         scenes_state.set_window_as_cursor_scene();
-        cursor_scene_box = window_box;
+        quad_box = window_box;
     }
 
 }
@@ -294,8 +295,8 @@ event_move(window::InputEvent& event)
     Scene2D& cursor_scene = ManagerScene::get_cursor_scene_mut();
 
     scene::PointerMovement2D scene_pointer_move;
-    scene_pointer_move.pos_norm_prev = cursor_scene_box.to_normalized(cursor_prev.sane);
-    scene_pointer_move.pos_norm_curr = cursor_scene_box.to_normalized(cursor_pos.sane);
+    scene_pointer_move.pos_norm_prev = quad_box.to_normalized(cursor_prev.sane);
+    scene_pointer_move.pos_norm_curr = quad_box.to_normalized(cursor_pos.sane);
     scene_pointer_move.event = event;
 
     auto event_result =  cursor_scene.handle_pointer_move(scene_pointer_move);

@@ -167,6 +167,16 @@ struct InputEvent {
 
     bool is_type(EventType _type) { return _type == type ? true : false;}
 
+    /** Is any of the mouse events (move, scroll, click). */
+    bool is_mouse()
+    {
+        bool is_of_mouse_type = 
+            (type == EventType::MouseButton) ||
+            (type == EventType::MouseMove) ||
+            (type == EventType::MouseScroll);
+
+        return is_of_mouse_type ? true : false;
+    }
     bool is_mouse_button() {return type == EventType::MouseButton ? true : false;};
     bool is_mouse_movement() {return type == EventType::MouseMove ? true : false;};
     bool is_mouse_scroll() {return type == EventType::MouseScroll ? true : false;};
@@ -176,6 +186,105 @@ struct InputEvent {
 
 
 
-
 }
 
+
+
+
+
+
+/** 
+	InputEvent-response intended to be processed by event deistributor.
+*/
+struct InputResponse
+{
+	/** Respondents mouse action. */
+    enum MouseAction {
+        MOUSE_GRAB,
+        MOUSE_RELEASE,
+    }; 
+
+	/** Respondents keyboard action. */
+    enum KeyboardAction {
+		KEYBOARD_GRAB,
+        KEYBOARD_RELEASE,
+    }; 
+
+	
+
+	/** The type of action respondent performed on mouse. */
+	MouseAction mouse_action    	= MOUSE_RELEASE;
+	/** The type of action respondent performed on keyboard. */
+	KeyboardAction keyboard_action 	= KEYBOARD_RELEASE;
+
+
+	/** Defaults to no subsystem and all devices released. */
+    InputResponse() = default;
+    
+	InputResponse(MouseAction mouse_action)
+		: 	mouse_action {mouse_action} 
+	{
+	};
+	
+	InputResponse(KeyboardAction keyboard_action)
+		: 	keyboard_action {keyboard_action} 
+	{
+	};
+	
+	InputResponse(MouseAction mouse_action, KeyboardAction keyboard_action)
+		: 	mouse_action {mouse_action}, 
+			keyboard_action {keyboard_action} 
+	{
+	};
+
+
+    inline bool grabbed_mouse()
+	{
+		return mouse_action == MOUSE_GRAB ? true : false;
+	}
+
+    inline bool released_mouse()
+	{
+		return mouse_action == MOUSE_RELEASE ? true : false;
+	}
+
+	inline bool grabbed_keyboard()
+	{
+		return keyboard_action == KEYBOARD_GRAB ? true : false;
+	}
+
+    inline bool released_keyboard()
+	{
+		return keyboard_action == KEYBOARD_RELEASE ? true : false;
+	}
+};
+
+
+
+/** Keeps track of which subsystems is currently grabbing. */
+struct GrabState 
+{
+	InputResponse last_response;
+
+
+	void update_state(InputResponse response)
+	{
+		last_response = response;	
+	}
+
+	bool is_grabbing_mouse()
+	{
+		return last_response.mouse_action == InputResponse::MOUSE_GRAB ? true : false;
+	}
+
+    bool is_grabbing_keyboard()
+	{
+		return last_response.keyboard_action == InputResponse::KEYBOARD_GRAB ? true : false;
+	}
+
+    bool is_all_release()
+    {
+        return !is_grabbing_mouse() && !is_grabbing_keyboard() ? true : false;
+    }
+
+};
