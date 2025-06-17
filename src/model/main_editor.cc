@@ -11,11 +11,15 @@ int main(){
     std::cout << "Hello from editor!" << std::endl;
 
 
-    scene::SceneModelEditor scene;
+    SceneModelEditor scene;
     
     while(auxwin.end_frame()){
         // auxwin.new_frame();
         auxwin.new_frame();
+
+        auto resizes = auxwin.get_events_window_resize();
+        for(auto& resize : resizes)
+            scene.handle_window_resize(resize);
 
         std::vector<window::InputEvent> events = auxwin.get_events_input();
         for(window::InputEvent& event : events){
@@ -31,7 +35,6 @@ int main(){
 
         scene.update();
         scene.render();
-
         // auxwin.end_frame();
     }
 

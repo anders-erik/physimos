@@ -57,3 +57,23 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include
 
 target_link_libraries(source opengl uic_draw file_format simulator render scene lib)
 
+
+
+add_executable(main_main
+    main.cc 
+)
+target_link_libraries(main_main
+    phont
+
+    conductor
+    ui
+    image
+    window
+    math
+
+    lib
+    opengl
+
+    glad 
+    ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
+)

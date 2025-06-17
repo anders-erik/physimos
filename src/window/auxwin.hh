@@ -55,7 +55,7 @@ class Auxwin {
         KeyModifiers modifiers_current;
 
         std::vector<InputEvent> events_input;
-        std::vector<InputEvent> events_resize;
+        std::vector<WindowResizeEvent> events_resize;
 
 
         GLFWcursor* default_cursor;
@@ -98,7 +98,7 @@ class Auxwin {
         /** Create an artificial event. */
         void add_input_event(InputEvent event);
         std::vector<InputEvent> get_events_input();
-        std::vector<InputEvent> get_events_window_resize();
+        std::vector<WindowResizeEvent> get_events_window_resize();
 
         void framebuffer_callback(GLFWwindow* _window, int _width, int _height);
         void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);

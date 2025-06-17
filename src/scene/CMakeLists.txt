@@ -1,5 +1,7 @@
 
 add_subdirectory(render)
+add_subdirectory(render3D)
+
 
 set(SCENE_OBJS
     pscene.cc
@@ -14,6 +16,8 @@ set(SCENE_OBJS
     camera2D.cc
     shapeS2D.cc
     quadS2D.cc
+
+    scene3D.cc
 
     manager.cc
     quad_manager.cc
@@ -35,6 +39,7 @@ target_include_directories(scene PUBLIC
 # What to link against
 target_link_libraries(scene
     scene_render
+    scene_render_3D
     source # this will be changed to specific libraries as refactoring progress allows, and not the whole physimos source
     phont
 )

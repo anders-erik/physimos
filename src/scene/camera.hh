@@ -11,7 +11,7 @@
 
 // #include "rubik.hh"
 
-namespace scene {
+
 
 
 
@@ -58,4 +58,3 @@ public:
 };
 
 
-}

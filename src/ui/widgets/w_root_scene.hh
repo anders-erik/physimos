@@ -171,7 +171,11 @@ public:
     /** Recreates the whole widget from scene data every call. */
     void reload(f2 widget_pos)
     {
-        scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
+        SceneBase& window_scene_query = ManagerScene::get_window_scene_mut();
+        if(!window_scene_query.is_2d()) return;
+
+        scene::Scene2D& root_scene = (scene::Scene2D&) window_scene_query;
+
         auto& q_manager = ManagerScene::get_quad_manager();
 
         // Frame

@@ -54,7 +54,7 @@ public:
     void update();
 
     InputResponse event_all(window::InputEvent& event);
-    void event_window_resize(window::InputEvent& event);
+    void event_window_resize(window::WindowResizeEvent& window_resize);
 
     void render();
 

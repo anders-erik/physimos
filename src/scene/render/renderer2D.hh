@@ -10,6 +10,8 @@
 #include "opengl/program.hh"
 
 #include "scene/render/program_quad2D.hh"
+#include "scene/render3D/program_vector.hh"
+
 
 namespace opengl {
     class TextureFB;

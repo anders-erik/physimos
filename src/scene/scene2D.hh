@@ -20,6 +20,7 @@
 #include "scene/camera2D.hh"
 #include "scene/quad_manager.hh"
 
+#include "scene_base.hh"
 
 struct GLFWWindow;
 
@@ -28,21 +29,21 @@ namespace scene {
 
 struct QuadS2D;
 
+
 /** Returned when querying for a quad match in a scene. 
 quad_id == 0 -> no match */
-struct QuadQuery {
+struct QuadQuery 
+{
     size_t quad_id;
     Box2D normalized_viewbox_coords;
 };
 
-/** Cursor movement event in normalized viewport coordinated. Usually recieved from owner of scene.
-    [0,1]x[0,1] [unitless]
- */
-struct PointerMovement2D 
+
+/** Cursor movement event in normalized viewport coordinates: [0,1]x[0,1] [unitless] */
+struct CursorMovementNormalized 
 {
-    f2 pos_norm_prev; // Position of the cursor during previous frame
-    f2 pos_norm_curr; // Current cursor position
-    window::InputEvent event;
+    f2 prev; // Position of the cursor during previous frame
+    f2 curr; // Current cursor position
 };
 
 
@@ -70,7 +71,7 @@ struct EventResultScene {
 
 
 
-class Scene2D 
+class Scene2D : public SceneBase
 {
     size_t id; // id from manager during creation
     size_t parent_id = 0; // If the scene is not a root scene it has a valid parent id
@@ -136,9 +137,9 @@ public:
     void set_cursor_pos(f2 cursor_pos_normalized);
 
     /** Does NOT update cursor position, as this is done when finding current target. */
-    EventResultScene handle_pointer_move(PointerMovement2D cursor_event);
-    EventResultScene handle_pointer_click(window::InputEvent& event);
-    EventResultScene handle_scroll(window::InputEvent& scroll_event);
+    InputResponse handle_pointer_move(window::InputEvent& event);
+    InputResponse handle_pointer_click(window::InputEvent& event);
+    InputResponse handle_scroll(window::InputEvent& scroll_event);
 
     ShapeS2D& push_shape(Shape& shape);
 

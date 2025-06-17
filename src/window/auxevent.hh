@@ -146,24 +146,77 @@ struct WindowResizeEvent {
 
 
 
-struct InputEvent {
+struct InputEvent 
+{
     GLFWwindow *glfw_window;
+    // Cursor position at the moment of the event. 
+    // For mouse movement events this would be the location of the cursor *before* the move took place.
+    CursorPosition      cursor_pos; 
+
     EventType type;
     
     MouseButtonEvent mouse_button;
     MouseMoveEvent mouse_movement;
     MouseScrollEvent mouse_scroll;
     KeyStrokeEvent keystroke;
-    WindowResizeEvent window_resize;
 
     KeyModifiers modifiers;
 
-    InputEvent(GLFWwindow* _glfw_window, EventType _type, MouseButtonEvent _mouse_button, KeyModifiers modifier_state) :  glfw_window {_glfw_window}, type {_type}, mouse_button {_mouse_button}, modifiers{modifier_state} {};
-    InputEvent(GLFWwindow* _glfw_window, EventType _type, MouseMoveEvent _mouse_movement, KeyModifiers modifier_state) :  glfw_window {_glfw_window}, type {_type}, mouse_movement {_mouse_movement}, modifiers{modifier_state} {};
-    InputEvent(GLFWwindow* _glfw_window, EventType _type, MouseScrollEvent _mouse_scroll, KeyModifiers modifier_state) :  glfw_window {_glfw_window}, type {_type}, mouse_scroll { _mouse_scroll}, modifiers{modifier_state} {};
-    InputEvent(GLFWwindow* _glfw_window, EventType _type, KeyStrokeEvent _key_stroke, KeyModifiers modifier_state)     :  glfw_window {_glfw_window}, type {_type}, keystroke { _key_stroke}, modifiers{modifier_state} {};
-    InputEvent(GLFWwindow* _glfw_window, EventType _type, WindowResizeEvent _window_resize, KeyModifiers modifier_state): glfw_window {_glfw_window}, type {_type}, window_resize { _window_resize}, modifiers {modifier_state} {};
+
     InputEvent() : type { EventType::None} {};
+
+    InputEvent( GLFWwindow*         _glfw_window, 
+                CursorPosition      cursor_pos, 
+                EventType           _type, 
+                MouseButtonEvent    _mouse_button, 
+                KeyModifiers        modifier_state) 
+        :   glfw_window     {_glfw_window}, 
+            cursor_pos      {cursor_pos}, 
+            type            {_type}, 
+            mouse_button    {_mouse_button}, 
+            modifiers       {modifier_state} 
+    {
+    };
+
+    InputEvent( GLFWwindow* _glfw_window,
+                CursorPosition      cursor_pos,
+                EventType   _type, 
+                MouseMoveEvent _mouse_movement, 
+                KeyModifiers modifier_state) 
+        :   glfw_window     {_glfw_window}, 
+            cursor_pos      {cursor_pos}, 
+            type            {_type}, 
+            mouse_movement  {_mouse_movement}, 
+            modifiers       {modifier_state} 
+    {
+    };
+
+    InputEvent( GLFWwindow* _glfw_window, 
+                CursorPosition      cursor_pos,
+                EventType _type, 
+                MouseScrollEvent _mouse_scroll,
+                KeyModifiers modifier_state) 
+        :   glfw_window     {_glfw_window}, 
+            cursor_pos      {cursor_pos}, 
+            type            {_type}, 
+            mouse_scroll    { _mouse_scroll}, 
+            modifiers       {modifier_state} 
+    {
+    };
+
+    InputEvent( GLFWwindow* _glfw_window,
+                CursorPosition      cursor_pos,
+                EventType _type, 
+                KeyStrokeEvent _key_stroke, 
+                KeyModifiers modifier_state)
+        :   glfw_window     {_glfw_window}, 
+            cursor_pos      {cursor_pos}, 
+            type            {_type}, 
+            keystroke       { _key_stroke}, 
+            modifiers       {modifier_state} 
+    {
+    };
+
 
     bool is_type(EventType _type) { return _type == type ? true : false;}
 
@@ -181,7 +234,6 @@ struct InputEvent {
     bool is_mouse_movement() {return type == EventType::MouseMove ? true : false;};
     bool is_mouse_scroll() {return type == EventType::MouseScroll ? true : false;};
     bool is_keystroke() {return type == EventType::Keystroke ? true : false;};
-    bool is_window_resize() {return type == EventType::WindowResize ? true : false;};
 };
 
 
@@ -262,7 +314,7 @@ struct InputResponse
 
 
 /** Keeps track of which subsystems is currently grabbing. */
-struct GrabState 
+struct InputState 
 {
 	InputResponse last_response;
 

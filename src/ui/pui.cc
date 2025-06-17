@@ -118,11 +118,11 @@ event_all(window::InputEvent& event)
 
 
 void PUI::
-event_window_resize(window::InputEvent& event)
+event_window_resize(window::WindowResizeEvent& window_resize)
 {
     renderer_base.set_window_info(
-        event.window_resize.size_f, 
-        event.window_resize.content_scale
+        window_resize.size_f, 
+        window_resize.content_scale
     );
 }
 

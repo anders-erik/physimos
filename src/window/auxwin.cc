@@ -259,10 +259,7 @@ f2 Auxwin::get_monitor_size_mm()
 
 void Auxwin::add_input_event(InputEvent event)
 {
-    if(event.is_window_resize())
-        events_resize.push_back(event);
-    else
-        events_input.push_back(event);
+    events_input.push_back(event);
 }
 
 std::vector<InputEvent> Auxwin::get_events_input()
@@ -273,7 +270,7 @@ std::vector<InputEvent> Auxwin::get_events_input()
 }
 
 
-std::vector<InputEvent> Auxwin::get_events_window_resize()
+std::vector<WindowResizeEvent> Auxwin::get_events_window_resize()
 {
     auto return_vector = events_resize;
     events_resize.clear();
@@ -306,7 +303,7 @@ framebuffer_callback(GLFWwindow* _window, int _width, int _height)
         get_monitor_content_scale()
     };
 
-    events_resize.emplace_back(glfw_window, event_type, win_resize_event, modifiers_current);
+    events_resize.emplace_back(win_resize_event);
 
     glViewport(0, 0, frambuffer_size_i.x, frambuffer_size_i.y);
 }
@@ -339,7 +336,11 @@ mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
     }
 
     
-    events_input.emplace_back(window, event_type, mouse_button_event, modifiers_current);
+    events_input.emplace_back(  window, 
+                                cursor, 
+                                event_type, 
+                                mouse_button_event, 
+                                modifiers_current);
 }
 
 
@@ -360,13 +361,14 @@ cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 
 
     EventType       event_type = EventType::MouseMove;
-    MouseMoveEvent   mouse_movement (
-                                        cursor_prev,
-                                        cursor
-                                    );
+    MouseMoveEvent   mouse_movement (cursor_prev,
+                                     cursor);
 
-    events_input.emplace_back(window, event_type, mouse_movement, modifiers_current);
-
+    events_input.emplace_back(  window, 
+                                cursor_prev, 
+                                event_type, 
+                                mouse_movement, 
+                                modifiers_current);
 }
 
 
@@ -378,7 +380,11 @@ scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     EventType       event_type = EventType::MouseScroll;
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
-    events_input.emplace_back(window, event_type, mouse_scroll, modifiers_current);
+    events_input.emplace_back(  window, 
+                                cursor, 
+                                event_type, 
+                                mouse_scroll, 
+                                modifiers_current);
 }
 
 
@@ -456,7 +462,11 @@ key_callback(GLFWwindow *window, int key, int action, int mods)
         try_close();
 
 
-    events_input.emplace_back(window, event_type, keystroke_event, modifiers_current);
+    events_input.emplace_back(  window, 
+                                cursor, 
+                                event_type, 
+                                keystroke_event, 
+                                modifiers_current);
 }
 
 }

@@ -4,6 +4,7 @@
 
 	// Binary
 	"default_binary": "${workspaceRoot}/build/debug_linux/physimos",
+	// "default_binary": "${workspaceFolder}/build/debug_linux/src/main_main",
 	// "default_binary": "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
 	// "default_binary": "${workspaceRoot}/build/debug_linux/src/lib/main_lib",
 	// "default_binary": "${workspaceRoot}/build/debug_linux/src/lib/main_str",

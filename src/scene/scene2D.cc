@@ -203,11 +203,11 @@ try_find_quad_in_viewbox(f2 viewbox_pos_normalized)
 
 
 
-EventResultScene Scene2D::
-handle_pointer_move(PointerMovement2D pointer_movement)
+InputResponse Scene2D::
+handle_pointer_move(window::InputEvent& event)
 {
     // Get move deltas in current scene
-    f2 delta_normalized = pointer_movement.pos_norm_curr - pointer_movement.pos_norm_prev;
+    f2 delta_normalized = event.mouse_movement.cursor_new.normalized - event.mouse_movement.cursor_prev.normalized;
     f2 delta_scene = camera.normalized_to_scene_delta(delta_normalized);
 
     auto& q_manager = ManagerScene::get_quad_manager();
@@ -226,7 +226,7 @@ handle_pointer_move(PointerMovement2D pointer_movement)
             f2 new_pos = box.pos + delta_scene;
             f2 new_size = box.size;
             quad_hovered->set_box(new_pos, new_size);
-            return {EventResultScene::Grab};
+            return {InputResponse::MOUSE_GRAB};
         }
         
         return {};
@@ -235,13 +235,13 @@ handle_pointer_move(PointerMovement2D pointer_movement)
     if(scene_grab)
     {
         camera.pan(delta_scene);
-        return {EventResultScene::Grab};
+        return {InputResponse::MOUSE_GRAB};
     }
     
     return {};
 }
 
-EventResultScene Scene2D::
+InputResponse Scene2D::
 handle_pointer_click(window::InputEvent& event)
 {    
     window::MouseButtonEvent button_event = event.mouse_button;
@@ -265,7 +265,7 @@ handle_pointer_click(window::InputEvent& event)
         {
             scene_grab = true;
         }
-        return {EventResultScene::Grab};
+        return {InputResponse::MOUSE_GRAB};
     }
 
     if(button_event.is_middle_up())
@@ -285,13 +285,13 @@ handle_pointer_click(window::InputEvent& event)
 
 
 
-EventResultScene Scene2D::
+InputResponse Scene2D::
 handle_scroll(window::InputEvent& scroll_event)
 {
     // Disable scroll during grab
     if(scene_grab || quad_grab)
     {
-        return {EventResultScene::Grab};
+        return {InputResponse::MOUSE_GRAB};
     }
 
     // Resize quad
@@ -366,13 +366,17 @@ ShapeS2D& Scene2D::push_shape(Shape& shape){
 
 size_t Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
 {
-    auto* scene = ManagerScene::search_scene_storage(scene_id);
-    scene->set_parent_id(id);
+    auto* scene_query = ManagerScene::search_scene_storage(scene_id);
+
+    if(scene_query == nullptr) return 0;
+    if(!scene_query->is_2d()) return 0;
+
+    scene::Scene2D& scene = (scene::Scene2D&) *scene_query;
 
     scene::QuadS2D new_quad;
-    new_quad.set_box( quad_pos, scene->get_framebuffer_size() );
+    new_quad.set_box( quad_pos, scene.get_framebuffer_size() );
     new_quad.set_name("scene_quad_test");
-    new_quad.set_scene(scene);
+    new_quad.set_scene(&scene);
     new_quad.update_texture();
 
     auto& q_manager = ManagerScene::get_quad_manager();

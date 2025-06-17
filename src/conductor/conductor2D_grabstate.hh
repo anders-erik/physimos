@@ -3,16 +3,16 @@
 #include "window/auxevent.hh"
 
 
-struct GrabStateConductor : GrabState {
+struct GrabStateConductor : InputState {
 	/** Subsystems that can recieve and respond to input events. */
 	enum SubSys {
 		PUI,
-		SCENE2D,
+		SCENES,
 		NONE,
 	} subsystem;
 
 
-	void update_conductor(SubSys subsys, InputResponse response)
+	void update(SubSys subsys, InputResponse response)
 	{
 		update_state(response);
 		subsystem = subsys;
@@ -30,7 +30,7 @@ struct GrabStateConductor : GrabState {
 
 	bool scene2D()
 	{
-		return subsystem == SCENE2D ? true : false;
+		return subsystem == SCENES ? true : false;
 	}
 
 

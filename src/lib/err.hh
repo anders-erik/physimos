@@ -38,11 +38,11 @@ struct Err {
     err_s   severity = err_s::Error; // Error level
     err_m   module; // Which module the error took place in
     err_t   type; // error type
+    int ERRNO = 0; // store ERRNO from C APIs
     Str     message; // error message
 
     Str     file; // File path in which the error took place
 
-    int ERRNO = 0; // store ERRNO from C APIs
 
     Err() = default;
     Err(err_s severity, err_m module, err_t type, Str message)

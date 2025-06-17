@@ -123,6 +123,8 @@ int main()
 
 	Conductor2D conductor2D { conductor_window_size };
 
+	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
+
 	scene::QuadManager& q_manager = ManagerScene::get_quad_manager();
 
 	// Scene objects
@@ -137,8 +139,9 @@ int main()
 
 
 	// ROOT SCENE
-	scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
-	root_scene.set_name("Forever Root");
+	// scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();
+	scene::Scene2D& scene_2d = (scene::Scene2D&) ManagerScene::get_window_scene_mut();
+	scene_2d.set_name("Forever Root");
 	// ADD GREEN QUADS TO ROOT SCENE
 	scene::QuadS2D root_scene_quad;
 	root_scene_quad.set_box( {2.0f, 2.0f}, {60.0f, 60.0f} );
@@ -146,11 +149,11 @@ int main()
 	root_scene_quad.set_name("root_scene_quad_1");
 	// root_scene.push_quad(root_scene_quad);
 	size_t quad_id_0 = ManagerScene::get_quad_manager().push_quad(root_scene_quad);
-	root_scene.push_quad_id(quad_id_0);
+	scene_2d.push_quad_id(quad_id_0);
 
-	root_scene_quad.set_box( {550.0f, 100.0f}, {200.0f, 150.0f} );
+	root_scene_quad.set_box( {620.0f, 100.0f}, {150.0f, 150.0f} );
 	root_scene_quad.set_name("quad_2");
-	root_scene.push_quad(root_scene_quad);
+	scene_2d.push_quad(root_scene_quad);
 
 
 
@@ -158,9 +161,9 @@ int main()
 	scene::Scene2D scene_100x100 = {f2{100.0f, 100.0f}};
 	scene_100x100.set_name("100x100 test scene");
 	scene_100x100.push_quad(black_rectangle);
-	size_t scene_100x100_id = ManagerScene::push_scene(scene_100x100);
+	size_t scene_100x100_id = ManagerScene::push_scene2D(scene_100x100);
 
-	root_scene.add_subscene2D(scene_100x100_id, {300.0f, 0.0f});
+	scene_2d.add_subscene2D(scene_100x100_id, {300.0f, 0.0f});
 
 
 
@@ -175,10 +178,10 @@ int main()
 	// Glyphs
 	add_glyph_quads_to_scene(&glyphscene);
 
-	size_t glyphscene_id = ManagerScene::push_scene(glyphscene);
+	size_t glyphscene_id = ManagerScene::push_scene2D(glyphscene);
 
 	// Add to ROOT SCENE
-	size_t quad_id = root_scene.add_subscene2D(glyphscene_id, {350, 200});
+	size_t quad_id = scene_2d.add_subscene2D(glyphscene_id, {350, 200});
 	auto* q_glyphscene = q_manager.get_quad_mut(quad_id);
 	if(q_glyphscene != nullptr)
 	{

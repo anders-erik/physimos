@@ -1,5 +1,5 @@
 #include "glad/glad.h"
-#include "scene.hh"
+#include "scene3D.hh"
 #include "camera.hh"
 
 #include "opengl/error.hh"
@@ -18,6 +18,7 @@
 
 
 
+
 model::TubeContext tube_context = {
     1.0f,   //  float radius;
     6,      //  int frame_point_count;
@@ -26,7 +27,7 @@ model::TubeContext tube_context = {
     0,      //  int vertex_count_target;
 };
 
-SceneModelEditor::SceneModelEditor(){
+Scene3D::Scene3D(){
 
     opengl::textures_init();
 
@@ -58,7 +59,7 @@ SceneModelEditor::SceneModelEditor(){
 }
 
 
-void SceneModelEditor::update(){
+void Scene3D::update(){
 
     // if(_cube.animator.is_animating)
         // _cube.update_animator();
@@ -95,7 +96,7 @@ void SceneModelEditor::update(){
 
 }
 
-void SceneModelEditor::render(){
+void Scene3D::render(){
 
 
     m4f4 identity;
@@ -137,7 +138,7 @@ void SceneModelEditor::render(){
 
 
 
-void SceneModelEditor::handle_input(window::InputEvent input_event){
+void Scene3D::handle_input(window::InputEvent input_event){
 
 
     switch (input_event.type){
@@ -147,13 +148,16 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
         if(input_event.mouse_button.button == window::MouseButton::Middle){
 
             if(input_event.mouse_button.action == window::ButtonAction::Press)
+            {
                 camera_grabbed = true;
-                // std::cout << "GRAB CAMERA" << std::endl;
+                std::cout << "GRAB CAMERA" << std::endl;
+            }
 
             if(input_event.mouse_button.action == window::ButtonAction::Release)
+            {
                 camera_grabbed = false;
-                // std::cout << "RELEASE CAMERA" << std::endl;
-
+                std::cout << "RELEASE CAMERA" << std::endl;
+            }
 
         }
 
@@ -163,6 +167,8 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
     case window::EventType::MouseMove:
 
         if(camera_grabbed){
+            // std::cout << "Orbiting" << std::endl;
+            
             camera.theta_change(input_event.mouse_movement.delta.sane.x);
             camera.phi_change(input_event.mouse_movement.delta.sane.y);
         }
@@ -187,7 +193,7 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
             switch (input_event.keystroke.key){
 
             case window::Key::p :
-                // std::cout << "camera.rho    = " << camera.rho << std::endl;
+                std::cout << "camera.rho    = " << camera.rho << std::endl;
                 // std::cout << "camera.theta  = " << camera.theta << std::endl;
                 // std::cout << "camera.phi    = " << camera.phi << std::endl;
 
@@ -214,7 +220,7 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
 
 }
 
-void SceneModelEditor::handle_window_resize(window::WindowResizeEvent resize_event)
+void Scene3D::handle_window_resize(window::WindowResizeEvent resize_event)
 {
     camera.set_fov(resize_event.size.x, resize_event.size.y);
 }

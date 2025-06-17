@@ -10,7 +10,7 @@
 #include <iostream>
 #include <cmath>
 
-namespace scene {
+
 
 CameraOrbital::CameraOrbital(){
     triplet_reload();
@@ -104,4 +104,3 @@ void CameraOrbital::set_matrices(){
 
 
 
-}

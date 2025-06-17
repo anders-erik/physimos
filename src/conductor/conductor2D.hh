@@ -11,6 +11,7 @@
 #include "scene/shapeS2D.hh"
 
 #include "scene/render/renderer2D.hh"
+#include "scene/render3D/renderer3D.hh"
 
 #include "conductor2D_grabstate.hh"
 
@@ -29,10 +30,11 @@ class Conductor2D
 	UI::PUI pui;
 
 	bool targeting_ui = false;
-	GrabStateConductor grab_state;
+	GrabStateConductor input_state;
 	CursorPosition cursor_pos; // Copy from most recent mouse move event
 
-	scene::RendererScene2D renderer_scene;
+	scene::RendererScene2D renderer_scene_2D;
+	RendererScene3D renderer_scene_3D;
 
 public:
 
@@ -44,6 +46,9 @@ public:
 	void process_framebuffer_events();
 	/** Render all quad textures */
 	void render_quad_textures();
+
+	void update();
+	void render();
 
 	/** transfer control to Conductor2D by entering main rendering loop */
 	void main_loop();

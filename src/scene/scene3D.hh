@@ -17,33 +17,42 @@
 
 #include "scene_base.hh"
 
+#include "scene/render3D/program_model_texture.hh"
+#include "scene/render3D/program_model_color.hh"
+#include "scene/render3D/program_axes.hh"
+
 struct GLFWWindow;
 
 
 
-class SceneModelEditor
+class Scene3D : public SceneBase
 {
 
 public:
+
     model::ModelColor model;
-    opengl::RendererModelColor renderer_model_color;
-    opengl::RenderContextModelColor model_render_context;
+
+    ProgramModelColor renderer_model_color;
+    RenderContextModelColor model_render_context;
     opengl::RendererVector renderer_vector;
 
+
+    ProgramModelTexture renderer_model_texture;
+
     model::ModelTexture ground;
-    opengl::RendererModelTextureContext ground_render_context;
+    ProgramModelTextureContext ground_render_context;
 
     model::ModelTexture tube;
-    opengl::RendererModelTextureContext tube_render_context;
+    ProgramModelTextureContext tube_render_context;
 
-    opengl::RendererModelTexture renderer_model_texture;
 
-    opengl::RendererAxes renderer_axes;
+    ProgramAxes renderer_axes;
 
     CameraOrbital camera;
     bool camera_grabbed = false;
 
-    SceneModelEditor();
+
+    Scene3D();
 
 
     void handle_input(window::InputEvent input_event);
