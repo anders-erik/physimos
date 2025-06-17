@@ -23,11 +23,8 @@
 
 
 
-void ProgramAxes::init(){
-
-    // opengl::build_program_vert_frag(opengl::ProgramName::Axes);
-
-    // unsigned int program = opengl::gpu_get_program(opengl::ProgramName::Axes);
+void ProgramAxes::init()
+{
     glUseProgram(id);
 
     transform_location = glGetUniformLocation(id, "transform");

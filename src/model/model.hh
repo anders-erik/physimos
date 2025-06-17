@@ -4,6 +4,8 @@
 #include <vector>
 #include "math/transform.hh"
 
+#include "opengl/texture.hh"
+
 
 namespace model {
 
@@ -15,59 +17,63 @@ struct TriangleFaceIndeces {
     int v2;
 };
 
-typedef struct VertexBase {
+
+struct Vertex 
+{
     f3 pos;
-    f3 normal;
 
-    VertexBase(f3 _pos, f3 _normal) : pos {_pos}, normal {_normal} {};
-    VertexBase(f3 _pos) : pos {_pos}, normal {f3()} {};
-    VertexBase() : pos {f3()}, normal {f3()} {};
-} VertexBase;
+    Vertex() {};
+    Vertex(f3 pos) : pos {pos} {};
+};
 
-
-typedef struct VertexColor {
+struct VertexColor {
     f3 pos;
     f3 color;
     f3 normal;
 
-    VertexColor(f3 pos) : pos {pos}, color {f3()}, normal {f3()} {};
-    VertexColor() : pos {f3()}, color {f3()}, normal {f3()} {};
-} VertexColor;
+    VertexColor(f3 pos) : pos {pos} {};
+    VertexColor() {};
+};
 
-typedef struct VertexTexture {
+struct VertexT {
     f3 pos;
     f3 normal;
     f2 tex;
 
-    VertexTexture(f3 pos) : pos {pos}, normal {f3()}, tex { f2()} {};
-    VertexTexture() : pos {f3()}, normal {f3()}, tex { f2()} {};
-} VertexTexture;
+    VertexT() {};
+    VertexT(f3 pos) : pos {pos} {};
+};
 
 
-typedef struct MeshColor {
+struct MeshColor 
+{
     std::vector<VertexColor> vertices;
     std::vector<TriangleFaceIndeces> faces;
-} MeshColor;
+};
 
-typedef struct MeshTexture {
-    std::vector<VertexTexture> vertices;
+
+struct MeshT 
+{
+    std::vector<VertexT> vertices;
     std::vector<TriangleFaceIndeces> faces;
-} MeshTexture;
+};
 
 
-struct ModelColor {
-    Transform transform;
-
+struct ModelColor 
+{
     MeshColor mesh;
+    Transform transform;
 
     void set_base_color(f3 color);
 };
 
-struct ModelTexture {
+
+struct ModelT 
+{
+    MeshT mesh;
     Transform transform;
 
-    MeshTexture mesh;
-
+    opengl::Textures texture;
 };
 
 
@@ -84,13 +90,13 @@ void model_add_cube_mesh(MeshColor& mesh);
 void model_add_facelet(MeshColor& mesh, f3 color, Axis axis);
 
 
-void model_center(MeshTexture& mesh);
-void model_translate(MeshTexture& mesh, f3 translation);
-void model_scale(MeshTexture& mesh, float scale);
+void model_center(MeshT& mesh);
+void model_translate(MeshT& mesh, f3 translation);
+void model_scale(MeshT& mesh, float scale);
 /** Only supports x, y, or z axes. */
-void model_rotate(MeshTexture& mesh, float angle_rad, f3 axis);
+void model_rotate(MeshT& mesh, float angle_rad, f3 axis);
 
-void model_generate_ground(MeshTexture& mesh);
-void model_generate_tube(MeshTexture& mesh, TubeContext tube_context);
+void model_generate_ground(MeshT& mesh);
+void model_generate_tube(MeshT& mesh, TubeContext tube_context);
 
 }

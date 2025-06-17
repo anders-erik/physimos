@@ -7,7 +7,7 @@ struct GrabStateConductor : InputState {
 	/** Subsystems that can recieve and respond to input events. */
 	enum SubSys {
 		PUI,
-		SCENES,
+		SCENE,
 		NONE,
 	} subsystem;
 
@@ -28,9 +28,9 @@ struct GrabStateConductor : InputState {
 		return subsystem == PUI ? true : false;
 	}
 
-	bool scene2D()
+	bool scene()
 	{
-		return subsystem == SCENES ? true : false;
+		return subsystem == SCENE ? true : false;
 	}
 
 

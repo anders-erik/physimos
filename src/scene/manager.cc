@@ -376,6 +376,28 @@ events_user_all(window::InputEvent& event)
 }
 
 
+InputResponse event_handler(window::InputEvent & event)
+{
+
+    switch (window_scene->type)
+    {
+
+    case SceneType::D2:
+        /* code */
+        break;    
+
+    case SceneType::D3:
+        return static_cast<Scene3D*>(window_scene)->handle_input(event);
+        break;
+
+    default:
+        break;
+    }
+
+    return InputResponse();
+}
+
+
 
 
 void event_window_resize(window::WindowResizeEvent& window_resize)
@@ -385,6 +407,21 @@ void event_window_resize(window::WindowResizeEvent& window_resize)
     
     // TODO: update the window scene?
     // ManagerScene::get_root_scene_mut().set_framebuffer_size(window_resize.size_f);
+
+    switch (window_scene->type)
+    {
+
+    case SceneType::D2:
+        /* code */
+        break;    
+
+    case SceneType::D3:
+        return static_cast<Scene3D*>(window_scene)->handle_window_resize(window_resize);
+        break;
+
+    default:
+        break;
+    }
 }
 
 

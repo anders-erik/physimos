@@ -9,7 +9,8 @@
 #include "opengl/renderer_model_color.hh"
 
 #include "math/vecmat.hh"
-#include "window/auxwin.hh"
+
+#include "window/auxevent.hh"
 
 #include "camera.hh"
 
@@ -21,8 +22,6 @@
 #include "scene/render3D/program_model_color.hh"
 #include "scene/render3D/program_axes.hh"
 
-struct GLFWWindow;
-
 
 
 class Scene3D : public SceneBase
@@ -30,36 +29,26 @@ class Scene3D : public SceneBase
 
 public:
 
-    model::ModelColor model;
 
-    ProgramModelColor renderer_model_color;
-    RenderContextModelColor model_render_context;
-    opengl::RendererVector renderer_vector;
+    std::vector<model::ModelT> texture_models;
+    std::vector<model::ModelColor> color_models;
 
+    model::ModelT tube;
 
-    ProgramModelTexture renderer_model_texture;
-
-    model::ModelTexture ground;
-    ProgramModelTextureContext ground_render_context;
-
-    model::ModelTexture tube;
-    ProgramModelTextureContext tube_render_context;
-
-
-    ProgramAxes renderer_axes;
 
     CameraOrbital camera;
     bool camera_grabbed = false;
 
 
-    Scene3D();
+    Scene3D() = default;
 
+    void push_texture_model(model::ModelT& new_model);
+    void push_color_model(model::ModelColor& new_model);
 
-    void handle_input(window::InputEvent input_event);
+    InputResponse handle_input(window::InputEvent input_event);
     void handle_window_resize(window::WindowResizeEvent resize_event);
 
     void update();
-    void render();
     
 };
 

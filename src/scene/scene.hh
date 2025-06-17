@@ -30,10 +30,10 @@ public:
     opengl::RenderContextModelColor model_render_context;
     opengl::RendererVector renderer_vector;
 
-    model::ModelTexture ground;
+    model::ModelT ground;
     opengl::RendererModelTextureContext ground_render_context;
 
-    model::ModelTexture tube;
+    model::ModelT tube;
     opengl::RendererModelTextureContext tube_render_context;
 
     opengl::RendererModelTexture renderer_model_texture;

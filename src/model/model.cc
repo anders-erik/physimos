@@ -253,11 +253,11 @@ void model_add_cube_mesh(MeshColor& mesh){
 }
 
 
-void model_center(MeshTexture& mesh){
+void model_center(MeshT& mesh){
     
     f3 center = {0.0f, 0.0f, 0.0f};
 
-    for(VertexTexture& vertex : mesh.vertices){
+    for(VertexT& vertex : mesh.vertices){
         center.x += vertex.pos.x;
         center.y += vertex.pos.y;
         center.z += vertex.pos.z;
@@ -267,29 +267,29 @@ void model_center(MeshTexture& mesh){
     center.y /= (float) mesh.vertices.size();
     center.z /= (float) mesh.vertices.size();
 
-    for(VertexTexture& vertex : mesh.vertices){
+    for(VertexT& vertex : mesh.vertices){
         vertex.pos.x -= center.x;
         vertex.pos.y -= center.y;
         vertex.pos.z -= center.z;
     }
 }
-void model_scale(MeshTexture& mesh, float scale){
-    for(VertexTexture& vertex : mesh.vertices){
+void model_scale(MeshT& mesh, float scale){
+    for(VertexT& vertex : mesh.vertices){
         vertex.pos.x *= scale;
         vertex.pos.y *= scale;
         vertex.pos.z *= scale;
     }
 }
-void model_translate(MeshTexture& mesh, f3 translation){
+void model_translate(MeshT& mesh, f3 translation){
 
-    for(VertexTexture& vertex : mesh.vertices){
+    for(VertexT& vertex : mesh.vertices){
         vertex.pos.x += translation.x;
         vertex.pos.y += translation.y;
         vertex.pos.z += translation.z;
     }
 
 }
-void model_rotate(MeshTexture& mesh, float angle_rad, f3 axis){
+void model_rotate(MeshT& mesh, float angle_rad, f3 axis){
     m4f4 rot_matrix;
 
     if(axis.x == 1.0f){
@@ -305,7 +305,7 @@ void model_rotate(MeshTexture& mesh, float angle_rad, f3 axis){
         rot_matrix = tmp_mat;
     }
 
-    for(VertexTexture& vertex : mesh.vertices){
+    for(VertexT& vertex : mesh.vertices){
 
         vertex.pos.matmul(rot_matrix);
 
@@ -316,7 +316,7 @@ void model_rotate(MeshTexture& mesh, float angle_rad, f3 axis){
 
 
 
-void model_generate_ground(MeshTexture& mesh){
+void model_generate_ground(MeshT& mesh){
     
     
     int square_width = 10;
@@ -333,7 +333,7 @@ void model_generate_ground(MeshTexture& mesh){
     for(int row = 0; row < verts_per_width; row++){
         for(int col = 0; col < verts_per_width; col++){
 
-            VertexTexture& vertex = mesh.vertices.emplace_back();
+            VertexT& vertex = mesh.vertices.emplace_back();
             
             // POSITION
 
@@ -390,7 +390,7 @@ void model_generate_ground(MeshTexture& mesh){
 
 
 
-void model_generate_tube(MeshTexture& mesh, TubeContext tube_context){
+void model_generate_tube(MeshT& mesh, TubeContext tube_context){
 
     while(mesh.vertices.size() > 0)
         mesh.vertices.pop_back();
@@ -417,7 +417,7 @@ void model_generate_tube(MeshTexture& mesh, TubeContext tube_context){
             float y_pos = std::sin(angle) * tube_context.radius;
             float z_pos = std::cos(angle) * tube_context.radius;
 
-            VertexTexture vertex;
+            VertexT vertex;
 
             vertex.pos = { x_pos, y_pos, z_pos};
 

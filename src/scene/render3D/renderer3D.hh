@@ -40,6 +40,11 @@ public:
 
     void render_scene_3d(SceneBase& scene);
 
+private:
+
+    void render_texure_model(model::ModelT model_texture);
+    void render_color_model(model::ModelColor model);
+
 };
 
 

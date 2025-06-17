@@ -19,16 +19,17 @@ struct AxesVertex {
     f3 color;
 };
 
-struct ProgramAxes : protected opengl::Program
+/** Draw unit axes at scene origin. */
+class ProgramAxes : protected opengl::Program
 {
-    opengl::ProgramName renderer_program = opengl::ProgramName::Axes;
-
     unsigned int vao;
     unsigned int vbo;
 
     unsigned int transform_location;
     unsigned int view_location;
     unsigned int perspective_location;
+
+public:
 
     ProgramAxes() : opengl::Program("3D/axes") {};
 

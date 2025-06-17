@@ -95,24 +95,24 @@ void ProgramVector::set_project_view_matrix(m4f4 project_mat, m4f4 view_mat)
 
 }
 
-void ProgramVector::render(f3 vector, f3 translation){
+void ProgramVector::render(f3 pos, f3 size){
 
     // PROGRAM
     glUseProgram(id);
 
     // UNIFORMS
-    glUniform3fv(glGetUniformLocation(id, "vector"), 3, (float*) &vector);
+    glUniform3fv(glGetUniformLocation(id, "vector"), 3, (float*) &size);
     glUniform3fv( glGetUniformLocation(id, "vector_color"), 1, (float*) &color);
-    glUniform1f( glGetUniformLocation(id, "vector_scale"), sqrtf( vector.x*vector.x + vector.y*vector.y + vector.z*vector.z));
+    glUniform1f( glGetUniformLocation(id, "vector_scale"), sqrtf( size.x*size.x + size.y*size.y + size.z*size.z));
 
     // ROTATION
-    m4f4 rotation_mat = math::rect_f3_to_m4f4(vector);
+    m4f4 rotation_mat = math::rect_f3_to_m4f4(size);
     glUniformMatrix4fv(glGetUniformLocation(id, "rotation_mat"), 1, GL_TRUE, (float*) &rotation_mat);
 
 
     // TRANSLATION 
     m4f4 translation_mat;
-    translation_mat.translate(translation);
+    translation_mat.translate(pos);
     glUniformMatrix4fv(glGetUniformLocation(id, "translation_mat"), 1, GL_TRUE, (float*) &translation_mat );
 
 

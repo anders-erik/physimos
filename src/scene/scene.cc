@@ -108,7 +108,7 @@ void SceneModelEditor::render(){
     // renderer_vector.render({0.0f, 0.0f, 2.0f}, {0.0f, 0.0f, 1.0f});
 
     // TUBE NORMAL VECTORS
-    for(model::VertexTexture vertex : tube.mesh.vertices){
+    for(model::VertexT vertex : tube.mesh.vertices){
         renderer_vector.render(vertex.normal, vertex.pos);
     }
 

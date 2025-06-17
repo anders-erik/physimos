@@ -3,7 +3,7 @@
 
 
 
-Conductor2D::Conductor2D(f2 window_size_f) 
+Physimos::Physimos(f2 window_size_f) 
 	: 	auxwin {window_size_f},
 		pui {UI::PUI(window_size_f, auxwin.get_monitor_content_scale())}
 {
@@ -19,7 +19,7 @@ Conductor2D::Conductor2D(f2 window_size_f)
 
 
 
-void Conductor2D::
+void Physimos::
 process_user_input()
 {
 	process_framebuffer_events(); // change framebuffer size, content scale
@@ -39,20 +39,22 @@ process_user_input()
 			{
 				if(input_state.pui())
 				{
-					ManagerScene::clear_cursor_hovers();
 					auto response = pui.event_all(event);
 					input_state.update(GrabStateConductor::PUI, response);
 					if(!input_state.is_grabbing_mouse())
 						std::cout << "pui release" << std::endl;
 
+					ManagerScene::clear_cursor_hovers();
 					continue;
 				}
-				else if (ManagerScene::is_grabbing_cursor())
+				else if (input_state.scene())
 				{
-					pui.clear_hovers();
-					auto response = ManagerScene::events_user_all(event);
+					auto response = ManagerScene::event_handler(event);
+					input_state.update(GrabStateConductor::SCENE, response);
 					if(!input_state.is_grabbing_mouse())
-						std::cout << "scenes release" << std::endl;
+						std::cout << "scene release" << std::endl;
+					
+					pui.clear_hovers();
 					continue;
 				}
 			}
@@ -72,10 +74,11 @@ process_user_input()
 			else
 			{
 				// ManagerScene::requery_cursor_target(cursor_pos);
-				auto response = ManagerScene::events_user_all(event);
-				input_state.update(GrabStateConductor::SCENES, response);
+				// auto response = ManagerScene::events_user_all(event);
+				auto response = ManagerScene::event_handler(event);
+				input_state.update(GrabStateConductor::SCENE, response);
 				if(input_state.is_grabbing_mouse())
-					std::cout << "scenes grab" << std::endl;
+					std::cout << "scene grab" << std::endl;
 
 				pui.clear_hovers();
 			}
@@ -97,7 +100,7 @@ process_user_input()
 }
 
 
-void Conductor2D::
+void Physimos::
 process_framebuffer_events()
 {
 	auto resize_events = auxwin.get_events_window_resize();
@@ -112,7 +115,7 @@ process_framebuffer_events()
 
 
 
-void Conductor2D::
+void Physimos::
 render_quad_textures()
 {
 	auto& q_manager = ManagerScene::get_quad_manager();
@@ -150,27 +153,28 @@ render_quad_textures()
 
 
 
-void Conductor2D::update()
+void Physimos::update()
 {
 	pui.update(); // reflect scene state changes
 }
 
-void Conductor2D::render()
+void Physimos::render()
 {
-	SceneBase& window_scene = ManagerScene::get_window_scene_mut();
 	render_quad_textures();
 	auxwin.bind_window_framebuffer();
+
+	SceneBase& window_scene = ManagerScene::get_window_scene_mut();
 
 	if(window_scene.is_2d())
 		renderer_scene_2D.render_scene((scene::Scene2D&)window_scene);
 	if(window_scene.is_3d())
 		renderer_scene_3D.render_scene_3d(window_scene);
 
-	pui.render(); // Render ui on top of scenes
+	pui.render(); // Render ui on top of scene
 }
 
 
-void Conductor2D::main_loop()
+void Physimos::main_loop()
 {
 	while (auxwin.is_open())
 	{

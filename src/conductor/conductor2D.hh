@@ -23,7 +23,7 @@ using namespace window;
 	Owns an auxwin, pui, and a scene manager.
 	Handles events and decides which root scene will recieve input events.
 */
-class Conductor2D 
+class Physimos 
 {
 	window::Auxwin auxwin;
 
@@ -38,7 +38,7 @@ class Conductor2D
 
 public:
 
-	Conductor2D(f2 window_size);
+	Physimos(f2 window_size);
 
 	/** Mouse and keyboard input. */
 	void process_user_input();
@@ -50,7 +50,7 @@ public:
 	void update();
 	void render();
 
-	/** transfer control to Conductor2D by entering main rendering loop */
+	/** transfer control to Physimos by entering main rendering loop */
 	void main_loop();
 };
 

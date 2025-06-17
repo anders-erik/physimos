@@ -110,6 +110,9 @@ void event_keystroke(window::InputEvent& event);
 /** Confirmed targeting scene. */
 InputResponse events_user_all(window::InputEvent& event);
 
+/** Relays an event to the window scene */
+InputResponse event_handler(window::InputEvent& event);
+
 void event_window_resize(window::WindowResizeEvent& window_resize);
 
 
