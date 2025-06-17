@@ -11,6 +11,8 @@
 #include "scene/scene2D.hh"
 #include "scene/quadS2D.hh"
 
+#include "scene/object_manager.hh"
+
 #include "widget.hh"
 
 
@@ -18,10 +20,9 @@ namespace UI {
 namespace W {
 
 /** Widget reflecting the state of a specific quad */
-struct Quad2DSmall : public Widget
+struct ObjectSmall : public Widget
 {
-    size_t quad_id;
-    scene::QuadS2D* quad;
+    Object object;
     f2 size = {180.0f, 30.0f};
 
     BaseString quad_name;
@@ -36,11 +37,17 @@ public:
         {
 
         case EventType::MouseButton:
+
             if(event.mouse_button.is_left_down())
             {
-                // println("WidgetQuad mouse down!");
-                auto& q_manager = ManagerScene::get_quad_manager();
-                q_manager.set_selected(quad_id);
+                println("Clicked on W::ObjectSmall!");
+
+                Scene3D& scene = (Scene3D&) ManagerScene::get_window_scene_mut();
+
+                scene.selected_object = object;
+
+                // auto& q_manager = ManagerScene::get_quad_manager();
+                // q_manager.set_selected(quad_id);
 
                 // return EventResult::Grab;
             }
@@ -60,16 +67,11 @@ public:
         return {};
     }
 
-    /** Recreates the whole widget from scene data every call. */
-    void reload(scene::QuadS2D* _quad, f2 new_pos)
-    {
-        if(_quad == nullptr)
-            return;
 
-        // Update quad
-        quad = _quad;
-        if(quad != nullptr)
-            quad_id = quad->get_id();
+    /** Recreates the whole widget from scene data every call. */
+    void reload(Object& new_object, f2 new_pos)
+    {
+        object = new_object;
 
         // Frame
         frame.pos = new_pos;
@@ -79,10 +81,8 @@ public:
 
         // Name
         f2 name_delta = { 5.0f, 6.0f };
-        Str name_str = quad->get_name();
         quad_name.set_pos(frame.pos + name_delta);
-        quad_name.set_str(name_str);
-
+        quad_name.set_str(object.name);
     }
 
 
@@ -92,7 +92,6 @@ public:
         renderer.draw_base(frame_base);
 
         renderer.draw_base_string(quad_name);
-
     }
 
 };

@@ -122,15 +122,8 @@ void RendererBase::draw_base_string(UI::BaseString& base_string)
     
     program_string.set_texture(opengl::ui__get_font_bitmap_texture_id());
     program_string.set_base_transform(base_string.get_box().pos, base_string.glyph_size);
-
-    // Glyphs
-    UI::Font::GlyphString glyph_string;
-    glyph_string.set_str(base_string.str);
-    glyph_string.set_max_width(base_string.max_width);
-    glyph_string.set_glyph_size(base_string.glyph_size);
-    glyph_string.generate_glyphs();
     
-    program_string.set_glyph_data(glyph_string.get_glyphs());
+    program_string.set_glyph_data(base_string.glyph_string.get_glyphs());
 
     program_string.draw();
 }

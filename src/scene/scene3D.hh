@@ -22,6 +22,7 @@
 #include "scene/render3D/program_model_color.hh"
 #include "scene/render3D/program_axes.hh"
 
+#include "scene/object_manager.hh"
 
 
 class Scene3D : public SceneBase
@@ -29,6 +30,9 @@ class Scene3D : public SceneBase
 
 public:
 
+    std::vector<Object> objects;
+
+    Object selected_object;
 
     std::vector<model::ModelT> texture_models;
     std::vector<model::ModelColor> color_models;
@@ -41,6 +45,9 @@ public:
 
 
     Scene3D() = default;
+
+    void push_object(Object new_object);
+    std::vector<Object>& get_objects_mut();
 
     void push_texture_model(model::ModelT& new_model);
     void push_color_model(model::ModelColor& new_model);

@@ -14,6 +14,7 @@
 
 #include "renderer3D.hh"
 
+#include "scene/object_manager.hh"
 
 
 
@@ -27,11 +28,13 @@ RendererScene3D::RendererScene3D()
     program_axes.init();
     program_model_texture.init();
     program_model_color.init();
+
+    program_mesh.init();
 }
 
 void RendererScene3D::render_scene_3d(SceneBase& scene_base)
 {
-    if(!scene_base.is_3d())
+    if(!scene_base.is_3D())
         throw std::runtime_error("Can only render 3d scene");
     Scene3D& scene3D = (Scene3D&) scene_base;
 
@@ -55,6 +58,10 @@ void RendererScene3D::render_scene_3d(SceneBase& scene_base)
     program_model_color.set_camera_uniforms(    scene3D.camera.perspective_mat, 
                                                 scene3D.camera.view_mat);
 
+    program_mesh.set_camera_view_projection(    scene3D.camera.perspective_mat, 
+                                                scene3D.camera.view_mat);
+
+
     // TEXTURE MODELS
     for(auto& model : scene3D.texture_models)
     {
@@ -73,7 +80,16 @@ void RendererScene3D::render_scene_3d(SceneBase& scene_base)
         program_vector.render(vertex.normal, vertex.pos);
     }
 
+    for(Object object : scene3D.objects)
+    {
+        if(object.type == Object::Mesh)
+        {
+            MeshO* mesho = ObjectManager::get_mesho(object.id);
+            if(mesho == nullptr) continue;
 
+            program_mesh.render(mesho->mesh);
+        }
+    }
 
     // VECTOR
     program_vector.render(  {0.0f, 0.0f, 0.0f}, 

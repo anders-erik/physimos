@@ -342,7 +342,7 @@ events_user_all(window::InputEvent& event)
     // auto& window_scene = get_window_scene_mut();
     // window_scene.try_hover_quad(); // ALWAYS try to highlight hovered quad in window scene
 
-    if(window_scene->is_3d())
+    if(window_scene->is_3D())
     {
         ((Scene3D*)window_scene)->handle_input(event);
         return {};

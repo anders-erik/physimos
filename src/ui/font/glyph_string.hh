@@ -20,26 +20,16 @@ namespace Font
 class GlyphString 
 {
     std::vector<GlyphFontBitmap> glyphs;
-    
-    Str str;
-
-    f2 glyph_size;
-    float max_width;
 
 public:
 
-    void set_str(const Str& new_str);
-    void set_max_width(float max_width);
-    void set_glyph_size(f2 glyph_size);
-
     const std::vector<GlyphFontBitmap>& get_glyphs();
 
-    /** Create a list of texture vertices to be passed to the string renderer.  */
-    void generate_glyphs();
+    /** Generates a whole number of glyphs. */
+    void generate_glyphs_whole(Str& str, size_t glyph_count, float glyph_width);
 
-
-    size_t get_glyph_count(float glyph_width, float max_texture_width, unsigned int str_size);
-    bool all_chars_fit(float glyph_width, float max_texture_width, unsigned int str_size);
+    /** Generates a whole number of glyphs, and then appends a final glyph that is vertically cut. */
+    void generate_glyphs_fractional(Str& str, size_t glyph_count_whole, float glyph_width, float width_last_glyph_normalized);
 
 };
 

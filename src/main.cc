@@ -12,6 +12,9 @@
 
 #include "model/model.hh"
 
+#include "scene/mesh.hh"
+#include "scene/object_manager.hh"
+
 int main()
 {
 
@@ -20,6 +23,7 @@ int main()
 	Physimos physimos { window_size };
 
 	Scene3D& root_scene = ManagerScene::get_root_scene_mut();
+	root_scene.set_name("Forever Root");
 
 
 	// GROUND GRASS
@@ -66,6 +70,14 @@ int main()
     // renderer_model_color.create_render_context(model_render_context, model);
     cube.transform.pos.x = 5.0f;
 	root_scene.push_color_model(cube);
+
+
+
+	// FIRST PURE MESH
+	Mesh mesh;
+	mesh.create_cube();
+	MeshO& mesho = ObjectManager::push_mesho(mesh);
+	root_scene.push_object(mesho.object);
 
 
 

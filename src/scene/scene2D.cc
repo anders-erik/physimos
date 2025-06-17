@@ -369,7 +369,7 @@ size_t Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
     auto* scene_query = ManagerScene::search_scene_storage(scene_id);
 
     if(scene_query == nullptr) return 0;
-    if(!scene_query->is_2d()) return 0;
+    if(!scene_query->is_2D()) return 0;
 
     scene::Scene2D& scene = (scene::Scene2D&) *scene_query;
 

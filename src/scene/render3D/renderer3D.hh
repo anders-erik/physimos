@@ -15,6 +15,8 @@
 #include "render3D/program_model_texture.hh"
 #include "render3D/program_model_color.hh"
 
+#include "render3D/program_mesh.hh"
+
 
 namespace opengl {
     class TextureFB;
@@ -28,11 +30,12 @@ namespace opengl {
 class RendererScene3D {
 
     ProgramAxes program_axes;
-
     ProgramVector program_vector;
     
     ProgramModelTexture program_model_texture;
     ProgramModelColor program_model_color;
+
+    ProgramMesh program_mesh;
 
 public:
 

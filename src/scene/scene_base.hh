@@ -14,25 +14,38 @@ struct SceneBase
 {
 
     SceneID scene_id;
+    Str name;
     SceneType type;
 
 
     SceneBase() {};
 
-    SceneBase(SceneID id, SceneType type) 
+    SceneBase(SceneID id, Str name, SceneType type) 
         :   scene_id {id}, 
+            name {name}, 
             type {type} 
     {
     };
 
-    bool is_2d() 
+    void set_name(Str new_name)
+    {
+        name = new_name;
+    }
+
+    Str& get_name()
+    {
+        return name;
+    }
+
+
+    bool is_2D() 
     {
         if(type == SceneType::D2)
             return true;
         
         return false;
     };
-    bool is_3d() 
+    bool is_3D() 
     {
         if(type == SceneType::D3)
             return true;

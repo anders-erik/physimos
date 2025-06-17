@@ -18,6 +18,8 @@ set(SCENE_OBJS
     quadS2D.cc
 
     scene3D.cc
+    object_manager.cc
+    mesh.cc
 
     manager.cc
     quad_manager.cc

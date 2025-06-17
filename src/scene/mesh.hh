@@ -9,7 +9,6 @@
 
 #include "opengl/texture.hh"
 
-typedef unsigned int ObjID;
 
 struct TriangleFaceIndeces {
     int v0;
@@ -17,25 +16,31 @@ struct TriangleFaceIndeces {
     int v2;
 };
 
-
+typedef f3 Vertex;
 
 struct Mesh
 {
-    std::vector<f3> verts;
+    std::vector<Vertex> verts;
     std::vector<TriangleFaceIndeces> faces;
+
+    Mesh() {};
+
+    void create_cube();
 };
+
 
 
 struct Model
 {
-    ObjID id;
-    Str name;
-
     Mesh mesh;
+    std::vector<f3> normals;
+    std::vector<f2> text_coords;
+
+    // Texture texture;
     
     f3 pos;
     f3 rot;
 
-    unsigned int color;
+    unsigned int color = 0x000000ff; // base color if no texture is set
 };
 

@@ -165,9 +165,9 @@ void Physimos::render()
 
 	SceneBase& window_scene = ManagerScene::get_window_scene_mut();
 
-	if(window_scene.is_2d())
+	if(window_scene.is_2D())
 		renderer_scene_2D.render_scene((scene::Scene2D&)window_scene);
-	if(window_scene.is_3d())
+	if(window_scene.is_3D())
 		renderer_scene_3D.render_scene_3d(window_scene);
 
 	pui.render(); // Render ui on top of scene
@@ -181,6 +181,8 @@ void Physimos::main_loop()
 		auxwin.new_frame();
 
 		process_user_input();
+
+		update();
 
 		render();
 		

@@ -30,9 +30,9 @@ contains_point(f2 cursor_pos_win_sane)
     cursor.clear_grabbed_widget();
     cursor.clear_hover();
 
-    if(w_quad2D_large.has_cursor(cursor_pos_win_sane))
+    if(w_object_large.has_cursor(cursor_pos_win_sane))
     {
-        cursor.hover(&w_quad2D_large);
+        cursor.hover(&w_object_large);
         return true;
     }
 
@@ -82,9 +82,11 @@ update()
     // delete widget_quad;
     // widget_quad = new WidgetQuad();
     // widget_quad->reload();
-    scene::QuadS2D* quad = ManagerScene::get_quad_manager().get_selected();
-    w_quad2D_large.reload(quad, {500.0f, 450.0f});
+    // scene::QuadS2D* quad = ManagerScene::get_quad_manager().get_selected();
+    // w_object_large.reload(quad, {500.0f, 450.0f});
 
+    Scene3D& scene = (Scene3D&) ManagerScene::get_window_scene_mut();
+    w_object_large.reload(scene.selected_object, {500.0f, 450.0f});
 
     // 
 }
@@ -103,10 +105,10 @@ event_all(window::InputEvent& event)
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
 
-    if(cursor.is_targeted_widget(&w_quad2D_large))
+    if(cursor.is_targeted_widget(&w_object_large))
     {
-        InputResponse result = w_quad2D_large.event_handler(event);
-        cursor.handle_event_result(result, &w_quad2D_large);
+        InputResponse result = w_object_large.event_handler(event);
+        cursor.handle_event_result(result, &w_object_large);
         if(result.grabbed_mouse())
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
@@ -141,7 +143,7 @@ render(){
     // widget_root_scene.populate();
     w_root_scene.render(renderer_base);
 
-    w_quad2D_large.render(renderer_base);
+    w_object_large.render(renderer_base);
 
 }
 

@@ -11,8 +11,8 @@
 #include "ui/string.hh"
 
 #include "ui/widgets/w_root_scene.hh"
-#include "ui/widgets/w_quad_s.hh"
-#include "ui/widgets/w_quad_l.hh"
+#include "ui/widgets/w_object_s.hh"
+#include "ui/widgets/w_object_l.hh"
 
 #include "ui/pui_cursor.hh"
 
@@ -34,7 +34,7 @@ class PUI
 
 
     UI::W::RootScene w_root_scene;
-    UI::W::Quad2DLarge w_quad2D_large;
+    UI::W::ObjectLarge w_object_large;
 
     PUICursor cursor;
 

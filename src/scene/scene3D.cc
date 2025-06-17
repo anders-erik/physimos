@@ -17,6 +17,18 @@
 
 
 
+void Scene3D::push_object(Object new_object)
+{
+    objects.push_back(new_object);
+}
+
+std::vector<Object>& Scene3D::get_objects_mut()
+{
+    return objects;
+}
+
+
+
 void Scene3D::push_texture_model(model::ModelT & new_model)
 {
     texture_models.push_back(new_model);
