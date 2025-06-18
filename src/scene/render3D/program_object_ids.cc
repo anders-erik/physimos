@@ -1,5 +1,4 @@
 #include "opengl/program.hh"
-#include "opengl/color.hh"
 
 #include "math/vecmat.hh"
 
@@ -7,10 +6,11 @@
 #include <iostream>
 #include <cmath>
 
-#include "program_mesh.hh"
+
+#include "program_object_ids.hh"
 
 
-void ProgramMesh::
+void ProgramObjectIDs::
 init()
 {
     glUseProgram(id);
@@ -21,7 +21,7 @@ init()
 }
 
 
-void ProgramMesh::
+void ProgramObjectIDs::
 set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat)
 {
     glUseProgram(id);
@@ -35,13 +35,19 @@ set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat)
 
 
 
-void ProgramMesh::
-render(Mesh& mesh, unsigned int color)
+void ProgramObjectIDs::
+render(Mesh& mesh, OID oid)
 {
     m4f4 model_matrix;
 
+    f4 vec4 = oid_to_vec4(oid);
+    // OID new_OID = vec4_to_oid(vec4);
+    // std::cout << oid << " " << new_OID << std::endl;
+    
+
     glUseProgram(id);
 
+    glUniform4fv(glGetUniformLocation(id, "oid_color"), 1, vec4.pointer());
 
     glBindVertexArray(VAO);
 
@@ -61,15 +67,31 @@ render(Mesh& mesh, unsigned int color)
     glUniformMatrix4fv(glGetUniformLocation(id, "model"), 1, GL_FALSE, model_matrix.pointer());
 
 
-    glUniform4fv(glGetUniformLocation(id, "mesh_color"), 1, Color::uint_to_f4(color).pointer());
-
-
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glLineWidth(2);
+    // Obviously always fill
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
     glDrawElements(GL_TRIANGLES, mesh.faces.size() * 3, GL_UNSIGNED_INT, 0);
 
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+}
+
+f4 ProgramObjectIDs::oid_to_vec4(OID oid)
+{
+    float A = ((float) ((oid << 24) >> 24)) / 256.0f;
+    float B = ((float) ((oid << 16) >> 24)) / 256.0f;
+    float G = ((float) ((oid <<  8) >> 24)) / 256.0f;
+    float R = ((float) ((oid <<  0) >> 24)) / 256.0f;
+
+    return {R, G, B, A};
+}
+
+OID ProgramObjectIDs::vec4_to_oid(f4 vec4)
+{
+    OID R = ((OID) (vec4.x * 255.0f)) << 24;
+    OID G = ((OID) (vec4.y * 255.0f)) << 16;
+    OID B = ((OID) (vec4.z * 255.0f)) << 8;
+    OID A = ((OID) (vec4.w * 255.0f)) << 0;
+
+    return R + G + B + A;
 }
 
 

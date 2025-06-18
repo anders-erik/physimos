@@ -75,7 +75,8 @@ struct Texture {
 
     void draw_rect(i2 pos, i2 size, ColorUC color);
 
-    static unsigned char* get_pixel(i2 pos, unsigned int texture_id);
+    /** Never got to work. Read framebuffer attachent instead. */
+    f4 get_pixel_color(i2 pos);
 
     void bind();
     void unbind();

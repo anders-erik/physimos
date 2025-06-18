@@ -133,12 +133,12 @@ struct KeyStrokeEvent {
 };
 
 struct WindowResizeEvent {
-    i2 size;
+    i2 size_i;
     f2 size_f;
     f2 content_scale; // This simply queries the current content scale. It does NOT respond the content scale changes
 
     WindowResizeEvent(i2 _size, f2 content_scale) 
-        :   size { _size }, 
+        :   size_i { _size }, 
             size_f { f2{ (float) _size.x, (float)_size.y}},
             content_scale {content_scale} {};
     WindowResizeEvent() = default;

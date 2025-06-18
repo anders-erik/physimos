@@ -54,20 +54,21 @@ InputResponse Scene3D::handle_input(window::InputEvent input_event){
 
     case window::EventType::MouseButton:
         
-        if(input_event.mouse_button.button == window::MouseButton::Middle){
+        if(input_event.mouse_button.is_middle_down())
+        {
+            camera_grabbed = true;
+            // std::cout << "GRAB CAMERA" << std::endl;
+        }
 
-            if(input_event.mouse_button.action == window::ButtonAction::Press)
-            {
-                camera_grabbed = true;
-                std::cout << "GRAB CAMERA" << std::endl;
-            }
+        if(input_event.mouse_button.is_middle_up())
+        {
+            camera_grabbed = false;
+            // std::cout << "RELEASE CAMERA" << std::endl;
+        }
 
-            if(input_event.mouse_button.action == window::ButtonAction::Release)
-            {
-                camera_grabbed = false;
-                std::cout << "RELEASE CAMERA" << std::endl;
-            }
-
+        if(input_event.mouse_button.is_left_down())
+        {
+            selected_object = hovered_object;
         }
 
         break;
@@ -138,7 +139,7 @@ InputResponse Scene3D::handle_input(window::InputEvent input_event){
 
 void Scene3D::handle_window_resize(window::WindowResizeEvent resize_event)
 {
-    camera.set_fov(resize_event.size.x, resize_event.size.y);
+    camera.set_fov(resize_event.size_i.x, resize_event.size_i.y);
 }
 
 

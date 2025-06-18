@@ -216,7 +216,7 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
 
 void SceneModelEditor::handle_window_resize(window::WindowResizeEvent resize_event)
 {
-    camera.set_fov(resize_event.size.x, resize_event.size.y);
+    camera.set_fov(resize_event.size_i.x, resize_event.size_i.y);
 }
 
 

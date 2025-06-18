@@ -33,6 +33,7 @@ public:
     std::vector<Object> objects;
 
     Object selected_object;
+    Object hovered_object;
 
     std::vector<model::ModelT> texture_models;
     std::vector<model::ModelColor> color_models;

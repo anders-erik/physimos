@@ -9,6 +9,7 @@
 #include "lib/process.hh"
 // END UI
 
+#include "opengl/error.hh"
 #include "texture.hh"
 
 namespace opengl {
@@ -105,14 +106,33 @@ void Texture::draw_rect(i2 _pos, i2 _size, ColorUC _color){
     glTexSubImage2D(GL_TEXTURE_2D, 0, _pos.x, _pos.y, _size.x, _size.y,  GL_RGBA,  GL_UNSIGNED_BYTE, bytes);
     unbind();
 }
-unsigned char* Texture::get_pixel(i2 pos, unsigned int texture_id){
-    unsigned char pixels[3];
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture_id);
-    glReadPixels(pos.x, pos.y, 0, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    std::cout << "pixels[0] = " << pixels[0] << std::endl;
+
+
+f4 Texture::
+get_pixel_color(i2 pos)
+{
+    f4 vec4_color {0.0f, 0.0f, 0.0f, 0.0f};
+
+    unsigned char pixels_uc[4] = {0, 0, 0, 0};
+    float pixels_f[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+    opengl::error_check();
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glBindTexture(GL_TEXTURE_2D, id_gl);
+    glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, GL_FLOAT, vec4_color.pointer());
+    // glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    // glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, GL_FLOAT, pixels_f);
+
     
-    return pixels;
+    opengl::error_check();
+    // std::cout << "pixels : " << pixels[0] << " " << pixels[1] << " " << pixels[2] << " " << pixels[3] << " " << std::endl;
+    // std::cout << "pixels : " << pixels_f[0] << " " << pixels_f[1] << " " << pixels_f[2] << " " << pixels_f[3] << " " << std::endl;
+    
+    
+    return vec4_color;
 }
+
+
 
 void Texture::new_texture(pimage::Bitmap& bitmap){
     size.x = bitmap.width;

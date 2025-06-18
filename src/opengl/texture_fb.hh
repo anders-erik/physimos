@@ -23,12 +23,15 @@ struct TextureFB {
 
     void reload(int width, int height);
 
+    void bind();
+    void unbind(f2 window_fb_size);
+
     void framebuffer_bind();
     void framebuffer_unbind(int width, int height);
 
-    void texture_bind();
-    void texture_unbind();
     unsigned int get_texture_id();
+
+    f4 sample_texture(i2 pos);
 
     void set_clear_color(f4 color);
     void clear_with(f4 clear_color);

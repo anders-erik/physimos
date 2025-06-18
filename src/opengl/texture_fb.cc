@@ -45,6 +45,20 @@ void TextureFB::reload(int width, int height)
 }
 
 
+void TextureFB::bind()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glEnable(GL_MULTISAMPLE);
+    glViewport(0,0, size.x, size.y);
+}
+void TextureFB::unbind(f2 window_fb_size)
+{
+    // glDisable(GL_MULTISAMPLE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0, (unsigned int)window_fb_size.x, (unsigned int)window_fb_size.y);
+}
+
+
 void TextureFB::
 framebuffer_bind()
 {
@@ -62,24 +76,27 @@ framebuffer_unbind(int width, int height)
 }
 
 
-void TextureFB::
-texture_bind()
-{
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture.id_gl);
-}
-
-
-void TextureFB::
-texture_unbind()
-{
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-}
 
 
 unsigned int TextureFB::
 get_texture_id()
 {
     return texture.id_gl;
+}
+
+f4 TextureFB::sample_texture(i2 pos)
+{
+    
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+    GLubyte pixel[4]; // for RGBA
+
+    f4 vec4_color;
+
+    glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, GL_FLOAT, &vec4_color);
+
+    return vec4_color;
+    // return texture.get_pixel_color(pos);
 }
 
 

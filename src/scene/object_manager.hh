@@ -44,6 +44,9 @@ namespace ObjectManager
 {
 
 OID new_oid();
+
+Object get_object(OID oid);
+
 MeshO& push_mesho(Mesh& mesh);
 MeshO* get_mesho(OID oid);
 

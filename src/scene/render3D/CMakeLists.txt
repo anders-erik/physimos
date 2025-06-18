@@ -8,7 +8,7 @@ set(SCENE_RENDER_3D
     program_model_texture.cc
     program_model_color.cc
     program_mesh.cc
-
+    program_object_ids.cc
 )
 
 

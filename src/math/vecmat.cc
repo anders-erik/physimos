@@ -64,9 +64,11 @@ f2 f2::operator-()
     };
 }
 
-i2 f2::to_i2(){
-return i2{(int)x, (int)y};
+i2 f2::to_i2()
+{
+    return i2{(int)x, (int)y};
 }
+
 void f2::print(std::string prefix){
     std::cout << prefix <<  ": x = " << x << ", y = " << y << std::endl;
 }
@@ -248,6 +250,12 @@ void f3::matmul(m3f3 matrix){
     this->x = tmp.x;
     this->y = tmp.y;
     this->z = tmp.z;
+}
+
+
+float* f4::pointer()
+{
+    return (float*) this;
 }
 
 

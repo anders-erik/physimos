@@ -121,6 +121,8 @@ struct f4 {
     f4(f3 _f3) : x {_f3.x}, y {_f3.y}, z {_f3.z}, w {1.0f} {}; 
     // f4() : x {0.0f}, y {0.0f}, z {0.0f}, w {1.0f} {}; 
     f4() = default;
+
+    float* pointer();
 };
 
 struct m2f2 {

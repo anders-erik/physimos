@@ -8,9 +8,10 @@
 
 #include "scene/mesh.hh"
 
+#include "scene/object_manager.hh"
 
 
-class ProgramMesh : protected opengl::Program
+class ProgramObjectIDs : protected opengl::Program
 {
 
     unsigned int VAO;
@@ -19,13 +20,16 @@ class ProgramMesh : protected opengl::Program
 
 public:
 
-    ProgramMesh() : Program("3D/mesh") {};
+    ProgramObjectIDs() : Program("3D/object_ids") {};
 
     void init();
 
     void set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat);
 
-    void render(Mesh& mesh, unsigned int color);
+    void render(Mesh& mesh, OID id);
+
+    f4 oid_to_vec4(OID oid);
+    OID vec4_to_oid(f4 vec4);
 
 };
 

@@ -5,7 +5,8 @@
 
 Physimos::Physimos(f2 window_size_f) 
 	: 	auxwin {window_size_f},
-		pui {UI::PUI(window_size_f, auxwin.get_monitor_content_scale())}
+		pui {UI::PUI(window_size_f, auxwin.get_monitor_content_scale())},
+		renderer_scene_3D { {window_size_f} }
 {
 	// First scene added to scene manager becomes root
 	Scene3D& root_scene = ManagerScene::init(window_size_f);
@@ -75,10 +76,20 @@ process_user_input()
 			{
 				// ManagerScene::requery_cursor_target(cursor_pos);
 				// auto response = ManagerScene::events_user_all(event);
+				
+				OID hovered_oid = renderer_scene_3D.sample_object_id_fb(event.cursor_pos.sane);
+				Scene3D& window_scene = (Scene3D&) ManagerScene::get_window_scene_mut();
+				window_scene.hovered_object = ObjectManager::get_object(hovered_oid);
+
 				auto response = ManagerScene::event_handler(event);
 				input_state.update(GrabStateConductor::SCENE, response);
 				if(input_state.is_grabbing_mouse())
 					std::cout << "scene grab" << std::endl;
+
+				//
+				
+				// std::cout << hovered_oid << std::endl;
+				
 
 				pui.clear_hovers();
 			}
@@ -105,11 +116,12 @@ process_framebuffer_events()
 {
 	auto resize_events = auxwin.get_events_window_resize();
 
-	for(WindowResizeEvent& event : resize_events)
+	for(WindowResizeEvent& window_event : resize_events)
 	{
 		// All subsystems get the resize event
-		pui.event_window_resize(event);
-		ManagerScene::event_window_resize(event);
+		pui.event_window_resize(window_event);
+		ManagerScene::event_window_resize(window_event);
+		renderer_scene_3D.set_window_fb_size(window_event);
 	}
 }
 

@@ -17,8 +17,8 @@
 
 class CameraOrbital {
     float rho_factor    = -0.2f;
-    float theta_scale   = -0.008f;
-    float phi_scale     =  0.010f;
+    float theta_scale   = -0.004f;
+    float phi_scale     =  0.005f;
 
     float rho_min       = 0.5f;
     float rho_max       = 20.0f;

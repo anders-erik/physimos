@@ -29,6 +29,17 @@ OID new_oid()
     return oid_index++;
 }
 
+Object get_object(OID oid)
+{
+    for(MeshO& mesho : meshos)
+    {
+        if(mesho.object.id == oid)
+            return mesho.object;
+    }
+
+    return Object();
+}
+
 MeshO& push_mesho(Mesh& mesh)
 {
     return meshos.emplace_back(mesh);
