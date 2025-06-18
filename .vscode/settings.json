@@ -2,7 +2,7 @@
 	// Task
 	// "default_task" : "run",
 
-	// Binary
+	// MAIN
 	"default_binary": "${workspaceRoot}/build/debug_linux/physimos",
 	// "default_binary": "${workspaceFolder}/build/debug_linux/src/main_main",
 	// "default_binary": "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
@@ -12,8 +12,11 @@
 	// "default_binary": "${workspaceRoot}/build/debug_linux/src/file_format/json/main_json",
 	// "default_binary": "${workspaceRoot}/build/debug_linux/src/phont/main_phont",
 	// "default_binary": "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
+	// "default_binary": "${workspaceRoot}/build/debug_linux/src/render/main_render",
 
+	// TEST
 	// "default_binary": "${workspaceFolder}/build/debug_linux/src/lib/test_lib",
+	// "default_binary": "${workspaceFolder}/build/debug_linux/src/math/test_math",
 	
 	// CWD
 	"default_cwd": "${workspaceFolder}",

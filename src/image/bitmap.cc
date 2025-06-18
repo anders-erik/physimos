@@ -30,8 +30,21 @@ Bitmap::Bitmap(unsigned int width, unsigned int height) {
     
 }
 
+Bitmap::Bitmap(ui2 size)
+{
+    width = size.x;
+    height = size.y;
+        
+    pixelcount = height * width;
 
-void Bitmap::set_pixel(unsigned int x, unsigned int y, Pixel pixel) {
+    pixels = std::vector<pimage::Pixel> { pixelcount };
+}
+
+
+void Bitmap::set_pixel(unsigned int x, unsigned int y, Pixel pixel) 
+{
+    if(x > width-1 || y > height-1)
+        return;
 
     unsigned int pixelIndex = this->width * y + x;
 
@@ -62,6 +75,14 @@ Pixel Bitmap::get_pixel(unsigned int x, unsigned int y) {
     unsigned int pixelIndex = this->width * y + x;
 
     return this->pixels[pixelIndex];
+}
+
+void Bitmap::clear(Pixel clear_pixel)
+{
+    for(auto& pixel : pixels)
+    {
+        pixel = clear_pixel;
+    }
 }
 
 Bitmap Bitmap::get_sub_bitmap(unsigned int x, unsigned int y, unsigned int w, unsigned int h){
@@ -111,6 +132,20 @@ void Bitmap::replace_color(Pixel old_pixel, Pixel new_pixel){
         }
 
     }
+}
+
+bool Bitmap::has_a_non_black_white_pixel()
+{
+    pimage::Pixel white = {255, 255, 255, 255};
+    pimage::Pixel black = {0  , 0  , 0  , 255};
+
+    for(auto pixel : pixels)
+    {
+        if(pixel != white && pixel != black)
+            return true;
+    }
+
+    return false;
 }
 
 

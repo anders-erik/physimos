@@ -37,6 +37,16 @@ struct s2 {
     size_t y;
 };
 
+struct ui2 {
+    using uint = unsigned int;
+    uint x = 0;
+    uint y = 0;
+
+    ui2(uint x, uint y) : x {x}, y {y} {}; 
+    ui2(uint xy) : x {xy}, y {xy} {}; 
+    ui2() = default;
+
+};
 
 struct i2 {
     int x = 0;

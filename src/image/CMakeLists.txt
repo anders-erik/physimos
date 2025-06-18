@@ -10,3 +10,7 @@ target_include_directories(image PUBLIC
     
     ${CMAKE_SOURCE_DIR}/src/
 )
+
+target_link_libraries(image 
+    lib
+)

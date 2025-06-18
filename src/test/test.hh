@@ -14,8 +14,8 @@
 #include <vector>
 #include <functional>
 
-#include "str.hh"
-#include "print.hh"
+#include "lib/str.hh"
+#include "lib/print.hh"
 
 
 
@@ -152,6 +152,15 @@ public:
         return unit_tests.size();
     }
 
+    /** Print only check mark and pass count. No list of unit tests. */
+    void print_passed()
+    {
+        print_indent(print_indentation);
+        print_check(all_passed());
+        std::cout << "Collection: " << name  << " - " << pass_count() << "/" << total_test_count() << std::endl;
+    }
+
+    /** Print check mark and pass count, as well as a list of unit tests ran. */
     void print_failed_test_infos()
     {
         print_indent(print_indentation);
@@ -240,6 +249,10 @@ public:
             if(!collection.all_passed())
             {
                 collection.print_failed_test_infos();
+            }
+            else
+            {
+                collection.print_passed();
             }
         }    
     }
