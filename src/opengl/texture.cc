@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 
 // UI
-#include "image/bmp.hh"
+#include "file_format/bmp/bmp.hh"
 #include "lib/process.hh"
 // END UI
 
@@ -66,7 +66,7 @@ Texture::Texture(int width, int height){
 
     new_texture(size.x, size.y);
 }
-Texture::Texture(pimage::Bitmap& bitmap){
+Texture::Texture(Bitmap& bitmap){
     new_texture(bitmap);
 }
 
@@ -134,11 +134,11 @@ get_pixel_color(i2 pos)
 
 
 
-void Texture::new_texture(pimage::Bitmap& bitmap){
+void Texture::new_texture(Bitmap& bitmap){
     size.x = bitmap.width;
     size.y = bitmap.height;
 
-    pimage::Pixel* pixels_data_raw;
+    BitmapPixel* pixels_data_raw;
 
     pixels_data_raw =  bitmap.pixels.data();
     glGenTextures(1, &id_gl);
@@ -376,9 +376,9 @@ unsigned int ui__get_font_bitmap_texture_id()
 void ui__init_font_texture()
 {
 
-    pimage::Bitmap bitmap = {pimage::Bitmap(0,0)};
+    Bitmap bitmap = {Bitmap(0,0)};
 
-    pimage::io::BMP BMP_loader;
+    BMP::File BMP_loader;
 
     std::string phys_dir = physimos_root_dir_or_die();
     std::filesystem::path path(phys_dir + "/resources/ui/font/characters-2-tall.bmp");
@@ -399,7 +399,7 @@ void ui__init_font_texture()
 
 
 unsigned int 
-ui__new_from_bitmap(pimage::Bitmap& bitmap)
+ui__new_from_bitmap(Bitmap& bitmap)
 {
     unsigned int newTexture = 0;
 
@@ -422,7 +422,7 @@ ui__new_from_bitmap(pimage::Bitmap& bitmap)
 
 
 void 
-ui__update_with_bitmap(unsigned int textureName, pimage::Bitmap& bitmap)
+ui__update_with_bitmap(unsigned int textureName, Bitmap& bitmap)
 {
     // glGenTextures(1, &textureName);
     glBindTexture(GL_TEXTURE_2D, textureName);
@@ -559,8 +559,8 @@ ui__init_static_icon_textures()
     //                                     255, 255, 255, 255
     // };
 
-    // pimage::Bitmap* up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/pan.bmp");
-    // pimage::Bitmap* up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/4x4.bmp");
+    // Bitmap* up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/pan.bmp");
+    // Bitmap* up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/4x4.bmp");
     // std::vector<pimage::Pixel> pixels = up_bitmap->pixels;
     // pimage::Pixel* pixel_data = pixels.data();
     // unsigned char* pixels_data_raw = (unsigned char*) pixel_data;
@@ -571,12 +571,12 @@ ui__init_static_icon_textures()
     // }
 
 
-    pimage::io::BMP bmp_loader = pimage::io::BMP();
+    BMP::File bmp_loader = BMP::File();
     // Pointer to data used during opengl call
-    pimage::Pixel* pixels_data_raw;
+    BitmapPixel* pixels_data_raw;
 
     //  UP
-    pimage::Bitmap up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/up.bmp");
+    Bitmap up_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/up.bmp");
     up_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     // Don't need to cast to char, nor invert image as opengl expects first pixel at lower left corner
     pixels_data_raw =  up_bitmap.pixels.data();
@@ -590,7 +590,7 @@ ui__init_static_icon_textures()
 
 
     //  DOWN
-    pimage::Bitmap down_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/down.bmp");
+    Bitmap down_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/down.bmp");
     down_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     pixels_data_raw =  down_bitmap.pixels.data();
     glGenTextures(1, &downTexture);
@@ -601,7 +601,7 @@ ui__init_static_icon_textures()
     glGenerateMipmap(GL_TEXTURE_2D);
 
     //  LEFT
-    pimage::Bitmap left_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/left.bmp");
+    Bitmap left_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/left.bmp");
     left_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     pixels_data_raw =  left_bitmap.pixels.data();
     glGenTextures(1, &leftTexture);
@@ -613,7 +613,7 @@ ui__init_static_icon_textures()
 
 
     //  RIGHT
-    pimage::Bitmap right_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/right.bmp");
+    Bitmap right_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/right.bmp");
     right_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     pixels_data_raw =  right_bitmap.pixels.data();
     glGenTextures(1, &rightTexture);
@@ -627,7 +627,7 @@ ui__init_static_icon_textures()
 
 
     //  SCROLL VERT
-    pimage::Bitmap scroll_vert_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-vert.bmp");
+    Bitmap scroll_vert_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-vert.bmp");
     scroll_vert_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     pixels_data_raw =  scroll_vert_bitmap.pixels.data();
     glGenTextures(1, &scrollVertTexture);
@@ -639,7 +639,7 @@ ui__init_static_icon_textures()
 
 
     //  SCROLL HORI
-    pimage::Bitmap scroll_hori_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-hori.bmp");
+    Bitmap scroll_hori_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/scroll-hori.bmp");
     scroll_hori_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     pixels_data_raw =  scroll_hori_bitmap.pixels.data();
     glGenTextures(1, &scrollHoriTexture);
@@ -652,7 +652,7 @@ ui__init_static_icon_textures()
 
 
     //  PAN
-    pimage::Bitmap pan_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/pan.bmp");
+    Bitmap pan_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/pan.bmp");
     pan_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     pixels_data_raw =  pan_bitmap.pixels.data();
     glGenTextures(1, &panTexture);
@@ -663,7 +663,7 @@ ui__init_static_icon_textures()
     glGenerateMipmap(GL_TEXTURE_2D);
 
     //  RESIZE
-    pimage::Bitmap resize_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/resize.bmp");
+    Bitmap resize_bitmap = bmp_loader.load(phys_dir + "/resources/ui/icons/resize.bmp");
     resize_bitmap.replace_color({0,0,0,255}, {0,0,0,0});
     pixels_data_raw =  resize_bitmap.pixels.data();
     glGenTextures(1, &resizeTexture);

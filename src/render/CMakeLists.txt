@@ -5,6 +5,8 @@ add_subdirectory(math)
 set(RENDER_OBJS 
     shader.cpp
     wo_renderer.cpp
+
+    bitmap.cc
 )
 
 #   set(SOURCES )
@@ -16,6 +18,7 @@ target_include_directories(render PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include
 
 target_link_libraries(render
     render_math
+    lib
 )
 
 
@@ -33,6 +36,6 @@ target_include_directories(main_render PUBLIC
 target_link_libraries(main_render 
     render 
     math
-    image
+    file_format
 )
 

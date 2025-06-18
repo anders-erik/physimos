@@ -17,6 +17,7 @@
 	// TEST
 	// "default_binary": "${workspaceFolder}/build/debug_linux/src/lib/test_lib",
 	// "default_binary": "${workspaceFolder}/build/debug_linux/src/math/test_math",
+	// "default_binary": "${workspaceFolder}/build/debug_linux/src/file_format/test_file_format",
 	
 	// CWD
 	"default_cwd": "${workspaceFolder}",

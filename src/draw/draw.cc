@@ -147,8 +147,8 @@ namespace draw {
 
 
 BitmapTexture_Dynamic::BitmapTexture_Dynamic(uint width, uint height) 
-    :   bitmap_current_state { pimage::Bitmap(width , height) },
-        bitmap_rendered         { pimage::Bitmap(width , height) }
+    :   bitmap_current_state { Bitmap(width , height) },
+        bitmap_rendered         { Bitmap(width , height) }
 {
     // SET BITMAP COLOR TO ALL-BLACK
     bitmap_rendered.replace_color({0,0,0,0}, {0,0,0, 255});
@@ -249,10 +249,10 @@ void BitmapTexture_Dynamic::transaction_new(){
     for(int col = 0; col < bitmap_rendered.width; col++){
         for(int row = 0; row < bitmap_rendered.height; row++){
 
-            pimage::Pixel pix_new   = bitmap_rendered.get_pixel(col, row);
-            pimage::Pixel pix_last  = bitmap_current_state.get_pixel(col, row);
+            BitmapPixel pix_new   = bitmap_rendered.get_pixel(col, row);
+            BitmapPixel pix_last  = bitmap_current_state.get_pixel(col, row);
 
-            bool pixel_are_equal = pimage::pixels_equal(pix_new, pix_last);
+            bool pixel_are_equal = pixels_equal(pix_new, pix_last);
 
             if(!pixel_are_equal){
 

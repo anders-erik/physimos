@@ -1,7 +1,7 @@
 #ifndef UI_TEXTURE_HH
 #define UI_TEXTURE_HH
 
-#include "image/bitmap.hh"
+#include "render/bitmap.hh"
 
 #include "ui/ui_globals.hh"
 
@@ -11,8 +11,8 @@ namespace UI {
         /** Allocates a new texture of size 1x1 with the color pink */
         void new_texture(unsigned int& texture_to_init);
 
-        unsigned int new_from_bitmap(pimage::Bitmap& bitmap);
-        void update_with_bitmap(unsigned int textureName, pimage::Bitmap& bitmap);
+        unsigned int new_from_bitmap(Bitmap& bitmap);
+        void update_with_bitmap(unsigned int textureName, Bitmap& bitmap);
 
         /** Loads all ui color textures into vram */
         void init_static_color_textures();

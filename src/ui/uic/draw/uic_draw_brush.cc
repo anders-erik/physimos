@@ -5,7 +5,7 @@
 #include "ui/ui_texture.hh"
 
 #include "lib/lib.hh"
-#include "image/bitmap.hh"
+#include "render/bitmap.hh"
 #include <random>
 
 namespace UI::component {
@@ -21,7 +21,7 @@ UIC_Draw_Brush_SetGreen::UIC_Draw_Brush_SetGreen() {
 }
 UiResult UIC_Draw_Brush_SetGreen::click(){
     UIC_Draw_Brush* uic_Draw_Brush = (UIC_Draw_Brush*)this->parent;
-    uic_Draw_Brush->boundObject.color = pimage::pixel_color_green;
+    uic_Draw_Brush->boundObject.color = pixel_color_green;
     return UiResult(true, CAction::None, this);
 }
 
@@ -34,7 +34,7 @@ UIC_Draw_Brush_SetRed::UIC_Draw_Brush_SetRed() {
 }
 UiResult UIC_Draw_Brush_SetRed::click() {
     UIC_Draw_Brush* uic_Draw_Brush = (UIC_Draw_Brush*)this->parent;
-    uic_Draw_Brush->boundObject.color = pimage::pixel_color_red;
+    uic_Draw_Brush->boundObject.color = pixel_color_red;
     return UiResult(true, CAction::None, this);
 }
 

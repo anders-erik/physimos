@@ -24,7 +24,7 @@ target_link_libraries(main_phont
 
     conductor
     ui
-    image
+    render
     window
     math
 

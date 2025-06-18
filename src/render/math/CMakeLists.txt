@@ -13,6 +13,6 @@ target_include_directories(render_math PUBLIC
 target_link_libraries(render_math 
     math
     lib
-    image
+    render
 )
 

@@ -49,7 +49,7 @@ namespace UI {
         }
 
 
-        void StringShader::set_bitmap(pimage::Bitmap& bitmap){
+        void StringShader::set_bitmap(Bitmap& bitmap){
 
             texture = texture::new_from_bitmap(bitmap);
 

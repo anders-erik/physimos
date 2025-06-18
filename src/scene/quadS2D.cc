@@ -79,7 +79,7 @@ f2 QuadS2D::scene_to_quad_normalized(f2 cursor_pos_scene_coords)
 
 void QuadS2D::set_bitmap_texture(unsigned int opengl_texture_id)
 {
-    type = T::Bitmap;
+    type = T::_Bitmap;
     this->texture_id = opengl_texture_id;
 }
 
@@ -91,7 +91,7 @@ void QuadS2D::set_scene(const Scene2D* new_scene)
 
 bool QuadS2D::is_bitmap()
 {
-    return type == T::Bitmap ? true : false;
+    return type == T::_Bitmap ? true : false;
 }
 
 bool QuadS2D::is_scene2D()

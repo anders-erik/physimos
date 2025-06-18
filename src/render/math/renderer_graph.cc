@@ -1,7 +1,7 @@
 
 #include "renderer_graph.hh"
 
-pimage::Bitmap RendererMathGraph::render_graph2D_bitmap(Graph2D<float>& graph)
+Bitmap RendererMathGraph::render_graph2D_bitmap(Graph2D<float>& graph)
 {
     graph.update();
 
@@ -13,10 +13,10 @@ pimage::Bitmap RendererMathGraph::render_graph2D_bitmap(Graph2D<float>& graph)
                         bitmap_scale * (unsigned int) graph_view_size.y};
 
 
-    pimage::Bitmap bitmap {bitmap_size};
+    Bitmap bitmap {bitmap_size};
 
-    pimage::Pixel white = {255, 255, 255, 255};
-    pimage::Pixel black = {0  , 0  , 0  , 255};
+    BitmapPixel white = {255, 255, 255, 255};
+    BitmapPixel black = {0  , 0  , 0  , 255};
 
     bitmap.clear(black);
 

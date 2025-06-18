@@ -7,9 +7,10 @@
 #include "math/shape.hh"
 #include "math/box2D.hh"
 
+#include "render/bitmap.hh"
+
 // Forward declares
-namespace {
-    struct Bitmap;}
+
 namespace opengl {
     struct Texture;}
 namespace scene {
@@ -30,14 +31,14 @@ class QuadS2D
 public:
 
     enum class T {
-        Bitmap,
+        _Bitmap,
         Scene2D,
     };
 
 private:
 
 
-    T type = T::Bitmap;
+    T type = T::_Bitmap;
     Str name; // given name
 
     size_t object_id = 0; // the id of the texture provider (Scene, texture_id, bitmap, etc.)

@@ -43,7 +43,6 @@ struct ui2 {
     uint y = 0;
 
     ui2(uint x, uint y) : x {x}, y {y} {}; 
-    ui2(uint xy) : x {xy}, y {xy} {}; 
     ui2() = default;
 
 };

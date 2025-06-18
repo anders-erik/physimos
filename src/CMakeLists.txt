@@ -2,7 +2,6 @@
 add_subdirectory(conductor)
 add_subdirectory(draw)
 add_subdirectory(file_format)
-add_subdirectory(image)
 add_subdirectory(logger)
 add_subdirectory(lib)
 add_subdirectory(math)
@@ -67,7 +66,7 @@ target_link_libraries(main_main
 
     conductor
     ui
-    image
+    render
     window
     math
 

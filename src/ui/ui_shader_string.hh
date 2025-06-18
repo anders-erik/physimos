@@ -6,7 +6,7 @@
 
 #include "ui/ui_globals.hh"
 
-#include "image/bitmap.hh"
+#include "render/bitmap.hh"
 
 namespace UI {
     namespace shader {
@@ -60,7 +60,7 @@ namespace UI {
 
                 /** Set values needed for render draw. UI transform and texture.  */
                 void set_primitive_transform(float* primitiveTransform_mat);
-                void set_bitmap(pimage::Bitmap& bitmap);
+                void set_bitmap(Bitmap& bitmap);
                 void set_texture(unsigned int new_texture);
                 void set_vertex_data(VertexTexture* vertex_data, unsigned int sizeof_vertex_data);
 

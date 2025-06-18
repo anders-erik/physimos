@@ -2,7 +2,7 @@
 
 #include "math/vecmat.hh"
 
-#include "image/bitmap.hh"
+#include "render/bitmap.hh"
 
 namespace opengl {
 
@@ -68,9 +68,9 @@ struct Texture {
     Texture() = default;
     Texture(int width, int height);
     Texture(i2 _size);
-    Texture(pimage::Bitmap& bitmap);
+    Texture(Bitmap& bitmap);
 
-    void new_texture(pimage::Bitmap& bitmap);
+    void new_texture(Bitmap& bitmap);
     void new_texture(int width, int height);
 
     void draw_rect(i2 pos, i2 size, ColorUC color);
@@ -105,8 +105,8 @@ void ui__init_font_texture();
 /** Allocates a new texture of size 1x1 with the color pink */
 void ui__new_texture(unsigned int& texture_to_init);
 
-unsigned int ui__new_from_bitmap(pimage::Bitmap& bitmap);
-void ui__update_with_bitmap(unsigned int textureName, pimage::Bitmap& bitmap);
+unsigned int ui__new_from_bitmap(Bitmap& bitmap);
+void ui__update_with_bitmap(unsigned int textureName, Bitmap& bitmap);
 
 /** Loads all ui color textures into vram */
 void ui__init_static_color_textures();

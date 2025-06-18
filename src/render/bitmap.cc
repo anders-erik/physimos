@@ -11,14 +11,14 @@
 #include "bitmap.hh"
 
 
-namespace pimage {
 
-Pixel pixel_color_white = {255, 255, 255, 255};
-Pixel pixel_color_black = {0, 0, 0, 255};
 
-Pixel pixel_color_red   = {255, 0, 0, 255};
-Pixel pixel_color_green = {0, 255, 0, 255};
-Pixel pixel_color_blue  = {0, 0, 255, 255};
+BitmapPixel pixel_color_white = {255, 255, 255, 255};
+BitmapPixel pixel_color_black = {0, 0, 0, 255};
+
+BitmapPixel pixel_color_red   = {255, 0, 0, 255};
+BitmapPixel pixel_color_green = {0, 255, 0, 255};
+BitmapPixel pixel_color_blue  = {0, 0, 255, 255};
 
 Bitmap::Bitmap(unsigned int width, unsigned int height) {
 
@@ -26,7 +26,7 @@ Bitmap::Bitmap(unsigned int width, unsigned int height) {
     this->width = width;
     
     this->pixelcount = height * width;
-    this->pixels = std::vector<pimage::Pixel> (this->pixelcount);
+    this->pixels = std::vector<BitmapPixel> (this->pixelcount);
     
 }
 
@@ -37,11 +37,23 @@ Bitmap::Bitmap(ui2 size)
         
     pixelcount = height * width;
 
-    pixels = std::vector<pimage::Pixel> { pixelcount };
+    pixels = std::vector<BitmapPixel> { pixelcount };
+}
+
+Bitmap::Bitmap(ui2 size, BitmapPixel pixel)
+{
+    width = size.x;
+    height = size.y;
+        
+    pixelcount = height * width;
+
+    pixels = std::vector<BitmapPixel> { pixelcount };
+
+    pixels[0] = pixel;
 }
 
 
-void Bitmap::set_pixel(unsigned int x, unsigned int y, Pixel pixel) 
+void Bitmap::set_pixel(unsigned int x, unsigned int y, BitmapPixel pixel) 
 {
     if(x > width-1 || y > height-1)
         return;
@@ -52,7 +64,7 @@ void Bitmap::set_pixel(unsigned int x, unsigned int y, Pixel pixel)
 
 }
 
-void  Bitmap::set_square(unsigned int x, unsigned int y, Pixel pixel, int size){
+void  Bitmap::set_square(unsigned int x, unsigned int y, BitmapPixel pixel, int size){
     
     // trying to draw outside bitmap bounds not valid
     if(x > width || y > height)
@@ -70,14 +82,14 @@ void  Bitmap::set_square(unsigned int x, unsigned int y, Pixel pixel, int size){
     }
 }
 
-Pixel Bitmap::get_pixel(unsigned int x, unsigned int y) {
+BitmapPixel Bitmap::get_pixel(unsigned int x, unsigned int y) {
 
     unsigned int pixelIndex = this->width * y + x;
 
     return this->pixels[pixelIndex];
 }
 
-void Bitmap::clear(Pixel clear_pixel)
+void Bitmap::clear(BitmapPixel clear_pixel)
 {
     for(auto& pixel : pixels)
     {
@@ -119,8 +131,8 @@ void   Bitmap::set_sub_bitmap(unsigned int x, unsigned int y, Bitmap& bitmap_to_
 // }
 
 
-void Bitmap::replace_color(Pixel old_pixel, Pixel new_pixel){
-    for(Pixel& pixel : pixels){
+void Bitmap::replace_color(BitmapPixel old_pixel, BitmapPixel new_pixel){
+    for(BitmapPixel& pixel : pixels){
         // Pixel to replace identified
         if(pixel.R == old_pixel.R && pixel.G == old_pixel.G && pixel.B == old_pixel.B && pixel.A == old_pixel.A){
     
@@ -136,8 +148,8 @@ void Bitmap::replace_color(Pixel old_pixel, Pixel new_pixel){
 
 bool Bitmap::has_a_non_black_white_pixel()
 {
-    pimage::Pixel white = {255, 255, 255, 255};
-    pimage::Pixel black = {0  , 0  , 0  , 255};
+    BitmapPixel white = {255, 255, 255, 255};
+    BitmapPixel black = {0  , 0  , 0  , 255};
 
     for(auto pixel : pixels)
     {
@@ -149,7 +161,13 @@ bool Bitmap::has_a_non_black_white_pixel()
 }
 
 
-bool pixels_equal(Pixel a, Pixel b){
+BitmapPixel* Bitmap::pointer()
+{
+    return pixels.data();
+}
+
+
+bool pixels_equal(BitmapPixel a, BitmapPixel b){
     return  a.R == b.R &&
             a.G == b.G &&
             a.B == b.B &&
@@ -157,5 +175,5 @@ bool pixels_equal(Pixel a, Pixel b){
 }
 
 
-} // pimage
+
 

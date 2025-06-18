@@ -3,8 +3,8 @@
 
 #include "math/graph2D.hh"
 
-#include "image/bitmap.hh"
-#include "image/bmp.hh"
+#include "render/bitmap.hh"
+#include "file_format/bmp/bmp.hh"
 
 #include "render/math/renderer_graph.hh"
 
@@ -23,14 +23,16 @@ int main ()
 
     Graph2D<float> graph {5, viewbox, polynomial};
 
-    pimage::Bitmap bitmap = RendererMathGraph::render_graph2D_bitmap(graph);
+    Bitmap bitmap = RendererMathGraph::render_graph2D_bitmap(graph);
 
-    // bitmap.clear(black);
+    BitmapPixel white = {255, 255, 255, 255};
+
+    // bitmap.clear(white);
 
     if(bitmap.has_a_non_black_white_pixel())
         std::cout << "Non black white pixel found!" << std::endl;
 
-    pimage::io::BMP bmp_loader {&bitmap};
+    BMP::File bmp_loader {bitmap};
 
     bmp_loader.write("graph.bmp");
 

@@ -2,7 +2,7 @@
 
 #include "math/vecmat.hh"
 
-#include "image/bitmap.hh"
+#include "render/bitmap.hh"
 
 namespace opengl {
 

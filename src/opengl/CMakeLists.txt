@@ -28,7 +28,7 @@ target_link_libraries(opengl
     model
     math
     window
-    image
+    render
     glad
     ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
 )

@@ -4,29 +4,24 @@
 #include <filesystem>
 #include <vector>
 
-#include "image/bitmap.hh"
+#include "render/bitmap.hh"
+
+#include "file_format/bmp/bmp_header.hh"
 
 
-namespace pimage::io {
+namespace BMP 
+{
+
+
 
 extern unsigned int BMP_Header_BITMAPINFOHEADER_size;
 
-
-typedef enum LoadStatus {
-    Ok = 0,
-
-    ErrorOpeningFile = 10,
-    ErrorFileFormat = 11,
-    ErrorParsing = 12,
-
-    ErrorUnknown = 13,
-} LoadStatus;
 
 
 
 /// @brief Stores the loaded bmp-file header in BIG-endian byte order [opposite of file], except 'BM' which remains as is. \n
 /// Data size is 54 bytes and padded to 56 (usually).
-typedef struct BMP_BITMAPINFOHEADER {
+struct BMP_BITMAPINFOHEADER_BIGEND {
 // sizeof() = 56
 // used size = 54
 
@@ -65,18 +60,27 @@ typedef struct BMP_BITMAPINFOHEADER {
     unsigned int    palette_color_count;
     // Value of 0 treats all colors equally
     unsigned int    important_color_count;
-    
-} BMP_BITMAPINFOHEADER;
+
+};
 
 
-/** BMP loader and writer. Uses pimage::bitmap for internal image representation.  */
-typedef struct BMP {
-    // ::pimage::Bitmap* bitmap = nullptr;
+
+
+
+/** BMP loader and writer. Uses Bitmap for internal image representation.  */
+struct File {
+    // ::Bitmap* bitmap = nullptr;
 
     // BITMAPINFOHEADER header
-    BMP_BITMAPINFOHEADER* header;
+    BMP_BITMAPINFOHEADER_BIGEND old_header;
+
+    Header header;
+
+    FileHeader& file_header();
+    BITMAPINFOHEADER& info_header();
+
     // In memory buffer of file contents.
-    std::vector<unsigned char>* bmp_buffer = nullptr;
+    std::vector<unsigned char> bmp_data;
 
 
     // Usually 3.
@@ -85,30 +89,39 @@ typedef struct BMP {
     unsigned int bytesPerImageRow;
     // Total number of bytes of one horizontal image row. Is padded to 4-byte alignment.
     unsigned int bytesPerImageRow_padded;
-    
-    // NOT CURRENTLY IN USE
-    LoadStatus loadStatus;
+
+
+    File() = default;
+    // Convenience constructor that is equivelent to 'bmp=BMP(); bmp.from_bitmap(...)'
+    File(Bitmap& new_bitmap);
 
     // Load a bmp file from file.
-    ::pimage::Bitmap   load(std::filesystem::path filePath);
+    Bitmap load(std::filesystem::path filePath);
     // Internal. 
     // Copies the header data from bmp_buffer to header struct.
     // Currently 'BITMAPINFOHEADER' is the only header that I support
     // Header formats : https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header
     void                extract_header_BITMAPINFOHEADER();
     // Set the internal BMP structure using a physimos bitmap, making it read for write calls.
-    bool                from_bitmap(::pimage::Bitmap* new_bitmap);
+    bool                from_bitmap(Bitmap& new_bitmap);
     // Write the in-memory bmp_buffer to file. 
     bool                write(std::filesystem::path filePath);
     // Pretty print the contents of the struct. 
     void                print_header();
 
+    /** Provides the starting and final bitmap data indeces, i.e. not including header. */
+    ui2 padded_data_indeces();
+    /** Provides the starting and final bitmap data indeces, i.e. not including header. */
+    unsigned char padded_data_size();
+    /** Provides the starting and final bitmap data indeces, i.e. not including header. */
+    unsigned char* padded_data();
+
+    /** Return the image data exactly as would be represented in file. */
+    std::vector<unsigned char>& get_image_data_raw();
+
     
-    BMP();
-    // Convenience constructor that is equivelent to 'bmp=BMP(); bmp.from_bitmap(...)'
-    BMP(::pimage::Bitmap* new_bitmap);
-    ~BMP();
-} BMP;
+
+};
 
 
 }

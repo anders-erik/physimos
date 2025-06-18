@@ -81,6 +81,16 @@ public:
         return *this;
     }
 
+    /** Passes the unit test of true assert statement. */
+    UnitTestInfo& assert(bool assert_statement)
+    {
+        if(assert_statement)
+            return pass();
+        else
+            return fail();
+        
+    }
+
     /** Check if test passed. */
     bool is_passed()
     { 
