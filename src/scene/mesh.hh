@@ -25,7 +25,11 @@ struct Mesh
 
     Mesh() {};
 
+    /** Returnes the total byte size of the vertices. [verts.size() * sizeof(Vertex)] */
+    unsigned int vert_size_bytes();
+
     void create_cube();
+    void create_quad();
 };
 
 

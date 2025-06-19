@@ -20,6 +20,7 @@ set(SCENE_OBJS
     scene3D.cc
     object_manager.cc
     mesh.cc
+    mesh_texture.cc
 
     manager.cc
     quad_manager.cc

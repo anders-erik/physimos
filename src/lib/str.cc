@@ -1,5 +1,6 @@
 
 #include <stdexcept>
+#include <vector>
 
 #include <cstdio>  // snprintf - float constructor
 
@@ -425,7 +426,10 @@ Str Str::
 to_str_int(int integer)
 {
     size_t max_chars_int = 10;
+
+    // std::vector<char> chars_;
     char chars[max_chars_int + 1];
+
     int divisor = 1000000000;
 
     for(size_t i = 0; i < max_chars_int; i++){

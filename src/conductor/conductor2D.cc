@@ -8,6 +8,8 @@ Physimos::Physimos(f2 window_size_f)
 		pui {UI::PUI(window_size_f, auxwin.get_monitor_content_scale())},
 		renderer_scene_3D { {window_size_f} }
 {
+	// auxwin.init(window_size_f);
+
 	// First scene added to scene manager becomes root
 	Scene3D& root_scene = ManagerScene::init(window_size_f);
 	// root_scene.set_viewbox_width(window_size_f.x);
@@ -178,9 +180,15 @@ void Physimos::render()
 	SceneBase& window_scene = ManagerScene::get_window_scene_mut();
 
 	if(window_scene.is_2D())
+	{
 		renderer_scene_2D.render_scene((scene::Scene2D&)window_scene);
-	if(window_scene.is_3D())
-		renderer_scene_3D.render_scene_3d(window_scene);
+	}
+	else if(window_scene.is_3D())
+	{
+		Scene3D& window_scene_3D = (Scene3D&) window_scene;
+		renderer_scene_3D.render_scene_3d(window_scene_3D);
+		renderer_scene_3D.render_object_ids(window_scene_3D);
+	}
 
 	pui.render(); // Render ui on top of scene
 }

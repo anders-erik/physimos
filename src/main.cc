@@ -31,7 +31,7 @@ int main()
 	model::ModelT ground_grass;
     model::model_generate_ground(ground_grass.mesh);
     model::model_center(ground_grass.mesh);
-	model::model_translate(ground_grass.mesh, {0.0f, 0.0f, 0.0f});
+	model::model_translate(ground_grass.mesh, {0.0f, 0.0f, -1.5f});
     ground_grass.texture = opengl::Textures::Grass;
 	root_scene.push_texture_model(ground_grass);
 
@@ -41,7 +41,7 @@ int main()
 	model::ModelT ground_checker;
 	model::model_generate_ground(ground_checker.mesh);
     model::model_center(ground_checker.mesh);
-	model::model_translate(ground_checker.mesh, {5.0f, 0.0f, 0.1f});
+	model::model_translate(ground_checker.mesh, {5.0f, 0.0f, -1.4f});
     ground_checker.texture = opengl::Textures::Checker2x2;
 	root_scene.push_texture_model(ground_checker);
 
@@ -79,6 +79,14 @@ int main()
 	mesh.create_cube();
 	MeshO& mesho = ObjectManager::push_mesho(mesh);
 	root_scene.push_object(mesho.object);
+
+
+	// QuadO
+	SQuadTexture s_q_texture;
+	QuadO& quado = ObjectManager::push_quado(s_q_texture);
+	root_scene.push_object(quado.object);
+
+
 
 
 

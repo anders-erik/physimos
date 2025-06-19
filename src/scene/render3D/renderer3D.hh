@@ -19,6 +19,8 @@
 #include "render3D/program_model_color.hh"
 
 #include "render3D/program_mesh.hh"
+#include "render3D/program_quad.hh"
+
 #include "render3D/program_object_ids.hh"
 
 
@@ -42,6 +44,8 @@ class RendererScene3D
     ProgramModelColor program_model_color;
 
     ProgramMesh program_mesh;
+    ProgramQuad program_quad;
+
     ProgramObjectIDs program_object_ids;
 
     opengl::TextureFB fb_object_ids;
@@ -52,9 +56,15 @@ public:
 
     void set_window_fb_size(window::WindowResizeEvent& window_resize_event);
 
-    OID sample_object_id_fb(f2 cursor_pos_sane);
 
-    void render_scene_3d(SceneBase& scene);
+    /** Render scene objects. */
+    void render_scene_3d(Scene3D& scene3D);
+
+    /** Object id outlines for cursor interaction */
+    void render_object_ids(Scene3D& scene3D);
+
+    /** Samples a location in the object id framebuffer */
+    OID sample_object_id_fb(f2 cursor_pos_sane);
 
 private:
 

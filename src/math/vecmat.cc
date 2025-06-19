@@ -362,7 +362,8 @@ void m4f4::rotate_z(float angle){
     mat_mul(*this, rot_z_matrix);
 }
 
-float * m4f4::pointer(){
+float * m4f4::pointer() const
+{
     return (float*) this;
 }
 const float * m4f4::pointer_const() const{

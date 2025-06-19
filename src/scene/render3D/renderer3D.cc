@@ -35,6 +35,8 @@ RendererScene3D(f2 window_fb_size)
     program_mesh.init();
     program_object_ids.init();
 
+    program_quad.init();
+
     fb_object_ids.reload((int)window_fb_size.x, (int) window_fb_size.y);
 }
 
@@ -49,30 +51,13 @@ set_window_fb_size(window::WindowResizeEvent& window_resize_event)
 }
 
 
-OID RendererScene3D::sample_object_id_fb(f2 cursor_pos_sane)
-{
-    fb_object_ids.bind();
-
-    f4 vec4_color = fb_object_ids.sample_texture(cursor_pos_sane.to_i2());
-
-    fb_object_ids.unbind(window_fb_size);
-
-    return program_object_ids.vec4_to_oid(vec4_color);
-}
-
 
 
 void RendererScene3D::
-render_scene_3d(SceneBase& scene_base)
+render_scene_3d(Scene3D& scene3D)
 {
-    if(!scene_base.is_3D())
-        throw std::runtime_error("Can only render 3d scene");
-    Scene3D& scene3D = (Scene3D&) scene_base;
 
-    fb_object_ids.bind();
-    // fb_object_ids.clear_with({1.0f, 1.0f, 1.0f, 1.0f});
-    fb_object_ids.clear_with({0.0f, 0.0f, 0.0f, 0.0f});
-    fb_object_ids.unbind(window_fb_size);
+    
 
     glEnable(GL_DEPTH_TEST);
     // Defaults to fill. Context flag can overwrite?
@@ -96,9 +81,8 @@ render_scene_3d(SceneBase& scene_base)
 
     program_mesh.set_camera_view_projection(    scene3D.camera.perspective_mat, 
                                                 scene3D.camera.view_mat);
-
-    program_object_ids.set_camera_view_projection(  scene3D.camera.perspective_mat, 
-                                                    scene3D.camera.view_mat);
+    program_quad.set_camera_view_projection(    scene3D.camera.perspective_mat, 
+                                                scene3D.camera.view_mat);
 
 
     // TEXTURE MODELS
@@ -126,19 +110,28 @@ render_scene_3d(SceneBase& scene_base)
             MeshO* mesho = ObjectManager::get_mesho(object.id);
             if(mesho == nullptr) continue;
 
-
             if(mesho->object.id == scene3D.selected_object.id)
                 program_mesh.render(mesho->mesh, 0x0000ffff);
             else if(mesho->object.id == scene3D.hovered_object.id)
                 program_mesh.render(mesho->mesh, 0x00ff00ff);
             else
                 program_mesh.render(mesho->mesh, 0xffffffff);
+        }
+        else if (object.type == Object::Quad)
+        {
+            QuadO* quado = ObjectManager::get_quado(object.id);
+            if(quado == nullptr) continue;
 
-
-            // OID OUTLINE
-            fb_object_ids.bind();
-            program_object_ids.render(mesho->mesh, mesho->object.id);
-            fb_object_ids.unbind(window_fb_size);
+            if(quado->object.id == scene3D.selected_object.id)
+                program_mesh.render(quado->mesh, 0x0000ffff);
+            else if(quado->object.id == scene3D.hovered_object.id)
+                program_mesh.render(quado->mesh, 0x00ff00ff);
+            else
+                program_mesh.render(quado->mesh, 0xffffffff);
+            // program_quad.render(quado->mesh, quado->texture.text_coords);
+            program_quad.render(m4f4());
+            // program_quad.render(quado->mesh);
+            
         }
     }
 
@@ -151,6 +144,48 @@ render_scene_3d(SceneBase& scene_base)
 
 }
 
+void RendererScene3D::render_object_ids(Scene3D & scene)
+{
+    program_object_ids.set_camera_view_projection(  scene.camera.perspective_mat, 
+                                                    scene.camera.view_mat);
+
+    fb_object_ids.bind();
+
+    fb_object_ids.clear_with({0.0f, 0.0f, 0.0f, 0.0f});
+    
+    for(Object object : scene.objects)
+    {
+        if(object.type == Object::Mesh)
+        {
+            MeshO* mesho = ObjectManager::get_mesho(object.id);
+            if(mesho == nullptr) continue;
+
+            program_object_ids.render(mesho->mesh, mesho->object.id);
+        }
+        else if (object.type == Object::Quad)
+        {
+            QuadO* quado = ObjectManager::get_quado(object.id);
+            if(quado == nullptr) continue;
+
+            program_object_ids.render(quado->mesh, quado->object.id);
+        }
+    }
+
+    fb_object_ids.unbind(window_fb_size);
+}
+
+
+
+OID RendererScene3D::sample_object_id_fb(f2 cursor_pos_sane)
+{
+    fb_object_ids.bind();
+
+    f4 vec4_color = fb_object_ids.sample_texture(cursor_pos_sane.to_i2());
+
+    fb_object_ids.unbind(window_fb_size);
+
+    return program_object_ids.vec4_to_oid(vec4_color);
+}
 
 
 

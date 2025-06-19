@@ -199,7 +199,7 @@ struct m4f4 {
     void rotate_y(float angle);
     void rotate_z(float angle);
 
-    float* pointer();
+    float* pointer() const;
     const float * pointer_const() const;
 
     void perspective(float fov, float width, float height, float zn, float zf);
