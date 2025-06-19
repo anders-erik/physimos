@@ -128,8 +128,10 @@ render_scene_3d(Scene3D& scene3D)
                 program_mesh.render(quado->mesh, 0x00ff00ff);
             else
                 program_mesh.render(quado->mesh, 0xffffffff);
+            
+            program_quad.render(m4f4(), quado->texture.texture_id);
+            // program_quad.render(m4f4(), 0);
             // program_quad.render(quado->mesh, quado->texture.text_coords);
-            program_quad.render(m4f4());
             // program_quad.render(quado->mesh);
             
         }

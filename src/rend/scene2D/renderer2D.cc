@@ -16,7 +16,7 @@
 
 #include "program_quad2D.hh"
 
-namespace scene {
+
 
 
 
@@ -131,6 +131,42 @@ RendererScene2D::RendererScene2D(){
 
     init_frame_wire_quad_context_t();
 }
+
+
+void RendererScene2D::
+create_scene_framebuffer(SID sid, ui2 framebuffer_size)
+{
+    SceneFramebuffer& s_fb = scene_framebuffers.emplace_back();
+    s_fb.sid = sid;
+    s_fb.framebuffer.reload(framebuffer_size.x, framebuffer_size.y);
+}
+
+void RendererScene2D::render_scene_framebuffer(SID sid)
+{
+    for(auto& scene_fb : scene_framebuffers)
+    {
+        if(sid == scene_fb.sid)
+        {
+            SceneBase* base_search = ManagerScene::search_scene_storage_2D(sid);
+            if(base_search == nullptr)  return;
+            if(!base_search->is_2D()) return;
+            render_scene_FB((Scene2D&)*base_search, scene_fb.framebuffer);
+        }
+    }
+}
+
+uint RendererScene2D::get_scene_fb_texture_id(SID sid)
+{
+    for(auto& scene_fb : scene_framebuffers)
+    {
+        if(sid == scene_fb.sid)
+        {
+            return scene_fb.framebuffer.get_texture_id();
+        }
+    }
+}
+
+
 
 void RendererScene2D::create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts){
 
@@ -423,4 +459,4 @@ std::array<VertexQuad2D,8> RendererScene2D::generate_quad_line_frame_verts_0101(
 
 
 
-}
+

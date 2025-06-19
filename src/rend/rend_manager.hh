@@ -3,9 +3,8 @@
 #include "math/vecmat.hh"
 
 struct RendererScene3D;
-namespace scene {
-    struct RendererScene2D;
-}
+struct RendererScene2D;
+
 namespace UI {
     struct RendererBase;
 }
@@ -25,9 +24,9 @@ enum Types
 
 void init(f2 window_fb_size);
 
-RendererScene3D&            get_renderer_scene3D();
-scene::RendererScene2D&     get_renderer_scene2D();
-UI::RendererBase&           get_renderer_pui();
+RendererScene3D&    get_renderer_scene3D();
+RendererScene2D&    get_renderer_scene2D();
+UI::RendererBase&   get_renderer_pui();
 
 
 }

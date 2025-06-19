@@ -2,7 +2,7 @@
 #pragma once
 
 
-typedef unsigned char SceneID;
+typedef unsigned char SID;
 
 enum SceneType {
     D2,
@@ -13,14 +13,14 @@ enum SceneType {
 struct SceneBase 
 {
 
-    SceneID scene_id;
+    SID scene_id;
     Str name;
     SceneType type;
 
 
     SceneBase() {};
 
-    SceneBase(SceneID id, Str name, SceneType type) 
+    SceneBase(SID id, Str name, SceneType type) 
         :   scene_id {id}, 
             name {name}, 
             type {type} 

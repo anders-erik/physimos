@@ -18,7 +18,7 @@ namespace scene {
 
 struct QuadS2D;
 
-
+/** Global quad manager */
 class QuadManager 
 {
     size_t id_index = 2; // index of 0 = no quad exists for this id

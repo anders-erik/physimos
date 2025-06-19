@@ -34,7 +34,7 @@ void ProgramAxes::init()
 
     AxesVertex vertices[6];
 
-    float axes_scale = 1.0f;
+    float axes_scale = 1.1f;
 
     vertices[0].pos.x = 0.0f;
     vertices[0].color.x = 1.0f;

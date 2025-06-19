@@ -366,7 +366,7 @@ ShapeS2D& Scene2D::push_shape(Shape& shape){
 
 size_t Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
 {
-    auto* scene_query = ManagerScene::search_scene_storage(scene_id);
+    auto* scene_query = ManagerScene::search_scene_storage_2D(scene_id);
 
     if(scene_query == nullptr) return 0;
     if(!scene_query->is_2D()) return 0;

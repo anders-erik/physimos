@@ -5,6 +5,8 @@
 
 #include "window/auxevent.hh"
 
+#include "rend/rend_manager.hh"
+
 #include "scene2D.hh"
 #include "scene.hh"
 
@@ -19,7 +21,7 @@ namespace ManagerScene
 
 static InputStateSceneManager input_state;
 
-static SceneID id_count = 2; // Global index count
+static SID id_count = 2; // Global index count
 
 static bool is_grabbing_a_scene = false;
 static Box2D window_box; // The current window viewport box
@@ -33,9 +35,9 @@ static SceneBase* window_scene = nullptr;
 
 static struct ScenesState
 {
-    const SceneID root_id = 1; // root scene is created during init; is indestructable; id==1;
-    SceneID window_id = 1; // the scene renedered to the main framebuffer
-    SceneID cursor_id = 1; // scene curently hovered by, or is grabbing, cursor - recieves mouse click and movement events
+    const SID root_id = 1; // root scene is created during init; is indestructable; id==1;
+    SID window_id = 1; // the scene renedered to the main framebuffer
+    SID cursor_id = 1; // scene curently hovered by, or is grabbing, cursor - recieves mouse click and movement events
 
     /** The cursor is not currently targeting a subscene */
     bool window_scene_is_target(){
@@ -48,7 +50,7 @@ static struct ScenesState
     }
 
     /** Reset targeted scene to default: Window. */
-    void set_cursor_scene(SceneID scene_id){
+    void set_cursor_scene(SID scene_id){
         cursor_id = scene_id;
     }
 
@@ -64,7 +66,7 @@ static QuadManager quad_manager;
     Returns a unique, not equal to 0 or 1, unsigned integer.
     An id of 0 is globally understood as having no object asssociated with it; ids of 1 is always the fixed root scene.
  */
-SceneID new_unique_id()
+SID new_unique_id()
 {
     ++id_count;
 
@@ -109,19 +111,27 @@ get_root_scene_3D_mut()
 }
 
 
-SceneID push_scene2D(scene::Scene2D& _scene){
+SID push_scene2D(scene::Scene2D& _scene){
     
-    SceneID new_id = new_unique_id();
+    SID sid = new_unique_id();
 
-    _scene.scene_id = new_id;
+
+    // Create framebuffer
+    auto& renderer_2D = Rend::Manager::get_renderer_scene2D();
+    f2 fb_size_s = _scene.get_framebuffer_size();
+    ui2 framebuffer_size = {fb_size_s.x, fb_size_s.y};
+    renderer_2D.create_scene_framebuffer(sid, framebuffer_size);
+
+
+    _scene.scene_id = sid;
     _scene.type = SceneType::D2;
 
-
-    _scene.set_id(new_id);
+    
+    _scene.set_id(sid);
 
     scenes2D.push_back( _scene );
 
-    return new_id;
+    return sid;
 }
 
 
@@ -165,7 +175,7 @@ get_window_scene_mut()
 
 
 SceneBase*
-search_scene_storage(SceneID id)
+search_scene_storage_2D(SID id)
 {
     for(scene::Scene2D& scene : scenes2D)
         if(scene.scene_id == id)

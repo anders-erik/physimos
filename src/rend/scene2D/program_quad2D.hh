@@ -8,7 +8,7 @@
 #include "opengl/program.hh"
 
 
-namespace scene {
+
 
 
 struct VertexQuad2D {
@@ -42,5 +42,3 @@ public:
 
 
 
-
-}

@@ -77,14 +77,15 @@ set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat)
 
 
 void ProgramQuad::
-render(const m4f4& model_matrix)
+render(const m4f4& model_matrix, unsigned int texture_id)
 {
     glUseProgram(id);
 
     glUniformMatrix4fv(model_matrix_LOC, 1, GL_FALSE, model_matrix.pointer());
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, opengl::texture_get_id(opengl::Textures::Grass));
+    // glBindTexture(GL_TEXTURE_2D, opengl::texture_get_id(opengl::Textures::Grass));
+    glBindTexture(GL_TEXTURE_2D, texture_id);
 
     glBindVertexArray(vao);
 

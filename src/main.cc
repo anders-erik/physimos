@@ -15,6 +15,7 @@
 #include "scene/mesh.hh"
 #include "scene/object_manager.hh"
 
+#include "rend/rend_manager.hh"
 
 int main()
 {
@@ -79,13 +80,24 @@ int main()
 	root_scene.push_object(mesho.object);
 
 
+	// GRAPH SCENE2D
+	scene::Scene2D scene2D { {100, 100} };
+	scene::QuadS2D quad2D;
+	quad2D.set_box({1, 1}, {3, 3});
+	quad2D.set_texture_id(opengl::texture_get_id(opengl::Textures::Checker2x2));
+	scene2D.push_quad(quad2D);
+	SID sid_2D = ManagerScene::push_scene2D(scene2D);
+
+
 	// QuadO
 	SQuadTexture s_q_texture;
+	s_q_texture.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(sid_2D);
 	QuadO& quado = ObjectManager::push_quado(s_q_texture);
 	root_scene.push_object(quado.object);
 
 
-
+	// Guarantee one proper rend call
+	Rend::Manager::get_renderer_scene2D().render_scene_framebuffer(sid_2D);
 
 
 	physimos.main_loop();

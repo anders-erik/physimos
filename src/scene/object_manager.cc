@@ -100,20 +100,3 @@ QuadO::QuadO(SQuadTexture& scene_quad_texture)
     texture = scene_quad_texture;
 }
 
-SQuadTexture::SQuadTexture()
-{
-    // Texture coords
-    // text_coords.reserve(4);
-
-    text_coords.clear();
-
-    text_coords.push_back({ 0.0, 0.0 });
-    text_coords.push_back({ 1.0, 0.0 });
-    text_coords.push_back({ 1.0, 1.0 });
-    text_coords.push_back({ 0.0, 1.0 });
-    
-    // text_coords[0] = { 0.0, 0.0 };
-    // text_coords[1] = { 1.0, 0.0 };
-    // text_coords[2] = { 1.0, 1.0 };
-    // text_coords[3] = { 0.0, 1.0 };
-}

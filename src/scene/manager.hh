@@ -59,7 +59,7 @@ namespace ManagerScene
 {
 
 
-SceneID new_unique_id();
+SID new_unique_id();
 
 /** Initializes manager and creates the root scene. The root scene is returned. */
 Scene3D& init(f2 window_size);
@@ -77,12 +77,12 @@ Scene3D& init(f2 window_size);
 
 /** Tries to find scene with matching scene_id in storage.
     Returns `nullptr` if no match is found. */
-[[nodiscard]] SceneBase* search_scene_storage(SceneID id);
+[[nodiscard]] SceneBase* search_scene_storage_2D(SID id);
 
 
 /** Copies the scene into storage
     Returns the scene id for later queries. */
-SceneID push_scene2D(scene::Scene2D& _scene);
+SID push_scene2D(scene::Scene2D& _scene);
 
 
 

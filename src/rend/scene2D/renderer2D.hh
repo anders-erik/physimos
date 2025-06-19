@@ -2,15 +2,21 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 #include "math/vecmat.hh"
 #include "math/transform.hh"
 #include "math/shape.hh"
 
 #include "opengl/program.hh"
+#include "opengl/texture_fb.hh"
+
+#include "scene/scene_base.hh"
 
 #include "rend/scene2D/program_quad2D.hh"
 #include "rend/scene3D/program_vector.hh"
+
+#include "rend/defs.hh"
 
 
 namespace opengl {
@@ -22,8 +28,6 @@ namespace scene {
     class Scene2D;
     class QuadS2D;
 }
-
-namespace scene {
 
 
 
@@ -63,13 +67,19 @@ struct RenderContextShapeS2D {
 };
 
 
+/** Associiates a Scene ID with a framebuffer.
+    One is usually created automatically by scene manager. */
+struct SceneFramebuffer
+{
+    SID sid;
+    opengl::TextureFB framebuffer;
+};
 
 
-class RendererScene2D {
 
-
+class RendererScene2D 
+{
     ProgramQuad2D program_quad_2D;
-
 
     // Old enum for quad shader program -- only instance of specific program
     opengl::ProgramName program_name_enum = opengl::ProgramName::Quad2D;
@@ -77,9 +87,17 @@ class RendererScene2D {
 
     RenderContextQuadS2D render_context_frame; // frame context does not need updating
 
+    std::vector<SceneFramebuffer> scene_framebuffers;
+
 public:
 
     RendererScene2D();
+
+    // THREE CALLS TO MANAGE SCENE FRAMEBUFFERS
+    void create_scene_framebuffer(SID sid, ui2 framebuffer_size);
+    void render_scene_framebuffer(SID sid);
+    uint get_scene_fb_texture_id(SID sid);
+
 
     void create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts);
 
@@ -112,4 +130,3 @@ private:
 };
 
 
-}

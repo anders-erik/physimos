@@ -10,9 +10,6 @@
 
 
 
-namespace scene 
-{
-
 
 
 void ProgramQuad2D::
@@ -135,4 +132,3 @@ std::array<VertexQuad2D, 6> ProgramQuad2D::generate_quad_verts_c05()
 }
 
 
-}

@@ -9,10 +9,7 @@
 #include "opengl/program.hh"
 
 
-struct VertexQuad2D {
-    f3 pos;
-    f2 tex;
-};
+
 
 class ProgramVector : protected opengl::Program {
 
