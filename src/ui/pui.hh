@@ -4,8 +4,6 @@
 
 #include "window/auxevent.hh"
 
-#include "ui/render/renderer_base.hh"
-
 #include "ui/base.hh"
 #include "ui/texture.hh"
 #include "ui/string.hh"
@@ -23,10 +21,6 @@ namespace UI {
 /** Physimos UI. */
 class PUI 
 {
-    UI::RendererBase renderer_base;
-
-
-
     UI::Base base_0;
     UI::Base new_quad_in_root_scene;
     UI::BaseTexture base_texture;
@@ -40,7 +34,7 @@ class PUI
 
 public:
 
-    PUI(f2 window_size_f, f2 content_scale);
+    PUI();
 
     /** 
         Queries the ui for a matching element in which the cursor is contained.

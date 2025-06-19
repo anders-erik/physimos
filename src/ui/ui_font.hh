@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 #include "ui/ui_shader_string.hh"
 

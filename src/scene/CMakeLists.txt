@@ -1,7 +1,4 @@
 
-add_subdirectory(render)
-add_subdirectory(render3D)
-
 
 set(SCENE_OBJS
     pscene.cc
@@ -41,9 +38,7 @@ target_include_directories(scene PUBLIC
 
 # What to link against
 target_link_libraries(scene
-    scene_render
-    scene_render_3D
+    rend
     source # this will be changed to specific libraries as refactoring progress allows, and not the whole physimos source
-    phont
 )
 

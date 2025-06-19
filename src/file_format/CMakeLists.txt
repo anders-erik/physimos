@@ -32,7 +32,7 @@ add_executable(test_file_format
 target_link_libraries(test_file_format
     file_format
     lib
-    render
+    rend
 )
 target_include_directories(test_file_format PUBLIC 
     .

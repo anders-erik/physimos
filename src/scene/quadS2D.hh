@@ -7,7 +7,7 @@
 #include "math/shape.hh"
 #include "math/box2D.hh"
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 // Forward declares
 

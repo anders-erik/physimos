@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 
 #include "math/graph2D.hh"

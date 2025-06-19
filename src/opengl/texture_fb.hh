@@ -2,7 +2,7 @@
 
 #include "math/vecmat.hh"
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 #include "opengl/texture.hh"
 

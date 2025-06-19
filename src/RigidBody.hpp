@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "render/shader.hpp"
+#include "rend/shader.hpp"
 
 
 class RigidBody {

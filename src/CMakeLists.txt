@@ -9,7 +9,7 @@ add_subdirectory(model)
 add_subdirectory(opengl)
 add_subdirectory(phont)
 add_subdirectory(physics)
-add_subdirectory(render)
+add_subdirectory(rend)
 add_subdirectory(scene)
 add_subdirectory(simulator)
 add_subdirectory(ui)
@@ -44,7 +44,7 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/file_format)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/scene)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/ui)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/simulator)
-target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/render)
+target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/rend)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/logger)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/model)
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/src/lib)
@@ -54,7 +54,7 @@ target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include
 target_include_directories(source PUBLIC ${CMAKE_SOURCE_DIR}/extern/GLFW/include/)
 
 
-target_link_libraries(source opengl uic_draw file_format simulator render scene lib)
+target_link_libraries(source opengl uic_draw file_format simulator rend scene lib)
 
 
 
@@ -62,11 +62,12 @@ add_executable(main_main
     main.cc 
 )
 target_link_libraries(main_main
-    phont
 
+    rend
+    scene
     conductor
+  
     ui
-    render
     window
     math
 

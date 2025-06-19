@@ -20,8 +20,9 @@ target_include_directories(conductor PUBLIC
 
 # What to link against
 target_link_libraries(conductor 
-    phont
     scene
+    rend
     window
+    lib
 )
 

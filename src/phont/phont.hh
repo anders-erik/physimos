@@ -12,7 +12,7 @@
 #include "opengl/texture_fb.hh"
 #include "opengl/texture_fbms.hh"
 
-#include "scene/render/renderer2D.hh"
+#include "rend/scene2D/renderer2D.hh"
 
 
 namespace phont {

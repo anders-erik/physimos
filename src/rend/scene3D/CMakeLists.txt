@@ -1,5 +1,5 @@
 
-set(SCENE_RENDER_3D
+set(REND_SCENE3D
 
     renderer3D.cc
 
@@ -13,9 +13,9 @@ set(SCENE_RENDER_3D
 )
 
 
-add_library(scene_render_3D ${SCENE_RENDER_3D})
+add_library(rend_scene3D ${REND_SCENE3D})
 
-target_include_directories(scene_render_3D PUBLIC 
+target_include_directories(rend_scene3D PUBLIC 
     .
     ${CMAKE_SOURCE_DIR}/src/ 
     #extern
@@ -24,9 +24,10 @@ target_include_directories(scene_render_3D PUBLIC
 
 
 # What to link against
-target_link_libraries(scene_render_3D
+target_link_libraries(rend_scene3D
     scene
     opengl
     math
+    lib
 )
 

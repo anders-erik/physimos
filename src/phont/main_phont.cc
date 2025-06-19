@@ -121,7 +121,7 @@ int main()
 
 	f2 conductor_window_size = {800.0f, 600.0f};
 
-	Physimos conductor2D { conductor_window_size };
+	Physimos conductor2D { 600, 600 };
 
 	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
 

@@ -5,7 +5,7 @@
 #include "ui/ui_texture.hh"
 
 #include "lib/lib.hh"
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 #include <random>
 
 namespace UI::component {

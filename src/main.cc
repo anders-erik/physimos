@@ -19,9 +19,7 @@
 int main()
 {
 
-	f2 window_size = {800.0f, 600.0f};
-
-	Physimos physimos { window_size };
+	Physimos physimos { 800, 600 };
 
 	Scene3D& root_scene = ManagerScene::get_root_scene_mut();
 	root_scene.set_name("Forever Root");

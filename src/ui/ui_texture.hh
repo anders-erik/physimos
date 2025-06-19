@@ -1,7 +1,7 @@
 #ifndef UI_TEXTURE_HH
 #define UI_TEXTURE_HH
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 #include "ui/ui_globals.hh"
 

@@ -9,9 +9,9 @@
 
 #include "ui/font/font.hh"
 
-#include "ui/render/program_base.hh"
-#include "ui/render/program_texture.hh"
-#include "ui/render/program_string.hh"
+#include "rend/pui/program_base.hh"
+#include "rend/pui/program_texture.hh"
+#include "rend/pui/program_string.hh"
 
 
 

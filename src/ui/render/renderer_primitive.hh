@@ -10,9 +10,9 @@
 #include "ui/ui_font.hh"
 #include "ui/ui_shader_string.hh"
 
-#include "ui/render/program_base.hh"
-#include "ui/render/program_texture.hh"
-#include "ui/render/program_string.hh"
+// #include "ui/render/program_base.hh"
+// #include "ui/render/program_texture.hh"
+// #include "ui/render/program_string.hh"
 
 #include "ui/render/program_primitive_color.hh"
 #include "ui/render/program_primitive_texture.hh"

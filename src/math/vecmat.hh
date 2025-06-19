@@ -56,6 +56,7 @@ struct i2 {
     i2() = default;
 
     i2 operator/(const i2& rhs);
+
 };
 
 struct i3 {

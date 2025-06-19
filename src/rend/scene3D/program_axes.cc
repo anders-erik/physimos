@@ -2,7 +2,7 @@
 #include "scene/scene.hh"
 #include "scene/camera.hh"
 
-#include "scene/render3D/program_axes.hh"
+#include "rend/scene3D/program_axes.hh"
 
 #include "model/model.hh"
 #include "math/vecmat.hh"

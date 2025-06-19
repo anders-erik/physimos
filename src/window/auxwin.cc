@@ -50,35 +50,22 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 
 
 
-Auxwin::Auxwin(f2 new_window_size){
-    init(new_window_size);
-}
-
-void Auxwin::init(int width, int height){
-    current_window_size_f = { (float) width, (float) height};
-    current_window_size_i = { width, height};
-    init();
-}
-
-void Auxwin::init(i2 new_window_size){
-    current_window_size_f = { (float) new_window_size.x, (float) new_window_size.y};
-    current_window_size_i = new_window_size;
-    init();
-}
-void Auxwin::init(f2 new_window_size){
-    current_window_size_f = new_window_size;
-    current_window_size_i = { (int) new_window_size.x, (int) new_window_size.y};
-    init();
-}
-void Auxwin::init(){
+void Auxwin::init(int width, int height)
+{
+    current_window_size_f = {width, height};
+    current_window_size_i = {width, height};
+    
     current_auxwin = this;
 
     glfwInit();
     
     glfw_window_hints();
+
     glfw_create_window();
+
     opengl_init();
 }
+
 
 
 void Auxwin::reload_coordinate_constants_using_glfw()

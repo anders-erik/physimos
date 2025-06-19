@@ -3,10 +3,10 @@
 
 #include "math/graph2D.hh"
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 #include "file_format/bmp/bmp.hh"
 
-#include "render/math/renderer_graph.hh"
+#include "rend/math/renderer_graph.hh"
 
 
 

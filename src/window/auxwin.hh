@@ -66,13 +66,9 @@ class Auxwin {
         bool open = true;
 
 
-        Auxwin() {};
-        Auxwin(f2 new_window_size);
+        Auxwin() = default;
 
-        void init(i2 window_size);
-        void init(f2 window_size);
         void init(int width, int height);
-        void init();
         
 
         /** Activate the associated glfw window */

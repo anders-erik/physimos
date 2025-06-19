@@ -1,18 +1,18 @@
 
+#include "rend/rend_manager.hh"
+
 #include "conductor2D.hh"
 
 
 
-Physimos::Physimos(f2 window_size_f) 
-	: 	auxwin {window_size_f},
-		pui {UI::PUI(window_size_f, auxwin.get_monitor_content_scale())},
-		renderer_scene_3D { {window_size_f} }
+Physimos::Physimos(int width, int height) 
 {
-	// auxwin.init(window_size_f);
+	auxwin.init(width, height);
+
+	Rend::Manager::init( {width, height} );
 
 	// First scene added to scene manager becomes root
-	Scene3D& root_scene = ManagerScene::init(window_size_f);
-	// root_scene.set_viewbox_width(window_size_f.x);
+	Scene3D& root_scene = ManagerScene::init( {width, height} );
 
 }
 
@@ -76,10 +76,10 @@ process_user_input()
 			}
 			else
 			{
-				// ManagerScene::requery_cursor_target(cursor_pos);
-				// auto response = ManagerScene::events_user_all(event);
-				
-				OID hovered_oid = renderer_scene_3D.sample_object_id_fb(event.cursor_pos.sane);
+
+				// Try hover a Scene Object
+				auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
+				OID hovered_oid = rend_scene3D.sample_object_id_fb(event.cursor_pos.sane);
 				Scene3D& window_scene = (Scene3D&) ManagerScene::get_window_scene_mut();
 				window_scene.hovered_object = ObjectManager::get_object(hovered_oid);
 
@@ -87,11 +87,6 @@ process_user_input()
 				input_state.update(GrabStateConductor::SCENE, response);
 				if(input_state.is_grabbing_mouse())
 					std::cout << "scene grab" << std::endl;
-
-				//
-				
-				// std::cout << hovered_oid << std::endl;
-				
 
 				pui.clear_hovers();
 			}
@@ -104,7 +99,7 @@ process_user_input()
 		}
 
 
-		// Currently only the scene recieved keyboard input
+		// Currently only the scene recieves keyboard input
 		if(event.is_keystroke())
 		{
 			ManagerScene::events_user_all(event);
@@ -123,7 +118,8 @@ process_framebuffer_events()
 		// All subsystems get the resize event
 		pui.event_window_resize(window_event);
 		ManagerScene::event_window_resize(window_event);
-		renderer_scene_3D.set_window_fb_size(window_event);
+
+		Rend::Manager::get_renderer_scene3D().set_window_fb_size(window_event);
 	}
 }
 
@@ -181,13 +177,16 @@ void Physimos::render()
 
 	if(window_scene.is_2D())
 	{
-		renderer_scene_2D.render_scene((scene::Scene2D&)window_scene);
+		auto& rend_scene2D = Rend::Manager::get_renderer_scene2D();
+		rend_scene2D.render_scene((scene::Scene2D&)window_scene);
 	}
 	else if(window_scene.is_3D())
 	{
 		Scene3D& window_scene_3D = (Scene3D&) window_scene;
-		renderer_scene_3D.render_scene_3d(window_scene_3D);
-		renderer_scene_3D.render_object_ids(window_scene_3D);
+
+		auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
+		rend_scene3D.render_scene_3d(window_scene_3D);
+		rend_scene3D.render_object_ids(window_scene_3D);
 	}
 
 	pui.render(); // Render ui on top of scene

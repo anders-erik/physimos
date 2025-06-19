@@ -8,9 +8,9 @@ set(SCENE_RENDER
 )
 
 
-add_library(scene_render ${SCENE_RENDER})
+add_library(rend_scene2D ${SCENE_RENDER})
 
-target_include_directories(scene_render PUBLIC 
+target_include_directories(rend_scene2D PUBLIC 
     .
     ${CMAKE_SOURCE_DIR}/src/ 
     #extern
@@ -19,7 +19,7 @@ target_include_directories(scene_render PUBLIC
 
 
 # What to link against
-target_link_libraries(scene_render
+target_link_libraries(rend_scene2D
     scene
     opengl
     math

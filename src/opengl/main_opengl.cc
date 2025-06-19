@@ -9,7 +9,7 @@
 #include "scene/shapeS2D.hh"
 
 #include "opengl/texture.hh"
-#include "scene/render/renderer2D.hh"
+#include "rend/scene2D/renderer2D.hh"
 
 #include "math/shape.hh"
 
@@ -22,7 +22,7 @@ int main(){
     f2 win_size_init {800, 600};
 
     window::Auxwin auxwin;
-    auxwin.init(win_size_init);
+    auxwin.init(800, 600);
 
     scene::Camera2D camera;
 

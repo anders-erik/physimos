@@ -3,7 +3,7 @@
 #include "lib/str.hh"
 
 #include "ui/base.hh"
-#include "ui/render/renderer_base.hh"
+#include "rend/pui/renderer_base.hh"
 
 namespace UI {
 

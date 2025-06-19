@@ -18,9 +18,9 @@
 
 #include "scene_base.hh"
 
-#include "scene/render3D/program_model_texture.hh"
-#include "scene/render3D/program_model_color.hh"
-#include "scene/render3D/program_axes.hh"
+#include "rend/scene3D/program_model_texture.hh"
+#include "rend/scene3D/program_model_color.hh"
+#include "rend/scene3D/program_axes.hh"
 
 #include "scene/object_manager.hh"
 

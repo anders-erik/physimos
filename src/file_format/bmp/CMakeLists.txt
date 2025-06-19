@@ -10,5 +10,5 @@ include_directories( bmp
 )
 
 target_link_libraries( bmp
-    render
+    rend
 )

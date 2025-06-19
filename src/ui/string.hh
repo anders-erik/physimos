@@ -6,7 +6,7 @@
 #include "lib/minmax.hh"
 
 #include "ui/base.hh"
-#include "ui/render/renderer_base.hh"
+#include "rend/pui/renderer_base.hh"
 
 #include "ui/font/glyph_string.hh"
 

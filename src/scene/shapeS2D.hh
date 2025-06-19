@@ -12,7 +12,7 @@
 #include "math/box2D.hh"
 
 
-#include "scene/render/renderer2D.hh"
+#include "rend/scene2D/renderer2D.hh"
 
 
 namespace scene {

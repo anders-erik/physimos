@@ -11,7 +11,7 @@
 
 #include "conductor_viewport.hh"
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 namespace draw {
 

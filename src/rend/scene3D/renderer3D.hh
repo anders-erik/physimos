@@ -12,16 +12,16 @@
 
 #include "window/auxevent.hh"
 
-#include "render3D/program_vector.hh"
-#include "render3D/program_axes.hh"
+#include "rend/scene3D/program_vector.hh"
+#include "rend/scene3D/program_axes.hh"
 
-#include "render3D/program_model_texture.hh"
-#include "render3D/program_model_color.hh"
+#include "rend/scene3D/program_model_texture.hh"
+#include "rend/scene3D/program_model_color.hh"
 
-#include "render3D/program_mesh.hh"
-#include "render3D/program_quad.hh"
+#include "rend/scene3D/program_mesh.hh"
+#include "rend/scene3D/program_quad.hh"
 
-#include "render3D/program_object_ids.hh"
+#include "rend/scene3D/program_object_ids.hh"
 
 
 namespace opengl {
@@ -29,7 +29,7 @@ namespace opengl {
     class TextureFBMS;
 }
 
-
+struct Scene3D;
 
 
 

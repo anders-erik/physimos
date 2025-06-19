@@ -20,11 +20,14 @@ add_executable(main_phont
     main_phont.cc 
 )
 target_link_libraries(main_phont
-    phont
+    
+    rend
 
+    scene
     conductor
+
+    phont
     ui
-    render
     window
     math
 

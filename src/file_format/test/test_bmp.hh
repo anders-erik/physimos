@@ -5,7 +5,7 @@
 
 #include "test/test.hh"
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 #include "file_format/bmp/bmp.hh"
 
 

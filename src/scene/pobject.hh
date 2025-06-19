@@ -11,9 +11,9 @@
 
 
 // librender
-#include "render/shader.hpp"
-#include "render/wo_renderer.hpp"
-#include "render/render_types.hh"
+#include "rend/shader.hpp"
+#include "rend/wo_renderer.hpp"
+#include "rend/render_types.hh"
 
 
 

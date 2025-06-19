@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <vector>
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 #include "file_format/bmp/bmp_header.hh"
 

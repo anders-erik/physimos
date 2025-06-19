@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 #include "bmp_header.hh"
 

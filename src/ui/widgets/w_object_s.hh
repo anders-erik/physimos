@@ -3,7 +3,7 @@
 
 #include "lib/pair.hh"
 
-#include "ui/render/renderer_base.hh"
+#include "rend/pui/renderer_base.hh"
 
 #include "ui/string.hh"
 

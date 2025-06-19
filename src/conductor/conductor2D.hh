@@ -10,8 +10,8 @@
 #include "scene/scene2D.hh"
 #include "scene/shapeS2D.hh"
 
-#include "scene/render/renderer2D.hh"
-#include "scene/render3D/renderer3D.hh"
+#include "rend/scene2D/renderer2D.hh"
+#include "rend/scene3D/renderer3D.hh"
 
 #include "conductor2D_grabstate.hh"
 
@@ -26,19 +26,16 @@ using namespace window;
 class Physimos 
 {
 	window::Auxwin auxwin;
-
 	UI::PUI pui;
 
 	bool targeting_ui = false;
 	GrabStateConductor input_state;
 	CursorPosition cursor_pos; // Copy from most recent mouse move event
 
-	scene::RendererScene2D renderer_scene_2D;
-	RendererScene3D renderer_scene_3D;
 
 public:
 
-	Physimos(f2 window_size);
+	Physimos(int width, int height);
 
 	/** Mouse and keyboard input. */
 	void process_user_input();

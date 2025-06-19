@@ -15,7 +15,7 @@
 #include "math/vecmat.hh"
 #include "math/shape.hh"
 
-#include "scene/render/renderer2D.hh"
+#include "rend/scene2D/renderer2D.hh"
 #include "scene/shapeS2D.hh"
 #include "scene/camera2D.hh"
 #include "scene/quad_manager.hh"

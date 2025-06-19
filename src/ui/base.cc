@@ -5,14 +5,14 @@
 
 #include "lib/string.hh"
 
-#include "render/shader.hpp"
+#include "rend/shader.hpp"
 #include "file_format/bmp_loader.hpp"
 
 #include "ui_globals.hh"
 #include "ui/ui_texture.hh"
 #include "ui/ui_font.hh"
 
-#include "ui/render/renderer_base.hh"
+#include "rend/pui/renderer_base.hh"
 
 #include "base.hh"
 

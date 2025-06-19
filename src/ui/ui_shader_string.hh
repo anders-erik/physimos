@@ -6,7 +6,7 @@
 
 #include "ui/ui_globals.hh"
 
-#include "render/bitmap.hh"
+#include "rend/bitmap.hh"
 
 namespace UI {
     namespace shader {

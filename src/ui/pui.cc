@@ -1,12 +1,18 @@
 
+// REND
+#include "rend/pui/renderer_base.hh"
+#include "rend/rend_manager.hh"
+
+
 // #include "ui/pui.hh"
 #include "pui.hh"
 
 namespace UI {
 
-PUI::PUI(f2 window_size_f, f2 content_scale) 
+PUI::PUI() 
 {
-    renderer_base.set_window_info(window_size_f, content_scale);
+    // UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
+    // renderer_base.set_window_info(window_size_f, content_scale);
 
     base_0.set_pos({100, 100});
     base_0.set_size({100, 100});
@@ -122,6 +128,7 @@ event_all(window::InputEvent& event)
 void PUI::
 event_window_resize(window::WindowResizeEvent& window_resize)
 {
+    UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
     renderer_base.set_window_info(
         window_resize.size_f, 
         window_resize.content_scale
@@ -132,6 +139,8 @@ event_window_resize(window::WindowResizeEvent& window_resize)
 
 void PUI::
 render(){
+
+    UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
 
     renderer_base.draw_base(base_0);
     renderer_base.draw_base(new_quad_in_root_scene);
