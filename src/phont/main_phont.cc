@@ -137,6 +137,7 @@ int main()
 	black_rectangle.set_box({1.0f, 4.0f}, {4.0f, 1.0f});
 
 
+	// WARNING :: THIS IS _BROKEN_ AS WINDOW SCENE ATM IS ONLY SUPPORTING SCENE3D!!
 
 	// ROOT SCENE
 	// scene::Scene2D& root_scene = ManagerScene::get_root_scene_mut();

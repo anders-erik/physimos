@@ -110,10 +110,12 @@ render_scene_3d(Scene3D& scene3D)
             MeshO* mesho = ObjectManager::get_mesho(object.id);
             if(mesho == nullptr) continue;
 
-            if(mesho->object.id == scene3D.selected_object.id)
+            if(mesho->object.id == scene3D.capturing_quad.id)
                 program_mesh.render(mesho->mesh, 0x0000ffff);
-            else if(mesho->object.id == scene3D.hovered_object.id)
+            else if(mesho->object.id == scene3D.selected_object.id)
                 program_mesh.render(mesho->mesh, 0x00ff00ff);
+            else if(mesho->object.id == scene3D.hovered_object.id)
+                program_mesh.render(mesho->mesh, 0xff0000ff);
             else
                 program_mesh.render(mesho->mesh, 0xffffffff);
         }
@@ -122,10 +124,12 @@ render_scene_3d(Scene3D& scene3D)
             QuadO* quado = ObjectManager::get_quado(object.id);
             if(quado == nullptr) continue;
 
-            if(quado->object.id == scene3D.selected_object.id)
+            if(quado->object.id == scene3D.capturing_quad.id)
                 program_mesh.render(quado->mesh, 0x0000ffff);
-            else if(quado->object.id == scene3D.hovered_object.id)
+            else if(quado->object.id == scene3D.selected_object.id)
                 program_mesh.render(quado->mesh, 0x00ff00ff);
+            else if(quado->object.id == scene3D.hovered_object.id)
+                program_mesh.render(quado->mesh, 0xff0000ff);
             else
                 program_mesh.render(quado->mesh, 0xffffffff);
             
@@ -178,7 +182,7 @@ void RendererScene3D::render_object_ids(Scene3D & scene)
 
 
 
-OID RendererScene3D::sample_object_id_fb(f2 cursor_pos_sane)
+Object RendererScene3D::sample_object_in_fb(f2 cursor_pos_sane)
 {
     fb_object_ids.bind();
 
@@ -186,7 +190,9 @@ OID RendererScene3D::sample_object_id_fb(f2 cursor_pos_sane)
 
     fb_object_ids.unbind(window_fb_size);
 
-    return program_object_ids.vec4_to_oid(vec4_color);
+    OID oid = program_object_ids.vec4_to_oid(vec4_color);
+
+    return ObjectManager::get_object(oid);
 }
 
 

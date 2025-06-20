@@ -29,7 +29,7 @@ std::vector<UnitTestFn> graph2D_construct = {
         R2<float> view_pos = {-1.0f, -1.0f};
         R2<float> view_size = {2.0f, 2.0f};
         
-        AABB<float> viewbox = {view_pos, view_size};
+        R2<float> viewbox = {-1.0f, 1.0f};
 
         Polynomial<float> polynomial {{0, 0, 1}};
 

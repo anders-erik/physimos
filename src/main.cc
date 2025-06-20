@@ -84,18 +84,10 @@ int main()
 	scene::Scene2D scene2D { {100, 100} };
 	scene2D.get_camera().set_width(20);
 	scene2D.get_camera().pan({10.0f, 10.0f});
-	// scene2D.g
-	// QUAD
-	// scene::QuadS2D quad2D;
-	// quad2D.set_box({1, 1}, {3, 3});
-	// quad2D.set_texture_id(opengl::texture_get_id(opengl::Textures::Checker2x2));
-	// scene2D.push_quad(quad2D);
-	// GRAPH
-	R2<float> view_pos = {-10.0f, -10.0f};
-    R2<float> view_size = {20.0f, 20.0f};
-    AABB<float> viewbox = {view_pos, view_size};
-    Polynomial<float> polynomial {{2, 0.1, 0, 0}};
-    Graph2D<float> graph {21, viewbox, polynomial};
+
+    R2<float> domain = {-10.0f, 10.0f};
+    Polynomial<float> polynomial {{0, 0, 1, 0}};
+    Graph2D<float> graph {21, domain, polynomial};
 	graph.update();
 	scene2D.graphs.push_back(graph);
 	
@@ -109,6 +101,7 @@ int main()
 	// QuadO
 	SQuadTexture s_q_texture;
 	s_q_texture.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(sid_2D);
+	s_q_texture.sid = sid_2D;
 	QuadO& quado = ObjectManager::push_quado(s_q_texture);
 	root_scene.push_object(quado.object);
 

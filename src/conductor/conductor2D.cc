@@ -19,90 +19,196 @@ Physimos::Physimos(int width, int height)
 
 
 
+bool Physimos::
+is_quad_capture_click(InputEvent & event)
+{
+	if(event.is_mouse_button() && event.mouse_button.is_left_down() && event.modifiers.is_ctrl())
+		return true;
+
+	return false;
+}
+
+
+bool Physimos::
+should_release_quad(InputEvent & event)
+{
+	if(event.is_mouse_button() && event.mouse_button.is_left_down())
+	{
+		auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
+		Object hovered_object = rend_scene3D.sample_object_in_fb(event.cursor_pos.sane);
+
+		Scene3D& root_scene = ManagerScene::get_root_scene_mut();
+
+		if(hovered_object.id != root_scene.capturing_quad.id)
+			return true;	
+	}
+
+	return false;
+}
+
+
+
+
+void Physimos::
+send_event_pui(InputEvent& event)
+{
+	auto response = pui.event_all(event);
+	input_state.update(GrabStateConductor::PUI, response);
+
+	ManagerScene::clear_cursor_hovers();
+}
+
+
+
+void Physimos::
+send_event_scene(InputEvent& event)
+{
+	auto response = ManagerScene::event_handler(event);
+	input_state.update(GrabStateConductor::SCENE, response);
+
+	pui.clear_hovers();
+}
+
+
+
+void Physimos::
+send_event_quad(InputEvent& event)
+{
+	Scene3D& window_scene = ManagerScene::get_window_scene_mut();
+	auto& capturing_object = window_scene.capturing_quad;
+	auto* capturing_quado = ObjectManager::get_quado(capturing_object.id);
+	if(capturing_quado == nullptr)
+	{
+		window_scene.capturing_quad = {};
+		input_state.clear();
+		return;
+	}
+
+	// FINALLY SEND INFO
+	if(capturing_quado->texture.is_scene2D())
+	{
+		std::cout << "Sending to scene" << std::endl;
+		scene::Scene2D* scene_p = (scene::Scene2D*) ManagerScene::search_scene_storage_2D(capturing_quado->texture.sid);
+		
+		if(event.is_mouse_scroll())
+			scene_p->handle_scroll(event);
+		if(event.is_mouse_button())
+			scene_p->handle_pointer_click(event);
+		if(event.is_mouse_movement())
+			scene_p->handle_pointer_move(event);
+
+		input_state.update(GrabStateConductor::QUAD, {InputResponse::MOUSE_GRAB});
+		return;
+	}
+
+	// always release unless already continued with new grab
+	window_scene.capturing_quad = {};
+	input_state.clear();
+}
+
+
+
+
+void Physimos::
+process_mouse_input(InputEvent& event)
+{
+	// Short Circuit on grab
+	if(input_state.is_grabbing_mouse())
+	{
+		if(input_state.pui())
+		{
+			send_event_pui(event);
+			return;
+		}
+		else if(input_state.quad())
+		{
+			if(should_release_quad(event))
+			{	
+				ManagerScene::get_root_scene_mut().capturing_quad = {};
+				input_state.update(GrabStateConductor::QUAD, {InputResponse::MOUSE_RELEASE});
+				return;
+			}
+			send_event_quad(event);
+			return;
+		}
+		else if(input_state.scene())
+		{
+			send_event_scene(event);
+			return;
+		}
+	}
+
+
+	// Requery if cursor is not grabbed
+	if(pui.contains_point(cursor_pos.sane))
+	{
+		send_event_pui(event);
+		return;
+	}
+
+	// Scene OR quad at this point
+
+	auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
+	Object hovered_object = rend_scene3D.sample_object_in_fb(event.cursor_pos.sane);
+
+	if(hovered_object.is_quad() && is_quad_capture_click(event))
+	{
+		std::cout << "conductor :: Capturing Quad state set" << std::endl;
+		ManagerScene::get_window_scene_mut().capturing_quad = hovered_object;
+		input_state.update(GrabStateConductor::QUAD, {InputResponse::MOUSE_GRAB});
+		return;
+	}
+	else
+	{
+		ManagerScene::get_window_scene_mut().hovered_object = hovered_object;
+		send_event_scene(event);
+		return;
+	}
+}
+
+
+void Physimos::
+process_keyboard_input(InputEvent & event)
+{
+	std::cout << "KEYSTROKE" << std::endl;
+			
+	if(input_state.quad())
+	{
+		if(event.keystroke.key == Key::Esc)
+		{
+			Scene3D& window_scene = ManagerScene::get_window_scene_mut();
+			window_scene.capturing_quad = {};
+			input_state.clear();
+			return;
+		}
+	}
+
+	ManagerScene::events_user_all(event);
+}
 
 
 
 void Physimos::
 process_user_input()
 {
-	process_framebuffer_events(); // change framebuffer size, content scale
-
 	auto events = auxwin.get_events_input();
-	
-	// cursor_pos.print();
-	
 
 	for(InputEvent& event : events)
 	{
 
 		if(event.is_mouse())
 		{
-			// mouse grab
-			if(input_state.is_grabbing_mouse())
-			{
-				if(input_state.pui())
-				{
-					auto response = pui.event_all(event);
-					input_state.update(GrabStateConductor::PUI, response);
-					if(!input_state.is_grabbing_mouse())
-						std::cout << "pui release" << std::endl;
-
-					ManagerScene::clear_cursor_hovers();
-					continue;
-				}
-				else if (input_state.scene())
-				{
-					auto response = ManagerScene::event_handler(event);
-					input_state.update(GrabStateConductor::SCENE, response);
-					if(!input_state.is_grabbing_mouse())
-						std::cout << "scene release" << std::endl;
-					
-					pui.clear_hovers();
-					continue;
-				}
-			}
-
-
-			// Requery if cursor is not grabbed
-
-			if(pui.contains_point(cursor_pos.sane))
-			{
-				auto response = pui.event_all(event);
-				input_state.update(GrabStateConductor::PUI, response);
-				if(input_state.is_grabbing_mouse())
-					std::cout << "pui grab" << std::endl;
-
-				ManagerScene::clear_cursor_hovers();
-			}
-			else
-			{
-
-				// Try hover a Scene Object
-				auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
-				OID hovered_oid = rend_scene3D.sample_object_id_fb(event.cursor_pos.sane);
-				Scene3D& window_scene = (Scene3D&) ManagerScene::get_window_scene_mut();
-				window_scene.hovered_object = ObjectManager::get_object(hovered_oid);
-
-				auto response = ManagerScene::event_handler(event);
-				input_state.update(GrabStateConductor::SCENE, response);
-				if(input_state.is_grabbing_mouse())
-					std::cout << "scene grab" << std::endl;
-
-				pui.clear_hovers();
-			}
+			process_mouse_input(event);
 
 			// Cache most up to date cursor position
 			if(event.is_mouse_movement())
-			{
 				cursor_pos = event.mouse_movement.cursor_new;
-			}
+			continue;
 		}
 
-
-		// Currently only the scene recieves keyboard input
-		if(event.is_keystroke())
+		if(event.is_keystroke()) // Currently only the scene recieves keyboard input
 		{
-			ManagerScene::events_user_all(event);
+			process_keyboard_input(event);
 		}
 	}
 }
@@ -126,79 +232,42 @@ process_framebuffer_events()
 
 
 void Physimos::
-render_quad_textures()
-{
-	auto& q_manager = ManagerScene::get_quad_manager();
-
-	for(QuadS2D& quad : q_manager.get_quads_mut())
-	{
-		if(quad.is_bitmap())
-		{
-			// nothing yet
-		}
-		else if (quad.is_scene2D())
-		{
-			// // Get scene
-			// size_t scene_id = quad.get_object_id();
-			// scene::Scene2D* scene_p = ManagerScene::search_scene_storage(scene_id);
-			// if(scene_p == nullptr) continue;
-			// auto& scene = *scene_p;
-
-			// if(scene.is_multisampled())
-			// {
-			// 	unsigned int text_id = renderer_scene_2D.render_scene_FBMS(scene, scene.get_FBMS());
-			// 	quad.set_texture_id(text_id);
-			// }
-			// else
-			// {
-			// 	unsigned int text_id = renderer_scene_2D.render_scene_FBMS(scene, scene.get_FBMS());
-			// 	quad.set_texture_id(text_id);
-				
-			// }
-
-
-		}
-	}
-}
-
-
-
-void Physimos::update()
+update()
 {
 	pui.update(); // reflect scene state changes
 }
 
-void Physimos::render()
+
+
+void Physimos::
+render()
 {
-	render_quad_textures();
+	Rend::Manager::get_renderer_scene2D().render_all_scene2D_to_frambuffers();
+
 	auxwin.bind_window_framebuffer();
 
 	SceneBase& window_scene = ManagerScene::get_window_scene_mut();
 
-	if(window_scene.is_2D())
-	{
-		auto& rend_scene2D = Rend::Manager::get_renderer_scene2D();
-		rend_scene2D.render_scene((scene::Scene2D&)window_scene);
-	}
-	else if(window_scene.is_3D())
-	{
-		Scene3D& window_scene_3D = (Scene3D&) window_scene;
+	Scene3D& window_scene_3D = (Scene3D&) window_scene;
 
-		auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
-		rend_scene3D.render_scene_3d(window_scene_3D);
-		rend_scene3D.render_object_ids(window_scene_3D);
-	}
+	auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
+	rend_scene3D.render_scene_3d(window_scene_3D);
+	rend_scene3D.render_object_ids(window_scene_3D);
+	
 
 	pui.render(); // Render ui on top of scene
 }
 
 
-void Physimos::main_loop()
+
+void Physimos::
+main_loop()
 {
 	while (auxwin.is_open())
 	{
 		auxwin.new_frame();
 
+		process_framebuffer_events(); // change framebuffer size, content scale
 		process_user_input();
 
 		update();

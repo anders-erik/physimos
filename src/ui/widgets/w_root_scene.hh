@@ -52,11 +52,8 @@ public:
     /** Recreates the whole widget from scene data every call. */
     void reload(f2 widget_pos)
     {
-        SceneBase& window_scene_base = ManagerScene::get_window_scene_mut();
+        Scene3D& root_scene = ManagerScene::get_window_scene_mut();
 
-        if(window_scene_base.is_2D()) return;
-
-        Scene3D& root_scene = (Scene3D&) window_scene_base;
 
 
         // Frame
@@ -70,7 +67,7 @@ public:
 
         // Name
         f2 name_delta = { 0.0f, -20.0f };
-        Str name_str = window_scene_base.get_name();
+        Str name_str = root_scene.get_name();
         scene_name_base.set_pos( pos += name_delta );
         // scene_name_base.set_size( offset );
         scene_name_base.set_str(name_str);

@@ -5,7 +5,7 @@ Bitmap RendererMathGraph::render_graph2D_bitmap(Graph2D<float>& graph)
 {
     graph.update();
 
-    R2<float> graph_view_size = graph.viewbox.size;
+    R2<float> graph_view_size = graph.domain;
 
     unsigned int bitmap_scale = 1;
 
@@ -20,7 +20,7 @@ Bitmap RendererMathGraph::render_graph2D_bitmap(Graph2D<float>& graph)
 
     bitmap.clear(black);
 
-    f2 viewbox_pos = {graph.viewbox.pos.x, graph.viewbox.pos.y};
+    f2 viewbox_pos = {graph.domain.x, graph.domain.y};
 
     for(size_t i = 0; i < graph.point_count; i++)
     {

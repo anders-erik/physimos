@@ -64,7 +64,7 @@ public:
     void render_object_ids(Scene3D& scene3D);
 
     /** Samples a location in the object id framebuffer */
-    OID sample_object_id_fb(f2 cursor_pos_sane);
+    Object sample_object_in_fb(f2 cursor_pos_sane);
 
 private:
 

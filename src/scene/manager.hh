@@ -2,6 +2,7 @@
 
 
 #include <vector>
+#include <list>
 
 #include "math/vecmat.hh"
 
@@ -70,10 +71,11 @@ Scene3D& init(f2 window_size);
 [[nodiscard]] Scene3D& get_root_scene_mut();
 
 /** Immutable window scene. */
-[[nodiscard]] const SceneBase& get_window_scene();
+[[nodiscard]] const Scene3D& get_window_scene();
 /** Mutable window scene */
-[[nodiscard]] SceneBase& get_window_scene_mut();
+[[nodiscard]] Scene3D& get_window_scene_mut();
 
+[[nodiscard]] std::list<scene::Scene2D>& get_all_scene2D();
 
 /** Tries to find scene with matching scene_id in storage.
     Returns `nullptr` if no match is found. */
@@ -100,7 +102,8 @@ void clear_cursor_hovers();
 
 bool is_grabbing_cursor();
 
-
+/** If NOT capturring quad */
+bool is_targeting_scene(f2 cursor_pos_sane);
 
 void event_scroll(window::InputEvent& event);
 void event_move(window::InputEvent& event);

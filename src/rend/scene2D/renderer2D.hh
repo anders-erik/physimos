@@ -102,8 +102,11 @@ public:
 
     // THREE CALLS TO MANAGE SCENE FRAMEBUFFERS
     void create_scene_framebuffer(SID sid, ui2 framebuffer_size);
-    void render_scene_framebuffer(SID sid);
+    opengl::TextureFB& get_scene_fb(SID sid);
     uint get_scene_fb_texture_id(SID sid);
+    void render_scene_framebuffer(SID sid);
+    /** All 2D scenes - usually quad-textures */
+    void render_all_scene2D_to_frambuffers();
 
 
     void create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts);

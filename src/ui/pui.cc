@@ -91,7 +91,7 @@ update()
     // scene::QuadS2D* quad = ManagerScene::get_quad_manager().get_selected();
     // w_object_large.reload(quad, {500.0f, 450.0f});
 
-    Scene3D& scene = (Scene3D&) ManagerScene::get_window_scene_mut();
+    Scene3D& scene = ManagerScene::get_window_scene_mut();
     w_object_large.reload(scene.selected_object, {500.0f, 450.0f});
 
     // 

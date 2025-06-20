@@ -42,7 +42,7 @@ public:
             {
                 println("Clicked on W::ObjectSmall!");
 
-                Scene3D& scene = (Scene3D&) ManagerScene::get_window_scene_mut();
+                Scene3D& scene = ManagerScene::get_window_scene_mut();
 
                 scene.selected_object = object;
 

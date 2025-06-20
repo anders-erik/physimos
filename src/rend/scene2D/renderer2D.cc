@@ -157,6 +157,19 @@ void RendererScene2D::render_scene_framebuffer(SID sid)
     }
 }
 
+opengl::TextureFB& RendererScene2D::get_scene_fb(SID sid)
+{
+    for(auto& scene_fb : scene_framebuffers)
+    {
+        if(sid == scene_fb.sid)
+        {
+            return scene_fb.framebuffer;
+        }
+    }
+
+    throw std::runtime_error("Unable to find framebuffer for scene.");
+}
+
 uint RendererScene2D::get_scene_fb_texture_id(SID sid)
 {
     for(auto& scene_fb : scene_framebuffers)
@@ -166,8 +179,20 @@ uint RendererScene2D::get_scene_fb_texture_id(SID sid)
             return scene_fb.framebuffer.get_texture_id();
         }
     }
+
+    throw std::runtime_error("Unable to find framebuffer and its id for scene.");
 }
 
+
+void RendererScene2D::
+render_all_scene2D_to_frambuffers()
+{
+    auto& scenes_2D = ManagerScene::get_all_scene2D();
+    for(auto& scene2D : scenes_2D)
+    {
+        render_scene_FB(scene2D, get_scene_fb(scene2D.scene_id));
+    }
+}
 
 
 void RendererScene2D::create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts){

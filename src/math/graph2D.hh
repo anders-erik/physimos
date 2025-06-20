@@ -14,7 +14,7 @@ public:
 
     size_t point_count = 0;
 
-    AABB<T> viewbox;
+    R2<T> domain;
     T step_size;
 
     Polynomial<T> polynomial { {0} }; // default is zero-order with constant equal to 0
@@ -25,18 +25,18 @@ public:
 
     // Graph2D() = default;
 
-    Graph2D(size_t point_count, AABB<T> viewbox)
+    Graph2D(size_t point_count, R2<T> domain)
         :   point_count {point_count},
-            viewbox     {viewbox},
+            domain     {domain},
             x           {Vec<T> {point_count, 0.0}},
             y           {Vec<T> {point_count, 0.0}}
     {
         calculate_step_size();
     };
 
-    Graph2D(size_t point_count, AABB<T> viewbox, Polynomial<T> polynomial)
+    Graph2D(size_t point_count, R2<T> domain, Polynomial<T> polynomial)
         :   point_count {point_count},
-            viewbox     {viewbox},
+            domain     {domain},
             polynomial  {polynomial},
             x           {Vec<T> {point_count, 0.0}},
             y           {Vec<T> {point_count, 0.0}}
@@ -56,7 +56,7 @@ public:
         {
             T i_f = (T) i;
 
-            x[i] = viewbox.pos.x + i_f * step_size;
+            x[i] = domain.x + i_f * step_size;
             y[i] = polynomial(x[i]);
         }
     }
@@ -71,7 +71,7 @@ private:
     void calculate_step_size()
     {
         T point_count_float = (T) point_count;
-        step_size = viewbox.size.x / (point_count_float - 1.0);
+        step_size = (domain.y - domain.x) / (point_count_float - 1.0);
     }
 
 };

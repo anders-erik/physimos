@@ -1,6 +1,7 @@
 
 #pragma once
 
+struct Scene3D;
 
 typedef unsigned char SID;
 
@@ -52,4 +53,9 @@ struct SceneBase
         
         return false;
     };
+
+    Scene3D& to_3D()
+    {
+        return (Scene3D&) *this;
+    }
 };

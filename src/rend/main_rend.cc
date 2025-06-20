@@ -17,7 +17,7 @@ int main ()
     R2<float> view_pos = {-2.0f, -2.0f};
     R2<float> view_size = {4.0f, 4.0f};
 
-    AABB<float> viewbox = {view_pos, view_size};
+    R2<float> viewbox = {-2.0f, 2.0f};
 
     Polynomial<float> polynomial {{0, 0, 1}};
 

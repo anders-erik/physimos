@@ -7,10 +7,16 @@ struct GrabStateConductor : InputState {
 	/** Subsystems that can recieve and respond to input events. */
 	enum SubSys {
 		PUI,
+		QUAD,
 		SCENE,
 		NONE,
-	} subsystem;
+	} subsystem = NONE;
 
+	void clear()
+	{
+		last_response = {};
+		subsystem = NONE;
+	}
 
 	void update(SubSys subsys, InputResponse response)
 	{
@@ -22,10 +28,14 @@ struct GrabStateConductor : InputState {
 			subsystem = NONE;
 	}
 
-
 	bool pui()
 	{
 		return subsystem == PUI ? true : false;
+	}
+
+	bool quad()
+	{
+		return subsystem == QUAD ? true : false;
 	}
 
 	bool scene()
@@ -37,6 +47,11 @@ struct GrabStateConductor : InputState {
 	bool pui_is_grabbing_mouse()
 	{
 		return pui() && is_grabbing_mouse();
+	}
+
+	bool quad_is_grabbing_mouse()
+	{
+		return quad() && is_grabbing_mouse();
 	}
 
 };

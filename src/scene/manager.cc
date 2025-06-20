@@ -29,7 +29,7 @@ static Box2D quad_box; // the box of cursor scene in window coordinates
 
 static window::CursorPosition cursor_pos; // Copy from most recent cursor move event
 
-static SceneBase* window_scene = nullptr; 
+static Scene3D* window_scene = nullptr; 
 
 // static RendererScene2D renderer_scene;
 
@@ -158,17 +158,22 @@ get_root_scene_mut()
 }
 
 
-const SceneBase& 
+const Scene3D& 
 get_window_scene()
 {
     return *window_scene;
 }
 
 
-SceneBase& 
+Scene3D& 
 get_window_scene_mut()
 {
     return *window_scene;
+}
+
+std::list<scene::Scene2D>& get_all_scene2D()
+{
+    return scenes2D;
 }
 
 
@@ -388,6 +393,8 @@ events_user_all(window::InputEvent& event)
 
 InputResponse event_handler(window::InputEvent & event)
 {
+
+
 
     switch (window_scene->type)
     {

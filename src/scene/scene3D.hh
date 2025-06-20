@@ -34,6 +34,7 @@ public:
 
     Object selected_object;
     Object hovered_object;
+    Object capturing_quad;
 
     std::vector<model::ModelT> texture_models;
     std::vector<model::ModelColor> color_models;

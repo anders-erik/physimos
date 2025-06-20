@@ -70,7 +70,6 @@ InputResponse Scene3D::handle_input(window::InputEvent input_event){
         {
             selected_object = hovered_object;
         }
-
         break;
 
 
