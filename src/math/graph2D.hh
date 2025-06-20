@@ -61,7 +61,7 @@ public:
         }
     }
 
-    F2<T> at(size_t index)
+    R2<T> at(size_t index)
     {
         return {x[index], y[index]};
     }

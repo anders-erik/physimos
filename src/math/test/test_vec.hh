@@ -20,7 +20,7 @@ std::vector<UnitTestFn> construct_vec = {
 
         Vec<double> vec;
 
-        if(vec.count != 0)
+        if(vec.size() != 0)
             return test_info.fail();
         
         return test_info.pass();
@@ -34,7 +34,7 @@ std::vector<UnitTestFn> construct_vec = {
 
         Vec<double> vec {100};
 
-        if(vec.count != 100)
+        if(vec.size() != 100)
             return test_info.fail();
         
         return test_info.pass();

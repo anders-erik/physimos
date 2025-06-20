@@ -5,7 +5,7 @@ Bitmap RendererMathGraph::render_graph2D_bitmap(Graph2D<float>& graph)
 {
     graph.update();
 
-    F2<float> graph_view_size = graph.viewbox.size;
+    R2<float> graph_view_size = graph.viewbox.size;
 
     unsigned int bitmap_scale = 1;
 

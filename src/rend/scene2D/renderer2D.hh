@@ -16,8 +16,13 @@
 #include "rend/scene2D/program_quad2D.hh"
 #include "rend/scene3D/program_vector.hh"
 
+#include "rend/scene2D/shader_graph_point.hh"
+#include "rend/scene2D/shader_graph_line.hh"
+
 #include "rend/defs.hh"
 
+template <typename T>
+struct Graph2D;
 
 namespace opengl {
     class TextureFB;
@@ -80,6 +85,8 @@ struct SceneFramebuffer
 class RendererScene2D 
 {
     ProgramQuad2D program_quad_2D;
+    Shader2DGraphPoint shader_graph_point;
+    Shader2DGraphLine shader_graph_line;
 
     // Old enum for quad shader program -- only instance of specific program
     opengl::ProgramName program_name_enum = opengl::ProgramName::Quad2D;
@@ -115,6 +122,8 @@ public:
 
     void render_point(RenderContextQuadS2D context);
     void render_line(RenderContextQuadS2D context);
+
+    void render_graph2D(Graph2D<float>& graph);
 
     void render_frame(m3f3 M_m_s, bool selected, int line_width);
 

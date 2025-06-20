@@ -26,8 +26,8 @@ std::vector<UnitTestFn> graph2D_construct = {
     {
         UnitTestInfo test_info = "float, 3 points, f(x) = x^2, NDC";
 
-        F2<float> view_pos = {-1.0f, -1.0f};
-        F2<float> view_size = {2.0f, 2.0f};
+        R2<float> view_pos = {-1.0f, -1.0f};
+        R2<float> view_size = {2.0f, 2.0f};
         
         AABB<float> viewbox = {view_pos, view_size};
 
@@ -37,9 +37,9 @@ std::vector<UnitTestFn> graph2D_construct = {
 
         graph.update();
 
-        F2<float> first_point = graph.at(0);
-        F2<float> second_point = graph.at(1);
-        F2<float> third_point = graph.at(2);
+        R2<float> first_point = graph.at(0);
+        R2<float> second_point = graph.at(1);
+        R2<float> third_point = graph.at(2);
 
         if(first_point.x != -1.0f)
             return test_info.fail();

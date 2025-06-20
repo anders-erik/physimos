@@ -82,12 +82,29 @@ int main()
 
 	// GRAPH SCENE2D
 	scene::Scene2D scene2D { {100, 100} };
-	scene::QuadS2D quad2D;
-	quad2D.set_box({1, 1}, {3, 3});
-	quad2D.set_texture_id(opengl::texture_get_id(opengl::Textures::Checker2x2));
-	scene2D.push_quad(quad2D);
+	scene2D.get_camera().set_width(20);
+	scene2D.get_camera().pan({10.0f, 10.0f});
+	// scene2D.g
+	// QUAD
+	// scene::QuadS2D quad2D;
+	// quad2D.set_box({1, 1}, {3, 3});
+	// quad2D.set_texture_id(opengl::texture_get_id(opengl::Textures::Checker2x2));
+	// scene2D.push_quad(quad2D);
+	// GRAPH
+	R2<float> view_pos = {-10.0f, -10.0f};
+    R2<float> view_size = {20.0f, 20.0f};
+    AABB<float> viewbox = {view_pos, view_size};
+    Polynomial<float> polynomial {{2, 0.1, 0, 0}};
+    Graph2D<float> graph {21, viewbox, polynomial};
+	graph.update();
+	scene2D.graphs.push_back(graph);
+	
 	SID sid_2D = ManagerScene::push_scene2D(scene2D);
 
+	// for(size_t i = 0; i < 20; i++)
+	// {
+	// 	std::cout << graph.x[i] << ", " << graph.y[i] << std::endl;
+	// }
 
 	// QuadO
 	SQuadTexture s_q_texture;

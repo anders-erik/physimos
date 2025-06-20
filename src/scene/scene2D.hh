@@ -14,6 +14,7 @@
 
 #include "math/vecmat.hh"
 #include "math/shape.hh"
+#include "math/graph2D.hh"
 
 #include "rend/scene2D/renderer2D.hh"
 #include "scene/shapeS2D.hh"
@@ -102,6 +103,8 @@ public:
     std::vector<ShapeS2D> shapes;
     
     std::vector<size_t> quad_ids;
+
+    std::vector<Graph2D<float>> graphs;
 
 public:
 

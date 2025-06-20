@@ -5,6 +5,8 @@ set(SCENE_RENDER
 
     program_quad2D.cc
 
+    shader_graph_point.cc
+    shader_graph_line.cc
 )
 
 

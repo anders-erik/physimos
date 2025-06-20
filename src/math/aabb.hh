@@ -2,8 +2,10 @@
 #pragma once
 
 
+/** Real 2D point.
+    R^2 = (R, R) */
 template <typename F>
-struct F2
+struct R2
 {
     F x;
     F y;
@@ -14,6 +16,6 @@ struct F2
 template <typename F>
 struct AABB 
 {
-    F2<F> pos;
-    F2<F> size;
+    R2<F> pos;
+    R2<F> size;
 };

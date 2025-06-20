@@ -125,6 +125,8 @@ void RenderContextQuadS2D::set_texture_id(unsigned int texture_id){
 RendererScene2D::RendererScene2D(){
 
     program_quad_2D.init();
+    shader_graph_point.init();
+    shader_graph_line.init();
 
     // program = opengl::build_program_vert_frag(opengl::Programs::phont_texture);
     program = opengl::build_program_vert_frag(program_name_enum);
@@ -244,6 +246,17 @@ void RendererScene2D::render_line(RenderContextQuadS2D context){
 
 
 
+void RendererScene2D::
+render_graph2D(Graph2D<float>& graph)
+{
+    shader_graph_line.set_line_data(graph.x, graph.y);
+    shader_graph_line.draw_lines();
+    shader_graph_point.set_point_data(graph.x, graph.y);
+    shader_graph_point.draw_points();
+}
+
+
+
 
 void RendererScene2D::
 render_quad(const scene::QuadS2D& quad)
@@ -282,6 +295,13 @@ render_scene(scene::Scene2D & scene)
     for(scene::ShapeS2D& line : scene.lines){
         set_model(line.get_matrix());
         render_line(line.render_context);
+    }
+
+
+    shader_graph_point.set_camera_matrix(scene.get_camera().get_matrix());
+    shader_graph_line.set_camera_matrix(scene.get_camera().get_matrix());
+    for(Graph2D<float>& graph : scene.graphs){
+        render_graph2D(graph);
     }
     
     // FRAMES

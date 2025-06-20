@@ -14,8 +14,8 @@ int main ()
 {
     std::cout << "Main Render" << std::endl << std::endl;
     
-    F2<float> view_pos = {-2.0f, -2.0f};
-    F2<float> view_size = {4.0f, 4.0f};
+    R2<float> view_pos = {-2.0f, -2.0f};
+    R2<float> view_size = {4.0f, 4.0f};
 
     AABB<float> viewbox = {view_pos, view_size};
 
