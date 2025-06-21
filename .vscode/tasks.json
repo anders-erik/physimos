@@ -6,10 +6,10 @@
             "label": "run",
             "detail": "Default build and run task.",
             "type": "process",
-            "command": "${config:default_binary}",
+            "command": "${config:binary_dir}/${config:binary}",
             "options": 
             {
-                "cwd": "${config:default_cwd}",
+                "cwd": "${config:cwd}",
 
                 "env": {
                     "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
@@ -35,7 +35,7 @@
             // tee output (stdout + stderr)
             // "command": "valgrind --leak-check=yes ${config:default_binary} &> >(tee ${workspaceFolder}/tmp/valgrind.txt)",
 
-            "command": "valgrind --leak-check=yes ${config:default_binary} &> ${workspaceFolder}/tmp/valgrind.txt",
+            "command": "valgrind --leak-check=yes ${config:binary_dir}/${config:binary} &> ${workspaceFolder}/tmp/valgrind.txt",
 
             "args": [],
             "options": {
@@ -60,6 +60,58 @@
                 "Debug build"
             ]
         },
+        {
+            "label": "KCachegrind",
+            "type": "shell",
+            "group": "build",
+            "command": "kcachegrind",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn": "Run Linux Perf"
+        },
+        {
+            "label": "Run Linux Perf",
+            "type": "shell",
+            "command": "valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes  ${config:binary_dir}${config:binary} > callgrind.txt && kcachegrind",
+            "args": [],
+            "options": {
+                "env": {
+                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}",
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn": "Build Linux Perf",
+        },
+        {
+            "label": "Build Linux Perf",
+            "type": "shell",
+            "group": "build",
+            "command": "time cmake --build --preset=perf_linux",
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+        {
+            "label": "Configure Linux Perf",
+            "type": "shell",
+            "group": "build",
+            "command": "cmake --preset=perf_linux",
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+
+
+
+
+
+
+
+
+
 
 
 

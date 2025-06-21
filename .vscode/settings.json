@@ -2,27 +2,34 @@
 	// Task
 	// "default_task" : "run",
 
+
+	// BINARY DIR
+	"binary_dir": "${workspaceFolder}/build/debug_linux/",
+	// "binary_dir": "${workspaceFolder}/build/perf_linux/",
+
+
 	// MAIN
-	"default_binary": "${workspaceRoot}/build/debug_linux/physimos",
-	// "default_binary": "${workspaceFolder}/build/debug_linux/src/main_main",
-	// "default_binary": "${workspaceFolder}/build/debug_linux/src/phont/main_phont",
-	// "default_binary": "${workspaceRoot}/build/debug_linux/src/lib/main_lib",
-	// "default_binary": "${workspaceRoot}/build/debug_linux/src/lib/main_str",
-	// "default_binary": "${workspaceRoot}/build/debug_linux/src/lib/main_file",
-	// "default_binary": "${workspaceRoot}/build/debug_linux/src/file_format/json/main_json",
-	// "default_binary": "${workspaceRoot}/build/debug_linux/src/phont/main_phont",
-	// "default_binary": "${workspaceRoot}/build/debug_linux/src/opengl/main_opengl",
-	// "default_binary": "${workspaceRoot}/build/debug_linux/src/render/main_render",
+	"binary": "physimos",
+	// "binary": "src/main_main",
+	// "binary": "src/phont/main_phont",
+	// "binary": "src/lib/main_lib",
+	// "binary": "src/lib/main_str",
+	// "binary": "src/lib/main_file",
+	// "binary": "src/file_format/json/main_json",
+	// "binary": "src/phont/main_phont",
+	// "binary": "src/opengl/main_opengl",
+	// "binary": "src/render/main_render",
 
 	// TEST
-	// "default_binary": "${workspaceFolder}/build/debug_linux/src/lib/test_lib",
-	// "default_binary": "${workspaceFolder}/build/debug_linux/src/math/test_math",
-	// "default_binary": "${workspaceFolder}/build/debug_linux/src/file_format/test_file_format",
+	// "binary": "src/lib/test_lib",
+	// "binary": "src/math/test_math",
+	// "binary": "src/file_format/test_file_format",
 	
 	// CWD
-	"default_cwd": "${workspaceFolder}",
-	// "default_cwd": "${workspaceFolder}/src/lib",
-	// "default_cwd": "${workspaceFolder}/src/lib/json",
+	"cwd": "${workspaceFolder}",
+	// "cwd": "${workspaceFolder}/src/lib",
+	// "cwd": "${workspaceFolder}/src/lib/json",
+
 
 
 	// https://stackoverflow.com/questions/48945319/a-keybindings-json-per-workspace-in-visual-studio-code

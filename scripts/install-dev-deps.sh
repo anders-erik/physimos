@@ -12,9 +12,13 @@ wayland(){
 valgrind() {
   sudo apt install valgrind
 }
+kcachegrind() {
+  sudo apt install kcachegrind
+}
 
 
 ninja
 glfw
 wayland
 valgrind
+kcachegrind

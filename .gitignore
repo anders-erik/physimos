@@ -16,7 +16,7 @@ GLFW/*
 glad/*
 glad.zip
 
-callgrind.out*
+callgrind*
 gmon.out
 gprof.txt
 perf.data

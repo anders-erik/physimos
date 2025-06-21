@@ -82,17 +82,20 @@ struct f2
     f2(int x, int y) : x { (float)x}, y {(float)y} {}; 
 
     f2& operator+=(const f2& rhs);
-    f2& operator+=(float scalar);
     f2& operator-=(const f2& rhs);
     f2& operator*=(const f2& rhs);
     f2& operator/=(const f2& rhs);
+
+    f2& operator+=(float scalar);
     f2& operator-=(float scalar);
-    // f2&& operator+(const f2& rhs);
-    f2 operator+(const f2& rhs);
+
+    f2 operator+(const f2& rhs) const;
     f2 operator-(const f2& rhs) const;
-    f2 operator*(float scalar);
     f2 operator*(const f2& rhs) const;
     f2 operator/(const f2& rhs) const;
+
+    f2 operator*(float scalar) const;
+
     f2 operator-();
 
     i2 to_i2();

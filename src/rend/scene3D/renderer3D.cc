@@ -5,6 +5,7 @@
 #include "glad/glad.h"
 
 #include "math/vecmat.hh"
+#include "math/quarternion.hh"
 
 #include "opengl/texture.hh"
 
@@ -142,12 +143,28 @@ render_scene_3d(Scene3D& scene3D)
         }
     }
 
-    // VECTOR
-    program_vector.render(  {0.0f, 0.0f, 0.0f}, 
-                            {0.0f, 2.0f, 2.0f});
 
     // AXES
     program_axes.render();
+
+
+    // VECTOR
+    program_vector.set_color({1.0f, 1.0f, 1.0f});
+    program_vector.render(  {0.0f, 0.0f, 0.0f}, 
+                            {0.0f, 2.0f, 2.0f});
+
+    // QUARTERNION TESTS
+    f3 rot_axis = {1.0f, 1.0f, 0.0f};
+    program_vector.set_color({1.0f, 0.0f, 1.0f});
+    Quarternion::rotate_f3( scene3D.quarternion_vector_100,
+                            rot_axis,
+                            0.01);
+    program_vector.render(  {0.0f, 0.0f, 0.0f},
+                            scene3D.quarternion_vector_100);
+    program_vector.render(  {0.0f, 0.0f, 0.0f},
+                            scene3D.quarternion_vector_111);
+
+
 
 }
 

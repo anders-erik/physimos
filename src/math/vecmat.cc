@@ -37,18 +37,19 @@ f2& f2::operator/=(const f2 & rhs)
     this->y /= rhs.y;
     return *this;
 }
-f2 f2::operator+(const f2& rhs){
+f2 f2::operator+(const f2& rhs) const
+{
     return {this->x + rhs.x, this->y + rhs.y};
 }
-f2 f2::operator-(const f2& rhs) const
+
+f2 f2::
+operator-(const f2& rhs) const
 {
     return f2 {this->x - rhs.x, this->y - rhs.y};
 }
-f2 f2::operator*(float scalar)
-{
-    return f2(this->x * scalar, this->y * scalar);
-}
-f2 f2::operator*(const f2 & rhs) const
+
+f2 f2::
+operator*(const f2 & rhs) const
 {
     return f2(this->x * rhs.x, this->y * rhs.y);
 }
@@ -56,7 +57,15 @@ f2 f2::operator/(const f2 & rhs) const
 {
     return f2(this->x / rhs.x, this->y / rhs.y);
 }
-f2 f2::operator-()
+
+f2 f2::
+operator*(float scalar) const
+{
+    return f2(this->x * scalar, this->y * scalar);
+}
+
+f2 f2::
+operator-()
 {
     return {
         -this->x,
@@ -251,19 +260,15 @@ void f3::matmul(m4f4 matrix){
     tmp.y = x*matrix.y.x + y*matrix.y.y + z*matrix.y.z;
     tmp.z = x*matrix.z.x + y*matrix.z.y + z*matrix.z.z;
 
-    this->x = tmp.x;
-    this->y = tmp.y;
-    this->z = tmp.z;
+    *this = tmp;
 }
 void f3::matmul(m3f3 matrix){
     f3 tmp;
-    tmp.x = matrix.x.x*x + matrix.x.y*y + matrix.x.z*z;
-    tmp.y = matrix.y.x*x + matrix.y.y*y + matrix.y.z*z;
-    tmp.z = matrix.z.x*x + matrix.z.y*y + matrix.z.z*z;
+    tmp.x = matrix.x.x * x  + matrix.x.y * y    + matrix.x.z * z;
+    tmp.y = matrix.y.x * x  + matrix.y.y * y    + matrix.y.z * z;
+    tmp.z = matrix.z.x * x  + matrix.z.y * y    + matrix.z.z * z;
 
-    this->x = tmp.x;
-    this->y = tmp.y;
-    this->z = tmp.z;
+    *this = tmp;
 }
 
 

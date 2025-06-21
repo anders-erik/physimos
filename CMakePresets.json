@@ -29,6 +29,18 @@
             "hidden": false
         },
         {
+            "name": "perf_linux",
+            "inherits": "default",
+            "displayName": "Linux Perf Config",
+            "description": "Linux Perf Config using Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/perf_linux",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Perf"
+            },
+            "hidden": false
+        },
+        {
             "name": "debug_windows",
             "inherits": "default",
             "displayName": "Debug Windows Config",
@@ -50,6 +62,11 @@
         {
             "name": "debug_linux",
             "configurePreset": "debug_linux",
+            "hidden": false
+        },
+        {
+            "name": "perf_linux",
+            "configurePreset": "perf_linux",
             "hidden": false
         },
         {

@@ -95,6 +95,13 @@ void ProgramVector::set_project_view_matrix(m4f4 project_mat, m4f4 view_mat)
 
 }
 
+void ProgramVector::set_color(f3 new_color)
+{
+    glUseProgram(id);
+    color = new_color;
+    glUniform3fv( glGetUniformLocation(id, "vector_color"), 1, (float*) &color);
+}
+
 void ProgramVector::render(f3 pos, f3 size){
 
     // PROGRAM
@@ -102,7 +109,6 @@ void ProgramVector::render(f3 pos, f3 size){
 
     // UNIFORMS
     glUniform3fv(glGetUniformLocation(id, "vector"), 3, (float*) &size);
-    glUniform3fv( glGetUniformLocation(id, "vector_color"), 1, (float*) &color);
     glUniform1f( glGetUniformLocation(id, "vector_scale"), sqrtf( size.x*size.x + size.y*size.y + size.z*size.z));
 
     // ROTATION

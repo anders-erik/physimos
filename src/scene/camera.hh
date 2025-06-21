@@ -26,12 +26,12 @@ struct OrbitalView
     f3 center_pos;  // the point about which the camera is orbiting
     m4f4 matrix;    // Full view matrix. Set by calling 'update_matrix()'
 
-    // float rho   =  10.0f; // Radius
-    // float theta =  3.9f; // x-y plane
-    // float phi   =  1.0f; // z-axis
-    float rho   =  0.0f; // Radius
-    float theta =  0.0f; // x-y plane
-    float phi   =  0.0f; // z-axis
+    float rho   =  3.0f; // Radius
+    float theta =  4.5f; // x-y plane
+    float phi   =  1.0f; // z-axis
+    // float rho   =  0.0f; // Radius
+    // float theta =  0.0f; // x-y plane
+    // float phi   =  0.0f; // z-axis
 
     float rho_factor    = -0.2f;
     float theta_scale   = -0.004f;

@@ -8,8 +8,8 @@
             "type": "cppdbg",
             "request": "launch",
 
-            "program": "${config:default_binary}",
-            "cwd": "${config:default_cwd}",
+            "program": "${config:binary_dir}/${config:binary}",
+            "cwd": "${config:cwd}",
             
             "args": [],
             "stopAtEntry": false,
@@ -31,9 +31,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": 
-            // "str_build",
-            "Debug build",
+            "preLaunchTask": "Debug build",
 
             "presentation": {
                 "echo": true,
