@@ -76,16 +76,16 @@ void SceneModelEditor::update(){
     // camera.set_triplet(camera.rho, camera.theta, camera.phi);
     // camera.triplet_reload();
 
-    camera.set_matrices();
+    // camera.set_matrices();
 
 
-    renderer_model_color.set_camera_uniforms(camera.view_mat, camera.perspective_mat);
-    renderer_model_texture.set_camera_view_projection(camera.perspective_mat, camera.view_mat);
-    renderer_vector.set_project_view_matrix(camera.perspective_mat, camera.view_mat);
+    renderer_model_color.set_camera_uniforms(camera.view.matrix, camera.perspective.matrix);
+    renderer_model_texture.set_camera_view_projection(camera.perspective.matrix, camera.view.matrix);
+    renderer_vector.set_project_view_matrix(camera.perspective.matrix, camera.view.matrix);
 
 
     m4f4 indentity;
-    renderer_axes.set_uniforms(indentity, camera.view_mat, camera.perspective_mat);
+    renderer_axes.set_uniforms(indentity, camera.view.matrix, camera.perspective.matrix);
     // renderer_axes.set_uniforms(_cube.c0.model.transform.matrix, camera.view_mat, camera.perspective_mat);
     
     // model.set_transform_matrix();
@@ -99,7 +99,7 @@ void SceneModelEditor::render(){
 
 
     m4f4 identity;
-    renderer_axes.set_uniforms(identity, camera.view_mat, camera.perspective_mat);
+    renderer_axes.set_uniforms(identity, camera.view.matrix, camera.perspective.matrix);
     renderer_axes.render();
 
 
@@ -163,8 +163,8 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
     case window::EventType::MouseMove:
 
         if(camera_grabbed){
-            camera.theta_change(input_event.mouse_movement.delta.sane.x);
-            camera.phi_change(input_event.mouse_movement.delta.sane.y);
+            camera.view.theta_change(input_event.mouse_movement.delta.sane.x);
+            camera.view.phi_change(input_event.mouse_movement.delta.sane.y);
         }
         
 
@@ -172,7 +172,7 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
     
     case window::EventType::MouseScroll:
 
-        camera.rho_change(input_event.mouse_scroll.delta);
+        camera.view.rho_change(input_event.mouse_scroll.delta);
 
         break;
 
@@ -216,7 +216,7 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
 
 void SceneModelEditor::handle_window_resize(window::WindowResizeEvent resize_event)
 {
-    camera.set_fov(resize_event.size_i.x, resize_event.size_i.y);
+    camera.perspective.set_fov(resize_event.size_i.x, resize_event.size_i.y);
 }
 
 

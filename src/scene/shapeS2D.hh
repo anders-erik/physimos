@@ -37,8 +37,6 @@ public: // Keep this while moving objects to private above
 
     std::vector<VertexQuad2D> verts_render; // Render vertices
     std::array<VertexQuad2D, 6> verts_6;   // Old quad verts
-    Transform2D transform_2d;
-
 
 
 public:

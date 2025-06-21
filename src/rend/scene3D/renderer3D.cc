@@ -63,26 +63,27 @@ render_scene_3d(Scene3D& scene3D)
     // Defaults to fill. Context flag can overwrite?
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-    scene3D.camera.set_matrices();
+    scene3D.camera.update();
+
 
     // UNIFORMS
-    program_model_texture.set_camera_view_projection(   scene3D.camera.perspective_mat,
-                                                        scene3D.camera.view_mat);
+    program_model_texture.set_camera_view_projection(   scene3D.camera.perspective.matrix,
+                                                        scene3D.camera.view.matrix);
 
-    program_vector.set_project_view_matrix( scene3D.camera.perspective_mat, 
-                                            scene3D.camera.view_mat);
+    program_vector.set_project_view_matrix( scene3D.camera.perspective.matrix, 
+                                            scene3D.camera.view.matrix);
 
     program_axes.set_uniforms(  m4f4(), 
-                                scene3D.camera.view_mat, 
-                                scene3D.camera.perspective_mat);
+                                scene3D.camera.view.matrix, 
+                                scene3D.camera.perspective.matrix);
     
-    program_model_color.set_camera_uniforms(    scene3D.camera.perspective_mat, 
-                                                scene3D.camera.view_mat);
+    program_model_color.set_camera_uniforms(    scene3D.camera.perspective.matrix, 
+                                                scene3D.camera.view.matrix);
 
-    program_mesh.set_camera_view_projection(    scene3D.camera.perspective_mat, 
-                                                scene3D.camera.view_mat);
-    program_quad.set_camera_view_projection(    scene3D.camera.perspective_mat, 
-                                                scene3D.camera.view_mat);
+    program_mesh.set_camera_view_projection(    scene3D.camera.perspective.matrix, 
+                                                scene3D.camera.view.matrix);
+    program_quad.set_camera_view_projection(    scene3D.camera.perspective.matrix, 
+                                                scene3D.camera.view.matrix);
 
 
     // TEXTURE MODELS
@@ -121,7 +122,7 @@ render_scene_3d(Scene3D& scene3D)
         }
         else if (object.type == Object::Quad)
         {
-            QuadO* quado = ObjectManager::get_quado(object.id);
+            SQuadO* quado = ObjectManager::get_quado(object.id);
             if(quado == nullptr) continue;
 
             if(quado->object.id == scene3D.capturing_quad.id)
@@ -152,8 +153,8 @@ render_scene_3d(Scene3D& scene3D)
 
 void RendererScene3D::render_object_ids(Scene3D & scene)
 {
-    program_object_ids.set_camera_view_projection(  scene.camera.perspective_mat, 
-                                                    scene.camera.view_mat);
+    program_object_ids.set_camera_view_projection(  scene.camera.perspective.matrix, 
+                                                    scene.camera.view.matrix);
 
     fb_object_ids.bind();
 
@@ -170,7 +171,7 @@ void RendererScene3D::render_object_ids(Scene3D & scene)
         }
         else if (object.type == Object::Quad)
         {
-            QuadO* quado = ObjectManager::get_quado(object.id);
+            SQuadO* quado = ObjectManager::get_quado(object.id);
             if(quado == nullptr) continue;
 
             program_object_ids.render(quado->mesh, quado->object.id);

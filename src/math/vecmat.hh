@@ -111,7 +111,9 @@ struct f3
     f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
     // f3() : x {0.0f}, y {0.0f}, z {0.0f} {}; 
 
+    f3 operator+(const f3& rhs);
     f3& operator=(const f3& rhs);
+    f3 operator-();
 
     void matmul(m4f4 matrix);
     void matmul(m3f3 matrix);
@@ -135,7 +137,9 @@ struct f4 {
     float* pointer();
 };
 
-struct m2f2 {
+
+struct m2f2 
+{
     f2 x;
     f2 y;
 
@@ -152,7 +156,9 @@ struct m2f2 {
         y { f2(0.0f, 1.0f) } {};
 };
 
-struct m3f3 {
+
+struct m3f3 
+{
     f3 x;
     f3 y;
     f3 z;
@@ -187,23 +193,25 @@ struct m3f3 {
         z { f3(0.0f, 0.0f, 1.0f) } {};
 };
 
-struct m4f4 {
+
+struct m4f4 
+{
     f4 x;
     f4 y;
     f4 z;
     f4 w;
 
     m4f4& operator=(const m4f4& rhs);
+    /** copy = this * rhs */
+    m4f4 operator*(const m4f4& rhs);
 
-    void translate(f3 transl);
-    void rotate_x(float angle);
-    void rotate_y(float angle);
-    void rotate_z(float angle);
+    /** this = this X rhs */
+    void mult_in_place(const m4f4& rhs);
+
+    void set_to_I();
 
     float* pointer() const;
     const float * pointer_const() const;
-
-    void perspective(float fov, float width, float height, float zn, float zf);
 
     void print();
 
@@ -212,16 +220,11 @@ struct m4f4 {
         y { f4(0.0f, 1.0f, 0.0f, 0.0f) }, 
         z { f4(0.0f, 0.0f, 1.0f, 0.0f) }, 
         w { f4(0.0f, 0.0f, 0.0f, 1.0f) } {};
+
+    m4f4(f4 x, f4 y, f4 z, f4 w) : 
+        x { x }, 
+        y { y }, 
+        z { z }, 
+        w { w } {};
     
 };
-
-// Create
-m4f4 m4f4_create_translation(f3 transl);
-m4f4 m4f4_create_rotation_x(float angle);
-m4f4 m4f4_create_rotation_y(float angle);
-m4f4 m4f4_create_rotation_z(float angle);
-// m4f4 rotation_mat(float angle, Axis axis);
-
-// Operations
-void mat_mul(m4f4& lmat, m4f4& rmat);
-

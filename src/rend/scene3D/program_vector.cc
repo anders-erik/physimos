@@ -106,13 +106,13 @@ void ProgramVector::render(f3 pos, f3 size){
     glUniform1f( glGetUniformLocation(id, "vector_scale"), sqrtf( size.x*size.x + size.y*size.y + size.z*size.z));
 
     // ROTATION
-    m4f4 rotation_mat = math::rect_f3_to_m4f4(size);
+    m4f4 rotation_mat = Transform::rect_f3_to_m4f4(size);
     glUniformMatrix4fv(glGetUniformLocation(id, "rotation_mat"), 1, GL_TRUE, (float*) &rotation_mat);
 
 
     // TRANSLATION 
     m4f4 translation_mat;
-    translation_mat.translate(pos);
+    Transform::translate(translation_mat, pos);
     glUniformMatrix4fv(glGetUniformLocation(id, "translation_mat"), 1, GL_TRUE, (float*) &translation_mat );
 
 

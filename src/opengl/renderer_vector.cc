@@ -107,13 +107,13 @@ void RendererVector::render(f3 vector, f3 translation){
     glUniform1f( glGetUniformLocation(program, "vector_scale"), sqrtf( vector.x*vector.x + vector.y*vector.y + vector.z*vector.z));
 
     // ROTATION
-    m4f4 rotation_mat = math::rect_f3_to_m4f4(vector);
+    m4f4 rotation_mat = Transform::rect_f3_to_m4f4(vector);
     glUniformMatrix4fv(glGetUniformLocation(program, "rotation_mat"), 1, GL_TRUE, (float*) &rotation_mat);
 
 
     // TRANSLATION 
     m4f4 translation_mat;
-    translation_mat.translate(translation);
+    Transform::translate(translation_mat, translation);
     glUniformMatrix4fv(glGetUniformLocation(program, "translation_mat"), 1, GL_TRUE, (float*) &translation_mat );
 
 

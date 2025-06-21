@@ -78,8 +78,8 @@ InputResponse Scene3D::handle_input(window::InputEvent input_event){
         if(camera_grabbed){
             // std::cout << "Orbiting" << std::endl;
             
-            camera.theta_change(input_event.mouse_movement.delta.sane.x);
-            camera.phi_change(input_event.mouse_movement.delta.sane.y);
+            camera.view.theta_change(input_event.mouse_movement.delta.sane.x);
+            camera.view.phi_change(input_event.mouse_movement.delta.sane.y);
         }
 
 
@@ -87,7 +87,7 @@ InputResponse Scene3D::handle_input(window::InputEvent input_event){
     
     case window::EventType::MouseScroll:
 
-        camera.rho_change(input_event.mouse_scroll.delta);
+        camera.view.rho_change(input_event.mouse_scroll.delta);
 
         break;
 
@@ -102,7 +102,7 @@ InputResponse Scene3D::handle_input(window::InputEvent input_event){
             switch (input_event.keystroke.key){
 
             case window::Key::p :
-                std::cout << "camera.rho    = " << camera.rho << std::endl;
+                std::cout << "camera.view.rho    = " << camera.view.rho << std::endl;
                 // std::cout << "camera.theta  = " << camera.theta << std::endl;
                 // std::cout << "camera.phi    = " << camera.phi << std::endl;
 
@@ -138,7 +138,7 @@ InputResponse Scene3D::handle_input(window::InputEvent input_event){
 
 void Scene3D::handle_window_resize(window::WindowResizeEvent resize_event)
 {
-    camera.set_fov(resize_event.size_i.x, resize_event.size_i.y);
+    camera.perspective.set_fov(resize_event.size_i.x, resize_event.size_i.y);
 }
 
 

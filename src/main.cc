@@ -104,10 +104,10 @@ int main()
 	// }
 
 	// QuadO
-	SQuadTexture s_q_texture;
+	SQuad s_q_texture;
 	s_q_texture.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(sid_2D);
 	s_q_texture.sid = sid_2D;
-	QuadO& quado = ObjectManager::push_quado(s_q_texture);
+	SQuadO& quado = ObjectManager::push_quado(s_q_texture);
 	root_scene.push_object(quado.object);
 
 

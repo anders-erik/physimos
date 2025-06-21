@@ -20,7 +20,7 @@ namespace ObjectManager
 static OID oid_index = 1;
 
 static std::vector<MeshO> meshos;
-static std::vector<QuadO> quados;
+static std::vector<SQuadO> quados;
 
 OID new_oid()
 {
@@ -38,7 +38,7 @@ Object get_object(OID oid)
             return mesho.object;
     }
 
-    for(QuadO& quado :  quados)
+    for(SQuadO& quado :  quados)
     {
         if(quado.object.id == oid)
             return quado.object;
@@ -65,17 +65,17 @@ MeshO* get_mesho(OID oid)
 
 
 
-QuadO& 
-push_quado(SQuadTexture & s_q_texture)
+SQuadO& 
+push_quado(SQuad & s_q_texture)
 {
     return quados.emplace_back(s_q_texture);
 }
 
 
-QuadO* 
+SQuadO* 
 get_quado(OID oid)
 {
-    for(QuadO& quado : quados)
+    for(SQuadO& quado : quados)
     {
         if(oid == quado.object.id)
             return &quado;
@@ -89,7 +89,7 @@ get_quado(OID oid)
 
 }
 
-QuadO::QuadO(SQuadTexture& scene_quad_texture)
+SQuadO::SQuadO(SQuad& scene_quad_texture)
 {
     object.id = ObjectManager::new_oid();
     object.type = Object::Quad;

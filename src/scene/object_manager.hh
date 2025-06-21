@@ -55,7 +55,7 @@ struct MeshO
 
 
 // Scene texture - keeps refences to texture type for querying
-struct SQuadTexture 
+struct SQuad 
 {
     enum Type {
         Scene2D,
@@ -68,14 +68,45 @@ struct SQuadTexture
 
 };
 
-struct QuadO 
+struct SQuadTransform
+{
+private:
+    float AR = 1.0f;
+    f3 size = {1.0f, 1.0f, 0.0f};
+public:
+    f3 rot;
+    f3 pos;
+
+    const f3& get_size() const { return size;};
+    void set_AR(float new_AR)
+    {
+        AR = new_AR;
+        set_width(size.x);
+    }
+    void set_width(float new_width) 
+    {
+        size.x = new_width;
+        size.y = new_width / AR;
+        size.z = 0.0f;
+    };
+
+    const m4f4& get_matrix()
+    {
+        m4f4 matrix;
+        Transform::translate(matrix, pos);
+        // matrix.scale(size);
+        return matrix;
+    }
+};
+
+struct SQuadO 
 {
     Object object;
     Mesh mesh;
 
-    SQuadTexture texture;
+    SQuad texture;
 
-    QuadO(SQuadTexture& scene_quad_texture);
+    SQuadO(SQuad& scene_quad_texture);
 };
 
 
@@ -89,7 +120,7 @@ Object get_object(OID oid);
 MeshO& push_mesho(Mesh& mesh);
 MeshO* get_mesho(OID oid);
 
-QuadO& push_quado(SQuadTexture& s_texture);
-QuadO* get_quado(OID oid);
+SQuadO& push_quado(SQuad& s_texture);
+SQuadO* get_quado(OID oid);
 
 }

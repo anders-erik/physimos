@@ -223,12 +223,26 @@ void m3f3::print(){
     std::cout << z.x << " " << z.y << " " << z.z << " " << std::endl;
 }
 
+f3 f3::operator+(const f3& rhs)
+{
+    return {    this->x + rhs.x,
+                this->y + rhs.y,
+                this->z + rhs.z};
+}
+
 f3& f3::operator=(const f3 & rhs)
 {
     this->x = rhs.x;
     this->y = rhs.y;
     this->z = rhs.z;
     return *this;
+}
+
+f3 f3::operator-()
+{
+    return {    -this->x,
+                -this->y,
+                -this->z };
 }
 
 void f3::matmul(m4f4 matrix){
@@ -259,108 +273,7 @@ float* f4::pointer()
 }
 
 
-m4f4 m4f4_create_translation(f3 transl){
-    m4f4 matrix;
 
-    matrix.x.w = transl.x;
-    matrix.y.w = transl.y;
-    matrix.z.w = transl.z;
-
-    return matrix;
-}
-
-
-m4f4 m4f4_create_rotation_x(float angle){
-    m4f4 matrix;
-
-    matrix.y.y = cosf(angle);
-    matrix.y.z = -sinf(angle);
-    matrix.z.y = sinf(angle);
-    matrix.z.z = cosf(angle);
-
-    return matrix;
-}
-m4f4 m4f4_create_rotation_y(float angle){
-    m4f4 matrix;
-
-    matrix.x.x = cosf(angle);
-    matrix.x.z = sinf(angle);
-    matrix.z.x = -sinf(angle);
-    matrix.z.z = cosf(angle);
-
-    return matrix;
-}
-m4f4 m4f4_create_rotation_z(float angle){
-    m4f4 matrix;
-
-    matrix.x.x = cosf(angle);
-    matrix.x.y = sinf(angle);
-    matrix.y.x = -sinf(angle);
-    matrix.y.y = cosf(angle);
-
-    return matrix;
-}
-
-void mat_mul(m4f4& lmat, m4f4& rmat){
-
-    m4f4 tmp;
-
-    tmp.x.x = lmat.x.x * rmat.x.x + lmat.x.y * rmat.y.x + lmat.x.z * rmat.z.x + lmat.x.w * rmat.w.x; 
-    tmp.x.y = lmat.x.x * rmat.x.y + lmat.x.y * rmat.y.y + lmat.x.z * rmat.z.y + lmat.x.w * rmat.w.y; 
-    tmp.x.z = lmat.x.x * rmat.x.z + lmat.x.y * rmat.y.z + lmat.x.z * rmat.z.z + lmat.x.w * rmat.w.z; 
-    tmp.x.w = lmat.x.x * rmat.x.w + lmat.x.y * rmat.y.w + lmat.x.z * rmat.z.w + lmat.x.w * rmat.w.w; 
-
-    tmp.y.x = lmat.y.x * rmat.x.x + lmat.y.y * rmat.y.x + lmat.y.z * rmat.z.x + lmat.y.w * rmat.w.x; 
-    tmp.y.y = lmat.y.x * rmat.x.y + lmat.y.y * rmat.y.y + lmat.y.z * rmat.z.y + lmat.y.w * rmat.w.y; 
-    tmp.y.z = lmat.y.x * rmat.x.z + lmat.y.y * rmat.y.z + lmat.y.z * rmat.z.z + lmat.y.w * rmat.w.z; 
-    tmp.y.w = lmat.y.x * rmat.x.w + lmat.y.y * rmat.y.w + lmat.y.z * rmat.z.w + lmat.y.w * rmat.w.w; 
-
-    tmp.z.x = lmat.z.x * rmat.x.x + lmat.z.y * rmat.y.x + lmat.z.z * rmat.z.x + lmat.z.w * rmat.w.x; 
-    tmp.z.y = lmat.z.x * rmat.x.y + lmat.z.y * rmat.y.y + lmat.z.z * rmat.z.y + lmat.z.w * rmat.w.y; 
-    tmp.z.z = lmat.z.x * rmat.x.z + lmat.z.y * rmat.y.z + lmat.z.z * rmat.z.z + lmat.z.w * rmat.w.z; 
-    tmp.z.w = lmat.z.x * rmat.x.w + lmat.z.y * rmat.y.w + lmat.z.z * rmat.z.w + lmat.z.w * rmat.w.w; 
-
-    tmp.w.x = lmat.w.x * rmat.x.x + lmat.w.y * rmat.y.x + lmat.w.z * rmat.z.x + lmat.w.w * rmat.w.x; 
-    tmp.w.y = lmat.w.x * rmat.x.y + lmat.w.y * rmat.y.y + lmat.w.z * rmat.z.y + lmat.w.w * rmat.w.y; 
-    tmp.w.z = lmat.w.x * rmat.x.z + lmat.w.y * rmat.y.z + lmat.w.z * rmat.z.z + lmat.w.w * rmat.w.z; 
-    tmp.w.w = lmat.w.x * rmat.x.w + lmat.w.y * rmat.y.w + lmat.w.z * rmat.z.w + lmat.w.w * rmat.w.w; 
-
-    lmat = tmp;
-
-}
-
-
-void m4f4::translate(f3 transl){
-
-    m4f4 tranls_matrix = m4f4_create_translation(transl);
-
-    mat_mul(*this, tranls_matrix);
-
-    // m4f4 tmp_mat;
-    // tmp_mat = tranls_matrix;
-    // mat_mul(tmp_mat, tranls_matrix);
-    // mat_mul(tmp_mat, *this);
-
-    // *this = tmp_mat;
-
-}
-
-
-void m4f4::rotate_x(float angle){
-    m4f4 rot_x_matrix = m4f4_create_rotation_x(angle);
-
-    mat_mul(*this, rot_x_matrix);
-}
-void m4f4::rotate_y(float angle){
-    m4f4 rot_y_matrix = m4f4_create_rotation_y(angle);
-
-    mat_mul(*this, rot_y_matrix);
-}
-void m4f4::rotate_z(float angle){
-    m4f4 rot_z_matrix = m4f4_create_rotation_z(angle);
-
-    mat_mul(*this, rot_z_matrix);
-}
 
 float * m4f4::pointer() const
 {
@@ -371,19 +284,6 @@ const float * m4f4::pointer_const() const{
 }
 
 
-void m4f4::perspective(float fov, float width, float height, float zn, float zf){
-    float aspect = width / height;
-    float tanHalfFov = tanf(fov / 2.0f);
-
-    x.x = 1 / (aspect * tanHalfFov);
-    y.y = 1 / tanHalfFov;
-    z.z = - (zf + zn) / (zf - zn);
-    w.w = 0.0f;
-
-    z.w = - (2.0f * zf * zn) / (zf - zn);
-    w.z = - 1.0f;
-
-}
 
 m4f4& m4f4::operator=(const m4f4& rhs){
     x.x = rhs.x.x;
@@ -407,6 +307,75 @@ m4f4& m4f4::operator=(const m4f4& rhs){
     w.w = rhs.w.w;
 
     return *this;
+}
+
+m4f4 m4f4::operator*(const m4f4 & rhs)
+{
+    m4f4& lhs = *this;
+
+    m4f4 copy;
+    copy = lhs; // copy current matrix
+    
+    copy.x.x = lhs.x.x * rhs.x.x + lhs.x.y * rhs.y.x + lhs.x.z * rhs.z.x + lhs.x.w * rhs.w.x; 
+    copy.x.y = lhs.x.x * rhs.x.y + lhs.x.y * rhs.y.y + lhs.x.z * rhs.z.y + lhs.x.w * rhs.w.y; 
+    copy.x.z = lhs.x.x * rhs.x.z + lhs.x.y * rhs.y.z + lhs.x.z * rhs.z.z + lhs.x.w * rhs.w.z; 
+    copy.x.w = lhs.x.x * rhs.x.w + lhs.x.y * rhs.y.w + lhs.x.z * rhs.z.w + lhs.x.w * rhs.w.w; 
+
+    copy.y.x = lhs.y.x * rhs.x.x + lhs.y.y * rhs.y.x + lhs.y.z * rhs.z.x + lhs.y.w * rhs.w.x; 
+    copy.y.y = lhs.y.x * rhs.x.y + lhs.y.y * rhs.y.y + lhs.y.z * rhs.z.y + lhs.y.w * rhs.w.y; 
+    copy.y.z = lhs.y.x * rhs.x.z + lhs.y.y * rhs.y.z + lhs.y.z * rhs.z.z + lhs.y.w * rhs.w.z; 
+    copy.y.w = lhs.y.x * rhs.x.w + lhs.y.y * rhs.y.w + lhs.y.z * rhs.z.w + lhs.y.w * rhs.w.w; 
+
+    copy.z.x = lhs.z.x * rhs.x.x + lhs.z.y * rhs.y.x + lhs.z.z * rhs.z.x + lhs.z.w * rhs.w.x; 
+    copy.z.y = lhs.z.x * rhs.x.y + lhs.z.y * rhs.y.y + lhs.z.z * rhs.z.y + lhs.z.w * rhs.w.y; 
+    copy.z.z = lhs.z.x * rhs.x.z + lhs.z.y * rhs.y.z + lhs.z.z * rhs.z.z + lhs.z.w * rhs.w.z; 
+    copy.z.w = lhs.z.x * rhs.x.w + lhs.z.y * rhs.y.w + lhs.z.z * rhs.z.w + lhs.z.w * rhs.w.w; 
+
+    copy.w.x = lhs.w.x * rhs.x.x + lhs.w.y * rhs.y.x + lhs.w.z * rhs.z.x + lhs.w.w * rhs.w.x; 
+    copy.w.y = lhs.w.x * rhs.x.y + lhs.w.y * rhs.y.y + lhs.w.z * rhs.z.y + lhs.w.w * rhs.w.y; 
+    copy.w.z = lhs.w.x * rhs.x.z + lhs.w.y * rhs.y.z + lhs.w.z * rhs.z.z + lhs.w.w * rhs.w.z; 
+    copy.w.w = lhs.w.x * rhs.x.w + lhs.w.y * rhs.y.w + lhs.w.z * rhs.z.w + lhs.w.w * rhs.w.w; 
+
+    return copy;
+}
+
+
+void m4f4::mult_in_place(const m4f4 & rhs)
+{
+    m4f4& lhs = *this;
+
+    m4f4 tmp;
+
+    tmp.x.x = lhs.x.x * rhs.x.x + lhs.x.y * rhs.y.x + lhs.x.z * rhs.z.x + lhs.x.w * rhs.w.x; 
+    tmp.x.y = lhs.x.x * rhs.x.y + lhs.x.y * rhs.y.y + lhs.x.z * rhs.z.y + lhs.x.w * rhs.w.y; 
+    tmp.x.z = lhs.x.x * rhs.x.z + lhs.x.y * rhs.y.z + lhs.x.z * rhs.z.z + lhs.x.w * rhs.w.z; 
+    tmp.x.w = lhs.x.x * rhs.x.w + lhs.x.y * rhs.y.w + lhs.x.z * rhs.z.w + lhs.x.w * rhs.w.w; 
+
+    tmp.y.x = lhs.y.x * rhs.x.x + lhs.y.y * rhs.y.x + lhs.y.z * rhs.z.x + lhs.y.w * rhs.w.x; 
+    tmp.y.y = lhs.y.x * rhs.x.y + lhs.y.y * rhs.y.y + lhs.y.z * rhs.z.y + lhs.y.w * rhs.w.y; 
+    tmp.y.z = lhs.y.x * rhs.x.z + lhs.y.y * rhs.y.z + lhs.y.z * rhs.z.z + lhs.y.w * rhs.w.z; 
+    tmp.y.w = lhs.y.x * rhs.x.w + lhs.y.y * rhs.y.w + lhs.y.z * rhs.z.w + lhs.y.w * rhs.w.w; 
+
+    tmp.z.x = lhs.z.x * rhs.x.x + lhs.z.y * rhs.y.x + lhs.z.z * rhs.z.x + lhs.z.w * rhs.w.x; 
+    tmp.z.y = lhs.z.x * rhs.x.y + lhs.z.y * rhs.y.y + lhs.z.z * rhs.z.y + lhs.z.w * rhs.w.y; 
+    tmp.z.z = lhs.z.x * rhs.x.z + lhs.z.y * rhs.y.z + lhs.z.z * rhs.z.z + lhs.z.w * rhs.w.z; 
+    tmp.z.w = lhs.z.x * rhs.x.w + lhs.z.y * rhs.y.w + lhs.z.z * rhs.z.w + lhs.z.w * rhs.w.w; 
+
+    tmp.w.x = lhs.w.x * rhs.x.x + lhs.w.y * rhs.y.x + lhs.w.z * rhs.z.x + lhs.w.w * rhs.w.x; 
+    tmp.w.y = lhs.w.x * rhs.x.y + lhs.w.y * rhs.y.y + lhs.w.z * rhs.z.y + lhs.w.w * rhs.w.y; 
+    tmp.w.z = lhs.w.x * rhs.x.z + lhs.w.y * rhs.y.z + lhs.w.z * rhs.z.z + lhs.w.w * rhs.w.z; 
+    tmp.w.w = lhs.w.x * rhs.x.w + lhs.w.y * rhs.y.w + lhs.w.z * rhs.z.w + lhs.w.w * rhs.w.w; 
+
+    lhs = tmp;
+
+}
+
+void m4f4::set_to_I()
+{
+    x = {1.0f, 0.0f, 0.0f, 0.0f};
+    y = {0.0f, 1.0f, 0.0f, 0.0f};
+    z = {0.0f, 0.0f, 1.0f, 0.0f};
+    w = {0.0f, 0.0f, 0.0f, 1.0f};
 }
 
 void m4f4::print(){
