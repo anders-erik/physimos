@@ -7,6 +7,7 @@ set(SCENE_RENDER
 
     shader_graph_point.cc
     shader_graph_line.cc
+    shader_gridline.cc
 )
 
 

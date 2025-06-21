@@ -127,6 +127,7 @@ RendererScene2D::RendererScene2D(){
     program_quad_2D.init();
     shader_graph_point.init();
     shader_graph_line.init();
+    shader_gridline.init();
 
     // program = opengl::build_program_vert_frag(opengl::Programs::phont_texture);
     program = opengl::build_program_vert_frag(program_name_enum);
@@ -302,6 +303,10 @@ render_scene(scene::Scene2D & scene)
 
     activate();
     set_camera(scene.get_camera().get_matrix());
+
+    // GRIDLINE
+    shader_gridline.set_camera_matrix(scene.get_camera().get_matrix());
+    shader_gridline.draw_gridlines();
 
     
     for(size_t quad_id : scene.quad_ids)

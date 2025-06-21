@@ -19,6 +19,8 @@
 #include "rend/scene2D/shader_graph_point.hh"
 #include "rend/scene2D/shader_graph_line.hh"
 
+#include "rend/scene2D/shader_gridline.hh"
+
 #include "rend/defs.hh"
 
 template <typename T>
@@ -87,6 +89,7 @@ class RendererScene2D
     ProgramQuad2D program_quad_2D;
     Shader2DGraphPoint shader_graph_point;
     Shader2DGraphLine shader_graph_line;
+    Shader2DGridline shader_gridline;
 
     // Old enum for quad shader program -- only instance of specific program
     opengl::ProgramName program_name_enum = opengl::ProgramName::Quad2D;

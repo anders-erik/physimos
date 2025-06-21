@@ -82,12 +82,17 @@ int main()
 
 	// GRAPH SCENE2D
 	scene::Scene2D scene2D { {100, 100} };
-	scene2D.get_camera().set_width(20);
-	scene2D.get_camera().pan({10.0f, 10.0f});
+	scene2D.get_camera().set_width(3);
+	scene2D.get_camera().pan({1.5f, 1.5f});
 
-    R2<float> domain = {-10.0f, 10.0f};
-    Polynomial<float> polynomial {{0, 0, 1, 0}};
-    Graph2D<float> graph {21, domain, polynomial};
+    R2<float> domain = {-2.0f, 2.0f};
+    // Polynomial<float> polynomial {{0, 0, 0, 1}};
+	Polynomial<float> polynomial {{1, 0, 2, 1, -1}};
+	polynomial.x_stretch = 0.5f;
+	polynomial.x_shift = 1.0f;
+	polynomial.y_stretch = 0.3f;
+	polynomial.y_shift = -1.0f;
+    Graph2D<float> graph {41, domain, polynomial};
 	graph.update();
 	scene2D.graphs.push_back(graph);
 	

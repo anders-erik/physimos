@@ -22,6 +22,11 @@ public:
 
     std::vector<T> coefficients;
 
+    T x_stretch = 1.0;
+    T x_shift = 0.0;
+    T y_stretch = 1.0;
+    T y_shift = 0.0;
+
     Polynomial() = default;
 
     Polynomial(std::vector<T> new_coefficients)
@@ -51,10 +56,11 @@ public:
 
         for(size_t i = 0; i < coefficients.size(); i++)
         {
-            sum += coefficients[i] * pow(x, i);
+            T x_transformed = (x / x_stretch) - x_shift;
+            sum += coefficients[i] * pow(x_transformed, i);
         }
 
-        return sum;
+        return (sum * y_stretch) + y_shift;
     }
 
 
