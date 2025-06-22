@@ -93,8 +93,6 @@ public:
     const m4f4& get_matrix()
     {
         m4f4 matrix;
-        Transform::translate(matrix, pos);
-        // matrix.scale(size);
         return matrix;
     }
 };

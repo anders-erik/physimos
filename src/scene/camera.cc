@@ -1,5 +1,7 @@
-
 #include <cmath>
+#include <iostream>
+
+#include "math/spherical.hh"
 
 #include "camera.hh"
 
@@ -80,25 +82,27 @@ phi_change(float delta)
 void OrbitalView::
 update_matrix()
 {
-    // cameras position relative to center -- using Spherical Coordinates
-    f3 cam_center_offset = {    rho * sinf(phi) * cosf(theta),
-                                rho * sinf(phi) * sinf(theta),
-                                rho * cosf(phi)                 };
-    // Camera position in scene coordinates 
-    f3 cam_pos = cam_center_offset + center_pos;
-    // Translate world objects a negative pos amount
-    m4f4 T = Transform::create_translation(-cam_pos); 
+    // Camera position relative to rotational center
+    f3 cam_center_offset = Spherical::to_cart({rho, theta, phi});
+    // Camera position in scene coordinates
+    f3 cam_pos = cam_center_offset + rotational_center;
 
-    // TODO: change the below rotation calls to a 'look_at' call. At present these transforms are not intuitive
+    m4f4 T = m4f4::translation(-(cam_pos)); 
 
-    /** Pre-rotate world by -90deg making phi rotation match spherical position. 
-        For theta = 0 this means camera is moving towards +x. */
-    m4f4 RZ_90 = Transform::create_rotation_z(1.57f); 
+    // cam_pos.print("cam_pos");
+    
+
+    // rotation angles in parenthesis is desired scene behavior. Camera rotation is then the reverse
+
+    /** Pre-rotate world by -90deg, making x-axis point downward on screen.  
+        Thus for theta = 0 and extrinsic x-rotation this means camera descending towards +x. */
+    m4f4 RZ_90 = m4f4::rotation_z(-(-1.57f)); 
     /** Rotate about z-axis, which is out of monitor by default. Before rotation: +x is down, +y is right. */
-    m4f4 R_TH = Transform::create_rotation_z(theta);
+    m4f4 R_TH = m4f4::rotation_z(-(-theta));
     /** Angle from positive z-axis, which is out of monitor by default, towards negative z-axis. */
-    m4f4 R_PHI = Transform::create_rotation_x(-phi);
+    m4f4 R_PHI = m4f4::rotation_x(-(phi));
 
+    // EXTRINSIC
     matrix = R_PHI * R_TH * RZ_90 * T;
 }
 
@@ -109,4 +113,14 @@ update()
 {
     view.update_matrix();
     perspective.update_matrix();
+}
+
+
+void CameraOrbital::
+print()
+{
+    std::cout << "Camera:" << std::endl;
+    std::cout << "rho   = " << view.rho << std::endl;
+    std::cout << "theta = " << view.theta << std::endl;
+    std::cout << "phi   = " << view.phi << std::endl;
 }

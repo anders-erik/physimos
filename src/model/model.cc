@@ -295,15 +295,15 @@ void model_rotate(MeshT& mesh, float angle_rad, f3 axis){
     m4f4 rot_matrix;
 
     if(axis.x == 1.0f){
-        m4f4 tmp_mat = Transform::create_rotation_x(1.57f);
+        m4f4 tmp_mat = m4f4::rotation_x(1.57f);
         rot_matrix = tmp_mat;
     }
     else if(axis.y == 1.0f){
-        m4f4 tmp_mat = Transform::create_rotation_y(1.57f);
+        m4f4 tmp_mat = m4f4::rotation_y(1.57f);
         rot_matrix = tmp_mat;
     }
     else if(axis.z == 1.0f){
-        m4f4 tmp_mat = Transform::create_rotation_z(1.57f);
+        m4f4 tmp_mat = m4f4::rotation_z(1.57f);
         rot_matrix = tmp_mat;
     }
 

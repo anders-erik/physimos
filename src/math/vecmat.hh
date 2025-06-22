@@ -98,6 +98,12 @@ struct f2
 
     f2 operator-();
 
+    float norm();
+    /** Radians measured ccw from the x-axis. */
+    float angle();
+    bool is_zero();
+    f2& clamp_nonzero();
+
     i2 to_i2();
 
     void print(std::string prefix);
@@ -111,6 +117,8 @@ struct f3
 
     f3() = default;
     constexpr f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
+    f3(const f2 _f2, float z) : x {_f2.x}, y {_f2.y}, z {z} {}; 
+    f3(float x, const f2 _f2) : x {x}, y {_f2.x}, z {_f2.y} {}; 
     f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
     // f3() : x {0.0f}, y {0.0f}, z {0.0f} {}; 
 
@@ -118,8 +126,15 @@ struct f3
     f3& operator=(const f3& rhs);
     f3 operator-();
 
+    f2 to_xy() const;
+    f2 yaw_pitch();
+    /** sqrt ( x^2 + y^2 + z^2 ) */
+    float norm();
+
     void matmul(m4f4 matrix);
     void matmul(m3f3 matrix);
+
+    void print(std::string name);
 };
 
 
@@ -131,7 +146,8 @@ struct f4 {
 
 
     f4(float x, float y, float z, float w) : x {x}, y {y}, z {z}, w {w} {}; 
-    f4(float x, float y, float z) : x {x}, y {y}, z {z}, w {1.0f} {}; 
+    // f4(float x, float y, float z) : x {x}, y {y}, z {z}, w {1.0f} {}; 
+    f4(const f3 _f3, float w) : x {_f3.x}, y {_f3.y}, z {_f3.z}, w {w} {}; 
     f4(float xyz) : x {xyz}, y {xyz}, z {xyz}, w {1.0f} {}; 
     f4(f3 _f3) : x {_f3.x}, y {_f3.y}, z {_f3.z}, w {1.0f} {}; 
     // f4() : x {0.0f}, y {0.0f}, z {0.0f}, w {1.0f} {}; 
@@ -204,6 +220,18 @@ struct m4f4
     f4 z;
     f4 w;
 
+    m4f4() : 
+        x { f4(1.0f, 0.0f, 0.0f, 0.0f) }, 
+        y { f4(0.0f, 1.0f, 0.0f, 0.0f) }, 
+        z { f4(0.0f, 0.0f, 1.0f, 0.0f) }, 
+        w { f4(0.0f, 0.0f, 0.0f, 1.0f) } {};
+
+    m4f4(f4 x, f4 y, f4 z, f4 w) : 
+        x { x }, 
+        y { y }, 
+        z { z }, 
+        w { w } {};
+
     m4f4& operator=(const m4f4& rhs);
     /** copy = this * rhs */
     m4f4 operator*(const m4f4& rhs);
@@ -218,16 +246,15 @@ struct m4f4
 
     void print();
 
-    m4f4() : 
-        x { f4(1.0f, 0.0f, 0.0f, 0.0f) }, 
-        y { f4(0.0f, 1.0f, 0.0f, 0.0f) }, 
-        z { f4(0.0f, 0.0f, 1.0f, 0.0f) }, 
-        w { f4(0.0f, 0.0f, 0.0f, 1.0f) } {};
-
-    m4f4(f4 x, f4 y, f4 z, f4 w) : 
-        x { x }, 
-        y { y }, 
-        z { z }, 
-        w { w } {};
-    
+    /** Create a pure translation matrix */
+    static m4f4 translation(f3 transl);
+    /** Create a pure rotation matrix about x axis. 
+        angle > 0 : +Y -> +Z */
+    static m4f4 rotation_x(float angle);
+    /** Create a pure rotation matrix about y axis. 
+        angle > 0 : +Z -> +X */
+    static m4f4 rotation_y(float angle);
+    /** Create a pure rotation matrix about z axis. 
+        angle > 0 : +X -> +Y */
+    static m4f4 rotation_z(float angle);
 };

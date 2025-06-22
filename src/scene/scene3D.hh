@@ -42,7 +42,7 @@ public:
     model::ModelT tube;
 
     f3 quarternion_vector_100 = {1.0f, 0.0f, 0.0f};
-    f3 quarternion_vector_111 = {1.0f, 1.0f, 1.0f};
+    f3 quarternion_vector_111 = {0.0f, 0.0f, 1.0f};
 
 
     CameraOrbital camera;

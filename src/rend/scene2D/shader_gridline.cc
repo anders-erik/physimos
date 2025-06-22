@@ -2,7 +2,7 @@
 #include "glad/glad.h"
 
 #include "lib/arr.hh"
-#include "math/types.hh"
+#include "math/number.hh"
 
 #include "math/vecmat.hh"
 #include "math/vec.hh"

@@ -112,13 +112,15 @@ void ProgramVector::render(f3 pos, f3 size){
     glUniform1f( glGetUniformLocation(id, "vector_scale"), sqrtf( size.x*size.x + size.y*size.y + size.z*size.z));
 
     // ROTATION
+    f2 yaw_pitch = Transform::to_yaw_pitch(size);
+    m4f4 vec_rotation_mat = Transform::yaw_pitch_matrix(yaw_pitch.x, yaw_pitch.y);
+
     m4f4 rotation_mat = Transform::rect_f3_to_m4f4(size);
     glUniformMatrix4fv(glGetUniformLocation(id, "rotation_mat"), 1, GL_TRUE, (float*) &rotation_mat);
 
 
     // TRANSLATION 
-    m4f4 translation_mat;
-    Transform::translate(translation_mat, pos);
+    m4f4 translation_mat = m4f4::translation(pos);
     glUniformMatrix4fv(glGetUniformLocation(id, "translation_mat"), 1, GL_TRUE, (float*) &translation_mat );
 
 

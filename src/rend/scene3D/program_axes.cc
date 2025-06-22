@@ -34,25 +34,26 @@ void ProgramAxes::init()
 
     AxesVertex vertices[6];
 
-    float axes_scale = 1.1f;
+    float scale = 1.1f;
 
-    vertices[0].pos.x = 0.0f;
-    vertices[0].color.x = 1.0f;
+    f3 _000 = {0.0f,  0.0f,  0.0f};
+    f3 _100 = {scale, 0.0f,  0.0f};
+    f3 _010 = {0.0f,  scale, 0.0f};
+    f3 _001 = {0.0f,  0.0f,  scale};
 
-    vertices[1].pos.x = axes_scale;
-    vertices[1].color.x = 1.0f;
+    f3 red   = {1.0f, 0.0f, 0.0f};
+    f3 green = {0.0f, 1.0f, 0.0f};
+    f3 blue  = {0.0f, 0.0f, 1.0f};
 
-    vertices[2].pos.y = 0.0f;
-    vertices[2].color.y = 1.0f;
 
-    vertices[3].pos.y = axes_scale;
-    vertices[3].color.y = 1.0f;
+    vertices[0] = { _000, red};
+    vertices[1] = { _100, red};
 
-    vertices[4].pos.z = 0.0f;
-    vertices[4].color.z = 1.0f;
-
-    vertices[5].pos.z = axes_scale;
-    vertices[5].color.z = 1.0f;
+    vertices[2] = { _000, green};
+    vertices[3] = { _010, green};
+    
+    vertices[4] = { _000, blue};
+    vertices[5] = { _001, blue};
 
     
     glGenVertexArrays(1, &vao);

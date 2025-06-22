@@ -30,24 +30,10 @@ struct Transform {
 
     void set_matrix_model(); // Old transform interface
 
-    void translate(f3 transl);
-    void rotate_x(float angle);
-    void rotate_y(float angle);
-    void rotate_z(float angle);
-    
-    static void translate(m4f4& matrix, f3 transl);
-    static void rotate_x(m4f4& matrix, float angle);
-    static void rotate_y(m4f4& matrix, float angle);
-    static void rotate_z(m4f4& matrix, float angle);
+    static f2 to_yaw_pitch(f3 rect_vector);
+    static m4f4 yaw_pitch_matrix(float yaw, float pitch);
 
-    static m4f4 create_translation(f3 transl);
-    static m4f4 create_rotation_x(float angle);
-    static m4f4 create_rotation_y(float angle);
-    static m4f4 create_rotation_z(float angle);
-
-
-
-    /** Rotates a unit vector in the f3.x direction to point in the direction of the passed rectangular f3 vector.  */
+/** Matrix that will yaw a unit vector in the xy plane, followed by piching to match rect_vector.  */
     static m4f4 rect_f3_to_m4f4(f3 rect_vector);
 };
 

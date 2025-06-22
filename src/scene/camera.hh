@@ -23,13 +23,13 @@ struct CameraPerspective
 
 struct OrbitalView
 {
-    f3 center_pos;  // the point about which the camera is orbiting
-    m4f4 matrix;    // Full view matrix. Set by calling 'update_matrix()'
+    f3 rotational_center;   // the point about which the camera is orbiting
+    m4f4 matrix;            // Full view matrix. Set by calling 'update_matrix()'
 
     float rho   =  3.0f; // Radius
     float theta =  4.5f; // x-y plane
     float phi   =  1.0f; // z-axis
-    // float rho   =  0.0f; // Radius
+    // float rho   =  2.0f; // Radius
     // float theta =  0.0f; // x-y plane
     // float phi   =  0.0f; // z-axis
 
@@ -64,6 +64,8 @@ struct CameraOrbital
 
     /** Makes view and perspective matrices reflect most recent values. */
     void update();
+
+    void print();
 };
 
 

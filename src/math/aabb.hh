@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "math/types.hh"
+#include "math/number.hh"
 
 
 /** 2D */

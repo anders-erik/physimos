@@ -67,11 +67,36 @@ operator*(float scalar) const
 f2 f2::
 operator-()
 {
-    return {
-        -this->x,
-        -this->y
-    };
+    return {-x, -y};
 }
+
+float f2::norm()
+{
+    return sqrtf(x*x + y*y);
+}
+
+float f2::angle()
+{
+    float ang = atanf( y / x );
+
+    if(x < 0.0f)
+        ang += 3.141593;
+
+    return ang;
+}
+
+bool f2::is_zero()
+{
+    return (x == 0.0f && y == 0.0f) ? true : false;
+}
+
+f2& f2::clamp_nonzero()
+{
+    if(is_zero())
+        x = 0.00001f;
+    return *this;
+}
+
 
 i2 f2::to_i2()
 {
@@ -249,9 +274,31 @@ f3& f3::operator=(const f3 & rhs)
 
 f3 f3::operator-()
 {
-    return {    -this->x,
-                -this->y,
-                -this->z };
+    return { -x, -y, -z };
+}
+
+f2 f3::to_xy() const
+{
+    return f2(x, y);
+}
+
+f2 f3::yaw_pitch()
+{
+    f2 xy = to_xy();
+
+    if(xy.is_zero())
+        return {INFINITY, INFINITY};
+
+    float yaw = xy.angle();
+    float pitch = atanf( z / xy.norm());
+
+    return {yaw, pitch};
+}
+
+
+float f3::norm()
+{
+    return sqrtf(x*x + y*y + z*z);
 }
 
 void f3::matmul(m4f4 matrix){
@@ -269,6 +316,11 @@ void f3::matmul(m3f3 matrix){
     tmp.z = matrix.z.x * x  + matrix.z.y * y    + matrix.z.z * z;
 
     *this = tmp;
+}
+
+void f3::print(std::string name)
+{
+    std::cout << name <<  ": x = " << x << ", y = " << y << ", z = " << z << std::endl;
 }
 
 
@@ -389,6 +441,48 @@ void m4f4::print(){
     std::cout << z.x << " " << z.y << " " << z.z << " " << z.w << std::endl;
     std::cout << w.x << " " << w.y << " " << w.z << " " << w.w << std::endl;
 }
+
+
+
+m4f4 m4f4::
+translation(f3 transl)
+{
+    return {{1, 0, 0, transl.x},
+            {0, 1, 0, transl.y},
+            {0, 0, 1, transl.z},
+            {0, 0, 0, 1       }};
+}
+
+
+m4f4 m4f4::
+rotation_x(float angle)
+{
+    return {{1, 0,           0,             0},
+            {0, cosf(angle), -sinf(angle),  0},
+            {0, sinf(angle), cosf(angle),   0},
+            {0, 0,           0,             1}};
+}
+
+
+m4f4 m4f4::
+rotation_y(float angle)
+{
+    return {{cosf(angle),   0,  sinf(angle),    0},
+            {0,             1,  0,              0},
+            {-sinf(angle),  0,  cosf(angle),    0},
+            {0,             0,  0,              1}};
+}
+
+
+m4f4 m4f4::
+rotation_z(float angle)
+{
+    return {{cosf(angle),  sinf(angle),    0,  0},
+            {-sinf(angle),   cosf(angle),    0,  0},
+            {0,             0,              1,  0},
+            {0,             0,              0,  1}};
+}
+
 
 i2 i2::operator/(const i2 & rhs)
 {

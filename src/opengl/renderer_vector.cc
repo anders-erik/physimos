@@ -112,8 +112,8 @@ void RendererVector::render(f3 vector, f3 translation){
 
 
     // TRANSLATION 
-    m4f4 translation_mat;
-    Transform::translate(translation_mat, translation);
+    m4f4 translation_mat = m4f4::translation(translation);
+    // Transform::translate(translation_mat, translation);
     glUniformMatrix4fv(glGetUniformLocation(program, "translation_mat"), 1, GL_TRUE, (float*) &translation_mat );
 
 

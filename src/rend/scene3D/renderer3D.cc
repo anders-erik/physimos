@@ -65,6 +65,7 @@ render_scene_3d(Scene3D& scene3D)
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
     scene3D.camera.update();
+    // scene3D.camera.print();
 
 
     // UNIFORMS
@@ -154,7 +155,7 @@ render_scene_3d(Scene3D& scene3D)
                             {0.0f, 2.0f, 2.0f});
 
     // QUARTERNION TESTS
-    f3 rot_axis = {1.0f, 1.0f, 0.0f};
+    f3 rot_axis = {0.5f, 0.0f, 1.0f};
     program_vector.set_color({1.0f, 0.0f, 1.0f});
     Quarternion::rotate_f3( scene3D.quarternion_vector_100,
                             rot_axis,
@@ -163,6 +164,10 @@ render_scene_3d(Scene3D& scene3D)
                             scene3D.quarternion_vector_100);
     program_vector.render(  {0.0f, 0.0f, 0.0f},
                             scene3D.quarternion_vector_111);
+
+    program_vector.set_color({0.0f, 0.0f, 0.0f});
+    program_vector.render(  {0.0f, 0.0f, 0.0f},
+                            rot_axis);
 
 
 
