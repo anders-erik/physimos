@@ -1,6 +1,7 @@
 
 #pragma once
 
+
 #include <vector>
 
 #include "lib/str.hh"
@@ -10,7 +11,7 @@
 #include "opengl/texture.hh"
 
 #include "scene/mesh.hh"
-#include "scene/scene_base.hh"
+#include "scene/sid.hh"
 
 
 typedef unsigned int OID;
@@ -58,13 +59,13 @@ struct MeshO
 struct SQuad 
 {
     enum Type {
-        Scene2D,
-    } type = Scene2D;
+        _Scene2D,
+    } type = _Scene2D;
     unsigned int texture_id = 0; // LEGACY
 
     SID sid = 0;
 
-    bool is_scene2D() { return type == Scene2D; }
+    bool is_scene2D() { return type == _Scene2D; }
 
 };
 

@@ -15,7 +15,9 @@
 
 #include "renderer_axes.hh"
 
-#include "scene_base.hh"
+#include "sid.hh"
+
+
 
 struct GLFWWindow;
 

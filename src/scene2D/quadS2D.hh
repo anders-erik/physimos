@@ -13,12 +13,10 @@
 
 namespace opengl {
     struct Texture;}
-namespace scene {
-    struct Scene2D;}
 
 
-namespace scene {
 
+struct Scene2D;
 
 
 /**
@@ -32,7 +30,7 @@ public:
 
     enum class T {
         _Bitmap,
-        Scene2D,
+        _Scene2D,
     };
 
 private:
@@ -91,5 +89,3 @@ public:
 };
 
 
-
-}

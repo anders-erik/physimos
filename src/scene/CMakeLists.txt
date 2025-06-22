@@ -9,19 +9,12 @@ set(SCENE_OBJS
     scene.cc
     camera.cc
 
-    scene2D.cc
-    camera2D.cc
-    shapeS2D.cc
-    quadS2D.cc
-
     scene3D.cc
     object_manager.cc
     mesh.cc
     mesh_texture.cc
 
     manager.cc
-    quad_manager.cc
-
 )
 
 
@@ -39,6 +32,7 @@ target_include_directories(scene PUBLIC
 # What to link against
 target_link_libraries(scene
     rend
-    source # this will be changed to specific libraries as refactoring progress allows, and not the whole physimos source
+    source
+    scene2D
 )
 

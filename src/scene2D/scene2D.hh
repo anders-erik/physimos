@@ -17,16 +17,16 @@
 #include "math/graph2D.hh"
 
 #include "rend/scene2D/renderer2D.hh"
-#include "scene/shapeS2D.hh"
-#include "scene/camera2D.hh"
-#include "scene/quad_manager.hh"
+#include "scene2D/shapeS2D.hh"
+#include "scene2D/camera2D.hh"
+#include "scene2D/quad_manager.hh"
 
-#include "scene_base.hh"
+#include "sid.hh"
 
 struct GLFWWindow;
 
 
-namespace scene {
+
 
 struct QuadS2D;
 
@@ -72,12 +72,13 @@ struct EventResultScene {
 
 
 
-class Scene2D : public SceneBase
+class Scene2D
 {
+    
+
     size_t id; // id from manager during creation
     size_t parent_id = 0; // If the scene is not a root scene it has a valid parent id
 
-    Str name;
 
     f2 framebuffer_size_f;  // 
     Box2D window_box;       // The AABB of this scene as viewed from the window
@@ -97,6 +98,9 @@ class Scene2D : public SceneBase
 
 
 public:
+    SID sid;
+    Str name;
+
     m3f3 frame_M_m_s; // dummy frame matrix for testing
     std::vector<ShapeS2D> points;
     std::vector<ShapeS2D> lines;
@@ -157,7 +161,7 @@ public:
     /** Add a quad subscene using an already manager-allocated scene.  */
     size_t add_subscene2D(size_t scene_id, f2 quad_pos);
     void push_quad_id(size_t quad_id);
-    void push_quad(scene::QuadS2D& quad);
+    void push_quad(QuadS2D& quad);
 
 private:
 
@@ -169,4 +173,3 @@ private:
 
 
 
-}

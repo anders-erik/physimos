@@ -9,8 +9,8 @@
 
 #include "opengl/texture.hh"
 
-#include "scene/quadS2D.hh"
-#include "scene/scene2D.hh"
+#include "scene2D/quadS2D.hh"
+#include "scene2D/scene2D.hh"
 #include "scene/manager.hh"
 
 #include "renderer3D.hh"

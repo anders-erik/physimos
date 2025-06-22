@@ -7,16 +7,11 @@
 #include "math/vecmat.hh"
 #include "math/transform.hh"
 
-#include "scene/quadS2D.hh"
+#include "scene2D/quadS2D.hh"
 
 #include "scene/manager.hh"
 
-#include "scene2D.hh"
-
-
-namespace scene {
-
-
+#include "scene2D/scene2D.hh"
 
 
 
@@ -143,7 +138,7 @@ void Scene2D::set_cursor_pos(f2 cursor_pos_normalized)
 
 void Scene2D::try_hover_quad()
 {
-    auto& q_manager = ManagerScene::get_quad_manager();
+    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
     q_manager.clear_hovered();
 
     for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
@@ -156,7 +151,7 @@ void Scene2D::try_hover_quad()
 
 bool Scene2D::try_select_quad()
 {
-    auto& q_manager = ManagerScene::get_quad_manager();
+    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
 
     for(QuadS2D* quad : q_manager.get_quads_from_ids_mut(quad_ids))
     {
@@ -176,7 +171,7 @@ bool Scene2D::try_select_quad()
 QuadQuery Scene2D::
 try_find_quad_in_viewbox(f2 viewbox_pos_normalized)
 {
-    auto& q_manager = ManagerScene::get_quad_manager();
+    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
     set_cursor_pos(viewbox_pos_normalized);
 
     // q_manager.get_quads_mut(quad_ids);
@@ -210,7 +205,7 @@ handle_pointer_move(window::InputEvent& event)
     f2 delta_normalized = event.mouse_movement.cursor_new.normalized - event.mouse_movement.cursor_prev.normalized;
     f2 delta_scene = camera.normalized_to_scene_delta(delta_normalized);
 
-    auto& q_manager = ManagerScene::get_quad_manager();
+    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
 
     if(quad_grab)
     {
@@ -329,9 +324,9 @@ void Scene2D::push_quad_id(size_t quad_id)
     quad_ids.push_back(quad_id);
 }
 
-void Scene2D::push_quad(scene::QuadS2D& quad)
+void Scene2D::push_quad(QuadS2D& quad)
 {
-    auto& q_manager = ManagerScene::get_quad_manager();
+    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
     size_t quad_id = q_manager.push_quad(quad);
     quad_ids.push_back(quad_id);
 }
@@ -345,17 +340,17 @@ ShapeS2D& Scene2D::push_shape(Shape& shape){
     // renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
 
     if(shape.is(shape_t::point)){
-        scene::ShapeS2D& new_shape_S2D = points.emplace_back(shape);
+        ShapeS2D& new_shape_S2D = points.emplace_back(shape);
         renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
         return new_shape_S2D;
     }
     else if(shape.is(shape_t::line)){
-        scene::ShapeS2D& new_shape_S2D = lines.emplace_back(shape);
+        ShapeS2D& new_shape_S2D = lines.emplace_back(shape);
         renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
         return new_shape_S2D;
     }
     else {
-        scene::ShapeS2D& new_shape_S2D = shapes.emplace_back(shape);
+        ShapeS2D& new_shape_S2D = shapes.emplace_back(shape);
         renderer2D.create_shape_context_t(new_shape_S2D.render_context, new_shape_S2D.verts_render);
         return new_shape_S2D;
     }
@@ -366,20 +361,19 @@ ShapeS2D& Scene2D::push_shape(Shape& shape){
 
 size_t Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
 {
-    auto* scene_query = ManagerScene::search_scene_storage_2D(scene_id);
+    Scene2D* scene_query = ManagerScene::get_manager_2D().search_scene_storage_2D(scene_id);
 
     if(scene_query == nullptr) return 0;
-    if(!scene_query->is_2D()) return 0;
 
-    scene::Scene2D& scene = (scene::Scene2D&) *scene_query;
+    Scene2D& scene = (Scene2D&) *scene_query;
 
-    scene::QuadS2D new_quad;
+    QuadS2D new_quad;
     new_quad.set_box( quad_pos, scene.get_framebuffer_size() );
     new_quad.set_name("scene_quad_test");
     new_quad.set_scene(&scene);
     new_quad.update_texture();
 
-    auto& q_manager = ManagerScene::get_quad_manager();
+    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
     size_t new_quad_id = q_manager.push_quad(new_quad);
     quad_ids.push_back(q_manager.push_quad(new_quad));
 
@@ -392,7 +386,7 @@ size_t Scene2D::add_subscene2D(size_t scene_id, f2 quad_pos)
 
 void Scene2D::try_resize_hovered_quad(float size_factor)
 {
-    auto& q_manager = ManagerScene::get_quad_manager();
+    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
 
     auto* quad_hovered = q_manager.get_hovered();
     if(quad_hovered != nullptr)
@@ -420,4 +414,3 @@ void Scene2D::release_grabs()
 
 
 
-}

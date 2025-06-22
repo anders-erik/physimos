@@ -8,8 +8,8 @@
 #include "ui/string.hh"
 
 #include "scene/manager.hh"
-#include "scene/scene2D.hh"
-#include "scene/quadS2D.hh"
+#include "scene2D/scene2D.hh"
+#include "scene2D/quadS2D.hh"
 
 #include "scene/object_manager.hh"
 
@@ -55,7 +55,6 @@ public:
         Scene3D& root_scene = ManagerScene::get_window_scene_mut();
 
 
-
         // Frame
         frame.pos = widget_pos;
         frame.size = {200.0f, 200.0f};
@@ -67,7 +66,7 @@ public:
 
         // Name
         f2 name_delta = { 0.0f, -20.0f };
-        Str name_str = root_scene.get_name();
+        Str name_str = root_scene.name;
         scene_name_base.set_pos( pos += name_delta );
         // scene_name_base.set_size( offset );
         scene_name_base.set_str(name_str);

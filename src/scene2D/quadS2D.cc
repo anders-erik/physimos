@@ -7,8 +7,6 @@
 #include "manager.hh"
 
 
-namespace scene {
-
 
 const size_t QuadS2D::get_id() const
 {
@@ -85,7 +83,7 @@ void QuadS2D::set_bitmap_texture(unsigned int opengl_texture_id)
 
 void QuadS2D::set_scene(const Scene2D* new_scene)
 {
-    type = T::Scene2D;
+    type = T::_Scene2D;
     object_id = new_scene->get_id();
 }
 
@@ -96,7 +94,7 @@ bool QuadS2D::is_bitmap()
 
 bool QuadS2D::is_scene2D()
 {
-     return type == T::Scene2D ? true : false;
+     return type == T::_Scene2D ? true : false;
 }
 
 void QuadS2D::update_texture()
@@ -104,4 +102,4 @@ void QuadS2D::update_texture()
     
 }
 
-}
+

@@ -32,22 +32,3 @@ target_link_libraries(opengl
     glad
     ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
 )
-
-add_executable(main_opengl
-    main_opengl.cc
-)
-target_include_directories(main_opengl PUBLIC
-    .
-    ${CMAKE_SOURCE_DIR}/src/
-    ${CMAKE_SOURCE_DIR}/extern/glad/include/
-    ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
-)
-target_link_libraries(main_opengl
-    window
-
-    lib
-    opengl
-
-    glad 
-    ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
-)

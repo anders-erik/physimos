@@ -8,8 +8,8 @@
 #include "ui/string.hh"
 
 #include "scene/manager.hh"
-#include "scene/scene2D.hh"
-#include "scene/quadS2D.hh"
+#include "scene2D/scene2D.hh"
+#include "scene2D/quadS2D.hh"
 
 #include "widget.hh"
 

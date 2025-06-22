@@ -6,9 +6,6 @@
 
 
 
-namespace scene {
-
-
 
 /** Camera for Scene2D : Box2D/AABB wrapper.  */
 class Camera2D 
@@ -51,5 +48,3 @@ private:
 
 
 
-
-}

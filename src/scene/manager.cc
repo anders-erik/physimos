@@ -7,10 +7,11 @@
 
 #include "rend/rend_manager.hh"
 
-#include "scene2D.hh"
 #include "scene.hh"
 
-#include "quad_manager.hh"
+#include "scene2D/scene2D.hh"
+#include "scene2D/manager_2D.hh"
+#include "scene2D/quad_manager.hh"
 
 #include "manager.hh"
 
@@ -18,125 +19,62 @@
 namespace ManagerScene 
 {
 
+static bool init_flag = false;
 
-static InputStateSceneManager input_state;
+static Manager2D manager_2D;
 
-static SID id_count = 2; // Global index count
+static SID sid_3D_counter = 2; // Global index count
 
-static bool is_grabbing_a_scene = false;
-static Box2D window_box; // The current window viewport box
-static Box2D quad_box; // the box of cursor scene in window coordinates
+static f2 window_size; // The current window viewport box
 
-static window::CursorPosition cursor_pos; // Copy from most recent cursor move event
+static Scene3D root_scene;
+static Scene3D* window_scene = nullptr;
 
-static Scene3D* window_scene = nullptr; 
+static std::list<Scene3D> scenes3D; // list of non-root 3D scenes
 
-// static RendererScene2D renderer_scene;
 
-static struct ScenesState
-{
-    const SID root_id = 1; // root scene is created during init; is indestructable; id==1;
-    SID window_id = 1; // the scene renedered to the main framebuffer
-    SID cursor_id = 1; // scene curently hovered by, or is grabbing, cursor - recieves mouse click and movement events
+static std::list<Scene2D> scenes2D;
+static ManagerQuadS2D quad_manager;
 
-    /** The cursor is not currently targeting a subscene */
-    bool window_scene_is_target(){
-        return (cursor_id == window_id) ? true : false;
-    }
-
-    /** Reset targeted scene to default: Window. */
-    void set_window_as_cursor_scene(){
-        cursor_id = window_id;
-    }
-
-    /** Reset targeted scene to default: Window. */
-    void set_cursor_scene(SID scene_id){
-        cursor_id = scene_id;
-    }
-
-} scenes_state;
-
-// std::vector<scene::Scene2D> scenes;
-static std::list<scene::Scene2D> scenes2D;
-static std::list<Scene3D> scenes3D;
-static QuadManager quad_manager;
 
 
 /** 
     Returns a unique, not equal to 0 or 1, unsigned integer.
     An id of 0 is globally understood as having no object asssociated with it; ids of 1 is always the fixed root scene.
  */
-SID new_unique_id()
+SID new_sid_3D()
 {
-    ++id_count;
+    ++sid_3D_counter;
 
-    if (id_count == 0)
-        id_count += 2;
-    else if (id_count == 1)
-        id_count += 1;
+    if (sid_3D_counter == 0)
+        throw std::runtime_error("SID 3d counter was equal to 0.");
+    else if (sid_3D_counter == 1)
+        throw std::runtime_error("SID 3d counter was equal to 1.");
     
-    return id_count;
+    return sid_3D_counter | SID_3D;
 }
 
 
 
 Scene3D& init(f2 _window_size)
 {
-    if(scenes2D.size() > 1)
-    {
+    if(init_flag)
         throw std::runtime_error("Can't init the scene manager twice");
-    }
-
-    window_box.pos = {0.0f, 0.0f}; // always at [0,0]
-    window_box.size = _window_size;
+    init_flag = true;
 
 
-    Scene3D& root_scene = scenes3D.emplace_back();
+    window_size = _window_size;
 
-    root_scene.scene_id = scenes_state.root_id;
-    root_scene.type = SceneType::D3;
+    root_scene.sid = 1 | SID_3D;
 
     window_scene = &root_scene;
-
-    scenes_state.window_id = scenes_state.root_id;
-    scenes_state.cursor_id = 0;
 
     return root_scene;
 }
 
-Scene3D& 
-get_root_scene_3D_mut()
-{
-    return scenes3D.front();
-}
 
 
-SID push_scene2D(scene::Scene2D& _scene){
-    
-    SID sid = new_unique_id();
-
-
-    // Create framebuffer
-    auto& renderer_2D = Rend::Manager::get_renderer_scene2D();
-    f2 fb_size_s = _scene.get_framebuffer_size();
-    ui2 framebuffer_size = {fb_size_s.x, fb_size_s.y};
-    renderer_2D.create_scene_framebuffer(sid, framebuffer_size);
-
-
-    _scene.scene_id = sid;
-    _scene.type = SceneType::D2;
-
-    
-    _scene.set_id(sid);
-
-    scenes2D.push_back( _scene );
-
-    return sid;
-}
-
-
-
-scene::QuadManager& 
+ManagerQuadS2D& 
 get_quad_manager()
 {
     return quad_manager;
@@ -147,14 +85,14 @@ get_quad_manager()
 const Scene3D& 
 get_root_scene()
 {
-    return scenes3D.front();
+    return root_scene;
 }
 
 
 Scene3D& 
 get_root_scene_mut()
 {
-    return scenes3D.front();
+    return root_scene;
 }
 
 
@@ -171,246 +109,12 @@ get_window_scene_mut()
     return *window_scene;
 }
 
-std::list<scene::Scene2D>& get_all_scene2D()
+
+
+
+InputResponse event_send_window_scene(window::InputEvent& event)
 {
-    return scenes2D;
-}
-
-
-
-
-SceneBase*
-search_scene_storage_2D(SID id)
-{
-    for(scene::Scene2D& scene : scenes2D)
-        if(scene.scene_id == id)
-            return &scene;
-
-    return nullptr;
-}
-
-
-
-
-bool is_grabbing_cursor()
-{
-    return is_grabbing_a_scene;
-}
-
-
-void clear_cursor_hovers()
-{
-    auto& q_manager = ManagerScene::get_quad_manager();
-    q_manager.clear_hovered();
-}
-
-
-
-
-
-
-
-
-void event_scroll(window::InputEvent& event)
-{
-    switch (window_scene->type)
-    {
-
-        case SceneType::D2 :
-            {
-            auto event_result = ((scene::Scene2D*) window_scene)->handle_scroll(event);
-            if(event_result.grabbed_mouse())
-                is_grabbing_a_scene = true;
-            else
-                is_grabbing_a_scene = false;
-            }
-            break;
-        
-        case SceneType::D3 :
-            std::cout << "D3 scroll" << std::endl;
-            break;
-    
-        // default:
-        //     break;
-    }
-    
-}
-
-
-void 
-event_move(window::InputEvent& event)
-{
-
-    switch (window_scene->type)
-    {
-    case SceneType::D2 :
-        {
-        auto event_result = ((scene::Scene2D*) window_scene)->handle_scroll(event);
-        if(event_result.grabbed_mouse())
-            is_grabbing_a_scene = true;
-        else
-            is_grabbing_a_scene = false;
-        }
-        break;
-
-    case D3:
-        std::cout << "D3 mouse move" << std::endl;
-        break;
-    
-    // default:
-    //     break;
-    }
-}
-
-
-void 
-event_mouse_button(window::InputEvent& event)
-{
-	auto& mouse_button_event = event.mouse_button;
-
-    switch (window_scene->type)
-    {
-
-    case SceneType::D2 :
-        {
-        auto event_result = ((scene::Scene2D*) window_scene)->handle_pointer_click(event);
-        if(event_result.grabbed_mouse())
-            is_grabbing_a_scene = true;
-        else
-            is_grabbing_a_scene = false;
-        }
-        break;
-    
-
-    case SceneType::D3:
-        std::cout << "D3 mouse button" << std::endl;
-        
-        break;
-
-    }
-
-
-    // select the subscene quad in window scene
-    if(mouse_button_event.is_left_down())
-    {
-        // bool success = cursor_scene.try_select_quad();
-    }
-
-}
-
-void event_keystroke(window::InputEvent& event)
-{
-    using namespace window;
-
-    
-    
-    switch (window_scene->type)
-    {
-    case SceneType::D2 :
-        {
-        auto event_result = ((scene::Scene2D*) window_scene)->handle_pointer_click(event);
-        if(event_result.grabbed_mouse())
-            is_grabbing_a_scene = true;
-        else
-            is_grabbing_a_scene = false;
-        }
-        break;
-
-    // case SceneType::D3 :
-
-    //     if(event.keystroke.is(Key::p)){
-
-    //         if(event.keystroke.is(ButtonAction::Press))
-    //             std::cout << "p down" << std::endl;
-    //         else if(event.keystroke.is(ButtonAction::Release))
-    //             std::cout << "p up" << std::endl;
-            
-    //     }
-
-    //     if(event.keystroke.has(KeyModifierState::ctl))
-    //         std::cout << "CTRL is down" << std::endl;
-
-    //     break;
-    
-    // default:
-    //     break;
-    }
-        
-}
-
-
-
-InputResponse 
-events_user_all(window::InputEvent& event)
-{
-    using namespace window;
-
-    // std::cout << "root_id  : " << scenes_state.root_id << std::endl;
-    // std::cout << "window_id: " << scenes_state.window_id << std::endl;
-    // std::cout << "cursor_id: " << scenes_state.cursor_id << std::endl;
-    // cursor_scene_window_box.print();
-    // cursor_scene_box.print();
-    // std::cout << "is_grabbing_a_scene: " << is_grabbing_a_scene << std::endl;
-
-
-
-    // auto& window_scene = get_window_scene_mut();
-    // window_scene.try_hover_quad(); // ALWAYS try to highlight hovered quad in window scene
-
-    if(window_scene->is_3D())
-    {
-        ((Scene3D*)window_scene)->handle_input(event);
-        return {};
-    }
-
-    switch (event.type)
-    {
-
-    case EventType::MouseMove :
-        event_move(event);
-        break;
-
-    case EventType::MouseButton :
-        event_mouse_button(event);
-        break;
-
-    case EventType::MouseScroll :
-        event_scroll(event);
-        break;
-
-    case EventType::Keystroke :
-        event_keystroke(event);
-        break;
-    
-    default:
-        println("WARN: unknown event handled in scene managers primary event handler.");
-        break;
-    }
-
-    return {};
-}
-
-
-InputResponse event_handler(window::InputEvent & event)
-{
-
-
-
-    switch (window_scene->type)
-    {
-
-    case SceneType::D2:
-        /* code */
-        break;    
-
-    case SceneType::D3:
-        return static_cast<Scene3D*>(window_scene)->handle_input(event);
-        break;
-
-    default:
-        break;
-    }
-
+    window_scene->handle_input(event);
     return InputResponse();
 }
 
@@ -419,28 +123,17 @@ InputResponse event_handler(window::InputEvent & event)
 
 void event_window_resize(window::WindowResizeEvent& window_resize)
 {
-
-    window_box.size = window_resize.size_f;
-    
-    // TODO: update the window scene?
-    // ManagerScene::get_root_scene_mut().set_framebuffer_size(window_resize.size_f);
-
-    switch (window_scene->type)
-    {
-
-    case SceneType::D2:
-        /* code */
-        break;    
-
-    case SceneType::D3:
-        return static_cast<Scene3D*>(window_scene)->handle_window_resize(window_resize);
-        break;
-
-    default:
-        break;
-    }
+    window_size = window_resize.size_f;
+    window_scene->handle_window_resize(window_resize);
 }
 
+
+
+
+Manager2D& get_manager_2D()
+{
+    return manager_2D;
+}
 
 
 }

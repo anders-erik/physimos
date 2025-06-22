@@ -7,8 +7,8 @@
 #include "ui/pui.hh"
 
 #include "scene/manager.hh"
-#include "scene/scene2D.hh"
-#include "scene/shapeS2D.hh"
+#include "scene2D/scene2D.hh"
+#include "scene2D/shapeS2D.hh"
 
 #include "rend/scene2D/renderer2D.hh"
 #include "rend/scene3D/renderer3D.hh"
@@ -40,7 +40,6 @@ public:
 	bool is_quad_capture_click(InputEvent& event);
 	bool should_release_quad(InputEvent& event);
 
-	void send_event_pui(InputEvent& event);
 	void send_event_scene(InputEvent& event);
 	void send_event_quad(InputEvent& event);
 
@@ -61,6 +60,7 @@ public:
 
 	/** transfer control to Physimos by entering main rendering loop */
 	void main_loop();
+
 };
 
 

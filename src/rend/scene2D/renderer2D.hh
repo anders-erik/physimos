@@ -11,7 +11,7 @@
 #include "opengl/program.hh"
 #include "opengl/texture_fb.hh"
 
-#include "scene/scene_base.hh"
+#include "scene/sid.hh"
 
 #include "rend/scene2D/program_quad2D.hh"
 #include "rend/scene3D/program_vector.hh"
@@ -31,10 +31,9 @@ namespace opengl {
     class TextureFBMS;
 }
 
-namespace scene {
-    class Scene2D;
-    class QuadS2D;
-}
+class Scene2D;
+class QuadS2D;
+
 
 
 
@@ -120,11 +119,11 @@ public:
     void set_model(m3f3 model_mat);
 
     // Render real quads
-    void render_quad(const scene::QuadS2D& quad);
+    void render_quad(const QuadS2D& quad);
 
-    void render_scene(scene::Scene2D& scene);
-    unsigned int render_scene_FB(scene::Scene2D& scene, opengl::TextureFB& framebuffer);
-    unsigned int render_scene_FBMS(scene::Scene2D& scene, opengl::TextureFBMS& framebuffer_ms);
+    void render_scene(Scene2D& scene);
+    unsigned int render_scene_FB(Scene2D& scene, opengl::TextureFB& framebuffer);
+    unsigned int render_scene_FBMS(Scene2D& scene, opengl::TextureFBMS& framebuffer_ms);
 
     void render_point(RenderContextQuadS2D context);
     void render_line(RenderContextQuadS2D context);

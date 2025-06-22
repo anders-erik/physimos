@@ -13,13 +13,11 @@
 using QuadID = size_t;
 
 
-namespace scene {
-
 
 struct QuadS2D;
 
 /** Global quad manager */
-class QuadManager 
+class ManagerQuadS2D 
 {
     size_t id_index = 2; // index of 0 = no quad exists for this id
 
@@ -31,7 +29,7 @@ class QuadManager
 
 public:
 
-    QuadManager() = default;
+    ManagerQuadS2D() = default;
 
     /** Add transfer ownership and get a stable quad id back. */
     QuadS2D* add_quad(QuadS2D& new_quad);
@@ -57,5 +55,3 @@ public:
 };
 
 
-
-}

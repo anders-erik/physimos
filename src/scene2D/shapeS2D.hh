@@ -15,7 +15,6 @@
 #include "rend/scene2D/renderer2D.hh"
 
 
-namespace scene {
 
 
 class ShapeS2D {
@@ -64,6 +63,3 @@ public:
 };
 
 
-
-
-}

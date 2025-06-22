@@ -23,7 +23,7 @@ int main()
 	Physimos physimos { 800, 600 };
 
 	Scene3D& root_scene = ManagerScene::get_root_scene_mut();
-	root_scene.set_name("Forever Root");
+	root_scene.name = "Forever Root";
 
 
 	// GROUND GRASS
@@ -81,7 +81,7 @@ int main()
 
 
 	// GRAPH SCENE2D
-	scene::Scene2D scene2D { {100, 100} };
+	Scene2D scene2D { {100, 100} };
 	scene2D.get_camera().set_width(3);
 	scene2D.get_camera().pan({1.5f, 1.5f});
 
@@ -96,7 +96,7 @@ int main()
 	graph.update();
 	scene2D.graphs.push_back(graph);
 	
-	SID sid_2D = ManagerScene::push_scene2D(scene2D);
+	SID sid_2D = ManagerScene::get_manager_2D().push_scene2D(scene2D);
 
 	// for(size_t i = 0; i < 20; i++)
 	// {

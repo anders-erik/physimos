@@ -6,7 +6,6 @@
 
 #include "math/transform.hh"
 
-namespace scene {
 
 using namespace opengl;
 
@@ -200,4 +199,3 @@ std::array<VertexQuad2D,8> ShapeS2D::generate_quad_line_frame_verts_0505(f2 text
 
 
 
-}

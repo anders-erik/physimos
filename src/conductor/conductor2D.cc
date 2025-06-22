@@ -49,21 +49,12 @@ should_release_quad(InputEvent & event)
 
 
 
-void Physimos::
-send_event_pui(InputEvent& event)
-{
-	auto response = pui.event_all(event);
-	input_state.update(GrabStateConductor::PUI, response);
-
-	ManagerScene::clear_cursor_hovers();
-}
-
 
 
 void Physimos::
 send_event_scene(InputEvent& event)
 {
-	auto response = ManagerScene::event_handler(event);
+	auto response = ManagerScene::event_send_window_scene(event);
 	input_state.update(GrabStateConductor::SCENE, response);
 
 	pui.clear_hovers();
@@ -88,7 +79,7 @@ send_event_quad(InputEvent& event)
 	if(capturing_quado->texture.is_scene2D())
 	{
 		std::cout << "Sending to scene" << std::endl;
-		scene::Scene2D* scene_p = (scene::Scene2D*) ManagerScene::search_scene_storage_2D(capturing_quado->texture.sid);
+		Scene2D* scene_p = ManagerScene::get_manager_2D().search_scene_storage_2D(capturing_quado->texture.sid);
 		
 		if(event.is_mouse_scroll())
 			scene_p->handle_scroll(event);
@@ -117,7 +108,8 @@ process_mouse_input(InputEvent& event)
 	{
 		if(input_state.pui())
 		{
-			send_event_pui(event);
+			auto response = pui.event_all(event);
+			input_state.update(GrabStateConductor::PUI, response);
 			return;
 		}
 		else if(input_state.quad())
@@ -142,7 +134,8 @@ process_mouse_input(InputEvent& event)
 	// Requery if cursor is not grabbed
 	if(pui.contains_point(cursor_pos.sane))
 	{
-		send_event_pui(event);
+		auto response = pui.event_all(event);
+		input_state.update(GrabStateConductor::PUI, response);
 		return;
 	}
 
@@ -183,7 +176,7 @@ process_keyboard_input(InputEvent & event)
 		}
 	}
 
-	ManagerScene::events_user_all(event);
+	ManagerScene::event_send_window_scene(event);
 }
 
 
@@ -246,7 +239,7 @@ render()
 
 	auxwin.bind_window_framebuffer();
 
-	SceneBase& window_scene = ManagerScene::get_window_scene_mut();
+	Scene3D& window_scene = ManagerScene::get_window_scene_mut();
 
 	Scene3D& window_scene_3D = (Scene3D&) window_scene;
 

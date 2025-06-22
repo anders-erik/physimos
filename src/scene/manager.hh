@@ -15,43 +15,17 @@
 
 #include "scene3D.hh"
 
+#include "scene2D/manager_2D.hh"
 
-// Forward declares
-namespace scene {
-    struct Scene2D;
-    class QuadManager;
-}
-using namespace scene;
+
+struct Manager2D;
+
 
 namespace window {
     struct InputEvent;
     struct CursorPosition;
 }
 
-
-struct InputStateSceneManager : InputState 
-{
-    enum Type {
-        Scene2D,
-        Scene3D,
-        Subwin,
-        NONE,
-    } type;
-
-    void update(Type new_type, InputResponse new_response)
-    {
-        type = new_type;
-        last_response = new_response;
-
-        if(is_all_release())
-            type = NONE;
-    }
-
-
-    bool is_subwin() {return type == Subwin ? true : false;};
-    bool is_scene2D() {return type == Scene2D ? true : false;};
-
-};
 
 
 
@@ -60,14 +34,14 @@ namespace ManagerScene
 {
 
 
-SID new_unique_id();
+SID new_sid_3D();
 
 /** Initializes manager and creates the root scene. The root scene is returned. */
 Scene3D& init(f2 window_size);
 
 /** Immutable root scene. */
 [[nodiscard]] const Scene3D& get_root_scene();
-/** After init(), this call should never fail. */
+/** Mutable root scene. */
 [[nodiscard]] Scene3D& get_root_scene_mut();
 
 /** Immutable window scene. */
@@ -75,48 +49,13 @@ Scene3D& init(f2 window_size);
 /** Mutable window scene */
 [[nodiscard]] Scene3D& get_window_scene_mut();
 
-[[nodiscard]] std::list<scene::Scene2D>& get_all_scene2D();
-
-/** Tries to find scene with matching scene_id in storage.
-    Returns `nullptr` if no match is found. */
-[[nodiscard]] SceneBase* search_scene_storage_2D(SID id);
-
-
-/** Copies the scene into storage
-    Returns the scene id for later queries. */
-SID push_scene2D(scene::Scene2D& _scene);
-
-
-
-scene::QuadManager& get_quad_manager();
-
-
-/** 
-    Queries window scene for matching subscenes, and set it up for event handling.
-    If match, then that subscene is the new target. If no match then window scene is target.
- */
-void requery_cursor_target(window::CursorPosition& _cursor_pos);
-
-/** Clear current cursor scene from hovers, and set cursor scene to be window, then clear window. */
-void clear_cursor_hovers();
-
-bool is_grabbing_cursor();
-
-/** If NOT capturring quad */
-bool is_targeting_scene(f2 cursor_pos_sane);
-
-void event_scroll(window::InputEvent& event);
-void event_move(window::InputEvent& event);
-void event_mouse_button(window::InputEvent& event);
-void event_keystroke(window::InputEvent& event);
-
-/** Confirmed targeting scene. */
-InputResponse events_user_all(window::InputEvent& event);
 
 /** Relays an event to the window scene */
-InputResponse event_handler(window::InputEvent& event);
+InputResponse event_send_window_scene(window::InputEvent& event);
 
 void event_window_resize(window::WindowResizeEvent& window_resize);
 
+
+[[nodiscard]] Manager2D& get_manager_2D();
 
 };

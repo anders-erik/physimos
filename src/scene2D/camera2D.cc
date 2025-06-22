@@ -3,12 +3,10 @@
 #include "phont/phont.hh"
 #include "math/vecmat.hh"
 
-#include "scene/camera2D.hh"
+#include "scene2D/camera2D.hh"
 #include "camera2D.hh"
 
 
-
-namespace scene { 
 
 
 
@@ -104,4 +102,3 @@ Box2D Camera2D::get_viewbox()
 
 
 
-}

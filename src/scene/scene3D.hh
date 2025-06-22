@@ -16,7 +16,7 @@
 
 #include "renderer_axes.hh"
 
-#include "scene_base.hh"
+#include "sid.hh"
 
 #include "rend/scene3D/program_model_texture.hh"
 #include "rend/scene3D/program_model_color.hh"
@@ -25,10 +25,12 @@
 #include "scene/object_manager.hh"
 
 
-class Scene3D : public SceneBase
+class Scene3D
 {
 
 public:
+    SID sid;
+    Str name;
 
     std::vector<Object> objects;
 

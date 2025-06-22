@@ -9,8 +9,8 @@
 
 
 	// MAIN
-	"binary": "physimos",
-	// "binary": "src/main_main",
+	// "binary": "physimos",
+	"binary": "src/main_main",
 	// "binary": "src/phont/main_phont",
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
