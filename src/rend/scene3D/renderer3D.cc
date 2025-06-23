@@ -12,6 +12,7 @@
 #include "scene2D/quadS2D.hh"
 #include "scene2D/scene2D.hh"
 #include "scene/manager_3D.hh"
+#include "scene/object_manager.hh"
 
 #include "renderer3D.hh"
 
@@ -56,9 +57,9 @@ set_window_fb_size(window::WindowResizeEvent& window_resize_event)
 
 
 void RendererScene3D::
-render_scene_3d(Scene3D& scene3D, SceneState& state)
+render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
 {
-
+    ManagerO& o_man = manager_3D.manager_o;
     
 
     glEnable(GL_DEPTH_TEST);
@@ -107,44 +108,41 @@ render_scene_3d(Scene3D& scene3D, SceneState& state)
         program_vector.render(vertex.normal, vertex.pos);
     }
 
-    for(TagO tago : scene3D.tagos)
+
+    // NEW SCENE OBJECTS
+
+    const SS::ActiveTags& active_tags = manager_3D.state.active_tags;
+    
+    for(TagO tag : scene3D.tagos)
     {
-        if(tago.type == TagO::Base)
+        Object* base = o_man.get_object(tag);
+        if(base == nullptr) continue;
+
+        m4f4 translation_matrix = m4f4::translation(base->pos);
+
+        // MESH - color change if active object
+        if(active_tags.is_active(tag))
         {
-            Object* base = ObjectManager::get_object(tago);
-            if(base == nullptr) continue;
-
-            if(base->tag.oid == state.capturing_quad_tag.oid)
-                program_mesh.render(base->mesh, 0x0000ffff);
-            else if(base->tag.oid == state.selected_tag.oid)
-                program_mesh.render(base->mesh, 0x00ff00ff);
-            else if(base->tag.oid == state.hovered_tag.oid)
-                program_mesh.render(base->mesh, 0xff0000ff);
+            if(active_tags.is_quad_capture(tag))
+                program_mesh.render(translation_matrix, base->mesh, 0x0000ffff);
+            else if(active_tags.is_selected(tag))
+                program_mesh.render(translation_matrix, base->mesh, 0x00ff00ff);
             else
-                program_mesh.render(base->mesh, 0xffffffff);
+                program_mesh.render(translation_matrix, base->mesh, 0xff0000ff);
         }
-        else if (tago.type == TagO::Quad)
+        else
         {
-            SQuadO* quado = ObjectManager::get_squado(tago);
-            if(quado == nullptr) continue;
-
-            m4f4 translation_matrix = m4f4::translation(quado->object.pos);
-
-            if(quado->object.tag.oid == state.capturing_quad_tag.oid)
-                program_mesh.render(translation_matrix, quado->object.mesh, 0x0000ffff);
-            else if(quado->object.tag.oid == state.selected_tag.oid)
-                program_mesh.render(translation_matrix, quado->object.mesh, 0x00ff00ff);
-            else if(quado->object.tag.oid == state.hovered_tag.oid)
-                program_mesh.render(translation_matrix, quado->object.mesh, 0xff0000ff);
-            else
-                program_mesh.render(translation_matrix, quado->object.mesh, 0xffffffff);
-
-            program_quad.render(translation_matrix, quado->object.mesh, quado->squad.texture_id);
-            // program_quad.render(m4f4(), 0);
-            // program_quad.render(quado->mesh, quado->texture.text_coords);
-            // program_quad.render(quado->mesh);
-            
+            program_mesh.render(translation_matrix, base->mesh, 0xffffffff);
         }
+
+        // Object specific render
+        if (tag.type == TagO::Quad)
+        {
+            SQuadO* squad_o = o_man.get_squado(tag);
+            if(squad_o == nullptr) continue;
+            program_quad.render(translation_matrix, base->mesh, squad_o->squad.texture_id);
+        }
+
     }
 
 
@@ -171,12 +169,12 @@ render_scene_3d(Scene3D& scene3D, SceneState& state)
     program_vector.set_color({0.0f, 0.0f, 0.0f});
     program_vector.render(  {0.0f, 0.0f, 0.0f},
                             rot_axis);
-
-
-
 }
 
-void RendererScene3D::render_object_ids(Scene3D & scene)
+
+
+void RendererScene3D::
+render_object_ids(Scene3D & scene, Manager3D& manager_3D)
 {
     program_object_ids.set_camera_view_projection(  scene.camera.perspective.matrix, 
                                                     scene.camera.view.matrix);
@@ -189,14 +187,14 @@ void RendererScene3D::render_object_ids(Scene3D & scene)
     {
         if(tago.type == TagO::Base)
         {
-            Object* baseo = ObjectManager::get_object(tago);
+            Object* baseo = manager_3D.manager_o.get_object(tago);
             if(baseo == nullptr) continue;
 
             program_object_ids.render(m4f4(), baseo->mesh, baseo->tag.oid);
         }
         else if (tago.type == TagO::Quad)
         {
-            SQuadO* quado = ObjectManager::get_squado(tago);
+            SQuadO* quado = manager_3D.manager_o.get_squado(tago);
             if(quado == nullptr) continue;
 
             program_object_ids.render(  m4f4::translation(quado->object.pos), 
@@ -210,7 +208,7 @@ void RendererScene3D::render_object_ids(Scene3D & scene)
 
 
 
-Object* RendererScene3D::sample_object_in_fb(f2 cursor_pos_sane)
+TagO RendererScene3D::sample_and_set_hover(Manager3D& manager_3D, f2 cursor_pos_sane)
 {
     fb_object_ids.bind();
 
@@ -218,9 +216,20 @@ Object* RendererScene3D::sample_object_in_fb(f2 cursor_pos_sane)
 
     fb_object_ids.unbind(window_fb_size);
 
-    OID oid = program_object_ids.vec4_to_oid(vec4_color);
+    OID sampled_oid = program_object_ids.vec4_to_oid(vec4_color);
 
-    return ObjectManager::get_object(oid);
+    
+    for(TagO& tag : manager_3D.window_scene->tagos)
+    {
+        if(tag.oid == sampled_oid)
+        {
+            manager_3D.state.active_tags.hover_set(tag);
+            return manager_3D.state.active_tags.tag_hover;
+        }
+    }
+
+    manager_3D.state.active_tags.hover_clear();
+    return manager_3D.state.active_tags.tag_hover;
 }
 
 

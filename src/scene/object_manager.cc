@@ -6,15 +6,9 @@
 
 
 
-namespace ObjectManager
-{
 
-static OID oid_index = 1;
-
-static std::vector<Object> objects;
-static std::vector<SQuadO> quados;
-
-OID new_oid()
+OID ManagerO::
+new_oid()
 {
     if(oid_index == 0)
         throw std::runtime_error("Ran out of new OIDs");
@@ -23,25 +17,35 @@ OID new_oid()
 }
 
 
-TagO new_tag()
+TagO ManagerO::
+new_tag()
 {
     return {    new_oid(),
                 TagO::None};
 }
 
-TagO new_tag(TagO::Type type)
+
+TagO ManagerO::
+new_tag(TagO::Type type)
 {
     return {    new_oid(),
                 type};
 }
 
-TagO push_object(Object& object)
+
+TagO ManagerO::
+push_object(Object& object)
 {
     return objects.emplace_back(object).tag;
 }
 
-Object* get_object(TagO tag)
+
+Object* ManagerO::
+get_object(TagO tag)
 {
+    if(tag.is_none())
+        return nullptr;
+
     if(tag.is_base())
     {
         for(Object& object : objects)
@@ -63,7 +67,8 @@ Object* get_object(TagO tag)
     return nullptr;
 }
 
-Object* get_object(OID oid)
+Object* ManagerO::
+get_object(OID oid)
 {
     if(oid == 0)
         return nullptr;
@@ -86,14 +91,14 @@ Object* get_object(OID oid)
 
 
 
-TagO
+TagO ManagerO::
 push_squado(SQuadO & squado)
 {
     return quados.emplace_back(squado).object.tag;
 }
 
 
-SQuadO* 
+SQuadO* ManagerO::
 get_squado(TagO tag)
 {
     for(SQuadO& quado : quados)
@@ -105,7 +110,8 @@ get_squado(TagO tag)
 }
 
 
-Object new_object()
+Object ManagerO::
+new_object()
 {
     TagO tag = new_tag();
     Str name = Str{"object_"} + Str{tag.oid};
@@ -116,5 +122,4 @@ Object new_object()
 }
 
 
-}
 

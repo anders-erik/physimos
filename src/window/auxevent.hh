@@ -130,6 +130,8 @@ struct KeyStrokeEvent {
     bool has(KeyModifierState key_modifier) {
         return this->modifier == key_modifier ? true : false;
     }
+
+    bool is_press() {return action == ButtonAction::Press; }
 };
 
 struct WindowResizeEvent {

@@ -137,11 +137,6 @@ public:
         object_name.set_pos(offset += name_delta);
         object_name.set_str(name_str);
 
-
-        
-        Object* object_base = ObjectManager::get_object(object.tag.oid);
-        if(object_base == nullptr) return;
-
         
         f2 box_indent = { 10.0f, 0.0f };
         offset += box_indent;
@@ -156,7 +151,7 @@ public:
         // x
         f2 pos_x_delta = { 150.0f, -20.0f };
         verts_size.set_pos(offset + pos_x_delta);
-        verts_size.set_str(Str(object_base->mesh.verts.size()));
+        verts_size.set_str(Str(object.mesh.verts.size()));
 
 
         // label
@@ -166,7 +161,7 @@ public:
         // y
         f2 faces_size_delta = { 150.0f, -40.0f };
         faces_size.set_pos(offset + faces_size_delta);
-        faces_size.set_str(Str(object_base->mesh.faces.size()));
+        faces_size.set_str(Str(object.mesh.faces.size()));
 
         offset -= box_indent;
 

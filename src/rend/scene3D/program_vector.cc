@@ -32,8 +32,8 @@ init()
     // glUniform3f( glGetUniformLocation(program, "vector_color"), color.x, color.y, color.z);
     
     float length = 1.0f;
-    float pyramid_width = 0.07f;
-    float pyramid_height = 0.07f;
+    float pyramid_width = 0.05f;
+    float pyramid_height = 0.10f;
     float pyramid_base_loc = length - pyramid_height;
 
     f3 base = {0.0f, 0.0f, 0.0f};

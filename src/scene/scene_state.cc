@@ -1,7 +1,9 @@
 
 #include "scene/scene3D.hh"
+#include "scene/manager_3D.hh"
 
 #include "scene/scene_state.hh"
+#include "scene_state.hh"
 
 
 InputResponse SceneState::
@@ -25,7 +27,7 @@ old_scene_handler(Scene3D& scene, window::InputEvent & event)
 
         if(event.mouse_button.is_left_down())
         {
-            selected_tag = hovered_tag;
+            active_tags.select_current_hover();
         }
         break;
 
@@ -93,19 +95,88 @@ old_scene_handler(Scene3D& scene, window::InputEvent & event)
     return InputResponse {};
 }
 
-InputResponse SceneState::
-handle(Scene3D& scene, window::InputEvent & event)
+
+bool SceneState::
+try_new_quad_grab(window::InputEvent& event)
 {
-    // scene.handle_input(event);
-    old_scene_handler(scene, event);
+    if(event.is_mouse_button() && event.mouse_button.is_left_down() && event.modifiers.is_ctrl())
+    {
+        if(active_tags.is_hovering_a_quad())
+        {
+            active_tags.capture_current_hover();
+            return true;
+        }
+    }
+
+	return false;
+}
+
+
+bool SceneState::
+try_release_quad(window::InputEvent& event)
+{
+    bool quad_release_click = event.is_mouse_button() && event.mouse_button.is_left_down();
+
+    // If NOT hovering grabbing/capturing quad and left click is failed grab
+    if(!active_tags.is_hovering_captured() && quad_release_click)
+    {
+        active_tags.release_quad();
+		return true;
+    }
+
+    return false;
+}
+
+
+bool SceneState::
+try_release_quad_esc(window::InputEvent& event)
+{
+    bool quad_release_esc = event.is_keystroke() && event.keystroke.is(window::Key::Esc);
+
+    if(quad_release_esc)
+    {
+        active_tags.release_quad();
+		return true;
+    }
+
+    return false;
+}
+
+
+InputResponse SceneState::
+handle_mouse(Manager3D& manager_3D, window::InputEvent & event)
+{
+
+    old_scene_handler( *manager_3D.window_scene, 
+                        event                   );
+
+    if(camera_grabbed)
+        return InputResponse{InputResponse::MOUSE_GRAB};
+
     return InputResponse();
 }
 
 
+InputResponse SceneState::
+handle_key(Manager3D & manager_3D, window::InputEvent & event)
+{
+    bool esc = event.is_keystroke() && event.keystroke.is_press() && event.keystroke.is(window::Key::Esc);
+
+    if(esc)
+    {
+        if(active_tags.is_quad_capture())
+            active_tags.release_quad();
+        else if(active_tags.is_selected_not_capture())
+            active_tags.unselect();
+    }
+
+
+    return InputResponse();
+}
 
 void SceneState::
-handle_window(Scene3D& scene, window::WindowResizeEvent & window_event)
+handle_window(Manager3D& manager_3D, window::WindowResizeEvent & window_event)
 {
-    scene.camera.perspective.set_fov(   window_event.size_i.x, 
+    manager_3D.window_scene->camera.perspective.set_fov(   window_event.size_i.x, 
                                         window_event.size_i.y );
 }

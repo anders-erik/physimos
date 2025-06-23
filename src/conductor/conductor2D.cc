@@ -5,18 +5,20 @@
 
 
 
-Physimos::Physimos(int width, int height) 
+Physimos::
+Physimos(int width, int height) 
 {
 	auxwin.init(width, height);
 
 	Rend::Manager::init( {width, height} );
 
-	// First scene added to scene manager becomes root
 	manager_3D.init();
-
 }
 
-Scene3D & Physimos::get_window_scene()
+
+
+Scene3D & Physimos::
+get_window_scene()
 {
 	return *manager_3D.window_scene;
 }
@@ -24,65 +26,31 @@ Scene3D & Physimos::get_window_scene()
 
 
 
-bool Physimos::
-is_quad_capture_click(InputEvent & event)
-{
-	if(event.is_mouse_button() && event.mouse_button.is_left_down() && event.modifiers.is_ctrl())
-		return true;
-
-	return false;
-}
-
-
-bool Physimos::
-should_release_quad(InputEvent & event)
-{
-	if(event.is_mouse_button() && event.mouse_button.is_left_down())
-	{
-		auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
-		Object* hovered_object = rend_scene3D.sample_object_in_fb(event.cursor_pos.sane);
-		if(hovered_object == nullptr)
-			return true;
-
-		if(hovered_object->tag.oid != manager_3D.state.capturing_quad_tag.oid)
-			return true;	
-	}
-
-	return false;
-}
-
-
-
-
-
 
 void Physimos::
-send_event_window_scene(InputEvent& event)
+send_event_pui(InputEvent & event)
 {
-	auto response = manager_3D.state.handle(	*manager_3D.window_scene, 
-												event						);
-	input_state.update(GrabStateConductor::SCENE, response);
-
-	pui.clear_hovers();
+	auto response = pui.event_all(manager_3D, event);
+	mouse_grab.update(MouseGrab::PUI, response);
+	
+	manager_3D.state.active_tags.hover_clear();
 }
-
 
 
 void Physimos::
 send_event_quad(InputEvent& event)
 {
-	auto* capturing_quado = ObjectManager::get_squado(manager_3D.state.capturing_quad_tag);
+	auto* capturing_quado = manager_3D.manager_o.get_squado(manager_3D.state.active_tags.get_quad_capture());
 	if(capturing_quado == nullptr)
 	{
-		manager_3D.state.capturing_quad_tag = {};
-		input_state.clear();
+		manager_3D.state.active_tags.release_quad();
+		mouse_grab.release();
 		return;
 	}
 
-	// FINALLY SEND INFO
+	// SEND EVENT
 	if(capturing_quado->squad.is_scene2D())
 	{
-		std::cout << "Sending to scene" << std::endl;
 		Scene2D* scene_p = manager_2D.search_scene_storage_2D(capturing_quado->squad.sid);
 		
 		if(event.is_mouse_scroll())
@@ -92,99 +60,83 @@ send_event_quad(InputEvent& event)
 		if(event.is_mouse_movement())
 			scene_p->handle_pointer_move(event);
 
-		input_state.update(GrabStateConductor::QUAD, {InputResponse::MOUSE_GRAB});
+		mouse_grab.update(MouseGrab::QUAD, {InputResponse::MOUSE_GRAB});
 		return;
 	}
 
-	// always release unless already continued with new grab
-	manager_3D.state.capturing_quad_tag = {};
-	input_state.clear();
 }
 
 
-
-
 void Physimos::
-process_mouse_input(InputEvent& event)
+send_event_scene(InputEvent & event)
 {
-	// Short Circuit on grab
-	if(input_state.is_grabbing_mouse())
+	auto response = manager_3D.state.handle_mouse(	manager_3D, 
+													event		);
+	mouse_grab.update(MouseGrab::SCENE, response);
+}
+
+
+
+bool Physimos::
+try_send_event_to_grabbed(InputEvent & event)
+{
+	switch (mouse_grab.state)
 	{
-		if(input_state.pui())
+
+	case MouseGrab::PUI:
+		send_event_pui(event);
+		break;
+	
+	case MouseGrab::QUAD:
+		Rend::Manager::get_renderer_scene3D().sample_and_set_hover(manager_3D, event.cursor_pos.sane);
+		if(manager_3D.state.try_release_quad(event))
 		{
-			auto response = pui.event_all(manager_3D, event);
-			input_state.update(GrabStateConductor::PUI, response);
-			return;
+			mouse_grab.release();
+			return false;
 		}
-		else if(input_state.quad())
-		{
-			if(should_release_quad(event))
-			{	
-				std::cout << "RELEASE GRABBING QUAD" << std::endl;
-				manager_3D.state.capturing_quad_tag = {};
-				input_state.update(GrabStateConductor::QUAD, {InputResponse::MOUSE_RELEASE});
-				return;
-			}
-			send_event_quad(event);
-			return;
-		}
-		else if(input_state.scene())
-		{
-			send_event_window_scene(event);
-			return;
-		}
-	}
-
-
-	// Requery if cursor is not grabbed
-	if(pui.contains_point(cursor_pos.sane))
-	{
-		auto response = pui.event_all(manager_3D, event);
-		input_state.update(GrabStateConductor::PUI, response);
-		return;
-	}
-
-	// Scene OR quad at this point
-
-	auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
-	Object* hovered_object = rend_scene3D.sample_object_in_fb(event.cursor_pos.sane);
-
-
-	if(hovered_object != nullptr && hovered_object->tag.is_quad() && is_quad_capture_click(event))
-	{
-		std::cout << "conductor :: Capturing Quad state set" << std::endl;
-		manager_3D.state.capturing_quad_tag = hovered_object->tag;
-		input_state.update(GrabStateConductor::QUAD, {InputResponse::MOUSE_GRAB});
-		return;
-	}
-	else
-	{
-		if(hovered_object == nullptr)
-			manager_3D.state.hovered_tag = TagO();
 		else
-			manager_3D.state.hovered_tag = hovered_object->tag;
-
-		send_event_window_scene(event);
-		return;
-	}
-}
-
-
-void Physimos::
-process_keyboard_input(InputEvent & event)
-{			
-	if(input_state.quad())
-	{
-		if(event.keystroke.key == Key::Esc)
 		{
-			manager_3D.state.capturing_quad_tag = {};
-			input_state.clear();
+			send_event_quad(event);
 		}
-		return;
+		break;
+
+	case MouseGrab::SCENE:
+		send_event_scene(event);
+		break;
+
+	case MouseGrab::EMPTY:
+		return false;
+		break;
 	}
 
-	send_event_window_scene(event);
+	return true;
 }
+
+
+
+bool Physimos::
+requery_pui(CursorPosition cursor_pos)
+{
+	pui.clear_hovers();
+	if(pui.contains_point(cursor_pos.sane))
+		return true;
+
+	return false;
+}
+
+
+bool Physimos::
+query_for_quad_grab(InputEvent& event, CursorPosition cursor_pos)
+{
+	Rend::Manager::get_renderer_scene3D().sample_and_set_hover(manager_3D, cursor_pos.sane);
+	if(manager_3D.state.try_new_quad_grab(event))
+		return true;
+
+	return false;
+}
+
+
+
 
 
 
@@ -195,20 +147,27 @@ process_user_input()
 
 	for(InputEvent& event : events)
 	{
-
 		if(event.is_mouse())
 		{
-			process_mouse_input(event);
+			if(try_send_event_to_grabbed(event))
+				continue;
 
-			// Cache most up to date cursor position
+			if(requery_pui(event.cursor_pos))
+				send_event_pui(event);
+			else if(query_for_quad_grab(event, event.cursor_pos))
+				mouse_grab.update(MouseGrab::QUAD, InputResponse::MOUSE_GRAB);
+			else
+				send_event_scene(event);
+
 			if(event.is_mouse_movement())
 				cursor_pos = event.mouse_movement.cursor_new;
+
 			continue;
 		}
 
 		if(event.is_keystroke()) // Currently only the scene recieves keyboard input
 		{
-			process_keyboard_input(event);
+			manager_3D.state.handle_key(manager_3D, event);
 		}
 	}
 }
@@ -224,8 +183,8 @@ process_framebuffer_events()
 		// All subsystems get the resize event
 		pui.event_window_resize(window_event);
 
-		manager_3D.state.handle_window(	*manager_3D.window_scene,
-									window_event);
+		manager_3D.state.handle_window(	manager_3D,
+										window_event);
 
 		Rend::Manager::get_renderer_scene3D().set_window_fb_size(window_event);
 	}
@@ -249,8 +208,12 @@ render()
 	auxwin.bind_window_framebuffer();
 
 	auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
-	rend_scene3D.render_scene_3d(*manager_3D.window_scene, manager_3D.state);
-	rend_scene3D.render_object_ids(*manager_3D.window_scene);
+
+	rend_scene3D.render_scene_3d(  *manager_3D.window_scene, 
+									manager_3D				);
+
+	rend_scene3D.render_object_ids(*manager_3D.window_scene,
+									manager_3D				);
 	
 	pui.render(); // Render ui on top of scene
 }

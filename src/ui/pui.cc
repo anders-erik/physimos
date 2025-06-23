@@ -99,9 +99,9 @@ update(Manager3D& manager_3D)
 
     // Scene3D& scene = ManagerScene::get_window_scene_mut();
 
-    Object* obj_p = ObjectManager::get_object(manager_3D.state.selected_tag);
-    if(obj_p == nullptr)
-        return;// w_object_large.
+    Object* obj_p = manager_3D.manager_o.get_object(manager_3D.state.active_tags.tag_click);
+    if(obj_p == nullptr)    return;
+
     w_object_large.reload(*obj_p, {500.0f, 450.0f});
 
 }

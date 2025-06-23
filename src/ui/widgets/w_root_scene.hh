@@ -82,7 +82,7 @@ public:
         for(auto& tago : manager_3D.root_scene.tagos)
         {
             W::ObjectSmall object_widget;
-            Object* object = ObjectManager::get_object(tago);
+            Object* object = manager_3D.manager_o.get_object(tago);
             if(object == nullptr) continue;
             object_widget.reload(*object, pos += object_w_delta);
             object_widgets.push_back(object_widget);

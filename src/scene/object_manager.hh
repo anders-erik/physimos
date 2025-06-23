@@ -19,23 +19,27 @@
 #include "scene/squad.hh"
 
 
-
-
-
-
-namespace ObjectManager 
+struct ManagerO
 {
+    OID oid_index = 1;
 
-OID new_oid();
-TagO new_tag();
-TagO new_tag(TagO::Type type);
+    std::vector<Object> objects;
+    std::vector<SQuadO> quados;
 
-TagO push_object(Object& object);
-Object* get_object(OID oid);
-Object* get_object(TagO tago);
+    OID new_oid();
+    TagO new_tag();
+    TagO new_tag(TagO::Type type);
 
-TagO push_squado(SQuadO & squado);
-SQuadO* get_squado(TagO tago);
+    TagO push_object(Object& object);
+    Object* get_object(OID oid);
+    Object* get_object(TagO tago);
 
-Object new_object();
-}
+    TagO push_squado(SQuadO & squado);
+    SQuadO* get_squado(TagO tago);
+
+    Object new_object();
+};
+
+
+
+

@@ -3,55 +3,48 @@
 #include "window/auxevent.hh"
 
 
-struct GrabStateConductor : InputState {
-	/** Subsystems that can recieve and respond to input events. */
-	enum SubSys {
-		PUI,
-		QUAD,
-		SCENE,
-		NONE,
-	} subsystem = NONE;
 
-	void clear()
+struct MouseGrab
+{
+	enum State
 	{
-		last_response = {};
-		subsystem = NONE;
+		EMPTY		= 0x00,
+		PUI	 		= 0x01,
+		QUAD	 	= 0x02,
+		SCENE	 	= 0x04,
+	} state = EMPTY;
+
+	void update(State subsystem, InputResponse response)
+	{
+		if(response.grabbed_mouse())
+			state = subsystem;
+		else
+			state = EMPTY;
 	}
 
-	void update(SubSys subsys, InputResponse response)
+	void release()
 	{
-		update_state(response);
-		subsystem = subsys;
-
-		// If no grab state exists, then we unset the subsystem target
-		if(is_all_release())
-			subsystem = NONE;
+		state = EMPTY;
 	}
 
 	bool pui()
 	{
-		return subsystem == PUI ? true : false;
+		return state == PUI;
 	}
 
 	bool quad()
 	{
-		return subsystem == QUAD ? true : false;
+		return state == QUAD;
 	}
 
 	bool scene()
 	{
-		return subsystem == SCENE ? true : false;
+		return state == SCENE;
 	}
 
-
-	bool pui_is_grabbing_mouse()
+	bool is_grabbing()
 	{
-		return pui() && is_grabbing_mouse();
-	}
-
-	bool quad_is_grabbing_mouse()
-	{
-		return quad() && is_grabbing_mouse();
+		return state != EMPTY;
 	}
 
 };

@@ -33,8 +33,9 @@ struct TagO
                 type    == rhs.type;
     }
 
-    bool is_quad() {return type == Quad ? true : false;}
-    bool is_base() {return type == Base ? true : false;}
+    bool is_quad() const  {return type == Quad;}
+    bool is_base() const  {return type == Base;}
+    bool is_none() const  {return type == None;}
 
 };
 

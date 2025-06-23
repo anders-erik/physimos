@@ -22,7 +22,10 @@ int main()
 
 	Physimos physimos { 800, 600 };
 
-	Scene3D& root_scene = physimos.get_window_scene();
+	Manager3D& manager_3D = physimos.manager_3D;
+	Scene3D& root_scene = manager_3D.root_scene;
+	ManagerO& manager_o = manager_3D.manager_o;
+
 	root_scene.name = "Forever Root";
 
 
@@ -74,10 +77,10 @@ int main()
 
 
 	// FIRST PURE MESH
-	Object object_base = ObjectManager::new_object();
+	Object object_base = manager_o.new_object();
 	object_base.mesh.create_cube();
 	object_base.tag.type = TagO::Type::Base;
-	ObjectManager::push_object(object_base);
+	manager_o.push_object(object_base);
 	root_scene.tagos.push_back(object_base.tag);
 
 
@@ -106,7 +109,7 @@ int main()
 	// }
 
 	// QuadO
-	Object squad_object = ObjectManager::new_object();
+	Object squad_object = manager_o.new_object();
 	squad_object.name = "squado_1";
 	squad_object.mesh.create_quad();
 	squad_object.mesh.center();
@@ -119,7 +122,7 @@ int main()
 
 	SQuadO squado {squad_object, squad};
 
-	TagO squado_tag = ObjectManager::push_squado(squado);
+	TagO squado_tag = manager_o.push_squado(squado);
 	root_scene.tagos.push_back(squado_tag);
 
 

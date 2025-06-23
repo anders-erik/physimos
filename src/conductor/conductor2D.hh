@@ -31,7 +31,7 @@ class Physimos
 	UI::PUI pui;
 
 	bool targeting_ui = false;
-	GrabStateConductor input_state;
+	MouseGrab mouse_grab;
 	CursorPosition cursor_pos; // Copy from most recent mouse move event
 
 public:
@@ -43,16 +43,17 @@ public:
 
 	Scene3D& get_window_scene();
 
-	bool is_quad_capture_click(InputEvent& event);
-	bool should_release_quad(InputEvent& event);
-
-	void send_event_window_scene(InputEvent& event);
+	void send_event_pui(InputEvent& event);
 	void send_event_quad(InputEvent& event);
+	void send_event_scene(InputEvent& event);
 
-	/** Mouse and keyboard input. */
-	void process_mouse_input(InputEvent& event);
-	/** Mouse and keyboard input. */
-	void process_keyboard_input(InputEvent& event);
+	/** Returns true on events being sent to grabed subsystem */
+	bool try_send_event_to_grabbed(InputEvent & event);
+
+	/** Returns true on matching cursor pos */
+	bool requery_pui(CursorPosition cursor_pos);
+	/** Returns true on matching cursor pos */
+	bool query_for_quad_grab(InputEvent& event, CursorPosition cursor_pos);
 
 	/** Mouse and keyboard input. */
 	void process_user_input();
@@ -68,5 +69,6 @@ public:
 	void main_loop();
 
 };
+
 
 

@@ -31,6 +31,7 @@ namespace opengl {
 
 struct Scene3D;
 struct SceneState;
+struct Manager3D;
 
 
 class RendererScene3D 
@@ -58,13 +59,14 @@ public:
 
 
     /** Render scene objects. */
-    void render_scene_3d(Scene3D& scene3D, SceneState& state);
+    void render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D);
 
     /** Object id outlines for cursor interaction */
-    void render_object_ids(Scene3D& scene3D);
+    void render_object_ids(Scene3D& scene3D, Manager3D& manager_3D);
 
-    /** Samples a location in the object id framebuffer */
-    Object* sample_object_in_fb(f2 cursor_pos_sane);
+    /** Samples a location in the object id framebuffer of the window scene
+        Returns the hover tag that is active after sampling.  */
+    TagO sample_and_set_hover(Manager3D& manager_3D, f2 cursor_pos_sane);
 
 private:
 
