@@ -38,7 +38,7 @@ public:
     void set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat);
 
     /** Recreates render context on every call. */
-    void render(const m4f4& model_matrix, unsigned int texture_id);
+    void render(const m4f4& model_matrix, Mesh& mesh, unsigned int texture_id);
 
 };
 

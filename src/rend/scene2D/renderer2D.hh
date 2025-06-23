@@ -33,7 +33,7 @@ namespace opengl {
 
 class Scene2D;
 class QuadS2D;
-
+struct Manager2D;
 
 
 
@@ -108,7 +108,7 @@ public:
     uint get_scene_fb_texture_id(SID sid);
     void render_scene_framebuffer(SID sid);
     /** All 2D scenes - usually quad-textures */
-    void render_all_scene2D_to_frambuffers();
+    void render_all_scene2D_to_frambuffers(Manager2D& manager_2D);
 
 
     void create_shape_context_t(RenderContextQuadS2D& render_context, std::vector<VertexQuad2D> verts);
@@ -121,9 +121,9 @@ public:
     // Render real quads
     void render_quad(const QuadS2D& quad);
 
-    void render_scene(Scene2D& scene);
-    unsigned int render_scene_FB(Scene2D& scene, opengl::TextureFB& framebuffer);
-    unsigned int render_scene_FBMS(Scene2D& scene, opengl::TextureFBMS& framebuffer_ms);
+    void render_scene(Scene2D& scene, Manager2D& manager_2D);
+    unsigned int render_scene_FB(Scene2D& scene, Manager2D& manager_2D, opengl::TextureFB& framebuffer);
+    unsigned int render_scene_FBMS(Scene2D& scene, Manager2D& manager_2D, opengl::TextureFBMS& framebuffer_ms);
 
     void render_point(RenderContextQuadS2D context);
     void render_line(RenderContextQuadS2D context);

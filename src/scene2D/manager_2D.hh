@@ -5,11 +5,9 @@
 
 #include "scene/sid.hh"
 
-
+#include "scene2D/scene2D.hh"
 #include "scene2D/quad_manager.hh"
 
-
-struct Scene2D;
 
 
 struct Manager2D

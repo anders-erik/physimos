@@ -112,6 +112,9 @@ public:
 
 public:
 
+    // TODO: MOVE QUAD MANGER TO SCENE ITSELF, OR IMPROVE MANAGER_2D
+    Manager2D*      manager_2D;
+
     Scene2D(f2 _framebuffer_size);
 
 

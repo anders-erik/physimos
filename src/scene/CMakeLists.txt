@@ -14,7 +14,11 @@ set(SCENE_OBJS
     mesh.cc
     mesh_texture.cc
 
-    manager.cc
+    manager_3D.cc
+    scene_state.cc
+
+    squad.cc
+    object.cc
 )
 
 

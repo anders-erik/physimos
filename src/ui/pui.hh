@@ -14,6 +14,9 @@
 
 #include "ui/pui_cursor.hh"
 
+struct Scene3D;
+struct Manager3D;
+struct SceneState;
 
 namespace UI {
 
@@ -45,9 +48,9 @@ public:
     void clear_hovers();
 
     /** Reloads the UI to reflect the most up-to-date data from scenes. */
-    void update();
+    void update(Manager3D& manager_3D);
 
-    InputResponse event_all(window::InputEvent& event);
+    InputResponse event_all(Manager3D& manager_3D, window::InputEvent& event);
     void event_window_resize(window::WindowResizeEvent& window_resize);
 
     void render();

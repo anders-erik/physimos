@@ -10,7 +10,7 @@
 
 #include "scene2D/quadS2D.hh"
 #include "scene2D/scene2D.hh"
-#include "scene/manager.hh"
+#include "scene2D/manager_2D.hh"
 
 #include "renderer2D.hh"
 
@@ -146,15 +146,15 @@ create_scene_framebuffer(SID sid, ui2 framebuffer_size)
 
 void RendererScene2D::render_scene_framebuffer(SID sid)
 {
-    for(auto& scene_fb : scene_framebuffers)
-    {
-        if(sid == scene_fb.sid)
-        {
-            Scene2D* scene2D_search = ManagerScene::get_manager_2D().search_scene_storage_2D(sid);
-            if(scene2D_search == nullptr)  return;
-            render_scene_FB(*scene2D_search, scene_fb.framebuffer);
-        }
-    }
+    // for(auto& scene_fb : scene_framebuffers)
+    // {
+    //     if(sid == scene_fb.sid)
+    //     {
+    //         Scene2D* scene2D_search = ManagerScene::get_manager_2D().search_scene_storage_2D(sid);
+    //         if(scene2D_search == nullptr)  return;
+    //         render_scene_FB(*scene2D_search, scene_fb.framebuffer);
+    //     }
+    // }
 }
 
 opengl::TextureFB& RendererScene2D::get_scene_fb(SID sid)
@@ -185,12 +185,12 @@ uint RendererScene2D::get_scene_fb_texture_id(SID sid)
 
 
 void RendererScene2D::
-render_all_scene2D_to_frambuffers()
+render_all_scene2D_to_frambuffers(Manager2D& manager_2D)
 {
-    auto& scenes_2D = ManagerScene::get_manager_2D().get_all_scene2D();
+    auto& scenes_2D = manager_2D.get_all_scene2D();
     for(auto& scene2D : scenes_2D)
     {
-        render_scene_FB(scene2D, get_scene_fb(scene2D.sid));
+        render_scene_FB(scene2D, manager_2D, get_scene_fb(scene2D.sid));
     }
 }
 
@@ -295,10 +295,10 @@ render_quad(const QuadS2D& quad)
 
 
 void RendererScene2D::
-render_scene(Scene2D & scene)
+render_scene(Scene2D & scene, Manager2D& manager_2D)
 {
     
-    auto& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
+    auto& q_manager = manager_2D.manager_quad2d;
 
     activate();
     set_camera(scene.get_camera().get_matrix());
@@ -359,24 +359,24 @@ render_scene(Scene2D & scene)
 }
 
 unsigned int RendererScene2D::
-render_scene_FB(Scene2D & scene, opengl::TextureFB & framebuffer)
+render_scene_FB(Scene2D & scene, Manager2D& manager_2D, opengl::TextureFB & framebuffer)
 {
     framebuffer.framebuffer_bind();
     framebuffer.clear_with({0.5f, 0.5f, 0.5f, 1.0f});
 
-    render_scene(scene);
+    render_scene(scene, manager_2D);
 
     return framebuffer.get_texture_id();
 }
 
 
 unsigned int RendererScene2D::
-render_scene_FBMS(Scene2D & scene, opengl::TextureFBMS & framebuffer_ms)
+render_scene_FBMS(Scene2D & scene, Manager2D& manager_2D, opengl::TextureFBMS & framebuffer_ms)
 {
     framebuffer_ms.multisample_fbo_bind();
     framebuffer_ms.multisample_fbo_clear_red();
 
-    render_scene(scene);
+    render_scene(scene, manager_2D);
 
     framebuffer_ms.blit();
 

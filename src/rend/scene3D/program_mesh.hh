@@ -26,6 +26,7 @@ public:
     void set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat);
 
     void render(Mesh& mesh, unsigned int color);
+    void render(const m4f4& model_matrix, Mesh& mesh, unsigned int color);
 
 };
 

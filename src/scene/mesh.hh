@@ -23,13 +23,16 @@ struct Mesh
     std::vector<Vertex> verts;
     std::vector<TriangleFaceIndeces> faces;
 
-    Mesh() {};
+    Mesh() = default;
 
     /** Returnes the total byte size of the vertices. [verts.size() * sizeof(Vertex)] */
     unsigned int vert_size_bytes();
 
+    void center();
+    
     void create_cube();
     void create_quad();
+
 };
 
 

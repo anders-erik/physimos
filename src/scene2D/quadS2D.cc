@@ -4,7 +4,6 @@
 
 #include "quadS2D.hh"
 
-#include "manager.hh"
 
 
 

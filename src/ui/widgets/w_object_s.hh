@@ -2,15 +2,16 @@
 #pragma once
 
 #include "lib/pair.hh"
+#include "lib/print.hh"
 
 #include "rend/pui/renderer_base.hh"
 
 #include "ui/string.hh"
 
-#include "scene/manager.hh"
 #include "scene2D/scene2D.hh"
 #include "scene2D/quadS2D.hh"
 
+#include "scene/manager_3D.hh"
 #include "scene/object_manager.hh"
 
 #include "widget.hh"
@@ -29,7 +30,7 @@ struct ObjectSmall : public Widget
 
 public:
 
-    InputResponse event_handler(window::InputEvent& event)
+    InputResponse event_handler(Manager3D& manager_3D, window::InputEvent& event)
     {
         using namespace window;
 
@@ -42,9 +43,9 @@ public:
             {
                 println("Clicked on W::ObjectSmall!");
 
-                Scene3D& scene = ManagerScene::get_window_scene_mut();
+                // Scene3D& scene = ManagerScene::get_window_scene_mut();
 
-                scene.selected_object = object;
+                manager_3D.state.selected_tag = object.tag;
 
                 // auto& q_manager = ManagerScene::get_quad_manager();
                 // q_manager.set_selected(quad_id);

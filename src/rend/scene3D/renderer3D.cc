@@ -11,10 +11,11 @@
 
 #include "scene2D/quadS2D.hh"
 #include "scene2D/scene2D.hh"
-#include "scene/manager.hh"
+#include "scene/manager_3D.hh"
 
 #include "renderer3D.hh"
 
+#include "scene/scene_state.hh"
 #include "scene/object_manager.hh"
 
 
@@ -55,7 +56,7 @@ set_window_fb_size(window::WindowResizeEvent& window_resize_event)
 
 
 void RendererScene3D::
-render_scene_3d(Scene3D& scene3D)
+render_scene_3d(Scene3D& scene3D, SceneState& state)
 {
 
     
@@ -106,37 +107,39 @@ render_scene_3d(Scene3D& scene3D)
         program_vector.render(vertex.normal, vertex.pos);
     }
 
-    for(Object object : scene3D.objects)
+    for(TagO tago : scene3D.tagos)
     {
-        if(object.type == Object::Mesh)
+        if(tago.type == TagO::Base)
         {
-            MeshO* mesho = ObjectManager::get_mesho(object.id);
-            if(mesho == nullptr) continue;
+            Object* base = ObjectManager::get_object(tago);
+            if(base == nullptr) continue;
 
-            if(mesho->object.id == scene3D.capturing_quad.id)
-                program_mesh.render(mesho->mesh, 0x0000ffff);
-            else if(mesho->object.id == scene3D.selected_object.id)
-                program_mesh.render(mesho->mesh, 0x00ff00ff);
-            else if(mesho->object.id == scene3D.hovered_object.id)
-                program_mesh.render(mesho->mesh, 0xff0000ff);
+            if(base->tag.oid == state.capturing_quad_tag.oid)
+                program_mesh.render(base->mesh, 0x0000ffff);
+            else if(base->tag.oid == state.selected_tag.oid)
+                program_mesh.render(base->mesh, 0x00ff00ff);
+            else if(base->tag.oid == state.hovered_tag.oid)
+                program_mesh.render(base->mesh, 0xff0000ff);
             else
-                program_mesh.render(mesho->mesh, 0xffffffff);
+                program_mesh.render(base->mesh, 0xffffffff);
         }
-        else if (object.type == Object::Quad)
+        else if (tago.type == TagO::Quad)
         {
-            SQuadO* quado = ObjectManager::get_quado(object.id);
+            SQuadO* quado = ObjectManager::get_squado(tago);
             if(quado == nullptr) continue;
 
-            if(quado->object.id == scene3D.capturing_quad.id)
-                program_mesh.render(quado->mesh, 0x0000ffff);
-            else if(quado->object.id == scene3D.selected_object.id)
-                program_mesh.render(quado->mesh, 0x00ff00ff);
-            else if(quado->object.id == scene3D.hovered_object.id)
-                program_mesh.render(quado->mesh, 0xff0000ff);
+            m4f4 translation_matrix = m4f4::translation(quado->object.pos);
+
+            if(quado->object.tag.oid == state.capturing_quad_tag.oid)
+                program_mesh.render(translation_matrix, quado->object.mesh, 0x0000ffff);
+            else if(quado->object.tag.oid == state.selected_tag.oid)
+                program_mesh.render(translation_matrix, quado->object.mesh, 0x00ff00ff);
+            else if(quado->object.tag.oid == state.hovered_tag.oid)
+                program_mesh.render(translation_matrix, quado->object.mesh, 0xff0000ff);
             else
-                program_mesh.render(quado->mesh, 0xffffffff);
-            
-            program_quad.render(m4f4(), quado->texture.texture_id);
+                program_mesh.render(translation_matrix, quado->object.mesh, 0xffffffff);
+
+            program_quad.render(translation_matrix, quado->object.mesh, quado->squad.texture_id);
             // program_quad.render(m4f4(), 0);
             // program_quad.render(quado->mesh, quado->texture.text_coords);
             // program_quad.render(quado->mesh);
@@ -182,21 +185,23 @@ void RendererScene3D::render_object_ids(Scene3D & scene)
 
     fb_object_ids.clear_with({0.0f, 0.0f, 0.0f, 0.0f});
     
-    for(Object object : scene.objects)
+    for(TagO tago : scene.tagos)
     {
-        if(object.type == Object::Mesh)
+        if(tago.type == TagO::Base)
         {
-            MeshO* mesho = ObjectManager::get_mesho(object.id);
-            if(mesho == nullptr) continue;
+            Object* baseo = ObjectManager::get_object(tago);
+            if(baseo == nullptr) continue;
 
-            program_object_ids.render(mesho->mesh, mesho->object.id);
+            program_object_ids.render(m4f4(), baseo->mesh, baseo->tag.oid);
         }
-        else if (object.type == Object::Quad)
+        else if (tago.type == TagO::Quad)
         {
-            SQuadO* quado = ObjectManager::get_quado(object.id);
+            SQuadO* quado = ObjectManager::get_squado(tago);
             if(quado == nullptr) continue;
 
-            program_object_ids.render(quado->mesh, quado->object.id);
+            program_object_ids.render(  m4f4::translation(quado->object.pos), 
+                                        quado->object.mesh, 
+                                        quado->object.tag.oid                   );
         }
     }
 
@@ -205,7 +210,7 @@ void RendererScene3D::render_object_ids(Scene3D & scene)
 
 
 
-Object RendererScene3D::sample_object_in_fb(f2 cursor_pos_sane)
+Object* RendererScene3D::sample_object_in_fb(f2 cursor_pos_sane)
 {
     fb_object_ids.bind();
 

@@ -23,20 +23,17 @@
 #include "rend/scene3D/program_axes.hh"
 
 #include "scene/object_manager.hh"
+#include "scene/scene_state.hh"
 
 
-class Scene3D
+struct Scene3D
 {
-
-public:
     SID sid;
     Str name;
 
-    std::vector<Object> objects;
+    CameraOrbital camera;
 
-    Object selected_object;
-    Object hovered_object;
-    Object capturing_quad;
+    std::vector<TagO> tagos;
 
     std::vector<model::ModelT> texture_models;
     std::vector<model::ModelColor> color_models;
@@ -46,23 +43,5 @@ public:
     f3 quarternion_vector_100 = {1.0f, 0.0f, 0.0f};
     f3 quarternion_vector_111 = {0.0f, 0.0f, 1.0f};
 
-
-    CameraOrbital camera;
-    bool camera_grabbed = false;
-
-
-    Scene3D() = default;
-
-    void push_object(Object new_object);
-    std::vector<Object>& get_objects_mut();
-
-    void push_texture_model(model::ModelT& new_model);
-    void push_color_model(model::ModelColor& new_model);
-
-    InputResponse handle_input(window::InputEvent input_event);
-    void handle_window_resize(window::WindowResizeEvent resize_event);
-
-    void update();
-    
 };
 

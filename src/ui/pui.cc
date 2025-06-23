@@ -1,8 +1,11 @@
 
+#include "lib/print.hh"
 // REND
 #include "rend/pui/renderer_base.hh"
 #include "rend/rend_manager.hh"
 
+#include "scene/scene_state.hh"
+#include "scene/manager_3D.hh"
 
 // #include "ui/pui.hh"
 #include "pui.hh"
@@ -69,6 +72,7 @@ contains_point(f2 cursor_pos_win_sane)
     return false;
 }
 
+
 void PUI::
 clear_hovers()
 {
@@ -81,9 +85,9 @@ clear_hovers()
 
 
 void PUI::
-update()
+update(Manager3D& manager_3D)
 {
-    w_root_scene.reload({10.0f, 300.0f});
+    w_root_scene.reload(manager_3D, {10.0f, 300.0f});
 
     // delete widget_quad;
     // widget_quad = new WidgetQuad();
@@ -91,21 +95,26 @@ update()
     // scene::QuadS2D* quad = ManagerScene::get_quad_manager().get_selected();
     // w_object_large.reload(quad, {500.0f, 450.0f});
 
-    Scene3D& scene = ManagerScene::get_window_scene_mut();
-    w_object_large.reload(scene.selected_object, {500.0f, 450.0f});
+    // println(scene_state.selected_tag.oid);
 
-    // 
+    // Scene3D& scene = ManagerScene::get_window_scene_mut();
+
+    Object* obj_p = ObjectManager::get_object(manager_3D.state.selected_tag);
+    if(obj_p == nullptr)
+        return;// w_object_large.
+    w_object_large.reload(*obj_p, {500.0f, 450.0f});
+
 }
 
 
 
 
 InputResponse PUI::
-event_all(window::InputEvent& event)
+event_all(Manager3D& manager_3D, window::InputEvent& event)
 {
     if(cursor.is_targeted_widget(&w_root_scene))
     {
-        InputResponse result = w_root_scene.event_handler(event);
+        InputResponse result = w_root_scene.event_handler(manager_3D, event);
         cursor.handle_event_result(result, &w_root_scene);
         if(result.grabbed_mouse())
             return InputResponse(InputResponse::MOUSE_GRAB);

@@ -30,7 +30,7 @@ namespace opengl {
 }
 
 struct Scene3D;
-
+struct SceneState;
 
 
 class RendererScene3D 
@@ -58,13 +58,13 @@ public:
 
 
     /** Render scene objects. */
-    void render_scene_3d(Scene3D& scene3D);
+    void render_scene_3d(Scene3D& scene3D, SceneState& state);
 
     /** Object id outlines for cursor interaction */
     void render_object_ids(Scene3D& scene3D);
 
     /** Samples a location in the object id framebuffer */
-    Object sample_object_in_fb(f2 cursor_pos_sane);
+    Object* sample_object_in_fb(f2 cursor_pos_sane);
 
 private:
 

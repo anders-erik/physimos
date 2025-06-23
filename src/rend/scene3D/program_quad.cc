@@ -77,17 +77,46 @@ set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat)
 
 
 void ProgramQuad::
-render(const m4f4& model_matrix, unsigned int texture_id)
+render(const m4f4& model_matrix, Mesh& mesh, unsigned int texture_id)
 {
     glUseProgram(id);
 
-    glUniformMatrix4fv(model_matrix_LOC, 1, GL_FALSE, model_matrix.pointer());
+    glUniformMatrix4fv(model_matrix_LOC, 1, GL_TRUE, model_matrix.pointer());
+
+
+    glBindVertexArray(vao);
+
+
+    // MESH
+    glGenBuffers(1, &vbo_vert);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
+    glBufferData(GL_ARRAY_BUFFER, mesh.vert_size_bytes(), mesh.verts.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0); // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+
+    // TEXTURE
+    MeshTexture mesh_texture_quad;
+    mesh_texture_quad.create_quad();
+    size_t text_size_bytes = mesh_texture_quad.vert_size_bytes();
+
+    glGenBuffers(1, &vbo_text);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_text);
+    glBufferData(GL_ARRAY_BUFFER, text_size_bytes, mesh_texture_quad.verts.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1); // Texture Coord
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(f2), (void*)0);
+    
+
+    // FACES
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.faces.size() * sizeof(TriangleFaceIndeces), mesh.faces.data(), GL_STATIC_DRAW);
+
 
     glActiveTexture(GL_TEXTURE0);
     // glBindTexture(GL_TEXTURE_2D, opengl::texture_get_id(opengl::Textures::Grass));
     glBindTexture(GL_TEXTURE_2D, texture_id);
 
-    glBindVertexArray(vao);
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 

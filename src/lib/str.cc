@@ -425,6 +425,9 @@ to_str_char(char ch)
 Str Str::
 to_str_int(int integer)
 {
+    if(integer == 0)
+        return "0";
+
     size_t max_chars_int = 10;
 
     // std::vector<char> chars_;

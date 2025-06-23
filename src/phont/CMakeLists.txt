@@ -16,27 +16,27 @@ target_link_libraries(phont
 )
 
 
-add_executable(main_phont
-    main_phont.cc 
-)
-target_link_libraries(main_phont
+# add_executable(main_phont
+#     main_phont.cc 
+# )
+# target_link_libraries(main_phont
     
-    rend
+#     rend
 
-    scene
-    conductor
+#     scene
+#     conductor
 
-    phont
-    ui
-    window
-    math
+#     phont
+#     ui
+#     window
+#     math
 
-    lib
-    opengl
+#     lib
+#     opengl
 
-    glad 
-    ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
-)
+#     glad 
+#     ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
+# )
 
 
 

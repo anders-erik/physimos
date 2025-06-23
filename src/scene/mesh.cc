@@ -6,6 +6,18 @@ unsigned int Mesh::vert_size_bytes()
     return verts.size() * sizeof(Vertex);
 }
 
+void Mesh::center()
+{
+    f3 vert_sum;
+    for(auto& vert : verts)
+        vert_sum += vert;
+    
+    f3 vert_average = vert_sum / verts.size();
+
+    for(auto& vert : verts)
+        vert -= vert_average;
+}
+
 void Mesh::create_cube()
 {
     verts.clear();

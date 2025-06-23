@@ -1,16 +1,8 @@
 
+#include "scene/object_manager.hh"
 #include "object_manager.hh"
 
 
-
-MeshO::MeshO(Mesh& mesh)
-{
-    object.id = ObjectManager::new_oid();
-    object.type = Object::Mesh;
-    object.name = Str("mesh_") + Str::to_str_int(object.id);
-
-    this->mesh = mesh;
-}
 
 
 
@@ -19,7 +11,7 @@ namespace ObjectManager
 
 static OID oid_index = 1;
 
-static std::vector<MeshO> meshos;
+static std::vector<Object> objects;
 static std::vector<SQuadO> quados;
 
 OID new_oid()
@@ -30,34 +22,62 @@ OID new_oid()
     return oid_index++;
 }
 
-Object get_object(OID oid)
+
+TagO new_tag()
 {
-    for(MeshO& mesho : meshos)
+    return {    new_oid(),
+                TagO::None};
+}
+
+TagO new_tag(TagO::Type type)
+{
+    return {    new_oid(),
+                type};
+}
+
+TagO push_object(Object& object)
+{
+    return objects.emplace_back(object).tag;
+}
+
+Object* get_object(TagO tag)
+{
+    if(tag.is_base())
     {
-        if(mesho.object.id == oid)
-            return mesho.object;
+        for(Object& object : objects)
+        {
+            if(object.tag.oid == tag.oid)
+                return &object;
+        }
+    }
+
+    if(tag.is_quad())
+    {
+        for(SQuadO& quado :  quados)
+        {
+            if(quado.object.tag.oid == tag.oid)
+                return &quado.object;
+        }
+    }
+
+    return nullptr;
+}
+
+Object* get_object(OID oid)
+{
+    if(oid == 0)
+        return nullptr;
+
+    for(Object& object : objects)
+    {
+        if(object.tag.oid == oid)
+            return &object;
     }
 
     for(SQuadO& quado :  quados)
     {
-        if(quado.object.id == oid)
-            return quado.object;
-    }
-
-    return Object();
-}
-
-MeshO& push_mesho(Mesh& mesh)
-{
-    return meshos.emplace_back(mesh);
-}
-
-MeshO* get_mesho(OID oid)
-{
-    for(MeshO& mesho : meshos)
-    {
-        if(mesho.object.id == oid)
-            return &mesho;
+        if(quado.object.tag.oid == oid)
+            return &quado.object;
     }
 
     return nullptr;
@@ -65,38 +85,36 @@ MeshO* get_mesho(OID oid)
 
 
 
-SQuadO& 
-push_quado(SQuad & s_q_texture)
+
+TagO
+push_squado(SQuadO & squado)
 {
-    return quados.emplace_back(s_q_texture);
+    return quados.emplace_back(squado).object.tag;
 }
 
 
 SQuadO* 
-get_quado(OID oid)
+get_squado(TagO tag)
 {
     for(SQuadO& quado : quados)
     {
-        if(oid == quado.object.id)
+        if(tag.oid == quado.object.tag.oid)
             return &quado;
     }
     return nullptr;
 }
 
 
-
-
-
+Object new_object()
+{
+    TagO tag = new_tag();
+    Str name = Str{"object_"} + Str{tag.oid};
+    Mesh mesh;
+    return Object { tag,
+                    name,
+                    mesh };
 }
 
-SQuadO::SQuadO(SQuad& scene_quad_texture)
-{
-    object.id = ObjectManager::new_oid();
-    object.type = Object::Quad;
-    object.name = Str("quad_") + Str::to_str_int(object.id);
 
-    mesh.create_quad();
-
-    texture = scene_quad_texture;
 }
 

@@ -26,7 +26,7 @@ public:
 
     void set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat);
 
-    void render(Mesh& mesh, OID id);
+    void render(const m4f4& model_matrix, Mesh& mesh, OID id);
 
     f4 oid_to_vec4(OID oid);
     OID vec4_to_oid(f4 vec4);

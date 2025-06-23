@@ -6,7 +6,6 @@
 #include <any>
 
 
-#include "manager.hh"
 
 #include "conductor/conductor2D.hh"
 
@@ -119,81 +118,81 @@ void add_glyph_quads_to_scene(Scene2D* scene){
 int main()
 {
 
-	f2 conductor_window_size = {800.0f, 600.0f};
+	// f2 conductor_window_size = {800.0f, 600.0f};
 
-	Physimos conductor2D { 600, 600 };
+	// Physimos conductor2D { 600, 600 };
 
-	opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
+	// opengl::build_program_vert_frag(opengl::ProgramName::ndc_black);
 
-	ManagerQuadS2D& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
+	// ManagerQuadS2D& q_manager = ManagerScene::get_manager_2D().manager_quad2d;
 
-	// Scene objects
-	Shape point_to_draw = Shape::create(shape_t::point);
-	point_to_draw.move(f2{8.0f, 4.0f});
+	// // Scene objects
+	// Shape point_to_draw = Shape::create(shape_t::point);
+	// point_to_draw.move(f2{8.0f, 4.0f});
 
-	Shape line_to_draw = Shape::create(shape_t::line);
+	// Shape line_to_draw = Shape::create(shape_t::line);
 
-	QuadS2D black_rectangle;
-	black_rectangle.set_box({1.0f, 4.0f}, {4.0f, 1.0f});
-
-
-	// WARNING :: THIS IS _BROKEN_ AS WINDOW SCENE ATM IS ONLY SUPPORTING SCENE3D!!
-
-	// ROOT SCENE
-	// Scene2D& root_scene = ManagerScene::get_root_scene_mut();
-	Scene2D& scene_2d = (Scene2D&) ManagerScene::get_window_scene_mut();
-	scene_2d.set_name("Forever Root");
-	// ADD GREEN QUADS TO ROOT SCENE
-	QuadS2D root_scene_quad;
-	root_scene_quad.set_box( {2.0f, 2.0f}, {60.0f, 60.0f} );
-    root_scene_quad.set_bitmap_texture(opengl::texture_get_id(opengl::Textures::Grass));
-	root_scene_quad.set_name("root_scene_quad_1");
-	// root_scene.push_quad(root_scene_quad);
-	size_t quad_id_0 = ManagerScene::get_manager_2D().manager_quad2d.push_quad(root_scene_quad);
-	scene_2d.push_quad_id(quad_id_0);
-
-	root_scene_quad.set_box( {620.0f, 100.0f}, {150.0f, 150.0f} );
-	root_scene_quad.set_name("quad_2");
-	scene_2d.push_quad(root_scene_quad);
+	// QuadS2D black_rectangle;
+	// black_rectangle.set_box({1.0f, 4.0f}, {4.0f, 1.0f});
 
 
+	// // WARNING :: THIS IS _BROKEN_ AS WINDOW SCENE ATM IS ONLY SUPPORTING SCENE3D!!
 
-	// SCENE 100x100
-	Scene2D scene_100x100 = {f2{100.0f, 100.0f}};
-	scene_100x100.set_name("100x100 test scene");
-	scene_100x100.push_quad(black_rectangle);
-	size_t scene_100x100_id = ManagerScene::get_manager_2D().push_scene2D(scene_100x100);
+	// // ROOT SCENE
+	// // Scene2D& root_scene = ManagerScene::get_root_scene_mut();
+	// Scene2D& scene_2d = (Scene2D&) ManagerScene::get_window_scene_mut();
+	// scene_2d.set_name("Forever Root");
+	// // ADD GREEN QUADS TO ROOT SCENE
+	// QuadS2D root_scene_quad;
+	// root_scene_quad.set_box( {2.0f, 2.0f}, {60.0f, 60.0f} );
+    // root_scene_quad.set_bitmap_texture(opengl::texture_get_id(opengl::Textures::Grass));
+	// root_scene_quad.set_name("root_scene_quad_1");
+	// // root_scene.push_quad(root_scene_quad);
+	// size_t quad_id_0 = ManagerScene::get_manager_2D().manager_quad2d.push_quad(root_scene_quad);
+	// scene_2d.push_quad_id(quad_id_0);
 
-	scene_2d.add_subscene2D(scene_100x100_id, {300.0f, 0.0f});
+	// root_scene_quad.set_box( {620.0f, 100.0f}, {150.0f, 150.0f} );
+	// root_scene_quad.set_name("quad_2");
+	// scene_2d.push_quad(root_scene_quad);
 
 
 
-	// GLYPHSCENE
-	Scene2D glyphscene = {f2{240, 300}};
-	glyphscene.set_name("glyphscene");
-	// Quads and shapes
-	glyphscene.push_quad(black_rectangle);
-	glyphscene.push_shape(point_to_draw);
-	ShapeS2D& glyphscene_line = glyphscene.push_shape(line_to_draw);
-	glyphscene_line.set_pos( {6.0f, 6.0f} );
-	// Glyphs
-	add_glyph_quads_to_scene(&glyphscene);
+	// // SCENE 100x100
+	// Scene2D scene_100x100 = {f2{100.0f, 100.0f}};
+	// scene_100x100.set_name("100x100 test scene");
+	// scene_100x100.push_quad(black_rectangle);
+	// size_t scene_100x100_id = ManagerScene::get_manager_2D().push_scene2D(scene_100x100);
 
-	size_t glyphscene_id = ManagerScene::get_manager_2D().push_scene2D(glyphscene);
-
-	// Add to ROOT SCENE
-	size_t quad_id = scene_2d.add_subscene2D(glyphscene_id, {350, 200});
-	auto* q_glyphscene = q_manager.get_quad_mut(quad_id);
-	if(q_glyphscene != nullptr)
-	{
-		q_glyphscene->set_name("glyph scene quad");
-	}
+	// scene_2d.add_subscene2D(scene_100x100_id, {300.0f, 0.0f});
 
 
 
+	// // GLYPHSCENE
+	// Scene2D glyphscene = {f2{240, 300}};
+	// glyphscene.set_name("glyphscene");
+	// // Quads and shapes
+	// glyphscene.push_quad(black_rectangle);
+	// glyphscene.push_shape(point_to_draw);
+	// ShapeS2D& glyphscene_line = glyphscene.push_shape(line_to_draw);
+	// glyphscene_line.set_pos( {6.0f, 6.0f} );
+	// // Glyphs
+	// add_glyph_quads_to_scene(&glyphscene);
+
+	// size_t glyphscene_id = ManagerScene::get_manager_2D().push_scene2D(glyphscene);
+
+	// // Add to ROOT SCENE
+	// size_t quad_id = scene_2d.add_subscene2D(glyphscene_id, {350, 200});
+	// auto* q_glyphscene = q_manager.get_quad_mut(quad_id);
+	// if(q_glyphscene != nullptr)
+	// {
+	// 	q_glyphscene->set_name("glyph scene quad");
+	// }
 
 
-	conductor2D.main_loop();
+
+
+
+	// conductor2D.main_loop();
 
 	return 0;
 }

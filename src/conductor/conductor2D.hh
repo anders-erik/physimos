@@ -6,12 +6,14 @@
 
 #include "ui/pui.hh"
 
-#include "scene/manager.hh"
+#include "scene/manager_3D.hh"
+#include "scene/scene_state.hh"
+#include "rend/scene3D/renderer3D.hh"
+
+#include "scene2D/manager_2D.hh"
 #include "scene2D/scene2D.hh"
 #include "scene2D/shapeS2D.hh"
-
 #include "rend/scene2D/renderer2D.hh"
-#include "rend/scene3D/renderer3D.hh"
 
 #include "conductor2D_grabstate.hh"
 
@@ -32,15 +34,19 @@ class Physimos
 	GrabStateConductor input_state;
 	CursorPosition cursor_pos; // Copy from most recent mouse move event
 
-
 public:
+	Manager2D manager_2D;
+	Manager3D manager_3D;
+
 
 	Physimos(int width, int height);
+
+	Scene3D& get_window_scene();
 
 	bool is_quad_capture_click(InputEvent& event);
 	bool should_release_quad(InputEvent& event);
 
-	void send_event_scene(InputEvent& event);
+	void send_event_window_scene(InputEvent& event);
 	void send_event_quad(InputEvent& event);
 
 	/** Mouse and keyboard input. */

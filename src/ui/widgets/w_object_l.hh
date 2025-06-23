@@ -2,15 +2,17 @@
 #pragma once
 
 #include "lib/pair.hh"
+#include "lib/print.hh"
 
 #include "rend/pui/renderer_base.hh"
 
 #include "ui/string.hh"
 
-#include "scene/manager.hh"
+#include "scene/object.hh"
 #include "scene2D/scene2D.hh"
 #include "scene2D/quadS2D.hh"
 
+#include "scene/manager_3D.hh"
 #include "scene/object_manager.hh"
 
 #include "widget.hh"
@@ -136,12 +138,9 @@ public:
         object_name.set_str(name_str);
 
 
-        // Mesh Object
-        if(object.type != Object::Mesh)
-            return;
         
-        MeshO* mesho = ObjectManager::get_mesho(object.id);
-        if(mesho == nullptr) return;
+        Object* object_base = ObjectManager::get_object(object.tag.oid);
+        if(object_base == nullptr) return;
 
         
         f2 box_indent = { 10.0f, 0.0f };
@@ -157,7 +156,7 @@ public:
         // x
         f2 pos_x_delta = { 150.0f, -20.0f };
         verts_size.set_pos(offset + pos_x_delta);
-        verts_size.set_str(Str(mesho->mesh.verts.size()));
+        verts_size.set_str(Str(object_base->mesh.verts.size()));
 
 
         // label
@@ -167,7 +166,7 @@ public:
         // y
         f2 faces_size_delta = { 150.0f, -40.0f };
         faces_size.set_pos(offset + faces_size_delta);
-        faces_size.set_str(Str(mesho->mesh.faces.size()));
+        faces_size.set_str(Str(object_base->mesh.faces.size()));
 
         offset -= box_indent;
 

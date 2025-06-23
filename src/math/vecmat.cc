@@ -272,9 +272,79 @@ f3& f3::operator=(const f3 & rhs)
     return *this;
 }
 
+f3& f3::
+operator+=(const f3 & rhs)
+{
+    x += rhs.x;
+    y += rhs.y;
+    z += rhs.z;
+    return *this;
+}
+
+f3& f3::
+operator-=(const f3 & rhs)
+{
+    x -= rhs.x;
+    y -= rhs.y;
+    z -= rhs.z;
+    return *this;
+}
+
+f3 & f3::
+operator*=(const f3 & rhs)
+{
+    x *= rhs.x;
+    y *= rhs.y;
+    z *= rhs.z;
+    return *this;
+}
+
+f3 & f3::
+operator/=(const f3 & rhs)
+{
+    x /= rhs.x;
+    y /= rhs.y;
+    z /= rhs.z;
+    return *this;
+}
+
+
 f3 f3::operator-()
 {
     return { -x, -y, -z };
+}
+
+
+f3 f3::
+operator+(float scalar)
+{
+    return {    x + scalar,
+                y + scalar,
+                z + scalar};
+}
+
+f3 f3::
+operator-(float scalar)
+{
+    return {    x - scalar,
+                y - scalar,
+                z - scalar};
+}
+
+f3 f3::
+operator*(float scalar)
+{
+    return {    x * scalar,
+                y * scalar,
+                z * scalar};
+}
+
+f3 f3::
+operator/(float scalar)
+{
+    return {    x / scalar,
+                y / scalar,
+                z / scalar};
 }
 
 f2 f3::to_xy() const

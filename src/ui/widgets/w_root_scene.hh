@@ -7,10 +7,10 @@
 
 #include "ui/string.hh"
 
-#include "scene/manager.hh"
 #include "scene2D/scene2D.hh"
 #include "scene2D/quadS2D.hh"
 
+#include "scene/manager_3D.hh"
 #include "scene/object_manager.hh"
 
 #include "widget.hh"
@@ -33,14 +33,15 @@ public:
     RootScene() = default;
 
 
-    InputResponse event_handler(window::InputEvent& event)
+    InputResponse event_handler(Manager3D& manager_3D, window::InputEvent& event)
     {
 
         for(auto& quad_widget : object_widgets)
         {
             if(quad_widget.has_cursor(cursor_sane))
             {
-                quad_widget.event_handler(event);
+
+                quad_widget.event_handler(manager_3D, event);
             }
         }
 
@@ -50,9 +51,8 @@ public:
 
 
     /** Recreates the whole widget from scene data every call. */
-    void reload(f2 widget_pos)
+    void reload(Manager3D& manager_3D, f2 widget_pos)
     {
-        Scene3D& root_scene = ManagerScene::get_window_scene_mut();
 
 
         // Frame
@@ -66,7 +66,7 @@ public:
 
         // Name
         f2 name_delta = { 0.0f, -20.0f };
-        Str name_str = root_scene.name;
+        Str name_str = manager_3D.root_scene.name;
         scene_name_base.set_pos( pos += name_delta );
         // scene_name_base.set_size( offset );
         scene_name_base.set_str(name_str);
@@ -79,10 +79,12 @@ public:
         f2 object_indent = {10.0f, 0.0f};
         
         pos += object_indent;
-        for(auto& object : root_scene.get_objects_mut())
+        for(auto& tago : manager_3D.root_scene.tagos)
         {
             W::ObjectSmall object_widget;
-            object_widget.reload(object, pos += object_w_delta);
+            Object* object = ObjectManager::get_object(tago);
+            if(object == nullptr) continue;
+            object_widget.reload(*object, pos += object_w_delta);
             object_widgets.push_back(object_widget);
         }
         pos -= object_indent;

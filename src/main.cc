@@ -6,7 +6,6 @@
 #include <any>
 
 
-#include "scene/manager.hh"
 
 #include "conductor/conductor2D.hh"
 
@@ -16,13 +15,14 @@
 #include "scene/object_manager.hh"
 
 #include "rend/rend_manager.hh"
+#include "main.h"
 
 int main()
 {
 
 	Physimos physimos { 800, 600 };
 
-	Scene3D& root_scene = ManagerScene::get_root_scene_mut();
+	Scene3D& root_scene = physimos.get_window_scene();
 	root_scene.name = "Forever Root";
 
 
@@ -32,7 +32,7 @@ int main()
     model::model_center(ground_grass.mesh);
 	model::model_translate(ground_grass.mesh, {0.0f, 0.0f, -1.5f});
     ground_grass.texture = opengl::Textures::Grass;
-	root_scene.push_texture_model(ground_grass);
+	root_scene.texture_models.push_back(ground_grass);
 
 
 
@@ -42,7 +42,7 @@ int main()
     model::model_center(ground_checker.mesh);
 	model::model_translate(ground_checker.mesh, {5.0f, 0.0f, -1.4f});
     ground_checker.texture = opengl::Textures::Checker2x2;
-	root_scene.push_texture_model(ground_checker);
+	root_scene.texture_models.push_back(ground_checker);
 
 
 
@@ -60,7 +60,7 @@ int main()
     model_scale(tube.mesh, 0.5f);
     model_translate(tube.mesh, {-3.0f, 0.0f, 2.0f});
     tube.texture = opengl::Textures::Colors;
-	root_scene.push_texture_model(tube);
+	root_scene.texture_models.push_back(tube);
 
 
 
@@ -69,19 +69,21 @@ int main()
 	model_add_cube_mesh(cube.mesh);
     // renderer_model_color.create_render_context(model_render_context, model);
     cube.transform.pos.x = 5.0f;
-	root_scene.push_color_model(cube);
+	root_scene.color_models.push_back(cube);
 
 
 
 	// FIRST PURE MESH
-	Mesh mesh;
-	mesh.create_cube();
-	MeshO& mesho = ObjectManager::push_mesho(mesh);
-	root_scene.push_object(mesho.object);
+	Object object_base = ObjectManager::new_object();
+	object_base.mesh.create_cube();
+	object_base.tag.type = TagO::Type::Base;
+	ObjectManager::push_object(object_base);
+	root_scene.tagos.push_back(object_base.tag);
 
 
 	// GRAPH SCENE2D
 	Scene2D scene2D { {100, 100} };
+	scene2D.manager_2D = &physimos.manager_2D;
 	scene2D.get_camera().set_width(3);
 	scene2D.get_camera().pan({1.5f, 1.5f});
 
@@ -96,7 +98,7 @@ int main()
 	graph.update();
 	scene2D.graphs.push_back(graph);
 	
-	SID sid_2D = ManagerScene::get_manager_2D().push_scene2D(scene2D);
+	SID sid_2D = physimos.manager_2D.push_scene2D(scene2D);
 
 	// for(size_t i = 0; i < 20; i++)
 	// {
@@ -104,15 +106,25 @@ int main()
 	// }
 
 	// QuadO
-	SQuad s_q_texture;
-	s_q_texture.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(sid_2D);
-	s_q_texture.sid = sid_2D;
-	SQuadO& quado = ObjectManager::push_quado(s_q_texture);
-	root_scene.push_object(quado.object);
+	Object squad_object = ObjectManager::new_object();
+	squad_object.name = "squado_1";
+	squad_object.mesh.create_quad();
+	squad_object.mesh.center();
+	squad_object.tag.type = TagO::Type::Quad;
+	squad_object.pos.x = 2.0f;
+
+	SQuad squad;
+	squad.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(sid_2D);
+	squad.sid = sid_2D;
+
+	SQuadO squado {squad_object, squad};
+
+	TagO squado_tag = ObjectManager::push_squado(squado);
+	root_scene.tagos.push_back(squado_tag);
 
 
 	// Guarantee one proper rend call
-	Rend::Manager::get_renderer_scene2D().render_scene_framebuffer(sid_2D);
+	// Rend::Manager::get_renderer_scene2D().render_scene_framebuffer(sid_2D);
 
 
 	physimos.main_loop();

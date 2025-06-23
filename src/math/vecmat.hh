@@ -122,9 +122,20 @@ struct f3
     f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
     // f3() : x {0.0f}, y {0.0f}, z {0.0f} {}; 
 
-    f3 operator+(const f3& rhs);
     f3& operator=(const f3& rhs);
+    f3& operator+=(const f3& rhs);
+    f3& operator-=(const f3& rhs);
+    f3& operator*=(const f3& rhs);
+    f3& operator/=(const f3& rhs);
+
+    f3 operator+(const f3& rhs);
+
     f3 operator-();
+
+    f3 operator+(float scalar);
+    f3 operator-(float scalar);
+    f3 operator*(float scalar);
+    f3 operator/(float scalar);
 
     f2 to_xy() const;
     f2 yaw_pitch();

@@ -36,9 +36,8 @@ set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat)
 
 
 void ProgramObjectIDs::
-render(Mesh& mesh, OID oid)
+render(const m4f4& model_matrix, Mesh& mesh, OID oid)
 {
-    m4f4 model_matrix;
 
     f4 vec4 = oid_to_vec4(oid);
     // OID new_OID = vec4_to_oid(vec4);
@@ -64,7 +63,7 @@ render(Mesh& mesh, OID oid)
     // glBindVertexArray(0);
 
     glBindVertexArray(VAO);
-    glUniformMatrix4fv(glGetUniformLocation(id, "model"), 1, GL_FALSE, model_matrix.pointer());
+    glUniformMatrix4fv(glGetUniformLocation(id, "model"), 1, GL_TRUE, model_matrix.pointer());
 
 
     // Obviously always fill

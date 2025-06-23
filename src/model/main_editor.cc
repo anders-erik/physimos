@@ -18,8 +18,8 @@ int main(){
         auxwin.new_frame();
 
         auto resizes = auxwin.get_events_window_resize();
-        for(auto& resize : resizes)
-            scene.handle_window_resize(resize);
+        // for(auto& resize : resizes)
+            // scene.handle_window_resize(resize);
 
         std::vector<window::InputEvent> events = auxwin.get_events_input();
         for(window::InputEvent& event : events){
