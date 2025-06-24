@@ -5,7 +5,7 @@ endif()
 
 set(WINDOW 
     auxwin.cc
-    auxkey.cc
+    glfw_key.cc
     coordinate_transform.cc
 )
 

@@ -5,9 +5,10 @@
 
 #include "math/vecmat.hh"
 
+#include "coordinate_transform.hh"
 
 #include "auxevent.hh"
-#include "coordinate_transform.hh"
+#include "window/cursor.hh"
 
 // To not require the inclusion of the glfw header
 struct GLFWwindow;
@@ -33,6 +34,8 @@ class Auxwin {
         double dt_to_close = 0.5; // delta time to which compare successive close-button strokes
         /** Check close condition. If met then the 'close()' method is invoked. */
         void try_close();
+        /** Check keystroke close conditions. If match, close flag is set. */
+        void try_close_keystroke(KeyStrokeEvent keystroke, KeyModifiers modifiers);
 
 
         /** Required input for coordinate transformation constants.  */
@@ -49,17 +52,14 @@ class Auxwin {
         void glfw_create_window();
         void opengl_init();
 
-        CursorPosition cursor;
+        CursorPosition cursor_pos;
 
-        KeyModifierState modifier_current_state;
         KeyModifiers modifiers_current;
 
         std::vector<InputEvent> events_input;
         std::vector<WindowResizeEvent> events_resize;
 
-
-        GLFWcursor* default_cursor;
-        GLFWcursor* pan_cursor;
+        Cursor cursor;
 
     public:
         GLFWwindow *glfw_window;
@@ -86,6 +86,12 @@ class Auxwin {
         void close();
         void destroy();
 
+        void glfw_create_cursors();
+        void set_cursor_state(Cursor::State new_state);
+        CursorPosition get_cursor_pos();
+
+        i2 get_window_size();
+        f2 get_window_size_float();
 
         f2 get_monitor_size_px();
         f2 get_monitor_size_mm();

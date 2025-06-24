@@ -186,7 +186,7 @@ void SceneModelEditor::handle_input(window::InputEvent input_event){
         
             switch (input_event.keystroke.key){
 
-            case window::Key::p :
+            case Key::p :
                 // std::cout << "camera.rho    = " << camera.rho << std::endl;
                 // std::cout << "camera.theta  = " << camera.theta << std::endl;
                 // std::cout << "camera.phi    = " << camera.phi << std::endl;

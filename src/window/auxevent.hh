@@ -110,28 +110,22 @@ struct MouseScrollEvent {
 
 struct KeyStrokeEvent {
     Key key = Key::None;
-    KeyModifierState modifier;
     ButtonAction action;
 
-    KeyStrokeEvent(Key _key, KeyModifierState _modifier, ButtonAction _action) 
+    KeyStrokeEvent() = default;
+    KeyStrokeEvent(Key _key, ButtonAction _action) 
         :   key         {_key},
-            modifier    {_modifier},
             action      {_action} 
     {
     };
-    KeyStrokeEvent() = default;
 
-    bool is(Key key) {
-        return this->key == key ? true : false;
-    }
-    bool is(ButtonAction button_action) {
-        return this->action == button_action ? true : false;
-    }
-    bool has(KeyModifierState key_modifier) {
-        return this->modifier == key_modifier ? true : false;
-    }
+    bool is_esc()       {return key == Key::Esc;                    }
+    bool is_press()     {return action == ButtonAction::Press;      }
+    bool is_not_press() {return action != ButtonAction::Press;      }
+    bool is_release()   {return action == ButtonAction::Release;    }
 
-    bool is_press() {return action == ButtonAction::Press; }
+    bool is(Key key_to_check)           {return key == key_to_check;    }
+    bool is(ButtonAction button_action) {return action == button_action;}
 };
 
 struct WindowResizeEvent {
@@ -139,11 +133,11 @@ struct WindowResizeEvent {
     f2 size_f;
     f2 content_scale; // This simply queries the current content scale. It does NOT respond the content scale changes
 
+    WindowResizeEvent() = default;
     WindowResizeEvent(i2 _size, f2 content_scale) 
         :   size_i { _size }, 
             size_f { f2{ (float) _size.x, (float)_size.y}},
             content_scale {content_scale} {};
-    WindowResizeEvent() = default;
 };
 
 
@@ -153,89 +147,87 @@ struct InputEvent
     GLFWwindow *glfw_window;
     // Cursor position at the moment of the event. 
     // For mouse movement events this would be the location of the cursor *before* the move took place.
-    CursorPosition      cursor_pos; 
+    CursorPosition      cursor_pos;
+    KeyModifiers modifiers;
 
-    EventType type;
+    EventType type = EventType::None;
     
+    // TODO: turn into variant
     MouseButtonEvent mouse_button;
     MouseMoveEvent mouse_movement;
     MouseScrollEvent mouse_scroll;
     KeyStrokeEvent keystroke;
 
-    KeyModifiers modifiers;
 
 
-    InputEvent() : type { EventType::None} {};
+    InputEvent() = default;
 
     InputEvent( GLFWwindow*         _glfw_window, 
                 CursorPosition      cursor_pos, 
+                KeyModifiers        modifier_state,
                 EventType           _type, 
-                MouseButtonEvent    _mouse_button, 
-                KeyModifiers        modifier_state) 
+                MouseButtonEvent    _mouse_button) 
         :   glfw_window     {_glfw_window}, 
             cursor_pos      {cursor_pos}, 
+            modifiers       {modifier_state},
             type            {_type}, 
-            mouse_button    {_mouse_button}, 
-            modifiers       {modifier_state} 
+            mouse_button    {_mouse_button}
     {
     };
 
     InputEvent( GLFWwindow* _glfw_window,
                 CursorPosition      cursor_pos,
+                KeyModifiers        modifier_state,
                 EventType   _type, 
-                MouseMoveEvent _mouse_movement, 
-                KeyModifiers modifier_state) 
+                MouseMoveEvent _mouse_movement) 
         :   glfw_window     {_glfw_window}, 
-            cursor_pos      {cursor_pos}, 
+            cursor_pos      {cursor_pos},
+            modifiers       {modifier_state},
             type            {_type}, 
-            mouse_movement  {_mouse_movement}, 
-            modifiers       {modifier_state} 
+            mouse_movement  {_mouse_movement}
     {
     };
 
     InputEvent( GLFWwindow* _glfw_window, 
                 CursorPosition      cursor_pos,
+                KeyModifiers        modifier_state,
                 EventType _type, 
-                MouseScrollEvent _mouse_scroll,
-                KeyModifiers modifier_state) 
+                MouseScrollEvent _mouse_scroll) 
         :   glfw_window     {_glfw_window}, 
-            cursor_pos      {cursor_pos}, 
+            cursor_pos      {cursor_pos},
+            modifiers       {modifier_state},
             type            {_type}, 
-            mouse_scroll    { _mouse_scroll}, 
-            modifiers       {modifier_state} 
+            mouse_scroll    { _mouse_scroll}
     {
     };
 
     InputEvent( GLFWwindow* _glfw_window,
                 CursorPosition      cursor_pos,
+                KeyModifiers        modifier_state,
                 EventType _type, 
-                KeyStrokeEvent _key_stroke, 
-                KeyModifiers modifier_state)
+                KeyStrokeEvent _key_stroke)
         :   glfw_window     {_glfw_window}, 
-            cursor_pos      {cursor_pos}, 
+            cursor_pos      {cursor_pos},
+            modifiers       {modifier_state},
             type            {_type}, 
-            keystroke       { _key_stroke}, 
-            modifiers       {modifier_state} 
+            keystroke       { _key_stroke}
     {
     };
 
 
-    bool is_type(EventType _type) { return _type == type ? true : false;}
+    bool is_type(EventType _type) { return _type == type; }
 
     /** Is any of the mouse events (move, scroll, click). */
     bool is_mouse()
     {
-        bool is_of_mouse_type = 
-            (type == EventType::MouseButton) ||
-            (type == EventType::MouseMove) ||
-            (type == EventType::MouseScroll);
-
-        return is_of_mouse_type ? true : false;
+        return  (type == EventType::MouseButton)    ||
+                (type == EventType::MouseMove)      ||
+                (type == EventType::MouseScroll);
     }
-    bool is_mouse_button() {return type == EventType::MouseButton ? true : false;};
-    bool is_mouse_movement() {return type == EventType::MouseMove ? true : false;};
-    bool is_mouse_scroll() {return type == EventType::MouseScroll ? true : false;};
-    bool is_keystroke() {return type == EventType::Keystroke ? true : false;};
+    bool is_mouse_button()  {return type == EventType::MouseButton; }
+    bool is_mouse_movement(){return type == EventType::MouseMove  ; }
+    bool is_mouse_scroll()  {return type == EventType::MouseScroll; }
+    bool is_keystroke()     {return type == EventType::Keystroke  ; }
 };
 
 

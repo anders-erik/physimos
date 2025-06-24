@@ -27,21 +27,20 @@ using namespace window;
 */
 class Physimos 
 {
+public:
+
 	window::Auxwin auxwin;
 	UI::PUI pui;
-
-	bool targeting_ui = false;
-	MouseGrab mouse_grab;
-	CursorPosition cursor_pos; // Copy from most recent mouse move event
-
-public:
-	Manager2D manager_2D;
 	Manager3D manager_3D;
+	Manager2D manager_2D;
 
+	MouseGrab mouse_grab;
 
 	Physimos(int width, int height);
 
 	Scene3D& get_window_scene();
+
+	void update_grab(MouseGrab::State subsystem, InputResponse response);
 
 	void send_event_pui(InputEvent& event);
 	void send_event_quad(InputEvent& event);
@@ -49,7 +48,6 @@ public:
 
 	/** Returns true on events being sent to grabed subsystem */
 	bool try_send_event_to_grabbed(InputEvent & event);
-
 	/** Returns true on matching cursor pos */
 	bool requery_pui(CursorPosition cursor_pos);
 	/** Returns true on matching cursor pos */
@@ -59,7 +57,6 @@ public:
 	void process_user_input();
 	/** Window resize, content scale, etc. */
 	void process_framebuffer_events();
-
 
 	void update();
 

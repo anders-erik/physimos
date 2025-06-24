@@ -63,6 +63,8 @@ void Auxwin::init(int width, int height)
 
     glfw_create_window();
 
+    glfw_create_cursors();
+
     opengl_init();
 }
 
@@ -91,9 +93,12 @@ void Auxwin::glfw_window_hints(){
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 }
+
+
+
 void Auxwin::glfw_create_window(){
 
-    cursor.window_dims = current_window_size_f;
+    cursor_pos.window_dims = current_window_size_f;
 
     glfw_window = glfwCreateWindow(current_window_size_i.x, current_window_size_i.y, "Auxwin", NULL, NULL);
 
@@ -105,10 +110,6 @@ void Auxwin::glfw_create_window(){
 		glfwTerminate();
 		// return -1;A
 	}
-
-    // Set up cursors
-    pan_cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-    default_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 
 
     reload_coordinate_constants_using_glfw();
@@ -152,7 +153,10 @@ void Auxwin::bind_window_framebuffer()
     glViewport(0,0, current_window_size_i.x, current_window_size_i.y);
     
 }
-void Auxwin::try_close()
+
+
+void Auxwin::
+try_close()
 {
     double current_time = glfwGetTime();
     double dt = current_time - time_of_last_close_key;
@@ -162,11 +166,37 @@ void Auxwin::try_close()
     else
         time_of_last_close_key = current_time;
 }
-void Auxwin::close(){
+
+
+void Auxwin::
+try_close_keystroke(KeyStrokeEvent keystroke, KeyModifiers modifiers)
+{
+    if( keystroke.is(ButtonAction::Press)   &&
+        keystroke.key == Key::F1            &&
+        modifiers.is_esc()               )
+    {
+            close();
+    }
+
+    if( keystroke.is(ButtonAction::Press)   &&
+        keystroke.key == Key::q             &&
+        modifiers.is_alt_ctrl_shift()           )
+    {
+            close();
+    }
+}
+
+
+
+void Auxwin::
+close(){
     glfwSetWindowShouldClose(glfw_window, true);
     open = false;
 }
-bool Auxwin::is_open(){
+
+
+bool Auxwin::
+is_open(){
     return !glfwWindowShouldClose(glfw_window);
     // return open;
 }
@@ -210,6 +240,67 @@ void Auxwin::destroy(){
 
     // TODO: SHOUDL NOT TERMINATE THE GLFW LIB!
     glfwTerminate();
+}
+
+
+
+void Auxwin::
+glfw_create_cursors()
+{
+    // Set up cursors
+    cursor.glfw_images.arrow    = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+    cursor.glfw_images.inverted = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+    cursor.glfw_images.hand     = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+    cursor.glfw_images.none     = glfwCreateStandardCursor(GLFW_CURSOR_HIDDEN);
+}
+
+void Auxwin::
+set_cursor_state(Cursor::State new_state)
+{
+    if(cursor.state == new_state)
+        return;
+    
+    cursor.state = new_state;
+
+    switch (cursor.state)
+    {
+    case Cursor::NORMAL:
+        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursor(glfw_window, cursor.glfw_images.arrow);
+        break;
+
+    case Cursor::INVERTED:
+        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursor(glfw_window, cursor.glfw_images.inverted);
+        break;
+
+    case Cursor::HAND:
+        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursor(glfw_window, cursor.glfw_images.hand);
+        break;
+
+    case Cursor::CAPTURE:
+        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursor(glfw_window, cursor.glfw_images.none);
+        break;
+    }
+}
+
+CursorPosition Auxwin::
+get_cursor_pos()
+{
+    return cursor_pos;
+}
+
+
+i2 Auxwin::get_window_size()
+{
+    return current_window_size_i;
+}
+
+f2 Auxwin::get_window_size_float()
+{
+    return current_window_size_f;
 }
 
 
@@ -279,7 +370,7 @@ framebuffer_callback(GLFWwindow* _window, int _width, int _height)
     current_window_size_f = frambuffer_size_f / content_scale_f;
     current_window_size_i = frambuffer_size_i / content_scale_i;
 
-    cursor.window_dims = current_window_size_f;
+    cursor_pos.window_dims = current_window_size_f;
     
     reload_coordinate_constants_using_glfw();
 
@@ -297,9 +388,8 @@ framebuffer_callback(GLFWwindow* _window, int _width, int _height)
 
 
 void Auxwin::
-mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
-    
-    EventType event_type = EventType::MouseButton;
+mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
     MouseButtonEvent mouse_button_event;
 
     if(action == GLFW_PRESS)
@@ -307,87 +397,83 @@ mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
     else if (action == GLFW_RELEASE)
         mouse_button_event.action = ButtonAction::Release;
     
-    if(button == GLFW_MOUSE_BUTTON_MIDDLE)
-        mouse_button_event.button = MouseButton::Middle;
-    else if (button == GLFW_MOUSE_BUTTON_LEFT)
+    if (button == GLFW_MOUSE_BUTTON_LEFT)
         mouse_button_event.button = MouseButton::Left;
     else if (button == GLFW_MOUSE_BUTTON_RIGHT)
         mouse_button_event.button = MouseButton::Right;
+    else if(button == GLFW_MOUSE_BUTTON_MIDDLE)
+        mouse_button_event.button = MouseButton::Middle;
+    else if (button == GLFW_MOUSE_BUTTON_4)
+        mouse_button_event.button = MouseButton::Aux1;
+    else if (button == GLFW_MOUSE_BUTTON_5)
+        mouse_button_event.button = MouseButton::Aux2;
 
     // CURSOR IMAGE
     if(mouse_button_event.button == MouseButton::Middle){
         if(mouse_button_event.action == ButtonAction::Press)
-            glfwSetCursor(window, pan_cursor);
+            set_cursor_state(Cursor::HAND);
         else if (mouse_button_event.action == ButtonAction::Release)
-            glfwSetCursor(window, default_cursor);
+            set_cursor_state(Cursor::NORMAL);
     }
+    if(mouse_button_event.button == MouseButton::Aux1)
+        set_cursor_state(Cursor::CAPTURE);
+    if(mouse_button_event.button == MouseButton::Aux2)
+        set_cursor_state(Cursor::NORMAL);
 
     
     events_input.emplace_back(  window, 
-                                cursor, 
-                                event_type, 
-                                mouse_button_event, 
-                                modifiers_current);
+                                cursor_pos, 
+                                modifiers_current,
+                                EventType::MouseButton, 
+                                mouse_button_event);
 }
 
 
 void Auxwin::
 cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 {
-
-    CursorPosition cursor_prev = cursor;
+    CursorPosition cursor_prev = cursor_pos;
 
     f2 input ((float) xpos, (float) ypos);
 
     // Update current cursor
-    cursor.input = input;
-    cursor.sane = coord_transformer.i_s(input);
-    cursor.pixels = coord_transformer.s_p(cursor.sane);
-    cursor.normalized = coord_transformer.s_n(cursor.sane);
-    cursor.millimeters = coord_transformer.s_m(cursor.sane);
+    cursor_pos.input        = input;
+    cursor_pos.sane         = coord_transformer.i_s(input);
+    cursor_pos.pixels       = coord_transformer.s_p(cursor_pos.sane);
+    cursor_pos.normalized   = coord_transformer.s_n(cursor_pos.sane);
+    cursor_pos.millimeters  = coord_transformer.s_m(cursor_pos.sane);
 
-
-    EventType       event_type = EventType::MouseMove;
     MouseMoveEvent   mouse_movement (cursor_prev,
-                                     cursor);
+                                     cursor_pos);
 
     events_input.emplace_back(  window, 
-                                cursor_prev, 
-                                event_type, 
-                                mouse_movement, 
-                                modifiers_current);
+                                cursor_prev,
+                                modifiers_current,
+                                EventType::MouseMove, 
+                                mouse_movement);
 }
 
 
 void Auxwin::
 scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
-    // f2 delta ((float)xpos, (float)ypos);
-
-    EventType       event_type = EventType::MouseScroll;
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
     events_input.emplace_back(  window, 
-                                cursor, 
-                                event_type, 
-                                mouse_scroll, 
-                                modifiers_current);
+                                cursor_pos,
+                                modifiers_current,
+                                EventType::MouseScroll, 
+                                mouse_scroll);
 }
 
 
 void Auxwin::
 key_callback(GLFWwindow *window, int key, int action, int mods)
 {
-
     KeyStrokeEvent keystroke_event;
 
-    EventType event_type = EventType::Keystroke;
-
-    // KEY
     keystroke_event.key = get_key_from_glfw_key(key);
 
-
-    // BUTTON ACTION
     if(action == GLFW_PRESS)
         keystroke_event.action = ButtonAction::Press;
     else if(action == GLFW_RELEASE)
@@ -395,65 +481,24 @@ key_callback(GLFWwindow *window, int key, int action, int mods)
     else if(action == GLFW_REPEAT)
         keystroke_event.action = ButtonAction::Hold;
 
-    // MODIFIER KEY
-    switch (mods)
+
+    if(KeyModifiers::is_mod_key(keystroke_event.key))
     {
-    case 0: modifier_current_state = KeyModifierState::none            ;   break;
-    case 1: modifier_current_state = KeyModifierState::shift           ;   break;
-    case 2: modifier_current_state = KeyModifierState::ctl             ;   break;
-    case 3: modifier_current_state = KeyModifierState::ctl_shift       ;   break;
-    case 4: modifier_current_state = KeyModifierState::alt             ;   break;
-    case 5: modifier_current_state = KeyModifierState::alt_shift       ;   break;
-    case 6: modifier_current_state = KeyModifierState::alt_ctrl        ;   break;
-    case 7: modifier_current_state = KeyModifierState::alt_ctl_shift   ;   break;
-    
-    default: modifier_current_state = KeyModifierState::none           ;   break;
+        if(keystroke_event.is_press())
+            modifiers_current.press(keystroke_event.key);
+        else if(keystroke_event.is_release())
+            modifiers_current.release(keystroke_event.key);
+        
+        // println(KeyModifiers::to_str(modifiers_current));
     }
     
-    switch (key)
-    {
-    case GLFW_KEY_LEFT_SHIFT:
-    case GLFW_KEY_RIGHT_SHIFT:
-        if(action == GLFW_PRESS)
-            modifiers_current.set_shift();
-        if(action == GLFW_RELEASE)
-            modifiers_current.unset_shift();
-        break;
-    
-    case GLFW_KEY_LEFT_CONTROL:
-    case GLFW_KEY_RIGHT_CONTROL:
-        if(action == GLFW_PRESS)
-            modifiers_current.set_ctrl();
-        if(action == GLFW_RELEASE)
-            modifiers_current.unset_ctrl();
-        break;
-
-    case GLFW_KEY_LEFT_ALT:
-    case GLFW_KEY_RIGHT_ALT:
-        if(action == GLFW_PRESS)
-            modifiers_current.set_alt();
-        if(action == GLFW_RELEASE)
-            modifiers_current.unset_alt();
-        break;
-    
-    default:
-        break;
-    }
-    
-
-    keystroke_event.modifier = modifier_current_state;
-
-
-    // CHECK CLOSE KEY
-    if(keystroke_event.is(close_key) && keystroke_event.is(ButtonAction::Press))
-        try_close();
-
+    try_close_keystroke(keystroke_event, modifiers_current);
 
     events_input.emplace_back(  window, 
-                                cursor, 
-                                event_type, 
-                                keystroke_event, 
-                                modifiers_current);
+                                cursor_pos,
+                                modifiers_current,
+                                EventType::Keystroke, 
+                                keystroke_event     );
 }
 
 }

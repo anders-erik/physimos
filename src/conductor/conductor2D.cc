@@ -23,6 +23,21 @@ get_window_scene()
 	return *manager_3D.window_scene;
 }
 
+void Physimos::
+update_grab(MouseGrab::State subsystem, InputResponse response)
+{
+	mouse_grab.update(subsystem, response);
+
+	if(mouse_grab.pui())
+		auxwin.set_cursor_state(Cursor::HAND);
+	else if(mouse_grab.quad())
+		auxwin.set_cursor_state(Cursor::INVERTED);
+	else if(mouse_grab.scene())
+		auxwin.set_cursor_state(Cursor::CAPTURE);
+	else
+		auxwin.set_cursor_state(Cursor::NORMAL);
+}
+
 
 
 
@@ -31,7 +46,7 @@ void Physimos::
 send_event_pui(InputEvent & event)
 {
 	auto response = pui.event_all(manager_3D, event);
-	mouse_grab.update(MouseGrab::PUI, response);
+	update_grab(MouseGrab::PUI, response);
 	
 	manager_3D.state.active_tags.hover_clear();
 }
@@ -60,7 +75,7 @@ send_event_quad(InputEvent& event)
 		if(event.is_mouse_movement())
 			scene_p->handle_pointer_move(event);
 
-		mouse_grab.update(MouseGrab::QUAD, {InputResponse::MOUSE_GRAB});
+		update_grab(MouseGrab::QUAD, {InputResponse::MOUSE_GRAB});
 		return;
 	}
 
@@ -70,9 +85,9 @@ send_event_quad(InputEvent& event)
 void Physimos::
 send_event_scene(InputEvent & event)
 {
-	auto response = manager_3D.state.handle_mouse(	manager_3D, 
-													event		);
-	mouse_grab.update(MouseGrab::SCENE, response);
+	auto response = manager_3D.state.handle_user_input(	manager_3D, 
+														event		);
+	update_grab(MouseGrab::SCENE, response);
 }
 
 
@@ -101,6 +116,8 @@ try_send_event_to_grabbed(InputEvent & event)
 		break;
 
 	case MouseGrab::SCENE:
+		// A scene grab always has a virtual cursor position at the center of the window
+		Rend::Manager::get_renderer_scene3D().sample_and_set_hover(manager_3D, auxwin.get_window_size_float() / 2 );
 		send_event_scene(event);
 		break;
 
@@ -155,19 +172,18 @@ process_user_input()
 			if(requery_pui(event.cursor_pos))
 				send_event_pui(event);
 			else if(query_for_quad_grab(event, event.cursor_pos))
-				mouse_grab.update(MouseGrab::QUAD, InputResponse::MOUSE_GRAB);
+				update_grab(MouseGrab::QUAD, InputResponse::MOUSE_GRAB);
 			else
 				send_event_scene(event);
-
-			if(event.is_mouse_movement())
-				cursor_pos = event.mouse_movement.cursor_new;
 
 			continue;
 		}
 
-		if(event.is_keystroke()) // Currently only the scene recieves keyboard input
+		if(event.is_keystroke())
 		{
-			manager_3D.state.handle_key(manager_3D, event);
+			send_event_scene(event);
+			// // Currently only the scene recieves keyboard input
+			// manager_3D.state.handle_key(manager_3D, event);
 		}
 	}
 }
@@ -214,6 +230,8 @@ render()
 
 	rend_scene3D.render_object_ids(*manager_3D.window_scene,
 									manager_3D				);
+
+	
 	
 	pui.render(); // Render ui on top of scene
 }
