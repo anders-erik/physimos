@@ -12,7 +12,7 @@
 #include "scene/model.hh"
 
 #include "scene/mesh.hh"
-#include "scene/object_manager.hh"
+#include "scene/manager_object.hh"
 
 #include "rend/rend_manager.hh"
 #include "main.h"
@@ -24,7 +24,7 @@ int main()
 
 	Manager3D& manager_3D = physimos.manager_3D;
 	Scene3D& root_scene = manager_3D.root_scene;
-	ManagerO& manager_o = manager_3D.manager_o;
+	ManagerObject& manager_o = manager_3D.manager_o;
 
 	root_scene.name = "Forever Root";
 
@@ -77,10 +77,9 @@ int main()
 
 
 	// FIRST PURE MESH
-	Object object_base = manager_o.new_object();
+	Object& object_base = manager_o.new_object();
 	object_base.mesh.create_cube();
 	object_base.tag.type = TagO::Type::Base;
-	manager_o.push_object(object_base);
 	root_scene.tagos.push_back(object_base.tag);
 
 
@@ -101,29 +100,25 @@ int main()
 	graph.update();
 	scene2D.graphs.push_back(graph);
 	
-	SID sid_2D = physimos.manager_2D.push_scene2D(scene2D);
+	SID graph_sid = physimos.manager_2D.push_scene2D(scene2D);
 
-	// for(size_t i = 0; i < 20; i++)
-	// {
-	// 	std::cout << graph.x[i] << ", " << graph.y[i] << std::endl;
-	// }
+
 
 	// QuadO
-	Object squad_object = manager_o.new_object();
-	squad_object.name = "squado_1";
+	Object& squad_object = manager_o.new_object();
+	squad_object.name = "quado_1";
 	squad_object.mesh.create_quad();
 	squad_object.mesh.center();
 	squad_object.tag.type = TagO::Type::Quad;
 	squad_object.pos.x = 2.0f;
+	root_scene.tagos.push_back(squad_object.tag);
 
-	SQuad squad;
-	squad.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(sid_2D);
-	squad.sid = sid_2D;
+	Quad quad;
+	quad.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(graph_sid);
+	quad.sid_2D = graph_sid;
 
-	SQuadO squado {squad_object, squad};
-
-	TagO squado_tag = manager_o.push_squado(squado);
-	root_scene.tagos.push_back(squado_tag);
+	manager_3D.manager_q.quados.emplace_back(	squad_object.tag, 
+												quad				);
 
 
 	// Guarantee one proper rend call

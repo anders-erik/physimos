@@ -1,6 +1,7 @@
 
 
 set(SCENE_OBJS
+
     pscene.cc
     pobject.cc
     WorldSimulator.cc
@@ -10,14 +11,16 @@ set(SCENE_OBJS
     camera.cc
 
     scene3D.cc
-    object_manager.cc
     mesh.cc
     mesh_texture.cc
 
     manager_3D.cc
+    manager_object.cc
+    manager_quad.cc
+
     scene_state.cc
 
-    squad.cc
+    quad.cc
     object.cc
 )
 

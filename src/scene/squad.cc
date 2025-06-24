@@ -1,5 +1,0 @@
-
-#include "scene/squad.hh"
-
-
-

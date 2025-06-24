@@ -12,12 +12,11 @@
 #include "scene2D/quadS2D.hh"
 #include "scene2D/scene2D.hh"
 #include "scene/manager_3D.hh"
-#include "scene/object_manager.hh"
+#include "scene/manager_object.hh"
 
 #include "renderer3D.hh"
 
 #include "scene/scene_state.hh"
-#include "scene/object_manager.hh"
 
 
 
@@ -74,7 +73,7 @@ set_window_fb_size(window::WindowResizeEvent& window_resize_event)
 void RendererScene3D::
 render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
 {
-    ManagerO& o_man = manager_3D.manager_o;
+    ManagerObject& man_o = manager_3D.manager_o;
     
 
     glEnable(GL_DEPTH_TEST);
@@ -130,17 +129,31 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
     
     for(TagO tag : scene3D.tagos)
     {
-        Object* base = o_man.get_object(tag);
+        Object* base = man_o.get_object(tag);
         if(base == nullptr) continue;
 
         m4f4 translation_matrix = m4f4::translation(base->pos);
 
+
+        // QUAD FIRST
+        if (tag.type == TagO::Quad)
+        {
+            Quad* quad = manager_3D.manager_q.find_quad_oid(tag.oid);
+            if(quad == nullptr) continue;
+
+            program_quad.render(translation_matrix, base->mesh, quad->texture_id);
+
+            if(manager_3D.manager_q.state.is_capturing())
+            {
+                program_mesh.render(translation_matrix, base->mesh, 0x0000ffff);
+            }
+        }
+    
+
         // MESH - color change if active object
         if(active_tags.is_active(tag))
         {
-            if(active_tags.is_quad_capture(tag))
-                program_mesh.render(translation_matrix, base->mesh, 0x0000ffff);
-            else if(active_tags.is_selected(tag))
+            if(active_tags.is_selected(tag))
                 program_mesh.render(translation_matrix, base->mesh, 0x00ff00ff);
             else
                 program_mesh.render(translation_matrix, base->mesh, 0xff0000ff);
@@ -150,15 +163,8 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
             program_mesh.render(translation_matrix, base->mesh, 0xffffffff);
         }
 
-        // Object specific render
-        if (tag.type == TagO::Quad)
-        {
-            SQuadO* squad_o = o_man.get_squado(tag);
-            if(squad_o == nullptr) continue;
-            program_quad.render(translation_matrix, base->mesh, squad_o->squad.texture_id);
-        }
-
     }
+    
 
 
     // AXES
@@ -200,28 +206,21 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
     
     for(TagO tago : scene.tagos)
     {
-        if(tago.type == TagO::Base)
-        {
-            Object* baseo = manager_3D.manager_o.get_object(tago);
-            if(baseo == nullptr) continue;
+        Object* baseo = manager_3D.manager_o.get_object(tago);
+        if(baseo == nullptr) continue;
 
-            program_object_ids.render(m4f4(), baseo->mesh, baseo->tag.oid);
-        }
-        else if (tago.type == TagO::Quad)
-        {
-            SQuadO* quado = manager_3D.manager_o.get_squado(tago);
-            if(quado == nullptr) continue;
-
-            program_object_ids.render(  m4f4::translation(quado->object.pos), 
-                                        quado->object.mesh, 
-                                        quado->object.tag.oid                   );
-        }
+        program_object_ids.render(  m4f4::translation(baseo->pos), 
+                                    baseo->mesh, 
+                                    baseo->tag.oid                  );
     }
 
     fb_object_ids.unbind(window_fb_size);
 }
 
-TagO RendererScene3D::sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane)
+
+
+TagO RendererScene3D::
+sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane)
 {
     fb_object_ids.bind();
 
@@ -242,29 +241,6 @@ TagO RendererScene3D::sample_oid_tag(const std::vector<TagO>& scene_tags, const 
     return TagO();
 }
 
-TagO RendererScene3D::sample_and_set_hover(Manager3D& manager_3D, f2 cursor_pos_sane)
-{
-    fb_object_ids.bind();
-
-    f4 vec4_color = fb_object_ids.sample_texture(cursor_pos_sane.to_i2());
-
-    fb_object_ids.unbind(window_fb_size);
-
-    OID sampled_oid = program_object_ids.vec4_to_oid(vec4_color);
-
-    
-    for(TagO& tag : manager_3D.window_scene->tagos)
-    {
-        if(tag.oid == sampled_oid)
-        {
-            manager_3D.state.active_tags.hover_set(tag);
-            return manager_3D.state.active_tags.tag_hover;
-        }
-    }
-
-    manager_3D.state.active_tags.hover_clear();
-    return manager_3D.state.active_tags.tag_hover;
-}
 
 
 

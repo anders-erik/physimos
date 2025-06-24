@@ -35,7 +35,7 @@ update_grab(MouseGrab::State subsystem, InputResponse response)
 	else if(mouse_grab.scene())
 		auxwin.set_cursor_state(Cursor::CAPTURE);
 	else
-		auxwin.set_cursor_state(Cursor::NORMAL);
+		auxwin.set_cursor_state(Cursor::NORMAL);	
 }
 
 
@@ -55,38 +55,21 @@ send_event_pui(InputEvent & event)
 void Physimos::
 send_event_quad(InputEvent& event)
 {
-	auto* capturing_quado = manager_3D.manager_o.get_squado(manager_3D.state.active_tags.get_quad_capture());
-	if(capturing_quado == nullptr)
-	{
-		manager_3D.state.active_tags.release_quad();
-		mouse_grab.release();
-		return;
-	}
-
-	// SEND EVENT
-	if(capturing_quado->squad.is_scene2D())
-	{
-		Scene2D* scene_p = manager_2D.search_scene_storage_2D(capturing_quado->squad.sid);
-		
-		if(event.is_mouse_scroll())
-			scene_p->handle_scroll(event);
-		if(event.is_mouse_button())
-			scene_p->handle_pointer_click(event);
-		if(event.is_mouse_movement())
-			scene_p->handle_pointer_move(event);
-
-		update_grab(MouseGrab::QUAD, {InputResponse::MOUSE_GRAB});
-		return;
-	}
-
+	auto response = manager_3D.manager_q.handle_event(	event,
+														manager_2D	);
+	update_grab(MouseGrab::QUAD, response);
 }
 
 
 void Physimos::
 send_event_scene(InputEvent & event)
 {
+	// A scene grab always has a virtual cursor position at the center of the window
+	// manager_3D.renderer_3D.sample_and_set_hover(manager_3D, auxwin.get_window_size_float() / 2 );
+
 	auto response = manager_3D.state.handle_user_input(	manager_3D, 
-														event		);
+														event,		
+														sampled_tag	);
 	update_grab(MouseGrab::SCENE, response);
 }
 
@@ -103,20 +86,15 @@ try_send_event_to_grabbed(InputEvent & event)
 		break;
 	
 	case MouseGrab::QUAD:
-		if(manager_3D.state.try_release_quad(event, sampled_tag))
+		if(manager_3D.manager_q.try_release_quad(event, sampled_tag))
 		{
-			mouse_grab.release();
+			update_grab(MouseGrab::QUAD, InputResponse::MOUSE_RELEASE);
 			return false;
 		}
-		else
-		{
-			send_event_quad(event);
-		}
+		send_event_quad(event);
 		break;
 
 	case MouseGrab::SCENE:
-		// A scene grab always has a virtual cursor position at the center of the window
-		manager_3D.renderer_3D.sample_and_set_hover(manager_3D, auxwin.get_window_size_float() / 2 );
 		send_event_scene(event);
 		break;
 
@@ -151,7 +129,7 @@ process_user_input()
 
 			if(pui.contains_point(event.cursor_pos.sane))
 				send_event_pui(event);
-			else if(manager_3D.state.try_new_quad_grab(event, sampled_tag))
+			else if(manager_3D.manager_q.try_new_quad_grab(event, sampled_tag))
 				update_grab(MouseGrab::QUAD, InputResponse::MOUSE_GRAB);
 			else
 				send_event_scene(event);
@@ -161,9 +139,9 @@ process_user_input()
 
 		if(event.is_keystroke())
 		{
-			send_event_scene(event);
-			// // Currently only the scene recieves keyboard input
-			// manager_3D.state.handle_key(manager_3D, event);
+			// Always scene unless explicitly grabbed by others
+			if(!try_send_event_to_grabbed(event))
+				send_event_scene(event);
 		}
 	}
 }

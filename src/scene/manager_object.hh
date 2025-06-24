@@ -16,15 +16,14 @@
 
 #include "scene/object.hh"
 
-#include "scene/squad.hh"
+#include "scene/quad.hh"
 
 
-struct ManagerO
+struct ManagerObject
 {
     OID oid_index = 1;
 
     std::vector<Object> objects;
-    std::vector<SQuadO> quados;
 
     OID new_oid();
     TagO new_tag();
@@ -34,10 +33,7 @@ struct ManagerO
     Object* get_object(OID oid);
     Object* get_object(TagO tago);
 
-    TagO push_squado(SQuadO & squado);
-    SQuadO* get_squado(TagO tago);
-
-    Object new_object();
+    Object& new_object();
 };
 
 

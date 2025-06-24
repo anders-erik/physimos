@@ -11,11 +11,11 @@ struct TagO
     enum Type {
         Base,
         Quad,
-        None,
+        Null,
     };
 
     OID oid = 0;
-    Type type = None;
+    Type type = Null;
 
 
     TagO() = default;
@@ -35,7 +35,8 @@ struct TagO
 
     bool is_quad() const  {return type == Quad;}
     bool is_base() const  {return type == Base;}
-    bool is_none() const  {return type == None;}
+    bool is_none() const  {return type == Null;}
+    bool not_null() const  {return type != Null;}
 
 };
 

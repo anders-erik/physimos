@@ -12,7 +12,7 @@
 #include "scene2D/quadS2D.hh"
 
 #include "scene/manager_3D.hh"
-#include "scene/object_manager.hh"
+#include "scene/manager_object.hh"
 
 #include "widget.hh"
 

@@ -4,8 +4,9 @@
 
 #include "rend/scene3D/renderer3D.hh"
 #include "scene/scene_state.hh"
-#include "scene/object_manager.hh"
 #include "scene/scene3D.hh"
+#include "scene/manager_object.hh"
+#include "scene/manager_quad.hh"
 
 #include "scene2D/manager_2D.hh"
 
@@ -26,7 +27,8 @@ public:
     Scene3D root_scene;
     Scene3D* window_scene = nullptr;
 
-    ManagerO manager_o;
+    ManagerObject   manager_o;
+    ManagerQuad     manager_q;
 
     std::list<Scene3D> scenes; // list of non-root 3D scenes
 

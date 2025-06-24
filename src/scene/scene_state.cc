@@ -66,81 +66,8 @@ send_to_current_state(Scene3D& scene, window::InputEvent & event)
 }
 
 
-bool SceneState::
-try_new_quad_grab(window::InputEvent& event, TagO sampled_tag)
-{
-    bool is_quad_grab_click = event.is_mouse_button() && event.mouse_button.is_left_down() && event.modifiers.is_ctrl();
-
-    if( sampled_tag.is_quad()   &&
-        is_quad_grab_click          )
-    {
-        return true;
-    }
-
-	return false;
-}
 
 
-bool SceneState::
-try_release_quad(window::InputEvent& event, TagO sampled_tag)
-{
-    bool is_quad_release_click = event.is_mouse_button() && event.mouse_button.is_left_down();
-
-    if( sampled_tag.is_quad()                           &&
-        sampled_tag == active_tags.get_quad_capture()   &&
-        is_quad_release_click                               )
-    {
-        return true;
-    }
-
-    return false;
-}
-
-
-bool SceneState::
-try_release_quad_esc(window::InputEvent& event)
-{
-    bool quad_release_esc = event.is_keystroke() && event.keystroke.is(Key::Esc);
-
-    if(quad_release_esc)
-    {
-        active_tags.release_quad();
-		return true;
-    }
-
-    return false;
-}
-
-
-
-void SceneState::
-peel_one_layer()
-{
-    
-}
-
-
-void SceneState::
-clear_all_layers()
-{
-    active_tags.release_quad();
-    active_tags.unselect();
-    keys.clear_all();
-    cursor_grab = false;
-}
-
-bool SceneState::
-try_clear_state(window::InputEvent& event)
-{
-    // A left click automatically clears all scene states
-    if(event.is_mouse_button() && event.mouse_button.is_left_down())
-    {
-        clear_all_layers();
-        return true;
-    }
-
-    return false;
-}
 
 bool SceneState::
 try_peel_state(window::InputEvent& event)
@@ -148,11 +75,7 @@ try_peel_state(window::InputEvent& event)
     // Escape always peels once layer
     if(event.is_keystroke() && event.keystroke.is_esc())
     {
-        if(cursor_grab)
-        {
-            cursor_grab = false;
-        }
-        else if(keys.key_2_active())
+        if(keys.key_2_active())
         {
             keys.clear_2();
         }
@@ -160,11 +83,7 @@ try_peel_state(window::InputEvent& event)
         {
             keys.clear_1();
         }
-        else if(active_tags.is_quad_capture())
-        {
-            active_tags.release_quad();
-        }
-        else if(active_tags.is_selected_not_capture())
+        else if(active_tags.has_selected())
         {
             active_tags.unselect();
         }
@@ -173,14 +92,9 @@ try_peel_state(window::InputEvent& event)
     }
 
     // State specific peeling
-    if(cursor_grab)
+    if(active_tags.has_selected())
     {
-        if(event.is_mouse_button() && event.mouse_button.is_middle_up())
-            cursor_grab = false;
-        else if(event.is_keystroke() && event.keystroke.is_esc())
-            cursor_grab = false;
-        else
-            return false;
+        
     }
 
     return false;
@@ -190,34 +104,32 @@ try_peel_state(window::InputEvent& event)
 bool SceneState::
 try_build_state(window::InputEvent& event)
 {
-    if(event.is_mouse_button() && event.mouse_button.is_left_down())
-    {
-        active_tags.select_current_hover();
-    }
-
-    if(event.is_keystroke() && event.keystroke.is(Key::alt))
-    {
-        cursor_grab = true;
-        return true;
-    }
-    if(event.is_mouse_button() && event.mouse_button.is_middle_down())
-    {
-        cursor_grab = true;
-        return true;
-    }
+    
 
     return false;
 }
 
 
 
-InputResponse SceneState::handle_user_input(Manager3D & manager_3D, window::InputEvent & event)
+InputResponse SceneState::handle_user_input(Manager3D& manager_3D, window::InputEvent & event, TagO sampled_tag)
 {
-    try_clear_state(event);
-    
+    active_tags.hover_set(sampled_tag);
+
     try_peel_state(event);
 
     try_build_state(event);
+
+
+    if(event.is_mouse_button() && event.mouse_button.is_left_down())
+        active_tags.select(sampled_tag);
+
+    if(event.is_keystroke() && event.keystroke.is(Key::alt) && event.keystroke.is_press())
+        cursor_grab = !cursor_grab;
+
+    if(event.is_mouse_button() && event.mouse_button.is_middle_down())
+        cursor_grab = true;
+    if(event.is_mouse_button() && event.mouse_button.is_middle_up())
+        cursor_grab = false;
 
 
     send_to_current_state( *manager_3D.window_scene, 

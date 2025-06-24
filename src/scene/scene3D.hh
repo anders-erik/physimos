@@ -16,7 +16,7 @@
 
 #include "scene/model.hh"
 
-#include "scene/object_manager.hh"
+#include "scene/manager_object.hh"
 #include "scene/scene_state.hh"
 
 

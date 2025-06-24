@@ -7,7 +7,7 @@
 
 #include "scene/mesh.hh"
 
-#include "scene/object_manager.hh"
+#include "scene/manager_object.hh"
 
 
 class ShaderObjectIDs : protected opengl::ShaderProgram

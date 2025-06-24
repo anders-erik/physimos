@@ -69,9 +69,6 @@ public:
     void render_object_ids(Scene3D& scene3D, Manager3D& manager_3D);
     TagO sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane);
 
-    /** Samples a location in the object id framebuffer of the window scene
-        Returns the hover tag that is active after sampling.  */
-    TagO sample_and_set_hover(Manager3D& manager_3D, f2 cursor_pos_sane);
 
 private:
 

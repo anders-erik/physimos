@@ -28,7 +28,7 @@ float colorSquareVertices[18] = {
 
 
 void ProgramPrimitiveColor::init(){
-
+    build();
     // id = program_id;
 
     glUseProgram(id);

@@ -32,7 +32,7 @@ float stringSquareVertices[30] = {
 
 
 void ProgramPrimitiveString::init(){
-
+    build();
     glUseProgram(id);
 
     // GET UNIFORM LOCATIONS

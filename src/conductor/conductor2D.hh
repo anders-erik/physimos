@@ -47,7 +47,7 @@ struct Physimos
 	void send_event_quad(InputEvent& event);
 	void send_event_scene(InputEvent& event);
 
-	/** Returns true on events being sent to grabed subsystem */
+	/** Returns true on consumed event. */
 	bool try_send_event_to_grabbed(InputEvent & event);
 
 	/** Mouse and keyboard input. */

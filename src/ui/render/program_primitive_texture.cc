@@ -32,7 +32,7 @@ float textureSquareVertices[30] = {
 
 
 void ProgramPrimitiveTexture::init(){
-
+    build();
     glUseProgram(id);
 
     // GET UNIFORM LOCATIONS
