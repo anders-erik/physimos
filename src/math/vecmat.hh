@@ -55,6 +55,8 @@ struct i2 {
     i2(int xy) : x {xy}, y {xy} {}; 
     i2() = default;
 
+    bool operator==(const i2& rhs) const;
+
     i2 operator/(const i2& rhs);
 
 };
@@ -104,7 +106,7 @@ struct f2
     bool is_zero();
     f2& clamp_nonzero();
 
-    i2 to_i2();
+    i2 to_i2() const ;
 
     void print(std::string prefix);
 };

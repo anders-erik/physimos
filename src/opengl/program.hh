@@ -34,19 +34,20 @@ enum class ProgramName {
 
 
 
-class Program {
+class ShaderProgram 
+{
+
+public:
 
     Str program_name_str;
     
     Shader shader_vert;
     Shader shader_frag;
 
-public:
-
     unsigned int id;
 
     // The program attempts to compile shaders and link program during construction.
-    Program(Str program_name);
+    ShaderProgram(Str program_name);
 
     unsigned int build();
     unsigned int link();

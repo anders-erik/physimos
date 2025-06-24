@@ -36,7 +36,7 @@ int main()
 	// opengl::Shader ui_color_frag {"ui/color.frag"};
 	// ui_color_frag.compile();
 
-	opengl::Program ui_color = {"ui/color"};
+	opengl::ShaderProgram ui_color = {"ui/color"};
 	
 	conductor_conduct();
 	

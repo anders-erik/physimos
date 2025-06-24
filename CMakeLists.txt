@@ -113,7 +113,7 @@ target_link_libraries(physimos
   uic_right_panel 
   scene 
   draw 
-  logger 
+  logger
   file_format 
   simulator 
   math 

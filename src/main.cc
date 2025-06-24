@@ -9,7 +9,7 @@
 
 #include "conductor/conductor2D.hh"
 
-#include "model/model.hh"
+#include "scene/model.hh"
 
 #include "scene/mesh.hh"
 #include "scene/object_manager.hh"

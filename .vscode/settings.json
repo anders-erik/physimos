@@ -16,8 +16,6 @@
 	// "binary": "src/lib/main_str",
 	// "binary": "src/lib/main_file",
 	// "binary": "src/file_format/json/main_json",
-	// "binary": "src/phont/main_phont",
-	// "binary": "src/opengl/main_opengl",
 	// "binary": "src/render/main_render",
 
 	// TEST

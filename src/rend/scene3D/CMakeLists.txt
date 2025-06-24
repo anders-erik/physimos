@@ -3,13 +3,13 @@ set(REND_SCENE3D
 
     renderer3D.cc
 
-    program_vector.cc
-    program_axes.cc
-    program_model_texture.cc
-    program_model_color.cc
-    program_mesh.cc
-    program_object_ids.cc
-    program_quad.cc
+    shader_vector.cc
+    shader_axes.cc
+    shader_model_texture.cc
+    shader_model_color.cc
+    shader_mesh.cc
+    shader_object_ids.cc
+    shader_quad.cc
 )
 
 

@@ -88,10 +88,10 @@ class Auxwin {
 
         void glfw_create_cursors();
         void set_cursor_state(Cursor::State new_state);
-        CursorPosition get_cursor_pos();
+        CursorPosition get_cursor_pos() const;
 
-        i2 get_window_size();
-        f2 get_window_size_float();
+        i2 get_window_size() const;
+        f2 get_window_size_float() const;
 
         f2 get_monitor_size_px();
         f2 get_monitor_size_mm();

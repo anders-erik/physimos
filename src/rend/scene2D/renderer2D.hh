@@ -13,8 +13,7 @@
 
 #include "scene/sid.hh"
 
-#include "rend/scene2D/program_quad2D.hh"
-#include "rend/scene3D/program_vector.hh"
+#include "rend/scene2D/shader_quad2D.hh"
 
 #include "rend/scene2D/shader_graph_point.hh"
 #include "rend/scene2D/shader_graph_line.hh"
@@ -85,7 +84,7 @@ struct SceneFramebuffer
 
 class RendererScene2D 
 {
-    ProgramQuad2D program_quad_2D;
+    ShaderQuad2D program_quad_2D;
     Shader2DGraphPoint shader_graph_point;
     Shader2DGraphLine shader_graph_line;
     Shader2DGridline shader_gridline;

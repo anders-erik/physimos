@@ -29,9 +29,9 @@ public:
 
 
     /** Returns true on successful grab. Updates state. */
-    bool try_new_quad_grab(window::InputEvent& event);
+    bool try_new_quad_grab(window::InputEvent& event, TagO sampled_tag);
     /** Returns true on released quad. Updates state. */
-    bool try_release_quad(window::InputEvent& event);
+    bool try_release_quad(window::InputEvent& event, TagO sampled_tag);
     bool try_release_quad_esc(window::InputEvent& event);
 
     void peel_one_layer();

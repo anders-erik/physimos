@@ -98,7 +98,7 @@ f2& f2::clamp_nonzero()
 }
 
 
-i2 f2::to_i2()
+i2 f2::to_i2() const 
 {
     return i2{(int)x, (int)y};
 }
@@ -553,6 +553,14 @@ rotation_z(float angle)
             {0,             0,              0,  1}};
 }
 
+
+
+
+bool i2::
+operator==(const i2 & rhs) const
+{
+    return x == rhs.x && y == rhs.y;
+}
 
 i2 i2::operator/(const i2 & rhs)
 {

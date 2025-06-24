@@ -3,7 +3,7 @@ set(SCENE_RENDER
 
     renderer2D.cc
 
-    program_quad2D.cc
+    shader_quad2D.cc
 
     shader_graph_point.cc
     shader_graph_line.cc

@@ -16,6 +16,8 @@
 void Shader2DGridline::
 init()
 {
+    build();
+
     glUseProgram(id);
 
 

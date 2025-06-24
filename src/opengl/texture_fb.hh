@@ -31,7 +31,7 @@ struct TextureFB {
 
     unsigned int get_texture_id();
 
-    f4 sample_texture(i2 pos) const;
+    f4 sample_texture(const i2 pos) const;
 
     void set_clear_color(f4 color);
     void clear_with(f4 clear_color);

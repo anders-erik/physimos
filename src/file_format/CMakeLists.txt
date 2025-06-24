@@ -1,6 +1,7 @@
 
 add_subdirectory(json)
 add_subdirectory(bmp)
+add_subdirectory(obj)
 
 add_library(file_format 
     bmp_loader.cpp 

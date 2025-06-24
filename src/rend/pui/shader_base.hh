@@ -7,11 +7,12 @@
 #include "opengl/program.hh"
 
 
-namespace UI {
+
+namespace UI 
+{
 
 
-
-class ProgramPrimitiveTexture : public opengl::ShaderProgram {
+class ShaderBase : public opengl::ShaderProgram {
 
     unsigned int vao;
     unsigned int vbo;
@@ -19,21 +20,20 @@ class ProgramPrimitiveTexture : public opengl::ShaderProgram {
     unsigned int uiViewportTransformLoc;
     unsigned int uiPrimitiveTransformLoc;
 
-    // unsigned int texture;
+    unsigned char color4Loc;
+    unsigned char darknessShiftLoc;
 
 public:
 
-    ProgramPrimitiveTexture() : ShaderProgram("ui/texture") {};
-
+    ShaderBase() : ShaderProgram("ui/base") {};
 
     void init();
     void set_viewport_transform(m4f4 _viewport_transform);
 
+
     void draw() const;
-    void set(float* primitiveTransform_mat, unsigned int texture) const;
-
+    void set(float* primitive_transform_4x4, float _darkness_shift, f4 color4) const;
 };
-
 
 
 

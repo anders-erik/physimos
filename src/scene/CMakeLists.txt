@@ -5,8 +5,8 @@ set(SCENE_OBJS
     pobject.cc
     WorldSimulator.cc
     Camera.cpp
+    model.cc
 
-    scene.cc
     camera.cc
 
     scene3D.cc

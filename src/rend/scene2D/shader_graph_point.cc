@@ -14,6 +14,8 @@
 void Shader2DGraphPoint::
 init()
 {
+    build();
+
     glUseProgram(id);
 
     // GET UNIFORM LOCATIONS

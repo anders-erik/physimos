@@ -84,7 +84,7 @@ get_texture_id()
     return texture.id_gl;
 }
 
-f4 TextureFB::sample_texture(i2 pos) const 
+f4 TextureFB::sample_texture(const i2 pos) const 
 {
     
     glReadBuffer(GL_COLOR_ATTACHMENT0);

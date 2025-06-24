@@ -14,6 +14,8 @@
 void Shader2DGraphLine::
 init()
 {
+    build();
+
     glUseProgram(id);
 
     // GET UNIFORM LOCATIONS

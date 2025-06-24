@@ -25,9 +25,8 @@ using namespace window;
 	Owns an auxwin, pui, and a scene manager.
 	Handles events and decides which root scene will recieve input events.
 */
-class Physimos 
+struct Physimos 
 {
-public:
 
 	window::Auxwin auxwin;
 	UI::PUI pui;
@@ -35,6 +34,8 @@ public:
 	Manager2D manager_2D;
 
 	MouseGrab mouse_grab;
+
+	TagO sampled_tag = TagO(); // sampled tag at current cursor position immediately after window render
 
 	Physimos(int width, int height);
 
@@ -48,10 +49,6 @@ public:
 
 	/** Returns true on events being sent to grabed subsystem */
 	bool try_send_event_to_grabbed(InputEvent & event);
-	/** Returns true on matching cursor pos */
-	bool requery_pui(CursorPosition cursor_pos);
-	/** Returns true on matching cursor pos */
-	bool query_for_quad_grab(InputEvent& event, CursorPosition cursor_pos);
 
 	/** Mouse and keyboard input. */
 	void process_user_input();

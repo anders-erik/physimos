@@ -9,9 +9,9 @@
 
 #include "ui/font/font.hh"
 
-#include "rend/pui/program_base.hh"
-#include "rend/pui/program_texture.hh"
-#include "rend/pui/program_string.hh"
+#include "rend/pui/shader_base.hh"
+#include "rend/pui/shader_texture.hh"
+#include "rend/pui/shader_string.hh"
 
 
 
@@ -30,9 +30,9 @@ class RendererBase {
     // Shared matrix across ui shader programs
     m4f4 viewport_transform;
 
-    ProgramBase program_base;
-    ProgramTexture program_texture;
-    ProgramString program_string;
+    ShaderBase program_base;
+    ShaderTexture program_texture;
+    ShaderString program_string;
 
     // String 
     std::vector<UI::Font::GlyphFontBitmap> glyphs_tmp; // temporarily holds all glyphs for sending to gpu

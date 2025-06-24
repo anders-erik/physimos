@@ -4,9 +4,6 @@
 #include <vector>
 
 #include "opengl/program.hh"
-#include "opengl/renderer_model_texture.hh"
-#include "opengl/renderer_vector.hh"
-#include "opengl/renderer_model_color.hh"
 
 #include "math/vecmat.hh"
 
@@ -14,13 +11,10 @@
 
 #include "camera.hh"
 
-#include "renderer_axes.hh"
 
 #include "sid.hh"
 
-#include "rend/scene3D/program_model_texture.hh"
-#include "rend/scene3D/program_model_color.hh"
-#include "rend/scene3D/program_axes.hh"
+#include "scene/model.hh"
 
 #include "scene/object_manager.hh"
 #include "scene/scene_state.hh"

@@ -23,10 +23,8 @@
 
 
 
-
-
-RendererScene3D::
-RendererScene3D(f2 window_fb_size)
+void RendererScene3D::
+init(f2 window_fb_size)
 {
     this->window_fb_size = window_fb_size;
 
@@ -44,11 +42,28 @@ RendererScene3D(f2 window_fb_size)
 }
 
 
+void RendererScene3D::
+bind_window_fb(i2 window_scene_i)
+{
+    glBindFramebuffer(  GL_FRAMEBUFFER, 
+                        0               );
+
+    glViewport( 0,
+                0,
+                window_scene_i.x,
+                window_scene_i.y    );
+
+    if(window_scene_i != fb_object_ids.size)
+    {
+        fb_object_ids.reload(   window_scene_i.x, 
+                                window_scene_i.y    );
+    }
+}
+
 
 void RendererScene3D::
 set_window_fb_size(window::WindowResizeEvent& window_resize_event)
 {
-
     this->window_fb_size = window_resize_event.size_f;
     fb_object_ids.reload(window_resize_event.size_i.x, window_resize_event.size_i.y);
 }
@@ -206,7 +221,26 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
     fb_object_ids.unbind(window_fb_size);
 }
 
+TagO RendererScene3D::sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane)
+{
+    fb_object_ids.bind();
 
+    f4 vec4_color = fb_object_ids.sample_texture(cursor_pos_sane.to_i2());
+
+    fb_object_ids.unbind(window_fb_size);
+
+
+    OID sampled_oid = program_object_ids.vec4_to_oid(vec4_color);
+
+    
+    for(TagO tag : scene_tags)
+    {
+        if(tag.oid == sampled_oid)
+            return tag;
+    }
+
+    return TagO();
+}
 
 TagO RendererScene3D::sample_and_set_hover(Manager3D& manager_3D, f2 cursor_pos_sane)
 {

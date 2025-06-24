@@ -67,15 +67,14 @@ send_to_current_state(Scene3D& scene, window::InputEvent & event)
 
 
 bool SceneState::
-try_new_quad_grab(window::InputEvent& event)
+try_new_quad_grab(window::InputEvent& event, TagO sampled_tag)
 {
-    if(event.is_mouse_button() && event.mouse_button.is_left_down() && event.modifiers.is_ctrl())
+    bool is_quad_grab_click = event.is_mouse_button() && event.mouse_button.is_left_down() && event.modifiers.is_ctrl();
+
+    if( sampled_tag.is_quad()   &&
+        is_quad_grab_click          )
     {
-        if(active_tags.is_hovering_a_quad())
-        {
-            active_tags.capture_current_hover();
-            return true;
-        }
+        return true;
     }
 
 	return false;
@@ -83,15 +82,15 @@ try_new_quad_grab(window::InputEvent& event)
 
 
 bool SceneState::
-try_release_quad(window::InputEvent& event)
+try_release_quad(window::InputEvent& event, TagO sampled_tag)
 {
-    bool quad_release_click = event.is_mouse_button() && event.mouse_button.is_left_down();
+    bool is_quad_release_click = event.is_mouse_button() && event.mouse_button.is_left_down();
 
-    // If NOT hovering grabbing/capturing quad and left click is failed grab
-    if(!active_tags.is_hovering_captured() && quad_release_click)
+    if( sampled_tag.is_quad()                           &&
+        sampled_tag == active_tags.get_quad_capture()   &&
+        is_quad_release_click                               )
     {
-        active_tags.release_quad();
-		return true;
+        return true;
     }
 
     return false;

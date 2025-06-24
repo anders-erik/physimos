@@ -8,6 +8,7 @@
 #include "scene/scene3D.hh"
 
 #include "scene/manager_3D.hh"
+#include "manager_3D.hh"
 
 
 
@@ -32,7 +33,7 @@ new_sid_3D()
 
 
 Scene3D& Manager3D::
-init()
+init(f2 window_scene_f)
 {
     if(init_flag)
         throw std::runtime_error("Can't init the scene manager twice");
@@ -42,7 +43,24 @@ init()
 
     window_scene = &root_scene;
 
+    renderer_3D.init(window_scene_f);
+
     return root_scene;
 }
 
 
+void Manager3D::
+render_window_scene (   
+                        i2 window_size_i, 
+                        window::CursorPosition cursor_pos
+                    )
+{
+    renderer_3D.bind_window_fb(window_size_i);
+
+	renderer_3D.render_scene_3d(    *window_scene, 
+                                    *this           );
+
+	renderer_3D.render_object_ids(  *window_scene,
+                                    *this           );
+    
+}

@@ -8,7 +8,7 @@
 #include "rend/defs.hh"
 
 
-class Shader2DGridline : private opengl::Program {
+class Shader2DGridline : private opengl::ShaderProgram {
 
     uint camera2D_mat_LOC;
     uint color_LOC;
@@ -23,7 +23,7 @@ class Shader2DGridline : private opengl::Program {
     const float xy_max = 100.0f;
 public:
 
-    Shader2DGridline() : Program("2D/gridline") {};
+    Shader2DGridline() : ShaderProgram("2D/gridline") {};
 
     void init();
 

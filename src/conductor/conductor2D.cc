@@ -12,7 +12,7 @@ Physimos(int width, int height)
 
 	Rend::Manager::init( {width, height} );
 
-	manager_3D.init();
+	manager_3D.init( {width, height} );
 }
 
 
@@ -103,8 +103,7 @@ try_send_event_to_grabbed(InputEvent & event)
 		break;
 	
 	case MouseGrab::QUAD:
-		Rend::Manager::get_renderer_scene3D().sample_and_set_hover(manager_3D, event.cursor_pos.sane);
-		if(manager_3D.state.try_release_quad(event))
+		if(manager_3D.state.try_release_quad(event, sampled_tag))
 		{
 			mouse_grab.release();
 			return false;
@@ -117,7 +116,7 @@ try_send_event_to_grabbed(InputEvent & event)
 
 	case MouseGrab::SCENE:
 		// A scene grab always has a virtual cursor position at the center of the window
-		Rend::Manager::get_renderer_scene3D().sample_and_set_hover(manager_3D, auxwin.get_window_size_float() / 2 );
+		manager_3D.renderer_3D.sample_and_set_hover(manager_3D, auxwin.get_window_size_float() / 2 );
 		send_event_scene(event);
 		break;
 
@@ -131,26 +130,7 @@ try_send_event_to_grabbed(InputEvent & event)
 
 
 
-bool Physimos::
-requery_pui(CursorPosition cursor_pos)
-{
-	pui.clear_hovers();
-	if(pui.contains_point(cursor_pos.sane))
-		return true;
 
-	return false;
-}
-
-
-bool Physimos::
-query_for_quad_grab(InputEvent& event, CursorPosition cursor_pos)
-{
-	Rend::Manager::get_renderer_scene3D().sample_and_set_hover(manager_3D, cursor_pos.sane);
-	if(manager_3D.state.try_new_quad_grab(event))
-		return true;
-
-	return false;
-}
 
 
 
@@ -169,9 +149,9 @@ process_user_input()
 			if(try_send_event_to_grabbed(event))
 				continue;
 
-			if(requery_pui(event.cursor_pos))
+			if(pui.contains_point(event.cursor_pos.sane))
 				send_event_pui(event);
-			else if(query_for_quad_grab(event, event.cursor_pos))
+			else if(manager_3D.state.try_new_quad_grab(event, sampled_tag))
 				update_grab(MouseGrab::QUAD, InputResponse::MOUSE_GRAB);
 			else
 				send_event_scene(event);
@@ -202,7 +182,7 @@ process_framebuffer_events()
 		manager_3D.state.handle_window(	manager_3D,
 										window_event);
 
-		Rend::Manager::get_renderer_scene3D().set_window_fb_size(window_event);
+		manager_3D.renderer_3D.set_window_fb_size(window_event);
 	}
 }
 
@@ -221,18 +201,12 @@ render()
 {
 	Rend::Manager::get_renderer_scene2D().render_all_scene2D_to_frambuffers(manager_2D);
 
-	auxwin.bind_window_framebuffer();
+	manager_3D.render_window_scene(	auxwin.get_window_size(),
+									auxwin.get_cursor_pos()	);
 
-	auto& rend_scene3D = Rend::Manager::get_renderer_scene3D();
+	sampled_tag = manager_3D.renderer_3D.sample_oid_tag(  	manager_3D.window_scene->tagos,
+                                                			auxwin.get_cursor_pos().sane     	);
 
-	rend_scene3D.render_scene_3d(  *manager_3D.window_scene, 
-									manager_3D				);
-
-	rend_scene3D.render_object_ids(*manager_3D.window_scene,
-									manager_3D				);
-
-	
-	
 	pui.render(); // Render ui on top of scene
 }
 

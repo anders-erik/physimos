@@ -14,7 +14,7 @@
 
 #include "renderer2D.hh"
 
-#include "program_quad2D.hh"
+#include "shader_quad2D.hh"
 
 
 

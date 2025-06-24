@@ -13,7 +13,7 @@ namespace UI {
 
 
 
-class ProgramPrimitiveColor : public opengl::Program {
+class ProgramPrimitiveColor : public opengl::ShaderProgram {
 
     unsigned int vao;
     unsigned int vbo;
@@ -26,7 +26,7 @@ class ProgramPrimitiveColor : public opengl::Program {
 
 public:
 
-    ProgramPrimitiveColor() : Program("ui/color") {};
+    ProgramPrimitiveColor() : ShaderProgram("ui/color") {};
 
     void init();
     void set_viewport_transform(m4f4 _viewport_transform);

@@ -147,11 +147,18 @@ void Auxwin::make_current()
 {
     glfwMakeContextCurrent(glfw_window);
 }
-void Auxwin::bind_window_framebuffer()
+
+
+void Auxwin::
+bind_window_framebuffer()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0,0, current_window_size_i.x, current_window_size_i.y);
-    
+    glBindFramebuffer(  GL_FRAMEBUFFER, 
+                        0               );
+
+    glViewport( 0,
+                0, 
+                current_window_size_i.x, 
+                current_window_size_i.y );
 }
 
 
@@ -286,19 +293,22 @@ set_cursor_state(Cursor::State new_state)
     }
 }
 
+
 CursorPosition Auxwin::
-get_cursor_pos()
+get_cursor_pos() const
 {
     return cursor_pos;
 }
 
 
-i2 Auxwin::get_window_size()
+i2 Auxwin::
+get_window_size() const
 {
     return current_window_size_i;
 }
 
-f2 Auxwin::get_window_size_float()
+f2 Auxwin::
+get_window_size_float() const
 {
     return current_window_size_f;
 }

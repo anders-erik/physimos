@@ -12,16 +12,16 @@
 
 #include "window/auxevent.hh"
 
-#include "rend/scene3D/program_vector.hh"
-#include "rend/scene3D/program_axes.hh"
+#include "rend/scene3D/shader_vector.hh"
+#include "rend/scene3D/shader_axes.hh"
 
-#include "rend/scene3D/program_model_texture.hh"
-#include "rend/scene3D/program_model_color.hh"
+#include "rend/scene3D/shader_model_texture.hh"
+#include "rend/scene3D/shader_model_color.hh"
 
-#include "rend/scene3D/program_mesh.hh"
-#include "rend/scene3D/program_quad.hh"
+#include "rend/scene3D/shader_mesh.hh"
+#include "rend/scene3D/shader_quad.hh"
 
-#include "rend/scene3D/program_object_ids.hh"
+#include "rend/scene3D/shader_object_ids.hh"
 
 
 namespace opengl {
@@ -38,22 +38,26 @@ class RendererScene3D
 {
     f2 window_fb_size;
 
-    ProgramAxes program_axes;
-    ProgramVector program_vector;
+    ShaderAxes program_axes;
+    ShaderVector program_vector;
     
-    ProgramModelTexture program_model_texture;
-    ProgramModelColor program_model_color;
+    ShaderModelTexture program_model_texture;
+    ShaderModelColor program_model_color;
 
-    ProgramMesh program_mesh;
-    ProgramQuad program_quad;
+    ShaderMesh program_mesh;
+    ShaderQuad program_quad;
 
-    ProgramObjectIDs program_object_ids;
+    ShaderObjectIDs program_object_ids;
 
     opengl::TextureFB fb_object_ids;
 
 public:
 
-    RendererScene3D(f2 window_fb_size);
+    RendererScene3D() = default;
+
+    void init(f2 window_fb_size);
+
+    void bind_window_fb(i2 window_scene_i);
 
     void set_window_fb_size(window::WindowResizeEvent& window_resize_event);
 
@@ -63,6 +67,7 @@ public:
 
     /** Object id outlines for cursor interaction */
     void render_object_ids(Scene3D& scene3D, Manager3D& manager_3D);
+    TagO sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane);
 
     /** Samples a location in the object id framebuffer of the window scene
         Returns the hover tag that is active after sampling.  */

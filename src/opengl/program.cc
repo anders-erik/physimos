@@ -22,7 +22,7 @@ unsigned int program_ui_texture;
 // ProgramPaths ui_color_ = {"ui/color"};
 
 
-Program::Program(Str program_name) 
+ShaderProgram::ShaderProgram(Str program_name) 
     :   program_name_str {program_name}
 {
 
@@ -32,12 +32,10 @@ Program::Program(Str program_name)
     shader_vert.set_program_name(program_name_str);
     shader_frag.set_program_name(program_name_str);
 
-    build();
-
 }
 
 
-unsigned int Program::build(){
+unsigned int ShaderProgram::build(){
     
     shader_vert.compile();
     shader_frag.compile();
@@ -51,7 +49,7 @@ unsigned int Program::build(){
 }
 
 
-unsigned int Program::link(){
+unsigned int ShaderProgram::link(){
     
     // shader Program
     id = glCreateProgram(); //Creates a program object
@@ -65,7 +63,7 @@ unsigned int Program::link(){
 }
 
 
-void Program::check_link_error(){
+void ShaderProgram::check_link_error(){
 
     int success;
     char infoLog[1024];
@@ -81,12 +79,12 @@ void Program::check_link_error(){
 }
 
 
-unsigned int Program::get_program_id(){
+unsigned int ShaderProgram::get_program_id(){
     return id;
 }
 
 
-void Program::use(){
+void ShaderProgram::use(){
     glUseProgram(id);
 }
 

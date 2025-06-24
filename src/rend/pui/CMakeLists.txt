@@ -3,9 +3,9 @@ set(REND_PUI
 
     renderer_base.cc
 
-    program_base.cc
-    program_string.cc
-    program_texture.cc
+    shader_base.cc
+    shader_string.cc
+    shader_texture.cc
 )
 
 

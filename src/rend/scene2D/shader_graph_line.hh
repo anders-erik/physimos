@@ -12,7 +12,7 @@
 template <typename T>
 struct Vec;
 
-class Shader2DGraphLine : protected opengl::Program {
+class Shader2DGraphLine : protected opengl::ShaderProgram {
 
     uint camera2D_mat_LOC;
     uint model_mat_LOC;
@@ -26,7 +26,7 @@ class Shader2DGraphLine : protected opengl::Program {
 
 public:
 
-    Shader2DGraphLine() : Program("2D/graph") {};
+    Shader2DGraphLine() : ShaderProgram("2D/graph") {};
 
     void init();
 
