@@ -60,21 +60,21 @@ phi_clamp(float _phi)
 void OrbitalView::
 rho_change(float delta)
 {
-    rho = rho_clamp(rho + rho * rho_factor * delta);
+    rho = rho_clamp(rho + delta);
 }
 
 
 void OrbitalView::
 theta_change(float delta)
 {
-    theta = theta + theta_scale * delta;
+    theta += delta;
 }
 
 
 void OrbitalView::
 phi_change(float delta)
 {
-    phi = phi_clamp(phi + phi_scale * delta);
+    phi = phi_clamp(phi + delta);
 }
 
 
@@ -113,6 +113,43 @@ update()
 {
     view.update_matrix();
     perspective.update_matrix();
+}
+
+
+
+void CameraOrbital::
+forward(float delta)
+{
+    view.rho_change(-delta);
+}
+void CameraOrbital::
+backward(float delta)
+{
+    view.rho_change(delta);
+}
+
+void CameraOrbital::
+left(float delta)
+{
+    view.theta_change(-delta);
+}
+
+void CameraOrbital::
+right(float delta)
+{
+    view.theta_change(delta);
+}
+
+void CameraOrbital::
+up(float delta)
+{
+    view.phi_change(-delta);
+}
+
+void CameraOrbital::
+down(float delta)
+{
+    view.phi_change(delta);
 }
 
 

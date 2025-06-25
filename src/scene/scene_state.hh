@@ -7,6 +7,7 @@
 
 #include "scene/ss_active_tags.hh"
 #include "scene/ss_key_state.hh"
+#include "scene/ss_camera.hh"
 
 
 struct Scene3D;
@@ -15,23 +16,23 @@ struct InputResponse;
 
 
 
+
+
 class SceneState
 {
-
-    InputResponse send_to_current_state(Scene3D& scene, window::InputEvent& event);
 
 public:
 
     bool cursor_grab = false;
 
-    SS::ActiveTags  active_tags;
-    SS::KeyState    keys;
+    SS::ActiveTags      active_tags;
+    SS::KeyState        keys;
+
+    CameraState         camera;
 
 
-    bool try_peel_state(window::InputEvent& event);
-    bool try_clear_state(window::InputEvent& event);
-
-    bool try_build_state(window::InputEvent & event);
+    bool update_state(window::InputEvent& event, TagO sampled_tag);
+    void camera_movement(window::InputEvent& event);
 
 
     InputResponse handle_user_input(Manager3D& manager_3D, window::InputEvent& event, TagO sampled_tag);

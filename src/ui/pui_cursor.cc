@@ -78,7 +78,7 @@ void PUICursor::clear_all()
 
 void PUICursor::handle_event_result(InputResponse event_result, Widget* widget)
 {
-    if(event_result.grabbed_mouse())
+    if(event_result.is_mouse_grab())
     {
         grab(widget);
     }

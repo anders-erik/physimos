@@ -144,6 +144,8 @@ struct f3
     /** sqrt ( x^2 + y^2 + z^2 ) */
     float norm();
 
+    void set_zero();
+
     void matmul(m4f4 matrix);
     void matmul(m3f3 matrix);
 

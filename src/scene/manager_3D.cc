@@ -49,6 +49,31 @@ init(f2 window_scene_f)
 }
 
 
+
+void Manager3D::
+update()
+{
+    if(state.camera.is_forward())
+        window_scene->camera.forward(0.15);
+    if(state.camera.is_backward())
+        window_scene->camera.backward(0.15);
+    if(state.camera.is_left())
+        window_scene->camera.left(0.03);
+    if(state.camera.is_right())
+        window_scene->camera.right(0.03);
+    if(state.camera.is_up())
+        window_scene->camera.up(0.02);
+    if(state.camera.is_down())
+        window_scene->camera.down(0.02);
+
+    
+    window_scene->camera.view.rho_change(   -state.camera.spherical_delta.x  / 1.0f    );
+    window_scene->camera.view.theta_change( -state.camera.spherical_delta.y  / 200.0f    );
+    window_scene->camera.view.phi_change(    state.camera.spherical_delta.z  / 400.0f      );
+    state.camera.spherical_delta.set_zero();
+}
+
+
 void Manager3D::
 render_window_scene (   
                         i2 window_size_i, 

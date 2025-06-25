@@ -33,7 +33,12 @@ update_grab(MouseGrab::State subsystem, InputResponse response)
 	else if(mouse_grab.quad())
 		auxwin.set_cursor_state(Cursor::INVERTED);
 	else if(mouse_grab.scene())
-		auxwin.set_cursor_state(Cursor::CAPTURE);
+	{
+		if(response.is_mouse_grab())
+			auxwin.set_cursor_state(Cursor::CAPTURE);
+		else if(response.is_mouse_pan())
+			auxwin.set_cursor_state(Cursor::HAND);
+	}
 	else
 		auxwin.set_cursor_state(Cursor::NORMAL);	
 }
@@ -169,6 +174,7 @@ process_framebuffer_events()
 void Physimos::
 update()
 {
+	manager_3D.update();
 	pui.update(	manager_3D ); // reflect scene state changes
 }
 

@@ -33,10 +33,6 @@ struct OrbitalView
     // float theta =  0.0f; // x-y plane
     // float phi   =  0.0f; // z-axis
 
-    float rho_factor    = -0.2f;
-    float theta_scale   = -0.004f;
-    float phi_scale     =  0.005f;
-
     float rho_min       = 0.5f;
     float rho_max       = 20.0f;
     float phi_min       = 0.01f;
@@ -64,6 +60,13 @@ struct CameraOrbital
 
     /** Makes view and perspective matrices reflect most recent values. */
     void update();
+
+    void forward(float delta);
+    void backward(float delta);
+    void left(float delta);
+    void right(float delta);
+    void up(float delta);
+    void down(float delta);
 
     void print();
 };

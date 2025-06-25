@@ -20,11 +20,11 @@ struct CursorPosition {
 
     CursorPosition operator-(const CursorPosition& rhs){
         CursorPosition difference;
-        difference.input = this->input - rhs.input;
-        difference.sane = this->sane - rhs.sane;
-        difference.normalized = this->normalized - rhs.normalized;
-        difference.pixels = this->pixels - rhs.pixels;
-        difference.millimeters = this->millimeters - rhs.millimeters;
+        difference.input       = input       - rhs.input;
+        difference.sane        = sane        - rhs.sane;
+        difference.normalized  = normalized  - rhs.normalized;
+        difference.pixels      = pixels      - rhs.pixels;
+        difference.millimeters = millimeters - rhs.millimeters;
         return difference;
     }
 
@@ -247,6 +247,7 @@ struct InputResponse
 	/** Respondents mouse action. */
     enum MouseAction {
         MOUSE_GRAB,
+        MOUSE_PAN,
         MOUSE_RELEASE,
     }; 
 
@@ -283,11 +284,21 @@ struct InputResponse
 	{
 	};
 
+    bool is_mouse_grab()
+    {
+        return mouse_action == MOUSE_GRAB;
+    }
 
-    inline bool grabbed_mouse()
-	{
-		return mouse_action == MOUSE_GRAB ? true : false;
-	}
+    bool is_mouse_pan()
+    {
+        return mouse_action == MOUSE_PAN;
+    }
+
+    bool is_mouse_non_release()
+    {
+        return is_mouse_grab() || is_mouse_pan();
+    }
+
 
     inline bool released_mouse()
 	{

@@ -116,7 +116,7 @@ event_all(Manager3D& manager_3D, window::InputEvent& event)
     {
         InputResponse result = w_root_scene.event_handler(manager_3D, event);
         cursor.handle_event_result(result, &w_root_scene);
-        if(result.grabbed_mouse())
+        if(result.is_mouse_grab())
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
 
@@ -124,7 +124,7 @@ event_all(Manager3D& manager_3D, window::InputEvent& event)
     {
         InputResponse result = w_object_large.event_handler(event);
         cursor.handle_event_result(result, &w_object_large);
-        if(result.grabbed_mouse())
+        if(result.is_mouse_grab())
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
 

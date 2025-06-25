@@ -16,7 +16,7 @@ struct MouseGrab
 
 	void update(State subsystem, InputResponse response)
 	{
-		if(response.grabbed_mouse())
+		if(response.is_mouse_non_release())
 			state = subsystem;
 		else
 			state = EMPTY;

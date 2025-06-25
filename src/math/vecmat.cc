@@ -371,6 +371,13 @@ float f3::norm()
     return sqrtf(x*x + y*y + z*z);
 }
 
+void f3::set_zero()
+{
+    x = 0.0f;
+    y = 0.0f;
+    z = 0.0f;
+}
+
 void f3::matmul(m4f4 matrix){
     f3 tmp;
     tmp.x = x*matrix.x.x + y*matrix.x.y + z*matrix.x.z;
