@@ -39,6 +39,7 @@ void glfw_mouse_button_callback(GLFWwindow *window, int button, int action, int 
 void glfw_cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
     current_auxwin->cursor_position_callback(window, xpos, ypos);
 }
+
 void glfw_scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
     current_auxwin->scroll_callback(window, xoffset, yoffset);
 }
@@ -52,16 +53,13 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 
 void Auxwin::init(int width, int height)
 {
-    current_window_size_f = {width, height};
-    current_window_size_i = {width, height};
-    
     current_auxwin = this;
 
     glfwInit();
     
     glfw_window_hints();
 
-    glfw_create_window();
+    glfw_create_window({width, height});
 
     glfw_create_cursors();
 
@@ -75,7 +73,7 @@ void Auxwin::reload_coordinate_constants_using_glfw()
     coords_input.monitor_size_px = get_monitor_size_px();
     coords_input.monitor_size_mm = get_monitor_size_mm();
     coords_input.content_scale = get_monitor_content_scale();
-    coords_input.window_size_sc = current_window_size_f;
+    coords_input.window_size_sc = get_window_fb_size_float() / coords_input.content_scale;
 
     coord_transformer.set_constants(coords_input);
 }
@@ -96,12 +94,18 @@ void Auxwin::glfw_window_hints(){
 
 
 
-void Auxwin::glfw_create_window(){
+void Auxwin::glfw_create_window(i2 window_size_i)
+{
 
-    cursor_pos.window_dims = current_window_size_f;
+    glfw_window = glfwCreateWindow(window_size_i.x, window_size_i.y, "Auxwin", NULL, NULL);
 
-    glfw_window = glfwCreateWindow(current_window_size_i.x, current_window_size_i.y, "Auxwin", NULL, NULL);
+    f2 content_scale = get_monitor_content_scale();
 
+    f2 window_size_f = {(float)window_size_i.x, (float) window_size_i.y};
+
+    window_fb_size = (window_size_f * content_scale).to_i2();
+
+    cursor_pos.window_dims = window_size_f;
 
 	// GLFWwindow *window = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
 	if (glfw_window == NULL)
@@ -115,11 +119,20 @@ void Auxwin::glfw_create_window(){
     reload_coordinate_constants_using_glfw();
 
 
-    glfwSetFramebufferSizeCallback(glfw_window, glfw_framebuffer_callback);
-    glfwSetMouseButtonCallback(glfw_window, glfw_mouse_button_callback);
-    glfwSetCursorPosCallback(glfw_window, glfw_cursor_position_callback);
-    glfwSetScrollCallback(glfw_window, glfw_scroll_callback);
-    glfwSetKeyCallback(glfw_window, glfw_key_callback);
+    glfwSetFramebufferSizeCallback( glfw_window, 
+                                    glfw_framebuffer_callback      );
+
+    glfwSetMouseButtonCallback(     glfw_window, 
+                                    glfw_mouse_button_callback     );
+
+    glfwSetCursorPosCallback(       glfw_window, 
+                                    glfw_cursor_position_callback  );
+
+    glfwSetScrollCallback(          glfw_window, 
+                                    glfw_scroll_callback           );
+
+    glfwSetKeyCallback(             glfw_window, 
+                                    glfw_key_callback              );
 
 
     // TODO: THIS SHOULD NOT BE FORCED WHEN CREATING A NEW WINDOW!
@@ -157,8 +170,8 @@ bind_window_framebuffer()
 
     glViewport( 0,
                 0, 
-                current_window_size_i.x, 
-                current_window_size_i.y );
+                window_fb_size.x, 
+                window_fb_size.y );
 }
 
 
@@ -255,18 +268,19 @@ void Auxwin::
 glfw_create_cursors()
 {
     // Set up cursors
-    cursor.glfw_images.arrow    = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-    cursor.glfw_images.inverted = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-    cursor.glfw_images.hand     = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-    cursor.glfw_images.none     = glfwCreateStandardCursor(GLFW_CURSOR_HIDDEN);
+    cursor.glfw_images.arrow        = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+    cursor.glfw_images.cross_hair   = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+    cursor.glfw_images.hand         = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+    cursor.glfw_images.none         = glfwCreateStandardCursor(GLFW_CURSOR_HIDDEN);
 }
 
 void Auxwin::
 set_cursor_state(Cursor::State new_state)
 {
+    // Prevent unnecesary cursor calls, which can be heavy
     if(cursor.state == new_state)
         return;
-    
+
     cursor.state = new_state;
 
     switch (cursor.state)
@@ -278,7 +292,7 @@ set_cursor_state(Cursor::State new_state)
 
     case Cursor::INVERTED:
         glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwSetCursor(glfw_window, cursor.glfw_images.inverted);
+        glfwSetCursor(glfw_window, cursor.glfw_images.cross_hair);
         break;
 
     case Cursor::HAND:
@@ -289,8 +303,17 @@ set_cursor_state(Cursor::State new_state)
     case Cursor::CAPTURE:
         glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursor(glfw_window, cursor.glfw_images.none);
+        // center_cursor_pos();
+        // center_real_cursor();
+        // events_input.clear();
         break;
     }
+}
+
+
+f2 Auxwin::get_center_pos()
+{
+    return (get_window_fb_size_float() * get_monitor_content_scale()) * 0.5f;
 }
 
 
@@ -302,15 +325,15 @@ get_cursor_pos() const
 
 
 i2 Auxwin::
-get_window_size() const
+get_window_fb_size() const
 {
-    return current_window_size_i;
+    return window_fb_size;
 }
 
 f2 Auxwin::
-get_window_size_float() const
+get_window_fb_size_float() const
 {
-    return current_window_size_f;
+    return {(float)window_fb_size.x, (float) window_fb_size.y};
 }
 
 
@@ -371,16 +394,19 @@ framebuffer_callback(GLFWwindow* _window, int _width, int _height)
 {
     // std::cout << "auxwin->framebuffer_callback" << std::endl;
 
+    window_fb_size = {_width, _height};
+    f2 window_fb_size_f = get_window_fb_size_float();
+
     f2 frambuffer_size_f = {(float) _width, (float) _height};
     i2 frambuffer_size_i = {_width, _height};
 
     f2 content_scale_f = get_monitor_content_scale();
     i2 content_scale_i = {(int)content_scale_f.x, (int)content_scale_f.y};
 
-    current_window_size_f = frambuffer_size_f / content_scale_f;
-    current_window_size_i = frambuffer_size_i / content_scale_i;
+    f2 window_size_f = frambuffer_size_f / content_scale_f;
+    i2 window_size_i = frambuffer_size_i / content_scale_i;
 
-    cursor_pos.window_dims = current_window_size_f;
+    cursor_pos.window_dims = window_size_f;
     
     reload_coordinate_constants_using_glfw();
 
@@ -431,13 +457,13 @@ mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
         set_cursor_state(Cursor::NORMAL);
 
     
-    events_input.emplace_back(  window, 
-                                cursor_pos, 
-                                modifiers_current,
+    events_input.emplace_back(  modifiers_current,
                                 EventType::MouseButton, 
                                 mouse_button_event);
 }
 
+bool init_flag = false;
+f2 input_prev;
 
 void Auxwin::
 cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
@@ -445,20 +471,23 @@ cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
     CursorPosition cursor_prev = cursor_pos;
 
     f2 input ((float) xpos, (float) ypos);
+    if(!init_flag)
+        input_prev = input;
 
-    // Update current cursor
+    f2 input_delta = input - input_prev;
+
+
     cursor_pos.input        = input;
     cursor_pos.sane         = coord_transformer.i_s(input);
     cursor_pos.pixels       = coord_transformer.s_p(cursor_pos.sane);
     cursor_pos.normalized   = coord_transformer.s_n(cursor_pos.sane);
     cursor_pos.millimeters  = coord_transformer.s_m(cursor_pos.sane);
 
+
     MouseMoveEvent   mouse_movement (cursor_prev,
                                      cursor_pos);
 
-    events_input.emplace_back(  window, 
-                                cursor_prev,
-                                modifiers_current,
+    events_input.emplace_back(  modifiers_current,
                                 EventType::MouseMove, 
                                 mouse_movement);
 }
@@ -469,9 +498,7 @@ scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
-    events_input.emplace_back(  window, 
-                                cursor_pos,
-                                modifiers_current,
+    events_input.emplace_back(  modifiers_current,
                                 EventType::MouseScroll, 
                                 mouse_scroll);
 }
@@ -504,9 +531,7 @@ key_callback(GLFWwindow *window, int key, int action, int mods)
     
     try_close_keystroke(keystroke_event, modifiers_current);
 
-    events_input.emplace_back(  window, 
-                                cursor_pos,
-                                modifiers_current,
+    events_input.emplace_back(  modifiers_current,
                                 EventType::Keystroke, 
                                 keystroke_event     );
 }

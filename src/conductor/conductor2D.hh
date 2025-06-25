@@ -33,7 +33,7 @@ struct Physimos
 	Manager3D manager_3D;
 	Manager2D manager_2D;
 
-	MouseGrab mouse_grab;
+	PhysimosGrab grab;
 
 	TagO sampled_tag = TagO(); // sampled tag at current cursor position immediately after window render
 
@@ -41,7 +41,7 @@ struct Physimos
 
 	Scene3D& get_window_scene();
 
-	void update_grab(MouseGrab::State subsystem, InputResponse response);
+	void update_grab(PhysimosGrab::SubSystemBits subsystem, InputResponse response);
 
 	void send_event_pui(InputEvent& event);
 	void send_event_quad(InputEvent& event);

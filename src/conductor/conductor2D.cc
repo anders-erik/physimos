@@ -24,23 +24,31 @@ get_window_scene()
 }
 
 void Physimos::
-update_grab(MouseGrab::State subsystem, InputResponse response)
+update_grab(PhysimosGrab::SubSystemBits subsystem, InputResponse response)
 {
-	mouse_grab.update(subsystem, response);
+	grab.update(subsystem, response);
 
-	if(mouse_grab.pui())
-		auxwin.set_cursor_state(Cursor::HAND);
-	else if(mouse_grab.quad())
-		auxwin.set_cursor_state(Cursor::INVERTED);
-	else if(mouse_grab.scene())
+	switch (grab.state)
 	{
-		if(response.is_mouse_grab())
-			auxwin.set_cursor_state(Cursor::CAPTURE);
-		else if(response.is_mouse_pan())
-			auxwin.set_cursor_state(Cursor::HAND);
+
+	case PhysimosGrab::QUAD_MOUSE_GRAB :
+		auxwin.set_cursor_state(Cursor::INVERTED);
+		break;
+
+	case PhysimosGrab::SCENE_MOUSE_GRAB :
+	case PhysimosGrab::PUI_MOUSE_GRAB :
+		auxwin.set_cursor_state(Cursor::CAPTURE);
+		break;
+
+	case PhysimosGrab::SCENE_MOUSE_PAN :
+		auxwin.set_cursor_state(Cursor::HAND);
+		break;
+
+	default:
+		auxwin.set_cursor_state(Cursor::NORMAL);
+		break;
+	
 	}
-	else
-		auxwin.set_cursor_state(Cursor::NORMAL);	
 }
 
 
@@ -51,7 +59,7 @@ void Physimos::
 send_event_pui(InputEvent & event)
 {
 	auto response = pui.event_all(manager_3D, event);
-	update_grab(MouseGrab::PUI, response);
+	update_grab(PhysimosGrab::PUI, response);
 	
 	manager_3D.state.active_tags.hover_clear();
 }
@@ -62,7 +70,7 @@ send_event_quad(InputEvent& event)
 {
 	auto response = manager_3D.manager_q.handle_event(	event,
 														manager_2D	);
-	update_grab(MouseGrab::QUAD, response);
+	update_grab(PhysimosGrab::QUAD, response);
 }
 
 
@@ -75,7 +83,7 @@ send_event_scene(InputEvent & event)
 	auto response = manager_3D.state.handle_user_input(	manager_3D, 
 														event,		
 														sampled_tag	);
-	update_grab(MouseGrab::SCENE, response);
+	update_grab(PhysimosGrab::SCENE, response);
 }
 
 
@@ -83,27 +91,28 @@ send_event_scene(InputEvent & event)
 bool Physimos::
 try_send_event_to_grabbed(InputEvent & event)
 {
-	switch (mouse_grab.state)
+	switch (grab.state)
 	{
 
-	case MouseGrab::PUI:
+	case PhysimosGrab::PUI_MOUSE_GRAB:
 		send_event_pui(event);
 		break;
 	
-	case MouseGrab::QUAD:
+	case PhysimosGrab::QUAD_MOUSE_GRAB:
 		if(manager_3D.manager_q.try_release_quad(event, sampled_tag))
 		{
-			update_grab(MouseGrab::QUAD, InputResponse::MOUSE_RELEASE);
+			update_grab(PhysimosGrab::QUAD, InputResponse::MOUSE_RELEASE);
 			return false;
 		}
 		send_event_quad(event);
 		break;
 
-	case MouseGrab::SCENE:
+	case PhysimosGrab::SCENE_MOUSE_GRAB:
+	case PhysimosGrab::SCENE_MOUSE_PAN:
 		send_event_scene(event);
 		break;
 
-	case MouseGrab::EMPTY:
+	case PhysimosGrab::NONE:
 		return false;
 		break;
 	}
@@ -132,10 +141,10 @@ process_user_input()
 			if(try_send_event_to_grabbed(event))
 				continue;
 
-			if(pui.contains_point(event.cursor_pos.sane))
+			if(pui.contains_point(auxwin.get_cursor_pos().pixels))
 				send_event_pui(event);
 			else if(manager_3D.manager_q.try_new_quad_grab(event, sampled_tag))
-				update_grab(MouseGrab::QUAD, InputResponse::MOUSE_GRAB);
+				update_grab(PhysimosGrab::QUAD, InputResponse::MOUSE_GRAB);
 			else
 				send_event_scene(event);
 
@@ -185,11 +194,20 @@ render()
 {
 	Rend::Manager::get_renderer_scene2D().render_all_scene2D_to_frambuffers(manager_2D);
 
-	manager_3D.render_window_scene(	auxwin.get_window_size(),
+	manager_3D.render_window_scene(	auxwin.get_window_fb_size(),
 									auxwin.get_cursor_pos()	);
 
+
+	f2 sample_pos;
+	if(grab.is_scene_mouse_grab())
+		sample_pos = auxwin.get_center_pos();
+	else if(grab.is_scene_mouse_pan())
+		sample_pos = {-10.0f, -10.0f}; // Make sure no sucessful sampling takes place
+	else
+		sample_pos = auxwin.get_cursor_pos().pixels;
+
 	sampled_tag = manager_3D.renderer_3D.sample_oid_tag(  	manager_3D.window_scene->tagos,
-                                                			auxwin.get_cursor_pos().sane     	);
+                                                			sample_pos    					);
 
 	pui.render(); // Render ui on top of scene
 }

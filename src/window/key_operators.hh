@@ -55,5 +55,14 @@ operator^=(Key& lhs, const Key& rhs)
 }
 
 
+inline Key 
+operator~(Key key)
+{
+    return static_cast<Key> ( 
+        ~static_cast<unsigned char>(key)
+    );
+}
+
+
 
 

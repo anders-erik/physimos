@@ -3,6 +3,13 @@
 
 #include <string>
 
+struct s2;
+struct ui2;
+struct i2;
+struct f2;
+struct d2;
+
+
 struct m4f4;
 struct m3f3;
 
@@ -59,6 +66,7 @@ struct i2 {
 
     i2 operator/(const i2& rhs);
 
+    f2 to_f2();
 };
 
 struct i3 {
@@ -109,6 +117,17 @@ struct f2
     i2 to_i2() const ;
 
     void print(std::string prefix);
+};
+
+struct d2
+{
+    float x;
+    float y;
+
+    constexpr d2() : x {0.0}, y { 0.0 } {};
+
+    d2(f2 float_2) : x ((double)float_2.x), y {(float) float_2.y} {}
+
 };
 
 struct f3 

@@ -174,7 +174,7 @@ InputResponse SceneState::handle_user_input(Manager3D& manager_3D, window::Input
             // camera.perspective_mat.print();
             // camera.view_mat.print();
 
-            event.cursor_pos.print();
+            // event.cursor_pos.print();
 
             // opengl::error_check();
             break;

@@ -6,8 +6,6 @@
 #include "window/auxkey.hh"
 
 
-struct GLFWwindow; // bypass glfw inclusion
-
 namespace window {
 
 
@@ -57,30 +55,27 @@ enum ButtonAction {
     Hold,
 };
 
-struct MouseButtonEvent {
+struct MouseButtonEvent 
+{
     MouseButton button;
     ButtonAction action;
 
-    bool is_left_down(){
-        if(button == MouseButton::Left && action == ButtonAction::Press)
-            return true;
-        return false;
+    bool is_left_down()
+    {
+        return button == MouseButton::Left && action == ButtonAction::Press;
     }
-    bool is_left_up(){
-        if(button == MouseButton::Left && action == ButtonAction::Release)
-            return true;
-        return false;
+    bool is_left_up()
+    {
+        return button == MouseButton::Left && action == ButtonAction::Release;
     }
 
-    bool is_middle_down(){
-        if(button == MouseButton::Middle && action == ButtonAction::Press)
-            return true;
-        return false;
+    bool is_middle_down()
+    {
+        return button == MouseButton::Middle && action == ButtonAction::Press;
     }
-    bool is_middle_up(){
-        if(button == MouseButton::Middle && action == ButtonAction::Release)
-            return true;
-        return false;
+    bool is_middle_up()
+    {
+        return button == MouseButton::Middle && action == ButtonAction::Release;
     }
 };
 
@@ -144,12 +139,7 @@ struct WindowResizeEvent {
 
 struct InputEvent 
 {
-    GLFWwindow *glfw_window;
-    // Cursor position at the moment of the event. 
-    // For mouse movement events this would be the location of the cursor *before* the move took place.
-    CursorPosition      cursor_pos;
     KeyModifiers modifiers;
-
     EventType type = EventType::None;
     
     // TODO: turn into variant
@@ -159,63 +149,42 @@ struct InputEvent
     KeyStrokeEvent keystroke;
 
 
-
-    InputEvent() = default;
-
-    InputEvent( GLFWwindow*         _glfw_window, 
-                CursorPosition      cursor_pos, 
-                KeyModifiers        modifier_state,
+    InputEvent( KeyModifiers        modifier_state,
                 EventType           _type, 
                 MouseButtonEvent    _mouse_button) 
-        :   glfw_window     {_glfw_window}, 
-            cursor_pos      {cursor_pos}, 
-            modifiers       {modifier_state},
+        :   modifiers       {modifier_state},
             type            {_type}, 
             mouse_button    {_mouse_button}
     {
     };
 
-    InputEvent( GLFWwindow* _glfw_window,
-                CursorPosition      cursor_pos,
-                KeyModifiers        modifier_state,
+    InputEvent( KeyModifiers        modifier_state,
                 EventType   _type, 
                 MouseMoveEvent _mouse_movement) 
-        :   glfw_window     {_glfw_window}, 
-            cursor_pos      {cursor_pos},
-            modifiers       {modifier_state},
+        :   modifiers       {modifier_state},
             type            {_type}, 
             mouse_movement  {_mouse_movement}
     {
     };
 
-    InputEvent( GLFWwindow* _glfw_window, 
-                CursorPosition      cursor_pos,
-                KeyModifiers        modifier_state,
+    InputEvent( KeyModifiers        modifier_state,
                 EventType _type, 
                 MouseScrollEvent _mouse_scroll) 
-        :   glfw_window     {_glfw_window}, 
-            cursor_pos      {cursor_pos},
-            modifiers       {modifier_state},
+        :   modifiers       {modifier_state},
             type            {_type}, 
             mouse_scroll    { _mouse_scroll}
     {
     };
 
-    InputEvent( GLFWwindow* _glfw_window,
-                CursorPosition      cursor_pos,
-                KeyModifiers        modifier_state,
+    InputEvent( KeyModifiers        modifier_state,
                 EventType _type, 
                 KeyStrokeEvent _key_stroke)
-        :   glfw_window     {_glfw_window}, 
-            cursor_pos      {cursor_pos},
-            modifiers       {modifier_state},
+        :   modifiers       {modifier_state},
             type            {_type}, 
             keystroke       { _key_stroke}
     {
     };
 
-
-    bool is_type(EventType _type) { return _type == type; }
 
     /** Is any of the mouse events (move, scroll, click). */
     bool is_mouse()
@@ -240,108 +209,41 @@ struct InputEvent
 
 
 /** 
-	InputEvent-response intended to be processed by event deistributor.
+	InputEvent-response intended to be returned by an input event handler.
+    Default contructor should always contain action to reset all states tracked by reciever of response. 
 */
 struct InputResponse
 {
-	/** Respondents mouse action. */
-    enum MouseAction {
-        MOUSE_GRAB,
-        MOUSE_PAN,
-        MOUSE_RELEASE,
-    }; 
+    typedef unsigned short ActionBits;
 
-	/** Respondents keyboard action. */
-    enum KeyboardAction {
-		KEYBOARD_GRAB,
-        KEYBOARD_RELEASE,
-    }; 
+    static const ActionBits MOUSE_RELEASE       = 0x0001;
+    static const ActionBits MOUSE_GRAB          = 0x0002;
+    static const ActionBits MOUSE_PAN           = 0x0004;
 
-	
+    static const ActionBits KEYBOARD_RELEASE    = 0x0010;
+    static const ActionBits KEYBOARD_GRAB       = 0x0020;
 
-	/** The type of action respondent performed on mouse. */
-	MouseAction mouse_action    	= MOUSE_RELEASE;
-	/** The type of action respondent performed on keyboard. */
-	KeyboardAction keyboard_action 	= KEYBOARD_RELEASE;
+    static const ActionBits BOTH_RELEASED       = MOUSE_RELEASE | KEYBOARD_RELEASE;
 
 
-	/** Defaults to no subsystem and all devices released. */
-    InputResponse() = default;
+	ActionBits action;
+
+    InputResponse()                         : action {BOTH_RELEASED}    {}
+    InputResponse(ActionBits action_bits)   : action {action_bits}      {}
     
-	InputResponse(MouseAction mouse_action)
-		: 	mouse_action {mouse_action} 
-	{
-	};
-	
-	InputResponse(KeyboardAction keyboard_action)
-		: 	keyboard_action {keyboard_action} 
-	{
-	};
-	
-	InputResponse(MouseAction mouse_action, KeyboardAction keyboard_action)
-		: 	mouse_action {mouse_action}, 
-			keyboard_action {keyboard_action} 
-	{
-	};
-
-    bool is_mouse_grab()
-    {
-        return mouse_action == MOUSE_GRAB;
+    bool is(ActionBits bits_to_test) 
+    {   
+        return (bits_to_test & action) == bits_to_test;
     }
 
-    bool is_mouse_pan()
-    {
-        return mouse_action == MOUSE_PAN;
-    }
+    bool is_mouse_grab()            {   return  is(MOUSE_GRAB);                     }
+    bool is_mouse_pan()             {   return  is(MOUSE_PAN);                      }
+    bool is_mouse_release()         {   return  is(MOUSE_RELEASE);                  }
+    bool is_mouse_non_release()     {   return !is_mouse_release();                 }
 
-    bool is_mouse_non_release()
-    {
-        return is_mouse_grab() || is_mouse_pan();
-    }
+	bool is_keyboard_grab()         {   return  is(KEYBOARD_GRAB);                  }
+    bool is_keyboard_release()      {   return  is(KEYBOARD_RELEASE);               }
 
-
-    inline bool released_mouse()
-	{
-		return mouse_action == MOUSE_RELEASE ? true : false;
-	}
-
-	inline bool grabbed_keyboard()
-	{
-		return keyboard_action == KEYBOARD_GRAB ? true : false;
-	}
-
-    inline bool released_keyboard()
-	{
-		return keyboard_action == KEYBOARD_RELEASE ? true : false;
-	}
+    bool is_release_both()          {   return  is(BOTH_RELEASED);                  }
 };
 
-
-
-/** Keeps track of which subsystems is currently grabbing. */
-struct InputState 
-{
-	InputResponse last_response;
-
-
-	void update_state(InputResponse response)
-	{
-		last_response = response;	
-	}
-
-	bool is_grabbing_mouse()
-	{
-		return last_response.mouse_action == InputResponse::MOUSE_GRAB ? true : false;
-	}
-
-    bool is_grabbing_keyboard()
-	{
-		return last_response.keyboard_action == InputResponse::KEYBOARD_GRAB ? true : false;
-	}
-
-    bool is_all_release()
-    {
-        return !is_grabbing_mouse() && !is_grabbing_keyboard() ? true : false;
-    }
-
-};

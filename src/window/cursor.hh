@@ -15,7 +15,7 @@ struct Cursor
     struct Image
     {
         GLFWcursor* arrow       = nullptr;  // Default
-        GLFWcursor* inverted    = nullptr;  // 
+        GLFWcursor* cross_hair    = nullptr;  // 
         GLFWcursor* hand        = nullptr;  // 
         GLFWcursor* none        = nullptr;  // Capturing
     } glfw_images;

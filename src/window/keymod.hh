@@ -17,16 +17,16 @@ struct KeyModifiers
     KeyModifiers() = default;
 
     void press(Key new_mod_key)     { state |= new_mod_key;}
-    void release(Key new_mod_key)   { state ^= new_mod_key;}
+    void release(Key new_mod_key)   { state &= ~new_mod_key;}
 
     void set_shift()        { state |= Key::shift; }
-    void unset_shift()      { state ^= Key::shift; }
+    void unset_shift()      { state &= ~Key::shift; }
 
     void set_ctrl()         { state |= Key::ctrl; }
-    void unset_ctrl()       { state ^= Key::ctrl; }
+    void unset_ctrl()       { state &= ~Key::ctrl; }
 
     void set_alt()          { state |= Key::alt; }
-    void unset_alt()        { state ^= Key::alt; }
+    void unset_alt()        { state &= ~Key::alt; }
 
 
     bool is_none()          const   { return state ==  Key::None ; }
