@@ -33,6 +33,9 @@ struct Physimos
 	Manager3D manager_3D;
 	Manager2D manager_2D;
 
+	RendererScene2D 	rendererScene2D;
+	UI::RendererBase    renderer_pui;
+
 	PhysimosGrab grab;
 
 	TagO sampled_tag = TagO(); // sampled tag at current cursor position immediately after window render

@@ -74,6 +74,7 @@ void RendererScene3D::
 render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
 {
     ManagerObject& man_o = manager_3D.manager_o;
+    const SceneState& state = manager_3D.state;
     
 
     glEnable(GL_DEPTH_TEST);
@@ -117,23 +118,18 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
     }
 
     // Tube normals
-    for(model::VertexT vertex : scene3D.tube.mesh.vertices)
+    for(model::VertexT& vertex : scene3D.tube.mesh.vertices)
     {
         program_vector.render(vertex.normal, vertex.pos);
     }
 
 
-    // NEW SCENE OBJECTS
-
-    const SS::ActiveTags& active_tags = manager_3D.state.active_tags;
-    
     for(TagO tag : scene3D.tagos)
     {
         Object* base = man_o.get_object(tag);
         if(base == nullptr) continue;
 
         m4f4 translation_matrix = m4f4::translation(base->pos);
-
 
         // QUAD FIRST
         if (tag.type == TagO::Quad)
@@ -149,20 +145,13 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
             }
         }
     
-
-        // MESH - color change if active object
-        if(active_tags.is_active(tag))
-        {
-            if(active_tags.is_selected(tag))
-                program_mesh.render(translation_matrix, base->mesh, 0x00ff00ff);
-            else
-                program_mesh.render(translation_matrix, base->mesh, 0xff0000ff);
-        }
+        // MESH - change color of active objects
+        if(tag == state.selected.tag)
+            program_mesh.render(translation_matrix, base->mesh, 0x00ff00ff);
+        else if(tag == state.hovered.tag)
+            program_mesh.render(translation_matrix, base->mesh, 0xff0000ff);
         else
-        {
             program_mesh.render(translation_matrix, base->mesh, 0xffffffff);
-        }
-
     }
     
 

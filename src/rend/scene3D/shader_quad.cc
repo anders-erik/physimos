@@ -90,7 +90,6 @@ render(const m4f4& model_matrix, Mesh& mesh, unsigned int texture_id)
 
 
     // MESH
-    glGenBuffers(1, &vbo_vert);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
     glBufferData(GL_ARRAY_BUFFER, mesh.vert_size_bytes(), mesh.verts.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0); // Position
@@ -102,7 +101,6 @@ render(const m4f4& model_matrix, Mesh& mesh, unsigned int texture_id)
     mesh_texture_quad.create_quad();
     size_t text_size_bytes = mesh_texture_quad.vert_size_bytes();
 
-    glGenBuffers(1, &vbo_text);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_text);
     glBufferData(GL_ARRAY_BUFFER, text_size_bytes, mesh_texture_quad.verts.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(1); // Texture Coord
@@ -110,7 +108,6 @@ render(const m4f4& model_matrix, Mesh& mesh, unsigned int texture_id)
     
 
     // FACES
-    glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.faces.size() * sizeof(TriangleFaceIndeces), mesh.faces.data(), GL_STATIC_DRAW);
 

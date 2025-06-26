@@ -61,10 +61,9 @@ create_model_rendering_context( model::MeshT& mesh,
 
     context.texture = opengl::texture_get_id(texture_enum);
 
-
-    glGenVertexArrays(1, &context.VAO);
-    glGenBuffers(1, &context.VBO);
-    glGenBuffers(1, &context.EBO);
+    context.VAO = VAO;
+    context.VBO = VBO;
+    context.EBO = EBO;
 
     glBindVertexArray(context.VAO);
 

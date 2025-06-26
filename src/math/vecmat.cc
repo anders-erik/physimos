@@ -264,6 +264,13 @@ f3 f3::operator+(const f3& rhs)
                 this->z + rhs.z};
 }
 
+f3 f3::operator-(const f3 & rhs)
+{
+    return {    x - rhs.x,
+                y - rhs.y,
+                z - rhs.z};
+}
+
 f3& f3::operator=(const f3 & rhs)
 {
     this->x = rhs.x;
@@ -369,6 +376,18 @@ f2 f3::yaw_pitch()
 float f3::norm()
 {
     return sqrtf(x*x + y*y + z*z);
+}
+
+f3 f3::unit()
+{
+    return *this / norm();
+}
+
+f3 f3::cross(const f3 & rhs)
+{
+    return {    y * rhs.z - z * rhs.y,
+                z * rhs.x - x * rhs.z,
+                x * rhs.y - y * rhs.x   };
 }
 
 void f3::set_zero()

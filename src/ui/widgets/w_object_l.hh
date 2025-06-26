@@ -147,7 +147,7 @@ public:
         // label
         f2 verts_label_delta = { 10.0f, -20.0f };
         verts_size_label.set_pos(offset + verts_label_delta);
-        verts_size_label.set_str("Verts: ");
+        verts_size_label.set_str(Str("Verts: "));
         // x
         f2 pos_x_delta = { 150.0f, -20.0f };
         verts_size.set_pos(offset + pos_x_delta);
@@ -157,7 +157,7 @@ public:
         // label
         f2 faces_label_delta = { 10.0f, -40.0f };
         faces_size_label.set_pos(offset + faces_label_delta);
-        faces_size_label.set_str("Faces: ");
+        faces_size_label.set_str(Str("Faces: "));
         // y
         f2 faces_size_delta = { 150.0f, -40.0f };
         faces_size.set_pos(offset + faces_size_delta);

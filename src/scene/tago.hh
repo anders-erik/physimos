@@ -35,7 +35,7 @@ struct TagO
 
     bool is_quad() const  {return type == Quad;}
     bool is_base() const  {return type == Base;}
-    bool is_none() const  {return type == Null;}
+    bool is_null() const  {return type == Null;}
     bool not_null() const  {return type != Null;}
 
 };

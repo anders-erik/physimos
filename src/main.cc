@@ -100,7 +100,7 @@ int main()
 	graph.update();
 	scene2D.graphs.push_back(graph);
 	
-	SID graph_sid = physimos.manager_2D.push_scene2D(scene2D);
+	SID graph_sid = physimos.manager_2D.push_scene2D(scene2D, physimos.rendererScene2D);
 
 
 
@@ -114,7 +114,8 @@ int main()
 	root_scene.tagos.push_back(squad_object.tag);
 
 	Quad quad;
-	quad.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(graph_sid);
+	// quad.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(graph_sid);
+	quad.texture_id = physimos.rendererScene2D.get_scene_fb_texture_id(graph_sid);
 	quad.sid_2D = graph_sid;
 
 	manager_3D.manager_q.quados.emplace_back(	squad_object.tag, 
@@ -126,6 +127,8 @@ int main()
 
 
 	physimos.main_loop();
+
+	
 
 	return 0;
 }

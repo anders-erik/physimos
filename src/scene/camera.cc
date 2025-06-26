@@ -12,10 +12,10 @@ void CameraPerspective::update_matrix()
     matrix.set_to_I();
 
     float aspect = width / height;
-    float tanHalfFov = tanf(fov / 2.0f);
+    float tan_half_fov = tanf(fov / 2.0f);
 
-    matrix.x.x = 1 / (aspect * tanHalfFov);
-    matrix.y.y = 1 / tanHalfFov;
+    matrix.x.x = 1 / (aspect * tan_half_fov);
+    matrix.y.y = 1 / tan_half_fov;
     matrix.z.z = - (zf + zn) / (zf - zn);
     matrix.w.w = 0.0f;
 
@@ -28,6 +28,12 @@ void CameraPerspective::set_fov(int new_width, int new_height)
     width  = (float) new_width;
     height = (float) new_height;
     update_matrix();
+}
+
+float CameraPerspective::
+AR()
+{
+    return width / height;
 }
 
 
@@ -115,6 +121,50 @@ update()
     perspective.update_matrix();
 }
 
+
+f3 CameraOrbital::
+get_forward()
+{
+    f3 center_to_cam = Spherical::to_cart({ view.rho, 
+                                            view.theta, 
+                                            view.phi});
+    return (-center_to_cam).unit();
+}
+
+
+f3 CameraOrbital::
+get_pos()
+{
+    return view.rotational_center +  Spherical::to_cart({   view.rho, 
+                                                            view.theta, 
+                                                            view.phi});
+}
+
+
+f3 CameraOrbital::
+get_right()
+{
+    f3 center_to_cam = Spherical::to_cart({ view.rho, 
+                                            view.theta, 
+                                            view.phi});
+
+    f3 projected_xy = {center_to_cam.to_xy(), 0.0f};
+
+    f3 cam_xyprojected_cross = center_to_cam.cross(projected_xy);
+
+    f3 cam_xyprojected_cross_unit = cam_xyprojected_cross.unit();
+
+    if(view.phi < PIHf)
+        return cam_xyprojected_cross_unit;
+    else
+        return -cam_xyprojected_cross_unit;
+}
+
+f3 CameraOrbital::
+get_up()
+{
+    return get_right().cross(get_forward()).unit();
+}
 
 
 void CameraOrbital::

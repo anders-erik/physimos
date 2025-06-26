@@ -15,6 +15,7 @@ struct CameraPerspective
     float zf = 100.0f;
 
     void set_fov(int new_width, int new_height);
+    float AR();
     
     void update_matrix();
 };
@@ -60,6 +61,11 @@ struct CameraOrbital
 
     /** Makes view and perspective matrices reflect most recent values. */
     void update();
+
+    f3 get_pos();
+    f3 get_forward();
+    f3 get_right();
+    f3 get_up();
 
     void forward(float delta);
     void backward(float delta);

@@ -99,7 +99,7 @@ update(Manager3D& manager_3D)
 
     // Scene3D& scene = ManagerScene::get_window_scene_mut();
 
-    Object* obj_p = manager_3D.manager_o.get_object(manager_3D.state.active_tags.tag_selected);
+    Object* obj_p = manager_3D.manager_o.get_object(manager_3D.state.selected.tag);
     if(obj_p == nullptr)    return;
 
     w_object_large.reload(*obj_p, {500.0f, 450.0f});
@@ -137,19 +137,19 @@ event_all(Manager3D& manager_3D, window::InputEvent& event)
 void PUI::
 event_window_resize(window::WindowResizeEvent& window_resize)
 {
-    UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
-    renderer_base.set_window_info(
-        window_resize.size_f, 
-        window_resize.content_scale
-    );
+    // UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
+    // renderer_base.set_window_info(
+    //     window_resize.size_f, 
+    //     window_resize.content_scale
+    // );
 }
 
 
 
 void PUI::
-render(){
+render(UI::RendererBase& renderer_base){
 
-    UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
+    // UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
 
     renderer_base.draw_base(base_0);
     renderer_base.draw_base(new_quad_in_root_scene);

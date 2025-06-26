@@ -18,6 +18,8 @@ struct Scene3D;
 struct Manager3D;
 struct SceneState;
 
+struct RendererBase;
+
 namespace UI {
 
 
@@ -53,7 +55,7 @@ public:
     InputResponse event_all(Manager3D& manager_3D, window::InputEvent& event);
     void event_window_resize(window::WindowResizeEvent& window_resize);
 
-    void render();
+    void render(UI::RendererBase& renderer_base);
 
 };
 

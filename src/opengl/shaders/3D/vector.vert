@@ -2,9 +2,9 @@
 
 layout (location = 0) in vec3 vertPos;
 
-uniform vec3 vector;
-uniform float vector_scale;
-uniform vec3 vector_color;
+uniform vec3    vector;
+uniform float   vector_scale;
+uniform vec3    vector_color;
 
 uniform mat4 rotation_mat;
 uniform mat4 translation_mat;
@@ -24,5 +24,6 @@ void main(){
     // gl_Position = projection * view * translation_mat * vec4(scaled_vector, 1.0);
     // gl_Position = projection * view * translation_mat * vec4(vertPos, 1.0);
 
+    // gl_Position = projection * view * translation_mat * rotation_mat * vec4(vertPos_scaled, 1.0);
     gl_Position = projection * view * translation_mat * rotation_mat * vec4(vertPos_scaled, 1.0);
 }

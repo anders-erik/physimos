@@ -106,10 +106,10 @@ std::vector<UnitTestFn> equality = {
 
 
     []() -> UnitTestInfo {
-        UnitTestInfo test_info = "Equality: Str and source c string chars.";
+        UnitTestInfo test_info = {"Equality: Str and source c string chars."};
 
         const char* chars = "hi";
-        Str str = chars;
+        Str str = "hi";
 
         if(str.size() != 2 || str[0] != chars[0] || str[1] != chars[1])
             return test_info.fail();

@@ -1,6 +1,9 @@
 
 #pragma once
 
+#include "lib/arr.hh"
+#include "math/number.hh"
+
 #include "math/vecmat.hh"
 
 #include "opengl/program.hh"
@@ -13,8 +16,8 @@ class Shader2DGridline : private opengl::ShaderProgram {
     uint camera2D_mat_LOC;
     uint color_LOC;
 
-    uint vao_xy;     // x-y axes data
-    uint vbo_xy;   // point buffer for x-y axes
+    uint vao_xy;    // x-y axes data
+    uint vbo_xy;    // point buffer for x-y axes
 
     const uint xy_axis_line_count   = 2;
     const uint auxillary_line_count = 4;

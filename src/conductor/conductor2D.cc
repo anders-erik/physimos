@@ -10,7 +10,11 @@ Physimos(int width, int height)
 {
 	auxwin.init(width, height);
 
-	Rend::Manager::init( {width, height} );
+	// Rend::Manager::init( {width, height} );
+	renderer_pui.init();
+	renderer_pui.set_window_info(	auxwin.get_window_fb_size_float(), 
+									auxwin.get_monitor_content_scale()	);
+	rendererScene2D.init();
 
 	manager_3D.init( {width, height} );
 }
@@ -61,7 +65,7 @@ send_event_pui(InputEvent & event)
 	auto response = pui.event_all(manager_3D, event);
 	update_grab(PhysimosGrab::PUI, response);
 	
-	manager_3D.state.active_tags.hover_clear();
+	manager_3D.state.hovered.clear();
 }
 
 
@@ -169,7 +173,11 @@ process_framebuffer_events()
 	for(WindowResizeEvent& window_event : resize_events)
 	{
 		// All subsystems get the resize event
-		pui.event_window_resize(window_event);
+		// pui.event_window_resize(window_event);
+		renderer_pui.set_window_info(
+			window_event.size_f, 
+			window_event.content_scale
+		);
 
 		manager_3D.state.handle_window(	manager_3D,
 										window_event);
@@ -192,7 +200,8 @@ update()
 void Physimos::
 render()
 {
-	Rend::Manager::get_renderer_scene2D().render_all_scene2D_to_frambuffers(manager_2D);
+	// Rend::Manager::get_renderer_scene2D().render_all_scene2D_to_frambuffers(manager_2D);
+	rendererScene2D.render_all_scene2D_to_frambuffers(manager_2D);
 
 	manager_3D.render_window_scene(	auxwin.get_window_fb_size(),
 									auxwin.get_cursor_pos()	);
@@ -209,7 +218,7 @@ render()
 	sampled_tag = manager_3D.renderer_3D.sample_oid_tag(  	manager_3D.window_scene->tagos,
                                                 			sample_pos    					);
 
-	pui.render(); // Render ui on top of scene
+	pui.render(renderer_pui); // Render ui on top of scene
 }
 
 

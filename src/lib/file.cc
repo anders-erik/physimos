@@ -166,6 +166,8 @@ std::string File::cat_file_as_string(){
         std::string error_msg = "File: cat_file_as_string. Path: " + physimos_core_path_;
         plib::plog_error("CONFIG", "READ_FILE", error_msg);
     }
+
+    _ifstream.close();
     
     successful_read = true;
     return string;

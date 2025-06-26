@@ -9,6 +9,8 @@ struct R2
 {
     F x;
     F y;
+
+    F* data() { return (F*) this; }
 };
 
 

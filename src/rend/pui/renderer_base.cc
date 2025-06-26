@@ -34,6 +34,13 @@ const unsigned int SCREEN_INIT_HEIGHT = 800;
 RendererBase::RendererBase()
 {
 
+    
+
+}
+
+void RendererBase::
+init()
+{
     opengl::textures_init();
     UI::texture::init_static_color_textures();
     UI::texture::init_static_icon_textures();
@@ -53,9 +60,7 @@ RendererBase::RendererBase()
     program_string.set_viewport_transform(viewport_transform);
     // program_string.set_texture(font_bitmap.get_font_texture());
     // program_string.set_texture(font_texture.get_texture_id());
-
 }
-
 
 
 void RendererBase::set_window_info(f2 size , f2 scale){

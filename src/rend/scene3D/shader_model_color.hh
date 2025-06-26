@@ -29,6 +29,9 @@ struct ShaderModelColor : protected opengl::ShaderProgram
 {
     opengl::ProgramName renderer_program = opengl::ProgramName::ModelColor;
     
+    unsigned int vao;
+    unsigned int vbo;
+    unsigned int ebo;
 
     unsigned int transform_location;
     unsigned int view_location;

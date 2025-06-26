@@ -94,11 +94,15 @@ struct MouseMoveEvent {
           
 };
 
-struct MouseScrollEvent {
+struct MouseScrollEvent 
+{
     float delta;
 
     MouseScrollEvent(float _delta) : delta { _delta } {};
     MouseScrollEvent() : delta { 0.0f } {};
+
+    bool is_up() { return delta > 0; }
+    bool is_down() { return delta < 0; }
 };
 
 
@@ -117,6 +121,7 @@ struct KeyStrokeEvent {
     bool is_esc()       {return key == Key::Esc;                    }
     bool is_press()     {return action == ButtonAction::Press;      }
     bool is_not_press() {return action != ButtonAction::Press;      }
+    bool is_not_hold()  {return action != ButtonAction::Hold ;      }
     bool is_release()   {return action == ButtonAction::Release;    }
 
     bool is(Key key_to_check)           {return key == key_to_check;    }
@@ -247,3 +252,4 @@ struct InputResponse
     bool is_release_both()          {   return  is(BOTH_RELEASED);                  }
 };
 
+using namespace window;

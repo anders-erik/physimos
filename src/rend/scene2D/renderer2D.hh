@@ -38,9 +38,9 @@ struct Manager2D;
 
 class RenderContextQuadS2D {
 
-    void init();
 
 public:
+    void init();
 
     unsigned int VAO;
     unsigned int VBO;
@@ -50,7 +50,7 @@ public:
 
     void delete_contents();
 
-    RenderContextQuadS2D();
+    RenderContextQuadS2D() = default;
     RenderContextQuadS2D(unsigned int texture_id);
 
     void set_texture_id(unsigned int texture_id);
@@ -100,6 +100,8 @@ class RendererScene2D
 public:
 
     RendererScene2D();
+
+    void init();
 
     // THREE CALLS TO MANAGE SCENE FRAMEBUFFERS
     void create_scene_framebuffer(SID sid, ui2 framebuffer_size);

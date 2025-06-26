@@ -57,7 +57,7 @@ get_object(OID oid)
 Object* ManagerObject::
 get_object(TagO tag)
 {
-    if(tag.is_none())
+    if(tag.is_null())
         return nullptr;
 
     return get_object(tag.oid);
@@ -90,6 +90,7 @@ new_object()
 {
     TagO tag = new_tag();
     Str name = Str{"object_"} + Str{tag.oid};
+    // Str name = Str{"object_"};
     Mesh mesh;
     return objects.emplace_back(    tag,
                                     name,

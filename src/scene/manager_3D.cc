@@ -53,6 +53,9 @@ init(f2 window_scene_f)
 void Manager3D::
 update()
 {
+    // CAMERA
+    auto& camera = window_scene->camera;
+
     if(state.camera.is_forward())
         window_scene->camera.forward(0.15);
     if(state.camera.is_backward())
@@ -66,11 +69,33 @@ update()
     if(state.camera.is_down())
         window_scene->camera.down(0.02);
 
-    
     window_scene->camera.view.rho_change(   -state.camera.spherical_delta.x  / 1.0f    );
     window_scene->camera.view.theta_change( -state.camera.spherical_delta.y  / 200.0f    );
     window_scene->camera.view.phi_change(    state.camera.spherical_delta.z  / 400.0f      );
     state.camera.spherical_delta.set_zero();
+
+
+    // SELECTED
+    Object* selected_o = manager_o.get_object(state.selected.tag);
+    if(selected_o != nullptr)
+    {
+        // SCALE MOVEMENT
+        f3 cam_pos          = window_scene->camera.get_pos();
+        f3 cam_to_obj_delta = cam_pos - selected_o->pos;
+        float tan_half_fov = tanf(camera.perspective.fov / 2.0f);
+        float view_width_at_obj_dist = 2.0f * tan_half_fov * cam_to_obj_delta.norm();
+
+        // MOVE IN RELATION TO CAMERA VIEW
+        f3 cam_x    = window_scene->camera.get_right();
+        f3 cam_y       = window_scene->camera.get_up();
+        f3 cam_z  = window_scene->camera.get_forward();
+
+        selected_o->pos += cam_x * state.selected.pos_delta.x * view_width_at_obj_dist * camera.perspective.AR();
+        selected_o->pos += cam_y * state.selected.pos_delta.y * view_width_at_obj_dist;
+        selected_o->pos += cam_z * state.selected.pos_delta.z;
+
+        state.selected.pos_delta.set_zero();
+    }
 }
 
 

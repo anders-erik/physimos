@@ -76,16 +76,16 @@ init()
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
 
+    
     glBindVertexArray(vao);
+
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vectorVertices), vectorVertices, GL_STATIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, arrow.size()*sizeof(f3), arrow.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
-    glBindVertexArray(vao);
-    glDrawArrays(GL_LINES, 0, arrow.size());
+    // glBindVertexArray(vao);
+    // glDrawArrays(GL_LINES, 0, arrow.size());
 }
 
 void ShaderVector::set_project_view_matrix(m4f4 project_mat, m4f4 view_mat)
@@ -128,8 +128,9 @@ void ShaderVector::render(f3 pos, f3 size){
 
     // DRAW
     glBindVertexArray(vao);
-    glDrawArrays(GL_LINES, 0, arrow.size());
 
+    
+    glDrawArrays(GL_LINES, 0, arrow.size());
 }
 
 

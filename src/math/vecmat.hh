@@ -150,6 +150,7 @@ struct f3
     f3& operator/=(const f3& rhs);
 
     f3 operator+(const f3& rhs);
+    f3 operator-(const f3& rhs);
 
     f3 operator-();
 
@@ -162,6 +163,9 @@ struct f3
     f2 yaw_pitch();
     /** sqrt ( x^2 + y^2 + z^2 ) */
     float norm();
+    /** this / norm */
+    f3 unit();
+    f3 cross(const f3& rhs);
 
     void set_zero();
 

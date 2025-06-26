@@ -41,6 +41,7 @@ class RendererBase {
 public:
 
     RendererBase();
+    void init();
 
     void set_window_info(f2 size, f2 scale);
 

@@ -18,7 +18,7 @@ std::string fs_cat_rel(std::string path_std_string){
     std::string relative_path_str = physimos_root_dir_or_die();
     return fs_cat(relative_path_str + "/" + path_std_string);
 }
-std::vector<unsigned char>& fs_cat_bin_rel(std::string path_std_string){
+std::vector<unsigned char> fs_cat_bin_rel(std::string path_std_string){
     std::string relative_path_str = physimos_root_dir_or_die();
     return fs_cat_bin(relative_path_str + "/" + path_std_string);
 }
@@ -42,8 +42,8 @@ std::string fs_cat(std::string path_std_string){
 }
 
 // Creates a new char vector with contents equal to file contents. Empty vector on failed read.
-std::vector<unsigned char>& fs_cat_bin(std::string path_std_string){
-    std::vector<unsigned char>* returnVector;
+std::vector<unsigned char> fs_cat_bin(std::string path_std_string){
+    std::vector<unsigned char> returnVector;
 
     try
     {
@@ -52,17 +52,16 @@ std::vector<unsigned char>& fs_cat_bin(std::string path_std_string){
         if (!_ifstream.is_open()) 
             throw std::runtime_error("Could not open file");
 
-        returnVector = new std::vector<unsigned char>(std::istreambuf_iterator<char>(_ifstream), {});
+        returnVector = std::vector<unsigned char>(std::istreambuf_iterator<char>(_ifstream), {});
         
         _ifstream.close();
-        return *returnVector;
+        
     }
     catch (const std::exception& e)
     {
         std::cout << "Error: Could not read file " << path_std_string << std::endl;
         plib::plog_error("FS, ", "fs_cat_bin, ", "Error: Could not read file " + path_std_string);
-        returnVector = new std::vector<unsigned char> {};
-        return *returnVector;
+        returnVector = std::vector<unsigned char> {};
     }
 
     // Alternative read and check used by old BMP loader
@@ -70,7 +69,7 @@ std::vector<unsigned char>& fs_cat_bin(std::string path_std_string){
     //     std::cerr << "Error: Could not read file data" << std::endl;
     //     return nullptr;
     // }
-
+    return returnVector;
 }
 
 

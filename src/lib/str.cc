@@ -77,6 +77,8 @@ Str(const Str& other)
 #ifdef VERBOSE_STR
     std::cout << "Str Copy Constructor" << std::endl;
 #endif
+    if(this == & other)
+        std::cout << "WARN" << std::endl;
 
     allocate(other.capacity());
     memcpy(mem, other.data(), other.size());
@@ -90,7 +92,9 @@ Str(Str&& other)
 #ifdef VERBOSE_STR
     std::cout << "Str move constructor" << std::endl;
 #endif
-    
+    if(this == & other)
+        std::cout << "WARN" << std::endl;
+        
     mem = other.data();
     size_alloc = other.capacity();
     size_str = other.size();
@@ -187,9 +191,12 @@ operator=(const Str& other)
     std::cout << "Str copy assignment" << std::endl;
 #endif
 
+    if(this == & other)
+        std::cout << "WARN" << std::endl;
+
     allocate(other.capacity());
-    memcpy(mem, other.data(), other.size());
     size_str = other.size();
+    memcpy(mem, other.data(), size_str);
 
     return *this;
 }
@@ -418,7 +425,8 @@ Str
 to_str_char(char ch)
 {
     Str str = " ";
-    return str[0] = ch;
+    str[0] = ch;
+    return str;
 }
 
 

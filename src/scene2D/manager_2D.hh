@@ -20,7 +20,7 @@ struct Manager2D
 
     SID new_sid_2D();
 
-    SID push_scene2D(Scene2D& new_scene);
+    SID push_scene2D(Scene2D& new_scene, RendererScene2D& renderer_2D);
 
     Scene2D* search_scene_storage_2D(SID id);
     

@@ -24,6 +24,9 @@ void ShaderModelColor::init()
     view_location = glGetUniformLocation(id, "view");
     perspective_location = glGetUniformLocation(id, "perspective");
 
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
 
 }
 void ShaderModelColor::create_render_context(RenderContextModelColor& context, model::ModelColor& model){
@@ -33,9 +36,11 @@ void ShaderModelColor::create_render_context(RenderContextModelColor& context, m
     glUseProgram(id);
 
     // NEW OBJECTS
-    glGenVertexArrays(1, &context.vao);
-    glGenBuffers(1, &context.vbo);
-    glGenBuffers(1, &context.ebo);
+    
+
+    context.vao = vao;
+    context.vbo = vbo;
+    context.ebo = ebo;
 
     glBindVertexArray(context.vao);
 

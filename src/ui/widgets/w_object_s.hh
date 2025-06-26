@@ -45,7 +45,7 @@ public:
 
                 // Scene3D& scene = ManagerScene::get_window_scene_mut();
 
-                manager_3D.state.active_tags.select(object.tag);
+                manager_3D.state.selected.try_select(object.tag);
 
                 // auto& q_manager = ManagerScene::get_quad_manager();
                 // q_manager.set_selected(quad_id);
@@ -70,7 +70,7 @@ public:
 
 
     /** Recreates the whole widget from scene data every call. */
-    void reload(Object& new_object, f2 new_pos)
+    void reload(const Object& new_object, f2 new_pos)
     {
         object = new_object;
 

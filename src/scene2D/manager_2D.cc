@@ -23,13 +23,13 @@ SID Manager2D::new_sid_2D()
 
 
 
-SID Manager2D::push_scene2D(Scene2D& new_scene)
+SID Manager2D::push_scene2D(Scene2D& new_scene, RendererScene2D& renderer_2D)
 {
     SID sid = new_sid_2D();
 
 
     // Create framebuffer
-    auto& renderer_2D = Rend::Manager::get_renderer_scene2D();
+    // auto& renderer_2D = Rend::Manager::get_renderer_scene2D();
     f2 fb_size_s = new_scene.get_framebuffer_size();
     ui2 framebuffer_size = {fb_size_s.x, fb_size_s.y};
     renderer_2D.create_scene_framebuffer(sid, framebuffer_size);
