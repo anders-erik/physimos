@@ -3,6 +3,8 @@
 
 #include "lib/log.hh"
 
+#include "math/quarternion.hh"
+
 #include "rend/rend_manager.hh"
 
 #include "scene/scene3D.hh"
@@ -79,22 +81,64 @@ update()
     Object* selected_o = manager_o.get_object(state.selected.tag);
     if(selected_o != nullptr)
     {
+        // CAMERA DIRS
+        f3 cam_r    = window_scene->camera.get_right();
+        f3 cam_u    = window_scene->camera.get_up();
+        f3 cam_f    = window_scene->camera.get_forward();
+    
+
+        // 1. TRANSLATE
+
         // SCALE MOVEMENT
         f3 cam_pos          = window_scene->camera.get_pos();
         f3 cam_to_obj_delta = cam_pos - selected_o->pos;
         float tan_half_fov = tanf(camera.perspective.fov / 2.0f);
         float view_width_at_obj_dist = 2.0f * tan_half_fov * cam_to_obj_delta.norm();
 
-        // MOVE IN RELATION TO CAMERA VIEW
-        f3 cam_x    = window_scene->camera.get_right();
-        f3 cam_y       = window_scene->camera.get_up();
-        f3 cam_z  = window_scene->camera.get_forward();
 
-        selected_o->pos += cam_x * state.selected.pos_delta.x * view_width_at_obj_dist * camera.perspective.AR();
-        selected_o->pos += cam_y * state.selected.pos_delta.y * view_width_at_obj_dist;
-        selected_o->pos += cam_z * state.selected.pos_delta.z;
+        selected_o->pos += cam_r * state.selected.pos_delta.x * view_width_at_obj_dist * camera.perspective.AR();
+        selected_o->pos += cam_u * state.selected.pos_delta.y * view_width_at_obj_dist;
+        selected_o->pos += cam_f * state.selected.pos_delta.z;
 
         state.selected.pos_delta.set_zero();
+
+
+
+        // 2. ROTATE
+        if(!state.selected.rot_delta_norm.is_zero())
+        {
+            
+        float angle = state.selected.rot_delta_norm.norm() * 10.0f;
+
+        f3 move_axis_x;
+        f3 move_axis_y;
+        if(state.selected.rot_delta_norm.x != 0.0f)
+            move_axis_x = (cam_r * state.selected.rot_delta_norm.x).unit();
+        if(state.selected.rot_delta_norm.y != 0.0f)
+            move_axis_y = (cam_u * state.selected.rot_delta_norm.y).unit();
+        f3 move_axis = (move_axis_x + move_axis_y).unit();
+
+        f3 rot_axis = move_axis.cross(cam_f).unit();
+
+        Quarternion rot_q = {0.0f, rot_axis};
+        selected_o->rot = Quarternion::rotate_quart(selected_o->rot, rot_q, angle);
+        // rot_q.set_angle(angle);
+        
+        // selected_o->rot = rot_q.rotate(selected_o->rot);
+        // std::cout << selected_o->rot.x << std::endl;
+        
+        // state.selected.rot_delta_norm.print("rot_delta");
+        state.selected.rot_delta_norm.set_zero();
+
+        // Quarternion::conjugate
+        }
+
+        // 3. SCALE
+        if(state.selected.size_factor != 0.0f)
+        {
+            selected_o->scale *= state.selected.size_factor;
+            state.selected.size_factor = 0.0f;
+        }
     }
 }
 

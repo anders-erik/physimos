@@ -31,11 +31,53 @@ init()
     glGenBuffers(1, &vbo_xy);
 
 
+    uint point_count = line_count * 2;
+    line_points.reserve(point_count);
+    // X-Y axes
+    // line_points[0] = {  -xy_max,  0.0f};
+    // line_points[1] = {   xy_max,  0.0f};
+    // line_points[2] = {   0.0f,   -xy_max};
+    // line_points[3] = {   0.0f,    xy_max};
+    // // Auxillary lines
+    // line_points[4]  = { -xy_max, -1.0f}; // y = -1
+    // line_points[5]  = {  xy_max, -1.0f};
+    // line_points[6]  = { -xy_max,  1.0f}; // y = 1
+    // line_points[7]  = {  xy_max,  1.0f};
 
-    
+    // line_points[8]  = { -1.0f,   -xy_max}; // x = -1
+    // line_points[9]  = { -1.0f,    xy_max};
+    // line_points[10] = {  1.0f,   -xy_max}; // x = 1
+    // line_points[11] = {  1.0f,    xy_max};
+    line_points.at(0) = {  -xy_max,  0.0f};
+    line_points.at(1) = {   xy_max,  0.0f};
+    line_points.at(2) = {   0.0f,   -xy_max};
+    line_points.at(3) = {   0.0f,    xy_max};
+    // Auxillary lines
+    line_points.at(4)  = { -xy_max, -1.0f}; // y = -1
+    line_points.at(5)  = {  xy_max, -1.0f};
+    line_points.at(6)  = { -xy_max,  1.0f}; // y = 1
+    line_points.at(7)  = {  xy_max,  1.0f};
+
+    line_points.at(8)  = { -1.0f,   -xy_max}; // x = -1
+    line_points.at(9)  = { -1.0f,    xy_max};
+    line_points.at(10) = {  1.0f,   -xy_max}; // x = 1
+    line_points.at(11) = {  1.0f,    xy_max};
+
+}
+
+void Shader2DGridline::
+set_line_point_buffer()
+{
+    glBindVertexArray(vao_xy);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_xy);
+    glBufferData(GL_ARRAY_BUFFER, line_points.size_byte(), line_points.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(R2<float>), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 }
 
 
@@ -55,40 +97,30 @@ set_camera_matrix(m3f3 _camera_matrix)
 
 
 void Shader2DGridline::
-draw_gridlines() const 
+draw_gridlines() 
 {
     glUseProgram(id);
-
     glBindVertexArray(vao_xy);
-
-    // std::vector<f2> line_points;
-    // line_points.reserve(line_count * 2);
-    Arr<R2<float>> line_points {line_count * 2};
-    // X-Y axes
-    line_points[0] = {  -xy_max,  0.0f};
-    line_points[1] = {   xy_max,  0.0f};
-    line_points[2] = {   0.0f,   -xy_max};
-    line_points[3] = {   0.0f,    xy_max};
-    // Auxillary lines
-    line_points[4]  = { -xy_max, -1.0f}; // y = -1
-    line_points[5]  = {  xy_max, -1.0f};
-    line_points[6]  = { -xy_max,  1.0f}; // y = 1
-    line_points[7]  = {  xy_max,  1.0f};
-
-    line_points[8]  = { -1.0f,   -xy_max}; // x = -1
-    line_points[9]  = { -1.0f,    xy_max};
-    line_points[10] = {  1.0f,    xy_max}; // x = 1
-    line_points[11] = {  1.0f,    xy_max};
+    // glBindBuffer(GL_ARRAY_BUFFER, vbo_xy);
+    // glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(R2<float>), (void *)0);
+    // glEnableVertexAttribArray(0);
 
 
-    glBindVertexArray(vao_xy);
+    GLint currVAO = 0;
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &currVAO);
+    if(currVAO != vao_xy)
+        throw std::runtime_error("currVAO != vao_xy");
+    // assert();
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_xy);
+    GLint vao, vbo, enabled;
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &vbo);
+    glGetVertexAttribiv(0, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
 
-    // glBufferData(GL_ARRAY_BUFFER, line_points.size()*sizeof(f2), line_points.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, line_points.size_byte(), line_points.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(R2<float>), (void *)0);
-	glEnableVertexAttribArray(0);
+    // printf("VAO=%d VBO=%d attrib0_enabled=%d\n", vao, vbo, enabled);
+        
+
+    // set_line_point_buffer();
 
     // x=y axes
     glLineWidth(2);
@@ -101,6 +133,10 @@ draw_gridlines() const
     glDrawArrays(   GL_LINES, 
                     xy_axis_line_count * 2, 
                     auxillary_line_count * 2);
+
+
+    glBindVertexArray(0);
+    glUseProgram(0);
 }
 
 

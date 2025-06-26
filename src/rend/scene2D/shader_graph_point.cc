@@ -25,7 +25,7 @@ init()
     color_LOC = glGetUniformLocation(id, "color");
     glUniform4f(color_LOC, 0.0f, 0.0f, 0.0f, 1.0f);
 
-    glGenBuffers(1, &vao_p);
+    glGenVertexArrays(1, &vao_p);
     glGenBuffers(1, &vbo_x_p);
     glGenBuffers(1, &vbo_y_p);
 }

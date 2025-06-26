@@ -110,7 +110,8 @@ int main()
 	squad_object.mesh.create_quad();
 	squad_object.mesh.center();
 	squad_object.tag.type = TagO::Type::Quad;
-	squad_object.pos.x = 2.0f;
+	squad_object.pos.x = 0.0f;
+	squad_object.pos.z = 1.0f;
 	root_scene.tagos.push_back(squad_object.tag);
 
 	Quad quad;

@@ -90,6 +90,12 @@ bool f2::is_zero()
     return (x == 0.0f && y == 0.0f) ? true : false;
 }
 
+void f2::set_zero()
+{
+    x = 0.0f;
+    y = 0.0f;
+}
+
 f2& f2::clamp_nonzero()
 {
     if(is_zero())
@@ -539,6 +545,15 @@ void m4f4::print(){
 }
 
 
+
+m4f4 m4f4::scale(float scale_factor)
+{
+    float s = scale_factor;
+    return {{s, 0, 0, 0},
+            {0, s, 0, 0},
+            {0, 0, s, 0},
+            {0, 0, 0, 1       }};
+}
 
 m4f4 m4f4::
 translation(f3 transl)

@@ -78,6 +78,13 @@ public:
         return *(t_p + index);
     }
 
+    T& at(size_t index) const
+    {
+        if(index >= count)
+            throw std::runtime_error("Index out of bounds in Arr.at()");
+        return *(t_p + index);
+    }
+
     Arr<T>& set(T value)
     {
         for(size_t i = 0; i < count; i++)
@@ -87,10 +94,17 @@ public:
     }
 
     T*          data_mut()          {return t_p ;}
-    const T*    data()              {return t_p ;} const
+    const T*    data() const        {return t_p ;} 
     size_t      size() const        {return count ;}
     size_t      size_byte() const   {return (count * sizeof(T)) ;}
 
+    void reserve(size_t new_count) 
+    {
+        if(t_p == nullptr)
+            allocate(new_count);
+        else if(new_count > count) 
+            reallocate(new_count);
+    }
 
 private:
 
@@ -98,6 +112,24 @@ private:
     {
         t_p = new T[count*sizeof(T)];
         this->count = count;
+    }
+
+    void reallocate(size_t new_count)
+    {
+        if(new_count == count)
+            return;
+
+        T* new_t_p = new T[new_count*sizeof(T)];
+
+        if(new_count < count)
+            memcpy(new_t_p, t_p, new_count);
+        else
+            memcpy(new_t_p, t_p, count);
+
+        delete[] t_p;
+
+        t_p   = new_t_p;
+        count = new_count;
     }
 
     void deallocate()

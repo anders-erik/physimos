@@ -112,6 +112,7 @@ struct f2
     /** Radians measured ccw from the x-axis. */
     float angle();
     bool is_zero();
+    void set_zero();
     f2& clamp_nonzero();
 
     i2 to_i2() const ;
@@ -284,6 +285,8 @@ struct m4f4
 
     void print();
 
+    /** Create a pure translation matrix */
+    static m4f4 scale(float scale_factor);
     /** Create a pure translation matrix */
     static m4f4 translation(f3 transl);
     /** Create a pure rotation matrix about x axis. 

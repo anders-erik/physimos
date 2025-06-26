@@ -26,6 +26,9 @@ struct Selected
     Key     key_2       = Key::None;
 
     f3      pos_delta;
+    f2      rot_delta_norm;
+    float   size_factor;
+
 
     bool is_null() { return tag.is_null(); }
     bool has_key()

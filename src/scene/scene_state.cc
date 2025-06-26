@@ -20,10 +20,9 @@ try_change_selected(window::InputEvent & event)
     switch (selected.state)
     {
     case SS::Selected::KEY_1:
-        
-        if(selected.key_1 == Key::g)
+
+        if(selected.key_1 == SS::TRANSLATE_KEY)
         {
-            // std::cout << "G" << std::endl;
             if(event.is_mouse_scroll())
             {
                 float increment = 1.0f;
@@ -35,13 +34,28 @@ try_change_selected(window::InputEvent & event)
             }
             if(event.is_mouse_movement())
             {
-                float scale = 10.0f;
-                f2 norm_delta = event.mouse_movement.delta.normalized;
-
-                // f3 scene_delta = {norm_delta*scale, 0.0f};
-                f3 scene_delta = {norm_delta, 0.0f};
-
-                selected.pos_delta += scene_delta;
+                f3 norm_delta = {   event.mouse_movement.delta.normalized, 
+                                    0.0f                                    };
+                selected.pos_delta += norm_delta;
+                return true;
+            }
+        }
+        if(selected.key_1 == SS::ROTATE_KEY)
+        {
+            if(event.is_mouse_movement())
+            {
+                selected.rot_delta_norm += event.mouse_movement.delta.normalized;
+                return true;
+            }
+        }
+        if(selected.key_1 == SS::SCALE_KEY)
+        {
+            if(event.is_mouse_scroll())
+            {
+                if(event.mouse_scroll.is_up())
+                    selected.size_factor = 1.1f;
+                else
+                    selected.size_factor = 0.9f;
                 return true;
             }
         }
@@ -219,14 +233,50 @@ try_update_selected(window::InputEvent& event)
     {
     case SS::Selected::SELECTED:
         {
-        if(event.is_keystroke() && event.keystroke.is(Key::g))
+        if(event.is_keystroke() && event.keystroke.is_press() && event.keystroke.is(SS::GRAB_KEY))
         {
-            selected.set_key_1(Key::g);
+            selected.set_key_1(SS::GRAB_KEY);
+            return true;
+        }
+        if(event.is_keystroke() && event.keystroke.is_press() && event.keystroke.is(SS::ROTATE_KEY))
+        {
+            selected.set_key_1(SS::ROTATE_KEY);
+            return true;
+        }
+        if(event.is_keystroke() && event.keystroke.is_press() && event.keystroke.is(SS::TRANSLATE_KEY))
+        {
+            selected.set_key_1(SS::TRANSLATE_KEY);
+            return true;
+        }
+        if(event.is_keystroke() && event.keystroke.is_press() && event.keystroke.is(SS::SCALE_KEY))
+        {
+            selected.set_key_1(SS::SCALE_KEY);
+            return true;
         }
         }
         break;
 
     case SS::Selected::KEY_1:
+        if(event.is_keystroke() && event.keystroke.is_release() && event.keystroke.is(SS::GRAB_KEY))
+        {
+            selected.try_peel();
+            return true;
+        }
+        if(event.is_keystroke() && event.keystroke.is_release() && event.keystroke.is(SS::ROTATE_KEY))
+        {
+            selected.try_peel();
+            return true;
+        }
+        if(event.is_keystroke() && event.keystroke.is_release() && event.keystroke.is(SS::TRANSLATE_KEY))
+        {
+            selected.try_peel();
+            return true;
+        }
+        if(event.is_keystroke() && event.keystroke.is_release() && event.keystroke.is(SS::SCALE_KEY))
+        {
+            selected.try_peel();
+            return true;
+        }
         break;
 
     case SS::Selected::KEY_2:

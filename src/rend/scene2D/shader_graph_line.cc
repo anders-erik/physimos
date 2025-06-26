@@ -26,7 +26,7 @@ init()
     glUniform4f(color_LOC, 0.5f, 0.0f, 1.0f, 1.0f);
 
 
-    glGenBuffers(1, &vao_l);
+    glGenVertexArrays(1, &vao_l);
     glGenBuffers(1, &vbo_x_l);
     glGenBuffers(1, &vbo_y_l);
 

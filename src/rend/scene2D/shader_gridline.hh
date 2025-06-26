@@ -23,6 +23,8 @@ class Shader2DGridline : private opengl::ShaderProgram {
     const uint auxillary_line_count = 4;
     const uint line_count           = xy_axis_line_count + auxillary_line_count;
 
+    Arr<R2<float>> line_points;
+
     const float xy_max = 100.0f;
 public:
 
@@ -30,9 +32,11 @@ public:
 
     void init();
 
+    void set_line_point_buffer();
+
     void set_camera_matrix(m3f3 _camera_matrix);
 
-    void draw_gridlines() const;
+    void draw_gridlines();
 
 };
 

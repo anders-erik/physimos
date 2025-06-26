@@ -5,6 +5,10 @@
 
 namespace SS 
 {
+    inline const Key GRAB_KEY       = Key::g;
+    inline const Key ROTATE_KEY     = Key::r;
+    inline const Key TRANSLATE_KEY  = Key::t;
+    inline const Key SCALE_KEY      = Key::y;
 
 struct KeyState
 {

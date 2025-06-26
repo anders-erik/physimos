@@ -72,7 +72,9 @@ void RenderContextQuadS2D::delete_contents(){
 }
 
 
-void RenderContextQuadS2D::init(){
+void RenderContextQuadS2D::init()
+{
+    // glUseProgram();
 
     std::array<VertexQuad2D, 6> verts = generate_quad_verts_c05();
 
@@ -125,15 +127,18 @@ RendererScene2D::RendererScene2D(){
 void RendererScene2D::
 init()
 {
+
     program_quad_2D.init();
     shader_graph_point.init();
     shader_graph_line.init();
-    shader_gridline.init();
 
-    render_context_frame.init();
+    shader_gridline.init();
+    shader_gridline.set_line_point_buffer();
 
     // program = opengl::build_program_vert_frag(opengl::Programs::phont_texture);
     program = opengl::build_program_vert_frag(program_name_enum);
+    glUseProgram(program);
+    render_context_frame.init();
 
     init_frame_wire_quad_context_t();
 }

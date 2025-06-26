@@ -129,7 +129,10 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
         Object* base = man_o.get_object(tag);
         if(base == nullptr) continue;
 
+        m4f4 scale_matrix       = m4f4::scale(base->scale);
         m4f4 translation_matrix = m4f4::translation(base->pos);
+        m4f4 rotation_matrix    = base->rot.matrix();
+        m4f4 model_matrix       = translation_matrix * rotation_matrix * scale_matrix;
 
         // QUAD FIRST
         if (tag.type == TagO::Quad)
@@ -137,11 +140,12 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
             Quad* quad = manager_3D.manager_q.find_quad_oid(tag.oid);
             if(quad == nullptr) continue;
 
-            program_quad.render(translation_matrix, base->mesh, quad->texture_id);
+            program_quad.render(model_matrix, base->mesh, quad->texture_id);
+            program_axes.render(model_matrix);
 
             if(manager_3D.manager_q.state.is_capturing())
             {
-                program_mesh.render(translation_matrix, base->mesh, 0x0000ffff);
+                program_mesh.render(model_matrix, base->mesh, 0x0000ffff);
             }
         }
     
@@ -157,7 +161,7 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
 
 
     // AXES
-    program_axes.render();
+    program_axes.render(m4f4());
 
 
     // VECTOR
