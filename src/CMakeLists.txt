@@ -11,6 +11,7 @@ add_subdirectory(rend)
 add_subdirectory(scene)
 add_subdirectory(scene2D)
 add_subdirectory(simulator)
+add_subdirectory(test)
 add_subdirectory(ui)
 add_subdirectory(window)
 

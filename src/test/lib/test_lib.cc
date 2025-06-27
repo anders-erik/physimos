@@ -1,8 +1,8 @@
 
 #include "test/test.hh"
 
-#include "test/test_str.hh"
-#include "test/test_file.hh"
+#include "test/lib/test_str.hh"
+#include "test/lib/test_file.hh"
 
 
 

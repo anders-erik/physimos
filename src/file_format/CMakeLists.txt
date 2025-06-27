@@ -10,8 +10,6 @@ add_library(file_format
     pso_loader.cc
     resources.cc
     texture_gen.cc
-
-    test/test_file_format.cc
 )
 
 target_link_libraries(file_format 
@@ -26,16 +24,3 @@ target_include_directories(file_format PUBLIC ${CMAKE_SOURCE_DIR}/src/logger)
 target_include_directories(file_format PUBLIC ${CMAKE_SOURCE_DIR}/extern/glad/include)
 
 
-
-add_executable(test_file_format
-    test/test_file_format.cc
-)
-target_link_libraries(test_file_format
-    file_format
-    lib
-    rend
-)
-target_include_directories(test_file_format PUBLIC 
-    .
-    ${CMAKE_SOURCE_DIR}/src/
-)

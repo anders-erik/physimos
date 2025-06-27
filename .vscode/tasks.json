@@ -6,7 +6,7 @@
             "label": "run",
             "detail": "Default build and run task.",
             "type": "process",
-            "command": "${config:binary_dir}/${config:binary}",
+            "command": "${config:debug_dir}/${config:binary}",
             "options": 
             {
                 "cwd": "${config:cwd}",
@@ -35,7 +35,7 @@
             // tee output (stdout + stderr)
             // "command": "valgrind --leak-check=yes ${config:default_binary} &> >(tee ${workspaceFolder}/tmp/valgrind.txt)",
 
-            "command": "valgrind --leak-check=yes ${config:binary_dir}/${config:binary} &> ${workspaceFolder}/tmp/valgrind.txt",
+            "command": "valgrind --leak-check=yes ${config:debug_dir}/${config:binary} &> ${workspaceFolder}/tmp/valgrind.txt",
 
             "args": [],
             "options": {
@@ -73,7 +73,7 @@
         {
             "label": "Run Linux Perf",
             "type": "shell",
-            "command": "valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes  ${config:binary_dir}${config:binary} > callgrind.txt && kcachegrind",
+            "command": "valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes  ${config:perf_dir}${config:binary} > callgrind.txt && kcachegrind",
             "args": [],
             "options": {
                 "env": {

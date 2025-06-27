@@ -4,12 +4,30 @@
 
 Str Err::err_s_to_str()
 {
+    Str str_err;
+
+
     if(severity == err_s::Critical)
-        return "CRITICAL";
+        str_err += "CRITICAL";
     else if(severity == err_s::Error)
-        return "ERROR";
+        str_err += "err_s::Error; ";
     else if(severity == err_s::Warn)
-        return "WARN";
+        str_err += "WARN";
     else
-        return "UNKNOWN";
+        str_err += "UNKNOWN";
+
+
+    if(type == err_t::ERRNO)
+    {
+        str_err += "ERRNO=";
+        str_err += ERRNO;
+        if(ERRNO == 2)
+            str_err += ": Failed to open file. ";
+    }
+
+
+    str_err += "MSG: ";
+    str_err += message;
+
+    return str_err;
 }

@@ -1,10 +1,10 @@
 
 #include "test/test.hh"
 
-#include "test/test_core.hh"
-#include "test/test_vec.hh"
-#include "test/test_polynomial.hh"
-#include "test/test_graph2D.hh"
+#include "test/math/test_core.hh"
+#include "test/math/test_vec.hh"
+#include "test/math/test_polynomial.hh"
+#include "test/math/test_graph2D.hh"
 
 
 int main()

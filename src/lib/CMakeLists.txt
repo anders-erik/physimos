@@ -43,12 +43,3 @@ target_link_libraries(main_str  lib)
 target_link_libraries(main_file lib)
 
 
-
-add_executable(test_lib
-    test/test_lib.cc
-)
-target_link_libraries(test_lib lib)
-target_include_directories(test_lib PUBLIC 
-    .
-    ${CMAKE_SOURCE_DIR}/src/
-)

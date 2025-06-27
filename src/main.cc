@@ -12,10 +12,10 @@
 #include "scene/model.hh"
 
 #include "scene/mesh.hh"
+#include "scene/jmesh.hh"
+
 #include "scene/manager_object.hh"
 
-#include "rend/rend_manager.hh"
-#include "main.h"
 
 int main()
 {
@@ -123,8 +123,9 @@ int main()
 												quad				);
 
 
-	// Guarantee one proper rend call
-	// Rend::Manager::get_renderer_scene2D().render_scene_framebuffer(sid_2D);
+	// JFILE LOADING
+	// JMesh jmesh;
+	// Mesh mesh_quad;
 
 
 	physimos.main_loop();

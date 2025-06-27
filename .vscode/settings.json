@@ -4,13 +4,13 @@
 
 
 	// BINARY DIR
-	"binary_dir": "${workspaceFolder}/build/debug_linux/",
-	// "binary_dir": "${workspaceFolder}/build/perf_linux/",
+	"debug_dir": "${workspaceFolder}/build/debug_linux/",
+	"perf_dir": "${workspaceFolder}/build/perf_linux/",
 
 
 	// MAIN
 	// "binary": "physimos",
-	"binary": "src/main_main",
+	// "binary": "src/main_main",
 	// "binary": "src/phont/main_phont",
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
@@ -19,14 +19,15 @@
 	// "binary": "src/render/main_render",
 
 	// TEST
-	// "binary": "src/lib/test_lib",
-	// "binary": "src/math/test_math",
-	// "binary": "src/file_format/test_file_format",
-	
+	// "binary": "src/test/test",
+	"binary": "src/test/lib/test_lib",
+	// "binary": "src/test/math/test_math",
+	// "binary": "src/test/file_format/test_file_format",
+
 	// CWD
 	"cwd": "${workspaceFolder}",
 	// "cwd": "${workspaceFolder}/src/lib",
-	// "cwd": "${workspaceFolder}/src/lib/json",
+	// "cwd": "${workspaceFolder}/src/file_format/json",
 
 
 

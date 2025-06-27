@@ -8,7 +8,7 @@
             "type": "cppdbg",
             "request": "launch",
 
-            "program": "${config:binary_dir}/${config:binary}",
+            "program": "${config:debug_dir}/${config:binary}",
             "cwd": "${config:cwd}",
             
             "args": [],
