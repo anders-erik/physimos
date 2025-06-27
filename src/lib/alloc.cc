@@ -24,6 +24,8 @@ char* allocate_bytes(unsigned int byte_count){
 
 char* reallocate_bytes(char * current_pointer, unsigned int current_size, unsigned int new_size){
 
+    if(current_size == new_size)
+        return current_pointer;
 
     #ifdef ALLOCATE_WITH_NEW
 

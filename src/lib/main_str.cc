@@ -1,8 +1,10 @@
 #include <vector>
 #include <iostream>
+#include <cstring>
 #include <chrono>
 
 #include "str.hh"
+#include "str_std.hh"
 #include "opt.hh"
 #include "print.hh"
 
@@ -42,9 +44,9 @@ void constructors(){
 
 
     {
-    Str str_10c (10, 'c');
-    print(str_10c);
-    println(str_10c);
+    // Str str_10c (10, 'c');
+    // print(str_10c);
+    // println(str_10c);
     // str_10c.print();
     // str_10c.println();
     // str_10c.~Str(); // double free
@@ -55,7 +57,7 @@ void constructors(){
     // str_c.~Str(); // double free
     // str_c[1];
 
-    Str str_5a (5, 'a');
+    // Str str_5a (5, 'a');
     // Str str_5a_2 = str_5a; // Copy deleted!
 
     // REMEMBER EXPLICIT 'Str' constructor or initializer list!
@@ -69,7 +71,7 @@ void constructors(){
 
     // Hypothesis: {...} or Str(...) always calls the appropriate constructor first, returns object(reference?), then uses that object accordingly. If constructor is called implicity (...) then it will never move, and just construct that object normally, even inside move (std::move((...))). I guess implicit construction only works for single argument construction...
 
-    str_5a = Str(5, 'a'); // Str size constructor + MOVE OPERATOR + destructor of "aaaaa"
+    // str_5a = Str(5, 'a'); // Str size constructor + MOVE OPERATOR + destructor of "aaaaa"
     // str_5a = std::move(str_5b); // MOVE ASSIGNMENT OPERATOR 
     // Str new_str ({5, 'c'}); // initialization_value constructor = Str new_str {5, 'c'};
     // Str new_str = std::move((5, 'c')); // Str size constructor
@@ -81,8 +83,8 @@ void constructors(){
     // int i = (5, 'f'); // Discards 5 -> {'f'} = {102}
 
     // move_construct(str_5a);  // Copy not available
-    move_construct_(str_5a);    // No movement requored
-    move_construct__(std::move(str_5a)); // Have to explicity move
+    // move_construct_(str_5a);    // No movement requored
+    // move_construct__(std::move(str_5a)); // Have to explicity move
     
     }
 
@@ -92,22 +94,22 @@ void double_free(){
 
     // Double free
     {
-    Str str_A1 (10, 'A'); // fill ten chars with 'A'
-    str_A1.print_line();
+    // Str str_A1 (10, 'A'); // fill ten chars with 'A'
+    // str_A1.print_line();
 
-    // Str str_A2 = str_A1;  // Make copy that also owns the string pointer
-    // str_A2.println();
+    // // Str str_A2 = str_A1;  // Make copy that also owns the string pointer
+    // // str_A2.println();
 
-    }// Double free as both objects tries to free the same pointer
+    // }// Double free as both objects tries to free the same pointer
 
 
-    // NOT double free
-    {
-    Str str_A1 (10, 'A'); // fill ten chars with 'A'
-    str_A1.print_line();
+    // // NOT double free
+    // {
+    // Str str_A1 (10, 'A'); // fill ten chars with 'A'
+    // str_A1.print_line();
 
-    Str& str_A2 = str_A1;  // Make copy that also owns the string pointer
-    str_A2.print_line();
+    // Str& str_A2 = str_A1;  // Make copy that also owns the string pointer
+    // str_A2.print_line();
 
     }// NOT Double free as second object is reference. Does not call destruct!
 
@@ -129,34 +131,34 @@ void string_vector(){
     vec.emplace_back();
     vec.pop_back();
 
-    {
-    Str& str10 = strings.emplace_back(10, 'a');  // 1st elem : allocates 1 when executed
-    Str& str20 = strings.emplace_back(20, 'a');  // 2nd elem : allocates 2, moves 1
-    Str& str30 = strings.emplace_back(30, 'a');  // 3rd elem : allocates 4, moves 2
-    Str& str40 = strings.emplace_back(40, 'a');
-    Str& str50 = strings.emplace_back(50, 'a');  // 5th elem : allocates 8, moves 4
-    Str& str60 = strings.emplace_back(60, 'a');
-    Str& str70 = strings.emplace_back(80, 'a');
-    Str& str90 = strings.emplace_back(90, 'a'); 
-    Str& str100 = strings.emplace_back(100, 'a'); // 9th elem : allocates 16, moves 8
-    Str& str110 = strings.emplace_back(110, 'a');
+    // {
+    // Str& str10 = strings.emplace_back(10, 'a');  // 1st elem : allocates 1 when executed
+    // Str& str20 = strings.emplace_back(20, 'a');  // 2nd elem : allocates 2, moves 1
+    // Str& str30 = strings.emplace_back(30, 'a');  // 3rd elem : allocates 4, moves 2
+    // Str& str40 = strings.emplace_back(40, 'a');
+    // Str& str50 = strings.emplace_back(50, 'a');  // 5th elem : allocates 8, moves 4
+    // Str& str60 = strings.emplace_back(60, 'a');
+    // Str& str70 = strings.emplace_back(80, 'a');
+    // Str& str90 = strings.emplace_back(90, 'a'); 
+    // Str& str100 = strings.emplace_back(100, 'a'); // 9th elem : allocates 16, moves 8
+    // Str& str110 = strings.emplace_back(110, 'a');
 
-    std::cout << strings.capacity() << std::endl;
+    // std::cout << strings.capacity() << std::endl;
 
-    str10.busy();
-    str20.busy();
-    str30.busy();
-    str40.busy();
-    str50.busy();
-    str60.busy();
-    str70.busy();
-    str90.busy();
-    str100.busy();
-    str110.busy();
+    // str10.busy();
+    // str20.busy();
+    // str30.busy();
+    // str40.busy();
+    // str50.busy();
+    // str60.busy();
+    // str70.busy();
+    // str90.busy();
+    // str100.busy();
+    // str110.busy();
 
-    } // Does not call destructors because they are references
-    std::cout << sizeof(Str) << std::endl;
-    std::cout << sizeof(std::string) << std::endl;
+    // } // Does not call destructors because they are references
+    // std::cout << sizeof(Str) << std::endl;
+    // std::cout << sizeof(std::string) << std::endl;
     
     // Here constructores are called
     // strings.pop_back();
@@ -197,15 +199,15 @@ void str_c_and_std_interface(){
     
     // string literal ok
     Str str_to_std_c = "sdafljadas"; // c_str constructor
-    std::string std_str_c = str_to_std_c.to_std_string();
+    std::string std_str_c = StrStd::to_string(str_to_std_c);
     std::cout << std_str_c << std::endl;
 
     // not null-terminated
-    Str str_to_std_a (10, 'a');
-    std::string std_str_a = str_to_std_a.to_std_string();
-    std::cout << std_str_a << std::endl;
-    // print retrieved 'c_str'
-    std::cout << str_to_std_a.to_c_str() << std::endl;
+    // Str str_to_std_a (10, 'a');
+    // std::string std_str_a = str_to_std_a.to_std_string();
+    // std::cout << std_str_a << std::endl;
+    // // print retrieved 'c_str'
+    // std::cout << str_to_std_a.to_c_str() << std::endl;
 
     std::cout << "STD end: " << std::endl << std::endl;
 
@@ -225,17 +227,17 @@ void opt_move_str(){
     opt_int = std::move(i); // only move
     std::cout << "opt_int.consume() = " << opt_int.consume() << std::endl;
 
-    Str str {10, 'x'};
+    // Str str {10, 'x'};
     // OptMove<Str> opt_str_copy = str; // No copy
     // OptMove<Str> opt_move_str = Str(10, 'b');
     // OptMove<Str> opt_str_list = Str(10, 'b') ;
     // OptMove<Str> opt_str_list = str; // implicit move not ok
-    OptMove<Str> opt_str_list = std::move(str);
+    // OptMove<Str> opt_str_list = std::move(str);
     // std::cout << "opt_move_str.has_value() = " << opt_str_copy.has_value() << std::endl;
-    Str opt_str_list_value = opt_str_list.consume();
-    Str opt_str_list_value_consumed_again = opt_str_list.consume();
-    std::cout << "value.consume() = " << opt_str_list_value.to_std_string() << std::endl;
-    std::cout << "value_consumed_again.consume() = " << opt_str_list_value_consumed_again.to_std_string() << std::endl;
+    // Str opt_str_list_value = opt_str_list.consume();
+    // Str opt_str_list_value_consumed_again = opt_str_list.consume();
+    // std::cout << "value.consume() = " << opt_str_list_value.to_std_string() << std::endl;
+    // std::cout << "value_consumed_again.consume() = " << opt_str_list_value_consumed_again.to_std_string() << std::endl;
 
 }
 
@@ -246,21 +248,21 @@ void res_str(){
 }
 
 void concat(){
-    Str str_lval {5, 'z'};
+    // Str str_lval {5, 'z'};
     Str str = "123";
     // str.println_quotes();
     println(Str("\"") + str + Str("\""));
     str += "456";
-    str.print_line_quotes();
+    str.print_in_quotes();
     str += "789";
-    str.print_line_quotes();
+    str.print_in_quotes();
 
     bool test = true;
     if(test)
         str += "asdf";
     else
         str += "fdsa";
-    str.print_line();
+    str.print();
 
     // str += str_lval;
     // str.println_quotes();
@@ -278,17 +280,17 @@ void substr()
     Str str_abc = str.substr(0, 3);
     Str str_abcdef = str.substr(0, 6);
 
-    std::cout << "str        = "; str.print_line();
-    std::cout << "str_       = "; str_.print_line();
-    std::cout << "str_abc    = "; str_abc.print_line();
-    std::cout << "str_abcdef = "; str_abcdef.print_line();
+    std::cout << "str        = "; str.print();
+    std::cout << "str_       = "; str_.print();
+    std::cout << "str_abc    = "; str_abc.print();
+    std::cout << "str_abcdef = "; str_abcdef.print();
     
     str.cut_to_substr(3, 3);
-    std::cout << "str        = "; str.print_line();
+    std::cout << "str        = "; str.print();
 
     Str bounds = "abc";
     bounds.cut_to_substr(0, 20000);
-    std::cout << bounds.to_std_string() << std::endl;
+    std::cout << StrStd::to_string(bounds) << std::endl;
     
 }
 

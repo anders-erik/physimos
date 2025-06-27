@@ -8,3 +8,4 @@
 #include "test/unit_test.hh"
 #include "test/unit_test_collection.hh"
 #include "test/module.hh"
+#include "test/library.hh"

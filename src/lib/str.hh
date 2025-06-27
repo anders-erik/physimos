@@ -1,56 +1,43 @@
-
 #pragma once
 
-#include <iostream>
-#include <string>
-
-#include <cstring>
-#include <new>
-
-struct Str;
-
-/** Get single character as string */
-Str to_str(char ch);
-/** Integer to Str */
-Str int_to_str(int integer);
+#include <cstddef>  // size_t
+#include <utility>  // enable_if_t, forward
 
 
-struct Str {
-
-    // bool allocated = false; /** memory allocated */
-    // bool initialized = false; /** Allocated memory initialized */
-    // size_t size = 0;
+struct Str 
+{
     unsigned int size_alloc = 0;
     unsigned int size_str = 0;
     char* mem = nullptr;
 
-    Str();
-    // Str(char * str_mem, unsigned int string_size);
-    Str(unsigned int string_size, char initialization_value);
+    constexpr
+    Str() = default;
     Str(const char *c_str);
-    
-    /** Create string representation of integer. E.g. 123 -> "123" */
-    Str(int integer);
-    /** String representatin of float. Max decimal value is 8. */
-    Str(float _float, unsigned char decimals);
-
     Str(const Str& other);
     Str(Str&& other);
 
+    template <  typename... Args,
+                typename = std::enable_if_t<(sizeof...(Args) > 1)>>
+    Str(Args&&... args)
+    {
+        (*this += ... += Str(std::forward<Args>(args)));
+    }
+
     ~Str();
-
-
-    Str& operator+=(Str&& rhs);
-    Str& operator+=(Str& rhs);
-    Str& operator+=(const char* c_str);
-    Str operator+(Str&& rhs);
-    Str operator+(Str& rhs);
-    Str operator+(const char* c_str);
 
     Str& operator=(const Str& other);
     Str& operator=(Str&& other);
 
     bool operator==(const Str& other) const;
+
+    Str& operator+=(Str&& rhs);
+    Str& operator+=(const Str& rhs);
+    Str& operator+=(const char* c_str);
+
+    Str operator+(const Str& rhs);
+    Str operator+(const char* c_str);
+
+
 
     char& operator[](size_t index); // mutable char
     const char operator[](size_t index) const; // read only
@@ -60,8 +47,10 @@ struct Str {
     char* data() const;
     unsigned int size() const;
     unsigned int capacity() const;
+    void reserve(unsigned int new_alloc_size);
     bool has_size() const;
     bool has_capacity() const;
+    void fill_alloc(char fill_char);
 
     void allocate(unsigned int size_to_alloc);
     void reallocate(unsigned int new_size_alloc);
@@ -77,20 +66,24 @@ struct Str {
     /** Returns new Str as specified substring. */
     Str substr(unsigned int pos, unsigned int new_size);
 
-    std::string to_std_string();
-    /** Reference-like string without copying. */
-    std::string_view to_std_string_view();
     const char* to_c_str();
 
-    /** Underscape to prevent name-clash with global print function. */
-    void print_();
-    void print_line() const;
-    void print_line_quotes();
+    /** Prints string and new line */
+    void print() const;
+    /** Prints quotes-enclosed string and new line */
+    void print_in_quotes();
 
-    void busy();
 
-    static Str to_str_char(char ch);
-    static Str to_str_int(int integer);
-    static Str to_str_float(float fl, int decimals);
+
+    /** ASCII char to Str */
+    static Str CH(char ch);
+    /** Signed Integer to Str */
+    static Str SI(long long s_int);
+    /** Unsigned Integer to Str */
+    static Str UI(size_t u_int);
+    /** Float to Str */
+    static Str FL(float fl, int decimals);
+    /** Double to Str */
+    static Str DB(double db, int decimals);
 };
 

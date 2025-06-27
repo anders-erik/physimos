@@ -1,13 +1,14 @@
 #pragma once
 
-#include <string>
 
 #include "process.hh"
 #include "str.hh"
+#include "str_std.hh"
 #include "res.hh"
 
 #include "err.hh"
 
+#include <string>
 
 class File {
 
@@ -90,7 +91,7 @@ public:
 
         // std::string
         std::string physimos_root_dir = physimos_root_dir_or_die();
-        relative_path_ = relative_path.to_std_string();
+        relative_path_ = StrStd::to_string(relative_path);
         physimos_core_path_ = physimos_root_dir + "/" + relative_path_;
     }
 

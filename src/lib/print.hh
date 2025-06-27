@@ -3,6 +3,34 @@
 
 #include "str.hh"
 
+namespace Print
+{
+
+void buf(const Str & str);
+void ln(const Str& str);
+
+template <typename... Args>
+inline void line(Args&&... args)
+{
+    (Print::buf(Str(std::forward<Args>(args))), ...);
+    // |
+    // |
+    // V
+    // line(Str(arg1));
+    // line(Str(arg2));
+    // ...
+    Print::buf("\n");
+}
+
+template <typename... Args>
+inline void lines(Args&&... args)
+{
+    (Print::ln(Str(std::forward<Args>(args))), ...);
+}
+
+}
+
+
 
 
 void print(const Str& str);
@@ -38,7 +66,7 @@ void println_list(Args&&... args){
 }
 
 // Namespacing the printxxx-functions
-struct Print {
+struct PrintStruct {
 
     static inline void line(const Str& str){
         println(str);

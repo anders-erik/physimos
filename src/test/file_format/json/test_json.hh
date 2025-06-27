@@ -9,12 +9,11 @@
 
 
 
-std::vector<UnitTestFn> json_strings = {
+std::vector<UnitTest> json_strings = {
 
-    []() -> UnitTestInfo 
+    {"\"hello\"",
+    [](UnitTest& utest) -> UnitTest&
     {
-        UnitTestInfo utest = "\"hello\"";
-
         Json json {"\"hello\""};
 
         json.lex_parse();
@@ -28,12 +27,12 @@ std::vector<UnitTestFn> json_strings = {
             return utest.fail("jvar.get_string() != \"hello\"");
 
         return utest.pass();
-    },
+    }},
 
 
-    []() -> UnitTestInfo 
+    {"string.json",
+    [](UnitTest& utest) -> UnitTest&
     {
-        UnitTestInfo utest = "string.json";
 
         Str path = "src/test/file_format/json/data/string.json";
         File file {path};
@@ -60,7 +59,7 @@ std::vector<UnitTestFn> json_strings = {
             return utest.fail();
 
         return utest.pass();
-    },
+    }},
 
 
 

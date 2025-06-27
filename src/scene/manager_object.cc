@@ -89,7 +89,7 @@ Object& ManagerObject::
 new_object()
 {
     TagO tag = new_tag();
-    Str name = Str{"object_"} + Str{tag.oid};
+    Str name = Str{"object_"} + Str::SI(tag.oid);
     // Str name = Str{"object_"};
     Mesh mesh;
     return objects.emplace_back(    tag,

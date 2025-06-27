@@ -151,7 +151,7 @@ public:
         // x
         f2 pos_x_delta = { 150.0f, -20.0f };
         verts_size.set_pos(offset + pos_x_delta);
-        verts_size.set_str(Str(object.mesh.verts.size()));
+        verts_size.set_str(Str::SI(object.mesh.verts.size()));
 
 
         // label
@@ -161,7 +161,7 @@ public:
         // y
         f2 faces_size_delta = { 150.0f, -40.0f };
         faces_size.set_pos(offset + faces_size_delta);
-        faces_size.set_str(Str(object.mesh.faces.size()));
+        faces_size.set_str(Str::SI(object.mesh.faces.size()));
 
         offset -= box_indent;
 

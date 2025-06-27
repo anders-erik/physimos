@@ -1,4 +1,6 @@
 
+#include <stdexcept>
+
 #ifdef PH_LINUX
     #include <fcntl.h>     // open
     #include <unistd.h>    // read, close, write
@@ -13,6 +15,28 @@
 #include "print.hh"
 
 
+
+
+void Print::
+buf(const Str & str)
+{
+    if(str.size() == 0)
+        return;
+
+#ifdef PH_LINUX
+        write(  STDOUT_FILENO, 
+                str.data(), 
+                str.size()      );
+#endif
+
+}
+
+void Print::
+ln(const Str & str)
+{
+    Print::buf(str);
+    Print::buf("\n");
+}
 
 
 void print(const Str & str){

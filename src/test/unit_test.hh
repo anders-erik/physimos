@@ -1,44 +1,59 @@
 
 #pragma once
 
+#include "lib/str.hh"
+#include "lib/print.hh"
+
 #include <functional>
 #include <vector>
 
 #include "lib/str.hh"
 
+struct UnitTest;
+typedef std::vector<UnitTest> UnitTestArray;
+
+typedef std::function<UnitTest&(UnitTest& utest)> UnitTestFn;
 
 /** Unit test information returned by completed unit test. */
-class UnitTestInfo {
-
-    std::string     name;                           // name of unit test
-    std::string     fail_message;                   // message printed if unit test fails
+class UnitTest 
+{
+    std::string     name                = "";            // name of unit test
+    UnitTestFn      test_fn;
+    std::string     fail_message        = "";            // message printed if unit test fails
     bool            pass_flag           = false;
-    int             print_indentation   = 8;
+    int             print_indentation   = 12;
 
 public:
-    
-    UnitTestInfo(const char* name) : name {std::string(name)} {};
-    UnitTestInfo(const char* name, bool passed) : name {std::string(name)}, pass_flag {passed} {};
-    UnitTestInfo(std::string name) : name {name}, pass_flag {false} {};
-    UnitTestInfo(std::string name, bool passed) : name {name}, pass_flag {passed} {};
+
+    UnitTest(const char* name , UnitTestFn unit_test_fn) 
+        :   name            {name}, 
+            test_fn   {unit_test_fn} 
+    {
+    };
+
+    /** Set passed to true and return itself */
+    UnitTest& run()
+    {
+        return test_fn(*this);
+    }
 
 
     /** Set passed to true and return itself */
-    UnitTestInfo& pass()
+    UnitTest& pass()
     {
         pass_flag = true;
         return *this;
     }
 
     /** Set passed to false and return itself */
-    UnitTestInfo& fail()
+    UnitTest& fail()
     {
         pass_flag = false;
         return *this;
     }
 
     /** Set passed to false and return itself */
-    UnitTestInfo& fail(std::string new_fail_message)
+    UnitTest& fail(std::string new_fail_message)
     {
         fail_message = new_fail_message;
         pass_flag = false;
@@ -46,7 +61,7 @@ public:
     }
 
     /** Passes the unit test of true assert statement. */
-    UnitTestInfo& assert(bool assert_statement)
+    UnitTest& assert(bool assert_statement)
     {
         if(assert_statement)
             return pass();
@@ -70,7 +85,7 @@ public:
     }
 
 };
-typedef std::function<UnitTestInfo()> UnitTestFn;
+
 
 
 

@@ -9,23 +9,21 @@
 
 
 
-std::vector<UnitTestFn> graph2D_construct = {
+std::vector<UnitTest> graph2D_construct = {
 
 
-    []() -> UnitTestInfo 
+    {   "no default",
+    [](UnitTest& utest) -> UnitTest&
     {
-        UnitTestInfo test_info = "no default";
-
         // Graph2D<float> graph;
         
-        return test_info.pass();
-    },
+        return utest.pass();
+    }},
 
 
-    []() -> UnitTestInfo 
+    {   "float, 3 points, f(x) = x^2, NDC",
+    [](UnitTest& utest) -> UnitTest&
     {
-        UnitTestInfo test_info = "float, 3 points, f(x) = x^2, NDC";
-
         R2<float> view_pos = {-1.0f, -1.0f};
         R2<float> view_size = {2.0f, 2.0f};
         
@@ -42,20 +40,20 @@ std::vector<UnitTestFn> graph2D_construct = {
         R2<float> third_point = graph.at(2);
 
         if(first_point.x != -1.0f)
-            return test_info.fail();
+            return utest.fail();
         if(first_point.y != 1.0f)
-            return test_info.fail();
+            return utest.fail();
         if(second_point.x != 0.0f)
-            return test_info.fail();
+            return utest.fail();
         if(second_point.y != 0.0f)
-            return test_info.fail();
+            return utest.fail();
         if(third_point.x != 1.0f)
-            return test_info.fail();
+            return utest.fail();
         if(third_point.y != 1.0f)
-            return test_info.fail();
+            return utest.fail();
         
-        return test_info.pass();
-    },
+        return utest.pass();
+    }},
 
 };
 

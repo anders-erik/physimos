@@ -2,6 +2,7 @@
 #include "glad/glad.h"
 
 #include "lib/str.hh"
+#include "lib/str_std.hh"
 #include "lib/log.hh"
 
 #include "shader.hh"
@@ -103,7 +104,7 @@ check_error()
     char infoLog[1024];
 
     std::string shader_type;
-    std::string path_full_string = path_core_full.to_std_string();
+    std::string path_full_string = StrStd::to_string(path_core_full);
 
     if(type == Type::Fragment)
         shader_type = "FRAGMENT";

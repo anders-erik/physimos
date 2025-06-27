@@ -8,21 +8,20 @@
 #include "test/unit_test.hh"
 
 
-
+ 
 /** Collection of related unit tests. Usually all tests associated with a particular method of a class. */
 class UnitTestCollection
 {
     std::string name;   // Name of collection
-    std::vector<UnitTestFn> unit_tests; // Tests to run
-    std::vector<UnitTestInfo> infos; // returned unit test info objects
-    int print_indentation = 4;
+    std::vector<UnitTest> tests; // returned unit test info objects
+    int print_indentation = 8;
 
 public:
     
 
-    UnitTestCollection(std::string collection_name, std::vector<UnitTestFn> unit_tests)
-        :   name {collection_name},
-            unit_tests {unit_tests} 
+    UnitTestCollection(std::string collection_name, std::vector<UnitTest> unit_tests)
+        :   name    {collection_name},
+            tests   {unit_tests} 
     {
     };
     
@@ -34,9 +33,9 @@ public:
 
     bool all_passed()
     {
-        for(auto& test_info : infos)
+        for(auto& test : tests)
         {
-            if(!test_info.is_passed())
+            if(!test.is_passed())
                 return false;
         }
         return true;
@@ -45,20 +44,20 @@ public:
     size_t pass_count()
     {
         size_t count = 0;
-        for(auto& test_info : infos)
+        for(auto& test : tests)
         {
-            if(test_info.is_passed())
+            if(test.is_passed())
                 ++count;
         }
         return count;
     }
     size_t tests_completed()
     {
-        return infos.size();
+        return tests.size();
     }
     size_t total_test_count()
     {
-        return unit_tests.size();
+        return tests.size();
     }
 
     /** Print only check mark and pass count. No list of unit tests. */
@@ -76,7 +75,7 @@ public:
         print_check(all_passed());
         std::cout << "Collection: " << name  << " - " << pass_count() << "/" << total_test_count() << std::endl;
         
-        for(auto& test_info : infos)
+        for(auto& test_info : tests)
         {
             test_info.print();
         }
@@ -84,10 +83,9 @@ public:
 
     void run_collection()
     {
-        for(auto& unit_test : unit_tests)
+        for(auto& test : tests)
         {
-            UnitTestInfo test_info = unit_test();
-            infos.push_back(test_info);
+            test.run();
         }
     }
 

@@ -117,10 +117,10 @@ public:
         base_label.set_str(str_label);
         // x
         base_x.set_pos(base_offset + pos_x_delta);
-        base_x.set_str(Str(_f2.x, decimal_points));
+        base_x.set_str(Str::FL(_f2.x, decimal_points));
         // y
         base_y.set_pos(base_offset + pos_y_delta);
-        base_y.set_str(Str(_f2.y, decimal_points));
+        base_y.set_str(Str::FL(_f2.y, decimal_points));
     }
 
 

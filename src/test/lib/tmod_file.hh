@@ -5,21 +5,20 @@
 
 #include "file.hh"
 
-std::vector<UnitTestFn> cat_str = {
 
+UnitTestArray cat_str = {
 
-    []() -> UnitTestInfo 
+    {   "Read /dev/null : waterfall",
+    [](UnitTest& utest) -> UnitTest& 
     {
-        UnitTestInfo info = {"Read /dev/null : waterfall"};
-
         Str path = "/dev/null";
         ResMove<Str> res_str = File::cat_as_str_core_xplat(path);
 
         if(res_str.has_value())
-            return info.fail();
+            return utest.fail();
 
         if(!res_str.has_error())
-            return info.fail();
+            return utest.fail();
 
         Err error = res_str.consume_error();
         
@@ -28,12 +27,12 @@ std::vector<UnitTestFn> cat_str = {
         bool type = error.type == err_t::ERRNO;
         bool ERRNO = error.ERRNO == 2;
         if(!severity || !module || !type || !ERRNO)
-            return info.fail();
+            return utest.fail();
 
         // println(error.message);
         
-        return info.pass();
-    },
+        return utest.pass();
+    }},
 
 
 };

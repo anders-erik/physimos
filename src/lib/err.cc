@@ -20,7 +20,7 @@ Str Err::err_s_to_str()
     if(type == err_t::ERRNO)
     {
         str_err += "ERRNO=";
-        str_err += ERRNO;
+        str_err += Str::SI(ERRNO);
         if(ERRNO == 2)
             str_err += ": Failed to open file. ";
     }

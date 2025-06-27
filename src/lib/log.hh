@@ -1,10 +1,11 @@
 #ifndef PLIB_LOG_HH
 #define PLIB_LOG_HH
 
-#include <string>
 
 #include "str.hh"
 #include "err.hh"
+
+#include <string>
 
 // Currently only prints to stdout
 void log_error(Str scope, Str error_type, Str message);

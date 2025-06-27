@@ -1,10 +1,12 @@
 
 #pragma once
 
-
+#include "lib/str.hh"
+#include "lib/print.hh"
 
 #include <unistd.h> // Segfault handler
 #include <csignal>
+#include <cstring>
 
 #include <iostream>
 
@@ -27,17 +29,29 @@ void segfault_handler(int signal) {
 
 void print_check(bool passed)
 {
-    if(passed)
-        std::cout << "✅  ";
+     if(passed)
+        print("✅  ");
     else
-        std::cout << "❌  ";
+        print("❌  ");
 }
 
 void print_indent(int indent_count){
     for(auto i = indent_count; i >= 0; i--)
     {
-        std::cout << " ";
+        print(" ");
     }
 }
 
 
+
+bool str_equal_c_str_chars(Str str, const char* c_str){
+
+    if(str.size() != strlen(c_str))
+        return false;
+    
+    for(size_t i = 0; i < str.size(); i++)
+        if(str[i] != c_str[i])
+            return false;
+
+    return true;
+}

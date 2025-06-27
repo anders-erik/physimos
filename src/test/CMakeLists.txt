@@ -7,14 +7,14 @@ add_subdirectory(math)
 
 
 
-add_executable(test
-    test.cc
+add_executable(test_unit
+    test_unit.cc
 )
-target_link_libraries(test 
+target_link_libraries(test_unit 
     math
     lib
 )
-target_include_directories(test PUBLIC 
+target_include_directories(test_unit PUBLIC 
     .
     ${CMAKE_SOURCE_DIR}/src/
 )

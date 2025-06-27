@@ -1,3 +1,7 @@
+#include <cstring>
+#include <iostream>
+
+#include "str_std.hh"
 
 #include <stdexcept>
 #include <vector>
@@ -9,63 +13,11 @@
 #include "print.hh"
 
 
-// #define VERBOSE_STR // Prints string info throughout its lifetime
-
-
-
-
-Str::Str() 
-{
-#ifdef VERBOSE_STR
-    // println("Str default constructor"); // Can't use because member function clashing
-    Print::line("Str default constructor");
-    
-    std::cout << "Str default constructor" << std::endl;
-#endif
-};
-
-
-Str::
-Str(int integer) 
-{
-#ifdef VERBOSE_STR
-    std::cout << "Integer constructor" << std::endl;
-#endif
-
-    *this = std::move(Str::to_str_int(integer));
-}
-
-
-Str::
-Str(float _float, unsigned char decimals)
-{
-    *this = std::move(Str::to_str_float(_float, decimals));
-}
-
-
-Str::
-Str(unsigned int string_size, char initialization_value) 
-{
-#ifdef VERBOSE_STR
-    std::cout << "Str initialization_value constructor" << std::endl;
-#endif
-    
-    this->size_str = string_size;
-    
-    allocate(size());
-    memset(mem, initialization_value, size());
-};
-
 
 Str::
 Str(const char *c_str) 
 {
-#ifdef VERBOSE_STR
-    std::cout << "Str c_str constructor" << std::endl;
-#endif
-
     size_str = std::strlen(c_str);
-
     allocate(size());
     memcpy(mem, c_str, size());
 }
@@ -74,60 +26,82 @@ Str(const char *c_str)
 Str::
 Str(const Str& other) 
 {
-#ifdef VERBOSE_STR
-    std::cout << "Str Copy Constructor" << std::endl;
-#endif
-    if(this == & other)
-        std::cout << "WARN" << std::endl;
-
-    allocate(other.capacity());
-    memcpy(mem, other.data(), other.size());
-    size_str = other.size();
+    if(this != & other)
+    {
+        allocate(other.capacity());
+        memcpy(mem, other.data(), other.size());
+        size_str = other.size();
+    }
 };
 
 
 Str::
 Str(Str&& other) 
 {
-#ifdef VERBOSE_STR
-    std::cout << "Str move constructor" << std::endl;
-#endif
-    if(this == & other)
-        std::cout << "WARN" << std::endl;
-        
-    mem = other.data();
-    size_alloc = other.capacity();
-    size_str = other.size();
-    other.rob();
+    if(this != & other)
+    {
+        mem = other.data();
+        size_alloc = other.capacity();
+        size_str = other.size();
+        other.rob();
+    }
 }
-
 
 
 Str::
 ~Str()
 {
-#ifdef VERBOSE_STR
-    std::cout << "Str destructor with content = \"" << to_std_string() << "\"" << std::endl;
-#endif
     release_mem();
 }
 
 
 
-char& Str::
-operator[](size_t index)
+
+Str& Str::
+operator=(const Str& other)
 {
-    return *(mem+index);
+    if(this != &other)
+    {
+        allocate(other.capacity());
+        size_str = other.size();
+        memcpy(mem, other.data(), size_str);
+    }
+
+    return *this;
 }
 
-const char Str::
-operator[](size_t index) const
-{
-    if(index > size_str-1)
-        throw std::runtime_error("Str: index access out of bounds.");
 
-    return *(mem+index);
+Str& Str::
+operator=(Str&& other)
+{
+    if (this != &other)
+    {
+        mem = other.mem;
+        size_str = other.size_str;
+        size_alloc = other.size_alloc;
+        other.rob();
+    }
+
+    return *this;
 }
+
+
+bool Str::
+operator==(const Str & rhs) const
+{
+    if(this->size() != rhs.size())
+        return false;
+
+    for(size_t i = 0; i < this->size(); i++)
+    {
+        if(this->operator[](i) != rhs[i])
+            return false;
+    }
+
+    return true;
+}
+
+
 
 
 
@@ -140,7 +114,7 @@ operator+=(Str&& rhs)
 
 
 Str& Str::
-operator+=(Str & rhs)
+operator+=(const Str & rhs)
 {
     this->append(rhs);
     return *this;
@@ -156,17 +130,9 @@ operator+=(const char * c_str)
 }
 
 
-Str Str::
-operator+(Str&& rhs)
-{
-    Str new_str = *this;
-    new_str.append(rhs);
-    return new_str;
-}
-
 
 Str Str::
-operator+(Str& rhs)
+operator+(const Str& rhs)
 {
     Str new_str = *this;
     new_str.append(rhs);
@@ -178,111 +144,60 @@ Str Str::
 operator+(const char * c_str)
 {
     Str new_str = *this;
-    Str rhs = Str(c_str);
-    new_str.append(rhs);
+    new_str.append(Str(c_str));
     return new_str;
 }
 
 
-Str& Str::
-operator=(const Str& other)
+
+
+char& Str::
+operator[](size_t index)
 {
-#ifdef VERBOSE_STR
-    std::cout << "Str copy assignment" << std::endl;
-#endif
-
-    if(this == & other)
-        std::cout << "WARN" << std::endl;
-
-    allocate(other.capacity());
-    size_str = other.size();
-    memcpy(mem, other.data(), size_str);
-
-    return *this;
+    return *(mem+index);
 }
 
-
-Str& Str::
-operator=(Str&& other)
+const char Str::
+operator[](size_t index) const
 {
-#ifdef VERBOSE_STR
-    std::cout << "Str move assignment op" << std::endl;
-#endif
+    if(index >= size_str)
+        throw std::runtime_error("Str: index access out of bounds.");
 
-    if (this == &other)
-        std::cout << "this != &other" << std::endl;
-    
-    mem = other.mem;
-    size_str = other.size_str;
-    size_alloc = other.size_alloc;
-    // allocated = other.allocated;
-    // initialized = other.initialized;
-
-    other.rob();
-
-    return *this;
-}
-
-bool Str::operator==(const Str & other) const
-{
-    if(this->size() != other.size())
-        return false;
-
-    for(size_t i = 0; i < this->size(); i++)
-    {
-        if(this->operator[](i) != other[i])
-            return false;
-    }
-
-    return true;
+    return *(mem+index);
 }
 
 
 
 void Str::allocate(unsigned int size_to_alloc)
 {
-    size_alloc = size_to_alloc;
-
     mem = Alloc::allocate_bytes(size_to_alloc);
+    size_alloc = size_to_alloc;
 }
 
 
-void Str::reallocate(unsigned int new_size_alloc){
-
-    // No need to reallocate
-    if(size_alloc == new_size_alloc)
-        return;
-        // throw std::runtime_error("Tried to reallocate Str to current size.");
-
+void Str::reallocate(unsigned int new_size_alloc)
+{
     mem = Alloc::reallocate_bytes(mem, size_alloc, new_size_alloc);
-
     size_alloc = new_size_alloc;
-
-#ifdef VERBOSE_STR
-    std::cout << "Realloc to size " << size_alloc << std::endl; 
-#endif
-
 }
 
 
 void Str::release_mem()
 {
     if(has_capacity())
-    {
         Alloc::deallocate_bytes(mem);
-    }
 
     mem = nullptr;
     size_alloc = 0;
     size_str = 0;
 }
 
-void Str::rob(){
+void Str::
+rob()
+{
     mem = nullptr;
     size_alloc = 0;
     size_str = 0;
-    // allocated = false;
-    // initialized = false;
 }
 
 
@@ -305,6 +220,18 @@ capacity() const
     return size_alloc;
 }
 
+void Str::
+reserve(unsigned int new_alloc_size)
+{
+    if(new_alloc_size <= size_alloc)
+        return;
+    
+    if(mem == nullptr)
+        allocate(new_alloc_size);
+    else
+        reallocate(new_alloc_size);
+}
+
 
 bool Str::
 has_size() const 
@@ -318,6 +245,14 @@ has_capacity() const
 {
     return capacity() > 0 ? true : false;
 }
+
+void Str::
+fill_alloc(char fill_char)
+{
+    memset(mem, fill_char, size_alloc);
+    size_str = size_alloc;
+}
+
 
 
 void Str::append(const Str& str_to_append){
@@ -361,35 +296,18 @@ Str& Str::cut_to_substr(unsigned int pos, unsigned int new_size){
 
     return *this;
 }
-Str Str::substr(unsigned int pos, unsigned int new_size){
+
+Str Str::
+substr(unsigned int pos, unsigned int new_size)
+{
     Str copy = *this;
     return copy.cut_to_substr(pos, new_size);
 }
 
 
 
-std::string Str::to_std_string(){
-
-
-    if(!has_size()){
-        std::cout << "WARN: returning std string with mem == nullptr" << std::endl;
-        return std::string();
-    }
-
-    // specify the size of current Str allocation
-    return std::string(mem, size_str); 
-
-}
-
-/** Reference-like string without copying. */
-std::string_view Str::to_std_string_view(){
-
-    std::string_view view = std::string_view(mem, size_str);
-
-    return view;
-}
-const char* Str::to_c_str(){
-
+const char* Str::to_c_str()
+{
     // make sure null-termination fits
     if( size() == capacity() )
     {
@@ -400,40 +318,36 @@ const char* Str::to_c_str(){
     return data();
 }
 
-void Str::print_()
+
+
+void Str::print() const
 {
-    print(*this);
-}
-void Str::print_line() const
-{
-    println(*this);
+    Print::ln(*this);
 }
 
-void Str::print_line_quotes()
+void Str::print_in_quotes()
 {
-    print("\"");
-    print(*this);
-    println("\"");
+    Print::buf("\"");
+    Print::buf(*this);
+    Print::buf("\"\n");
 }
 
-void Str::busy() {}
 
 
 
-
-Str 
-to_str_char(char ch)
+Str Str::
+CH(char ch)
 {
-    Str str = " ";
+    Str str = "";
     str[0] = ch;
     return str;
 }
 
 
 Str Str::
-to_str_int(int integer)
+SI(long long s_int)
 {
-    if(integer == 0)
+    if(s_int == 0)
         return "0";
 
     size_t max_chars_int = 10;
@@ -445,9 +359,9 @@ to_str_int(int integer)
 
     for(size_t i = 0; i < max_chars_int; i++){
         // Extract currently largest digit
-        int res =  integer / divisor;
+        int res =  s_int / divisor;
         // remove that digit
-        integer -= divisor * res;
+        s_int -= divisor * res;
         // append as ascii
         chars[i] = res + 0x30;
         // Prepare for next digit
@@ -455,7 +369,7 @@ to_str_int(int integer)
     }
     chars[max_chars_int] = 0x0;
 
-    Str new_str = chars;
+    Str new_str = Str((const char*)chars);
 
     size_t leading_zero_count = 0;
     for (size_t i = 0; i < max_chars_int; i++)
@@ -473,7 +387,7 @@ to_str_int(int integer)
 
 
 Str Str::
-to_str_float(float fl, int decimals)
+FL(float fl, int decimals)
 {
     // Get actual number of decimal points
     // max 2^3

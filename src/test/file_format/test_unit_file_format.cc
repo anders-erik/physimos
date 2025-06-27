@@ -11,7 +11,6 @@ int main()
 {
     println("\nStarting File Format tests.\n");
 
-
     TestModule bmp_module {"BMP"};
         bmp_module.add_collection(UnitTestCollection{"one_black_pixel", one_black_pixel});
         bmp_module.add_collection(UnitTestCollection{"endian_swap", endian_swap});

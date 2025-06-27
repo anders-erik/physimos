@@ -1,5 +1,6 @@
 #include "glad/glad.h"
 
+#include "lib/str_std.hh"
 #include "lib/log.hh"
 #include "lib/fs.hh"
 #include "lib/process.hh"
@@ -74,7 +75,7 @@ void ShaderProgram::check_link_error(){
         plib::plog_error("OPENGL ", "SHADER_PROGRAM ", "Failed to link program. : InfoLog = " + std::string(infoLog));
     }
     else {
-        std::cout << program_name_str.to_std_string() << " linked succesfully." << std::endl;
+        std::cout << StrStd::to_string(program_name_str) << " linked succesfully." << std::endl;
     }
 }
 

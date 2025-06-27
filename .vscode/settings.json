@@ -10,7 +10,7 @@
 
 	// MAIN
 	// "binary": "physimos",
-	// "binary": "src/main_main",
+	"binary": "src/main_main",
 	// "binary": "src/phont/main_phont",
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
@@ -19,10 +19,10 @@
 	// "binary": "src/render/main_render",
 
 	// TEST
-	// "binary": "src/test/test",
-	"binary": "src/test/lib/test_lib",
-	// "binary": "src/test/math/test_math",
-	// "binary": "src/test/file_format/test_file_format",
+	// "binary": "src/test/test_unit",
+	// "binary": "src/test/lib/test_unit_lib",
+	// "binary": "src/test/math/test_unit_math",
+	// "binary": "src/test/file_format/test_unit_file_format",
 
 	// CWD
 	"cwd": "${workspaceFolder}",
