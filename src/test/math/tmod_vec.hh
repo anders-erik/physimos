@@ -11,7 +11,7 @@
 
 
 
-std::vector<UnitTest> construct_vec = {
+UnitTestArray construct_vec = {
 
     {   "Vec<double> {}",
     [](UnitTest& utest) -> UnitTest&
@@ -95,7 +95,7 @@ std::vector<UnitTest> construct_vec = {
 
 
 
-std::vector<UnitTest> arithmetic_vec = {
+UnitTestArray arithmetic_vec = {
 
     {   "multiply : 2.0",
     [](UnitTest& utest) -> UnitTest&

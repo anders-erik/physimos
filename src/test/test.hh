@@ -6,6 +6,7 @@
 
 #include "test/misc.hh"
 #include "test/unit_test.hh"
-#include "test/unit_test_collection.hh"
-#include "test/module.hh"
-#include "test/library.hh"
+
+#include "test/collection.hh"
+#include "test/types.hh"
+

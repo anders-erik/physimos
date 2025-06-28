@@ -10,13 +10,13 @@
 
 
 
-TestModule mod_math_core = {
+TCModule mod_math_core = {
     "Core", {
         {"pow_fns", pow_fns},
     }
 };
 
-TestModule mod_math_vec = {
+TCModule mod_math_vec = {
     "Vec", {
         {"construct", construct_vec},
         {"arithmetic", arithmetic_vec},
@@ -24,21 +24,21 @@ TestModule mod_math_vec = {
 };
 
 
-TestModule mod_math_polynomial = {
+TCModule mod_math_polynomial = {
     "Polynomial", {
         {"construct", construct_poly},
         {"evaluate", evaluate},
     }
 };
 
-TestModule mod_math_graph2D = {
+TCModule mod_math_graph2D = {
     "Graph2D", {
         {"construct", graph2D_construct},
     }
 };
 
 
-TestLibrary library_math = {
+TCLibrary tclib_math = {
     "math",
     {   
         mod_math_core,

@@ -39,7 +39,7 @@ public:
     /** Read whole file as a Str. */
     ResMove<Str> cat_as_str_core_xplat();
     /** Static: Read whole file as a Str. */
-    static ResMove<Str> cat_as_str_core_xplat(Str& path_str);
+    static ResMove<Str> cat_as_str_core_xplat(const Str& path_str);
 
 private:
 

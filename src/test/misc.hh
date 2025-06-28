@@ -11,6 +11,9 @@
 #include <iostream>
 
 
+constexpr unsigned char TEST_INDENT = 4;
+constexpr unsigned char UNIT_TEST_INDENT = 12;
+
 #define trycatch(_x_) println("trycatch_x_");
 
 #define try_    try{
@@ -30,15 +33,15 @@ void segfault_handler(int signal) {
 void print_check(bool passed)
 {
      if(passed)
-        print("✅  ");
+        Print::buf("✅  ");
     else
-        print("❌  ");
+        Print::buf("❌  ");
 }
 
 void print_indent(int indent_count){
     for(auto i = indent_count; i >= 0; i--)
     {
-        print(" ");
+        Print::buf(" ");
     }
 }
 

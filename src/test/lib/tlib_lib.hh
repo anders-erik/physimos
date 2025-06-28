@@ -7,13 +7,13 @@
 
 
 
-TestModule file_mod = {
+TCModule file_mod = {
     "file", {
         {"cat_str", cat_str}
     }
 };
 
-TestModule str_mod = {
+TCModule str_mod = {
     "str", {
         {"constructors", constructors},
         {"equality", equality},
@@ -23,7 +23,7 @@ TestModule str_mod = {
 };
 
 
-TestLibrary library_lib = {
+TCLibrary tclib_lib = {
     "lib",
     {   
         file_mod,

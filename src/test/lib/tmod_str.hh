@@ -11,7 +11,7 @@
 
 
 
-std::vector<UnitTest> constructors = {
+UnitTestArray constructors = {
 
     {
     "Default.",
@@ -98,7 +98,7 @@ std::vector<UnitTest> constructors = {
 
 
 
-std::vector<UnitTest> equality = {
+UnitTestArray equality = {
 
 
     {   "Equality: Str and source c string chars.",
@@ -146,7 +146,7 @@ std::vector<UnitTest> equality = {
 
 
 
-std::vector<UnitTest> concat = {
+UnitTestArray concat = {
 
 
     
@@ -197,7 +197,7 @@ std::vector<UnitTest> concat = {
 
 
 
-std::vector<UnitTest> substr = {
+UnitTestArray substr = {
 
 
     

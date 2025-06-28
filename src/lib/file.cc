@@ -108,7 +108,7 @@ ResMove<Str> File::cat_as_str_core_xplat() {
 }
 
 
-ResMove<Str> File::cat_as_str_core_xplat(Str & path_str){
+ResMove<Str> File::cat_as_str_core_xplat(const Str & path_str){
 
     File file (path_str);
 

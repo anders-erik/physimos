@@ -8,7 +8,7 @@ int main()
 {
     println("\nStarting Math tests.\n");
 
-    library_math.run();
+    tclib_math.run();
 
     // TestModule core_module {"Core"};
     //     core_module.add_collection(UnitTestCollection{"pow_fns", pow_fns});

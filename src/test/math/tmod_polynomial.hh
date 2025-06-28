@@ -11,7 +11,7 @@
 
 
 
-std::vector<UnitTest> construct_poly = {
+UnitTestArray construct_poly = {
 
 
     {   "no coefficent",
@@ -29,7 +29,7 @@ std::vector<UnitTest> construct_poly = {
 
 
 
-std::vector<UnitTest> evaluate = {
+UnitTestArray evaluate = {
 
 
     {   "order 0: 5",

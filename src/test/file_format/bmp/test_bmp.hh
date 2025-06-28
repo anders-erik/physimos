@@ -13,7 +13,7 @@
 
 
 
-std::vector<UnitTest> one_black_pixel = {
+UnitTestArray one_black_pixel = {
 
 
     {   "1 black pixel : file_header",

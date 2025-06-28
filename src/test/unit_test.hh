@@ -10,20 +10,19 @@
 #include "lib/str.hh"
 
 struct UnitTest;
-typedef std::vector<UnitTest> UnitTestArray;
+
 
 typedef std::function<UnitTest&(UnitTest& utest)> UnitTestFn;
 
 /** Unit test information returned by completed unit test. */
-class UnitTest 
+struct UnitTest 
 {
-    std::string     name                = "";            // name of unit test
+    Str             name;            // name of unit test
     UnitTestFn      test_fn;
-    std::string     fail_message        = "";            // message printed if unit test fails
+    Str             fail_message;            // message printed if unit test fails
     bool            pass_flag           = false;
-    int             print_indentation   = 12;
+    int             indentation = 12;
 
-public:
 
     UnitTest(const char* name , UnitTestFn unit_test_fn) 
         :   name            {name}, 
@@ -53,7 +52,7 @@ public:
     }
 
     /** Set passed to false and return itself */
-    UnitTest& fail(std::string new_fail_message)
+    UnitTest& fail(Str new_fail_message)
     {
         fail_message = new_fail_message;
         pass_flag = false;
@@ -71,17 +70,17 @@ public:
     }
 
     /** Check if test passed. */
-    bool is_passed()
+    bool passed()
     { 
         return pass_flag ? true : false;
     }
 
     /** Print */
-    void print()
+    void print_result()
     {
-        print_indent(print_indentation);
+        print_indent(indentation);
         print_check(pass_flag);
-        std::cout << name << ": " << fail_message << std::endl;
+        Print::line(name, ": ", fail_message);
     }
 
 };

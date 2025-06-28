@@ -6,12 +6,12 @@
 
 #include "file_format/json/json.hh"
 
+Str data_path = "src/test/file_format/json/data/";
 
 
+UnitTestArray json_strings = {
 
-std::vector<UnitTest> json_strings = {
-
-    {"\"hello\"",
+    {   "\"hello\"",
     [](UnitTest& utest) -> UnitTest&
     {
         Json json {"\"hello\""};
@@ -30,13 +30,10 @@ std::vector<UnitTest> json_strings = {
     }},
 
 
-    {"string.json",
+    {   "string.json",
     [](UnitTest& utest) -> UnitTest&
     {
-
-        Str path = "src/test/file_format/json/data/string.json";
-        File file {path};
-        ResMove<Str> jsource_res = file.cat_as_str_core_xplat();
+        ResMove<Str> jsource_res = File::cat_as_str_core_xplat(data_path + "primitives/string.json");
         if(jsource_res.has_error())
         {
             Str error_msg = jsource_res.consume_error().err_s_to_str();
@@ -53,10 +50,10 @@ std::vector<UnitTest> json_strings = {
 
 
         if(!jvar.is_string())
-            return utest.fail();    
+            return utest.fail("jvar not string type");   
 
         if(jvar.get_string() != "valid_string")
-            return utest.fail();
+            return utest.fail("jvar.get_string() != \"valid_string\"");
 
         return utest.pass();
     }},

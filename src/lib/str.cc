@@ -384,6 +384,45 @@ SI(long long s_int)
     return new_str;
 }
 
+Str Str::UI(size_t u_int)
+{
+    if(u_int == 0)
+        return "0";
+
+    size_t max_chars_int = 10;
+
+    // std::vector<char> chars_;
+    char chars[max_chars_int + 1];
+
+    int divisor = 1000000000;
+
+    for(size_t i = 0; i < max_chars_int; i++){
+        // Extract currently largest digit
+        int res =  u_int / divisor;
+        // remove that digit
+        u_int -= divisor * res;
+        // append as ascii
+        chars[i] = res + 0x30;
+        // Prepare for next digit
+        divisor /= 10;
+    }
+    chars[max_chars_int] = 0x0;
+
+    Str new_str = Str((const char*)chars);
+
+    size_t leading_zero_count = 0;
+    for (size_t i = 0; i < max_chars_int; i++)
+    {
+        if(chars[i] != '0')
+            break;
+        leading_zero_count++;
+    }
+
+    new_str.cut_to_substr(leading_zero_count, new_str.size());
+
+    return new_str;
+}
+
 
 
 Str Str::

@@ -11,7 +11,7 @@
 
 
 
-std::vector<UnitTest> pow_fns = {
+UnitTestArray pow_fns = {
 
     {   "pow(5.0, 3)",
     [](UnitTest& utest) -> UnitTest&

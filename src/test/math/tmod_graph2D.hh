@@ -8,8 +8,7 @@
 
 
 
-
-std::vector<UnitTest> graph2D_construct = {
+UnitTestArray graph2D_construct = {
 
 
     {   "no default",
