@@ -14,14 +14,14 @@ struct UnitTest;
 
 typedef std::function<UnitTest&(UnitTest& utest)> UnitTestFn;
 
-/** Unit test information returned by completed unit test. */
+/** Test function and info. */
 struct UnitTest 
 {
-    Str             name;            // name of unit test
-    UnitTestFn      test_fn;
-    Str             fail_message;            // message printed if unit test fails
-    bool            pass_flag           = false;
-    int             indentation = 12;
+    Str         name;                       // name of unit test
+    UnitTestFn  test_fn;
+    Str         fail_message;               // message printed if unit test fails
+    bool        pass_flag       = false;
+    int         indentation     = 12;
 
 
     UnitTest(const char* name , UnitTestFn unit_test_fn) 
@@ -57,6 +57,16 @@ struct UnitTest
         fail_message = new_fail_message;
         pass_flag = false;
         return *this;
+    }
+
+    /** Passes the unit test of true assert statement. */
+    UnitTest& assert(bool assert_statement, Str new_fail_message)
+    {
+        if(assert_statement)
+            return pass();
+        else
+            return fail(new_fail_message);
+        
     }
 
     /** Passes the unit test of true assert statement. */

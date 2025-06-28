@@ -10,7 +10,7 @@
 #include "obj.hh"
 #include "obj_types.hh"
 
-#include "file_format/bmp_loader.hpp"
+#include "io/bmp_loader.hpp"
 
 // using namespace plib;
 

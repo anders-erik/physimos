@@ -3,8 +3,8 @@
 
 #include "test/test.hh"
 
-#include "test/file_format/bmp/test_bmp.hh"
-#include "test/file_format/json/tlib_json.hh"
+#include "test/io/bmp/test_bmp.hh"
+#include "test/io/json/tlib_json.hh"
 
 
 int main()

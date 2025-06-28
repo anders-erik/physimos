@@ -36,5 +36,5 @@ target_link_libraries(ui
     ui_render
 
     rend
-    file_format
+    io
 )

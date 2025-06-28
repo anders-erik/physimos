@@ -5,7 +5,7 @@
 
 #include "test/lib/tlib_lib.hh"
 #include "test/math/tlib_math.hh"
-#include "test/file_format/json/tlib_json.hh"
+#include "test/io/json/tlib_json.hh"
 
 
 int main()
@@ -20,10 +20,10 @@ int main()
     };
 
 
-    for(auto& lib_test : tclib_tests)
+    for(auto& tclib : tclib_tests)
     {
-        lib_test.run();
-        lib_test.print_result();
+        tclib.run();
+        tclib.print_result();
     }
 
 

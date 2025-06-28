@@ -7,7 +7,7 @@
 #include "lib/minmax.hh"
 
 #include "rend/bitmap.hh"
-#include "file_format/bmp/bmp.hh"
+#include "io/bmp/bmp.hh"
 
 #include "ui/ui_globals.hh"
 

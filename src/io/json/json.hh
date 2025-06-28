@@ -104,5 +104,24 @@ class Json {
                 
             }
 
+            static ResMove<JsonVar> parse(Str json_source)
+            {
+                Json json {json_source.to_c_str()};
+                
+                try
+                {
+                    json.lex_parse();
+                }
+                catch(const std::exception& e)
+                {
+                    Err err;
+                    err.message = e.what();
+                    return {MV(err)};
+                }
+                
+
+                return {std::move(json.get_root())};
+            }
+
         };
 

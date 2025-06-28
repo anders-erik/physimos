@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 
 // UI
-#include "file_format/bmp/bmp.hh"
+#include "io/bmp/bmp.hh"
 #include "lib/process.hh"
 // END UI
 

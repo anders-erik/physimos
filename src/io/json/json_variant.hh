@@ -45,7 +45,7 @@ struct JsonVar {
     json_type type = json_type::null;
     json_variant variant_;
     
-    JsonVar()  {};
+    JsonVar() = default;
     JsonVar(json_null new_null) : type {json_type::null}, variant_ {new_null} {};
     JsonVar(json_bool new_bool) : variant_ {new_bool}  { 
         type = new_bool ? json_type::bool_true : json_type::bool_false;

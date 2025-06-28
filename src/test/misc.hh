@@ -11,9 +11,6 @@
 #include <iostream>
 
 
-constexpr unsigned char TEST_INDENT = 4;
-constexpr unsigned char UNIT_TEST_INDENT = 12;
-
 #define trycatch(_x_) println("trycatch_x_");
 
 #define try_    try{

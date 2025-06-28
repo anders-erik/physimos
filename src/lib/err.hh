@@ -62,7 +62,7 @@ struct Err {
     {
     };
 
-
-    Str err_s_to_str();
+    /** Convert error object to string. */
+    Str str();
 
 };

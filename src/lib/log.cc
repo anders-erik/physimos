@@ -45,7 +45,7 @@ void log_error(Err & error){
     Str full_log_string;
 
     full_log_string += "[ERROR] _";
-    full_log_string += error.err_s_to_str();
+    full_log_string += error.str();
 
     full_log_string += error.file;
     full_log_string += error.message;

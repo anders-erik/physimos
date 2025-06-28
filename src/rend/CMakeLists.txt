@@ -43,6 +43,6 @@ target_include_directories(main_rend PUBLIC
 target_link_libraries(main_rend 
     rend 
     math
-    file_format
+    io
 )
 

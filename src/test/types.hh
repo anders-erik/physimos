@@ -4,6 +4,9 @@
 #include "test/collection.hh"
 
 
+constexpr unsigned char TEST_INDENT = 4;
+constexpr unsigned char UNIT_TEST_INDENT = 12;
+
 using UnitTestArray = std::vector<UnitTest>;
 
 using TCUnitTest    = TCollection<UnitTest, 8>;

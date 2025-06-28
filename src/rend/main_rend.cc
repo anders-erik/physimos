@@ -4,7 +4,7 @@
 #include "math/graph2D.hh"
 
 #include "rend/bitmap.hh"
-#include "file_format/bmp/bmp.hh"
+#include "io/bmp/bmp.hh"
 
 #include "rend/math/renderer_graph.hh"
 

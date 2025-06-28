@@ -15,19 +15,19 @@
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
 	// "binary": "src/lib/main_file",
-	// "binary": "src/file_format/json/main_json",
+	// "binary": "src/io/json/main_json",
 	// "binary": "src/render/main_render",
 
 	// TEST
 	// "binary": "src/test/test_unit",
 	// "binary": "src/test/lib/test_unit_lib",
 	// "binary": "src/test/math/test_unit_math",
-	// "binary": "src/test/file_format/test_unit_file_format",
+	// "binary": "src/test/io/test_unit_io",
 
 	// CWD
 	"cwd": "${workspaceFolder}",
 	// "cwd": "${workspaceFolder}/src/lib",
-	// "cwd": "${workspaceFolder}/src/file_format/json",
+	// "cwd": "${workspaceFolder}/src/io/json",
 
 
 

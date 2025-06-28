@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
         misc,
     } flag = json_flag::json_test;
 
-    std::string cwd             = "src/file_format/json/";
+    std::string cwd             = "src/io/json/";
 
     if(flag == json_flag::json || flag == json_flag::json_test || flag == json_flag::json_shape){
 

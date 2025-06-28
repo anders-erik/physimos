@@ -112,12 +112,14 @@ ResMove<Str> File::cat_as_str_core_xplat(const Str & path_str){
 
     File file (path_str);
 
-    ResMove<Str> static_cat = file.cat_as_str_core_xplat();
+    return file.cat_as_str_core_xplat();
 
-    if(static_cat.has_value())
-        return static_cat.consume_value();
-    else
-        return static_cat.consume_error();
+    // ResMove<Str> static_cat = file.cat_as_str_core_xplat();
+
+    // if(static_cat.has_value())
+    //     return static_cat.consume_value();
+    // else
+    //     return static_cat.consume_error();
 }
 
 

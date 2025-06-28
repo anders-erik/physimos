@@ -13,7 +13,7 @@
 
 #include "Simulator.hpp"
 
-#include "file_format/resources.hh"
+#include "io/resources.hh"
 
 #include "lib/lib.hh"
 #include "lib/log.hh"

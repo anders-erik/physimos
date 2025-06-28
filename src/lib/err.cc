@@ -2,7 +2,7 @@
 
 
 
-Str Err::err_s_to_str()
+Str Err::str()
 {
     Str str_err;
 
