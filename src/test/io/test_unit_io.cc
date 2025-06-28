@@ -24,7 +24,7 @@ int main()
 
 
     // TestModule json_module {"JSON"};
-    //     json_module.add_collection(UnitTestCollection{"json_strings", json_strings});
+    //     json_module.add_collection(UnitTestCollection{"json_test_setup", json_test_setup});
     // json_module.run();
 
     println("\nEnd File Format tests.\n");

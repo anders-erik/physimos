@@ -8,6 +8,7 @@ namespace Print
 
 void buf(const Str & str);
 void ln(const Str& str);
+void indent(unsigned char space_count);
 
 template <typename... Args>
 inline void line(Args&&... args)
@@ -27,6 +28,9 @@ inline void lines(Args&&... args)
 {
     (Print::ln(Str(std::forward<Args>(args))), ...);
 }
+
+
+
 
 }
 

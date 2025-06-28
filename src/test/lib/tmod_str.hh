@@ -15,43 +15,73 @@ UnitTestArray constructors = {
 
     {
     "Default.",
-    [](UnitTest& utest) -> UnitTest& 
+    [](UnitTest& utest) -> void 
     {
         Str str1;
         Str str2 {};
         Str str3 = Str{};
 
-        return utest.pass();
+        utest.assert(true);
     }},
 
 
     
     {"c-string.",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Str str1 = "";
         Str str2 = "000";
 
-        return utest.pass();
+        utest.assert(true);
     }},
 
 
-    
-    {"integer 123456.",
-    [](UnitTest& utest) -> UnitTest&
+    {"integer 123456: size",
+    [](UnitTest& utest) -> void
     {
-        Str str = Str::SI(123456);
-
-        if( str.size() == 6 && str[0] == '1' &&  str[1] == '2' &&  str[2] == '3'
-            && str[3] == '4' &&  str[4] == '5' &&  str[5] == '6' )
-            return utest.pass();
-        else
-            return utest.fail();
+        utest.assert(   Str::SI(123456).size() == 6,
+                        "Str::SI(123456).size() != 6");
+    }},
+    {"integer 123456: [0]",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::SI(123456)[0] == 1,
+                        "Str::SI(123456)[0] != 1");
+    }},
+    {"integer 123456: [1]",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::SI(123456)[1] == 2,
+                        "Str::SI(123456)[1] != 2");
+    }},
+    {"integer 123456: [2]",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::SI(123456)[2] == 3,
+                        "Str::SI(123456)[2] != 3");
+    }},
+    {"integer 123456: [3]",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::SI(123456)[3] == 4,
+                        "Str::SI(123456)[3] != 4");
+    }},
+    {"integer 123456: [4]",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::SI(123456)[4] == 5,
+                        "Str::SI(123456)[4] != 5");
+    }},
+    {"integer 123456: [5]",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::SI(123456)[5] == 6,
+                        "Str::SI(123456)[5] != 6");
     }},
 
     
     {"float.",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         
         Str str;
@@ -60,25 +90,25 @@ UnitTestArray constructors = {
         str = Str::FL(1.1f, 1);
         target = "1.1";
         if( str != target )
-            return utest.fail();
+            utest.fail();
         
         str = Str::FL(55.7f, 1);
         target = "55.7";
         if( str != target )
-            return utest.fail();
+            utest.fail();
 
         str = Str::FL(55.789f, 2);
         target = "55.79";
         if( str != target )
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 
     
     {"initalization char.",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Str str_c = "aaaaa";
 
@@ -87,9 +117,9 @@ UnitTestArray constructors = {
         str.fill_alloc('a');
 
         if( str != str_c )
-            return utest.fail();
+            utest.fail();
         else
-            return utest.pass();
+            utest.pass();
 
     }},
 
@@ -102,22 +132,22 @@ UnitTestArray equality = {
 
 
     {   "Equality: Str and source c string chars.",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
 
         const char* chars = "hi";
         Str str = "hi";
 
         if(str.size() != 2 || str[0] != chars[0] || str[1] != chars[1])
-            return utest.fail();
+            utest.fail();
 
-        return utest.pass();
+        utest.pass();
     }},
 
 
     
     {"equality: equal to itself.",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
 
         Str str = "str";
@@ -126,19 +156,19 @@ UnitTestArray equality = {
         {
             str += "str";
             if(str != str)
-                return utest.fail();
+                utest.fail();
         }
 
         Str str_empty_shrunk = "asdfasdfasdlja lskdfjalsdkdfalskd 1111000";
         str_empty_shrunk = "";
         if(str_empty_shrunk != str_empty_shrunk)
-            return utest.fail();
+            utest.fail();
 
         Str str_empty_constructed = "";
         if(str_empty_constructed != str_empty_shrunk)
-            return utest.fail();
+            utest.fail();
 
-        return utest.pass();
+        utest.pass();
     }},
 
 
@@ -151,7 +181,7 @@ UnitTestArray concat = {
 
     
     {   "concat: compare to c_str using strcat().",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
 
         const char* first_half = "first_half ";
@@ -169,15 +199,15 @@ UnitTestArray concat = {
         Str str = str_first + str_second;
         
         if(str_equal_c_str_chars(str, c_str))
-            return utest.pass();
+            utest.pass();
 
-        return utest.fail();
+        utest.fail();
     }},
 
 
     
     {   "concat: first plus second == manual paste.",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         // construct Str
         Str str_first  = "first_half ";
@@ -187,9 +217,9 @@ UnitTestArray concat = {
 
         
         if(str_concat != str_manual_concat)
-            return utest.fail();
+            utest.fail();
 
-        return utest.pass();
+        utest.pass();
     }},
 
 };
@@ -202,7 +232,7 @@ UnitTestArray substr = {
 
     
     {   "substr: random cuts to substr.",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Str str = "";
 
@@ -215,15 +245,15 @@ UnitTestArray substr = {
             str.fill_alloc('a');
 
             if(str.capacity() < rand_var)
-                return utest.fail("Capacity not enough");
+                utest.fail("Capacity not enough");
 
             str.cut_to_substr(0, 3);
 
             if(str != str_aaa)
-                return utest.fail("Strings not equal");
+                utest.fail("Strings not equal");
         }
         
-        return utest.pass();
+        utest.pass();
 
         
     }},

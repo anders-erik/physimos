@@ -13,6 +13,7 @@ add_executable(test_unit
 target_link_libraries(test_unit 
     math
     lib
+    io
 )
 target_include_directories(test_unit PUBLIC 
     .

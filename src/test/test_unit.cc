@@ -1,5 +1,6 @@
 
 #include <cstdlib>
+#include <string>
 
 #include "test/test.hh"
 
@@ -25,6 +26,8 @@ int main()
         tclib.run();
         tclib.print_result();
     }
+
+    std::string explct = std::string{100, '5'};
 
 
     println("\nDone all unit tests.\n");

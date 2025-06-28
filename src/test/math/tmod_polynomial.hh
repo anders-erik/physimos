@@ -15,14 +15,14 @@ UnitTestArray construct_poly = {
 
 
     {   "no coefficent",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Polynomial<double> p {{}};
 
         if(p.is_valid())
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 };
@@ -33,43 +33,43 @@ UnitTestArray evaluate = {
 
 
     {   "order 0: 5",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Polynomial<double> p {{5.0}};
 
         if(p.evaluate(0) == 5.0)
-            return utest.pass();
+            utest.pass();
         
-        return utest.fail();
+        utest.fail();
     }},
 
 
     {   "order 0: 0.000001",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Polynomial<double> p {{0.000001}};
 
         if(p.evaluate(0) == 0.000001)
-            return utest.pass();
+            utest.pass();
         
-        return utest.fail();
+        utest.fail();
     }},
 
 
     {   "order 1: {0, 1}, 5 -> 5",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Polynomial<double> poly {{0, 1}};
 
         if(poly(5.0) == 5.0)
-            return utest.pass();
+            utest.pass();
         
-        return utest.fail();
+        utest.fail();
     }},
 
 
     {   "order 3: {0, 1, 0, 1}, 5 -> 5 + 5^3",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Polynomial<double> poly {{0, 1, 0, 1}};
 
@@ -78,14 +78,14 @@ UnitTestArray evaluate = {
         
 
         if(poly(5.0) == expected_result)
-            return utest.pass();
+            utest.pass();
         
-        return utest.fail();
+        utest.fail();
     }},
 
 
     {   "order 3: {0, -1, 0, 0.0001}",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Polynomial<double> poly {{0, -1, -0.2, 0.0001}};
 
@@ -94,9 +94,9 @@ UnitTestArray evaluate = {
         
 
         if(poly(input) == expected_result)
-            return utest.pass();
+            utest.pass();
         
-        return utest.fail();
+        utest.fail();
     }},
 
 };

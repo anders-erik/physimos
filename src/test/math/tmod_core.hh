@@ -14,12 +14,12 @@
 UnitTestArray pow_fns = {
 
     {   "pow(5.0, 3)",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         if(pow(5.0, 3) != 125.0)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 };

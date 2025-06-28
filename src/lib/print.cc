@@ -38,6 +38,17 @@ ln(const Str & str)
     Print::buf("\n");
 }
 
+void Print::
+indent(unsigned char space_count)
+{
+    Str str;
+    str.reserve(space_count);
+    str.fill_alloc(' ');
+}
+
+
+
+
 
 void print(const Str & str){
 

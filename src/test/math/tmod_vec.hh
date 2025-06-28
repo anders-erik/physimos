@@ -14,62 +14,62 @@
 UnitTestArray construct_vec = {
 
     {   "Vec<double> {}",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec;
 
         if(vec.size() != 0)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 
     {   "Vec<double> {100}",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec {100};
 
         if(vec.size() != 100)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 
     {   "set : double, 1.0",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec_db {2};
 
         vec_db.set(1.0);
 
         if(vec_db[0] != 1.0)
-            return utest.fail();
+            utest.fail();
         
         if(vec_db[1] != 1.0)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 
     {   "Vec<double> {2, 5.55}",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec {2, 5.55};
 
         if(vec[0] != 5.55)
-            return utest.fail();
+            utest.fail();
         if(vec[1] != 5.55)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 
     {   "copy",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec_db {2};
 
@@ -78,14 +78,14 @@ UnitTestArray construct_vec = {
         Vec<double> vec_copy = vec_db;
 
         if(vec_copy[0] != 123.0)
-            return utest.fail();
+            utest.fail();
         if(vec_copy[1] != 123.0)
-            return utest.fail();
+            utest.fail();
 
         if(vec_copy != vec_copy)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 };
@@ -98,7 +98,7 @@ UnitTestArray construct_vec = {
 UnitTestArray arithmetic_vec = {
 
     {   "multiply : 2.0",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec_db {2};
 
@@ -106,16 +106,16 @@ UnitTestArray arithmetic_vec = {
         vec_db * 2.0;
 
         if(vec_db[0] != 2.0)
-            return utest.fail();
+            utest.fail();
         
         if(vec_db[1] != 2.0)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
     {   "divide : 2.0",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec_db {2};
 
@@ -123,16 +123,16 @@ UnitTestArray arithmetic_vec = {
         vec_db / 2.0;
 
         if(vec_db[0] != 0.5)
-            return utest.fail();
+            utest.fail();
         
         if(vec_db[1] != 0.5)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
     {   "add : 2.0",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         Vec<double> vec_src {2}; // inital vec
         Vec<double> vec_target {2}; // target vec adter addition
@@ -143,13 +143,13 @@ UnitTestArray arithmetic_vec = {
         vec_src + 2.0;
 
         if(vec_src != vec_target)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
     {   "subtract : 2.0",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         double inital_value = 1.0;
         double sub_value = 2.0;
@@ -163,12 +163,12 @@ UnitTestArray arithmetic_vec = {
 
 
         if(vec_db[0] != target_value)
-            return utest.fail();
+            utest.fail();
         
         if(vec_db[1] != target_value)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 };

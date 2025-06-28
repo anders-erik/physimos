@@ -123,5 +123,14 @@ class Json {
                 return {std::move(json.get_root())};
             }
 
+            static Str serialize(const JsonVar& json_var) {
+                
+                JsonSerializer serializer;
+                serializer.set_config( {serial_ws::new_lines, 4} );
+                // serializer.serialize()
+                std::string serialized_string = serializer.serialize(json_var);
+                return serialized_string.c_str();
+            }
+
         };
 

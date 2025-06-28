@@ -80,7 +80,7 @@ public:
     /** returns full json structure as string. Creates a copy of wrapper and store store for now.  */
     std::string serialize(JsonWrapper root_wrapper, json_store& store);
     /** Returns full json structure as string.  */
-    std::string serialize(JsonVar& json_root);
+    std::string serialize(const JsonVar& json_root);
 
 
 
@@ -159,7 +159,7 @@ void JsonSerializer::try_remove_trailing_comma_array(std::string& str){
 }
 
 
-std::string JsonSerializer::serialize(JsonVar& json_root){
+std::string JsonSerializer::serialize(const JsonVar& json_root){
 
     return build_string(json_root);
 }

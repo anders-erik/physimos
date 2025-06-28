@@ -17,7 +17,7 @@ UnitTestArray one_black_pixel = {
 
 
     {   "1 black pixel : file_header",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
 
         Bitmap bitmap {{1, 1}, {0, 0, 0, 255}};
@@ -31,12 +31,12 @@ UnitTestArray one_black_pixel = {
         file_header_target.reserved_2           = 0x0000;
         file_header_target.first_pixel_location = 54;
 
-        return utest.assert(bmp_loader.file_header() == file_header_target);
+        utest.assert(bmp_loader.file_header() == file_header_target);
     }},
 
 
     {   "1 black pixel : info_header",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
 
         Bitmap bitmap {{1, 1}, {0, 0, 0, 255}};
@@ -57,12 +57,12 @@ UnitTestArray one_black_pixel = {
         info_header_target.important_color_count = 0;
 
 
-        return utest.assert(bmp_loader.info_header() == info_header_target);
+        utest.assert(bmp_loader.info_header() == info_header_target);
     }},
 
 
     {   "1 black pixel : padded bitmap data",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
 
         Bitmap bitmap {{1, 1}, {0, 0, 0, 255}};
@@ -75,9 +75,9 @@ UnitTestArray one_black_pixel = {
         unsigned int padded_data_size = padded_data_indeces.y - padded_data_indeces.x;
 
         if(padded_data_size != 4)
-            return utest.fail();
+            utest.fail();
         if(bmp_loader.padded_data_size() != 4)
-            return utest.fail();
+            utest.fail();
 
 
         // DATA CONTENT
@@ -92,7 +92,7 @@ UnitTestArray one_black_pixel = {
                                     target_padded_data.data(), 
                                     4 );
         
-        return utest.assert(cmp_result == 0);
+        utest.assert(cmp_result == 0);
     }},
 
 };
@@ -106,7 +106,7 @@ std::vector<UnitTest> endian_swap = {
 
 
     {   "1 black pixel : endian double swap",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
 
         Bitmap bitmap {{1, 1}, {0, 0, 0, 255}};
@@ -119,14 +119,14 @@ std::vector<UnitTest> endian_swap = {
         header_a.endian_swap();
 
         if(header_a.file_header == header_b.file_header)
-            return utest.fail();
+            utest.fail();
         if(header_a.info_header == header_b.info_header)
-            return utest.fail();
+            utest.fail();
 
         header_a.endian_swap();
 
 
-        return utest.assert(       header_a.file_header == header_b.file_header
+        utest.assert(       header_a.file_header == header_b.file_header
                                     && header_a.info_header == header_b.info_header);
     }},
 

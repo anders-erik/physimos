@@ -12,16 +12,16 @@ UnitTestArray graph2D_construct = {
 
 
     {   "no default",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         // Graph2D<float> graph;
         
-        return utest.pass();
+        utest.pass();
     }},
 
 
     {   "float, 3 points, f(x) = x^2, NDC",
-    [](UnitTest& utest) -> UnitTest&
+    [](UnitTest& utest) -> void
     {
         R2<float> view_pos = {-1.0f, -1.0f};
         R2<float> view_size = {2.0f, 2.0f};
@@ -39,19 +39,19 @@ UnitTestArray graph2D_construct = {
         R2<float> third_point = graph.at(2);
 
         if(first_point.x != -1.0f)
-            return utest.fail();
+            utest.fail();
         if(first_point.y != 1.0f)
-            return utest.fail();
+            utest.fail();
         if(second_point.x != 0.0f)
-            return utest.fail();
+            utest.fail();
         if(second_point.y != 0.0f)
-            return utest.fail();
+            utest.fail();
         if(third_point.x != 1.0f)
-            return utest.fail();
+            utest.fail();
         if(third_point.y != 1.0f)
-            return utest.fail();
+            utest.fail();
         
-        return utest.pass();
+        utest.pass();
     }},
 
 };

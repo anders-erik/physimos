@@ -14,7 +14,7 @@
 // };
 
 /** Severity. */
-enum class err_s {
+enum class err_s : unsigned char {
     Critical,
     Error,
     Warn,
@@ -62,7 +62,16 @@ struct Err {
     {
     };
 
+    /** Note that the error messaged do not need to match! */
+    bool operator==(const Err& rhs)
+    {
+        return  severity    == rhs.severity     &&
+                module      == rhs.module       &&
+                type        == rhs.type         &&
+                ERRNO       == rhs.ERRNO;
+    }
+
     /** Convert error object to string. */
-    Str str();
+    Str to_str();
 
 };

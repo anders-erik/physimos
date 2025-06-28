@@ -10,10 +10,13 @@ add_library(io
     pso_loader.cc
     resources.cc
     texture_gen.cc
+
+    pretty_str.cc
 )
 
 target_link_libraries(io 
     bmp
+    lib
 )
 
 target_include_directories(io PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
