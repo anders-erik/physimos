@@ -244,11 +244,13 @@ void JsonTest::psps(std::string file_path_str){
 /** Make sure it does not throw */
 void JsonTest::conforms(std::string file_path_str){
 
+    std::string data_dir = "src/test/io/json/data/";
+
     // If reading file fails, the actual test is not performed
     std::string json_data;
     try
     {
-        json_data = load_file(file_path_str);
+        json_data = load_file(data_dir + file_path_str);
     }
     catch(const std::exception& e)
     {

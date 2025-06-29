@@ -10,7 +10,7 @@
     #error Printing for current OS not supported. Stopping.
 #endif
 
-
+#include "err.hh"
 #include "str.hh"
 #include "print.hh"
 
@@ -44,6 +44,12 @@ indent(unsigned char space_count)
     Str str;
     str.reserve(space_count);
     str.fill_alloc(' ');
+}
+
+void Print::
+err(const Err & err)
+{
+    Print::line(Str{"Err: ", err.message});
 }
 
 

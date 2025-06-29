@@ -225,7 +225,6 @@ struct JsonVar {
         
         throw std::runtime_error("Error trying to push kv to non-object."); 
     }
-
 };
 
 

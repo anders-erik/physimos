@@ -5,7 +5,7 @@
 
 #include "io/json/json.hh"
 
-Str data_path = "src/test/io/json/data/";
+Str data_dir = "src/test/io/json/data/";
 
 
 /** Read a file relative to the testing data (`src/test/io/json/data/`)
@@ -13,12 +13,12 @@ Str data_path = "src/test/io/json/data/";
 Str
 cat_json_source(Str file_path)
 {
-    Str absolute_path = data_path + file_path;
+    Str absolute_path = data_dir + file_path;
     ResMove<Str> json_source_res = File::cat_as_str_core_xplat(absolute_path);
     if(json_source_res.has_error())
     {
         Print::line("Failed to cat json source.", json_source_res.consume_error().to_str());
-        return "";
+        return "invalid_json_source";
     }
     else
         return json_source_res.consume_value();

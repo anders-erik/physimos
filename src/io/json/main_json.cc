@@ -12,6 +12,8 @@
 #include "json.hh"
 #include "json_test.hh"
 
+#include "test/io/json/tlib_json.hh"
+
 // #include "json_union.hh"
 
 
@@ -31,7 +33,20 @@ std::string load_file(std::string path) {
     return file_contents;
 }
 
+using RunFlag = uint;
+const RunFlag RF_NEW           = 0x0001;
+const RunFlag RF_TCLIB         = 0x0002 + RF_NEW;
+const RunFlag RF_TEST_OLD      = 0x0004 + RF_NEW;
+const RunFlag RF_JSHAPE        = 0x0008 + RF_NEW;
+const RunFlag RF_TEST_OLDOLD   = 0x0010;
+const RunFlag RF_VARIANT       = 0x0020;
+const RunFlag RF_CONFIG        = 0x0040;
+const RunFlag RF_BEYOND_ASCII  = 0x0080;
+const RunFlag RF_MISC          = 0x0100;
 
+
+
+std::string json_data_path    = "src/test/io/json/data/";
 
 
 int main (int argc, char **argv) {
@@ -39,54 +54,59 @@ int main (int argc, char **argv) {
     std::cout << "Main JSON" << std::endl << std::endl;
     
 
-    enum class json_flag {
-        json,
-        json_test,
-        json_shape,
-        test,
-        variant,
-        config,
-        beyond_ascii,
-        misc,
-    } flag = json_flag::json_test;
+    // RunFlag run_flag = RF_NEW;
+    RunFlag run_flag = RF_TCLIB;
 
-    std::string cwd             = "src/io/json/";
 
-    if(flag == json_flag::json || flag == json_flag::json_test || flag == json_flag::json_shape){
 
-        if(flag == json_flag::json){
+    if(run_flag | RF_NEW){
 
-            std::string _json_string;
+        if(run_flag == RF_NEW){
+
+            Str jsource;
 
             // _json_string = load_file("data/literal_names_array.json");
             // _json_string = load_file("data/name_literals_nested_array.json");
-            _json_string = load_file(cwd + "data/string_array.json");
+            // _json_string = load_file(json_data_path + "strings/string_array.json");
+            // _json_string = load_file(json_data_path + "non_valid_parser/non_ascii_string.json");
+            // _json_string = load_file(json_data_path + "non_valid_lexer/unclosed_string.json");
+            jsource = File::cat_as_str_core_xplat("resources/scene/toadstool_1.json").consume_value();
             // _json_string = load_file("data/numbers.json");
             // _json_string = load_file("data/object_nested.json");
             // _json_string = load_file("data/object.json");
             // _json_string = load_file("data/shapes.json");
 
 
-            Json json (_json_string);
-            json.lex();
-            json.print_tokens();
-            json.parse();
-            std::string serialized_json = json.serialize();
-            std::cout << serialized_json << std::endl;
+            ResMove<JsonVar> json_res = Json::parse(jsource);
+            if(json_res.has_error())
+                Print::err(json_res.consume_error());
+
+            JsonVar json_var = json_res.consume_value();
+
+            Str serialized = Json::serialize(json_var);
+            Print::line(serialized);
+            
+
+            // Json json (_json_string);
+            // json.lex();
+            // json.print_tokens();
+            // json.parse();
+            // std::string serialized_json = json.serialize();
+            // std::cout << serialized_json << std::endl;
             
         }
-        else if(flag == json_flag::json_test){
+        else if(run_flag == RF_TEST_OLD){
 
             JsonTest::test_conformance();
             // JsonTest::test_serialization();
 
         }
-        else if(flag == json_flag::json_shape){
+        else if(run_flag == RF_JSHAPE){
 
             // File file ("src/lib/json/data/shapes.json");
             // JFileShape shape_config (file);
 
-            JFileShape shape_config (cwd + "src/lib/json/data/shapes.json");
+            JFileShape shape_config (json_data_path + "src/lib/json/data/shapes.json");
 
             Shape line = { {0.03, 0.2}, {11.01, 12.343444}};
             std::string shape_string = JFileShape::serialize_shape(line);
@@ -94,15 +114,21 @@ int main (int argc, char **argv) {
             
 
         }
+        else if(run_flag == RF_TCLIB)
+        {
+            tclib_json.run();
+            tclib_json.print_result();
+            Print::line("");
+        }
 
     }
-    else if(flag == json_flag::test){
+    else if(run_flag == RF_TEST_OLDOLD){
 
         PhysonTest::test_conformance();
         PhysonTest::test_serialization();
         
     }
-    else if(flag == json_flag::variant){
+    else if(run_flag == RF_VARIANT){
 
         variant_playground();
 
@@ -141,7 +167,7 @@ int main (int argc, char **argv) {
         
 
     }
-    else if(flag == json_flag::config){
+    else if(run_flag == RF_CONFIG){
 
         // Shapes
         // std::string _json_string = load_file("data/shapes.json");
@@ -153,7 +179,7 @@ int main (int argc, char **argv) {
         // }
 
     }
-    if(flag == json_flag::beyond_ascii){
+    if(run_flag == RF_BEYOND_ASCII){
 
 
         // CHINESE MOON START
@@ -194,7 +220,7 @@ int main (int argc, char **argv) {
         // EXTENDED ASCII
         
     }
-    else if(flag == json_flag::misc){
+    else if(run_flag == RF_MISC){
 
 
         std::string _json_string = load_file("data/literal_names_array.json");

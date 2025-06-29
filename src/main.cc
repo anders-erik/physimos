@@ -126,6 +126,18 @@ int main()
 
 
 	// JFILE LOADING
+	ResMove<Mesh> mesh_from_file = JMesh::load_mesh_core("resources/scene/toadstool_1.json");
+	if(mesh_from_file.has_value())
+	{
+		Object& mesh_obj = manager_o.new_object();
+		mesh_obj.tag.type = TagO::Base;
+		mesh_obj.mesh = mesh_from_file.consume_value();
+		// mesh_obj.mesh.sheet();
+		// mesh_obj.mesh.center();
+
+		root_scene.tagos.push_back(mesh_obj.tag);
+	}
+
 	// JMesh jmesh;
 	// Mesh mesh_quad;
 

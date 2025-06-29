@@ -36,15 +36,17 @@ struct TCollection
         size_t count = 0;
         for(auto& test : tests)
         {
-            if(test.passed())
-                ++count;
+            count += test.pass_count();
         }
         return count;
     }
 
-    size_t total_test_count()
+    size_t test_count()
     {
-        return tests.size();
+        size_t counter = 0;
+        for(auto& test : tests)
+            counter += test.test_count();
+        return counter;
     }
 
 
@@ -56,7 +58,7 @@ struct TCollection
                         ": ", 
                         Str::UI(pass_count()), 
                         "/", 
-                        Str::UI(total_test_count()) );
+                        Str::UI(test_count()) );
 
         if(!passed())
             print_failed();

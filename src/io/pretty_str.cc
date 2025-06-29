@@ -85,7 +85,7 @@ StrM(Str& indent, const Err & err)
 
 Str Pretty::StrM(Str & indent, Str& str)
 {
-    return str;
+    return indent + str + "\n";
 }
 
 

@@ -3,12 +3,16 @@
 
 #include "str.hh"
 
+struct Err;
+
 namespace Print
 {
 
 void buf(const Str & str);
 void ln(const Str& str);
 void indent(unsigned char space_count);
+
+void err(const Err& err);
 
 template <typename... Args>
 inline void line(Args&&... args)

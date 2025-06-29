@@ -10,13 +10,15 @@
 #include "opengl/texture.hh"
 
 
-struct TriangleFaceIndeces {
+struct TriangleFaceIndeces 
+{
     int v0;
     int v1;
     int v2;
 };
 
 typedef f3 Vertex;
+
 
 struct Mesh
 {
@@ -27,6 +29,10 @@ struct Mesh
 
     /** Returnes the total byte size of the vertices. [verts.size() * sizeof(Vertex)] */
     unsigned int vert_size_bytes();
+
+    void clear();
+
+    void sheet();
 
     void center();
     

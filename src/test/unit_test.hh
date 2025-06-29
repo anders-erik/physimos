@@ -15,6 +15,11 @@ struct UnitTest;
 
 using UnitTestFn = std::function<void(UnitTest& utest)>;
 
+using UnitTestFnArray = std::vector<std::function<void(UnitTest& utest)>>;
+
+template <typename T>
+std::function<void(UnitTestFnArray& utests, T t)> UnitTestFnTemplate;
+
 
 /** Test function and info. */
 struct UnitTest 
@@ -130,6 +135,9 @@ struct UnitTest
     {
         return run_flag && has_been_asserted && success_flag;
     }
+
+    size_t test_count() { return 1; }
+    size_t pass_count() { return passed() ? 1 : 0; }
 
     /** Print */
     void print_result()

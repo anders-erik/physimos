@@ -6,8 +6,10 @@
 
 TCModule json_lex_parse = {
     "json_lex_parse",{
-        {"json_test_setup", json_test_setup},
-        {"json_psps", json_psps},
+        {"test_setup",      json_test_setup},
+        {"psps",            json_psps},
+        {"conforms",        json_conforms},
+        {"conforms_not",    json_conforms_not},
     }
 };
 
