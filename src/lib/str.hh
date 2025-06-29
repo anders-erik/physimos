@@ -3,6 +3,7 @@
 #include <cstddef>  // size_t
 #include <utility>  // enable_if_t, forward
 
+typedef unsigned int uint;
 
 struct Str 
 {
@@ -13,6 +14,8 @@ struct Str
     constexpr
     Str() = default;
     Str(const char *c_str);
+    explicit
+    Str(unsigned int size, char set_char);
     Str(const Str& other);
     Str(Str&& other);
 
@@ -85,5 +88,11 @@ struct Str
     static Str FL(float fl, int decimals);
     /** Double to Str */
     static Str DB(double db, int decimals);
+
+    template <typename T>
+    static Str Num(T num)
+    {
+        return Str::FL(num, 2);
+    }
 };
 

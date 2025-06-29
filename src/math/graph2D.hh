@@ -12,9 +12,9 @@ class Graph2D
 {
 public:
 
-    size_t point_count = 0;
-
     R2<T> domain;
+    uint point_count = 0;
+
     T step_size;
 
     Polynomial<T> polynomial { {0} }; // default is zero-order with constant equal to 0
@@ -23,25 +23,15 @@ public:
     Vec<T> y;
 
 
-    // Graph2D() = default;
-
-    Graph2D(size_t point_count, R2<T> domain)
-        :   point_count {point_count},
-            domain     {domain},
-            x           {Vec<T> {point_count, 0.0}},
-            y           {Vec<T> {point_count, 0.0}}
-    {
-        calculate_step_size();
-    };
-
-    Graph2D(size_t point_count, R2<T> domain, Polynomial<T> polynomial)
-        :   point_count {point_count},
-            domain     {domain},
+    Graph2D(R2<T> domain, uint point_count, Polynomial<T> polynomial)
+        :   domain      {domain},
+            point_count {point_count},
             polynomial  {polynomial},
             x           {Vec<T> {point_count, 0.0}},
             y           {Vec<T> {point_count, 0.0}}
     {
         calculate_step_size();
+        update();
     };
 
 

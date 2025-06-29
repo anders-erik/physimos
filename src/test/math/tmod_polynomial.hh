@@ -14,15 +14,11 @@
 UnitTestArray construct_poly = {
 
 
-    {   "no coefficent",
+    {"At least one coefficient",
     [](UnitTest& utest) -> void
     {
-        Polynomial<double> p {{}};
-
-        if(p.is_valid())
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   Polynomial<double>{}.is_valid(),
+                        false                            );
     }},
 
 };
@@ -32,71 +28,54 @@ UnitTestArray construct_poly = {
 UnitTestArray evaluate = {
 
 
-    {   "order 0: 5",
+    {"f=5 : f(0) == 5",
     [](UnitTest& utest) -> void
     {
         Polynomial<double> p {{5.0}};
 
-        if(p.evaluate(0) == 5.0)
-            utest.pass();
-        
-        utest.fail();
+        utest.assert(   p.evaluate(0),
+                        5.0             );
     }},
 
-
-    {   "order 0: 0.000001",
+    {"f=0.000001 : f(0) == 0.000001",
     [](UnitTest& utest) -> void
     {
         Polynomial<double> p {{0.000001}};
 
-        if(p.evaluate(0) == 0.000001)
-            utest.pass();
-        
-        utest.fail();
+        utest.assert(   p.evaluate(0),
+                        0.000001        );
     }},
 
-
-    {   "order 1: {0, 1}, 5 -> 5",
+    {"f=x : f(5) = 5",
     [](UnitTest& utest) -> void
     {
         Polynomial<double> poly {{0, 1}};
 
-        if(poly(5.0) == 5.0)
-            utest.pass();
-        
-        utest.fail();
+        utest.assert(   poly.evaluate(5.0),
+                        5.0                 );
     }},
 
 
-    {   "order 3: {0, 1, 0, 1}, 5 -> 5 + 5^3",
+    {   "f= x + x^3 : f(5) = 130",
     [](UnitTest& utest) -> void
     {
         Polynomial<double> poly {{0, 1, 0, 1}};
 
-        // 130.0
-        double expected_result = 1.0*5.0 + 1.0*5.0*5.0*5.0;
-        
-
-        if(poly(5.0) == expected_result)
-            utest.pass();
-        
-        utest.fail();
+        utest.assert(   poly(5.0),
+                        130.0       );
     }},
 
 
-    {   "order 3: {0, -1, 0, 0.0001}",
+    {   "f= -x - 0.3x^2 + 0.0001x^3 x^3  : f(5.0) = ",
     [](UnitTest& utest) -> void
     {
         Polynomial<double> poly {{0, -1, -0.2, 0.0001}};
 
-        double input = 5.0;
-        double expected_result = -1.0*input + -0.2 * input * input + 0.0001*input*input*input;
-        
+        // double expected_calc = -1.0*input + -0.2 * input * input + 0.0001*input*input*input;
+        double expected = -9.9875000000000007;;
 
-        if(poly(input) == expected_result)
-            utest.pass();
-        
-        utest.fail();
+        utest.assert(   poly(5.0),
+                        expected );
     }},
 
 };

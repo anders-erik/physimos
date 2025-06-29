@@ -74,4 +74,7 @@ struct Err {
     /** Convert error object to string. */
     Str to_str();
 
+    static Str to_str(err_s s);
+    static Str to_str(err_t t);
+    static Str to_str(err_m m);
 };

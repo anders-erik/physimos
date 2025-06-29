@@ -14,14 +14,11 @@ int main ()
 {
     std::cout << "Main Render" << std::endl << std::endl;
     
-    R2<float> view_pos = {-2.0f, -2.0f};
-    R2<float> view_size = {4.0f, 4.0f};
-
-    R2<float> viewbox = {-2.0f, 2.0f};
+    R2<float> domain = {-2.0f, 2.0f};
 
     Polynomial<float> polynomial {{0, 0, 1}};
 
-    Graph2D<float> graph {5, viewbox, polynomial};
+    Graph2D<float> graph {domain, 5, polynomial};
 
     Bitmap bitmap = RendererMathGraph::render_graph2D_bitmap(graph);
 

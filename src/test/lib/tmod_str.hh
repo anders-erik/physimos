@@ -8,9 +8,6 @@
 
 
 
-
-
-
 UnitTestArray constructors = {
 
     {
@@ -21,10 +18,10 @@ UnitTestArray constructors = {
         Str str2 {};
         Str str3 = Str{};
 
-        utest.assert(true);
+        utest.assert(true, true);
     }},
 
-
+    
     
     {"c-string.",
     [](UnitTest& utest) -> void
@@ -32,95 +29,81 @@ UnitTestArray constructors = {
         Str str1 = "";
         Str str2 = "000";
 
-        utest.assert(true);
+        utest.assert(true, true);
     }},
 
 
     {"integer 123456: size",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456).size() == 6,
-                        "Str::SI(123456).size() != 6");
+        utest.assert(   Str::SI(123456).size(),
+                        (uint) 6                );
     }},
     {"integer 123456: [0]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[0] == 1,
-                        "Str::SI(123456)[0] != 1");
+        utest.assert(   Str::SI(123456)[0],
+                        (char) '1'            );
     }},
     {"integer 123456: [1]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[1] == 2,
-                        "Str::SI(123456)[1] != 2");
+        utest.assert(   Str::SI(123456)[1],
+                        (char) '2');
     }},
     {"integer 123456: [2]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[2] == 3,
-                        "Str::SI(123456)[2] != 3");
+        utest.assert(   Str::SI(123456)[2],
+                        (char) '3');
     }},
     {"integer 123456: [3]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[3] == 4,
-                        "Str::SI(123456)[3] != 4");
+        utest.assert(   Str::SI(123456)[3],
+                        (char) '4');
     }},
     {"integer 123456: [4]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[4] == 5,
-                        "Str::SI(123456)[4] != 5");
+        utest.assert(   Str::SI(123456)[4],
+                        (char) '5');
     }},
     {"integer 123456: [5]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[5] == 6,
-                        "Str::SI(123456)[5] != 6");
-    }},
-
-    
-    {"float.",
-    [](UnitTest& utest) -> void
-    {
-        
-        Str str;
-        Str target;
-
-        str = Str::FL(1.1f, 1);
-        target = "1.1";
-        if( str != target )
-            utest.fail();
-        
-        str = Str::FL(55.7f, 1);
-        target = "55.7";
-        if( str != target )
-            utest.fail();
-
-        str = Str::FL(55.789f, 2);
-        target = "55.79";
-        if( str != target )
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   Str::SI(123456)[5],
+                        (char) '6');
     }},
 
 
     
-    {"initalization char.",
+    {"Str::FL(1.1f, 1)",
     [](UnitTest& utest) -> void
     {
-        Str str_c = "aaaaa";
+        utest.assert(   Str::FL(1.1f, 1),
+                        Str{"1.1"}          );
+    }},
+    {"Str::FL(55.7f, 1)",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::FL(55.7f, 1),
+                        Str{"55.7"}          );
+    }},
+    {"Str::FL(55.789f, 2)",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str::FL(55.789f, 2),
+                        Str{"55.79"}          );
+    }},
 
-        Str str;
-        str.reserve(5);
-        str.fill_alloc('a');
 
-        if( str != str_c )
-            utest.fail();
-        else
-            utest.pass();
-
+    
+    {"Str{5, 'a'}",
+    [](UnitTest& utest) -> void
+    {
+        utest.assert(   Str{(uint) 5, 'a'}, 
+                        Str("aaaaa")    );
     }},
 
 
@@ -131,47 +114,30 @@ UnitTestArray constructors = {
 UnitTestArray equality = {
 
 
-    {   "Equality: Str and source c string chars.",
+    {   "hi[0]",
     [](UnitTest& utest) -> void
     {
-
-        const char* chars = "hi";
+        char chars[] = "hi";
         Str str = "hi";
-
-        if(str.size() != 2 || str[0] != chars[0] || str[1] != chars[1])
-            utest.fail();
-
-        utest.pass();
+        utest.assert(str[0], chars[0]);
+    }},
+    {   "hi[1]",
+    [](UnitTest& utest) -> void
+    {
+        char chars[] = "hi";
+        Str str = "hi";
+        utest.assert(str[1], chars[1]);
     }},
 
 
     
-    {"equality: equal to itself.",
+    {"shrunk equals default.",
     [](UnitTest& utest) -> void
     {
-
-        Str str = "str";
-
-        for(size_t i = 1; i < 10; i++)
-        {
-            str += "str";
-            if(str != str)
-                utest.fail();
-        }
-
         Str str_empty_shrunk = "asdfasdfasdlja lskdfjalsdkdfalskd 1111000";
         str_empty_shrunk = "";
-        if(str_empty_shrunk != str_empty_shrunk)
-            utest.fail();
-
-        Str str_empty_constructed = "";
-        if(str_empty_constructed != str_empty_shrunk)
-            utest.fail();
-
-        utest.pass();
+        utest.assert(str_empty_shrunk, Str{});
     }},
-
-
 };
 
 
@@ -179,7 +145,6 @@ UnitTestArray equality = {
 UnitTestArray concat = {
 
 
-    
     {   "concat: compare to c_str using strcat().",
     [](UnitTest& utest) -> void
     {
@@ -188,8 +153,8 @@ UnitTestArray concat = {
         const char* second_half = "second_half";
 
         // construct the c string
-        char* c_str = new char[100];
-        memset(c_str, 0x0, 100);
+        char* c_str = new char[22];
+        memset(c_str, 0x0, 22);
         memcpy(c_str, first_half, strlen(first_half));
         c_str = strcat(c_str, second_half);
         
@@ -197,29 +162,24 @@ UnitTestArray concat = {
         Str str_first  = first_half;
         Str str_second = second_half;
         Str str = str_first + str_second;
-        
-        if(str_equal_c_str_chars(str, c_str))
-            utest.pass();
 
-        utest.fail();
+        utest.assert(   str, 
+                        Str{c_str}  );
     }},
 
 
     
-    {   "concat: first plus second == manual paste.",
+    {   "+ vs. c_str",
     [](UnitTest& utest) -> void
     {
         // construct Str
         Str str_first  = "first_half ";
         Str str_second = "second_half";
-        Str str_concat = str_first + str_second;
+        Str str_add = str_first + str_second;
         Str str_manual_concat = "first_half second_half";
 
-        
-        if(str_concat != str_manual_concat)
-            utest.fail();
-
-        utest.pass();
+        utest.assert(   str_add, 
+                        str_manual_concat   );
     }},
 
 };
@@ -230,32 +190,14 @@ UnitTestArray concat = {
 UnitTestArray substr = {
 
 
-    
-    {   "substr: random cuts to substr.",
+    {   "cut_to_substr(0, 3) == \"aaa\"",
     [](UnitTest& utest) -> void
     {
-        Str str = "";
-
-        Str str_aaa = "aaa";
-
-        for(size_t i = 0; i < 10; i++)
-        {
-            unsigned int rand_var = (unsigned int) rand() % 100;
-            str.reserve(rand_var);
-            str.fill_alloc('a');
-
-            if(str.capacity() < rand_var)
-                utest.fail("Capacity not enough");
-
-            str.cut_to_substr(0, 3);
-
-            if(str != str_aaa)
-                utest.fail("Strings not equal");
-        }
+        unsigned int rand_size = (unsigned int) 50 + (rand() % 100);
+        Str str {rand_size, 'a'};
         
-        utest.pass();
-
-        
+        utest.assert(   str.cut_to_substr(0, 3),
+                        Str{"aaa"});
     }},
 
 

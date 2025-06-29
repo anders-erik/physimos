@@ -16,6 +16,8 @@
 
 #include "scene/manager_object.hh"
 
+#include "io/json/examples/jfile.hh"
+#include "io/jfile/jmesh.hh"
 
 int main()
 {
@@ -96,7 +98,7 @@ int main()
 	polynomial.x_shift = 1.0f;
 	polynomial.y_stretch = 0.3f;
 	polynomial.y_shift = -1.0f;
-    Graph2D<float> graph {41, domain, polynomial};
+    Graph2D<float> graph {domain, 41, polynomial};
 	graph.update();
 	scene2D.graphs.push_back(graph);
 	

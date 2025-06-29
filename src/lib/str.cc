@@ -22,6 +22,14 @@ Str(const char *c_str)
     memcpy(mem, c_str, size());
 }
 
+Str::
+Str(unsigned int size, char set_char)
+{
+    size_str = size;
+    allocate(size_str);
+    fill_alloc(set_char);
+}
+
 
 Str::
 Str(const Str& other) 

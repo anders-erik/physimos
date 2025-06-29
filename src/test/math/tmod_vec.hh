@@ -13,79 +13,69 @@
 
 UnitTestArray construct_vec = {
 
-    {   "Vec<double> {}",
+    {   "Vec<double>{}.size() == 0",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec;
-
-        if(vec.size() != 0)
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   Vec<double>{}.size(),
+                        (uint) 0);
     }},
 
 
-    {   "Vec<double> {100}",
+    {   "Vec<double>{100}.size() == 100",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec {100};
-
-        if(vec.size() != 100)
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   Vec<double>{(uint)100}.size(), 
+                        (uint)100               );
     }},
 
 
-    {   "set : double, 1.0",
+    {   "Vec<double>{4, 1.0} == expected[0-3] = 1.0",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec_db {2};
-
-        vec_db.set(1.0);
-
-        if(vec_db[0] != 1.0)
-            utest.fail();
-        
-        if(vec_db[1] != 1.0)
-            utest.fail();
-        
-        utest.pass();
+        Vec<double> expected {(uint) 4};
+        expected[0] = 1.0;
+        expected[1] = 1.0;
+        expected[2] = 1.0;
+        expected[3] = 1.0;
+        utest.assert(   Vec<double>{(uint)4, 1.0},
+                        expected                    );
     }},
 
 
-    {   "Vec<double> {2, 5.55}",
+    {   "Vec<double> {2, 5.55} == expected[0-1] = 5.55",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec {2, 5.55};
+        Vec<double> expected {(uint) 2};
+        expected[0] = 5.55;
+        expected[1] = 5.55;
 
-        if(vec[0] != 5.55)
-            utest.fail();
-        if(vec[1] != 5.55)
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   Vec<double>{2, 5.55},
+                        expected                    );
     }},
 
 
-    {   "copy",
+    {   "Vec<double>{9} : set(123.0)",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec_db {2};
+        Vec<double> vec_man {(uint)9};
+        Vec<double> vec_set {(uint)9};
 
-        vec_db.set(123.0);
+        for(uint i = 0; i < vec_man.size(); i++)
+            vec_man[i] = 123.0;
 
-        Vec<double> vec_copy = vec_db;
+        utest.assert(   vec_set.set(123.0),
+                        vec_man             );
+    }},
 
-        if(vec_copy[0] != 123.0)
-            utest.fail();
-        if(vec_copy[1] != 123.0)
-            utest.fail();
+    {   "Vec<double>{9, 123} : copy()",
+    [](UnitTest& utest) -> void
+    {
+        Vec<double> vec_target {(uint)9, 123.0};
 
-        if(vec_copy != vec_copy)
-            utest.fail();
-        
-        utest.pass();
+        Vec<double> vec_copy = vec_target;
+
+        utest.assert(   vec_copy,
+                        vec_target  );
     }},
 
 };
@@ -97,78 +87,52 @@ UnitTestArray construct_vec = {
 
 UnitTestArray arithmetic_vec = {
 
-    {   "multiply : 2.0",
+    {   "Vec<double> {2, 1.0} : *= 2.0",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec_db {2};
+        Vec<double> vec {(uint)2, 1.0};
+        Vec<double> vec_target {(uint)2, 2.0};
 
-        vec_db.set(1.0);
-        vec_db * 2.0;
+        vec *= 2.0;
 
-        if(vec_db[0] != 2.0)
-            utest.fail();
-        
-        if(vec_db[1] != 2.0)
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   vec,
+                        vec_target  );
     }},
 
-    {   "divide : 2.0",
+    {   "Vec<double> {2, 1.0} : /= 2.0",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec_db {2};
+        Vec<double> vec {(uint)2, 1.0};
+        Vec<double> vec_target {(uint)2, 0.5};
 
-        vec_db.set(1.0);
-        vec_db / 2.0;
+        vec /= 2.0;
 
-        if(vec_db[0] != 0.5)
-            utest.fail();
-        
-        if(vec_db[1] != 0.5)
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   vec,
+                        vec_target  );
     }},
 
-    {   "add : 2.0",
+    {   "Vec<double> {2, 1.0} : += 2.0",
     [](UnitTest& utest) -> void
     {
-        Vec<double> vec_src {2}; // inital vec
-        Vec<double> vec_target {2}; // target vec adter addition
+        Vec<double> vec {(uint)2, 1.0};
+        Vec<double> vec_target {(uint)2, 3.0};
 
-        vec_src.set(1.0);
-        vec_target.set(3.0);
+        vec += 2.0;
 
-        vec_src + 2.0;
-
-        if(vec_src != vec_target)
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   vec,
+                        vec_target  );
     }},
 
-    {   "subtract : 2.0",
+    {   "Vec<double> {2, 3.0} : -= 2.0",
     [](UnitTest& utest) -> void
     {
-        double inital_value = 1.0;
-        double sub_value = 2.0;
-        double target_value = -1.0;
+        Vec<double> vec {(uint)2, 3.0};
+        Vec<double> vec_target {(uint)2, 1.0};
 
-        Vec<double> vec_db {2};
+        vec -= 2.0;
 
-        vec_db.set(inital_value);
-
-        vec_db - sub_value;
-
-
-        if(vec_db[0] != target_value)
-            utest.fail();
-        
-        if(vec_db[1] != target_value)
-            utest.fail();
-        
-        utest.pass();
+        utest.assert(   vec,
+                        vec_target  );
     }},
 
 };

@@ -30,7 +30,7 @@ UnitTestArray cat_str = {
         err_target.severity = err_s::Error;
         err_target.module = err_m::Lib;
         err_target.type = err_t::ERRNO;
-        err_target.ERRNO = 3;   // expect 2
+        err_target.ERRNO = 2;   // expect 2
 
 
         utest.assert(   err, 

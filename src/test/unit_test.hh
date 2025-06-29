@@ -26,8 +26,8 @@ struct UnitTest
     bool        has_been_asserted   = false;
     bool        success_flag        = false;
 
-    unsigned char indentation       = 12;
-    unsigned char fail_msg_indent   = 16;
+    unsigned int indentation       = 12;
+    unsigned int fail_msg_indent   = 16;
 
 
     UnitTest(const char* name , UnitTestFn unit_test_fn) 
@@ -102,9 +102,15 @@ struct UnitTest
             //                     Pretty::Spaces(fail_msg_indent),
             //                     "Expected: ", Pretty::StrSL(expected)
             //                 };
+
+
+            Str str_indnt {indentation, ' '};
+
             fail_message = {    "\n",
-                                "Actual:   \n", Pretty::StrML(fail_msg_indent, actual),
-                                "Expected: \n", Pretty::StrML(fail_msg_indent, expected)
+                                str_indnt, "Actual:   \n", 
+                                Pretty::StrM(fail_msg_indent, actual),
+                                str_indnt, "Expected: \n", 
+                                Pretty::StrM(fail_msg_indent, expected)
                             };
             success_flag = false;
         }

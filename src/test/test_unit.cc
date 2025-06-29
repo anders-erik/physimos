@@ -13,6 +13,8 @@ int main()
 {
     println("\nStarting all unit tests.\n");
 
+    std::string explct = std::string{100, '5'};
+
     std::vector<TCLibrary> tclib_tests =
     {
         tclib_lib,
@@ -27,7 +29,6 @@ int main()
         tclib.print_result();
     }
 
-    std::string explct = std::string{100, '5'};
 
 
     println("\nDone all unit tests.\n");
