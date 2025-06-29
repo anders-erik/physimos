@@ -4,7 +4,7 @@
 #include <string>
 #include <iomanip>
 
-#include "physon_types.hh"
+#include "json_types.hh"
 
 #include "json_variant.hh"
 #include "json_token.hh"
@@ -27,7 +27,7 @@ private:
     JsonVar parse_object();
 
     /** Unquoted json source string as input.  */
-    json_string parse_string_literal(std::string string_literal);
+    j_string parse_string_literal(std::string string_literal);
     char unicode_sequence_to_ASCII(std::string unicode_sequence);
     char json_escape_char_to_value(char escape_char);
     JsonVar parse_integer_str(std::string number_str);
@@ -93,10 +93,10 @@ char JsonParser::json_escape_char_to_value(char escape_char){
     return 0;
 }
 
-json_string JsonParser::parse_string_literal(std::string string_literal){
+j_string JsonParser::parse_string_literal(std::string string_literal){
 
     // Literal value to return
-    json_string new_string = "";
+    j_string new_string = "";
 
     // Parse loop
     for(size_t i = 0; i < string_literal.length(); i++){
@@ -130,7 +130,7 @@ json_string JsonParser::parse_string_literal(std::string string_literal){
 
 JsonVar JsonParser::parse_integer_str(std::string number_str){
 
-    json_int parsed_int;
+    j_int parsed_int;
 
     try {
         parsed_int = std::stol(number_str);
@@ -146,7 +146,7 @@ JsonVar JsonParser::parse_integer_str(std::string number_str){
 
 JsonVar JsonParser::parse_float_str(std::string number_str){
 
-    json_float parsed_float;
+    j_float parsed_float;
 
     try {
         parsed_float = std::stod(number_str);
@@ -221,7 +221,7 @@ JsonVar JsonParser::parse_object(){
 
         // KV creation
         std::string raw_json_str = json_source.substr(key_token.str_start_i, key_token.str_length);
-        json_string key = parse_string_literal(raw_json_str);
+        j_string key = parse_string_literal(raw_json_str);
 
         json_kv_variant kv (key, parse_value(value_token));
         object.push_to_object(kv);

@@ -4,25 +4,27 @@
 #include <string>
 #include <iostream>
 
-#include "physon_types.hh"
-
+#include "json_types.hh"
 #include "json_variant.hh"
 #include "json_lexer.hh"
 #include "json_parser.hh"
 #include "json_serialize.hh"
 
+
 class Json {
         
-            std::string json_source;    // Original json content to parse
-            Tokens tokens;              // Lexed Json including whitespace
-            JsonVar root_var;           // Parsed Json - whitespace not included
+            std::string json_source;    // Original json source to parse
+            Tokens      tokens;         // Lexed Json -- including whitespace
+            JsonVar     root_var;       // Parsed Json - whitespace removed included
             
             bool is_lexed = false;
             bool is_parsed = false;
 
         public:
 
-            Json(std::string _json_source) : json_source {_json_source} {};
+            Json(std::string _json_source) 
+                : json_source {_json_source} 
+            {};
 
             void set_json_source(std::string _json_source){
                 json_source = _json_source;
@@ -85,17 +87,6 @@ class Json {
                 lex();
                 return parse();
             };
-            std::string lex_parse_serialize(){
-                lex();
-                parse();
-                return serialize();
-            };
-            std::string lex_parse_serialize(std::string _json_source){
-                set_json_source(_json_source);
-                lex();
-                parse();
-                return serialize();
-            };
 
             static void throw_error(std::string error_msg){
                 std::string base_msg = "Json Error: \n";
@@ -110,7 +101,9 @@ class Json {
                 
                 try
                 {
-                    json.lex_parse();
+                    json.lex();
+                    json.parse();
+                    return {std::move(json.get_root())};
                 }
                 catch(const std::exception& e)
                 {
@@ -118,9 +111,6 @@ class Json {
                     err.message = e.what();
                     return {MV(err)};
                 }
-                
-
-                return {std::move(json.get_root())};
             }
 
             static Str serialize(const JsonVar& json_var) {

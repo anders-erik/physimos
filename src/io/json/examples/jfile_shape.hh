@@ -5,8 +5,7 @@
 
 #include "lib/log.hh"
 
-#include "../physon.hh"
-#include "../physon_types.hh"
+#include "../json_types.hh"
 
 #include "math/shape.hh"
 #include "jfile.hh"
@@ -53,7 +52,7 @@ public:
 std::string JFileShape::serialize_shape(Shape& shape){
 
     JsonVar shape_object = json_object_variants();
-    shape_object.push_to_object( {"type", json_string("shape") } );
+    shape_object.push_to_object( {"type", j_string("shape") } );
     shape_object.push_to_object( {"name", shape.get_shape_name(shape.get_type()) } );
     // JsonVar type = "shape";
     // JsonVar shape = shape.get_shape_name();
@@ -65,8 +64,8 @@ std::string JFileShape::serialize_shape(Shape& shape){
 
         JsonVar point_array = json_array_variants();
 
-        point_array.push_to_array(json_float(shape[i].x));
-        point_array.push_to_array(json_float(shape[i].y));
+        point_array.push_to_array(j_float(shape[i].x));
+        point_array.push_to_array(j_float(shape[i].y));
 
         shape_object.push_to_object( {px, point_array} );
     }
@@ -91,13 +90,13 @@ void JFileShape::loop_shape_array(json_array_variants& root_array){
         if(!verify_type_object(shape_entry, msg_entry_not_object))
             return;
 
-        json_kv_variant type_kv = shape_entry.find_in_object("type");
-        if(!json_equals_string(type_kv.second, "shape", msg_entry_type_not_shape))
+        JsonVar type = shape_entry.find_in_object("type");
+        if(!json_equals_string(type, "shape", msg_entry_type_not_shape))
             return;
 
 
         // Points
-        json_kv_variant point_kv;
+        JsonVar point_var;
         std::vector<f2> points;
         size_t max_point_count = 10000;
 
@@ -106,16 +105,16 @@ void JFileShape::loop_shape_array(json_array_variants& root_array){
             
             // Find point
             std::string point_str = "p" + std::to_string(i);
-            point_kv = shape_entry.find_in_object(point_str);
-            if(kv_is_empty(point_kv))
+            point_var = shape_entry.find_in_object(point_str);
+            if(point_var.is_null())
                 break;
             
             // Point data is array
-            if(!verify_type_array(point_kv.second, msg_shape_point_not_array))
+            if(!verify_type_array(point_var, msg_shape_point_not_array))
                 return;
 
             // Extract
-            f2 point = extract_point_from_array_2d(point_kv.second);
+            f2 point = extract_point_from_array_2d(point_var);
             points.push_back(point);
 
         }
@@ -131,8 +130,8 @@ void JFileShape::loop_shape_array(json_array_variants& root_array){
 
         // Shape Type check
         // Make sure that if shape name exists in json file, we compare to deduced type. If they do not match then a warning is logged.
-        json_kv_variant shape_type_kv = shape_entry.find_in_object("shape");
-        std::string parsed_shape_type = shape_type_kv.second.get_string();
+        JsonVar shape_type = shape_entry.find_in_object("shape");
+        std::string parsed_shape_type = shape_type.get_string();
         std::string deduced_shape_type = new_shape.get_shape_name(new_shape.get_type());
         if(parsed_shape_type != deduced_shape_type)
             warn_shape_type_mismatch(parsed_shape_type, deduced_shape_type);
@@ -153,11 +152,11 @@ f2 JFileShape::extract_point_from_array_2d(JsonVar& json_var){
 
     // X
     JsonVar& x_var = point_array_var[0];
-    json_float& x_fl = x_var.get_float();
+    j_float& x_fl = x_var.get_float();
     
     // Y
     JsonVar& y_var = point_array_var[1];
-    json_float& y_fl = y_var.get_float();
+    j_float& y_fl = y_var.get_float();
 
 
     return {(float)x_fl, (float)y_fl};

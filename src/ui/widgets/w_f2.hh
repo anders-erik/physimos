@@ -27,7 +27,7 @@ struct F2 : public Widget
     Str str_label = "f2_label";
 
     float scroll_step = 10.0f; // delta induced by single scroll event
-    int decimal_points = 2; // Number of digits past the point
+    uchar decimal_points = 2; // Number of digits past the point
 
     BaseString base_label;
     BaseString base_x;
@@ -117,10 +117,10 @@ public:
         base_label.set_str(str_label);
         // x
         base_x.set_pos(base_offset + pos_x_delta);
-        base_x.set_str(Str::FL(_f2.x, decimal_points));
+        base_x.set_str(Str::FL(_f2.x, decimal_points, Str::FloatRep::Fixed));
         // y
         base_y.set_pos(base_offset + pos_y_delta);
-        base_y.set_str(Str::FL(_f2.y, decimal_points));
+        base_y.set_str(Str::FL(_f2.y, decimal_points, Str::FloatRep::Fixed));
     }
 
 

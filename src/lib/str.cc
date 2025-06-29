@@ -434,7 +434,7 @@ Str Str::UI(size_t u_int)
 
 
 Str Str::
-FL(float fl, int decimals)
+FL(float fl, uchar decimals, Str::FloatRep float_representation)
 {
     // Get actual number of decimal points
     // max 2^3
@@ -446,7 +446,10 @@ FL(float fl, int decimals)
     format[0] = '%';
     format[1] = '.';
     format[2] = decimals_char;
-    format[3] = 'f';
+    if(float_representation == Str::FloatRep::Fixed)
+        format[3] = 'f';
+    if(float_representation == Str::FloatRep::Scientific)
+        format[3] = 'e';
     format[4] = 0x0;
 
     char buffer[32];

@@ -7,8 +7,7 @@
 #include "lib/log.hh"
 #include "lib/file.hh"
 
-#include "../physon.hh"
-#include "../physon_types.hh"
+#include "../json_types.hh"
 
 #include "../json.hh"
 

@@ -3,18 +3,12 @@
 
 #include "examples/jfile_shape.hh"
 
-#include "physon_types.hh"
-
-#include "physon.hh"
-#include "physon_tests.hh"
-#include "json_store.hh"
+#include "json_types.hh"
 
 #include "json.hh"
-#include "json_test.hh"
 
 #include "test/io/json/tlib_json.hh"
 
-// #include "json_union.hh"
 
 
 std::string load_file(std::string path) {
@@ -54,8 +48,8 @@ int main (int argc, char **argv) {
     std::cout << "Main JSON" << std::endl << std::endl;
     
 
-    // RunFlag run_flag = RF_NEW;
-    RunFlag run_flag = RF_TCLIB;
+    RunFlag run_flag = RF_NEW;
+    // RunFlag run_flag = RF_TCLIB;
 
 
 
@@ -97,7 +91,7 @@ int main (int argc, char **argv) {
         }
         else if(run_flag == RF_TEST_OLD){
 
-            JsonTest::test_conformance();
+            // JsonTest::test_conformance();
             // JsonTest::test_serialization();
 
         }
@@ -124,8 +118,8 @@ int main (int argc, char **argv) {
     }
     else if(run_flag == RF_TEST_OLDOLD){
 
-        PhysonTest::test_conformance();
-        PhysonTest::test_serialization();
+        // PhysonTest::test_conformance();
+        // PhysonTest::test_serialization();
         
     }
     else if(run_flag == RF_VARIANT){
@@ -136,19 +130,19 @@ int main (int argc, char **argv) {
         JsonVar root_array = json_array_variants();
         root_array.push_to_array(true);
         root_array.push_to_array(false);
-        root_array.push_to_array(json_null(nullptr));
+        root_array.push_to_array(j_null(nullptr));
 
         JsonSerializer serializer;
         std::cout << serializer.serialize(root_array) << std::endl;
 
         // OBJECT
         JsonVar root_obj = json_object_variants();
-        root_obj.emplace_kv("key1", json_int(123));
-        root_obj.emplace_kv("key2", json_int(234));
+        root_obj.emplace_kv("key1", j_int(123));
+        root_obj.emplace_kv("key2", j_int(234));
         // nested object
         json_kv_variant& kv = root_obj.emplace_kv("key3", json_object_variants());
         JsonVar& kv_value = kv.second;
-        kv_value.emplace_kv("k1", json_int(555));
+        kv_value.emplace_kv("k1", j_int(555));
 
         // PRINT OBJECTS
         std::string obj_str;
@@ -225,21 +219,21 @@ int main (int argc, char **argv) {
 
         std::string _json_string = load_file("data/literal_names_array.json");
 
-        Physon physon (_json_string);
+        // Physon physon (_json_string);
 
-        physon.parse();
+        // physon.parse();
 
-        physon.print_original();
-        // physon.print_tokens();
-        // print_store_sizes();
+        // physon.print_original();
+        // // physon.print_tokens();
+        // // print_store_sizes();
         
-        // physon.build_string(physon.root_wrapper);
+        // // physon.build_string(physon.root_wrapper);
 
-        std::cout << std::endl << physon.stringify() << std::endl;
+        // std::cout << std::endl << physon.stringify() << std::endl;
 
-        JsonSerializer serializer;
-        std::string serialized_str = serializer.serialize(physon.root_wrapper, physon.store);
-        std::cout << std::endl << serialized_str << std::endl << std::endl;
+        // JsonSerializer serializer;
+        // std::string serialized_str = serializer.serialize(physon.root_wrapper, physon.store);
+        // std::cout << std::endl << serialized_str << std::endl << std::endl;
         
     }
 

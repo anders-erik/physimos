@@ -4,6 +4,7 @@
 #include "io/pretty_str.hh"
 #include "pretty_str.hh"
 
+typedef unsigned char uchar;
 
 Str Pretty::
 StrS(bool _bool)
@@ -67,7 +68,9 @@ Str Pretty::StrM(Str & indent, char ch)
 
 Str Pretty::StrM(Str & indent, double dbl)
 {
-    return indent + Str::FL((float) dbl, 2) + "\n";
+    return indent + Str::FL(    (float) dbl, 
+                                (uchar)2, 
+                                Str::FloatRep::Fixed) + "\n";
 }
 
 Str Pretty::

@@ -81,19 +81,19 @@ UnitTestArray constructors = {
     {"Str::FL(1.1f, 1)",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::FL(1.1f, 1),
+        utest.assert(   Str::FL(1.1f, (uchar)1, Str::FloatRep::Fixed),
                         Str{"1.1"}          );
     }},
     {"Str::FL(55.7f, 1)",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::FL(55.7f, 1),
+        utest.assert(   Str::FL(55.7f, (uchar)1, Str::FloatRep::Fixed),
                         Str{"55.7"}          );
     }},
     {"Str::FL(55.789f, 2)",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::FL(55.789f, 2),
+        utest.assert(   Str::FL(55.789f, (uchar)2, Str::FloatRep::Fixed),
                         Str{"55.79"}          );
     }},
 

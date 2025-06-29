@@ -8,8 +8,7 @@
 #include <iomanip> // setprecision
 #include <climits> // LLONG_MAX
 
-#include "physon_types.hh"
-#include "json_store.hh"
+#include "json_types.hh"
 #include "json_variant.hh"
 
 
@@ -28,42 +27,62 @@ enum class float_representation {
 };
 
 struct FloatFormat {
-    float_representation rep = float_representation::scientific; // representation
-    size_t precision = 8; // Number of digits past decimal point
-    FloatFormat() {};
-    FloatFormat(float_representation rep, size_t precision): rep{rep}, precision {precision} {};
+    float_representation    rep;        // decimal or scientific
+    size_t                  precision;  // Number of digits past decimal point
+
+    FloatFormat() 
+        : rep       {float_representation::scientific}
+        , precision {8}
+    {};
+
+    FloatFormat(float_representation rep, size_t precision)
+        : rep{rep}
+        , precision {precision}
+    {};
 };
 
+
 /** Json Serialization confguration object.  */
-struct JSerialConfig {
-    serial_ws whitespace = serial_ws::new_lines;
-    size_t indent_space_count = 4;
+struct JSerialConfig 
+{
+    serial_ws   whitespace;
+    size_t      indent_space_count;
     FloatFormat float_format;
 
-    JSerialConfig() {};
-    JSerialConfig(serial_ws _whitespace) : whitespace {_whitespace}{};
-    JSerialConfig(size_t _indent_space_count) : indent_space_count {_indent_space_count} {};
-    JSerialConfig(serial_ws _whitespace, size_t _indent_space_count) : whitespace {_whitespace}, indent_space_count {_indent_space_count} {};
-    JSerialConfig(serial_ws _whitespace, size_t _indent_space_count, FloatFormat float_format) : whitespace {_whitespace}, indent_space_count {_indent_space_count}, float_format {float_format} {};
+    JSerialConfig() 
+        :   whitespace {serial_ws::new_lines}
+        ,   indent_space_count {4}
+        ,   float_format {FloatFormat()}
+    {};
+    JSerialConfig(serial_ws _whitespace) 
+        : whitespace {_whitespace}
+    {};
+    JSerialConfig(size_t _indent_space_count) 
+        : indent_space_count {_indent_space_count} 
+    {};
+    JSerialConfig(serial_ws _whitespace, size_t _indent_space_count) 
+        : whitespace {_whitespace}
+        , indent_space_count {_indent_space_count}
+    {};
+    JSerialConfig(serial_ws _whitespace, size_t _indent_space_count, FloatFormat float_format) 
+        : whitespace {_whitespace}
+        , indent_space_count {_indent_space_count}
+        , float_format {float_format}
+    {};
 };
 
 
 class JsonSerializer {
 
-    JSerialConfig config;
-    int recursive_depth = 0;
+    JSerialConfig   config;
 
-    /** Supports different precision and scientific notation */
-    static std::string float_to_json_representation(json_float float_, FloatFormat float_format);
-    /** Converts a std::string to is JSON equivelence. e.g. <I "mean" it..> --> <"I \"mean\" it.."> */
-    static std::string string_to_json_representation(std::string cpp_string);
+    int             recursive_depth = 0; // Container depth for correct indentation
 
-    std::string result_string = "";
-    void build_string(JsonWrapper value, json_store& store);
+    std::string     result_string = "";
+
 
     std::string build_string(JsonVar json_var);
 
-    static void add_spaces(std::string& str, int space_count);
     void try_add_new_line(std::string& str);
     void try_add_indent(std::string& str);
     void try_remove_trailing_comma_object(std::string& str);
@@ -71,14 +90,18 @@ class JsonSerializer {
     void add_trailing_comma_to_object(std::string& str);
     void add_trailing_comma_to_array(std::string& str);
 
+    static void add_spaces(std::string& str, int space_count);
+
+    /** Supports different precision and scientific notation */
+    static std::string float_to_json_representation(j_float float_, FloatFormat float_format);
+    /** Converts a std::string to is JSON equivelence. e.g. <I "mean" it..> --> <"I \"mean\" it.."> */
+    static std::string string_to_json_representation(std::string cpp_string);
 
 public:
 
     JsonSerializer() {};
     JsonSerializer(JSerialConfig config): config { config } {};
 
-    /** returns full json structure as string. Creates a copy of wrapper and store store for now.  */
-    std::string serialize(JsonWrapper root_wrapper, json_store& store);
     /** Returns full json structure as string.  */
     std::string serialize(const JsonVar& json_root);
 
@@ -265,17 +288,9 @@ std::string JsonSerializer::build_string(JsonVar json_var){
 }
 
 
-std::string JsonSerializer::serialize(JsonWrapper root_wrapper, json_store& store){
-    result_string = "";
-
-    build_string(root_wrapper, store);
-
-    return result_string;
-}
 
 
-
-std::string JsonSerializer::float_to_json_representation(json_float float_, FloatFormat float_format){
+std::string JsonSerializer::float_to_json_representation(j_float float_, FloatFormat float_format){
 
     if(float_format.precision == 0)
         throw std::runtime_error("Tried serializing json float with zero precision.");
@@ -374,95 +389,3 @@ std::string JsonSerializer::string_to_json_representation(std::string cpp_string
 
     return json_representation;
 }
-
-void JsonSerializer::build_string(JsonWrapper value, json_store& store){
-    
-    if(is_literal(value.type)){
-
-        switch (value.type)
-        {
-        case JSON_TYPE::NULL_:
-            result_string.append("null");
-            break;
-        case JSON_TYPE::TRUE:
-            result_string.append("true");
-            break;
-        case JSON_TYPE::FALSE:
-            result_string.append("false");
-            break;
-        case JSON_TYPE::FLOAT:
-            {
-                json_float float_ = store.get_float(value.store_id);
-                std::string float_str = float_to_json_representation(float_, config.float_format);
-
-                result_string.append( float_str );
-            }
-            break;
-        case JSON_TYPE::INTEGER:
-            result_string.append( std::to_string(store.get_integer(value.store_id) ) );
-            break;
-
-        case JSON_TYPE::STRING:
-            // 1) Grab value from store
-            // 2) convert to json representation
-            // 3) append to stringify-string
-            result_string.append(
-                string_to_json_representation(
-                    store.get_string(value.store_id)
-                )
-            );
-            break;
-        default:
-            break;
-        }
-
-        return;
-    }
-
-    // Print array
-    if(value.type == JSON_TYPE::ARRAY){
-        result_string.append("[");
-
-        json_array_wrap array =  store.get_array(value.store_id);
-
-        for(JsonWrapper array_entry : array){
-            build_string(array_entry, store);
-            result_string.append(", ");
-        }
-
-        // no comma after last entry
-        if(array.size() > 0)
-            result_string.erase(result_string.size()-2);
-
-        result_string.append("]");
-    }
-    else if(value.type == JSON_TYPE::KV){
-
-        json_kv_wrap& kv = store.get_kv(value.store_id);
-
-        result_string.append("\"");
-        result_string.append(kv.first);
-        result_string.append("\": ");
-
-        build_string(kv.second, store);
-    }
-    else if(value.type == JSON_TYPE::OBJECT){
-        result_string.append("{");
-
-        json_object_wrap object =  store.get_object(value.store_id);
-
-        for(JsonWrapper kv : object){
-            
-            build_string(kv, store);
-
-            result_string.append(", ");
-        }
-
-        // no comma after last entry
-        if(object.size() > 0)
-            result_string.erase(result_string.size()-2);
-
-        result_string.append("}");
-    }
-}
-

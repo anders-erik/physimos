@@ -3,7 +3,8 @@
 #include <cstddef>  // size_t
 #include <utility>  // enable_if_t, forward
 
-typedef unsigned int uint;
+typedef unsigned int    uint;
+typedef unsigned char   uchar;
 
 struct Str 
 {
@@ -78,6 +79,11 @@ struct Str
 
 
 
+    enum class FloatRep {
+        Fixed, 
+        Scientific,
+    };
+
     /** ASCII char to Str */
     static Str CH(char ch);
     /** Signed Integer to Str */
@@ -85,14 +91,13 @@ struct Str
     /** Unsigned Integer to Str */
     static Str UI(size_t u_int);
     /** Float to Str */
-    static Str FL(float fl, int decimals);
+    static Str FL(float fl, uchar decimals, Str::FloatRep float_representation);
     /** Double to Str */
     static Str DB(double db, int decimals);
 
     template <typename T>
     static Str Num(T num)
     {
-        return Str::FL(num, 2);
+        return Str::FL(num, (uchar)2, Str::FloatRep::Fixed);
     }
 };
-

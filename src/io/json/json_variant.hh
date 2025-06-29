@@ -3,11 +3,14 @@
 #include <optional>
 #include <type_traits>
 
-#include "physon_types.hh"
+#include "json_types.hh"
 
 
 struct JsonVar; // forward declare
-enum class json_type {
+
+
+enum class json_type 
+{
     null,
     boolean,
     bool_true,
@@ -19,7 +22,10 @@ enum class json_type {
     object,
     array,
 };
-bool is_literal(json_type type){
+
+
+bool is_literal(json_type type)
+{
     return  type == json_type::null         ||
             type == json_type::boolean      ||
             type == json_type::bool_true    ||
@@ -29,32 +35,36 @@ bool is_literal(json_type type){
             type == json_type::string;
 }
 
-typedef std::pair<json_string, JsonVar> json_kv_variant;
+typedef std::pair<j_string, JsonVar> json_kv_variant;
 typedef std::vector<json_kv_variant> json_object_variants;
 typedef std::vector<JsonVar> json_array_variants;
-typedef std::variant<   json_string, 
-                        json_bool,
-                        json_null, 
-                        json_float,
-                        json_int,
+typedef std::variant<   j_string, 
+                        j_bool,
+                        j_null, 
+                        j_float,
+                        j_int,
                         json_array_variants,
                         json_object_variants
                     > json_variant;
+
+
+
 /** Thick tag-union-like structure implemented using std::variant. */
-struct JsonVar {
+struct JsonVar
+{
     json_type type = json_type::null;
     json_variant variant_;
     
     JsonVar() = default;
-    JsonVar(json_null new_null) : type {json_type::null}, variant_ {new_null} {};
-    JsonVar(json_bool new_bool) : variant_ {new_bool}  { 
+    JsonVar(j_null new_null) : type {json_type::null}, variant_ {new_null} {};
+    JsonVar(j_bool new_bool) : variant_ {new_bool}  { 
         type = new_bool ? json_type::bool_true : json_type::bool_false;
     };
-    JsonVar(json_int new_int) : type {json_type::number_int}, variant_ {new_int} {};
-    JsonVar(json_float new_float) : type {json_type::number_float}, variant_ {new_float} {};
-    JsonVar(json_string new_string) : type {json_type::string}, variant_ {new_string} {};
-    // JsonVar(json_string& new_string) : type {json_type::string}, variant_ {new_string} {};
-    // JsonVar(json_string&& new_string) : type {json_type::string}, variant_ {new_string} {};
+    JsonVar(j_int new_int) : type {json_type::number_int}, variant_ {new_int} {};
+    JsonVar(j_float new_float) : type {json_type::number_float}, variant_ {new_float} {};
+    JsonVar(j_string new_string) : type {json_type::string}, variant_ {new_string} {};
+    // JsonVar(j_string& new_string) : type {json_type::string}, variant_ {new_string} {};
+    // JsonVar(j_string&& new_string) : type {json_type::string}, variant_ {new_string} {};
     JsonVar(json_array_variants new_array) : type {json_type::array}, variant_ {new_array} {};
     JsonVar(json_object_variants new_object) : type {json_type::object}, variant_ {new_object} {};
     JsonVar(json_type new_type){
@@ -93,26 +103,26 @@ struct JsonVar {
     };
 
 
-    json_kv_variant new_kv(json_string key, JsonVar value){
+    json_kv_variant new_kv(j_string key, JsonVar value){
         json_kv_variant kv (key, value);
         return kv;
     };
 
 
 
-    void set_bool(json_bool new_bool) {
+    void set_bool(j_bool new_bool) {
         type = json_type::boolean;
         variant_ = new_bool;
     }
-    void set_int(json_int new_int) {
+    void set_int(j_int new_int) {
         type = json_type::number_int;
         variant_ = new_int;
     }
-    void set_float(json_float new_float) {
+    void set_float(j_float new_float) {
         type = json_type::number_float;
         variant_ = new_float;
     }
-    void set_float(json_string new_string) {
+    void set_float(j_string new_string) {
         type = json_type::string;
         variant_ = new_string;
     }
@@ -136,25 +146,25 @@ struct JsonVar {
 
 
     json_type get_type(){return type; };
-    json_bool& get_bool(){
+    j_bool& get_bool(){
         if(type == json_type::boolean)
-            return std::get<json_bool>(variant_);
-        throw std::runtime_error("Error trying to get value from variant. json_bool. ");
+            return std::get<j_bool>(variant_);
+        throw std::runtime_error("Error trying to get value from variant. j_bool. ");
     };
-    json_int& get_int(){
+    j_int& get_int(){
         if(type == json_type::number_int)
-            return std::get<json_int>(variant_);
-        throw std::runtime_error("Error trying to get value from variant. json_int. ");
+            return std::get<j_int>(variant_);
+        throw std::runtime_error("Error trying to get value from variant. j_int. ");
     };
-    json_float& get_float(){
+    j_float& get_float(){
         if(type == json_type::number_float)
-            return std::get<json_float>(variant_);
-        throw std::runtime_error("Error trying to get value from variant. json_float. ");
+            return std::get<j_float>(variant_);
+        throw std::runtime_error("Error trying to get value from variant. j_float. ");
     };
-    json_string& get_string(){
+    j_string& get_string(){
         if(type == json_type::string)
-            return std::get<json_string>(variant_);
-        throw std::runtime_error("Error trying to get value from variant. json_string. ");
+            return std::get<j_string>(variant_);
+        throw std::runtime_error("Error trying to get value from variant. j_string. ");
     };
     json_array_variants& get_array(){
         if(type == json_type::array)
@@ -166,21 +176,18 @@ struct JsonVar {
             return std::get<json_object_variants>(variant_);
         throw std::runtime_error("Error trying to get value from variant. json_object_variants. ");
     };
-    // std::optional<json_kv_variant&> find_in_object(json_string str_to_match){
-    json_kv_variant find_in_object(json_string str_to_match){
+    // std::optional<json_kv_variant&> find_in_object(j_string str_to_match){
+    JsonVar find_in_object(j_string str_to_match){
 
         if(type != json_type::object)
             throw std::runtime_error("Error: tried to get kv from non object variant.");
 
         for (json_kv_variant& kv : get_object()){
             if(kv.first == str_to_match)
-                return kv;
+                return kv.second;
         }
 
-        json_string empty_str = "";
-        JsonVar null_var;
-        json_kv_variant empty_kv {empty_str, null_var};
-        return empty_kv;
+        return JsonVar{};
     };
 
 
@@ -203,7 +210,7 @@ struct JsonVar {
         
         throw std::runtime_error("Error trying to push value to non-array."); 
     }
-    json_kv_variant& emplace_kv(json_string key, JsonVar value){
+    json_kv_variant& emplace_kv(j_string key, JsonVar value){
 
         if(type != json_type::object)
             throw std::runtime_error("Can't emplace KV when JsonVar is not an object.");
@@ -254,12 +261,12 @@ void variant_playground(){
 
     JsonVar json_var = true;
 
-    json_int new_int = 123;
+    j_int new_int = 123;
     JsonVar json_var_int (new_int);
 
-    json_string new_string_hole = "HOLE";
+    j_string new_string_hole = "HOLE";
     JsonVar json_var_str_hole (new_string_hole);
-    JsonVar json_var_str_hola (json_string("HOLA"));
+    JsonVar json_var_str_hola (j_string("HOLA"));
     // JsonVar json_var_str_como ("COMO");
 
     std::cout << json_var_str_hole.get_string() << std::endl;
@@ -270,8 +277,8 @@ void variant_playground(){
     json_var_array.push_to_array(json_var_str_hola);
     // json_var_array.variant_.push_back(json_var_str_hole);
 
-    json_string key = "kk";
-    JsonVar value = json_string("vv");
+    j_string key = "kk";
+    JsonVar value = j_string("vv");
     json_kv_variant kv (key, value);
     JsonVar object (json_type::object);
     object.push_to_object(kv);
@@ -282,8 +289,8 @@ void variant_playground(){
 
     // TYPE CONVERSIONS
     std::cout << std::endl << "TYPE CONVERSIONS" << std::endl;
-    JsonVar int_1 = json_int(1111);
-    JsonVar int_2 = json_int(2222);
+    JsonVar int_1 = j_int(1111);
+    JsonVar int_2 = j_int(2222);
     std::cout << "int_2.get_int() = " << int_2.get_int()  << std::endl;
     int_2.set_bool(true);
     std::cout << "int_2.get_bool() = " << int_2.get_bool()  << std::endl;
@@ -309,7 +316,7 @@ void variant_playground(){
         // Convert to array and populate with ints
         arr.set_array();
         for(size_t j = 0; j < 10000; j++)
-            arr.get_array().push_back(JsonVar(json_int(1)));
+            arr.get_array().push_back(JsonVar(j_int(1)));
         
     }
     
@@ -318,7 +325,7 @@ void variant_playground(){
 
 
 
-    // variant_.emplace(variant(json_float(0.0)));
+    // variant_.emplace(variant(j_float(0.0)));
     // variant_.emplace(0);
 
     
@@ -331,7 +338,7 @@ void variant_playground(){
 
     // json_var.variant_ = false;
 
-    // std::cout << std::get<json_null>(json_var.variant_) << std::endl;
+    // std::cout << std::get<j_null>(json_var.variant_) << std::endl;
     
     std::visit(
         [](auto&& arg){ 
@@ -343,11 +350,11 @@ void variant_playground(){
     std::visit(
         overloaded{ // Requires 
             [](auto arg) { std::cout << "unknown type" << ' '; },
-            [](json_null arg) { std::cout << "null" << ' ';},
-            [](json_bool arg)  { std::cout << "bool" << ' '; },
-            [](json_int arg) { std::cout << "int" << ' '; },
-            [](json_float arg) { std::cout << "float" << ' '; },
-            [](const json_string& arg) { std::cout << "string" << ' '; },
+            [](j_null arg) { std::cout << "null" << ' ';},
+            [](j_bool arg)  { std::cout << "bool" << ' '; },
+            [](j_int arg) { std::cout << "int" << ' '; },
+            [](j_float arg) { std::cout << "float" << ' '; },
+            [](const j_string& arg) { std::cout << "string" << ' '; },
             [](json_array_variants& arg) { std::cout << "array" << ' '; },
             [](json_object_variants& arg) { std::cout << "object" << ' '; }
         },
@@ -359,27 +366,27 @@ void variant_playground(){
 
     // VARIANT METHODS EXPLORATION
 
-    // json_int intint = 123;
-    json_variant variant_int (json_int(123));
-    json_variant variant_float (json_float(1.23));
+    // j_int intint = 123;
+    json_variant variant_int (j_int(123));
+    json_variant variant_float (j_float(1.23));
 
-    std::cout << "std::get<json_int>(variant_int) = " << std::get<json_int>(variant_int) << std::endl;
+    std::cout << "std::get<j_int>(variant_int) = " << std::get<j_int>(variant_int) << std::endl;
     variant_int.swap(variant_float);
-    std::cout << "std::get<json_float>(variant_int) = " << std::get<json_float>(variant_int) << std::endl;
-    // variant_int.emplace( json_variant(json_int(123)) );
+    std::cout << "std::get<j_float>(variant_int) = " << std::get<j_float>(variant_int) << std::endl;
+    // variant_int.emplace( json_variant(j_int(123)) );
     // variant_int.emplace( 123 );
-    // variant_int.emplace( json_int(1) );
+    // variant_int.emplace( j_int(1) );
     // variant_int.emplace( intint );
     variant_int.emplace<4>(123);
-    // variant_int = json_variant::emplace<json_int>;
-    // variant_int.emplace( std::in_place_type<json_int> );
-    // std::cout << "std::get<json_int>(variant_int) = " << std::get<json_int>(variant_int) << std::endl;
+    // variant_int = json_variant::emplace<j_int>;
+    // variant_int.emplace( std::in_place_type<j_int> );
+    // std::cout << "std::get<j_int>(variant_int) = " << std::get<j_int>(variant_int) << std::endl;
 
-    variant_int = json_variant(json_int(123));
+    variant_int = json_variant(j_int(123));
     std::cout << std::get<4>(variant_int) << std::endl;
     variant_int = 321;
-    std::cout << std::get<json_int>(variant_int) << std::endl;
-    std::cout << *std::get_if<json_int>(&variant_int) << std::endl;
+    std::cout << std::get<j_int>(variant_int) << std::endl;
+    std::cout << *std::get_if<j_int>(&variant_int) << std::endl;
     using T = std::decay_t< decltype(variant_int) >;
     std::cout << "std::is_same_v<T, json_variant> = " << std::is_same_v<T, json_variant> << std::endl;
     
@@ -393,23 +400,23 @@ void variant_playground(){
     // NESTED JSON TESTS BY HAND
     {
         JsonVar root_arr  = json_array_variants();
-        JsonVar intintint = json_int(123);
+        JsonVar intintint = j_int(123);
         JsonVar arrarrarr = json_array_variants();
         arrarrarr.push_to_array(intintint);
         JsonVar objobjobj = json_object_variants();
-        json_kv_variant kvkvkv_1 = std::pair<json_string, JsonVar>("keykey1", json_string("Valval1"));
-        json_kv_variant kvkvkv_2 ("keykey2", json_int(2));
-        json_kv_variant kvkvkv_3 {"keykey3", json_int(3)};
-        // json_kv_variant kvkvkv_4 = ("keykey2", json_int(4)); // es a no wok
-        json_kv_variant kvkvkv_5 = {"keykey5", json_int(5)};
+        json_kv_variant kvkvkv_1 = std::pair<j_string, JsonVar>("keykey1", j_string("Valval1"));
+        json_kv_variant kvkvkv_2 ("keykey2", j_int(2));
+        json_kv_variant kvkvkv_3 {"keykey3", j_int(3)};
+        // json_kv_variant kvkvkv_4 = ("keykey2", j_int(4)); // es a no wok
+        json_kv_variant kvkvkv_5 = {"keykey5", j_int(5)};
         objobjobj.push_to_object(kvkvkv_1);
         objobjobj.push_to_object(kvkvkv_2);
         objobjobj.push_to_object(kvkvkv_3);
         objobjobj.push_to_object(kvkvkv_5);
-        objobjobj.push_to_object( {"keykey6", json_int(6)} );
+        objobjobj.push_to_object( {"keykey6", j_int(6)} );
 
         root_arr.push_to_array(intintint);              // lvalue
-        root_arr.push_to_array(json_int(456)); // rvalue
+        root_arr.push_to_array(j_int(456)); // rvalue
         root_arr.push_to_array(arrarrarr); // rvalue
         root_arr.push_to_array(objobjobj);
 
