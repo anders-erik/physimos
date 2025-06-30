@@ -1,5 +1,5 @@
 #include "err.hh"
-
+// #include <cerrno>
 
 
 Str Err::to_str()
@@ -15,6 +15,8 @@ Str Err::to_str()
         str_err += Str::SI(ERRNO);
         if(ERRNO == 2)
             str_err += ": Failed to open file. ";
+        // else
+            // strerror_r( errno, buffer, 256 );
     }
     else
     {

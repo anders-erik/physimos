@@ -4,8 +4,9 @@
 #include <string>
 #include <iostream>
 
+#include "lib/res.hh"
+
 #include "json_types.hh"
-#include "json_variant.hh"
 #include "json_lexer.hh"
 #include "json_parser.hh"
 #include "json_serialize.hh"
@@ -113,8 +114,8 @@ class Json {
                 }
             }
 
-            static Str serialize(const JsonVar& json_var) {
-                
+            static Str serialize(const JsonVar& json_var)
+            {    
                 JsonSerializer serializer;
                 serializer.set_config( {serial_ws::new_lines, 4} );
                 // serializer.serialize()

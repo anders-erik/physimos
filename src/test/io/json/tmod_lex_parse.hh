@@ -159,3 +159,20 @@ UnitTestArray json_conforms_not = {
     conforms_not("non_valid_parser/numbers_invalid.json")
 
 };
+
+
+
+// UnitTestArray json_bugs = {
+
+//     {"memory corruption during for-each loop",
+//     [](UnitTest& utest) -> void
+//     {
+//         JsonVar jroot = parse_json_test_file("misc/mesh_minimal.json");
+
+//         j_object mesh_object = jroot.object_find("mesh").get_object();
+
+//         utest.assert(   mesh_object[0].first,
+//                         j_string("sheet")       );
+//     }},
+
+// };

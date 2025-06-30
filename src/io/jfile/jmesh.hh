@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "lib/str.hh"
 #include "lib/print.hh"
 
@@ -28,28 +30,29 @@ struct JMesh
             return Err{};
         }
 
-        Mesh mesh;
 
         JsonVar json_root = json_var_res.consume_value();
 
-        JsonVar mesh_object_var = json_root.find_in_object("mesh");
-
-        // Str sheet_key = Json::serialize(mesh_object.find_in_object("sheet").first);
-        // j_string sheet_key = mesh_object_var.find_in_object("sheet").first;
-    
-        json_object_variants mesh_object = json_root.find_in_object("mesh").get_object();
-
-        // for(auto& kv : json_root.find_in_object("mesh").get_object()) // MEMORY BREAKS HERE
-        for(auto& kv : mesh_object)
+        OptPtr<JsonVar> mesh_array_opt = json_root.object_find("mesh");
+        if(mesh_array_opt.is_null())
         {
-            // std::cout << "\"" << kv.first << "\"" << std::endl;
-            // std::cout << "\"" << "sheet" << "\"" << std::endl;
+            Print::ln("error jmesh: mesh null");
+            return Err{};
+        }
+        JsonVar* mesh_array = mesh_array_opt.get_ptr();
 
-            if(kv.first == "sheet")
+
+        Mesh mesh;
+
+        for(auto& var : mesh_array->get_array())
+        {
+            auto& var_str = var.get_string();
+
+            if(var_str == "sheet")
             {
                 mesh.sheet();
             }
-            else if(kv.first == "center")
+            else if(var_str == "center")
             {
                 mesh.center();
             }

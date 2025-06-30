@@ -74,6 +74,8 @@ target_link_libraries(main_main
     lib
     opengl
 
+    io
+
     glad 
     ${CMAKE_SOURCE_DIR}/extern/GLFW/lib/libglfw3.a
 )

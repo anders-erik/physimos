@@ -9,7 +9,7 @@
 
 #include "test/io/json/tlib_json.hh"
 
-
+void variant_playground();
 
 std::string load_file(std::string path) {
 
@@ -48,12 +48,13 @@ int main (int argc, char **argv) {
     std::cout << "Main JSON" << std::endl << std::endl;
     
 
-    RunFlag run_flag = RF_NEW;
-    // RunFlag run_flag = RF_TCLIB;
+    // RunFlag run_flag = RF_NEW;
+    RunFlag run_flag = RF_TCLIB;
+    // RunFlag run_flag = RF_VARIANT;
 
 
 
-    if(run_flag | RF_NEW){
+    if(run_flag & RF_NEW){
 
         if(run_flag == RF_NEW){
 
@@ -64,11 +65,16 @@ int main (int argc, char **argv) {
             // _json_string = load_file(json_data_path + "strings/string_array.json");
             // _json_string = load_file(json_data_path + "non_valid_parser/non_ascii_string.json");
             // _json_string = load_file(json_data_path + "non_valid_lexer/unclosed_string.json");
-            jsource = File::cat_as_str_core_xplat("resources/scene/toadstool_1.json").consume_value();
+            jsource = File::cat_as_str_core_xplat(data_dir + "misc/mesh_minimal.json").consume_value();
             // _json_string = load_file("data/numbers.json");
             // _json_string = load_file("data/object_nested.json");
             // _json_string = load_file("data/object.json");
             // _json_string = load_file("data/shapes.json");
+
+            JsonVar json_v;
+            json_v.parse(jsource.to_c_str());
+            ResMove<Str> str = json_v.serialize();
+            Print::line(str.consume_value());
 
 
             ResMove<JsonVar> json_res = Json::parse(jsource);
@@ -124,25 +130,31 @@ int main (int argc, char **argv) {
     }
     else if(run_flag == RF_VARIANT){
 
+        JsonVar var;
+        var.variant_ = "hello";
+        // std::get<j_string>{var.variant_}
+        // std::cout << std::get<j_string>(var.variant_) << '\n';
+        // std::cout << std::get<j_float>(var.variant_) << '\n';
+
         variant_playground();
 
         // ARRAY
-        JsonVar root_array = json_array_variants();
-        root_array.push_to_array(true);
-        root_array.push_to_array(false);
-        root_array.push_to_array(j_null(nullptr));
+        JsonVar root_array = j_array();
+        root_array.get_array().push_back(true);
+        root_array.get_array().push_back(false);
+        root_array.get_array().push_back(j_null(nullptr));
 
         JsonSerializer serializer;
         std::cout << serializer.serialize(root_array) << std::endl;
 
         // OBJECT
-        JsonVar root_obj = json_object_variants();
-        root_obj.emplace_kv("key1", j_int(123));
-        root_obj.emplace_kv("key2", j_int(234));
+        JsonVar root_obj = j_object();
+        root_obj.get_object().emplace("key1", j_int(123));
+        root_obj.get_object().emplace("key2", j_int(234));
         // nested object
-        json_kv_variant& kv = root_obj.emplace_kv("key3", json_object_variants());
-        JsonVar& kv_value = kv.second;
-        kv_value.emplace_kv("k1", j_int(555));
+        // auto& kv = root_obj.object_push({"key3", j_object()});
+        // JsonVar& kv_value = kv.second;
+        // kv_value.get_object().emplace("k1", j_int(555));
 
         // PRINT OBJECTS
         std::string obj_str;

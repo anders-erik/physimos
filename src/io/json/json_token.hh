@@ -25,7 +25,7 @@ enum class token_t {
     whitespace,
 };
 
-std::string token_type_to_string(token_t type){
+constexpr std::string token_type_to_string(token_t type){
 
     switch (type)
     {

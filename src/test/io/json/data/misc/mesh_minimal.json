@@ -1,8 +1,7 @@
 {
-    "name": "toadstool",
+    "name": "memory_bug",
     "type": "mesh",
-    "mesh":
-    [
+    "mesh": [
         "sheet",
         "center"
     ]

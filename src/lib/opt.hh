@@ -5,6 +5,7 @@
 
 #define MV std::move
 
+
 /** A an optional pointer object to enforce nullptr check before use. */
 template <typename T>
 class OptPtr {
@@ -24,7 +25,7 @@ public:
         return t;
     };
     [[nodiscard]] inline bool is_null(){
-        return t == nullptr ? true : false;
+        return t == nullptr;
     }
     [[nodiscard]] inline bool has_value(){
         return t == nullptr ? false : true;
