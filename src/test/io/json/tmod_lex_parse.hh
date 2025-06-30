@@ -20,8 +20,8 @@ UnitTestArray json_test_setup = {
 
         JsonVar jvar = json.get_root();
 
-        utest.assert(   (Str) jvar.get_string().c_str(), 
-                        (Str) "hello"                ); 
+        utest.assert(   jvar.get_string(), 
+                        (Str)"hello"                ); 
     }},
 
 
@@ -36,8 +36,8 @@ UnitTestArray json_test_setup = {
         
         JsonVar jroot = jroot_res.consume_value();
 
-        utest.assert(   (Str) jroot.get_string().c_str(), 
-                        (Str) "valid_string"                ); 
+        utest.assert(   jroot.get_string(), 
+                        (Str) "valid_string"    ); 
     }},
 
 
@@ -46,8 +46,8 @@ UnitTestArray json_test_setup = {
     {
         JsonVar jroot = parse_json_test_file("primitives/string.json");
 
-        utest.assert(   (Str) jroot.get_string().c_str(),
-                        (Str) "valid_string"                ); 
+        utest.assert(   jroot.get_string(),
+                        (Str) "valid_string"    ); 
     }},
 };
 
@@ -58,6 +58,8 @@ UnitTestArray json_test_setup = {
 
 UnitTestArray json_psps = {
 
+
+
     #define psps(name)                                                  \
     {   name,                                                           \
     [](UnitTest& utest) -> void                                         \
@@ -67,7 +69,7 @@ UnitTestArray json_psps = {
         ResMove<JsonVar>    p2  = Json::parse(s1);                      \
         Str                 s2  = Json::serialize(p2.consume_value());  \
         utest.assert(   s1,                                             \
-                        s2);                                            \
+                        s2  );                                          \
     }},                                                                 \
 
 
@@ -79,8 +81,20 @@ UnitTestArray json_psps = {
     psps("integers/integers.json")
     psps("integers/ints2.json")
 
+
+    {   "misc/shapes.json",
+    [](UnitTest& utest) -> void
+    {
+        JsonVar             p1  = parse_json_test_file("misc/shapes.json");
+        Str                 s1  = Json::serialize(p1);                  
+        ResMove<JsonVar>    p2  = Json::parse(s1);                      
+        Str                 s2  = Json::serialize(p2.consume_value());  
+        utest.assert(   s1,                                             
+                        s2  );                                          
+    }},                                                                 
+
     psps("misc/penpaper.json")
-    psps("misc/shapes.json")
+    // psps("misc/shapes.json")
     psps("misc/widget.json")
     
     psps("primitives/array.json")

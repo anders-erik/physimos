@@ -15,6 +15,7 @@ int main()
     println("\nStarting Lib unit tests.\n");
 
     tclib_lib.run();
+    tclib_lib.print_result();
 
     println("\nEnd Lib unit tests.\n");
 

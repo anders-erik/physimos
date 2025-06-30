@@ -39,12 +39,16 @@ size_t JsonLexer::consume_ws(){
     return ws_chars_consumed;
 }
 
-bool JsonLexer::is_unicode_quad(const std::string& four_unicode_digits){
+bool JsonLexer::is_unicode_quad(const Str& four_unicode_digits)
+{
+    if(four_unicode_digits.size() != 4)
+        return false;
 
-    for(const char& ch : four_unicode_digits)
-        if(! (is_hex_digit(ch)))
+    for(auto i = 0; i < 4; i++)
+    {
+        if(!is_hex_digit(four_unicode_digits[i]))
             return false;
-    
+    }
     return true;
 }
 
@@ -58,8 +62,9 @@ size_t JsonLexer::consume_string_literal(){
         // Current char
         ch = current_char();
         
-        if( ch >= '\u0000' && ch < '\u0020'){
-            throw_error("Error: unescaped control character in string. Found at index " + std::to_string(json_source[index]) );
+        if( ch >= '\u0000' && ch < '\u0020')
+        {
+            throw_error((Str)"Error: unescaped control character in string. Found at index " + Str::CH(json_source[index]) );
         }
         else if(ch == SOLLIDUS_REVERSE){
 
@@ -290,12 +295,13 @@ size_t JsonLexer::consume_number_literal(){
 }
 
 
-bool JsonLexer::is_fractional_number_string(std::string number_string){
-
-    for(char ch : number_string)
-        if(ch == '.')
+bool JsonLexer::is_fractional_number_string(Str number_string)
+{
+    for(auto i=0; i < number_string.size(); i++)
+    {
+        if(number_string[i] == '.')
             return true;
-
+    }
     return false;
 }
 
@@ -349,13 +355,13 @@ void JsonLexer::tokenize_ws(){
 }
 
 
-void JsonLexer::throw_error(std::string error_msg){
+void JsonLexer::throw_error(Str error_msg){
 
-    std::string state_string = "\n    Current char  = " + json_source.substr(index, 1) + "\n    Current index = " + std::to_string(index);
+    Str state_string = (Str)"\n    Current char  = " + json_source.substr(index, 1) + "\n    Current index = " + Str::UI(index);
 
-    std::string full_error_str = "Lexer: " + error_msg + state_string;
+    Str full_error_str = (Str)"Lexer: " + error_msg + state_string;
 
-    throw std::runtime_error(full_error_str);
+    throw std::runtime_error(full_error_str.to_c_str());
 
 }
 
@@ -368,8 +374,9 @@ void JsonLexer::print_tokens(Tokens& tokens) {
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
     
     
-    for (const auto& token : tokens.get_vector()) {
-        std::cout << std::setw(12) << token_type_to_string(token.type) << "  |" << std::endl;
+    for (const auto& token : tokens.get_vector())
+    {
+        std::cout << std::setw(12) << token_type_to_string(token.type).to_c_str() << "  |" << std::endl;
     }
 
     std::cout << "____________________________________" << std::endl << std::endl;
@@ -378,7 +385,7 @@ void JsonLexer::print_tokens(Tokens& tokens) {
 
 
 
-Tokens& JsonLexer::lex(const std::string& _json_source){
+Tokens& JsonLexer::lex(const Str& _json_source){
 
     reset_lexer();
 

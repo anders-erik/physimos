@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <stack>
 #include <iostream>
 #include <fstream>
@@ -30,7 +31,7 @@ struct JsonVar; // forward declare
 
 typedef std::string     JSS; // Json source/serialized string
 
-typedef std::string     j_string;
+typedef Str             j_string;
 typedef bool            j_bool;
 typedef std::nullptr_t  j_null;
 typedef double          j_float;
@@ -111,7 +112,7 @@ struct JsonVar
             break;
 
         case json_type::string :
-            variant_ = "";
+            variant_ = Str();
             break;
 
         case json_type::array :
@@ -145,7 +146,7 @@ struct JsonVar
         type = json_type::number_float;
         variant_ = new_float;
     }
-    void set_float(j_string new_string)
+    void set_string(j_string new_string)
     {
         type = json_type::string;
         variant_ = new_string;

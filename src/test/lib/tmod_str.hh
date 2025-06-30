@@ -203,3 +203,105 @@ UnitTestArray substr = {
 
 };
 
+
+
+
+UnitTestArray operators = {
+
+
+    {   "\"a\" < \"b\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_a = "a";
+        Str str_b = "b";
+        
+        utest.assert(   str_a < str_b,
+                        true            );
+    }},
+
+    {   "\"b\" > \"a\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_a = "a";
+        Str str_b = "b";
+        
+        utest.assert(   str_a < str_b,
+                        true            );
+    }},
+
+
+    {   "\"a\" < \"aa\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_a = "a";
+        Str str_aa = "aa";
+        
+        utest.assert(   str_a < str_aa,
+                        true            );
+    }},
+
+    {   "\"aa\" > \"a\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_a = "a";
+        Str str_aa = "aa";
+        
+        utest.assert(   str_a < str_aa,
+                        true            );
+    }},
+
+
+    {   "\"cp0\" < \"ka\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_ka = "ka";
+        Str str_cp0 = "cp0";
+        
+        utest.assert(   str_cp0 < str_ka,
+                        true            );
+    }},
+
+    {   "\"ka\" < \"kb\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_ka = "ka";
+        Str str_kb = "kb";
+        
+        utest.assert(   str_ka < str_kb,
+                        true            );
+    }},
+
+
+    {   "\"kb\" < \"kba\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_kb = "kb";
+        Str str_kba = "kba";
+        
+        utest.assert(   str_kb < str_kba,
+                        true            );
+    }},
+
+    {   "\"cp0\" < \"kb\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_cp0 = "cp0";
+        Str str_kb  = "kb";
+        
+        utest.assert(   str_cp0 < str_kb,
+                        true            );
+    }},
+
+
+    {   "\"cp\" < \"k\"",
+    [](UnitTest& utest) -> void
+    {
+        Str str_cp = "cp";
+        Str str_k  = "k";
+        
+        utest.assert(   str_cp < str_k,
+                        true            );
+    }},
+
+
+};

@@ -33,8 +33,8 @@ void variant_playground(){
     JsonVar json_var_str_hola (j_string("HOLA"));
     // JsonVar json_var_str_como ("COMO");
 
-    std::cout << json_var_str_hole.get_string() << std::endl;
-    std::cout << json_var_str_hola.get_string() << std::endl;
+    // std::cout << json_var_str_hole.get_string() << std::endl;
+    // std::cout << json_var_str_hola.get_string() << std::endl;
     // std::cout << json_var_str_como.get_string() << std::endl;
 
     JsonVar json_var_array (json_type::array);

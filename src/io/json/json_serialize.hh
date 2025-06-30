@@ -77,24 +77,24 @@ class JsonSerializer {
 
     int             recursive_depth = 0; // Container depth for correct indentation
 
-    std::string     result_string = "";
+    Str     result_string = "";
 
 
-    std::string build_string(JsonVar json_var);
+    Str build_string(JsonVar json_var);
 
-    void try_add_new_line(std::string& str);
-    void try_add_indent(std::string& str);
-    void try_remove_trailing_comma_object(std::string& str);
-    void try_remove_trailing_comma_array(std::string& str);
-    void add_trailing_comma_to_object(std::string& str);
-    void add_trailing_comma_to_array(std::string& str);
+    void try_add_new_line(Str& str);
+    void try_add_indent(Str& str);
+    void try_remove_trailing_comma_object(Str& str);
+    void try_remove_trailing_comma_array(Str& str);
+    void add_trailing_comma_to_object(Str& str);
+    void add_trailing_comma_to_array(Str& str);
 
-    static void add_spaces(std::string& str, int space_count);
+    static void add_spaces(Str& str, int space_count);
 
     /** Supports different precision and scientific notation */
-    static std::string float_to_json_representation(j_float float_, FloatFormat float_format);
-    /** Converts a std::string to is JSON equivelence. e.g. <I "mean" it..> --> <"I \"mean\" it.."> */
-    static std::string string_to_json_representation(std::string cpp_string);
+    static Str float_to_json_representation(j_float float_, FloatFormat float_format);
+    /** Converts a Str to is JSON equivelence. e.g. <I "mean" it..> --> <"I \"mean\" it.."> */
+    static Str string_to_json_representation(Str cpp_string);
 
 public:
 
@@ -102,7 +102,7 @@ public:
     JsonSerializer(JSerialConfig config): config { config } {};
 
     /** Returns full json structure as string.  */
-    std::string serialize(const JsonVar& json_root);
+    Str serialize(const JsonVar& json_root);
 
 
 

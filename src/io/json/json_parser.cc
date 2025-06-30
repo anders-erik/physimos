@@ -3,11 +3,13 @@
 
 
 
-char JsonParser::unicode_sequence_to_ASCII(std::string unicode_sequence){
+char JsonParser::unicode_sequence_to_ASCII(Str unicode_sequence){
+
+    std::string std_string = unicode_sequence.to_c_str();
 
     unsigned int unicode_value_decimal;
     std::stringstream _stringstream;
-    _stringstream << std::hex << unicode_sequence;
+    _stringstream << std::hex << std_string;
     _stringstream >> unicode_value_decimal;
     // log(unicode_value_decimal);
 
@@ -58,20 +60,20 @@ char JsonParser::json_escape_char_to_value(char escape_char){
     return 0;
 }
 
-j_string JsonParser::parse_string_literal(std::string string_literal){
+j_string JsonParser::parse_string_literal(Str string_literal){
 
     // Literal value to return
     j_string new_string = "";
 
     // Parse loop
-    for(size_t i = 0; i < string_literal.length(); i++){
+    for(size_t i = 0; i < string_literal.size(); i++){
 
         /** Current char in the json-source string literal.  */
         char ch = string_literal[i];
 
         // Relies on lexer to have caught invalid quotes and control chars.
         if(ch != SOLLIDUS_REVERSE){
-            new_string += ch;
+            new_string += Str::CH(ch);
             continue;
         }
 
@@ -80,25 +82,25 @@ j_string JsonParser::parse_string_literal(std::string string_literal){
 
         // Single-char escape values
         if(ch != 'u'){
-            new_string += json_escape_char_to_value(ch);
+            new_string += Str::CH(json_escape_char_to_value(ch));
             continue;
         }
         
         // Unicode sequence - only ascii
-        std::string unicode_chars = string_literal.substr(i+1, 4);
-        new_string += unicode_sequence_to_ASCII(unicode_chars);
+        Str unicode_chars = string_literal.substr(i+1, 4);
+        new_string += Str::CH(unicode_sequence_to_ASCII(unicode_chars));
         i += 4;
     }
 
     return new_string;
 };
 
-JsonVar JsonParser::parse_integer_str(std::string number_str){
+JsonVar JsonParser::parse_integer_str(Str number_str){
 
     j_int parsed_int;
 
     try {
-        parsed_int = std::stol(number_str);
+        parsed_int = std::stol(number_str.to_c_str());
     }
     catch(const std::exception& e)
     {
@@ -109,12 +111,12 @@ JsonVar JsonParser::parse_integer_str(std::string number_str){
     return JsonVar( parsed_int );
 }
 
-JsonVar JsonParser::parse_float_str(std::string number_str){
+JsonVar JsonParser::parse_float_str(Str number_str){
 
     j_float parsed_float;
 
     try {
-        parsed_float = std::stod(number_str);
+        parsed_float = std::stod(number_str.to_c_str());
     }
     catch(const std::exception& e)
     {
@@ -185,7 +187,7 @@ JsonVar JsonParser::parse_object(){
             throw_error("Invalid kv token sequence in object.");
 
         // KV creation
-        std::string raw_json_str = json_source.substr(key_token.str_start_i, key_token.str_length);
+        Str raw_json_str = json_source.substr(key_token.str_start_i, key_token.str_length);
         j_string key = parse_string_literal(raw_json_str);
 
         // j_kv kv (key, parse_value(value_token));
@@ -278,9 +280,9 @@ JsonVar JsonParser::parse(){
 }
 
 
-void JsonParser::throw_error(std::string error_msg){
+void JsonParser::throw_error(Str error_msg){
     // token_type_to_string
-    std::string full_error_str = "Parser: " + error_msg + tokens.get_state_string();
+    Str full_error_str = Str{"Parser: "} + error_msg + tokens.get_state_string();
 
-    throw std::runtime_error(full_error_str);
+    throw std::runtime_error(full_error_str.to_c_str());
 }

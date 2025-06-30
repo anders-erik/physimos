@@ -22,19 +22,18 @@ object_find(j_string str_to_match)
 void JsonVar::object_push(const j_kv & kv)
 {
     get_object().insert(kv);
+    // get_object().emplace(kv);
 }
 
 void JsonVar::parse(const Str& json_source)
 {
-    Str str = json_source;
-    std::string json_src_string = str.to_c_str();
 
     variant_ = nullptr;
 
     JsonLexer lexer;
-    lexer.lex(json_src_string);
+    lexer.lex(json_source);
 
-    JsonParser parser (json_src_string, lexer.tokens); 
+    JsonParser parser (json_source, lexer.tokens); 
     *this = parser.parse();
 
 }
@@ -44,5 +43,5 @@ ResMove<Str> JsonVar::serialize()
     JsonSerializer serializer;
     serializer.set_config({});
 
-    return {serializer.serialize(*this).c_str()};
+    return {serializer.serialize(*this)};
 }

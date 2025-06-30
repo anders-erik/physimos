@@ -10,17 +10,17 @@
 struct JsonLexer {
 
     JsonLexer() {};
-    // JsonLexer(const std::string& _json_source) : json_source{_json_source} {};
+    // JsonLexer(const Str& _json_source) : json_source{_json_source} {};
 
     static void print_tokens(Tokens& tokens);
 
-    Tokens& lex(const std::string& _json_source);
+    Tokens& lex(const Str& _json_source);
 
 
     Tokens tokens;
 private:
 
-    std::string json_source;
+    Str json_source;
     size_t index = 0;
 
     void reset_lexer();
@@ -33,8 +33,8 @@ private:
     static bool is_plus_minus(char c);
     static bool is_hex_digit(char c);
     /**Only checks for existence of '.' */
-    static bool is_fractional_number_string(std::string number_string);
-    bool is_unicode_quad(const std::string& four_unicode_digits);
+    static bool is_fractional_number_string(Str number_string);
+    bool is_unicode_quad(const Str& four_unicode_digits);
 
     // QUERY
     /** Get current char without affecting index. */
@@ -77,7 +77,7 @@ private:
     void tokenize_ws();
 
     // ERROR HANDLING
-    void throw_error(std::string error_msg);
+    void throw_error(Str error_msg);
 
 };
 

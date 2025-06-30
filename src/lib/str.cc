@@ -109,6 +109,28 @@ operator==(const Str & rhs) const
     return true;
 }
 
+bool Str::operator<(const Str & other) const 
+{
+    uint min_size = size() < other.size() ? size() : other.size();
+
+    // compare chars for least shared size
+    for(uint i=0; i<min_size; i++)
+    {
+        if((*this)[i] < other[i])
+            return true;
+    }
+
+    if(size() < other.size())
+        return true;
+
+    return false;
+}
+
+bool Str::operator>=(const Str & other) const
+{
+    return !(*this < other);
+}
+
 
 
 
@@ -127,6 +149,11 @@ operator+=(const Str & rhs)
     this->append(rhs);
     return *this;
 }
+
+// Str& Str::operator+=(char ch)
+// {
+//     return *this += Str::CH(ch);
+// }
 
 
 Str& Str::
@@ -229,6 +256,12 @@ capacity() const
 }
 
 void Str::
+pop_back()
+{
+    size_str--;
+}
+
+void Str::
 reserve(unsigned int new_alloc_size)
 {
     if(new_alloc_size <= size_alloc)
@@ -262,6 +295,11 @@ fill_alloc(char fill_char)
 }
 
 
+void Str::
+clear()
+{
+    release_mem();
+}
 
 void Str::append(const Str& str_to_append){
 
@@ -346,7 +384,7 @@ void Str::print_in_quotes()
 Str Str::
 CH(char ch)
 {
-    Str str = "";
+    Str str = " ";
     str[0] = ch;
     return str;
 }
@@ -355,6 +393,13 @@ CH(char ch)
 Str Str::
 SI(long long s_int)
 {
+    char buff[30];
+    memset(buff, 0x0, 30);
+    snprintf(buff, sizeof(buff), "%lli", s_int);
+    return Str{buff};
+
+    // Old tmp code to hold me over
+
     if(s_int == 0)
         return "0";
 
@@ -392,8 +437,14 @@ SI(long long s_int)
     return new_str;
 }
 
-Str Str::UI(size_t u_int)
+Str Str::UI(unsigned long long u_int)
 {
+    char buff[30];
+    memset(buff, 0x0, 30);
+    snprintf(buff, sizeof(buff), "%lli", u_int);
+    return Str{buff};
+
+
     if(u_int == 0)
         return "0";
 

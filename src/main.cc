@@ -16,7 +16,7 @@
 
 #include "scene/manager_object.hh"
 
-#include "io/json/examples/jfile.hh"
+// #include "io/json/examples/jfile.hh"
 #include "io/jfile/jmesh.hh"
 
 int main()

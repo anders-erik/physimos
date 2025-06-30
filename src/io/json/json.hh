@@ -14,7 +14,7 @@
 
 class Json {
         
-            std::string json_source;    // Original json source to parse
+            Str json_source;    // Original json source to parse
             Tokens      tokens;         // Lexed Json -- including whitespace
             JsonVar     root_var;       // Parsed Json - whitespace removed included
             
@@ -23,11 +23,11 @@ class Json {
 
         public:
 
-            Json(std::string _json_source) 
+            Json(Str _json_source) 
                 : json_source {_json_source} 
             {};
 
-            void set_json_source(std::string _json_source){
+            void set_json_source(Str _json_source){
                 json_source = _json_source;
                 is_lexed = false;
                 is_parsed = false;
@@ -68,7 +68,7 @@ class Json {
                 return root_var;
             }
 
-            std::string serialize() {
+            Str serialize() {
                 if(!is_parsed){
                     std::cout << "Warning: can't serialize json. Tokens have not been parsed. " << std::endl;
                     return "";
@@ -83,23 +83,22 @@ class Json {
                 lex();
                 return parse();
             };
-            JsonVar& lex_parse(std::string _json_source){
+            JsonVar& lex_parse(Str _json_source){
                 set_json_source(_json_source);
                 lex();
                 return parse();
             };
 
-            static void throw_error(std::string error_msg){
-                std::string base_msg = "Json Error: \n";
-                std::string complete_msg = base_msg + error_msg + "\n";
-                throw std::runtime_error(complete_msg);
+            static void throw_error(Str error_msg){
+                // std::string base_msg = "Json Error: \n";
+                // std::string complete_msg = base_msg + error_msg + "\n";
+                // throw std::runtime_error(complete_msg);
                 
             }
 
             static ResMove<JsonVar> parse(Str json_source)
             {
-                Json json {json_source.to_c_str()};
-                
+                Json json {json_source};
                 try
                 {
                     json.lex();
@@ -119,8 +118,8 @@ class Json {
                 JsonSerializer serializer;
                 serializer.set_config( {serial_ws::new_lines, 4} );
                 // serializer.serialize()
-                std::string serialized_string = serializer.serialize(json_var);
-                return serialized_string.c_str();
+                Str serialized_string = serializer.serialize(json_var);
+                return serialized_string;
             }
 
         };

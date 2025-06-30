@@ -33,9 +33,12 @@ struct Str
     Str& operator=(Str&& other);
 
     bool operator==(const Str& other) const;
+    bool operator<(const Str& other) const;
+    bool operator>=(const Str& other) const;
 
     Str& operator+=(Str&& rhs);
     Str& operator+=(const Str& rhs);
+    // Str& operator+=(char ch);
     Str& operator+=(const char* c_str);
 
     Str operator+(const Str& rhs);
@@ -51,10 +54,12 @@ struct Str
     char* data() const;
     unsigned int size() const;
     unsigned int capacity() const;
+    void pop_back();
     void reserve(unsigned int new_alloc_size);
     bool has_size() const;
     bool has_capacity() const;
     void fill_alloc(char fill_char);
+    void clear();
 
     void allocate(unsigned int size_to_alloc);
     void reallocate(unsigned int new_size_alloc);
@@ -89,7 +94,7 @@ struct Str
     /** Signed Integer to Str */
     static Str SI(long long s_int);
     /** Unsigned Integer to Str */
-    static Str UI(size_t u_int);
+    static Str UI(unsigned long long u_int);
     /** Float to Str */
     static Str FL(float fl, uchar decimals, Str::FloatRep float_representation);
     /** Double to Str */

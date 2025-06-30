@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 
-#include "examples/jfile_shape.hh"
+// #include "examples/jfile_shape.hh"
 
 #include "json_types.hh"
 
@@ -48,8 +48,8 @@ int main (int argc, char **argv) {
     std::cout << "Main JSON" << std::endl << std::endl;
     
 
-    // RunFlag run_flag = RF_NEW;
-    RunFlag run_flag = RF_TCLIB;
+    RunFlag run_flag = RF_NEW;
+    // RunFlag run_flag = RF_TCLIB;
     // RunFlag run_flag = RF_VARIANT;
 
 
@@ -59,32 +59,61 @@ int main (int argc, char **argv) {
         if(run_flag == RF_NEW){
 
             Str jsource;
-
             // _json_string = load_file("data/literal_names_array.json");
             // _json_string = load_file("data/name_literals_nested_array.json");
             // _json_string = load_file(json_data_path + "strings/string_array.json");
             // _json_string = load_file(json_data_path + "non_valid_parser/non_ascii_string.json");
             // _json_string = load_file(json_data_path + "non_valid_lexer/unclosed_string.json");
-            jsource = File::cat_as_str_core_xplat(data_dir + "misc/mesh_minimal.json").consume_value();
+            // jsource = File::cat_as_str_core_xplat(data_dir + "misc/mesh_minimal.json").consume_value();
             // _json_string = load_file("data/numbers.json");
             // _json_string = load_file("data/object_nested.json");
             // _json_string = load_file("data/object.json");
             // _json_string = load_file("data/shapes.json");
 
-            JsonVar json_v;
-            json_v.parse(jsource.to_c_str());
-            ResMove<Str> str = json_v.serialize();
-            Print::line(str.consume_value());
+            // jsource = File::cat_as_str_core_xplat(data_dir + "primitives/string.json").consume_value();
+            // jsource = File::cat_as_str_core_xplat(data_dir + "primitives/object.json").consume_value();
+            // jsource = File::cat_as_str_core_xplat(data_dir + "integers/integers.json").consume_value();
+            // jsource = File::cat_as_str_core_xplat(data_dir + "misc/shapes.json").consume_value();
+            jsource = File::cat_as_str_core_xplat(data_dir + "misc/name_sort_bug.json").consume_value();
+
+            // JsonVar json_v;
+            // json_v.parse(jsource.to_c_str());
+            // ResMove<Str> str = json_v.serialize();
+            // Print::line(str.consume_value());
+
+            // JsonVar             p1  = parse_json_test_file("misc/shapes.json");
+            // JsonVar             p1  = parse_json_test_file("misc/name_sort_bug.json");
+            // Str                 s1  = Json::serialize(p1);
+            ResMove<JsonVar>    p2  = Json::parse(jsource);
+            Str                 s2  = Json::serialize(p2.consume_value());
+            ResMove<JsonVar>    p3  = Json::parse(s2);
+            Str                 s3  = Json::serialize(p3.consume_value());
+            ResMove<JsonVar>    p4  = Json::parse(s2);
+            Str                 s4  = Json::serialize(p3.consume_value());
+
+            if(s2 != s3)
+            {
+                Print::line("s2: \n", s2);
+                Print::line("s3: \n", s3);
+            }
+
+            std::map<Str, int> map_1;
+            map_1.insert({"k", 0});
+            map_1.insert({"cp", 0});
+            for(auto& kv : map_1)
+            {
+                Print::line(kv.first);
+            }
 
 
-            ResMove<JsonVar> json_res = Json::parse(jsource);
-            if(json_res.has_error())
-                Print::err(json_res.consume_error());
+            // ResMove<JsonVar> json_res = Json::parse(jsource);
+            // if(json_res.has_error())
+            //     Print::err(json_res.consume_error());
 
-            JsonVar json_var = json_res.consume_value();
+            // JsonVar json_var = json_res.consume_value();
 
-            Str serialized = Json::serialize(json_var);
-            Print::line(serialized);
+            // Str serialized = Json::serialize(json_var);
+            // Print::line(serialized);
             
 
             // Json json (_json_string);
@@ -106,11 +135,11 @@ int main (int argc, char **argv) {
             // File file ("src/lib/json/data/shapes.json");
             // JFileShape shape_config (file);
 
-            JFileShape shape_config (json_data_path + "src/lib/json/data/shapes.json");
+            // JFileShape shape_config (json_data_path + "src/lib/json/data/shapes.json");
 
-            Shape line = { {0.03, 0.2}, {11.01, 12.343444}};
-            std::string shape_string = JFileShape::serialize_shape(line);
-            std::cout << shape_string << std::endl;
+            // Shape line = { {0.03, 0.2}, {11.01, 12.343444}};
+            // std::string shape_string = JFileShape::serialize_shape(line);
+            // std::cout << shape_string << std::endl;
             
 
         }
@@ -145,7 +174,7 @@ int main (int argc, char **argv) {
         root_array.get_array().push_back(j_null(nullptr));
 
         JsonSerializer serializer;
-        std::cout << serializer.serialize(root_array) << std::endl;
+        // std::cout << serializer.serialize(root_array) << std::endl;
 
         // OBJECT
         JsonVar root_obj = j_object();
@@ -157,19 +186,19 @@ int main (int argc, char **argv) {
         // kv_value.get_object().emplace("k1", j_int(555));
 
         // PRINT OBJECTS
-        std::string obj_str;
+        // std::string obj_str;
 
-        serializer.set_config( { serial_ws::minimized, 0 } );
-        obj_str = serializer.serialize(root_obj);
-        std::cout << obj_str << std::endl;
+        // serializer.set_config( { serial_ws::minimized, 0 } );
+        // obj_str = serializer.serialize(root_obj);
+        // std::cout << obj_str << std::endl;
 
-        serializer.set_config( { serial_ws::oneline, 4 } );
-        obj_str = serializer.serialize(root_obj);
-        std::cout << obj_str << std::endl;
+        // serializer.set_config( { serial_ws::oneline, 4 } );
+        // obj_str = serializer.serialize(root_obj);
+        // std::cout << obj_str << std::endl;
 
-        serializer.set_config( { serial_ws::new_lines, 4 } );
-        obj_str = serializer.serialize(root_obj);
-        std::cout << obj_str << std::endl;
+        // serializer.set_config( { serial_ws::new_lines, 4 } );
+        // obj_str = serializer.serialize(root_obj);
+        // std::cout << obj_str << std::endl;
         
 
     }

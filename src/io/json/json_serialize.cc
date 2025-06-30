@@ -2,20 +2,20 @@
 #include "io/json/json_serialize.hh"
 
 
-void JsonSerializer::add_spaces(std::string& str, int count){
+void JsonSerializer::add_spaces(Str& str, int count){
     for(int i = 0; i < count; i++)
         str += " ";
 }
 
-void JsonSerializer::try_add_new_line(std::string& str){
+void JsonSerializer::try_add_new_line(Str& str){
     if(config.whitespace == serial_ws::new_lines)
         str += "\n";
 }
-void JsonSerializer::try_add_indent(std::string& str){
+void JsonSerializer::try_add_indent(Str& str){
     if(config.whitespace == serial_ws::new_lines)
         add_spaces(str, recursive_depth*config.indent_space_count);
 }
-void JsonSerializer::add_trailing_comma_to_object(std::string& str){
+void JsonSerializer::add_trailing_comma_to_object(Str& str){
     
     if(config.whitespace == serial_ws::minimized){
         str += ",";
@@ -27,24 +27,24 @@ void JsonSerializer::add_trailing_comma_to_object(std::string& str){
         str += ",\n";
     }
 }
-void JsonSerializer::try_remove_trailing_comma_object(std::string& str){
+void JsonSerializer::try_remove_trailing_comma_object(Str& str){
     
     if(config.whitespace == serial_ws::minimized){
-        if(str.back() == ',')
+        if(str[str.size()-1] == ',')
             str.pop_back();
     }
     else if (config.whitespace == serial_ws::oneline){
         if(str.size() > 2)
-            str = str.substr(0, str.length()-2);
+            str = str.substr(0, str.size()-2);
     }
     else if (config.whitespace == serial_ws::new_lines){
         if(str.size() > 2)
-            str = str.substr(0, str.length()-2);
+            str = str.substr(0, str.size()-2);
     }
 }
 
 
-void JsonSerializer::add_trailing_comma_to_array(std::string& str){
+void JsonSerializer::add_trailing_comma_to_array(Str& str){
     
     if(config.whitespace == serial_ws::minimized){
         str += ",";
@@ -56,29 +56,29 @@ void JsonSerializer::add_trailing_comma_to_array(std::string& str){
         str += ",\n";
     }
 }
-void JsonSerializer::try_remove_trailing_comma_array(std::string& str){
+void JsonSerializer::try_remove_trailing_comma_array(Str& str){
     
     if(config.whitespace == serial_ws::minimized){
-        if(str.back() == ',')
+        if(str[str.size()-1] == ',')
             str.pop_back();
     }
     else if (config.whitespace == serial_ws::oneline){
         if(str.size() > 2)
-            str = str.substr(0, str.length()-2);
+            str = str.substr(0, str.size()-2);
     }
     else if (config.whitespace == serial_ws::new_lines){
         if(str.size() > 2)
-            str = str.substr(0, str.length()-2);
+            str = str.substr(0, str.size()-2);
     }
 }
 
 
-std::string JsonSerializer::serialize(const JsonVar& json_root){
+Str JsonSerializer::serialize(const JsonVar& json_root){
 
     return build_string(json_root);
 }
 
-std::string JsonSerializer::build_string(JsonVar json_var){
+Str JsonSerializer::build_string(JsonVar json_var){
 
     if(is_literal(json_var.type)){
 
@@ -97,7 +97,7 @@ std::string JsonSerializer::build_string(JsonVar json_var){
             return float_to_json_representation(json_var.get_float(), config.float_format);
             break;
         case json_type::number_int:
-            return std::to_string( json_var.get_int() );
+            return Str::SI( json_var.get_int() );
             break;
         case json_type::string:
             return string_to_json_representation(json_var.get_string());
@@ -111,7 +111,7 @@ std::string JsonSerializer::build_string(JsonVar json_var){
 
 
     if(json_var.type == json_type::array){
-        std::string array_str = "[";
+        Str array_str = "[";
         j_array arr = json_var.get_array();
 
         try_add_new_line(array_str);
@@ -139,7 +139,7 @@ std::string JsonSerializer::build_string(JsonVar json_var){
     else if(json_var.type == json_type::object){
 
         j_object obj = json_var.get_object();
-        std::string obj_string = "{";
+        Str obj_string = "{";
 
         try_add_new_line(obj_string);
 
@@ -181,12 +181,12 @@ std::string JsonSerializer::build_string(JsonVar json_var){
 
 
 
-std::string JsonSerializer::float_to_json_representation(j_float float_, FloatFormat float_format){
+Str JsonSerializer::float_to_json_representation(j_float float_, FloatFormat float_format){
 
     if(float_format.precision == 0)
         throw std::runtime_error("Tried serializing json float with zero precision.");
 
-    std::string str_return = "";
+    Str str_return = "";
 
     std::ostringstream ss;
 
@@ -204,7 +204,7 @@ std::string JsonSerializer::float_to_json_representation(j_float float_, FloatFo
     }
 
     // Done, unless trimming is set
-    str_return = ss.str();
+    str_return = ss.str().c_str();
 
 
     // Trim Fixed represnetation sting below
@@ -219,7 +219,7 @@ std::string JsonSerializer::float_to_json_representation(j_float float_, FloatFo
 
     // Count trailing zeros
     size_t trailing_zero_count = 0;
-    size_t str_last_index = str_return.length() - 1;
+    size_t str_last_index = str_return.size() - 1;
     while( str_return[str_last_index - trailing_zero_count] == '0')
         ++trailing_zero_count;
     
@@ -230,14 +230,17 @@ std::string JsonSerializer::float_to_json_representation(j_float float_, FloatFo
     return str_return.substr(0, str_return.size()-trailing_zero_count);
 }
 
-std::string JsonSerializer::string_to_json_representation(std::string cpp_string){
+Str JsonSerializer::string_to_json_representation(Str cpp_string){
 
-    std::string json_representation = "";
+    Str json_representation = "";
 
     json_representation += "\"";
 
-    for(const char ch : cpp_string){
-        
+    // for(const char ch : cpp_string){
+    for(auto i=0; i<cpp_string.size(); i++)
+    {
+        char ch = cpp_string[i];
+   
         if(ch == QUOTATION_MARK){
             json_representation += "\\";
             json_representation += "\"";
@@ -268,10 +271,10 @@ std::string JsonSerializer::string_to_json_representation(std::string cpp_string
         else if( (ch >= '\u0000' && ch < '\u0020') ){
             json_representation += "\\u00XX";
             // TODO: CONVERT ch to hex-string and append
-            json_representation += std::to_string(ch);
+            json_representation += Str::CH(ch);
         }
         else {
-            json_representation += ch;
+            json_representation += Str::CH(ch);
         }
 
     }

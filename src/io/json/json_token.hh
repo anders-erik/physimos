@@ -3,6 +3,7 @@
 #include <string>
 #include <stdexcept>
 
+#include "lib/str.hh"
 
 enum class token_t {
 
@@ -25,7 +26,7 @@ enum class token_t {
     whitespace,
 };
 
-constexpr std::string token_type_to_string(token_t type){
+constexpr Str token_type_to_string(token_t type){
 
     switch (type)
     {
@@ -83,7 +84,8 @@ constexpr std::string token_type_to_string(token_t type){
     throw std::runtime_error("Failed to match a json token type.");
 }
 
-struct Token {
+struct Token 
+{
     token_t type;
     /** First char of token in source string.  */
     size_t str_start_i;
@@ -142,7 +144,8 @@ struct Token {
     
 };
 
-class Tokens {
+class Tokens 
+{
     std::vector<Token> vec;
     size_t current_index = 0;
 public:
@@ -181,9 +184,9 @@ public:
     bool index_is_valid(size_t i){
         return (i < vec.size()) ? true : false;
     }
-    std::string get_state_string(){
+    Str get_state_string(){
 
-        std::string state_string;
+        Str state_string;
 
         size_t print_count = 3;
         size_t index_offset_neg = 1;
@@ -193,18 +196,18 @@ public:
         for(size_t i = start_i; i < end_i; i++){
 
             if(index_is_valid(i))
-                state_string += "\nToken index " + std::to_string(i) + ": " + token_type_to_string(this->operator[](i).type);
+                state_string += (Str)"\nToken index " + Str::UI(i) + ": " + token_type_to_string(this->operator[](i).type);
             else
                 state_string += "\nToken index out of range.";
 
         }
         return state_string;
     }
-    void throw_bounds_error(std::string when_msg){
+    void throw_bounds_error(Str when_msg){
         --current_index; // move back to in bounds
-        std::string state_string = get_state_string();
-        std::string error_msg = "Out of bounds error." + when_msg;
-        throw std::runtime_error(error_msg + state_string);
+        Str state_string = get_state_string();
+        Str error_msg = (Str)"Out of bounds error." + when_msg;
+        throw std::runtime_error((error_msg + state_string).to_c_str());
     };
 };
 
