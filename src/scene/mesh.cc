@@ -13,10 +13,11 @@ clear()
     faces.clear();
 }
 
+
 void Mesh::sheet()
 {
-    int WC = 10;                // width vertex count
-    float square_width = 10;    // actual width
+    int WC = 10;            // width vertex count
+    float square_width = 1; // actual width
 
     float step_size = square_width / (float) (WC - 1);
 
@@ -51,19 +52,55 @@ void Mesh::sheet()
     }
 }
 
-void Mesh::center()
-{
-    f3 vert_sum;
-    for(auto& vert : verts)
-        vert_sum += vert;
-    
-    f3 vert_average = vert_sum / verts.size();
 
-    for(auto& vert : verts)
-        vert -= vert_average;
+void Mesh::sheet(SheetContext context)
+{
+
+    int     WC = context.width_count;   // width vertex count
+    float   W  = context.width;         // actual width
+
+    float step_size = W / (float) (WC - 1);
+
+    #define I(x, y)     ((x) + (y) * WC) // Linear index in arrays
+
+    verts.resize(WC*WC);
+    for(int yi = 0; yi < WC; yi++)
+    {
+        for(int xi = 0; xi < WC; xi++)
+        {
+            verts[I(xi, yi)] =  {   step_size * xi,
+                                    step_size * yi,
+                                    0               };
+        }
+    }
+
+    faces.clear();
+    for(int yi = 0; yi < WC-1; yi++)
+    {
+        for(int xi = 0; xi < WC-1; xi++)
+        {
+            int i = I(xi, yi);
+
+            faces.emplace_back(     i, 
+                                    i + 1,  
+                                    i + WC        );
+
+            faces.emplace_back(     i + WC, 
+                                    i + 1,  
+                                    i + WC + 1    );
+        }
+    }
 }
 
-void Mesh::create_cube()
+
+void Mesh::
+tube()
+{
+
+}
+
+
+void Mesh::cube()
 {
     verts.clear();
     faces.clear();
@@ -150,7 +187,7 @@ void Mesh::create_cube()
 
 }
 
-void Mesh::create_quad()
+void Mesh::quad()
 {
     verts.clear();
     faces.clear();
@@ -183,4 +220,32 @@ void Mesh::create_quad()
     faces.emplace_back(0, 1, 2); // Lower right
     faces.emplace_back(0, 2, 3); // Upper left
 
+}
+
+void Mesh::center()
+{
+    f3 vert_sum;
+    for(auto& vert : verts)
+        vert_sum += vert;
+    
+    f3 vert_average = vert_sum / verts.size();
+
+    for(auto& vert : verts)
+        vert -= vert_average;
+}
+
+
+void Mesh::
+scale(float factor)
+{
+    for(auto& vert : verts)
+        vert *= factor;
+}
+
+
+void Mesh::
+move(const f3& delta)
+{
+    for(auto& vert : verts)
+        vert += delta;
 }

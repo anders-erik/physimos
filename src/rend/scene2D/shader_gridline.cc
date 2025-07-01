@@ -63,6 +63,21 @@ init()
     line_points.at(10) = {  1.0f,   -xy_max}; // x = 1
     line_points.at(11) = {  1.0f,    xy_max};
 
+    line_points.push_back( {  -xy_max,  0.0f} );
+    line_points.push_back( {   xy_max,  0.0f} );
+    line_points.push_back( {   0.0f,   -xy_max} );
+    line_points.push_back( {   0.0f,    xy_max} );
+    // Auxillary lines
+    line_points.push_back( { -xy_max, -1.0f} ); // y = -1
+    line_points.push_back( {  xy_max, -1.0f} );
+    line_points.push_back( { -xy_max,  1.0f} ); // y = 1
+    line_points.push_back( {  xy_max,  1.0f} );
+
+    line_points.push_back( { -1.0f,   -xy_max} ); // x = -1
+    line_points.push_back( { -1.0f,    xy_max} );
+    line_points.push_back( {  1.0f,   -xy_max} ); // x = 1
+    line_points.push_back( {  1.0f,    xy_max} );
+
 }
 
 void Shader2DGridline::
@@ -71,7 +86,7 @@ set_line_point_buffer()
     glBindVertexArray(vao_xy);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo_xy);
-    glBufferData(GL_ARRAY_BUFFER, line_points.size_byte(), line_points.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, line_points.count_byte(), line_points.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(R2<float>), (void *)0);
     glEnableVertexAttribArray(0);
 

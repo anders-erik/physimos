@@ -3,6 +3,7 @@
 
 
 #include "str.hh"
+#include "str_util.hh"
 
 #include "test/test.hh"
 
@@ -301,6 +302,34 @@ UnitTestArray operator_less_than = {
         
         utest.assert(   !(str_k < str_cp),
                         true            );
+    }},
+
+
+};
+
+
+
+
+
+
+
+
+
+
+UnitTestArray split = {
+
+
+    {   "split(\"aa, bb, cb\", ',')",
+    [](UnitTest& utest) -> void
+    {
+        Str str = "aa,bb,cc";
+        Arr<Str> target_arr;
+        target_arr.push_back("aa");
+        target_arr.push_back("bb");
+        target_arr.push_back("cc");
+        
+        utest.assert(   StrUtil::split(str, ','),
+                        target_arr                  );
     }},
 
 

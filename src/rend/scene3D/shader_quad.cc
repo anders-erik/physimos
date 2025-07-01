@@ -28,7 +28,7 @@ void ShaderQuad::init()
 
     // MESH
     Mesh mesh_quad;
-    mesh_quad.create_quad();
+    mesh_quad.quad();
     size_t vert_size_bytes = mesh_quad.vert_size_bytes();
 
     glGenBuffers(1, &vbo_vert);

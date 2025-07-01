@@ -20,6 +20,7 @@ TCModule str_mod = {
         {"concat", concat},
         {"substr", substr},
         {"operator_less_than", operator_less_than},
+        {"split", split},
     }
 };
 

@@ -10,6 +10,23 @@
 #include "opengl/texture.hh"
 
 
+struct TubeContext
+{
+    float   radius;
+    int     frame_point_count;
+    int     frame_count;
+    float   frame_gap;
+    bool    closed;
+    f2      domain;
+};
+
+struct SheetContext
+{
+    float   width;
+    int     width_count;
+};
+
+
 struct TriangleFaceIndeces 
 {
     int v0;
@@ -33,12 +50,14 @@ struct Mesh
     void clear();
 
     void sheet();
+    void sheet(SheetContext context);
+    void tube();
+    void quad();
+    void cube();
 
     void center();
-    
-    void create_cube();
-    void create_quad();
-
+    void scale(float factor);
+    void move(const f3& delta);
 };
 
 

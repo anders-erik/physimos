@@ -56,6 +56,10 @@ struct JMesh
             {
                 mesh.center();
             }
+            else if(var_str == "cube")
+            {
+                mesh.cube();
+            }
         }
 
         

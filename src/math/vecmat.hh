@@ -141,7 +141,7 @@ struct f3
     constexpr f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
     f3(const f2 _f2, float z) : x {_f2.x}, y {_f2.y}, z {z} {}; 
     f3(float x, const f2 _f2) : x {x}, y {_f2.x}, z {_f2.y} {}; 
-    f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
+    // f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
     // f3() : x {0.0f}, y {0.0f}, z {0.0f} {}; 
 
     f3& operator=(const f3& rhs);
@@ -154,6 +154,8 @@ struct f3
     f3 operator-(const f3& rhs);
 
     f3 operator-();
+
+    f3& operator*=(float scalar);
 
     f3 operator+(float scalar);
     f3 operator-(float scalar);

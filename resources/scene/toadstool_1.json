@@ -4,6 +4,8 @@
     "mesh":
     [
         "sheet",
-        "center"
+        "center",
+        "cube",
+        "sheet"
     ]
 }

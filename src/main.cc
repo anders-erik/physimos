@@ -18,6 +18,7 @@
 
 // #include "io/json/examples/jfile.hh"
 #include "io/jfile/jmesh.hh"
+#include "scene/s_mesh.hh"
 
 int main()
 {
@@ -80,7 +81,7 @@ int main()
 
 	// FIRST PURE MESH
 	Object& object_base = manager_o.new_object();
-	object_base.mesh.create_cube();
+	object_base.mesh.cube();
 	object_base.tag.type = TagO::Type::Base;
 	root_scene.tagos.push_back(object_base.tag);
 
@@ -109,7 +110,7 @@ int main()
 	// QuadO
 	Object& squad_object = manager_o.new_object();
 	squad_object.name = "quado_1";
-	squad_object.mesh.create_quad();
+	squad_object.mesh.quad();
 	squad_object.mesh.center();
 	squad_object.tag.type = TagO::Type::Quad;
 	squad_object.pos.x = 0.0f;
@@ -140,6 +141,19 @@ int main()
 
 	// JMesh jmesh;
 	// Mesh mesh_quad;
+
+	// S_MESH -- Mesh script
+	ResMove<Mesh> mesh_script = ScriptMesh::run("resources/mesh/toadstool.smesh");
+	if(mesh_script.has_value())
+	{
+		Object& mesh_obj = manager_o.new_object();
+		mesh_obj.tag.type = TagO::Base;
+		mesh_obj.mesh = mesh_script.consume_value();
+		// mesh_obj.mesh.sheet();
+		// mesh_obj.mesh.center();
+
+		root_scene.tagos.push_back(mesh_obj.tag);
+	}
 
 
 	physimos.main_loop();

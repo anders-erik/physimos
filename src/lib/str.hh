@@ -6,6 +6,8 @@
 typedef unsigned int    uint;
 typedef unsigned char   uchar;
 
+using SizeStr = uint;
+
 struct Str 
 {
     unsigned int size_alloc = 0;

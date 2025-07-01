@@ -1,35 +1,43 @@
 #pragma once
 
+#include "lib/str.hh"
+
 #include <iostream>
 
 #include <cstring>
+
+using SizeArr = uint;
 
 
 template <typename T>
 class Arr
 {
     T* t_p = nullptr;
-    size_t count = 0;
+    uint reserved = 0;
+    
+    uint elem_count    = 0;
 
 public:
 
     Arr() = default;
     /** Uninitialized memory? */
-    Arr(size_t count)
+    Arr(uint reserve_size)
     { 
-        allocate(count);
+        allocate(reserve_size);
     }
     /** Construct with array filled with specific value. */
-    Arr(size_t count, const T& inital_value)
+    Arr(uint elem_count, const T& inital_value)
     {
-        allocate(count);
+        allocate(elem_count);
         set(inital_value);
     }
     /** Copy construct. */
-    Arr(const Arr<T>& vec) 
+    Arr(const Arr<T>& arr) 
     {
-        allocate(vec.size());
-        memcpy(t_p, vec.data(), count*sizeof(T));
+        allocate(arr.count());
+        elem_count = arr.count();
+        for(SizeArr i=0; i < elem_count; i++)
+            (*this)[i] = arr[i];
     }
 
     ~Arr() 
@@ -48,12 +56,13 @@ public:
             return *this;
         }
 
-        if(count != rhs.size())
+        if(elem_count < rhs.capacity())
         {
-            deallocate();
-            count = rhs.size(); 
+            reallocate(rhs.capacity());
         }
-        memcpy(t_p, rhs.data(), count*sizeof(T));
+        elem_count = rhs.count();
+        for(SizeArr i=0; i < elem_count; i++)
+            (*this)[i] = rhs[i];
         return *this;
     }
 
@@ -61,10 +70,10 @@ public:
     bool operator!=(const Arr<T>& rhs) { return *this == rhs ? false : true; }
     bool operator==(const Arr<T>& rhs)
     {
-        if(count != rhs.size())
+        if(elem_count != rhs.count())
             return false;
         
-        for(size_t i = 0; i < count; i++)
+        for(uint i = 0; i < elem_count; i++)
         {
             if((*this)[i] != rhs[i])
                 return false;
@@ -73,63 +82,107 @@ public:
         return true;
     }
 
-    T& operator[](size_t index) const
+    T& operator[](uint index) const
     {
         return *(t_p + index);
     }
 
-    T& at(size_t index) const
+    T& at(uint index) const
     {
-        if(index >= count)
+        if(index >= reserved)
             throw std::runtime_error("Index out of bounds in Arr.at()");
         return *(t_p + index);
     }
 
-    Arr<T>& set(T value)
+    Arr<T>& set(const T& value)
     {
-        for(size_t i = 0; i < count; i++)
+        elem_count = reserved;
+        for(uint i = 0; i < elem_count; i++)
             *(t_p + i) = value;
-        
+
         return *this;
     }
 
-    T*          data_mut()          {return t_p ;}
-    const T*    data() const        {return t_p ;} 
-    size_t      size() const        {return count ;}
-    size_t      size_byte() const   {return (count * sizeof(T)) ;}
 
-    void reserve(size_t new_count) 
+
+
+    T*        data_mut()                {return t_p ;}
+    const T*  data()            const   {return t_p ;}
+    uint      capacity()        const   {return reserved ;}
+    uint      capacity_bytes()  const   {return (reserved * sizeof(T)) ;}
+    uint      count()           const   {return elem_count ;}
+    uint      count_byte()      const   {return (elem_count * sizeof(T)) ;}
+
+    void reserve(uint new_count) 
     {
         if(t_p == nullptr)
             allocate(new_count);
-        else if(new_count > count) 
+        else if(new_count > elem_count) 
             reallocate(new_count);
     }
 
-private:
-
-    void allocate(size_t count)
+    void push_back(const T& t)
     {
-        t_p = new T[count*sizeof(T)];
-        this->count = count;
+        if(elem_count >= reserved)
+            expand();
+        (*this)[elem_count++] = t;
     }
 
-    void reallocate(size_t new_count)
+    void expand()
     {
-        if(new_count == count)
+        if(t_p == nullptr)
+            allocate(1);
+        
+        uint new_reserved = reserved * 2;
+        while(new_reserved <= elem_count)
+            new_reserved = reserved * 2;
+
+        reallocate(new_reserved);
+    }
+
+
+    Str to_str()
+    {
+        Str str = "[";
+        for(uint i = 0; i < elem_count; i++)
+        {
+            str += (*this)[i] + ", ";
+        }
+        str += "]";
+        return str;
+    }
+
+
+private:
+
+    void allocate(uint reserved)
+    {
+        t_p = new T[reserved*sizeof(T)];
+        this->reserved = reserved;
+    }
+
+    void reallocate(uint new_reserved)
+    {
+        if(new_reserved == reserved)
             return;
 
-        T* new_t_p = new T[new_count*sizeof(T)];
+        T* new_t_p = new T[new_reserved*sizeof(T)];
 
-        if(new_count < count)
-            memcpy(new_t_p, t_p, new_count);
-        else
-            memcpy(new_t_p, t_p, count);
+        if(new_reserved > reserved)
+        {
+            for(uint i = 0; i < elem_count; i++)
+                *(new_t_p + i) = *(t_p + i);
+        }
+        else // shrink Arr
+        {
+            for(uint i = 0; i < new_reserved; i++)
+                *(new_t_p + i) = *(t_p + i);
+        }
 
         delete[] t_p;
 
         t_p   = new_t_p;
-        count = new_count;
+        reserved = new_reserved;
     }
 
     void deallocate()
@@ -139,6 +192,7 @@ private:
             delete[] t_p; 
             t_p = nullptr;
         }
-        this->count = 0;
+        this->reserved = 0;
+        this->elem_count = 0;
     }
 };

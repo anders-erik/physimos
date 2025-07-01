@@ -327,6 +327,14 @@ f3 f3::operator-()
     return { -x, -y, -z };
 }
 
+f3& f3::operator*=(float scalar)
+{
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+    return *this;
+}
+
 
 f3 f3::
 operator+(float scalar)

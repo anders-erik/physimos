@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lib/arr.hh"
 #include "lib/str.hh"
 
 #include "math/vec.hh"
@@ -37,6 +38,12 @@ template <typename T>
 Str StrM(Str& indent, Vec<T>& vec)
 {
     return indent + vec.to_str() + "\n";
+}
+
+template <typename T>
+Str StrM(Str& indent, Arr<T>& arr)
+{
+    return indent + arr.to_str() + "\n";
 }
 
 template <typename T>
