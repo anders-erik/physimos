@@ -59,40 +59,42 @@ bool file_echo_overwrite_first_strsize_chars(const char* path, Str& str)
 ResMove<Str> file_cat_as_str(const char* path)
 {    
     int fd = open(path, O_RDONLY);
-    if (fd == -1) {
+    if (fd == -1) 
+    {
         return Err {err_s::Error, err_m::Lib, err_t::ERRNO, errno, path};
     }
 
     // Get File Size
     struct stat st;
-    if (stat(path, &st) != 0) {
+    if (stat(path, &st) != 0)
+    {
         perror("stat failed");
-        return Err{err_s::Error, err_m::Lib, err_t::filesystem, Str{"read failed"}};
+        return Err{err_s::Error, err_m::Lib, err_t::filesystem, Str{"stat failed"}};
     }
     // std::cout << "File size: " << st.st_size << " bytes" << std::endl;
     int file_size = st.st_size;
 
 
     // Create buffer
-    char buffer[file_size];
+    Str str {   (uint) file_size, 
+                (char) 0x00      };
 
 
     // Read
     ssize_t bytesRead;
-    while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0) {
+    while ((bytesRead = read(fd, str.data(), str.size())) > 0) 
+    {
         // write(STDOUT_FILENO, buffer, bytesRead); // write to stdout
     }
-    if (bytesRead == -1) {
+    if (bytesRead == -1)
+    {
         std::cerr << "read failed: " << strerror(errno) << '\n';
         return Err{err_s::Error, err_m::Lib, err_t::filesystem, Str{"read failed"}};
     }
 
     close(fd);
 
-    Str new_str = (const char*) buffer;
-
-    return std::move(new_str.cut_to_substr(0, (unsigned int) st.st_size));
-
+    return std::move(str);
 }
 
 

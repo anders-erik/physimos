@@ -1,4 +1,6 @@
 
+#include "io/json/json.hh"
+
 #include "io/json/json_parser.hh"
 
 
@@ -95,7 +97,7 @@ j_string JsonParser::parse_string_literal(Str string_literal){
     return new_string;
 };
 
-JsonVar JsonParser::parse_integer_str(Str number_str){
+Json JsonParser::parse_integer_str(Str number_str){
 
     j_int parsed_int;
 
@@ -108,10 +110,10 @@ JsonVar JsonParser::parse_integer_str(Str number_str){
 
     }
     
-    return JsonVar( parsed_int );
+    return Json( parsed_int );
 }
 
-JsonVar JsonParser::parse_float_str(Str number_str){
+Json JsonParser::parse_float_str(Str number_str){
 
     j_float parsed_float;
 
@@ -123,13 +125,13 @@ JsonVar JsonParser::parse_float_str(Str number_str){
         throw_error("Failed to parse float string.");
     }
     
-    return JsonVar( parsed_float );
+    return Json( parsed_float );
 }
 
 
-JsonVar JsonParser::parse_array(){
+Json JsonParser::parse_array(){
 
-    JsonVar array = j_array();
+    Json array = j_array();
 
     // Try to close right away
     if(Token::is_array_close(tokens.next_w_bounds_check()))
@@ -163,9 +165,9 @@ JsonVar JsonParser::parse_array(){
 }
 
 
-JsonVar JsonParser::parse_object(){
+Json JsonParser::parse_object(){
 
-    JsonVar object = j_object();
+    Json object = j_object();
 
     // Try to close right away
     if(Token::is_object_close(tokens.next_w_bounds_check()))
@@ -206,9 +208,9 @@ JsonVar JsonParser::parse_object(){
     
 }
 
-JsonVar JsonParser::parse_value(Token& token){
+Json JsonParser::parse_value(Token& token){
 
-    JsonVar json_var;
+    Json json_var;
 
     switch (token.type)
     {
@@ -221,15 +223,15 @@ JsonVar JsonParser::parse_value(Token& token){
         break;
 
     case token_t::null_ :
-        json_var = JsonVar(nullptr);
+        json_var = Json(nullptr);
         break;
 
     case token_t::true_ :
-        json_var = JsonVar(true);
+        json_var = Json(true);
         break;
 
     case token_t::false_ :
-        json_var = JsonVar(false);
+        json_var = Json(false);
         break;
 
     case token_t::int_ :
@@ -241,7 +243,7 @@ JsonVar JsonParser::parse_value(Token& token){
         break;
 
     case token_t::string_ :
-        json_var = JsonVar(parse_string_literal(json_source.substr(token.str_start_i, token.str_length)));
+        json_var = Json(parse_string_literal(json_source.substr(token.str_start_i, token.str_length)));
         break;
 
     case token_t::array_open :
@@ -262,7 +264,7 @@ JsonVar JsonParser::parse_value(Token& token){
 
 
 
-JsonVar JsonParser::parse(){
+Json JsonParser::parse(){
     
     tokens.reset_index();
     if(!tokens.current_is_in_bounds())

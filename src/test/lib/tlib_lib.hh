@@ -19,7 +19,7 @@ TCModule str_mod = {
         {"equality", equality},
         {"concat", concat},
         {"substr", substr},
-        {"operators", operators},
+        {"operator_less_than", operator_less_than},
     }
 };
 

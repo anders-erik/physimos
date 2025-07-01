@@ -18,11 +18,6 @@
 
 
 
-File::File(Str relative_path_str)
-    : relative_path {relative_path_str} 
-{
-};
-
 
 
 Str& File::get_current_path(){

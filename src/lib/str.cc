@@ -118,6 +118,8 @@ bool Str::operator<(const Str & other) const
     {
         if((*this)[i] < other[i])
             return true;
+        if((*this)[i] > other[i])
+            return false;
     }
 
     if(size() < other.size())

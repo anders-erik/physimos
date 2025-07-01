@@ -206,7 +206,7 @@ UnitTestArray substr = {
 
 
 
-UnitTestArray operators = {
+UnitTestArray operator_less_than = {
 
 
     {   "\"a\" < \"b\"",
@@ -219,7 +219,7 @@ UnitTestArray operators = {
                         true            );
     }},
 
-    {   "\"b\" > \"a\"",
+    {   "\"a\" < \"b\"",
     [](UnitTest& utest) -> void
     {
         Str str_a = "a";
@@ -240,7 +240,7 @@ UnitTestArray operators = {
                         true            );
     }},
 
-    {   "\"aa\" > \"a\"",
+    {   "\"a\" < \"aa\"",
     [](UnitTest& utest) -> void
     {
         Str str_a = "a";
@@ -293,13 +293,13 @@ UnitTestArray operators = {
     }},
 
 
-    {   "\"cp\" < \"k\"",
+    {   "!(\"k\" < \"cp\")",
     [](UnitTest& utest) -> void
     {
-        Str str_cp = "cp";
         Str str_k  = "k";
+        Str str_cp = "cp";
         
-        utest.assert(   str_cp < str_k,
+        utest.assert(   !(str_k < str_cp),
                         true            );
     }},
 

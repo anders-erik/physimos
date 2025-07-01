@@ -10,12 +10,12 @@
 
 	// MAIN
 	// "binary": "physimos",
-	// "binary": "src/main_main",
+	"binary": "src/main_main",
 	// "binary": "src/phont/main_phont",
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
 	// "binary": "src/lib/main_file",
-	"binary": "src/io/json/main_json",
+	// "binary": "src/io/json/main_json",
 	// "binary": "src/render/main_render",
 
 	// TEST

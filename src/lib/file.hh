@@ -28,7 +28,9 @@ class File {
 public:
 
     File() = default;
-    File(Str relative_path_str);
+    File(Str relative_path_str)
+        : relative_path {relative_path_str} 
+    {}
 
     void set_rel_path(Str& path_str);
     Str& get_current_path();

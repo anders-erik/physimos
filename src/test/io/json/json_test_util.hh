@@ -27,12 +27,12 @@ cat_json_source(Str file_path)
 
 /** Read and parse the json test-data file.
     If error is created during call an empty json object is returned. */
-JsonVar &&
+Json &&
 parse_json_test_file(Str file_path)
 {
     Str json_source = cat_json_source(file_path);
 
-    ResMove<JsonVar> jroot_res = Json::parse(json_source);
+    ResMove<Json> jroot_res = Json::parse(json_source);
     if(jroot_res.has_error())
     {
         Print::lines("Failed to parse json source.", jroot_res.consume_error().to_str());

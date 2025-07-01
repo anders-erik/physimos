@@ -1,4 +1,6 @@
 
+#include "io/json/json.hh"
+
 #include "io/json/json_serialize.hh"
 
 
@@ -73,12 +75,12 @@ void JsonSerializer::try_remove_trailing_comma_array(Str& str){
 }
 
 
-Str JsonSerializer::serialize(const JsonVar& json_root){
+Str JsonSerializer::serialize(const Json& json_root){
 
     return build_string(json_root);
 }
 
-Str JsonSerializer::build_string(JsonVar json_var){
+Str JsonSerializer::build_string(Json json_var){
 
     if(is_literal(json_var.type)){
 
@@ -117,7 +119,7 @@ Str JsonSerializer::build_string(JsonVar json_var){
         try_add_new_line(array_str);
         
         ++recursive_depth;
-        for(JsonVar var : arr){
+        for(Json var : arr){
 
             try_add_indent(array_str);
         

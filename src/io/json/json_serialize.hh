@@ -80,7 +80,7 @@ class JsonSerializer {
     Str     result_string = "";
 
 
-    Str build_string(JsonVar json_var);
+    Str build_string(Json json_var);
 
     void try_add_new_line(Str& str);
     void try_add_indent(Str& str);
@@ -102,7 +102,7 @@ public:
     JsonSerializer(JSerialConfig config): config { config } {};
 
     /** Returns full json structure as string.  */
-    Str serialize(const JsonVar& json_root);
+    Str serialize(const Json& json_root);
 
 
 

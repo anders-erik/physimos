@@ -15,24 +15,24 @@ struct JsonParser {
         :   json_source {_json_source},
             tokens {_tokens} {};
 
-    JsonVar parse();
+    Json parse();
     
 private:
 
     Str json_source;
     Tokens& tokens;
 
-    JsonVar parse_array();
-    JsonVar parse_object();
+    Json parse_array();
+    Json parse_object();
 
     /** Unquoted json source string as input.  */
     j_string parse_string_literal(Str string_literal);
     char unicode_sequence_to_ASCII(Str unicode_sequence);
     char json_escape_char_to_value(char escape_char);
-    JsonVar parse_integer_str(Str number_str);
-    JsonVar parse_float_str(Str number_str);
+    Json parse_integer_str(Str number_str);
+    Json parse_float_str(Str number_str);
 
-    JsonVar parse_value(Token& token);
+    Json parse_value(Token& token);
 
     void throw_error(Str error_msg);
 };

@@ -5,6 +5,11 @@
 
 #include "json_types.hh"
 
+#include "json_lexer.hh"
+#include "json_parser.hh"
+#include "json_serialize.hh"
+
+
 #include "json.hh"
 
 #include "test/io/json/tlib_json.hh"
@@ -73,37 +78,36 @@ int main (int argc, char **argv) {
             // jsource = File::cat_as_str_core_xplat(data_dir + "primitives/string.json").consume_value();
             // jsource = File::cat_as_str_core_xplat(data_dir + "primitives/object.json").consume_value();
             // jsource = File::cat_as_str_core_xplat(data_dir + "integers/integers.json").consume_value();
-            // jsource = File::cat_as_str_core_xplat(data_dir + "misc/shapes.json").consume_value();
-            jsource = File::cat_as_str_core_xplat(data_dir + "misc/name_sort_bug.json").consume_value();
+            jsource = File::cat_as_str_core_xplat(data_dir + "misc/shapes.json").consume_value();
+            // jsource = File::cat_as_str_core_xplat(data_dir + "misc/name_sort_bug.json").consume_value();
 
             // JsonVar json_v;
             // json_v.parse(jsource.to_c_str());
             // ResMove<Str> str = json_v.serialize();
             // Print::line(str.consume_value());
 
-            // JsonVar             p1  = parse_json_test_file("misc/shapes.json");
-            // JsonVar             p1  = parse_json_test_file("misc/name_sort_bug.json");
-            // Str                 s1  = Json::serialize(p1);
-            ResMove<JsonVar>    p2  = Json::parse(jsource);
-            Str                 s2  = Json::serialize(p2.consume_value());
-            ResMove<JsonVar>    p3  = Json::parse(s2);
-            Str                 s3  = Json::serialize(p3.consume_value());
-            ResMove<JsonVar>    p4  = Json::parse(s2);
-            Str                 s4  = Json::serialize(p3.consume_value());
+            // jsource = "asdlkasj";
 
-            if(s2 != s3)
-            {
-                Print::line("s2: \n", s2);
-                Print::line("s3: \n", s3);
-            }
+            Json j_var;
+            j_var.try_parse(jsource);
 
-            std::map<Str, int> map_1;
-            map_1.insert({"k", 0});
-            map_1.insert({"cp", 0});
-            for(auto& kv : map_1)
-            {
-                Print::line(kv.first);
-            }
+            ResMove<Str>  s1_res  = Json::serialize(j_var);
+            Str  s1 = s1_res.consume_value();
+            Print::line("serialize1: \n", s1);
+
+            // j_var.try_parse(s1);
+            // ResMove<Str>  serialize2  = Json::serialize(j_var);
+
+            // ResMove<JsonVar>    p1  = Json::parse(jsource);
+            // ResMove<Str>        s1  = Json::serialize(p1.consume_value());
+            // // ResMove<JsonVar>    p2  = Json::parse(s1);
+            // // Str                 s2  = Json::serialize(p2.consume_value());
+
+            // if(s1 != serialize2.consume_value())
+            // {
+            //     Print::line("serialize2: \n", serialize2.consume_value());
+            // }
+
 
 
             // ResMove<JsonVar> json_res = Json::parse(jsource);
@@ -159,8 +163,8 @@ int main (int argc, char **argv) {
     }
     else if(run_flag == RF_VARIANT){
 
-        JsonVar var;
-        var.variant_ = "hello";
+        Json var;
+        var.var = "hello";
         // std::get<j_string>{var.variant_}
         // std::cout << std::get<j_string>(var.variant_) << '\n';
         // std::cout << std::get<j_float>(var.variant_) << '\n';
@@ -168,7 +172,7 @@ int main (int argc, char **argv) {
         variant_playground();
 
         // ARRAY
-        JsonVar root_array = j_array();
+        Json root_array = j_array();
         root_array.get_array().push_back(true);
         root_array.get_array().push_back(false);
         root_array.get_array().push_back(j_null(nullptr));
@@ -177,7 +181,7 @@ int main (int argc, char **argv) {
         // std::cout << serializer.serialize(root_array) << std::endl;
 
         // OBJECT
-        JsonVar root_obj = j_object();
+        Json root_obj = j_object();
         root_obj.get_object().emplace("key1", j_int(123));
         root_obj.get_object().emplace("key2", j_int(234));
         // nested object

@@ -14,13 +14,10 @@ UnitTestArray json_test_setup = {
     {   "\"hello\"",
     [](UnitTest& utest) -> void
     {
-        Json json {"\"hello\""};
+        Json j_var;
+        j_var.try_parse("\"hello\"");
 
-        json.lex_parse();
-
-        JsonVar jvar = json.get_root();
-
-        utest.assert(   jvar.get_string(), 
+        utest.assert(   j_var.get_string(), 
                         (Str)"hello"                ); 
     }},
 
@@ -30,11 +27,11 @@ UnitTestArray json_test_setup = {
     {
         Str json_source = cat_json_source("primitives/string.json");
 
-        ResMove<JsonVar> jroot_res = Json::parse(json_source);
+        ResMove<Json> jroot_res = Json::parse(json_source);
         if(jroot_res.has_error())
             utest.fail(jroot_res.consume_error().to_str());
         
-        JsonVar jroot = jroot_res.consume_value();
+        Json jroot = jroot_res.consume_value();
 
         utest.assert(   jroot.get_string(), 
                         (Str) "valid_string"    ); 
@@ -44,7 +41,7 @@ UnitTestArray json_test_setup = {
     {   "parse_json_test_file utility fn",
     [](UnitTest& utest) -> void
     {
-        JsonVar jroot = parse_json_test_file("primitives/string.json");
+        Json jroot = parse_json_test_file("primitives/string.json");
 
         utest.assert(   jroot.get_string(),
                         (Str) "valid_string"    ); 
@@ -64,10 +61,11 @@ UnitTestArray json_psps = {
     {   name,                                                           \
     [](UnitTest& utest) -> void                                         \
     {                                                                   \
-        JsonVar             p1  = parse_json_test_file(name);           \
-        Str                 s1  = Json::serialize(p1);                  \
-        ResMove<JsonVar>    p2  = Json::parse(s1);                      \
-        Str                 s2  = Json::serialize(p2.consume_value());  \
+        Json     j_var = parse_json_test_file(name);                \
+        Str         s1  = j_var.try_serialize();                      \
+        j_var.try_parse(s1);                                        \
+        Str         s2  = j_var.try_serialize();                     \
+                                                                        \
         utest.assert(   s1,                                             \
                         s2  );                                          \
     }},                                                                 \
@@ -79,22 +77,10 @@ UnitTestArray json_psps = {
     psps("floats/floats.json")
 
     psps("integers/integers.json")
-    psps("integers/ints2.json")
-
-
-    {   "misc/shapes.json",
-    [](UnitTest& utest) -> void
-    {
-        JsonVar             p1  = parse_json_test_file("misc/shapes.json");
-        Str                 s1  = Json::serialize(p1);                  
-        ResMove<JsonVar>    p2  = Json::parse(s1);                      
-        Str                 s2  = Json::serialize(p2.consume_value());  
-        utest.assert(   s1,                                             
-                        s2  );                                          
-    }},                                                                 
+    psps("integers/ints2.json")                                                           
 
     psps("misc/penpaper.json")
-    // psps("misc/shapes.json")
+    psps("misc/shapes.json")
     psps("misc/widget.json")
     
     psps("primitives/array.json")
@@ -174,19 +160,3 @@ UnitTestArray json_conforms_not = {
 
 };
 
-
-
-// UnitTestArray json_bugs = {
-
-//     {"memory corruption during for-each loop",
-//     [](UnitTest& utest) -> void
-//     {
-//         JsonVar jroot = parse_json_test_file("misc/mesh_minimal.json");
-
-//         j_object mesh_object = jroot.object_find("mesh").get_object();
-
-//         utest.assert(   mesh_object[0].first,
-//                         j_string("sheet")       );
-//     }},
-
-// };

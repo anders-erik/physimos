@@ -23,7 +23,7 @@ struct JMesh
 
         Str json_source = json_source_res.consume_value();
 
-        ResMove<JsonVar> json_var_res = Json::parse(json_source);
+        ResMove<Json> json_var_res = Json::parse(json_source);
         if(json_var_res.has_error())
         {
             Print::err({});
@@ -31,15 +31,15 @@ struct JMesh
         }
 
 
-        JsonVar json_root = json_var_res.consume_value();
+        Json json_root = json_var_res.consume_value();
 
-        OptPtr<JsonVar> mesh_array_opt = json_root.object_find("mesh");
+        OptPtr<Json> mesh_array_opt = json_root.object_find("mesh");
         if(mesh_array_opt.is_null())
         {
             Print::ln("error jmesh: mesh null");
             return Err{};
         }
-        JsonVar* mesh_array = mesh_array_opt.get_ptr();
+        Json* mesh_array = mesh_array_opt.get_ptr();
 
 
         Mesh mesh;

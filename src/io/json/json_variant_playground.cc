@@ -2,8 +2,7 @@
 #include <optional>
 #include <type_traits>
 
-#include "json_types.hh"
-
+#include "io/json/json.hh"
 
 
 
@@ -23,28 +22,28 @@ void variant_playground(){
     // JsonVar json_var;
     // json_var.set_bool(false);
 
-    JsonVar json_var = true;
+    Json json_var = true;
 
     j_int new_int = 123;
-    JsonVar json_var_int (new_int);
+    Json json_var_int (new_int);
 
     j_string new_string_hole = "HOLE";
-    JsonVar json_var_str_hole (new_string_hole);
-    JsonVar json_var_str_hola (j_string("HOLA"));
+    Json json_var_str_hole (new_string_hole);
+    Json json_var_str_hola (j_string("HOLA"));
     // JsonVar json_var_str_como ("COMO");
 
     // std::cout << json_var_str_hole.get_string() << std::endl;
     // std::cout << json_var_str_hola.get_string() << std::endl;
     // std::cout << json_var_str_como.get_string() << std::endl;
 
-    JsonVar json_var_array (json_type::array);
+    Json json_var_array (json_type::array);
     json_var_array.get_array().push_back(json_var_str_hola);
     // json_var_array.variant_.push_back(json_var_str_hole);
 
     j_string key = "kk";
-    JsonVar value = j_string("vv");
+    Json value = j_string("vv");
     j_kv kv (key, value);
-    JsonVar object (json_type::object);
+    Json object (json_type::object);
     object.object_push(kv);
 
     // std::cout << object.get_object().map[0].str << std::endl;
@@ -53,8 +52,8 @@ void variant_playground(){
 
     // TYPE CONVERSIONS
     std::cout << std::endl << "TYPE CONVERSIONS" << std::endl;
-    JsonVar int_1 = j_int(1111);
-    JsonVar int_2 = j_int(2222);
+    Json int_1 = j_int(1111);
+    Json int_2 = j_int(2222);
     std::cout << "int_2.get_int() = " << int_2.get_int()  << std::endl;
     int_2.set_bool(true);
     std::cout << "int_2.get_bool() = " << int_2.get_bool()  << std::endl;
@@ -72,7 +71,7 @@ void variant_playground(){
 
     // check for any significant memory leaks when switching between int and very large array
     // Conclusion: The proper destructor seems to be autmatically called!
-    JsonVar arr = j_array();
+    Json arr = j_array();
     for(size_t i = 0; i < 10; i++){
         // turn into int
         arr.set_int(1);
@@ -80,7 +79,7 @@ void variant_playground(){
         // Convert to array and populate with ints
         arr.set_array();
         for(size_t j = 0; j < 10000; j++)
-            arr.get_array().push_back(JsonVar(j_int(1)));
+            arr.get_array().push_back(Json(j_int(1)));
         
     }
     
@@ -94,9 +93,9 @@ void variant_playground(){
 
     
     
-    std::cout << "sizeof(JsonVar) = " << sizeof(JsonVar) << std::endl;
+    std::cout << "sizeof(JsonVar) = " << sizeof(Json) << std::endl;
     std::cout << "sizeof(json_var_array) = " << sizeof(json_var_array) << std::endl;
-    std::cout << "sizeof(json_var_array.variant_) = " << sizeof(json_var_array.variant_) << std::endl;
+    std::cout << "sizeof(json_var_array.variant_) = " << sizeof(json_var_array.var) << std::endl;
 
     // json_var.set_bool(true);
 
@@ -108,7 +107,7 @@ void variant_playground(){
         [](auto&& arg){ 
             std::cout << "in visit" << std::endl;
         }, 
-        json_var.variant_
+        json_var.var
     );
 
     std::visit(
@@ -122,7 +121,7 @@ void variant_playground(){
             [](j_array& arg) { std::cout << "array" << ' '; },
             [](j_object& arg) { std::cout << "object" << ' '; }
         },
-        json_var.variant_
+        json_var.var
     );
 
     std::cout << std::endl;
@@ -163,11 +162,11 @@ void variant_playground(){
 
     // NESTED JSON TESTS BY HAND
     {
-        JsonVar root_arr  = j_array();
-        JsonVar intintint = j_int(123);
-        JsonVar arrarrarr = j_array();
+        Json root_arr  = j_array();
+        Json intintint = j_int(123);
+        Json arrarrarr = j_array();
         arrarrarr.get_array().push_back(intintint);
-        JsonVar objobjobj = j_object();
+        Json objobjobj = j_object();
         j_kv kvkvkv_1 = {"keykey1", j_string("Valval1")};
         j_kv kvkvkv_2 ("keykey2", j_int(2));
         j_kv kvkvkv_3 {"keykey3", j_int(3)};
@@ -184,7 +183,7 @@ void variant_playground(){
         root_arr.get_array().push_back(arrarrarr); // rvalue
         root_arr.get_array().push_back(objobjobj);
 
-        std::cout << sizeof(JsonVar) << std::endl;
+        std::cout << sizeof(Json) << std::endl;
         std::cout << sizeof(root_arr) << std::endl;
         std::cout << sizeof(root_arr.get_array()) << std::endl;
         std::cout << root_arr.get_array().size() << std::endl;

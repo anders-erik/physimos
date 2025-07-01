@@ -25,9 +25,9 @@ protected:
     File file;
     Json json;
 
-    bool verify_type_array(JsonVar& array, Str error_msg);
-    bool verify_type_object(JsonVar& object, Str error_msg);
-    bool json_equals_string(JsonVar& json_var_str, Str target, Str error_msg);
+    bool verify_type_array(Json& array, Str error_msg);
+    bool verify_type_object(Json& object, Str error_msg);
+    bool json_equals_string(Json& json_var_str, Str target, Str error_msg);
 
 
 public:
@@ -46,7 +46,7 @@ public:
 };
 
 
-bool JsonFile::verify_type_array(JsonVar& array, Str error_msg){
+bool JsonFile::verify_type_array(Json& array, Str error_msg){
     if(!array.is_array()){
         Str msg = error_msg + " File: " + file.physimos_core_path_;
         plib::plog_error("JPHILE", "json_format", msg);
@@ -55,7 +55,7 @@ bool JsonFile::verify_type_array(JsonVar& array, Str error_msg){
     return true;
 }
 
-bool JsonFile::verify_type_object(JsonVar& object, Str error_msg){
+bool JsonFile::verify_type_object(Json& object, Str error_msg){
     if(!object.is_object()){
         Str msg = error_msg + " File: " + file.physimos_core_path_;
         plib::plog_error("JPHILE", "json_format", msg);
@@ -65,7 +65,7 @@ bool JsonFile::verify_type_object(JsonVar& object, Str error_msg){
 }
 
 
-bool JsonFile::json_equals_string(JsonVar& json_var_str, Str target, Str error_msg){
+bool JsonFile::json_equals_string(Json& json_var_str, Str target, Str error_msg){
     if(json_var_str.get_string() != target){
         Str msg = "JFileShape: array entry is not of type shape. File: " +  file.physimos_core_path_;
         plib::plog_error("JPHILE", "json_format", msg);
