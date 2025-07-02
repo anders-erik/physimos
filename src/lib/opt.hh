@@ -90,44 +90,51 @@ public:
 
 /** A copy-only optional container. */
 template <typename T>
-class OptCopy {
+class OptCopy 
+{
 
     alignas(T) std::byte buffer[sizeof(T)];
-    T t; // object owned by OptCopy
     bool value = false;
 
 public:
 
-    OptCopy(OptCopy const& other)   = delete;
-    OptCopy(OptCopy&& other)        = delete;
 
-    OptCopy() noexcept {
-        std::cout << "OptCopy constructed without value." << std::endl;
-    };
-    ~OptCopy()                      = default;
+    OptCopy() = default;
     
-    
-    OptCopy(const T& _t){
-        std::cout << "OptCopy constructed by T copy." << std::endl;
-        new (buffer) T(value);
+    OptCopy(T&& _t)
+    {
+        new (buffer) T(_t);
         value = true;
     };
-
-
-    // OptCopy& operator=(const T& _t) {
-    //     std::cout << "OptCopy got new value by Copy." << std::endl;
-    //     t = _t;
-    //     value = true;
-    //     return *this;
-    // }
-
-
-
-    [[nodiscard]] T consume(){
-        if (!value) throw std::runtime_error("No value");
-        return t;
+    OptCopy(const T& _t)
+    {
+        new (buffer) T(_t);
+        value = true;
     };
-    bool has_value(){
+    ~OptCopy()
+    {
+        if(value)
+            delete buffer;
+    }
+
+
+    OptCopy& operator=(const T& _t)
+    {
+        if(value)
+            delete buffer;
+        new (buffer) T(_t);
+        return *this;
+    }
+
+
+
+    [[nodiscard]] T get_value()
+    {
+        if (!value) throw std::runtime_error("No value when getting OptCopy");
+        return (T)buffer;
+    };
+    bool has_value()
+    {
         return value;
     }
 

@@ -12,13 +12,12 @@
 #include "scene/model.hh"
 
 #include "scene/mesh.hh"
-#include "scene/jmesh.hh"
 
 #include "scene/manager_object.hh"
 
 // #include "io/json/examples/jfile.hh"
 #include "io/jfile/jmesh.hh"
-#include "scene/s_mesh.hh"
+#include "script/script_mesh.hh"
 
 int main()
 {
@@ -154,6 +153,23 @@ int main()
 
 		root_scene.tagos.push_back(mesh_obj.tag);
 	}
+
+
+	// TUBE
+	Object& toadstool = manager_o.new_object();
+	toadstool.tag.type = TagO::Base;
+	root_scene.tagos.push_back(toadstool.tag);
+	toadstool.pos = {2.0f, 0.0f, 1.0f};
+	// mesh
+	TubeContext t_context {8, 20, true};
+	toadstool.mesh.tube(t_context);
+	toadstool.mesh.scale_z(3.0f);
+	toadstool.mesh.move_z(-1.0f);
+	Polynomial<float> poly_toadstool {{1, 0, 2, 1, -1}};
+	toadstool.mesh.poly_z(poly_toadstool);
+	toadstool.mesh.center();
+	toadstool.mesh.scale(0.1f);
+
 
 
 	physimos.main_loop();

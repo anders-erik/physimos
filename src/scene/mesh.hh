@@ -1,23 +1,22 @@
 
 #pragma once
 
+#include <variant>
 #include <vector>
 
 #include "lib/str.hh"
 
 #include "math/transform.hh"
+#include "math/polynomial.hh"
 
 #include "opengl/texture.hh"
 
 
 struct TubeContext
 {
-    float   radius;
-    int     frame_point_count;
-    int     frame_count;
-    float   frame_gap;
-    bool    closed;
-    f2      domain;
+    int     circle_point_count; // points per 'circle'
+    int     frame_count;        // number of circles along its long axis
+    bool    closed = false;     // will close ends of tube if true
 };
 
 struct SheetContext
@@ -25,6 +24,9 @@ struct SheetContext
     float   width;
     int     width_count;
 };
+
+using MeshContext = std::variant<   TubeContext, 
+                                    SheetContext    >;
 
 
 struct TriangleFaceIndeces 
@@ -42,6 +44,8 @@ struct Mesh
     std::vector<Vertex> verts;
     std::vector<TriangleFaceIndeces> faces;
 
+    MeshContext context;
+
     Mesh() = default;
 
     /** Returnes the total byte size of the vertices. [verts.size() * sizeof(Vertex)] */
@@ -49,15 +53,20 @@ struct Mesh
 
     void clear();
 
+    void center();
+    void scale(float factor);
+    void scale_z(float factor);
+    void move_z(float factor);
+    void poly_z(Polynomial<float> polynomial);
+    void move(const f3& delta);
+
     void sheet();
     void sheet(SheetContext context);
-    void tube();
     void quad();
     void cube();
 
-    void center();
-    void scale(float factor);
-    void move(const f3& delta);
+
+    void tube(TubeContext t_context);
 };
 
 

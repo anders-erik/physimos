@@ -152,6 +152,10 @@ void Auxwin::opengl_init(){
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // GLint maxTextureSize;
+    // glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+    // printf("Max texture size: %d\n", maxTextureSize);
+
     opengl::textures_init();
 }
 

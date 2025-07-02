@@ -1,7 +1,5 @@
 #pragma once
 
-#include <variant>
-
 #include "res.hh"
 #include "str.hh"
 #include "str_util.hh"
@@ -9,14 +7,14 @@
 #include "print.hh"
 #include "arr.hh"
 
+#include "script/parse.hh"
+
 #include "scene/mesh.hh"
 
 enum class MeshMethod {
     sheet,
     center,
 };
-
-using MeshContext = std::variant<TubeContext, SheetContext>;
 
 
 struct MeshCall
@@ -27,8 +25,25 @@ struct MeshCall
 
 struct ScriptMesh
 {
+    static MeshCall
+    parse_line(Str line)
+    {
+
+        if(line.substr(0, 5) == "sheet")
+        {
+            // float w = Parse::try_float(line.substr(5, 8));
+            return { MeshMethod::sheet, SheetContext{2.0f, 10} } ;
+        }
+        else
+        {
+
+        }
+
+    }
+
+
     static Arr<MeshCall> 
-    parse(Str script)
+    parse_script(Str script)
     {
         Arr<MeshCall> method_calls;
 
@@ -36,13 +51,9 @@ struct ScriptMesh
 
         for(SizeArr i=0; i<lines.count(); i++)
         {
-            Str line = lines[i];
+            MeshCall mesh_call = ScriptMesh::parse_line(lines[i]);
 
-            if(line.substr(0, 5) == "sheet")
-            {
-                method_calls.push_back({MeshMethod::sheet, 
-                                        SheetContext{2.0f, 10}} );
-            }
+            method_calls.push_back(mesh_call);
         }
 
         return method_calls;
@@ -56,7 +67,7 @@ struct ScriptMesh
         if(script.has_error())
             return {MV(script.consume_error())};
 
-        Arr<MeshCall> method_calls = ScriptMesh::parse(script.consume_value());
+        Arr<MeshCall> method_calls = ScriptMesh::parse_script(script.consume_value());
 
         Mesh mesh;
 

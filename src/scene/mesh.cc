@@ -1,4 +1,8 @@
 
+#include <cmath>
+
+#include "math/const.hh"
+
 #include "mesh.hh"
 
 unsigned int Mesh::vert_size_bytes()
@@ -94,9 +98,78 @@ void Mesh::sheet(SheetContext context)
 
 
 void Mesh::
-tube()
+tube(TubeContext t_context)
 {
+    verts.clear();
+    faces.clear();
 
+    int FC  = t_context.frame_count;         // Frame count
+    int CPC = t_context.circle_point_count; // Circle point count
+
+    float frame_gap     = 1.0f / ( (float) (FC - 1));
+    float angle_delta   = PI2f / ( (float) CPC );
+
+    // Index : Mesh Verts
+    #define IMV(i_cp, i_f)     ((i_cp) + (i_f) * CPC)
+    
+    int i_fr;   // index: frame
+    int i_cp;   // index : circle point
+
+    // Verts
+    for( i_fr = 0; i_fr < FC; i_fr++)
+    {
+        for( i_cp = 0; i_cp < CPC; i_cp++)
+        {
+            float angle = angle_delta * (float) i_cp;
+
+            verts.emplace_back( cos(angle), 
+                                sin(angle), 
+                                (float) i_fr * frame_gap  );
+        }
+    }
+
+    // Faces
+    for( i_fr = 0; i_fr < FC - 1; i_fr++) // until N-1 as faces are created using frame n+1
+    {
+        for( i_cp = 0; i_cp < CPC; i_cp++)
+        {
+            int i_cp_p1_mod = (i_cp+1) % CPC; // if i_cp + 1 == CPC, then vert is equal to first vert
+
+            faces.emplace_back( IMV( i_cp        , i_fr   ), 
+                                IMV( i_cp_p1_mod , i_fr   ), 
+                                IMV( i_cp        , i_fr+1 )    );
+
+            faces.emplace_back( IMV( i_cp_p1_mod , i_fr   ), 
+                                IMV( i_cp_p1_mod , i_fr+1 ), 
+                                IMV( i_cp        , i_fr+1 )    );
+        }
+    }
+
+    // CLOSE ENDS
+    if(t_context.closed)
+    {
+        // triangulate bottom
+        verts.emplace_back(0.0f, 0.0f, 0.0f);
+        int last_vert_i = verts.size()-1;
+        for(i_cp = 0; i_cp < CPC; i_cp++)
+        {
+            int i_cp_p1_mod = (i_cp+1) % CPC; // if i_cp + 1 == CPC, then vert is equal to first vert
+            faces.emplace_back( last_vert_i, 
+                                IMV( i_cp        , 0 ), 
+                                IMV( i_cp_p1_mod , 0 )    );
+        }
+
+        // triangulate top
+        verts.emplace_back(0.0f, 0.0f, 1.0f);
+        last_vert_i = verts.size()-1;
+        for(i_cp = 0; i_cp < CPC; i_cp++)
+        {
+            int i_cp_p1_mod = (i_cp+1) % CPC; // if i_cp + 1 == CPC, then vert is equal to first vert
+            faces.emplace_back( last_vert_i, 
+                                IMV( i_cp        , FC-1 ), 
+                                IMV( i_cp_p1_mod , FC-1 )    );
+        }
+    }
 }
 
 
@@ -240,6 +313,30 @@ scale(float factor)
 {
     for(auto& vert : verts)
         vert *= factor;
+}
+
+void Mesh::
+scale_z(float factor)
+{
+    for(auto& vert : verts)
+        vert.z *= factor;
+}
+
+void Mesh::
+move_z(float delta)
+{
+    for(auto& vert : verts)
+        vert.z += delta;
+}
+
+void Mesh::poly_z(Polynomial<float> polynomial)
+{
+    for(auto& vert : verts)
+    {
+        float factor = polynomial(vert.z);
+        vert.x *= factor;
+        vert.y *= factor;
+    }
 }
 
 
