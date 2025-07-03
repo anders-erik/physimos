@@ -216,6 +216,12 @@ scale(float factor)
         vert *= factor;
 }
 
+void Mesh::scale(f3 scale)
+{
+    for(auto& vert : verts)
+        vert *= scale;
+}
+
 void Mesh::
 scale_z(float factor)
 {

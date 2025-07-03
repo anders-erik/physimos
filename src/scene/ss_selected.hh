@@ -26,7 +26,7 @@ struct Selected
     Key     key_2       = Key::None;
 
     f3      pos_delta;
-    f2      rot_delta_norm;
+    f3      rot_delta_norm;
     float   size_factor;
 
 

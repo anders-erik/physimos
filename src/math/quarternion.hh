@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <cmath>
 
 #include "math/vecmat.hh"
@@ -35,6 +37,23 @@ struct Quarternion
         this->z = q.z;
     }
 
+    Quarternion operator*(const Quarternion& q)
+    {
+        return Quarternion{  q0*q.q0 - x*q.x  - y*q.y - z*q.z
+                            ,q0*q.x  + x*q.q0 + y*q.z - z*q.y
+                            ,q0*q.y  + y*q.q0 + z*q.x - x*q.z
+                            ,q0*q.z  + z*q.q0 + x*q.y - y*q.x   };
+    }
+
+    Quarternion& normalize()
+    {
+        float norm = sqrtf(q0*q0 + x*x + y*y + z*z);
+        q0 /= norm;
+        x  /= norm;
+        y  /= norm;
+        z  /= norm;
+        return *this;
+    }
 
     Quarternion 
     conjugate()
@@ -50,9 +69,9 @@ struct Quarternion
         float cos_half = cosf(angle * 0.5f);
 
         q0  = cos_half;
-        x *= sin_half;
-        y *= sin_half;
-        z *= sin_half;
+        x  *= sin_half;
+        y  *= sin_half;
+        z  *= sin_half;
     }
 
 
@@ -76,6 +95,21 @@ struct Quarternion
                     q0*q.z  + x*q.y  - y*q.x  + z*q.q0 };
     }
 
+    void 
+    rotate(f3 rot_axis, float angle)
+    {
+        Quarternion q_axis = {0.0f, rot_axis};
+        q_axis.set_angle(angle);
+        auto q_axis_conj = q_axis.conjugate();
+
+        auto mult1 = q_axis * (*this);
+        auto mult2 = mult1 * q_axis_conj;
+
+        *this = mult1;
+        this->normalize();
+        // *this = mult2;
+    }
+
 
     static Quarternion 
     rotate_quart(Quarternion q_to_rot, Quarternion q_axis, float angle)
@@ -83,10 +117,11 @@ struct Quarternion
         q_axis.set_angle(angle);
         auto q_axis_conj = q_axis.conjugate();
 
-        auto mult1 = q_axis.rotate(q_to_rot);
+        auto mult1 = q_axis * q_to_rot;
         auto mult2 = mult1.rotate(q_axis_conj);
 
-        return mult2;
+        // return mult1.normalize();
+        return mult2.normalize();
     }
 
 
@@ -99,5 +134,13 @@ struct Quarternion
         vec_to_rotate = {   rotated_q.x, 
                             rotated_q.y, 
                             rotated_q.z };
+        vec_to_rotate.unit();
+    }
+
+
+    void print()
+    {
+        std::cout << "q0 = " << q0 << " x = " << x << " y = " << y << " z = " << z << std::endl;
+        
     }
 };

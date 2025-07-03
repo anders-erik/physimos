@@ -34,8 +34,12 @@ struct Scene3D
 
     model::ModelT tube;
 
-    f3 quarternion_vector_100 = {1.0f, 0.0f, 0.0f};
-    f3 quarternion_vector_111 = {0.0f, 0.0f, 1.0f};
+    f3 q_vec_100 = {1.0f, 0.0f, 0.0f};
+    f3 q_vec_010 = {0.0f, 1.0f, 0.0f};
+    f3 q_vec_001 = {0.0f, 0.0f, 1.0f};
+
+    Quarternion q_1000 = {1.0f, 0.0f, 0.0f, 0.0f};
+    f3 q_1000_vec = {1.0f, 0.0f, 0.0f};
 
 };
 

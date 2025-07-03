@@ -171,7 +171,8 @@ int main()
 	toadstool.mesh.center();
 	toadstool.mesh.scale(0.1f);
 
-
+	// manager_3D.window_scene->q_1000.rotate(f3::Z(), 0.785f);
+	// manager_3D.window_scene->q_1000.rotate(f3::X(), 1.57f);
 
 	physimos.main_loop();
 

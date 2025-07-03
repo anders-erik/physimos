@@ -14,25 +14,6 @@ struct YawPitch : public f2
 };
 
 
-struct Transform2D {
-    f2 pos;
-    f2 scale;
-    f2 rot;
-    m3f3 matrix;
-
-    float z;
-
-    void set_pos(float posx, float posy);   
-    void set_scale(float scalex, float scaley);
-    void move_x(float dx);
-    void move_y(float dy);
-
-    void set_matrix_model();
-    void set_matrix_camera();
-    m4f4 get_m4f4();
-};
-
-
 struct Transform {
     f3 pos;
     f3 rot;

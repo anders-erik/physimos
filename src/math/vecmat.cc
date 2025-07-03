@@ -87,7 +87,7 @@ float f2::angle()
 
 bool f2::is_zero()
 {
-    return (x == 0.0f && y == 0.0f) ? true : false;
+    return (x == 0.0f && y == 0.0f);
 }
 
 void f2::set_zero()
@@ -267,14 +267,21 @@ f3 f3::operator+(const f3& rhs)
 {
     return {    this->x + rhs.x,
                 this->y + rhs.y,
-                this->z + rhs.z};
+                this->z + rhs.z };
 }
 
 f3 f3::operator-(const f3 & rhs)
 {
     return {    x - rhs.x,
                 y - rhs.y,
-                z - rhs.z};
+                z - rhs.z   };
+}
+
+f3 f3::operator*(const f3 & rhs)
+{
+    return {    x * rhs.x,
+                y * rhs.y,
+                z * rhs.z   };
 }
 
 f3& f3::operator=(const f3 & rhs)
@@ -409,6 +416,11 @@ void f3::set_zero()
     x = 0.0f;
     y = 0.0f;
     z = 0.0f;
+}
+
+bool f3::is_zero()
+{
+    return (x == 0.0f && y == 0.0f && z == 0.0f);
 }
 
 void f3::matmul(m4f4 matrix){

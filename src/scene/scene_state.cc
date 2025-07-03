@@ -44,7 +44,13 @@ try_change_selected(window::InputEvent & event)
         {
             if(event.is_mouse_movement())
             {
-                selected.rot_delta_norm += event.mouse_movement.delta.normalized;
+                selected.rot_delta_norm.x += event.mouse_movement.delta.normalized.x;
+                selected.rot_delta_norm.y += event.mouse_movement.delta.normalized.y;
+                return true;
+            }
+            if(event.is_mouse_scroll())
+            {
+                selected.rot_delta_norm.z += event.mouse_scroll.delta;
                 return true;
             }
         }

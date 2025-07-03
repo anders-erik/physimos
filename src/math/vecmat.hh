@@ -24,6 +24,7 @@ struct m3f3;
 
 
 
+
 struct PointD {
     double x = 0.0;
     double y = 0.0;
@@ -139,7 +140,8 @@ struct f3
     float z = 0.0f;
 
     f3() = default;
-    constexpr f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
+    constexpr 
+    f3(float x, float y, float z) : x {x}, y {y}, z {z} {}; 
     f3(const f2 _f2, float z) : x {_f2.x}, y {_f2.y}, z {z} {}; 
     f3(float x, const f2 _f2) : x {x}, y {_f2.x}, z {_f2.y} {}; 
     // f3(float xyz) : x {xyz}, y {xyz}, z {xyz} {}; 
@@ -153,6 +155,7 @@ struct f3
 
     f3 operator+(const f3& rhs);
     f3 operator-(const f3& rhs);
+    f3 operator*(const f3& rhs);
 
     f3 operator-();
 
@@ -172,6 +175,7 @@ struct f3
     f3 cross(const f3& rhs);
 
     void set_zero();
+    bool is_zero();
 
     void matmul(m4f4 matrix);
     void matmul(m3f3 matrix);
@@ -179,6 +183,10 @@ struct f3
     float* pointer();
 
     void print(std::string name);
+
+    static constexpr f3 X() {return {1.0f, 0.0f, 0.0f}; }
+    static constexpr f3 Y() {return {0.0f, 1.0f, 0.0f}; }
+    static constexpr f3 Z() {return {0.0f, 0.0f, 1.0f}; }
 };
 
 

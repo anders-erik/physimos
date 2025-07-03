@@ -10,7 +10,7 @@
 #include "scene/manager_object.hh"
 
 
-class ShaderObjectIDs : protected opengl::ShaderProgram
+class ShaderObjectIDs : public opengl::ShaderProgram
 {
 
     unsigned int VAO;

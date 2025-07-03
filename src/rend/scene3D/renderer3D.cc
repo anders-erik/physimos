@@ -156,14 +156,14 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
     
         // MESH - change color of active objects
         if(tag == state.selected.tag)
-            program_mesh.render(translation_matrix, base->mesh, 0x00ff00ff);
+            program_mesh.render(model_matrix, base->mesh, 0x00ff00ff);
         else if(tag == state.hovered.tag)
-            program_mesh.render(translation_matrix, base->mesh, 0xff0000ff);
+            program_mesh.render(model_matrix, base->mesh, 0xff0000ff);
         
         // Draw meshes with normals as color models
         if(base->mesh.normals.size() > 0)
         {
-            program_color_light.render(translation_matrix, base->mesh);
+            program_color_light.render(model_matrix, base->mesh);
             // Draw normals if selected
             if(tag == state.selected.tag)
             {
@@ -177,7 +177,7 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
         }
         else
         {
-            program_mesh.render(translation_matrix, base->mesh);
+            program_mesh.render(model_matrix, base->mesh);
         }
     }
     
@@ -194,14 +194,38 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
 
     // QUARTERNION TESTS
     f3 rot_axis = {0.5f, 0.0f, 1.0f};
-    program_vector.set_color({1.0f, 0.0f, 1.0f});
-    Quarternion::rotate_f3( scene3D.quarternion_vector_100,
+    Quarternion::rotate_f3( scene3D.q_vec_100,
                             rot_axis,
-                            0.01);
+                            0.01f);
+    program_vector.set_color({1.0f, 0.0f, 0.0f});
     program_vector.render(  {0.0f, 0.0f, 0.0f},
-                            scene3D.quarternion_vector_100);
+                            scene3D.q_vec_100);
+    Quarternion::rotate_f3( scene3D.q_vec_010,
+                            rot_axis,
+                            0.01f);
+    program_vector.set_color({0.0f, 1.0f, 0.0f});
     program_vector.render(  {0.0f, 0.0f, 0.0f},
-                            scene3D.quarternion_vector_111);
+                            scene3D.q_vec_010);
+    Quarternion::rotate_f3( scene3D.q_vec_001,
+                            rot_axis,
+                            0.01f);
+    program_vector.set_color({0.0f, 0.0f, 1.0f});
+    program_vector.render(  {0.0f, 0.0f, 0.0f},
+                            scene3D.q_vec_001);
+
+    Mesh q_mesh;
+    q_mesh.cube();
+    q_mesh.scale({0.2, 0.2, 0.02});
+    scene3D.q_1000.rotate(f3::Z(), 0.01f);
+    // scene3D.q_1000 = Quarternion::rotate_quart(scene3D.q_1000, {0.0f, f3::Y()}, 0.1);
+    scene3D.q_1000.print();
+    program_mesh.render(     scene3D.q_1000.matrix()
+                            ,q_mesh 
+                            ,0xff00ffff                  );
+
+    // program_vector.set_color({1.0f, 0.0f, 1.0f});
+    // program_vector.render(  {0.0f, 0.0f, 0.0f},
+    //                         scene3D.q_1000_vec);
 
     program_vector.set_color({0.0f, 0.0f, 0.0f});
     program_vector.render(  {0.0f, 0.0f, 0.0f},
@@ -213,6 +237,8 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
 void RendererScene3D::
 render_object_ids(Scene3D & scene, Manager3D& manager_3D)
 {
+    program_object_ids.use();
+
     program_object_ids.set_camera_view_projection(  scene.camera.perspective.matrix, 
                                                     scene.camera.view.matrix);
 
@@ -225,9 +251,14 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
         Object* baseo = manager_3D.manager_o.get_object(tago);
         if(baseo == nullptr) continue;
 
-        program_object_ids.render(  m4f4::translation(baseo->pos), 
+        m4f4 scale_matrix       = m4f4::scale(baseo->scale);
+        m4f4 translation_matrix = m4f4::translation(baseo->pos);
+        m4f4 rotation_matrix    = baseo->rot.matrix();
+        m4f4 model_matrix       = translation_matrix * rotation_matrix * scale_matrix;
+
+        program_object_ids.render(  model_matrix, 
                                     baseo->mesh, 
-                                    baseo->tag.oid                  );
+                                    baseo->tag.oid  );
     }
 
     fb_object_ids.unbind(window_fb_size);

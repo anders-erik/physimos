@@ -16,7 +16,7 @@ struct Object
     Mesh        mesh;
     
     f3          pos;
-    Quarternion rot     = {0.0f, 1.0f, 0.0f, 0.0f};
+    Quarternion rot     = {1.0f, 0.0f, 0.0f, 0.0f};
     float       scale = 1.0f;
 
 

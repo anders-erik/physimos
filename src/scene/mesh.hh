@@ -55,6 +55,7 @@ struct Mesh
 
     void center();
     void scale(float factor);
+    void scale(f3 scale);
     void scale_z(float factor);
     void move_z(float factor);
     void move(const f3& delta);
