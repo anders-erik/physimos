@@ -49,6 +49,9 @@ public:
     void draw_base_texture(UI::BaseTexture& base_texture);
     void draw_base_string(UI::BaseString& base_string);
 
+    void stencil_start_new_capture();
+    void stencil_apply();
+    void stencil_disable();
 };
 
 

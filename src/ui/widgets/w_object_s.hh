@@ -24,9 +24,9 @@ namespace W {
 struct ObjectSmall : public Widget
 {
     Object object;
-    f2 size = {180.0f, 30.0f};
+    static constexpr f2 size = {180.0f, 30.0f};
 
-    BaseString quad_name;
+    BaseString obj_name;
 
 public:
 
@@ -82,8 +82,8 @@ public:
 
         // Name
         f2 name_delta = { 5.0f, 6.0f };
-        quad_name.set_pos(frame.pos + name_delta);
-        quad_name.set_str(object.name);
+        obj_name.set_pos(frame.pos + name_delta);
+        obj_name.set_str(object.name);
     }
 
 
@@ -91,8 +91,7 @@ public:
     void render(RendererBase& renderer)
     {
         renderer.draw_base(frame_base);
-
-        renderer.draw_base_string(quad_name);
+        renderer.draw_base_string(obj_name);
     }
 
 };

@@ -85,7 +85,8 @@ struct f2
     float y = 0.0f;
 
     f2() = default;
-    constexpr f2(float x, float y) : x {x}, y {y} {}; 
+    constexpr
+    f2(float x, float y) : x {x}, y {y} {}; 
     f2(float xyz) : x {xyz}, y {xyz} {}; 
 
     f2(double x, double y) : x { (float)x}, y {(float)y} {}; 

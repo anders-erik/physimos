@@ -192,7 +192,8 @@ void Physimos::
 update()
 {
 	manager_3D.update();
-	pui.update(	manager_3D ); // reflect scene state changes
+	pui.reload(	manager_3D, 
+				auxwin.get_window_fb_size().to_f2()	);
 }
 
 

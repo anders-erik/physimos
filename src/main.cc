@@ -158,6 +158,7 @@ int main()
 	// TUBE
 	Object& toadstool = manager_o.new_object();
 	toadstool.tag.type = TagO::Base;
+	toadstool.name = "toadstool";
 	root_scene.tagos.push_back(toadstool.tag);
 	toadstool.pos = {2.0f, 0.0f, 1.0f};
 	// mesh

@@ -11,6 +11,7 @@
 #include "ui/widgets/w_root_scene.hh"
 #include "ui/widgets/w_object_s.hh"
 #include "ui/widgets/w_object_l.hh"
+#include "ui/widgets/w_list.hh"
 
 #include "ui/pui_cursor.hh"
 
@@ -34,6 +35,7 @@ class PUI
 
     UI::W::RootScene w_root_scene;
     UI::W::ObjectLarge w_object_large;
+    UI::W::List<UI::W::ObjectSmall, Object, 150.0f> list_object;
 
     PUICursor cursor;
 
@@ -50,10 +52,9 @@ public:
     void clear_hovers();
 
     /** Reloads the UI to reflect the most up-to-date data from scenes. */
-    void update(Manager3D& manager_3D);
+    void reload(Manager3D& manager_3D, f2 framebuffer_size);
 
     InputResponse event_all(Manager3D& manager_3D, window::InputEvent& event);
-    void event_window_resize(window::WindowResizeEvent& window_resize);
 
     void render(UI::RendererBase& renderer_base);
 

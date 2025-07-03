@@ -51,6 +51,12 @@ contains_point(f2 cursor_pos_win_sane)
         return true;
     }
 
+    if(list_object.has_cursor(cursor_pos_win_sane))
+    {
+        cursor.hover(&list_object);
+        return true;
+    }
+
 
 
     Base* base;
@@ -85,9 +91,10 @@ clear_hovers()
 
 
 void PUI::
-update(Manager3D& manager_3D)
+reload(Manager3D& manager_3D, f2 framebuffer_size)
 {
-    w_root_scene.reload(manager_3D, {10.0f, 300.0f});
+    w_root_scene.reload(manager_3D, {10.0f, 200.0f});
+    list_object.reload(manager_3D.manager_o.objects, {0.0f, framebuffer_size.y-list_object.size.y});
 
     // delete widget_quad;
     // widget_quad = new WidgetQuad();
@@ -100,10 +107,10 @@ update(Manager3D& manager_3D)
     // Scene3D& scene = ManagerScene::get_window_scene_mut();
 
     Object* obj_p = manager_3D.manager_o.get_object(manager_3D.state.selected.tag);
-    if(obj_p == nullptr)    return;
-
-    w_object_large.reload(*obj_p, {500.0f, 450.0f});
-
+    if(obj_p != nullptr)
+        w_object_large.reload(*obj_p, {500.0f, 440.0f});
+    else
+        w_object_large.frame_base.get_box() = Box2D{};
 }
 
 
@@ -128,21 +135,17 @@ event_all(Manager3D& manager_3D, window::InputEvent& event)
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
 
+    if(cursor.is_targeted_widget(&list_object))
+    {
+        InputResponse result = list_object.event_handler(manager_3D, event);
+        cursor.handle_event_result(result, &list_object);
+        if(result.is_mouse_grab())
+            return InputResponse(InputResponse::MOUSE_GRAB);
+    }
+
     return InputResponse();
 }
 
-
-
-
-void PUI::
-event_window_resize(window::WindowResizeEvent& window_resize)
-{
-    // UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
-    // renderer_base.set_window_info(
-    //     window_resize.size_f, 
-    //     window_resize.content_scale
-    // );
-}
 
 
 
@@ -163,6 +166,7 @@ render(UI::RendererBase& renderer_base){
 
     w_object_large.render(renderer_base);
 
+    list_object.render(renderer_base);
 }
 
 

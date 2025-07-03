@@ -18,6 +18,7 @@
 #include "widget.hh"
 
 #include "widgets/w_f2.hh"
+#include "widgets/w_f3.hh"
 
 
 namespace UI 
@@ -30,8 +31,8 @@ namespace W
 /** Widget reflecting the state of a specific quad */
 struct ObjectLarge : public Widget
 {
-    Object object;
-    f2 size = {250.0f, 100.0f};
+    Object object; // object copy - read only
+    static constexpr f2 size = {250.0f, 150.0f};
 
     BaseString object_name;
     
@@ -43,6 +44,7 @@ struct ObjectLarge : public Widget
 
     f2 dummy_f2 = {1.0f, 2.0f};
     W::F2 w_f2;
+    W::F3 w_pos;
 
 public:
 
@@ -55,6 +57,11 @@ public:
         {
             w_f2.event_handler(event);
         }
+        if(w_pos.has_cursor(cursor_sane))
+        {
+            w_pos.event_handler(event);
+        }
+        
 
         switch (event.type)
         {
@@ -116,9 +123,8 @@ public:
     }
 
     /** Recreates the whole widget from scene data every call. */
-    inline void reload(Object new_object, f2 new_pos)
+    inline void reload(Object& new_object, f2 new_pos)
     {
-        // Update quad
         object = new_object;
 
         // Frame
@@ -165,9 +171,13 @@ public:
 
         offset -= box_indent;
 
-        // POS F2
-        f2 mesh_pos_offset = { 0.0f, -80.0f };
-        w_f2.reload(dummy_f2, offset += mesh_pos_offset);
+        // F2
+        f2 f2_offset = { 0.0f, -80.0f };
+        w_f2.reload(dummy_f2, offset + f2_offset);
+
+        // POS
+        f2 pos_offset = { 0.0f, -105.0f };
+        w_pos.reload(new_object.pos, "Pos", offset + pos_offset);
     }
 
 
@@ -184,6 +194,7 @@ public:
         renderer.draw_base_string(faces_size);
 
         w_f2.render(renderer);
+        w_pos.render(renderer);
     }
 
 };
