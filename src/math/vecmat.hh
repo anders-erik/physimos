@@ -175,6 +175,8 @@ struct f3
     void matmul(m4f4 matrix);
     void matmul(m3f3 matrix);
 
+    float* pointer();
+
     void print(std::string name);
 };
 

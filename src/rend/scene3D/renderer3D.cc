@@ -35,6 +35,8 @@ init(f2 window_fb_size)
     program_mesh.init();
     program_object_ids.init();
 
+    program_color_light.init();
+
     program_quad.init();
 
     fb_object_ids.reload((int)window_fb_size.x, (int) window_fb_size.y);
@@ -103,6 +105,9 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
                                                 scene3D.camera.view.matrix);
     program_quad.set_camera_view_projection(    scene3D.camera.perspective.matrix, 
                                                 scene3D.camera.view.matrix);
+    program_color_light.set_camera_view_perspective( scene3D.camera.view.matrix, 
+                                                    scene3D.camera.perspective.matrix          );
+    program_color_light.set_light_pos({0.0f, 0.0f, 0.0f});
 
 
     // TEXTURE MODELS
@@ -154,8 +159,26 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
             program_mesh.render(translation_matrix, base->mesh, 0x00ff00ff);
         else if(tag == state.hovered.tag)
             program_mesh.render(translation_matrix, base->mesh, 0xff0000ff);
+        
+        // Draw meshes with normals as color models
+        if(base->mesh.normals.size() > 0)
+        {
+            program_color_light.render(translation_matrix, base->mesh);
+            // Draw normals if selected
+            if(tag == state.selected.tag)
+            {
+                for(size_t i=0; i<base->mesh.verts.size(); i++)
+                {
+                    program_vector.set_color({0.0f, 0.0f, 0.0f});
+                    program_vector.render(  base->mesh.verts[i] + base->pos, 
+                                            base->mesh.normals[i]           );
+                }
+            }
+        }
         else
-            program_mesh.render(translation_matrix, base->mesh, 0xffffffff);
+        {
+            program_mesh.render(translation_matrix, base->mesh);
+        }
     }
     
 

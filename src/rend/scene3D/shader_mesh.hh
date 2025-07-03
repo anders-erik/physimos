@@ -26,6 +26,7 @@ public:
 
     void render(Mesh& mesh, unsigned int color);
     void render(const m4f4& model_matrix, Mesh& mesh, unsigned int color);
+    void render(const m4f4& model_matrix, Mesh& mesh);
 
 };
 

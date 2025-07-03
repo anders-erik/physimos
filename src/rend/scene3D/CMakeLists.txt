@@ -10,6 +10,7 @@ set(REND_SCENE3D
     shader_mesh.cc
     shader_object_ids.cc
     shader_quad.cc
+    shader_color_light.cc
 )
 
 

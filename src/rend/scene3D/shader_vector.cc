@@ -104,32 +104,26 @@ void ShaderVector::set_color(f3 new_color)
     glUniform3fv( glGetUniformLocation(id, "vector_color"), 1, (float*) &color);
 }
 
-void ShaderVector::render(f3 pos, f3 size){
-
+void ShaderVector::render(f3 pos, f3 vector)
+{
     // PROGRAM
     glUseProgram(id);
 
     // UNIFORMS
-    glUniform3fv(glGetUniformLocation(id, "vector"), 3, (float*) &size);
-    glUniform1f( glGetUniformLocation(id, "vector_scale"), sqrtf( size.x*size.x + size.y*size.y + size.z*size.z));
+    glUniform3fv(glGetUniformLocation(id, "vector"), 3, (float*) &vector);
+    glUniform1f( glGetUniformLocation(id, "vector_scale"), vector.norm());
 
     // ROTATION
-    f2 yaw_pitch = Transform::to_yaw_pitch(size);
-    m4f4 vec_rotation_mat = Transform::yaw_pitch_matrix(yaw_pitch.x, yaw_pitch.y);
-
-    m4f4 rotation_mat = Transform::rect_f3_to_m4f4(size);
-    glUniformMatrix4fv(glGetUniformLocation(id, "rotation_mat"), 1, GL_TRUE, (float*) &rotation_mat);
-
+    YawPitch yaw_pitch = Transform::to_yaw_pitch(vector);
+    m4f4 vec_rotation_mat = Transform::yaw_pitch_matrix(yaw_pitch);
+    glUniformMatrix4fv(glGetUniformLocation(id, "rotation_mat"), 1, GL_TRUE, (float*) &vec_rotation_mat);
 
     // TRANSLATION 
     m4f4 translation_mat = m4f4::translation(pos);
     glUniformMatrix4fv(glGetUniformLocation(id, "translation_mat"), 1, GL_TRUE, (float*) &translation_mat );
 
 
-    // DRAW
-    glBindVertexArray(vao);
-
-    
+    glBindVertexArray(vao);    
     glDrawArrays(GL_LINES, 0, arrow.size());
 }
 

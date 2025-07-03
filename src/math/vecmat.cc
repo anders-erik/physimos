@@ -428,6 +428,11 @@ void f3::matmul(m3f3 matrix){
     *this = tmp;
 }
 
+float* f3::pointer()
+{
+    return (float*) this;
+}
+
 void f3::print(std::string name)
 {
     std::cout << name <<  ": x = " << x << ", y = " << y << ", z = " << z << std::endl;

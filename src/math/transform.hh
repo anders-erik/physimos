@@ -3,6 +3,16 @@
 
 #include "vecmat.hh"
 
+struct YawPitch : public f2
+{
+    float yaw() {return x;}
+    float pitch() {return y;}
+
+    YawPitch(float yaw, float pitch)
+        : f2(yaw, pitch)
+    {};
+};
+
 
 struct Transform2D {
     f2 pos;
@@ -30,10 +40,7 @@ struct Transform {
 
     void set_matrix_model(); // Old transform interface
 
-    static f2 to_yaw_pitch(f3 rect_vector);
-    static m4f4 yaw_pitch_matrix(float yaw, float pitch);
-
-/** Matrix that will yaw a unit vector in the xy plane, followed by piching to match rect_vector.  */
-    static m4f4 rect_f3_to_m4f4(f3 rect_vector);
+    static YawPitch to_yaw_pitch(f3 rect_vector);
+    static m4f4 yaw_pitch_matrix(YawPitch YP);
 };
 

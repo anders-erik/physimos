@@ -20,6 +20,7 @@
 
 #include "rend/scene3D/shader_mesh.hh"
 #include "rend/scene3D/shader_quad.hh"
+#include "rend/scene3D/shader_color_light.hh"
 
 #include "rend/scene3D/shader_object_ids.hh"
 
@@ -46,6 +47,8 @@ class RendererScene3D
 
     ShaderMesh program_mesh;
     ShaderQuad program_quad;
+
+    ShaderColorLight program_color_light;
 
     ShaderObjectIDs program_object_ids;
 

@@ -14,9 +14,8 @@
 
 struct TubeContext
 {
-    int     circle_point_count; // points per 'circle'
     int     frame_count;        // number of circles along its long axis
-    bool    closed = false;     // will close ends of tube if true
+    int     circle_point_count; // points per 'circle'
 };
 
 struct SheetContext
@@ -44,11 +43,12 @@ struct Mesh
     std::vector<Vertex> verts;
     std::vector<TriangleFaceIndeces> faces;
 
-    MeshContext context;
+    std::vector<f3> normals;
+    uint color = 0xffffffff;
 
     Mesh() = default;
 
-    /** Returnes the total byte size of the vertices. [verts.size() * sizeof(Vertex)] */
+    /** Returns the total byte size of the vertices. [verts.size() * sizeof(Vertex)] */
     unsigned int vert_size_bytes();
 
     void clear();
@@ -57,7 +57,6 @@ struct Mesh
     void scale(float factor);
     void scale_z(float factor);
     void move_z(float factor);
-    void poly_z(Polynomial<float> polynomial);
     void move(const f3& delta);
 
     void sheet();
@@ -65,8 +64,8 @@ struct Mesh
     void quad();
     void cube();
 
-
     void tube(TubeContext t_context);
+    void tube_poly_z(TubeContext t_context, Polynomial<float> polynomial);
 };
 
 

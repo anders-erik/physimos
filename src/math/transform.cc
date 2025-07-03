@@ -94,7 +94,7 @@ void Transform::set_matrix_model()
 
 
 
-f2 Transform::
+YawPitch Transform::
 to_yaw_pitch(f3 rect_vector)
 {
     f2 vector_xy = rect_vector.to_xy();
@@ -109,29 +109,11 @@ to_yaw_pitch(f3 rect_vector)
     return {yaw, pitch};
 }
 
-m4f4 Transform::yaw_pitch_matrix(float yaw, float pitch)
+m4f4 Transform::yaw_pitch_matrix(YawPitch YP)
 {
-    m4f4 YAW = m4f4::rotation_z(-yaw);
-    m4f4 PITCH = m4f4::rotation_y(-pitch);
+    m4f4 YAW = m4f4::rotation_z(-YP.yaw());
+    m4f4 PITCH = m4f4::rotation_y(-YP.pitch());
     return YAW * PITCH;
 }
 
-
-m4f4 Transform::
-rect_f3_to_m4f4(f3 rect_vector)
-{
-    f2 vector_xy = rect_vector.to_xy();
-    
-    // Pure z-vectors need xy component to be visible
-    if(vector_xy.is_zero())
-        rect_vector.y = 0.0001f;
-
-    float yaw = vector_xy.angle();
-    m4f4 YAW = m4f4::rotation_z(-yaw);
-
-    float pitch = atanf( rect_vector.z / vector_xy.norm());
-    m4f4 PITCH = m4f4::rotation_y(-pitch);
-
-    return YAW * PITCH;
-}
 

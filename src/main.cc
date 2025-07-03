@@ -161,12 +161,12 @@ int main()
 	root_scene.tagos.push_back(toadstool.tag);
 	toadstool.pos = {2.0f, 0.0f, 1.0f};
 	// mesh
-	TubeContext t_context {8, 20, true};
+	TubeContext t_context {20, 8};
 	toadstool.mesh.tube(t_context);
 	toadstool.mesh.scale_z(3.0f);
 	toadstool.mesh.move_z(-1.0f);
 	Polynomial<float> poly_toadstool {{1, 0, 2, 1, -1}};
-	toadstool.mesh.poly_z(poly_toadstool);
+	toadstool.mesh.tube_poly_z(t_context, poly_toadstool);
 	toadstool.mesh.center();
 	toadstool.mesh.scale(0.1f);
 

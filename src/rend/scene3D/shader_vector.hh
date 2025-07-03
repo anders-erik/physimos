@@ -28,7 +28,7 @@ public:
 
     void set_project_view_matrix(m4f4 project_mat, m4f4 view_mat);
     void set_color(f3 new_color);
-    void render(f3 pos, f3 size);
+    void render(f3 pos, f3 vector);
     void init();
 
 };
