@@ -1,6 +1,8 @@
 #include "opengl/program.hh"
 #include "opengl/color.hh"
 
+#include "opengl/texture_unit.hh"
+
 #include "math/vecmat.hh"
 
 #include "glad/glad.h"
@@ -20,6 +22,7 @@ init()
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &vbo_pos);
     glGenBuffers(1, &vbo_norm);
+    glGenBuffers(1, &vbo_color);
     glGenBuffers(1, &EBO);
 
     view_mat_LOC        = glGetUniformLocation(id, "view");
@@ -56,7 +59,7 @@ render(const m4f4& model_matrix, Mesh& mesh)
     glUseProgram(id);
 
     glUniformMatrix4fv(glGetUniformLocation(id, "model"), 1, GL_TRUE, model_matrix.pointer());
-    glUniform4fv(glGetUniformLocation(id, "mesh_color"), 1, Color::uint_to_f4(mesh.color).pointer());
+    // glUniform4fv(glGetUniformLocation(id, "mesh_color"), 1, Color::uint_to_f4(mesh.color).pointer());
 
     glBindVertexArray(VAO);
 
@@ -71,6 +74,12 @@ render(const m4f4& model_matrix, Mesh& mesh)
     glBufferData(GL_ARRAY_BUFFER, mesh.normals.size() * sizeof(f3), mesh.normals.data(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void*)0);
     glEnableVertexAttribArray(1);
+
+    // Texture Coords
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
+    glBufferData(GL_ARRAY_BUFFER, mesh.colors.size() * sizeof(f3), mesh.colors.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void*)0);
+    glEnableVertexAttribArray(2);
 
     // Elements
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

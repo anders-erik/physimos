@@ -15,6 +15,7 @@ class ShaderColorLight : protected opengl::ShaderProgram
     unsigned int VAO;
     unsigned int vbo_pos;
     unsigned int vbo_norm;
+    unsigned int vbo_color;
     unsigned int EBO;
 
     uint view_mat_LOC;
@@ -22,6 +23,8 @@ class ShaderColorLight : protected opengl::ShaderProgram
 
     uint light_pos_LOC;
     uint light_color_LOC;
+
+    uint color_texunit_LOC;
 
 public:
 

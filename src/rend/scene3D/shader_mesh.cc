@@ -143,7 +143,7 @@ render(const m4f4& model_matrix, Mesh& mesh)
     glUniformMatrix4fv(glGetUniformLocation(id, "model"), 1, GL_TRUE, model_matrix.pointer());
 
 
-    glUniform4fv(glGetUniformLocation(id, "mesh_color"), 1, Color::uint_to_f4(mesh.color).pointer());
+    glUniform4fv(glGetUniformLocation(id, "mesh_color"), 1, Color::uint_to_f4(mesh.color_mesh).pointer());
 
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );

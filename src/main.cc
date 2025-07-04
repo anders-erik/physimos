@@ -173,6 +173,94 @@ int main()
 	toadstool.mesh.tube_poly_z(t_context, poly_toadstool);
 	toadstool.mesh.center();
 	toadstool.mesh.scale(0.1f);
+	toadstool.mesh.tube_color(t_context, 0xffffff, 0xff0000);
+
+
+	Polynomial<float> poly_top {{0.2, 0, -0.2}};
+
+	Object& circle_red = manager_o.new_object();
+	circle_red.tag.type = TagO::Base;
+	circle_red.name = "circle_red";
+	CircleContext c_ctx = {3, 10};
+	circle_red.mesh.circle(c_ctx);
+	circle_red.mesh.circle_poly_r(c_ctx, poly_top);
+	circle_red.mesh.color(0xff0000);
+	// circle.mesh.poly_r(poly_circle);
+	circle_red.pos = {0.0f, -2.0f, 0.0f};
+	root_scene.tagos.push_back(circle_red.tag);
+
+
+	Object& circle_white_1 = manager_o.new_object();
+	circle_white_1.tag.type = TagO::Base;
+	circle_white_1.name = "circle_white";
+	CircleContext c_ctx_white = {1, 10};
+	circle_white_1.mesh.circle(c_ctx_white);
+	circle_white_1.mesh.scale(0.1f);
+	circle_white_1.mesh.move({0.5f, 0.0f, 0.001f});
+	// circle_white_1.mesh.circle_poly_r(c_ctx_white, poly_circle_white);
+	circle_white_1.mesh.poly_r(poly_top);
+	circle_white_1.mesh.color(0xffffff);
+	circle_white_1.pos = {0.0f, -2.0f, 0.0f};
+	root_scene.tagos.push_back(circle_white_1.tag);
+
+	Object& circle_white_2 = manager_o.new_object();
+	circle_white_2.tag.type = TagO::Base;
+	circle_white_2.name = "circle_white";
+	CircleContext c_ctx_white_2 = {1, 10};
+	circle_white_2.mesh.circle(c_ctx_white_2);
+	circle_white_2.mesh.scale(0.1f);
+	circle_white_2.mesh.move({0.0f, 0.5f, 0.001f});
+	// circle_white_2.mesh.circle_poly_r(c_ctx_white_2, poly_circle_white_2);
+	circle_white_2.mesh.poly_r(poly_top);
+	circle_white_2.mesh.color(0xffffff);
+	// circle.mesh.poly_r(poly_circle);
+	circle_white_2.pos = {0.0f, -2.0f, 0.0f};
+	root_scene.tagos.push_back(circle_white_2.tag);
+
+
+	Mesh dot_mesh;
+	dot_mesh.circle({1, 10});
+	dot_mesh.scale(0.05f);
+	Mesh red_mesh;
+	red_mesh.circle({3, 10});
+	red_mesh.color(0xff0000);
+	// dot_mesh.move({0.0f, 0.5f, 0.001f});
+
+	Object& merged_o = manager_o.new_object();
+	merged_o.tag.type = TagO::Base;
+	merged_o.name = "merged";
+	merged_o.mesh = red_mesh;
+
+	for (size_t i = 0; i < 40; i++)
+	{
+		srand(i);
+		float rd_x = ((float)(rand() % 1000) / 700.f) - 0.7f;
+		srand(100*i);
+		float rd_y = ((float)(rand() % 1000) / 700.f) - 0.7f;
+
+		dot_mesh.center();
+		dot_mesh.move({rd_x, rd_y, 0.001f});
+		dot_mesh.get_center().print("Vert center");
+		merged_o.mesh.merge(dot_mesh);
+	}
+	merged_o.mesh.poly_r(poly_top);
+
+	Mesh bottom_mesh;
+	bottom_mesh.tube({20, 8});
+	bottom_mesh.color(0xffffff);
+	bottom_mesh.scale_z(2.0f);
+	bottom_mesh.move_z(-1.0f);
+	bottom_mesh.tube_poly_z(t_context, {{1, 0, 2, 1, -1}});
+	bottom_mesh.center();
+	bottom_mesh.scale(0.3f);
+	bottom_mesh.move_z(-0.28f);
+
+	merged_o.mesh.merge(bottom_mesh);
+	
+	merged_o.pos = {1.0f, -3.0f, 0.0f};
+	root_scene.tagos.push_back(merged_o.tag);
+
+	
 
 	// manager_3D.window_scene->q_1000.rotate(f3::Z(), 0.785f);
 	// manager_3D.window_scene->q_1000.rotate(f3::X(), 1.57f);
@@ -186,14 +274,13 @@ int main()
 	lampo.mesh.scale(0.1f);
 	lampo.name = "lamp_1";
 	Lamp lamp;
+	lamp.light_color = {0.8f, 0.6f, 0.6f};
 	lampo.tagp = manager_3D.manager_p.push_lamp(lamp);
 	root_scene.tagos.push_back(lampo.tag);
 
 
 
 	physimos.main_loop();
-
-	
 
 	return 0;
 }

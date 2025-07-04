@@ -3,6 +3,8 @@
 
 #include "math/const.hh"
 
+#include "opengl/color.hh"
+
 #include "mesh.hh"
 
 unsigned int Mesh::vert_size_bytes()
@@ -15,6 +17,34 @@ clear()
 {
     verts.clear();
     faces.clear();
+}
+
+void Mesh::merge(const Mesh& mesh_2)
+{
+    size_t vert_c = verts.size();
+
+    for(size_t i=0; i < mesh_2.verts.size(); i++)
+    {
+        verts.push_back(mesh_2.verts[i]);
+        normals.push_back(mesh_2.normals[i]);
+        colors.push_back(mesh_2.colors[i]);
+    }
+
+    for(size_t i=0; i < mesh_2.faces.size(); i++)
+    {
+        faces.emplace_back(   mesh_2.faces[i].v0 + vert_c
+                            , mesh_2.faces[i].v1 + vert_c
+                            , mesh_2.faces[i].v2 + vert_c   );
+    }
+}
+
+f3 Mesh::get_center()
+{
+    f3 vert_sum;
+    for(auto& vert : verts)
+        vert_sum += vert;
+
+    return vert_sum / verts.size();
 }
 
 
@@ -161,6 +191,161 @@ void Mesh::cube()
     faces.emplace_back( 6, 7, 4 );
 }
 
+
+
+
+void Mesh::
+circle(CircleContext c_ctx)
+{
+    verts.clear();
+    normals.clear();
+    colors.clear();
+    faces.clear();
+
+    float R_MAX = 1.0f;
+
+    uint CC  = c_ctx.CC;   // Circle count
+    uint PPC = c_ctx.PPC;  // Points per circle
+
+    #define IDX(i_ppc, i_cc) ((i_ppc) + (i_cc)*PPC)
+
+    float radius_delta = R_MAX / CC;
+    float radius = 0.0f;
+
+    float angle_delta = PI2f / (float) PPC;
+    float angle = 0.0f;
+
+    uint i_cc  = 0;
+    uint i_ppc = 0;
+
+    // VERTS
+    for(i_cc=0; i_cc < CC; i_cc++)
+    {
+        radius += radius_delta;
+
+        for(i_ppc=0; i_ppc < PPC; i_ppc++)
+        {
+            verts.emplace_back(   radius*cos(angle)
+                                , radius*sin(angle)
+                                , 0.0f      );
+            normals.emplace_back(0.0001f, 0.0f, 1.0f);
+            colors.emplace_back(default_color);
+
+            angle += angle_delta;
+        }
+    }
+    verts.emplace_back(0.0f, 0.0f, 0.0f); // center
+    normals.emplace_back(0.0001f, 0.0f, 1.0f);
+    colors.emplace_back(default_color);
+
+    // FACES
+    for(i_cc=0; i_cc < CC-1; i_cc++)
+    {
+        for(uint i_ppc=0; i_ppc < PPC; i_ppc++)
+        {
+            uint p_i_p1_mod = (i_ppc+1) % PPC;
+            faces.emplace_back(   IDX(i_ppc, i_cc)
+                                , IDX(i_ppc, i_cc+1)
+                                , IDX(p_i_p1_mod, i_cc)    );
+            faces.emplace_back(   IDX(i_ppc, i_cc+1)
+                                , IDX(p_i_p1_mod, i_cc+1)
+                                , IDX(p_i_p1_mod, i_cc)    );
+        }
+    }
+
+
+    // CENTER FACES
+    for(uint i_ppc=0; i_ppc < PPC; i_ppc++)
+    {
+        uint p_i_p1_mod = (i_ppc+1) % PPC;
+        faces.emplace_back(   IDX(i_ppc, 0)
+                            , IDX(p_i_p1_mod, 0)
+                            , verts.size()-1        );
+    }
+
+}
+
+void Mesh::
+circle_poly_r(CircleContext c_ctx, Polynomial<float> poly)
+{
+    normals.clear();
+
+    Polynomial<float> derivative = poly.derivative();
+
+    uint CC  = c_ctx.CC;   // Circle count
+    uint PPC = c_ctx.PPC;  // Points per circle
+
+    #define IDX(i_ppc, i_cc) ((i_ppc) + (i_cc)*PPC)
+
+    float angle_delta = PI2f / (float) PPC;
+    float angle = 0.0f;
+
+    uint i_cc  = 0;
+    uint i_ppc = 0;
+
+    for(i_cc=0; i_cc < CC; i_cc++)
+    {   
+        float radius = verts[IDX(0, i_cc)].to_xy().norm();
+        float dz_dr  = derivative(radius);
+        float dz_dr_normal = -1.0f / dz_dr;
+    
+        for(i_ppc=0; i_ppc < PPC; i_ppc++)
+        {
+            verts[IDX(i_ppc, i_cc)].z = poly(radius);
+
+            float dx = radius * cos(angle);
+            float dy = radius * sin(angle);
+            float dz = radius * dz_dr_normal;
+
+            f3 normal = {dx, dy, dz};
+            normals.emplace_back(normal.unit());
+
+            angle += angle_delta;
+        }
+    }
+    verts[verts.size()-1] = {0.0f, 0.0f, poly(0.0f)};
+    normals.emplace_back(0.0f, 0.0f, 1.0f);
+
+    // NORMALS
+
+}
+
+void Mesh::color(ColorInt color_i)
+{
+    colors.clear();
+    Colorf3 base_color_f3 = Color::int_to_f3(color_i);
+
+    for(size_t i=0; i < verts.size(); i++)
+        colors.push_back(base_color_f3);
+}
+
+
+
+void Mesh::
+poly_r(Polynomial<float> poly)
+{
+    normals.clear();
+
+    Polynomial<float> derivative = poly.derivative();
+
+    for(auto& vert : verts)
+    {
+        float radius = vert.to_xy().norm();
+        vert.z = poly(radius);
+
+        float dz_dr_normal  = -1.0f / derivative(radius);
+        float dz = radius * dz_dr_normal;
+
+        f3 normal = {vert.x, vert.y, dz};
+
+        if(vert.x == 0.0f && vert.y == 0.0f)
+            normal = {0.001f, 0.001f, 1.0f};
+
+        normals.emplace_back(normal.unit());
+    }
+}
+
+
 void Mesh::quad()
 {
     verts.clear();
@@ -237,11 +422,13 @@ move_z(float delta)
 }
 
 
-void Mesh::
+Mesh& Mesh::
 move(const f3& delta)
 {
     for(auto& vert : verts)
         vert += delta;
+    
+    return *this;
 }
 
 
@@ -266,6 +453,7 @@ tube(TubeContext t_context)
     // closed tubes only for now
     verts.reserve(CTVC);
     normals.reserve(CTVC);
+    colors.reserve(CTVC);
 
 
     float frame_gap     = 1.0f / ( (float) (FC - 1));
@@ -408,4 +596,45 @@ void Mesh::tube_poly_z(TubeContext t_context, Polynomial<float> polynomial)
     normals[normals.size()-1].x =  0.0f;
     normals[normals.size()-1].y =  0.0f;
     normals[normals.size()-1].z =  1.0f;
+}
+
+
+void Mesh::tube_color(TubeContext t_context, ColorInt base_color, ColorInt top_color)
+{
+    int FC  = t_context.frame_count;        // Frame count
+    int CPC = t_context.circle_point_count; // Circle point count
+    #define IMV(i_cp, i_f)     ((i_cp) + (i_f) * CPC)
+
+    colors.clear();
+    colors.reserve(FC * CPC + 2);
+
+    int i_fr;   // index: frame
+    int i_cp;   // index : circle point
+    
+    Colorf3 base_color_f3 = Color::int_to_f3(base_color);
+    Colorf3 top_color_f3  = Color::int_to_f3(top_color);
+
+    // verts
+    for(i_fr=0; i_fr<FC; i_fr++)
+    {
+        for(i_cp=0; i_cp<CPC; i_cp++)
+        {
+            if(i_fr < FC * 0.8)
+                colors.emplace_back(base_color_f3);
+            else
+            {
+                int rd = rand() % 100;
+                if(rd < 40)
+                    colors.emplace_back(base_color_f3);
+                else
+                    colors.emplace_back(top_color_f3);
+            }
+            // f2& texco = texcos[IMV(i_cp, i_fr)];
+
+            // texco = {0.5f, 0.5f};
+        }
+    }
+
+    colors.emplace_back(base_color_f3);
+    colors.emplace_back(top_color_f3);
 }

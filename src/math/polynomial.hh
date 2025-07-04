@@ -63,5 +63,17 @@ public:
         return (sum * y_stretch) + y_shift;
     }
 
+    Polynomial<T> derivative()
+    {
+        std::vector<T> new_coeff;
+
+        for(size_t i=1; i<coefficients.size(); i++)
+        {
+            T coeff = i * coefficients[i];
+            new_coeff.emplace_back(coeff);
+        }
+
+        return {new_coeff};
+    }
 
 };

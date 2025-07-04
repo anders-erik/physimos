@@ -131,9 +131,19 @@ init_color()
     glGenTextures(1, &colors_texture_id);
     glActiveTexture(GL_TEXTURE0 + TextureUnits::Color);
     glBindTexture(GL_TEXTURE_2D, colors_texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, X, Y*Z, 0, GL_RGB, GL_FLOAT, colors_texture_data);
+    glTexImage2D(   GL_TEXTURE_2D, 
+                    0, 
+                    GL_RGB, 
+                    X, 
+                    Y*Z, 
+                    0, 
+                    GL_RGB, 
+                    GL_FLOAT, 
+                    colors_texture_data );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
     glActiveTexture(GL_TEXTURE0);
 
 }
