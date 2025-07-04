@@ -1,6 +1,4 @@
 
-#include "rend/rend_manager.hh"
-
 #include "scene2D/scene2D.hh"
 
 #include "manager_2D.hh"

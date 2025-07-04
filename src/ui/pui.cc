@@ -2,7 +2,6 @@
 #include "lib/print.hh"
 // REND
 #include "rend/pui/renderer_base.hh"
-#include "rend/rend_manager.hh"
 
 #include "scene/scene_state.hh"
 #include "scene/manager_3D.hh"
@@ -23,8 +22,13 @@ PUI::PUI()
     new_quad_in_root_scene.set_pos({50, 50});
     new_quad_in_root_scene.set_size({50, 50});
 
-    base_texture.set_pos({110, 50});
-    base_texture.set_size({50, 50});
+    b_color_texture.set_pos({600, 10});
+    f2 color_size = {16.0f, 256.0f};
+    b_color_texture.set_size(color_size * 2.0f);
+
+    b_color_sample.set_pos({550, 10});
+    b_color_sample.set_size({45, 45});
+    b_color_sample.color = 0x009999;
 
     base_string.set_str("Hola");
     base_string.set_pos({170, 50});
@@ -158,7 +162,9 @@ render(UI::RendererBase& renderer_base){
     renderer_base.draw_base(new_quad_in_root_scene);
 
     // renderer_base.draw_base_texture(base_texture);
-    base_texture.render_texture(renderer_base);
+    b_color_texture.render_texture(renderer_base);
+    b_color_sample.render_texture(renderer_base);
+
     base_string.render_string(renderer_base);
 
     // widget_root_scene.populate();

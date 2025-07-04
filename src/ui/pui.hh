@@ -29,7 +29,8 @@ class PUI
 {
     UI::Base base_0;
     UI::Base new_quad_in_root_scene;
-    UI::BaseTexture base_texture;
+    UI::BaseTexture b_color_texture;
+    UI::BaseTexture b_color_sample;
     UI::BaseString base_string;
 
 

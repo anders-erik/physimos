@@ -1,6 +1,7 @@
 
 #include "math/vecmat.hh"
 #include "opengl/texture.hh"
+#include "opengl/texture_unit.hh"
 
 #include "glad/glad.h"
 #include <iostream>
@@ -17,14 +18,24 @@ const unsigned int SCREEN_INIT_WIDTH = 1200;
 const unsigned int SCREEN_INIT_HEIGHT = 800;
 
 
-float baseTextureSquareVertices[30] = {
-    // Position         // texture coord
-    0.0f, 0.0f, 0.0f,   0.0f, 0.0f,   // bottom-left
-    1.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // top-right
-    0.0f, 1.0f, 0.0f,   0.0f, 1.0f,   // top-left
-    1.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // top-right
-    0.0f, 0.0f, 0.0f,   0.0f, 0.0f,   // bottom-left
-    1.0f, 0.0f, 0.0f,   1.0f, 0.0f,   // bottom-right
+float baseTextureSquareVertices[18] = {
+    // Position
+    0.0f, 0.0f, 0.0f, // bottom-left
+    1.0f, 1.0f, 0.0f, // top-right
+    0.0f, 1.0f, 0.0f, // top-left
+    1.0f, 1.0f, 0.0f, // top-right
+    0.0f, 0.0f, 0.0f, // bottom-left
+    1.0f, 0.0f, 0.0f, // bottom-right
+};
+
+float baseTextureCoord[12] = {
+    // texture coord
+    0.0f, 0.0f,   // bottom-left
+    1.0f, 1.0f,   // top-right
+    0.0f, 1.0f,   // top-left
+    1.0f, 1.0f,   // top-right
+    0.0f, 0.0f,   // bottom-left
+    1.0f, 0.0f,   // bottom-right
 };
 
 
@@ -37,25 +48,27 @@ void ShaderTexture::init()
     // GET UNIFORM LOCATIONS
     uiViewportTransformLoc = glGetUniformLocation(id, "viewportTransform");
     uiPrimitiveTransformLoc = glGetUniformLocation(id, "primitiveTransform");
+    color_texunit_LOC = glGetUniformLocation(id, "color_texunit");
 
+    glUniform1i(color_texunit_LOC, opengl::TextureUnits::Color);
 
     // VAO, VBO
     glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(baseTextureSquareVertices), baseTextureSquareVertices, GL_STATIC_DRAW);
-
     glBindVertexArray(vao);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glGenBuffers(1, &vbo_pos);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_pos);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(baseTextureSquareVertices), baseTextureSquareVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glGenBuffers(1, &vbo_tex);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_tex);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(baseTextureCoord), baseTextureCoord, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 void ShaderTexture::set_viewport_transform(m4f4 _viewport_transform){
 
@@ -66,14 +79,40 @@ void ShaderTexture::set_viewport_transform(m4f4 _viewport_transform){
 
 }
 
+void ShaderTexture::reset_text_coord()
+{
+    glBindVertexArray(vao);
 
-void ShaderTexture::set(float* primitiveTransform_mat, unsigned int texture) const {
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_tex);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(baseTextureCoord), baseTextureCoord, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void ShaderTexture::set_text_coord(f2 text_coord)
+{
+    f2 coord_array[6] = {text_coord, text_coord, text_coord, text_coord ,text_coord, text_coord};
+
+    glBindVertexArray(vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_tex);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(coord_array), coord_array, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+void ShaderTexture::set(float* primitiveTransform_mat) const {
     
     glUseProgram(id);
     
     glUniformMatrix4fv(uiPrimitiveTransformLoc, 1, GL_TRUE, primitiveTransform_mat);
-
-    glBindTexture(GL_TEXTURE_2D, texture);
 
 }
 

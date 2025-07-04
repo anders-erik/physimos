@@ -44,6 +44,8 @@ struct Mesh
     std::vector<TriangleFaceIndeces> faces;
 
     std::vector<f3> normals;
+    std::vector<f2> texco;
+
     uint color = 0xffffffff;
 
     Mesh() = default;

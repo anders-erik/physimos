@@ -4,6 +4,7 @@
 #include "glad/glad.h"
 
 #include "opengl/texture.hh"
+#include "opengl/texture_unit.hh"
 
 #include "str.hh"
 
@@ -41,9 +42,6 @@ RendererBase::RendererBase()
 void RendererBase::
 init()
 {
-    opengl::textures_init();
-    UI::texture::init_static_color_textures();
-    UI::texture::init_static_icon_textures();
 
     viewport_transform.x.x = 2.0f / (float)SCREEN_INIT_WIDTH;
     viewport_transform.y.y = 2.0f / (float)SCREEN_INIT_HEIGHT;
@@ -58,6 +56,7 @@ init()
 
     program_string.init();
     program_string.set_viewport_transform(viewport_transform);
+    
     // program_string.set_texture(font_bitmap.get_font_texture());
     // program_string.set_texture(font_texture.get_texture_id());
 }
@@ -109,12 +108,22 @@ void RendererBase::draw_base_texture(UI::BaseTexture& base_texture){
 
     // glDisable(GL_DEPTH_TEST);
 
-    unsigned int texture_id = opengl::texture_get_id(opengl::Textures::Colors);
+    // unsigned int texture_id = opengl::texture_get_id(opengl::Textures::Colors);
 
     program_texture.set(
-        base_texture.get_M_m_s().pointer(), 
-        texture_id
+        base_texture.get_M_m_s().pointer()
     );
+
+    if(base_texture.color == -1)
+    {
+        program_texture.reset_text_coord();
+    }
+    else
+    {
+        f2 text_coord = opengl::TextureUnits::get_color_texco(base_texture.color);
+        program_texture.set_text_coord(text_coord);
+    }
+    
 
     program_texture.draw();  
 
@@ -125,7 +134,8 @@ void RendererBase::draw_base_string(UI::BaseString& base_string)
     // Draw the base background color
     draw_base((Base&)base_string);
     
-    program_string.set_texture(opengl::ui__get_font_bitmap_texture_id());
+    // program_string.set_texture(opengl::ui__get_font_bitmap_texture_id());
+
     program_string.set_base_transform(base_string.get_box().pos, base_string.glyph_size);
     
     program_string.set_glyph_data(base_string.glyph_string.get_glyphs());

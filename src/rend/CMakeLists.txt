@@ -12,7 +12,7 @@ set(RENDER_OBJS
 
     bitmap.cc
 
-    rend_manager.cc
+    rend.cc
 )
 
 #   set(SOURCES )

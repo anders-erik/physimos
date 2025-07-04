@@ -5,7 +5,7 @@
 
 #include "math/quarternion.hh"
 
-#include "rend/rend_manager.hh"
+#include "rend/rend.hh"
 
 #include "scene/scene3D.hh"
 

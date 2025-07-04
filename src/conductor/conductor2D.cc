@@ -1,5 +1,4 @@
 
-#include "rend/rend_manager.hh"
 
 #include "conductor2D.hh"
 

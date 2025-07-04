@@ -5,11 +5,14 @@
 #include "ui/base.hh"
 #include "rend/pui/renderer_base.hh"
 
+using TextureColor = int;
+
 namespace UI {
 
 
-struct BaseTexture : public Base {
-
+struct BaseTexture : public Base 
+{
+    TextureColor color = -1;
 
     BaseTexture() {}
 

@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform sampler2D charTexture;
+uniform sampler2D color_texunit;
 
 in vec2 TexCoord;
 
@@ -8,7 +8,7 @@ out vec4 FragColor;
 
 void main()
 {
-    vec4 texColor = texture(charTexture, TexCoord);
+    vec4 texColor = texture(color_texunit, TexCoord);
     // if(texColor.a < 0.1) 
     //     discard;
 

@@ -1,6 +1,7 @@
 
 #include "math/vecmat.hh"
 #include "opengl/texture.hh"
+#include "opengl/texture_unit.hh"
 
 #include "glad/glad.h"
 #include <iostream>
@@ -38,8 +39,12 @@ void ShaderString::init()
     glUseProgram(id);
 
     // GET UNIFORM LOCATIONS
-    uiViewportTransformLoc = glGetUniformLocation(id, "viewportTransform");
+    uiViewportTransformLoc  = glGetUniformLocation(id, "viewportTransform");
     uiPrimitiveTransformLoc = glGetUniformLocation(id, "primitiveTransform");
+    font_unit_LOC         = glGetUniformLocation(id, "font_unit");
+
+
+    glUniform1i(font_unit_LOC, opengl::TextureUnits::Font);
 
 
     // VAO, VBO

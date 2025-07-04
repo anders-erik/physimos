@@ -7,6 +7,7 @@
 #include "print.hh"
 
 #include "opengl/texture.hh"
+#include "opengl/texture_unit.hh"
 
 #include "auxwin.hh"
 
@@ -63,8 +64,12 @@ void Auxwin::init(int width, int height)
 
     glfw_create_cursors();
 
-    opengl_init();
+    gl.init(get_auxwin_proc_adr_fn());
+
+    // std::cout <<  << std::endl;
+    
 }
+
 
 
 
@@ -139,25 +144,13 @@ void Auxwin::glfw_create_window(i2 window_size_i)
     glfwMakeContextCurrent(glfw_window);
 
 }
-void Auxwin::opengl_init(){
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-	}
 
-    // OpenGL Fatures
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // GLint maxTextureSize;
-    // glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
-    // printf("Max texture size: %d\n", maxTextureSize);
-
-    opengl::textures_init();
+AuxwinProcAdrFn Auxwin::get_auxwin_proc_adr_fn()
+{
+    return (AuxwinProcAdrFn) glfwGetProcAddress;
 }
+
 
 
 void Auxwin::make_current()

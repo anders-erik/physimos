@@ -8,6 +8,8 @@ add_library(opengl
     texture_fb.cc
     texture_fbms.cc
 
+    texture_unit.cc
+    opengl.cc
 )
 
 target_include_directories(opengl PUBLIC 

@@ -17,14 +17,14 @@ namespace UI {
 
 
 
-class ShaderString : public opengl::ShaderProgram {
-
-
+class ShaderString : public opengl::ShaderProgram
+{
     unsigned int vao;
     unsigned int vbo;
 
-    unsigned int uiViewportTransformLoc;
-    unsigned int uiPrimitiveTransformLoc;
+    uint    uiViewportTransformLoc;
+    uint    uiPrimitiveTransformLoc;
+    uint    font_unit_LOC;
 
     unsigned int texture;
 

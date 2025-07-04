@@ -132,6 +132,7 @@ int main()
 	{
 		Object& mesh_obj = manager_o.new_object();
 		mesh_obj.tag.type = TagO::Base;
+		mesh_obj.name = "jmesh";
 		mesh_obj.mesh = mesh_from_file.consume_value();
 		// mesh_obj.mesh.sheet();
 		// mesh_obj.mesh.center();
@@ -148,6 +149,7 @@ int main()
 	{
 		Object& mesh_obj = manager_o.new_object();
 		mesh_obj.tag.type = TagO::Base;
+		mesh_obj.name = "mesh_script";
 		mesh_obj.mesh = mesh_script.consume_value();
 		// mesh_obj.mesh.sheet();
 		// mesh_obj.mesh.center();
@@ -156,7 +158,7 @@ int main()
 	}
 
 
-	// TUBE
+	// TOADSTOOL
 	Object& toadstool = manager_o.new_object();
 	toadstool.tag.type = TagO::Base;
 	toadstool.name = "toadstool";

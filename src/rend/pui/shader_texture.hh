@@ -14,12 +14,12 @@ namespace UI {
 class ShaderTexture : public opengl::ShaderProgram {
 
     unsigned int vao;
-    unsigned int vbo;
+    unsigned int vbo_pos;
+    unsigned int vbo_tex;
 
     unsigned int uiViewportTransformLoc;
     unsigned int uiPrimitiveTransformLoc;
-
-    // unsigned int texture;
+    uint    color_texunit_LOC;
 
 
 public:
@@ -29,7 +29,10 @@ public:
     void init();
     void set_viewport_transform(m4f4 _viewport_transform);
 
-    void set(float* primitiveTransform_mat, unsigned int texture) const;
+    void reset_text_coord();
+    void set_text_coord(f2 text_coord);
+
+    void set(float* primitiveTransform_mat) const;
     void draw() const;
 
 };

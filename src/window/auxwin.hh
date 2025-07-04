@@ -10,10 +10,13 @@
 #include "auxevent.hh"
 #include "window/cursor.hh"
 
+#include "opengl/opengl.hh"
+
 // To not require the inclusion of the glfw header
 struct GLFWwindow;
 struct GLFWcursor;
 
+using AuxwinProcAdrFn = void* (*)(const char* procname);
 
 namespace window {
 
@@ -22,6 +25,8 @@ namespace window {
 class Auxwin 
 {
     i2 window_fb_size;
+
+    opengl::OpenGL gl;
 
     
     // Internal window closing logic -- two quick escape-presses for now
@@ -46,7 +51,6 @@ class Auxwin
 
     void glfw_window_hints();
     void glfw_create_window(i2 window_size_i);
-    void opengl_init();
 
     CursorPosition cursor_pos;
 
@@ -66,6 +70,7 @@ public:
 
     void init(int width, int height);
     
+    AuxwinProcAdrFn get_auxwin_proc_adr_fn();
 
     /** Activate the associated glfw window */
     void make_current();
