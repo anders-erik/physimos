@@ -6,6 +6,8 @@
 #include "lib/str.hh"
 
 #include "scene/tago.hh"
+#include "scene/tagp.hh"
+
 #include "scene/mesh.hh"
 
 
@@ -19,12 +21,12 @@ struct Object
     Quarternion rot     = {1.0f, 0.0f, 0.0f, 0.0f};
     float       scale = 1.0f;
 
+    TagP        tagp;
 
     Object() = default;
     Object(TagO tag, Str name, Mesh& mesh)
         :   tag {tag},
             name {name},
             mesh {mesh}
-    {
-    }
+    {}
 };

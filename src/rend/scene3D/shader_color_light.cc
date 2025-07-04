@@ -22,9 +22,11 @@ init()
     glGenBuffers(1, &vbo_norm);
     glGenBuffers(1, &EBO);
 
-    light_pos_LOC       = glGetUniformLocation(id, "light_pos");
     view_mat_LOC        = glGetUniformLocation(id, "view");
     perspective_mat_LOC = glGetUniformLocation(id, "perspective");
+
+    light_pos_LOC       = glGetUniformLocation(id, "light_pos");
+    light_color_LOC     = glGetUniformLocation(id, "light_color");
 }
 
 
@@ -39,6 +41,11 @@ set_camera_view_perspective(m4f4 view_mat, m4f4 perspective_mat)
 void ShaderColorLight::set_light_pos(f3 light_pos)
 {
     glUniform3fv(light_pos_LOC, 1, light_pos.pointer());
+}
+
+void ShaderColorLight::set_light_color(f3 light_color)
+{
+    glUniform3fv(light_color_LOC, 1, light_color.pointer());
 }
 
 

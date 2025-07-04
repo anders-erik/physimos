@@ -14,6 +14,7 @@
 #include "scene/mesh.hh"
 
 #include "scene/manager_object.hh"
+#include "scene/manager_property.hh"
 
 // #include "io/json/examples/jfile.hh"
 #include "io/jfile/jmesh.hh"
@@ -173,6 +174,20 @@ int main()
 
 	// manager_3D.window_scene->q_1000.rotate(f3::Z(), 0.785f);
 	// manager_3D.window_scene->q_1000.rotate(f3::X(), 1.57f);
+
+
+	// LAMP
+	Object& lampo = manager_o.new_object();
+	lampo.tag.type = TagO::Lamp;
+	lampo.pos = {3.0f, 0.0f, 2.0f};
+	lampo.mesh.cube();
+	lampo.mesh.scale(0.1f);
+	lampo.name = "lamp_1";
+	Lamp lamp;
+	lampo.tagp = manager_3D.manager_p.push_lamp(lamp);
+	root_scene.tagos.push_back(lampo.tag);
+
+
 
 	physimos.main_loop();
 

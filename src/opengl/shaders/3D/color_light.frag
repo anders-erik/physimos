@@ -3,6 +3,7 @@
 uniform vec4 mesh_color;
 
 uniform vec3 light_pos;
+uniform vec3 light_color;
 
 in vec3 frag_pos;
 in vec3 frag_normal;
@@ -10,7 +11,8 @@ in vec3 frag_normal;
 out vec4 FragColor;
 
 
-vec3 light_color = vec3(0.5, 0.5, 0.5);
+// vec3 light_pos = vec3(0.0, 0.0, 1.0);
+// vec3 light_color = vec3(0.5, 0.5, 0.5);
 vec3 ambient = vec3(0.4, 0.4, 0.4);
 vec3 base_color = mesh_color.xyz;
 

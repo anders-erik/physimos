@@ -16,6 +16,7 @@ set(SCENE_OBJS
 
     manager_3D.cc
     manager_object.cc
+    manager_property.cc
     manager_quad.cc
 
     scene_state.cc

@@ -23,10 +23,13 @@ public:
     void init();
 
     void set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat);
+    /** alpha == 1.0f */
+    void set_color(f3 color);
 
     void render(Mesh& mesh, unsigned int color);
     void render(const m4f4& model_matrix, Mesh& mesh, unsigned int color);
     void render(const m4f4& model_matrix, Mesh& mesh);
+    void render_filled(const m4f4& model_matrix, Mesh& mesh);
 
 };
 

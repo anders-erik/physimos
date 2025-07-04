@@ -11,6 +11,7 @@ struct TagO
     enum Type {
         Base,
         Quad,
+        Lamp,
         Null,
     };
 
@@ -35,6 +36,7 @@ struct TagO
 
     bool is_quad() const  {return type == Quad;}
     bool is_base() const  {return type == Base;}
+    bool is_lamp() const  {return type == Lamp;}
     bool is_null() const  {return type == Null;}
     bool not_null() const  {return type != Null;}
 

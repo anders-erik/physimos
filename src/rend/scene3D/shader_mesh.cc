@@ -35,6 +35,14 @@ set_camera_view_projection(m4f4 persective_mat, m4f4 view_mat)
 }
 
 
+void ShaderMesh::
+set_color(f3 color)
+{
+    glUseProgram(id);
+    f4 f4_color = {color, 1.0f};
+    glUniform4fv(glGetUniformLocation(id, "mesh_color"), 1, f4_color.pointer());
+}
+
 
 
 void ShaderMesh::
@@ -144,6 +152,38 @@ render(const m4f4& model_matrix, Mesh& mesh)
     glDrawElements(GL_TRIANGLES, mesh.faces.size() * 3, GL_UNSIGNED_INT, 0);
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+}
+
+
+
+void ShaderMesh::
+render_filled(const m4f4 & model_matrix, Mesh & mesh)
+{
+    glUseProgram(id);
+
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, mesh.verts.size() * sizeof(Vertex), mesh.verts.data(), GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.faces.size() * sizeof(TriangleFaceIndeces), mesh.faces.data(), GL_DYNAMIC_DRAW);
+
+
+    glEnableVertexAttribArray(0); // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+    // glBindVertexArray(0);
+
+    glBindVertexArray(VAO);
+    glUniformMatrix4fv(glGetUniformLocation(id, "model"), 1, GL_TRUE, model_matrix.pointer());
+
+
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
+    glDrawElements(GL_TRIANGLES, mesh.faces.size() * 3, GL_UNSIGNED_INT, 0);
+
 }
 
 

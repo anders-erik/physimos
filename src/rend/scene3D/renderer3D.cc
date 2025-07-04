@@ -107,7 +107,21 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
                                                 scene3D.camera.view.matrix);
     program_color_light.set_camera_view_perspective( scene3D.camera.view.matrix, 
                                                     scene3D.camera.perspective.matrix          );
-    program_color_light.set_light_pos({0.0f, 0.0f, 0.0f});
+
+    // LAMP
+    for(auto tago : scene3D.tagos)
+    {
+        if(tago.is_lamp())
+        {
+            Object* lampo = man_o.get_object(tago);
+            if(lampo == nullptr) continue;
+            program_color_light.set_light_pos(lampo->pos);
+
+            Lamp* lamp = manager_3D.manager_p.find_lamp(lampo->tagp);
+            if(lampo == nullptr) continue;
+            program_color_light.set_light_color(lamp->light_color);
+        }
+    }
 
 
     // TEXTURE MODELS
@@ -139,7 +153,15 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
         m4f4 rotation_matrix    = base->rot.matrix();
         m4f4 model_matrix       = translation_matrix * rotation_matrix * scale_matrix;
 
-        // QUAD FIRST
+
+        // MESH - change color of active objects
+        if(tag == state.selected.tag)
+            program_mesh.render(model_matrix, base->mesh, 0x00ff00ff);
+        else if(tag == state.hovered.tag)
+            program_mesh.render(model_matrix, base->mesh, 0xff0000ff);
+
+
+        // QUAD
         if (tag.type == TagO::Quad)
         {
             Quad* quad = manager_3D.manager_q.find_quad_oid(tag.oid);
@@ -153,15 +175,15 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
                 program_mesh.render(model_matrix, base->mesh, 0x0000ffff);
             }
         }
-    
-        // MESH - change color of active objects
-        if(tag == state.selected.tag)
-            program_mesh.render(model_matrix, base->mesh, 0x00ff00ff);
-        else if(tag == state.hovered.tag)
-            program_mesh.render(model_matrix, base->mesh, 0xff0000ff);
-        
-        // Draw meshes with normals as color models
-        if(base->mesh.normals.size() > 0)
+        else if(tag.is_lamp())
+        {
+            Lamp* lamp = manager_3D.manager_p.find_lamp(base->tagp);
+            if(lamp == nullptr) continue;
+
+            program_mesh.set_color(lamp->light_color);
+            program_mesh.render_filled(model_matrix, base->mesh);
+        }
+        else if(base->mesh.normals.size() > 0) // Draw meshes with normals as color models + normal vectors
         {
             program_color_light.render(model_matrix, base->mesh);
             // Draw normals if selected
@@ -179,6 +201,7 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
         {
             program_mesh.render(model_matrix, base->mesh);
         }
+
     }
     
 
@@ -218,7 +241,7 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
     q_mesh.scale({0.2, 0.2, 0.02});
     scene3D.q_1000.rotate(f3::Z(), 0.01f);
     // scene3D.q_1000 = Quarternion::rotate_quart(scene3D.q_1000, {0.0f, f3::Y()}, 0.1);
-    scene3D.q_1000.print();
+    // scene3D.q_1000.print();
     program_mesh.render(     scene3D.q_1000.matrix()
                             ,q_mesh 
                             ,0xff00ffff                  );

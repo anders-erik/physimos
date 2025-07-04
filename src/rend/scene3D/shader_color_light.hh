@@ -17,9 +17,11 @@ class ShaderColorLight : protected opengl::ShaderProgram
     unsigned int vbo_norm;
     unsigned int EBO;
 
-    uint light_pos_LOC;
     uint view_mat_LOC;
     uint perspective_mat_LOC;
+
+    uint light_pos_LOC;
+    uint light_color_LOC;
 
 public:
 
@@ -29,6 +31,7 @@ public:
 
     void set_camera_view_perspective(m4f4 view_mat, m4f4 perspective_mat);
     void set_light_pos(f3 light_pos);
+    void set_light_color(f3 light_color);
 
     void render(const m4f4& model_matrix, Mesh& mesh);
 

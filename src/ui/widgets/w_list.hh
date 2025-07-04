@@ -46,9 +46,9 @@ public:
 
         case EventType::MouseScroll:
             if(event.mouse_scroll.delta > 0.0f)
-                scroll += scroll_step;
-            else
                 scroll -= scroll_step;
+            else
+                scroll += scroll_step;
 
             // clamp
             if(scroll > scroll_max)

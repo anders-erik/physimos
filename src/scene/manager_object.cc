@@ -20,7 +20,7 @@ TagO ManagerObject::
 new_tag()
 {
     return {    new_oid(),
-                TagO::Null  };
+                TagO::Base  };
 }
 
 
