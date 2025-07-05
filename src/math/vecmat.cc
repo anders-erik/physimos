@@ -394,14 +394,15 @@ f2 f3::yaw_pitch()
 }
 
 
-float f3::norm()
+float f3::norm() const
 {
     return sqrtf(x*x + y*y + z*z);
 }
 
 f3 f3::unit()
 {
-    return *this / norm();
+    float n = norm();
+    return *this / ( n == 0.0f ? 2.0f : n);
 }
 
 f3 f3::cross(const f3 & rhs)
@@ -409,6 +410,24 @@ f3 f3::cross(const f3 & rhs)
     return {    y * rhs.z - z * rhs.y,
                 z * rhs.x - x * rhs.z,
                 x * rhs.y - y * rhs.x   };
+}
+
+float f3::dot(const f3 & rhs)
+{
+    return x*rhs.x + y*rhs.y + z*rhs.z;
+}
+
+float f3::angle(const f3 & rhs)
+{
+    float numer = this->dot(rhs);
+    float denom = this->norm() * rhs.norm();
+
+    float ang = acosf(numer / denom);
+
+    if(ang != ang) // NaN != NaN
+        return 0.0f;
+
+    return ang;
 }
 
 void f3::set_zero()
@@ -423,7 +442,7 @@ bool f3::is_zero()
     return (x == 0.0f && y == 0.0f && z == 0.0f);
 }
 
-void f3::matmul(m4f4 matrix){
+void f3::matmul(m4f4& matrix){
     f3 tmp;
     tmp.x = x*matrix.x.x + y*matrix.x.y + z*matrix.x.z;
     tmp.y = x*matrix.y.x + y*matrix.y.y + z*matrix.y.z;
@@ -431,7 +450,7 @@ void f3::matmul(m4f4 matrix){
 
     *this = tmp;
 }
-void f3::matmul(m3f3 matrix){
+void f3::matmul(m3f3& matrix){
     f3 tmp;
     tmp.x = matrix.x.x * x  + matrix.x.y * y    + matrix.x.z * z;
     tmp.y = matrix.y.x * x  + matrix.y.y * y    + matrix.y.z * z;

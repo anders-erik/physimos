@@ -169,16 +169,18 @@ struct f3
     f2 to_xy() const;
     f2 yaw_pitch();
     /** sqrt ( x^2 + y^2 + z^2 ) */
-    float norm();
+    float norm() const;
     /** this / norm */
     f3 unit();
     f3 cross(const f3& rhs);
+    float dot(const f3& rhs);
+    float angle(const f3& rhs);
 
     void set_zero();
     bool is_zero();
 
-    void matmul(m4f4 matrix);
-    void matmul(m3f3 matrix);
+    void matmul(m4f4& matrix);
+    void matmul(m3f3& matrix);
 
     float* pointer();
 
@@ -196,7 +198,7 @@ struct f4 {
     float z = 0.0f;
     float w = 1.0f;
 
-
+    constexpr
     f4(float x, float y, float z, float w) : x {x}, y {y}, z {z}, w {w} {}; 
     // f4(float x, float y, float z) : x {x}, y {y}, z {z}, w {1.0f} {}; 
     f4(const f3 _f3, float w) : x {_f3.x}, y {_f3.y}, z {_f3.z}, w {w} {}; 
@@ -272,6 +274,7 @@ struct m4f4
     f4 z;
     f4 w;
 
+    constexpr
     m4f4() : 
         x { f4(1.0f, 0.0f, 0.0f, 0.0f) }, 
         y { f4(0.0f, 1.0f, 0.0f, 0.0f) }, 

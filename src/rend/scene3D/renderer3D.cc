@@ -83,30 +83,59 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
     // Defaults to fill. Context flag can overwrite?
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-    scene3D.camera.update();
-    // scene3D.camera.print();
+    // FIND CAM
+    Object*     cam_o    = nullptr;
+    CameraFree* cam_free = nullptr;
+    m4f4 cam_view_mat;
+    m4f4 cam_persp_mat;
+
+    for(auto tago : scene3D.tagos)
+    {
+        if(tago.is_camera())
+        {
+            cam_o = man_o.get_object(tago);
+            if(cam_o == nullptr) continue;
+
+            cam_free = manager_3D.manager_p.find_camera(cam_o->tagp);
+            if(cam_free == nullptr) continue;
+
+            break; // break if confirmed camera object AND camera property
+        }
+    }
+
+    if(cam_o != nullptr && cam_free != nullptr)
+    {
+        cam_view_mat  = cam_free->view.calc_matrix(cam_o->pos, cam_o->rot);
+        cam_persp_mat = cam_free->perspective.update_matrix();;
+    }
+    else
+    {
+        cam_view_mat = scene3D.camera.view.update_matrix();
+        cam_persp_mat = scene3D.camera.perspective.update_matrix();
+    }
+
 
 
     // UNIFORMS
-    program_model_texture.set_camera_view_projection(   scene3D.camera.perspective.matrix,
-                                                        scene3D.camera.view.matrix);
+    program_model_texture.set_camera_view_projection(   cam_persp_mat,
+                                                        cam_view_mat);
 
-    program_vector.set_project_view_matrix( scene3D.camera.perspective.matrix, 
-                                            scene3D.camera.view.matrix);
+    program_vector.set_project_view_matrix( cam_persp_mat, 
+                                            cam_view_mat);
 
     program_axes.set_uniforms(  m4f4(), 
-                                scene3D.camera.view.matrix, 
-                                scene3D.camera.perspective.matrix);
+                                cam_view_mat, 
+                                cam_persp_mat);
     
-    program_model_color.set_camera_uniforms(    scene3D.camera.perspective.matrix, 
-                                                scene3D.camera.view.matrix);
+    program_model_color.set_camera_uniforms(    cam_persp_mat, 
+                                                cam_view_mat);
 
-    program_mesh.set_camera_view_projection(    scene3D.camera.perspective.matrix, 
-                                                scene3D.camera.view.matrix);
-    program_quad.set_camera_view_projection(    scene3D.camera.perspective.matrix, 
-                                                scene3D.camera.view.matrix);
-    program_color_light.set_camera_view_perspective( scene3D.camera.view.matrix, 
-                                                    scene3D.camera.perspective.matrix          );
+    program_mesh.set_camera_view_projection(    cam_persp_mat, 
+                                                cam_view_mat);
+    program_quad.set_camera_view_projection(    cam_persp_mat, 
+                                                cam_view_mat);
+    program_color_light.set_camera_view_perspective( cam_view_mat, 
+                                                    cam_persp_mat          );
 
     // LAMP
     for(auto tago : scene3D.tagos)

@@ -55,9 +55,66 @@ init(f2 window_scene_f)
 void Manager3D::
 update()
 {
+    Scene3D& scenew = *window_scene;
+
+    Object*     cam_o    = nullptr;
+    CameraFree* cam_free = nullptr;
+    for(auto tago : scenew.tagos)
+    {
+        if(tago.is_camera())
+        {
+            cam_o = manager_o.get_object(tago);
+            if(cam_o == nullptr) continue;
+
+            cam_free = manager_p.find_camera(cam_o->tagp);
+            if(cam_free == nullptr) continue;
+
+            break; // break if confirmed camera object AND camera property
+        }
+    }
+    if(cam_o != nullptr && cam_free != nullptr)
+    {
+        f3 cam_f = Quarternion::rotate_f3(cam_o->rot, f3::X()).unit();
+        f3 cam_l = Quarternion::rotate_f3(cam_o->rot, f3::Y()).unit();
+        f3 cam_u = Quarternion::rotate_f3(cam_o->rot, f3::Z()).unit();
+
+        float move_factor = 0.2;
+
+        if(state.camera.is_forward())
+            cam_o->pos +=  cam_f * move_factor;
+        if(state.camera.is_backward())
+            cam_o->pos -=  cam_f * move_factor;
+        if(state.camera.is_left())
+            cam_o->pos +=  cam_l * move_factor;
+        if(state.camera.is_right())
+            cam_o->pos -=  cam_l * move_factor;
+        if(state.camera.is_up())
+            cam_o->pos +=  cam_u * move_factor;
+        if(state.camera.is_down())
+            cam_o->pos -=  cam_u * move_factor;
+
+        cam_o->pos +=  cam_f * state.camera.spherical_delta.x;
+
+        cam_o->rot.rotate(cam_u, -state.camera.spherical_delta.y  / 400.0f);
+        cam_o->rot.rotate(cam_l, -state.camera.spherical_delta.z  / 400.0f);
+
+        // remove tilt
+        f3 HL = f3::Z().cross(cam_f); // horizontal left
+        float angle_hl_l = HL.angle(cam_l); // absolute value angle
+
+        // Check angle direction
+        if(HL.z > cam_l.z)
+            cam_o->rot.rotate(cam_f, angle_hl_l);
+        else
+            cam_o->rot.rotate(cam_f, -angle_hl_l);
+
+        state.camera.spherical_delta.set_zero();
+        return;
+    }
+
     // CAMERA
     auto& camera = window_scene->camera;
-
+    
     if(state.camera.is_forward())
         window_scene->camera.forward(0.15);
     if(state.camera.is_backward())

@@ -7,7 +7,7 @@
 
 
 
-void CameraPerspective::update_matrix()
+m4f4& CameraPerspective::update_matrix()
 {
     matrix.set_to_I();
 
@@ -21,6 +21,8 @@ void CameraPerspective::update_matrix()
 
     matrix.z.w = - (2.0f * zf * zn) / (zf - zn);
     matrix.w.z = - 1.0f;
+
+    return matrix;
 }
 
 void CameraPerspective::set_fov(int new_width, int new_height)
@@ -85,7 +87,7 @@ phi_change(float delta)
 
 
 
-void OrbitalView::
+m4f4& OrbitalView::
 update_matrix()
 {
     // Camera position relative to rotational center
@@ -110,6 +112,8 @@ update_matrix()
 
     // EXTRINSIC
     matrix = R_PHI * R_TH * RZ_90 * T;
+
+    return matrix;
 }
 
 
@@ -210,4 +214,13 @@ print()
     std::cout << "rho   = " << view.rho << std::endl;
     std::cout << "theta = " << view.theta << std::endl;
     std::cout << "phi   = " << view.phi << std::endl;
+}
+
+m4f4 FreeView::calc_matrix(f3 pos, Quarternion rot)
+{
+    m4f4 align_x_rot = m4f4::rotation_x(-PIHf) * m4f4::rotation_z(-PIHf);
+
+    m4f4 translation_matrix = m4f4::translation(-pos);
+    m4f4 rotation_matrix    =  align_x_rot * rot.inverse().matrix();
+    return rotation_matrix * translation_matrix;
 }

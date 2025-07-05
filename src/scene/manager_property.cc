@@ -8,7 +8,7 @@ PID ManagerProperty::
 new_pid()
 {
     if(pid_count == 0)
-        throw std::runtime_error("Ran out of new PIDs");
+        throw "Ran out of new PIDs";
     
     return pid_count++;
 }
@@ -45,6 +45,23 @@ Lamp* ManagerProperty::find_lamp(TagP lamp_tagp)
     {
         if(lamp_tagp.pid == lamp_pair.XX.pid)
             return &lamp_pair.YY;
+    }
+    return nullptr;
+}
+
+TagP ManagerProperty::push_camera(const CameraFree& camera)
+{
+    TagP tagp {new_pid(), TagP::Camera};
+    cameras.push_back({tagp, camera});
+    return tagp;
+}
+
+CameraFree* ManagerProperty::find_camera(TagP camera_tagp)
+{
+    for(auto& cam_pair : cameras)
+    {
+        if(camera_tagp.pid == cam_pair.XX.pid)
+            return &cam_pair.YY;
     }
     return nullptr;
 }

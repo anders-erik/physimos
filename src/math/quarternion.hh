@@ -55,10 +55,34 @@ struct Quarternion
         return *this;
     }
 
+    float mult_conjugate()
+    {
+        return ((*this) * this->conjugate()).q0;
+    }
+
     Quarternion 
     conjugate()
     {
         return {q0, -x, -y, -z};
+    }
+
+    Quarternion 
+    inverse()
+    {
+        Quarternion ret_q = {q0, -x, -y, -z};
+        float norm_squared = ret_q.mult_conjugate();
+        ret_q.q0 /= norm_squared;
+        ret_q.x  /= norm_squared;
+        ret_q.y  /= norm_squared;
+        ret_q.x  /= norm_squared;
+        return ret_q;
+    }
+    
+
+    f3 
+    pure()
+    {
+        return {x, y, z};
     }
 
 
@@ -95,19 +119,14 @@ struct Quarternion
                     q0*q.z  + x*q.y  - y*q.x  + z*q.q0 };
     }
 
-    void 
+    Quarternion& 
     rotate(f3 rot_axis, float angle)
     {
         Quarternion q_axis = {0.0f, rot_axis};
         q_axis.set_angle(angle);
-        auto q_axis_conj = q_axis.conjugate();
 
-        auto mult1 = q_axis * (*this);
-        auto mult2 = mult1 * q_axis_conj;
-
-        *this = mult1;
-        this->normalize();
-        // *this = mult2;
+        *this = q_axis * (*this);
+        return this->normalize();
     }
 
 
@@ -135,6 +154,19 @@ struct Quarternion
                             rotated_q.y, 
                             rotated_q.z };
         vec_to_rotate.unit();
+    }
+
+    /** Rotates in place */
+    static f3 
+    rotate_f3(Quarternion q, f3 vec_to_rotate)
+    {
+        Quarternion q_to_rot = {0.0f, vec_to_rotate};
+
+        Quarternion rotated_q = q * q_to_rot * q.conjugate();
+
+        return  {   rotated_q.x, 
+                    rotated_q.y, 
+                    rotated_q.z };
     }
 
 

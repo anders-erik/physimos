@@ -176,60 +176,16 @@ int main()
 	toadstool.mesh.tube_color(t_context, 0xffffff, 0xff0000);
 
 
-	Polynomial<float> poly_top {{0.2, 0, -0.2}};
-
-	Object& circle_red = manager_o.new_object();
-	circle_red.tag.type = TagO::Base;
-	circle_red.name = "circle_red";
-	CircleContext c_ctx = {3, 10};
-	circle_red.mesh.circle(c_ctx);
-	circle_red.mesh.circle_poly_r(c_ctx, poly_top);
-	circle_red.mesh.color(0xff0000);
-	// circle.mesh.poly_r(poly_circle);
-	circle_red.pos = {0.0f, -2.0f, 0.0f};
-	root_scene.tagos.push_back(circle_red.tag);
-
-
-	Object& circle_white_1 = manager_o.new_object();
-	circle_white_1.tag.type = TagO::Base;
-	circle_white_1.name = "circle_white";
-	CircleContext c_ctx_white = {1, 10};
-	circle_white_1.mesh.circle(c_ctx_white);
-	circle_white_1.mesh.scale(0.1f);
-	circle_white_1.mesh.move({0.5f, 0.0f, 0.001f});
-	// circle_white_1.mesh.circle_poly_r(c_ctx_white, poly_circle_white);
-	circle_white_1.mesh.poly_r(poly_top);
-	circle_white_1.mesh.color(0xffffff);
-	circle_white_1.pos = {0.0f, -2.0f, 0.0f};
-	root_scene.tagos.push_back(circle_white_1.tag);
-
-	Object& circle_white_2 = manager_o.new_object();
-	circle_white_2.tag.type = TagO::Base;
-	circle_white_2.name = "circle_white";
-	CircleContext c_ctx_white_2 = {1, 10};
-	circle_white_2.mesh.circle(c_ctx_white_2);
-	circle_white_2.mesh.scale(0.1f);
-	circle_white_2.mesh.move({0.0f, 0.5f, 0.001f});
-	// circle_white_2.mesh.circle_poly_r(c_ctx_white_2, poly_circle_white_2);
-	circle_white_2.mesh.poly_r(poly_top);
-	circle_white_2.mesh.color(0xffffff);
-	// circle.mesh.poly_r(poly_circle);
-	circle_white_2.pos = {0.0f, -2.0f, 0.0f};
-	root_scene.tagos.push_back(circle_white_2.tag);
-
+	// TOADSTOOL MERGE
+	Object& toadst_merge = manager_o.new_object();
+	toadst_merge.tag.type = TagO::Base;
+	toadst_merge.name = "toadst_merged";
+	toadst_merge.mesh.circle({3, 10});
+	toadst_merge.mesh.color(0xff0000);
 
 	Mesh dot_mesh;
-	dot_mesh.circle({1, 10});
+	dot_mesh.circle({1, 8});
 	dot_mesh.scale(0.05f);
-	Mesh red_mesh;
-	red_mesh.circle({3, 10});
-	red_mesh.color(0xff0000);
-	// dot_mesh.move({0.0f, 0.5f, 0.001f});
-
-	Object& merged_o = manager_o.new_object();
-	merged_o.tag.type = TagO::Base;
-	merged_o.name = "merged";
-	merged_o.mesh = red_mesh;
 
 	for (size_t i = 0; i < 40; i++)
 	{
@@ -241,9 +197,11 @@ int main()
 		dot_mesh.center();
 		dot_mesh.move({rd_x, rd_y, 0.001f});
 		dot_mesh.get_center().print("Vert center");
-		merged_o.mesh.merge(dot_mesh);
+		toadst_merge.mesh.merge(dot_mesh);
 	}
-	merged_o.mesh.poly_r(poly_top);
+
+	Polynomial<float> poly_top {{0.2, 0, -0.2}};
+	toadst_merge.mesh.poly_r(poly_top);
 
 	Mesh bottom_mesh;
 	bottom_mesh.tube({20, 8});
@@ -255,10 +213,10 @@ int main()
 	bottom_mesh.scale(0.3f);
 	bottom_mesh.move_z(-0.28f);
 
-	merged_o.mesh.merge(bottom_mesh);
+	toadst_merge.mesh.merge(bottom_mesh);
 	
-	merged_o.pos = {1.0f, -3.0f, 0.0f};
-	root_scene.tagos.push_back(merged_o.tag);
+	toadst_merge.pos = {1.0f, -3.0f, 0.0f};
+	root_scene.tagos.push_back(toadst_merge.tag);
 
 	
 
@@ -277,6 +235,22 @@ int main()
 	lamp.light_color = {0.8f, 0.6f, 0.6f};
 	lampo.tagp = manager_3D.manager_p.push_lamp(lamp);
 	root_scene.tagos.push_back(lampo.tag);
+
+
+	// CAMERA OBJECT
+	Object& cam_o = manager_o.new_object();
+	cam_o.tag.type = TagO::Base;
+	// cam_o.tag.type = TagO::Camera;
+	cam_o.pos = {-10.0f, -1.0f, 0.0f};
+	// cam_o.rot.rotate(f3::Z(), PIHf);
+	// cam_o.rot.rotate(f3::X(), -PIHf);
+	cam_o.mesh.cube();
+	cam_o.mesh.scale({0.5f, 0.1f, 0.2f});
+	cam_o.name = "camera_1";
+	CameraFree cam;
+	cam.perspective.set_fov(800, 600);
+	cam_o.tagp = manager_3D.manager_p.push_camera(cam);
+	root_scene.tagos.push_back(cam_o.tag);
 
 
 

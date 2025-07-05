@@ -2,7 +2,7 @@
 
 #include "math/const.hh"
 #include "math/transform.hh"
-
+#include "math/quarternion.hh"
 
 struct CameraPerspective
 {
@@ -17,7 +17,7 @@ struct CameraPerspective
     void set_fov(int new_width, int new_height);
     float AR();
     
-    void update_matrix();
+    m4f4& update_matrix();
 };
 
 
@@ -35,7 +35,7 @@ struct OrbitalView
     // float phi   =  0.0f; // z-axis
 
     float rho_min       = 0.5f;
-    float rho_max       = 20.0f;
+    float rho_max       = 40.0f;
     float phi_min       = 0.01f;
     float phi_max       = 3.13f;
 
@@ -47,7 +47,7 @@ struct OrbitalView
     void theta_change(float delta);
     void phi_change(float delta);
 
-    void update_matrix();
+    m4f4& update_matrix();
 };
 
 
@@ -77,4 +77,13 @@ struct CameraOrbital
     void print();
 };
 
+struct FreeView
+{
+    m4f4 calc_matrix(f3 pos, Quarternion rot);
+};
 
+struct CameraFree
+{
+    CameraPerspective perspective;
+    FreeView view;
+};

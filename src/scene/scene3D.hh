@@ -26,6 +26,7 @@ struct Scene3D
     Str name;
 
     CameraOrbital camera;
+    TagO camera_tag;
 
     std::vector<TagO> tagos;
 
