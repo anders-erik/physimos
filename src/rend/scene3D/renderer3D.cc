@@ -231,6 +231,21 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
             program_mesh.render(model_matrix, base->mesh);
         }
 
+
+        if(base->pyh_tag.pid != 0)
+        {
+            Physics* physics = manager_3D.manager_p.find_physics(base->pyh_tag);
+            if(physics != nullptr)
+            {
+                Mesh aabb_mesh;
+                aabb_mesh.aabb(physics->aabb_base);
+
+                if(physics->colliding)
+                    program_mesh.render(model_matrix, aabb_mesh, 0xab0fdbff);
+                else
+                    program_mesh.render(model_matrix, aabb_mesh, 0x000000ff);
+            }
+        }
     }
     
 

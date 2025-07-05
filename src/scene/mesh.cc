@@ -105,6 +105,8 @@ void Mesh::sheet(SheetContext context)
             verts[I(xi, yi)] =  {   step_size * xi,
                                     step_size * yi,
                                     0               };
+            normals.emplace_back(0.0f, 0.0f, 1.0f);
+            colors.emplace_back(default_color);
         }
     }
 
@@ -189,6 +191,12 @@ void Mesh::cube()
     // Down
     faces.emplace_back( 4, 5, 6 );
     faces.emplace_back( 6, 7, 4 );
+}
+
+void Mesh::aabb(AABBf ab)
+{
+    (*this).cube();
+    (*this).scale({ab.max.x-ab.min.x, ab.max.y-ab.min.y, ab.max.z-ab.min.z});
 }
 
 

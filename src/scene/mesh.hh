@@ -8,6 +8,7 @@
 
 #include "math/transform.hh"
 #include "math/polynomial.hh"
+#include "math/aabb.hh"
 
 #include "opengl/texture.hh"
 #include "opengl/texture_unit.hh"
@@ -81,6 +82,7 @@ struct Mesh
     void sheet(SheetContext context);
     void quad();
     void cube();
+    void aabb(AABBf ab);
 
     void circle(CircleContext c_ctx);
     void circle_poly_r(CircleContext c_ctx, Polynomial<float> poly);

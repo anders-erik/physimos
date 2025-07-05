@@ -9,6 +9,7 @@
 
 #include "scene/camera.hh"
 #include "scene/lamp.hh"
+#include "scene/physics.hh"
 
 #include "scene/tagp.hh"
 
@@ -18,8 +19,9 @@ struct ManagerProperty
 {
     PID pid_count = 1;
 
-    std::vector<Pair<TagP, Lamp>> lamps;
-    std::vector<Pair<TagP, CameraFree>>cameras;
+    std::vector<Pair<TagP, Lamp>>       lamps;
+    std::vector<Pair<TagP, CameraFree>> cameras;
+    std::vector<Pair<TagP, Physics>>    physicss;
 
     PID new_pid();
     TagP new_tagp();
@@ -30,6 +32,9 @@ struct ManagerProperty
 
     TagP push_camera(const CameraFree& camera);
     CameraFree* find_camera(TagP camera_tagp);
+
+    TagP push_physics(const Physics& physics);
+    Physics* find_physics(TagP physics_tagp);
 
 };
 

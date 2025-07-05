@@ -253,6 +253,36 @@ int main()
 	root_scene.tagos.push_back(cam_o.tag);
 
 
+	// PHYSICS BODY
+	Object& phy_0 = manager_o.new_object();
+	phy_0.tag.type = TagO::Base;
+	phy_0.mesh.sheet({2, 2});
+	phy_0.mesh.center();
+	phy_0.name = "phy_0";
+	phy_0.pos = {-3.0f, -3.0f, 0.0f};
+	root_scene.tagos.push_back(phy_0.tag);
+	Physics physics_0;
+	physics_0.set_AABB_mesh(phy_0.mesh);
+	physics_0.aabb_base.max.z = 0.4f; // NOTE: manually setting of AABB
+	phy_0.pyh_tag = manager_3D.manager_p.push_physics(physics_0);
+
+
+	Object& phy_1 = manager_o.new_object();
+	phy_1.tag.type = TagO::Base;
+	phy_1.mesh.sheet({1, 2});
+	phy_1.mesh.center();
+	phy_1.name = "phy_1";
+	phy_1.pos = {-1.0f, -3.0f, 0.0f};
+	root_scene.tagos.push_back(phy_1.tag);
+	Physics physics_1;
+	physics_1.set_AABB_mesh(phy_1.mesh);
+	physics_1.aabb_base.max.z = 0.4f; // NOTE: manually setting of AABB
+	phy_1.pyh_tag = manager_3D.manager_p.push_physics(physics_1);
+
+
+	
+	
+
 
 	physimos.main_loop();
 

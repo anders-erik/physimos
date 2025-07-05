@@ -22,6 +22,7 @@ struct Object
     float       scale = 1.0f;
 
     TagP        tagp;
+    TagP        pyh_tag;
 
     Object() = default;
     Object(TagO tag, Str name, Mesh& mesh)

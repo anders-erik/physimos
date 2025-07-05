@@ -57,6 +57,41 @@ update()
 {
     Scene3D& scenew = *window_scene;
 
+    // COLLISION
+
+    // Update bounding box before collision-test
+    for(auto& object : manager_o.objects)
+    {
+        if(object.pyh_tag.pid != 0)
+        {
+            Physics* phy = manager_p.find_physics(object.pyh_tag);
+            if(phy == nullptr) continue;
+
+            phy->pos = object.pos;
+            phy->colliding = false;
+        }
+    }
+    // Check collisions
+    for(auto& phy_A : manager_p.physicss)
+    {
+        AABBf aabb_A = phy_A.YY.aabb_base + phy_A.YY.pos;
+
+        for(auto& phy_B : manager_p.physicss)
+        {
+            if(phy_A.XX.pid == phy_B.XX.pid) continue;
+
+            AABBf aabb_B = phy_B.YY.aabb_base + phy_B.YY.pos;
+
+            bool collided = AABBf::collide(aabb_A, aabb_B);
+            if(collided)
+            {
+                phy_A.YY.colliding = true;
+                phy_B.YY.colliding = true;
+            }
+        }
+    }
+
+
     Object*     cam_o    = nullptr;
     CameraFree* cam_free = nullptr;
     for(auto tago : scenew.tagos)

@@ -11,6 +11,7 @@ struct TagP
         Null,
         Lamp,
         Camera,
+        Physics,
     };
 
     PID  pid    = 0;
@@ -25,4 +26,5 @@ struct TagP
 
     bool is_lamp() { return type == Lamp;}
     bool is_camera() { return type == Camera;}
+    bool is_physics() { return type == Physics;}
 };
