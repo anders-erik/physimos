@@ -4,6 +4,9 @@
 #include "math/transform.hh"
 #include "math/quarternion.hh"
 
+#include "scene/tago.hh"
+#include "scene/object.hh"
+
 struct CameraPerspective
 {
     m4f4 matrix; // Full perspective matrix. Set by calling 'update_matrix()'
@@ -79,11 +82,52 @@ struct CameraOrbital
 
 struct FreeView
 {
-    m4f4 calc_matrix(f3 pos, Quarternion rot);
+    m4f4 matrix;
+
+    m4f4& calc_matrix(f3 pos, Quarternion rot);
+};
+
+struct OrbitalContext
+{
+
+    // float rho   =  10.0f; // Radius
+    // float theta =  0.0f; // x-y plane
+    // float phi   =  PIHf; // z-axis
+
+    float rho   =  8.0f; // Radius
+    float theta =  4.5f; // x-y plane
+    float phi   =  1.0f; // z-axis
+    // float rho   =  3.0f; // Radius
+    // float theta =  -PIHf; // x-y plane
+    // float phi   =  0.0f; // z-axis
+
+    float rho_min       = 0.3f;
+    float rho_max       = 60.0f;
+    float phi_min       = 0.01f;
+    float phi_max       = 3.13f;
+
+
+    float rho_clamp(float _rho);
+    float phi_clamp(float _phi);
+
+    void  rho_scale(float factor);
+    void  theta_add(float delta);
+    void  phi_add(float delta);
 };
 
 struct CameraFree
 {
     CameraPerspective perspective;
     FreeView view;
+
+    TagO follow_tag; // by setting a non-zero object tag the camera turns into an orbital camera
+    OrbitalContext orbit_ctx;
+};
+
+struct CameraObject
+{
+    Object      obj;
+    CameraFree  cam;
+
+    void update_matrices();
 };

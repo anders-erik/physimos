@@ -113,15 +113,15 @@ try_move_camera(window::InputEvent & event)
     // Mouse Navigation
     if(event.is_mouse_scroll())
     {
-        camera.spherical_delta.x += event.mouse_scroll.delta;
+        camera.deltas.z += event.mouse_scroll.delta;
         return true;
     }
     if(camera.grabbing_cursor || camera.panning)
     {
         if(event.is_mouse_movement())
         {
-            camera.spherical_delta.y += event.mouse_movement.delta.sane.x;
-            camera.spherical_delta.z += event.mouse_movement.delta.sane.y;
+            camera.deltas.x += event.mouse_movement.delta.sane.x;
+            camera.deltas.y += event.mouse_movement.delta.sane.y;
             return true;
         }
     }
@@ -334,8 +334,8 @@ handle_user_input(Manager3D& manager_3D, window::InputEvent & event, TagO sample
 void SceneState::
 handle_window(Manager3D& manager_3D, window::WindowResizeEvent & window_event)
 {
-    manager_3D.window_scene->camera.perspective.set_fov(    window_event.size_i.x, 
-                                                            window_event.size_i.y   );
+    manager_3D.window_scene->camobj.cam.perspective.set_fov(    window_event.size_i.x, 
+                                                                window_event.size_i.y   );
 }
 
 

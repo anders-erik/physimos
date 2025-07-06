@@ -55,10 +55,19 @@ struct Quarternion
         return *this;
     }
 
+    void reset()
+    {
+        q0 = 1.0f;
+        x  = 0.0f;
+        y  = 0.0f;
+        z  = 0.0f;
+    }
+
     float mult_conjugate()
     {
         return ((*this) * this->conjugate()).q0;
     }
+
 
     Quarternion 
     conjugate()

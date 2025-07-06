@@ -25,8 +25,7 @@ struct Scene3D
     SID sid;
     Str name;
 
-    CameraOrbital camera;
-    TagO camera_tag;
+    CameraObject camobj;
 
     std::vector<TagO> tagos;
 

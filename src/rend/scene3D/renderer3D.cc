@@ -83,37 +83,14 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
     // Defaults to fill. Context flag can overwrite?
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-    // FIND CAM
-    Object*     cam_o    = nullptr;
-    CameraFree* cam_free = nullptr;
-    m4f4 cam_view_mat;
-    m4f4 cam_persp_mat;
 
-    for(auto tago : scene3D.tagos)
-    {
-        if(tago.is_camera())
-        {
-            cam_o = man_o.get_object(tago);
-            if(cam_o == nullptr) continue;
+    scene3D.camobj.update_matrices();
+    m4f4 cam_persp_mat    = scene3D.camobj.cam.perspective.matrix;
+    m4f4 cam_view_mat   = scene3D.camobj.cam.view.matrix;
 
-            cam_free = manager_3D.manager_p.find_camera(cam_o->tagp);
-            if(cam_free == nullptr) continue;
-
-            break; // break if confirmed camera object AND camera property
-        }
-    }
-
-    if(cam_o != nullptr && cam_free != nullptr)
-    {
-        cam_view_mat  = cam_free->view.calc_matrix(cam_o->pos, cam_o->rot);
-        cam_persp_mat = cam_free->perspective.update_matrix();;
-    }
-    else
-    {
-        cam_view_mat = scene3D.camera.view.update_matrix();
-        cam_persp_mat = scene3D.camera.perspective.update_matrix();
-    }
-
+    // OLD ORBITAL
+    // cam_view_mat = scene3D.camera.view.update_matrix();
+    // cam_persp_mat = scene3D.camera.perspective.update_matrix();
 
 
     // UNIFORMS
@@ -241,9 +218,9 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
                 aabb_mesh.aabb(physics->aabb_base);
 
                 if(physics->colliding)
-                    program_mesh.render(model_matrix, aabb_mesh, 0xab0fdbff);
+                    program_mesh.render(translation_matrix, aabb_mesh, 0xab0fdbff);
                 else
-                    program_mesh.render(model_matrix, aabb_mesh, 0x000000ff);
+                    program_mesh.render(translation_matrix, aabb_mesh, 0x000000ff);
             }
         }
     }
@@ -306,8 +283,10 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
 {
     program_object_ids.use();
 
-    program_object_ids.set_camera_view_projection(  scene.camera.perspective.matrix, 
-                                                    scene.camera.view.matrix);
+    CameraObject& camobj = manager_3D.window_scene->camobj;
+    camobj.update_matrices();
+    program_object_ids.set_camera_view_projection(  camobj.cam.perspective.matrix, 
+                                                    camobj.cam.view.matrix);
 
     fb_object_ids.bind();
 

@@ -27,7 +27,7 @@ struct Selected
 
     f3      pos_delta;
     f3      rot_delta_norm;
-    float   size_factor;
+    float   size_factor = 1.0f;
 
 
     bool is_null() { return tag.is_null(); }

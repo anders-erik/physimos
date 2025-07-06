@@ -196,7 +196,7 @@ int main()
 
 		dot_mesh.center();
 		dot_mesh.move({rd_x, rd_y, 0.001f});
-		dot_mesh.get_center().print("Vert center");
+		// dot_mesh.get_center().print("Vert center");
 		toadst_merge.mesh.merge(dot_mesh);
 	}
 
@@ -229,7 +229,7 @@ int main()
 	lampo.tag.type = TagO::Lamp;
 	lampo.pos = {3.0f, 0.0f, 2.0f};
 	lampo.mesh.cube();
-	lampo.mesh.scale(0.1f);
+	lampo.mesh.scale(0.2f);
 	lampo.name = "lamp_1";
 	Lamp lamp;
 	lamp.light_color = {0.8f, 0.6f, 0.6f};
@@ -239,8 +239,8 @@ int main()
 
 	// CAMERA OBJECT
 	Object& cam_o = manager_o.new_object();
-	cam_o.tag.type = TagO::Base;
-	// cam_o.tag.type = TagO::Camera;
+	// cam_o.tag.type = TagO::Base;
+	cam_o.tag.type = TagO::Camera;
 	cam_o.pos = {-10.0f, -1.0f, 0.0f};
 	// cam_o.rot.rotate(f3::Z(), PIHf);
 	// cam_o.rot.rotate(f3::X(), -PIHf);
@@ -249,8 +249,13 @@ int main()
 	cam_o.name = "camera_1";
 	CameraFree cam;
 	cam.perspective.set_fov(800, 600);
+	// cam.follow_tag = lampo.tag;
 	cam_o.tagp = manager_3D.manager_p.push_camera(cam);
 	root_scene.tagos.push_back(cam_o.tag);
+	
+	root_scene.camobj.cam 				= cam;
+	root_scene.camobj.cam.follow_tag 	= lampo.tag;
+	root_scene.camobj.obj.pos 			= {-10.0f, -1.0f, 0.0f};
 
 
 	// PHYSICS BODY
@@ -265,7 +270,6 @@ int main()
 	physics_0.set_AABB_mesh(phy_0.mesh);
 	physics_0.aabb_base.max.z = 0.4f; // NOTE: manually setting of AABB
 	phy_0.pyh_tag = manager_3D.manager_p.push_physics(physics_0);
-
 
 	Object& phy_1 = manager_o.new_object();
 	phy_1.tag.type = TagO::Base;

@@ -29,7 +29,7 @@ struct CameraState
     BitType pressed = NONE;
     BitType active = NONE;
 
-    f3 spherical_delta;
+    f3   deltas;
     bool grabbing_cursor    = false;
     bool panning            = false;
 

@@ -3,6 +3,7 @@
 
 #include "lib/log.hh"
 
+#include "math/spherical.hh"
 #include "math/quarternion.hh"
 
 #include "rend/rend.hh"
@@ -92,46 +93,54 @@ update()
     }
 
 
-    Object*     cam_o    = nullptr;
-    CameraFree* cam_free = nullptr;
-    for(auto tago : scenew.tagos)
+    // CAMERA
+
+    CameraFree& cam     = scenew.camobj.cam;
+    Object&     c_obj   = scenew.camobj.obj;
+
+    f3 cam_f = Quarternion::rotate_f3(c_obj.rot, f3::X()).unit();
+    f3 cam_l = Quarternion::rotate_f3(c_obj.rot, f3::Y()).unit();
+    f3 cam_u = Quarternion::rotate_f3(c_obj.rot, f3::Z()).unit();
+
+    Object* followed_obj = manager_o.get_object(cam.follow_tag);
+
+    float move_factor = 0.2;
+
+    if(followed_obj != nullptr)
     {
-        if(tago.is_camera())
-        {
-            cam_o = manager_o.get_object(tago);
-            if(cam_o == nullptr) continue;
+        // NOTE: Update angles BEFORE position.
+        float rho_factor = 1.0f;
+        if(state.camera.deltas.z < 0.0f)
+            rho_factor =  1.2f;
+        else if(state.camera.deltas.z > 0.0f)
+            rho_factor =  0.8f;
+        cam.orbit_ctx.rho_scale(  rho_factor                      );
+        cam.orbit_ctx.theta_add( -state.camera.deltas.x  / 200.0f );
+        cam.orbit_ctx.phi_add(    state.camera.deltas.y  / 400.0f );
 
-            cam_free = manager_p.find_camera(cam_o->tagp);
-            if(cam_free == nullptr) continue;
+        f3 cam_center_offset = Spherical::to_cart({ cam.orbit_ctx.rho, 
+                                                    cam.orbit_ctx.theta, 
+                                                    cam.orbit_ctx.phi     });
+        
+        c_obj.pos = cam_center_offset + followed_obj->pos;
+        // c_obj.pos = cam_center_offset;
 
-            break; // break if confirmed camera object AND camera property
-        }
+        // Full rotation calculation to match spherical values
+        c_obj.rot.reset();
+        c_obj.rot.rotate(f3::Z(), -(PIf));
+        c_obj.rot.rotate(f3::Y(), -(PIHf - cam.orbit_ctx.phi));
+        c_obj.rot.rotate(f3::Z(), -(-cam.orbit_ctx.theta));
+
     }
-    if(cam_o != nullptr && cam_free != nullptr)
+    else
     {
-        f3 cam_f = Quarternion::rotate_f3(cam_o->rot, f3::X()).unit();
-        f3 cam_l = Quarternion::rotate_f3(cam_o->rot, f3::Y()).unit();
-        f3 cam_u = Quarternion::rotate_f3(cam_o->rot, f3::Z()).unit();
-
-        float move_factor = 0.2;
-
-        if(state.camera.is_forward())
-            cam_o->pos +=  cam_f * move_factor;
-        if(state.camera.is_backward())
-            cam_o->pos -=  cam_f * move_factor;
-        if(state.camera.is_left())
-            cam_o->pos +=  cam_l * move_factor;
-        if(state.camera.is_right())
-            cam_o->pos -=  cam_l * move_factor;
-        if(state.camera.is_up())
-            cam_o->pos +=  cam_u * move_factor;
-        if(state.camera.is_down())
-            cam_o->pos -=  cam_u * move_factor;
-
-        cam_o->pos +=  cam_f * state.camera.spherical_delta.x;
-
-        cam_o->rot.rotate(cam_u, -state.camera.spherical_delta.y  / 400.0f);
-        cam_o->rot.rotate(cam_l, -state.camera.spherical_delta.z  / 400.0f);
+        float free_pan_factor = 2.0f;
+        c_obj.rot.rotate(cam_l,    -state.camera.deltas.y 
+                                    * free_pan_factor  
+                                    / cam.perspective.height);
+        c_obj.rot.rotate(cam_u,    -state.camera.deltas.x 
+                                    * free_pan_factor  
+                                    / cam.perspective.width);
 
         // remove tilt
         f3 HL = f3::Z().cross(cam_f); // horizontal left
@@ -139,56 +148,52 @@ update()
 
         // Check angle direction
         if(HL.z > cam_l.z)
-            cam_o->rot.rotate(cam_f, angle_hl_l);
+            c_obj.rot.rotate(cam_f, angle_hl_l);
         else
-            cam_o->rot.rotate(cam_f, -angle_hl_l);
+            c_obj.rot.rotate(cam_f, -angle_hl_l);
 
-        state.camera.spherical_delta.set_zero();
-        return;
+        if(state.camera.is_forward())
+            c_obj.pos +=  cam_f * move_factor;
+        if(state.camera.is_backward())
+            c_obj.pos -=  cam_f * move_factor;
+        if(state.camera.is_left())
+            c_obj.pos +=  cam_l * move_factor;
+        if(state.camera.is_right())
+            c_obj.pos -=  cam_l * move_factor;
+        if(state.camera.is_up())
+            c_obj.pos +=  cam_u * move_factor;
+        if(state.camera.is_down())
+            c_obj.pos -=  cam_u * move_factor;
+        
+        c_obj.pos +=  cam_f * state.camera.deltas.z;
     }
 
-    // CAMERA
-    auto& camera = window_scene->camera;
     
-    if(state.camera.is_forward())
-        window_scene->camera.forward(0.15);
-    if(state.camera.is_backward())
-        window_scene->camera.backward(0.15);
-    if(state.camera.is_left())
-        window_scene->camera.left(0.03);
-    if(state.camera.is_right())
-        window_scene->camera.right(0.03);
-    if(state.camera.is_up())
-        window_scene->camera.up(0.02);
-    if(state.camera.is_down())
-        window_scene->camera.down(0.02);
-
-    window_scene->camera.view.rho_change(   -state.camera.spherical_delta.x  / 1.0f    );
-    window_scene->camera.view.theta_change( -state.camera.spherical_delta.y  / 200.0f    );
-    window_scene->camera.view.phi_change(    state.camera.spherical_delta.z  / 400.0f      );
-    state.camera.spherical_delta.set_zero();
+    state.camera.deltas.set_zero();
 
 
-    // SELECTED
+
+
+    // SELECTED OBJECT
+
     Object* selected_o = manager_o.get_object(state.selected.tag);
     if(selected_o != nullptr)
     {
-        // CAMERA DIRS
-        f3 cam_r    = window_scene->camera.get_right();
-        f3 cam_u    = window_scene->camera.get_up();
-        f3 cam_f    = window_scene->camera.get_forward();
-    
 
         // 1. TRANSLATE
         if(!state.selected.pos_delta.is_zero())
         {
             // SCALE MOVEMENT
-            f3 cam_pos          = window_scene->camera.get_pos();
-            f3 cam_to_obj_delta = cam_pos - selected_o->pos;
-            float tan_half_fov = tanf(camera.perspective.fov / 2.0f);
-            float view_width_at_obj_dist = 2.0f * tan_half_fov * cam_to_obj_delta.norm();
+            f3 cam_to_obj_delta = c_obj.pos - selected_o->pos;
+            float obj_distance  = cam_to_obj_delta.norm();
 
-            selected_o->pos += cam_r * state.selected.pos_delta.x * view_width_at_obj_dist * camera.perspective.AR();
+            float tan_fov = tanf(cam.perspective.fov);
+            float view_width_at_obj_dist = obj_distance * tan_fov;
+
+            // std::cout << obj_distance << ", " << view_width_at_obj_dist << std::endl;
+            
+
+            selected_o->pos -= cam_l * state.selected.pos_delta.x * view_width_at_obj_dist * cam.perspective.AR();
             selected_o->pos += cam_u * state.selected.pos_delta.y * view_width_at_obj_dist;
             selected_o->pos += cam_f * state.selected.pos_delta.z;
 
@@ -208,7 +213,7 @@ update()
             angle_delta.z *= scroll_factor;
 
             selected_o->rot.rotate(cam_u,  angle_delta.x);
-            selected_o->rot.rotate(cam_r, -angle_delta.y);
+            selected_o->rot.rotate(cam_l,  angle_delta.y);
             selected_o->rot.rotate(cam_f, -angle_delta.z);
             
             state.selected.rot_delta_norm.set_zero();

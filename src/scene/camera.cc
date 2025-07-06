@@ -216,11 +216,64 @@ print()
     std::cout << "phi   = " << view.phi << std::endl;
 }
 
-m4f4 FreeView::calc_matrix(f3 pos, Quarternion rot)
+m4f4& FreeView::calc_matrix(f3 pos, Quarternion rot)
 {
     m4f4 align_x_rot = m4f4::rotation_x(-PIHf) * m4f4::rotation_z(-PIHf);
 
     m4f4 translation_matrix = m4f4::translation(-pos);
     m4f4 rotation_matrix    =  align_x_rot * rot.inverse().matrix();
-    return rotation_matrix * translation_matrix;
+
+    matrix = rotation_matrix * translation_matrix;
+    return matrix;
+}
+
+
+
+
+float OrbitalContext::
+rho_clamp(float _rho)
+{
+    if(_rho < rho_min)
+        return rho_min;
+    if(_rho > rho_max)
+        return rho_max;
+    return _rho;
+}
+
+
+float OrbitalContext::
+phi_clamp(float _phi)
+{
+    if(_phi < phi_min)
+        return phi_min;
+    if(_phi > phi_max)
+        return phi_max;
+    return _phi;
+}
+
+
+void OrbitalContext::
+rho_scale(float factor)
+{
+    rho = rho_clamp(rho * factor);
+}
+
+
+void OrbitalContext::
+theta_add(float delta)
+{
+    theta += delta;
+}
+
+
+void OrbitalContext::
+phi_add(float delta)
+{
+    phi = phi_clamp(phi + delta);
+}
+
+void CameraObject::update_matrices()
+{
+    cam.view.calc_matrix(obj.pos, obj.rot);
+    cam.perspective.update_matrix();
 }
