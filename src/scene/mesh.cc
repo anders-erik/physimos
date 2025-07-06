@@ -47,6 +47,33 @@ f3 Mesh::get_center()
     return vert_sum / verts.size();
 }
 
+f3 Mesh::get_size()
+{
+    if(verts.size() == 0) return {};
+
+    f3 min = {__FLT_MAX__, __FLT_MAX__, __FLT_MAX__};
+    f3 max = {__FLT_MIN__, __FLT_MIN__, __FLT_MIN__};
+
+    for(auto& vert : verts)
+    {
+        if(vert.x < min.x)
+            min.x = vert.x;
+        if(vert.y < min.y)
+            min.y = vert.y;
+        if(vert.z < min.z)
+            min.z = vert.z;
+        
+        if(vert.x > max.x)
+            max.x = vert.x;
+        if(vert.y > max.y)
+            max.y = vert.y;
+        if(vert.z > max.z)
+            max.z = vert.z;
+    }
+
+    return max - min;
+}
+
 
 void Mesh::sheet()
 {
@@ -130,7 +157,7 @@ void Mesh::sheet(SheetContext context)
 
 
 
-void Mesh::cube()
+void Mesh::cube_centered()
 {
     verts.clear();
     faces.clear();
@@ -193,11 +220,57 @@ void Mesh::cube()
     faces.emplace_back( 6, 7, 4 );
 }
 
-void Mesh::aabb(AABBf ab)
+void Mesh::cube_origin_aligned()
 {
-    (*this).cube();
-    (*this).scale({ab.max.x-ab.min.x, ab.max.y-ab.min.y, ab.max.z-ab.min.z});
+    verts.clear();
+    faces.clear();
+
+    float SX = 1.0f;
+    float SY = 1.0f;
+    float SZ = 1.0f;
+    
+
+    // z = 0
+    verts.emplace_back( 0.0f,   0.0f,   0.0f    );
+    verts.emplace_back( SX,     0.0f,   0.0f    );
+    verts.emplace_back( SX,     SY,     0.0f    );
+    verts.emplace_back( 0.0f,   SY,     0.0f    );
+
+    // z = size.z
+    verts.emplace_back( 0.0f,   0.0f,   SZ      );
+    verts.emplace_back( SX,     0.0f,   SZ      );
+    verts.emplace_back( SX,     SY,     SZ      );
+    verts.emplace_back( 0.0f,   SY,     SZ      );
+
+
+    // Bottom
+    faces.emplace_back( 0, 1, 2 );
+    faces.emplace_back( 2, 3, 0 );
+    // Top
+    faces.emplace_back( 4, 5, 6 );
+    faces.emplace_back( 6, 7, 4 );
+    // 
+    faces.emplace_back( 1, 5, 2 );
+    faces.emplace_back( 2, 5, 6 );
+    // 
+    faces.emplace_back( 2, 6, 3 );
+    faces.emplace_back( 3, 6, 7 );
+    // 
+    faces.emplace_back( 3, 7, 0 );
+    faces.emplace_back( 0, 7, 4 );
+    // 
+    faces.emplace_back( 0, 4, 1 );
+    faces.emplace_back( 1, 4, 5 );
 }
+
+
+void Mesh::aabb(AABBf aabb)
+{
+    cube_origin_aligned();
+    scale(aabb.max-aabb.min);
+    move(aabb.min);
+}
+
 
 
 

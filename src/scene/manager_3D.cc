@@ -68,22 +68,24 @@ update()
             Physics* phy = manager_p.find_physics(object.pyh_tag);
             if(phy == nullptr) continue;
 
-            phy->pos = object.pos;
+            
+            phy->aabb.set_with_half_size(   object.pos, 
+                                            phy->model_size * object.scale * 0.5f );
             phy->colliding = false;
         }
     }
     // Check collisions
     for(auto& phy_A : manager_p.physicss)
     {
-        AABBf aabb_A = phy_A.YY.aabb_base + phy_A.YY.pos;
-
+        // AABBf aabb_A = {phy_A.YY.aabb.pos, phy_A.YY.aabb.size};
+        
         for(auto& phy_B : manager_p.physicss)
         {
             if(phy_A.XX.pid == phy_B.XX.pid) continue;
 
-            AABBf aabb_B = phy_B.YY.aabb_base + phy_B.YY.pos;
+            // AABBf aabb_B = {phy_B.YY.aabb.pos, phy_B.YY.aabb.size};
 
-            bool collided = AABBf::collide(aabb_A, aabb_B);
+            bool collided = AABBf::collide(phy_A.YY.aabb, phy_B.YY.aabb);
             if(collided)
             {
                 phy_A.YY.colliding = true;

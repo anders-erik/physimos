@@ -74,14 +74,14 @@ int main()
 	model::ModelColor cube;
 	model_add_cube_mesh(cube.mesh);
     // renderer_model_color.create_render_context(model_render_context, model);
-    cube.transform.pos.x = 5.0f;
+    cube.transform.pos.x = 8.0f;
 	root_scene.color_models.push_back(cube);
 
 
 
 	// FIRST PURE MESH
 	Object& object_base = manager_o.new_object();
-	object_base.mesh.cube();
+	object_base.mesh.cube_centered();
 	object_base.tag.type = TagO::Type::Base;
 	root_scene.tagos.push_back(object_base.tag);
 
@@ -228,7 +228,7 @@ int main()
 	Object& lampo = manager_o.new_object();
 	lampo.tag.type = TagO::Lamp;
 	lampo.pos = {3.0f, 0.0f, 2.0f};
-	lampo.mesh.cube();
+	lampo.mesh.cube_centered();
 	lampo.mesh.scale(0.2f);
 	lampo.name = "lamp_1";
 	Lamp lamp;
@@ -244,7 +244,7 @@ int main()
 	cam_o.pos = {-10.0f, -1.0f, 0.0f};
 	// cam_o.rot.rotate(f3::Z(), PIHf);
 	// cam_o.rot.rotate(f3::X(), -PIHf);
-	cam_o.mesh.cube();
+	cam_o.mesh.cube_centered();
 	cam_o.mesh.scale({0.5f, 0.1f, 0.2f});
 	cam_o.name = "camera_1";
 	CameraFree cam;
@@ -261,26 +261,27 @@ int main()
 	// PHYSICS BODY
 	Object& phy_0 = manager_o.new_object();
 	phy_0.tag.type = TagO::Base;
-	phy_0.mesh.sheet({2, 2});
+	phy_0.mesh.cube_centered();
 	phy_0.mesh.center();
 	phy_0.name = "phy_0";
-	phy_0.pos = {-3.0f, -3.0f, 0.0f};
+	phy_0.pos = {3.0f, 1.0f, 0.0f};
 	root_scene.tagos.push_back(phy_0.tag);
+
 	Physics physics_0;
-	physics_0.set_AABB_mesh(phy_0.mesh);
-	physics_0.aabb_base.max.z = 0.4f; // NOTE: manually setting of AABB
+	physics_0.model_size = {0.5f, 0.5f, 0.5f};
 	phy_0.pyh_tag = manager_3D.manager_p.push_physics(physics_0);
+
 
 	Object& phy_1 = manager_o.new_object();
 	phy_1.tag.type = TagO::Base;
 	phy_1.mesh.sheet({1, 2});
 	phy_1.mesh.center();
 	phy_1.name = "phy_1";
-	phy_1.pos = {-1.0f, -3.0f, 0.0f};
+	phy_1.pos = {4.5f, 1.0f, 0.0f};
 	root_scene.tagos.push_back(phy_1.tag);
+
 	Physics physics_1;
-	physics_1.set_AABB_mesh(phy_1.mesh);
-	physics_1.aabb_base.max.z = 0.4f; // NOTE: manually setting of AABB
+	physics_1.model_size = phy_1.mesh.get_size();
 	phy_1.pyh_tag = manager_3D.manager_p.push_physics(physics_1);
 
 

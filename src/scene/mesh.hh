@@ -68,6 +68,7 @@ struct Mesh
     void merge(const Mesh& mesh_2);
 
     f3 get_center();
+    f3 get_size();
 
     void center();
     void scale(float factor);
@@ -81,8 +82,10 @@ struct Mesh
     void sheet();
     void sheet(SheetContext context);
     void quad();
-    void cube();
-    void aabb(AABBf ab);
+    void cube_centered();
+    void cube_origin_aligned();
+
+    void aabb(AABBf aabb);
 
     void circle(CircleContext c_ctx);
     void circle_poly_r(CircleContext c_ctx, Polynomial<float> poly);

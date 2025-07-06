@@ -215,12 +215,17 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
             if(physics != nullptr)
             {
                 Mesh aabb_mesh;
-                aabb_mesh.aabb(physics->aabb_base);
+                aabb_mesh.cube_origin_aligned();
+                // aabb_mesh.cube_centered();
+                // aabb_mesh.aabb(physics->aabb);
+                
+                m4f4 mat =    m4f4::translation(physics->aabb.min) 
+                            * m4f4::scale(physics->model_size * base->scale);
 
                 if(physics->colliding)
-                    program_mesh.render(translation_matrix, aabb_mesh, 0xab0fdbff);
+                    program_mesh.render(mat, aabb_mesh, 0xab0fdbff);
                 else
-                    program_mesh.render(translation_matrix, aabb_mesh, 0x000000ff);
+                    program_mesh.render(mat, aabb_mesh, 0x000000ff);
             }
         }
     }
@@ -258,7 +263,7 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
                             scene3D.q_vec_001);
 
     Mesh q_mesh;
-    q_mesh.cube();
+    q_mesh.cube_centered();
     q_mesh.scale({0.2, 0.2, 0.02});
     scene3D.q_1000.rotate(f3::Z(), 0.01f);
     // scene3D.q_1000 = Quarternion::rotate_quart(scene3D.q_1000, {0.0f, f3::Y()}, 0.1);

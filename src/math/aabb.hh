@@ -13,16 +13,10 @@ struct AABBf
     f3 max = {__FLT_MIN__, __FLT_MIN__, __FLT_MIN__};
 
 
-    AABBf operator+(const f3& rhs)
+    void set_with_half_size(f3 pos, f3 half_size)
     {
-        AABBf ret_aabb;
-        ret_aabb.min.x = min.x + rhs.x;
-        ret_aabb.min.y = min.y + rhs.y;
-        ret_aabb.min.z = min.z + rhs.z;
-        ret_aabb.max.x = max.x + rhs.x;
-        ret_aabb.max.y = max.y + rhs.y;
-        ret_aabb.max.z = max.z + rhs.z;
-        return ret_aabb;
+        min = pos - half_size;
+        max = pos + half_size;
     }
 
     static bool collide(AABBf A, AABBf B)
@@ -41,12 +35,9 @@ struct AABBf
 
     bool contains_point(f3 offset, const f3& pnt)
     {
-        f3 MIN = offset + min;
-        f3 MAX = offset + max;
-
-        return  pnt.x >= MIN.x && pnt.x <= MAX.x  && \
-                pnt.y >= MIN.y && pnt.y <= MAX.y  && \
-                pnt.z >= MIN.z && pnt.z <= MAX.z;
+        return  pnt.x >= min.x && pnt.x <= min.x  && \
+                pnt.y >= min.y && pnt.y <= min.y  && \
+                pnt.z >= min.z && pnt.z <= min.z;
     }
 };
 

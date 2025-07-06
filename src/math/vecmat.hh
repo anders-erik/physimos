@@ -163,7 +163,7 @@ struct f3
 
     f3 operator+(float scalar);
     f3 operator-(float scalar);
-    f3 operator*(float scalar);
+    f3 operator*(float scalar) const;
     f3 operator/(float scalar);
 
     f2 to_xy() const;
@@ -190,6 +190,11 @@ struct f3
     static constexpr f3 Y() {return {0.0f, 1.0f, 0.0f}; }
     static constexpr f3 Z() {return {0.0f, 0.0f, 1.0f}; }
 };
+
+inline f3 operator*(float scalar, const f3& vec)
+{
+    return vec * scalar;
+}
 
 
 struct f4 {
@@ -301,8 +306,10 @@ struct m4f4
 
     void print();
 
-    /** Create a pure translation matrix */
+    /** Create a pure scale matrix */
     static m4f4 scale(float scale_factor);
+    /** Create a pure scale matrix */
+    static m4f4 scale(f3 scale);
     /** Create a pure translation matrix */
     static m4f4 translation(f3 transl);
     /** Create a pure rotation matrix about x axis. 

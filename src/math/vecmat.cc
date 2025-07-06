@@ -360,12 +360,13 @@ operator-(float scalar)
 }
 
 f3 f3::
-operator*(float scalar)
+operator*(float scalar) const 
 {
     return {    x * scalar,
                 y * scalar,
-                z * scalar};
+                z * scalar  };
 }
+
 
 f3 f3::
 operator/(float scalar)
@@ -597,6 +598,13 @@ m4f4 m4f4::scale(float scale_factor)
             {0, s, 0, 0},
             {0, 0, s, 0},
             {0, 0, 0, 1       }};
+}
+m4f4 m4f4::scale(f3 S)
+{
+    return {{S.x, 0,    0,    0 },
+            {0,   S.y,  0,    0 },
+            {0,   0,    S.z,  0 },
+            {0,   0,    0,    1 }};
 }
 
 m4f4 m4f4::

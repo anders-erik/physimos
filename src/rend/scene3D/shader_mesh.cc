@@ -119,6 +119,7 @@ render(const m4f4& model_matrix, Mesh& mesh, unsigned int color)
 }
 
 
+
 void ShaderMesh::
 render(const m4f4& model_matrix, Mesh& mesh)
 {
