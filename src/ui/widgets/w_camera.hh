@@ -48,51 +48,36 @@ struct Camera : public Widget
 public:
 
 
-    inline InputResponse event_handler(Manager3D& manager_3D, window::InputEvent& event)
+    InputResponse 
+    event_handler(Manager3D& manager_3D, window::InputEvent& event)
     {
-        using namespace window;
+        if(!event.is_left_click())
+            return {};
 
 
-        switch (event.type)
+        if(free_toggle.containsPoint(cursor_sane))
         {
-
-        case EventType::MouseButton:
-
-            // Name label grabs mouse
-            if(event.mouse_button.is_left_down())
-            {
-                if(free_toggle.containsPoint(cursor_sane))
-                {
-                    // Print::line("toggle cam a");
-                    manager_3D.window_scene->camobj.set_free();
-                }
-                if(orbit_center_toggle.containsPoint(cursor_sane))
-                {
-                    if(manager_3D.window_scene->camobj.state.is_orbit_center())
-                        manager_3D.window_scene->camobj.set_free();
-                    else
-                        manager_3D.window_scene->camobj.set_orbit_center();
-                }
-                if(B_orbit_tag_toggle.containsPoint(cursor_sane))
-                {
-                    if(manager_3D.window_scene->camobj.state.is_orbit_tag())
-                        manager_3D.window_scene->camobj.set_free();
-                }
-            }
-            break;
-
-
-        default:
-            break;
-
+            manager_3D.window_scene->camobj.set_free();
         }
-
+        else if(orbit_center_toggle.containsPoint(cursor_sane))
+        {
+            if(manager_3D.window_scene->camobj.state.is_orbit_center())
+                manager_3D.window_scene->camobj.set_free();
+            else
+                manager_3D.window_scene->camobj.set_orbit_center();
+        }
+        else if(B_orbit_tag_toggle.containsPoint(cursor_sane))
+        {
+            if(manager_3D.window_scene->camobj.state.is_orbit_tag())
+                manager_3D.window_scene->camobj.set_free();
+        }
 
         return {};
     }
 
     /** Recreates the whole widget from scene data every call. */
-    inline void reload(CameraObject& new_camobj, f2 new_pos)
+    void 
+    reload(CameraObject& new_camobj, f2 new_pos)
     {
         camobj = new_camobj;
 
@@ -162,7 +147,8 @@ public:
     }
 
 
-    inline void render(RendererBase& renderer)
+    void 
+    render(RendererBase& renderer)
     {
         renderer.draw_base(frame_base);
 

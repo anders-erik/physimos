@@ -15,16 +15,19 @@
 
 #include "widget.hh"
 
+#include "ui/widgets/w_list.hh"
 #include "widgets/w_object_s.hh"
+#include "ui/widgets/w_camera.hh"
 
 
 namespace UI {
 namespace W {
 
 /** Lists root scene objects */
-struct RootScene : public Widget {
-
-    std::vector<W::ObjectSmall> object_widgets;
+struct RootScene : public Widget 
+{
+    UI::W::List<UI::W::ObjectSmall, Object, 200.0f> list_object;
+    UI::W::Camera w_camera;
 
     BaseString scene_name_base;
 
@@ -34,16 +37,12 @@ public:
 
 
     InputResponse event_handler(Manager3D& manager_3D, window::InputEvent& event)
-    {
+    {        
+        if(w_camera.has_cursor(cursor_sane))
+            return w_camera.event_handler(manager_3D, event);
 
-        for(auto& quad_widget : object_widgets)
-        {
-            if(quad_widget.has_cursor(cursor_sane))
-            {
-
-                quad_widget.event_handler(manager_3D, event);
-            }
-        }
+        if(list_object.has_cursor(cursor_sane))
+            return list_object.event_handler(manager_3D, event);
 
         return {};
     }
@@ -51,43 +50,27 @@ public:
 
 
     /** Recreates the whole widget from scene data every call. */
-    void reload(Manager3D& manager_3D, f2 widget_pos)
+    void reload(Manager3D& manager_3D, f2 widget_pos, float width)
     {
-
-
         // Frame
         frame.pos = widget_pos;
-        frame.size = {200.0f, 200.0f};
+        frame.size = {width, 450.0f};
         frame_base.set_box(frame);
+        frame_base.set_rgba_color(0x333333ff);
 
 
-        // Start top left
-        f2 pos = {frame.pos.x, frame.pos.y + frame.size.y};
+        float y = frame.pos.y + frame.size.y;
+        float x = frame.pos.x + 5.0f;
 
-        // Name
-        f2 name_delta = { 0.0f, -20.0f };
-        Str name_str = manager_3D.root_scene.name;
-        scene_name_base.set_pos( pos += name_delta );
-        // scene_name_base.set_size( offset );
-        scene_name_base.set_str(name_str);
+        float name_y = -20.0f;
+        scene_name_base.set_pos( {x, y + name_y} );
+        scene_name_base.set_str(manager_3D.root_scene.name);
 
+        float objs_y = -250.0f;
+        list_object.reload(manager_3D.manager_o.objects, {x, y + objs_y});
 
-        // Objects
-        object_widgets.clear();
-
-        f2 object_w_delta = { 0.0f, -32.0f };
-        f2 object_indent = {10.0f, 0.0f};
-        
-        pos += object_indent;
-        for(auto& tago : manager_3D.root_scene.tagos)
-        {
-            W::ObjectSmall object_widget;
-            Object* object = manager_3D.manager_o.get_object(tago);
-            if(object == nullptr) continue;
-            object_widget.reload(*object, pos += object_w_delta);
-            object_widgets.push_back(object_widget);
-        }
-        pos -= object_indent;
+        float cam_y = -400.0f;
+        w_camera.reload(manager_3D.window_scene->camobj, {x, y + cam_y});        
     }
 
 
@@ -97,8 +80,8 @@ public:
 
         renderer.draw_base_string(scene_name_base);
 
-        for(auto& object_widget : object_widgets)
-            object_widget.render(renderer);
+        list_object.render(renderer);
+        w_camera.render(renderer);
     }
 };
 

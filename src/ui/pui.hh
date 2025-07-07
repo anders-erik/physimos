@@ -12,7 +12,9 @@
 #include "ui/widgets/w_camera.hh"
 #include "ui/widgets/w_object_s.hh"
 #include "ui/widgets/w_object_l.hh"
-#include "ui/widgets/w_list.hh"
+
+
+#include "ui/panel_left.hh"
 
 #include "ui/pui_cursor.hh"
 
@@ -28,6 +30,11 @@ namespace UI {
 /** Physimos UI. */
 class PUI 
 {
+    PUICursor cursor;
+
+    UI::PanelLeft panel_left;
+
+
     UI::Base base_0;
     UI::Base new_quad_in_root_scene;
     UI::BaseTexture b_color_texture;
@@ -35,13 +42,8 @@ class PUI
     UI::BaseString base_string;
 
 
-    UI::W::RootScene w_root_scene;
     UI::W::ObjectLarge w_object_large;
 
-    UI::W::List<UI::W::ObjectSmall, Object, 150.0f> list_object;
-    UI::W::Camera w_camera;
-
-    PUICursor cursor;
 
 public:
 
@@ -58,7 +60,7 @@ public:
     /** Reloads the UI to reflect the most up-to-date data from scenes. */
     void reload(Manager3D& manager_3D, f2 framebuffer_size);
 
-    InputResponse event_all(Manager3D& manager_3D, window::InputEvent& event);
+    InputResponse event_all(Manager3D& manager_3D, window::InputEvent& event, f2 cursor_pos_fb);
 
     void render(UI::RendererBase& renderer_base);
 

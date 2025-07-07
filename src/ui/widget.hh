@@ -3,6 +3,8 @@
 
 #include "lib/pair.hh"
 
+#include "window/auxevent.hh"
+
 #include "ui/string.hh"
 
 

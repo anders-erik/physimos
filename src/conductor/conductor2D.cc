@@ -61,7 +61,10 @@ update_grab(PhysimosGrab::SubSystemBits subsystem, InputResponse response)
 void Physimos::
 send_event_pui(InputEvent & event)
 {
-	auto response = pui.event_all(manager_3D, event);
+	auto response = pui.event_all(	manager_3D, 
+									event, 
+									auxwin.get_cursor_pos().pixels	);
+
 	update_grab(PhysimosGrab::PUI, response);
 	
 	manager_3D.state.hovered.clear();

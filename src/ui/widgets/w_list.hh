@@ -30,7 +30,7 @@ struct List : public Widget
     Str str_label = "List Widget";
 
     float scroll        = 0.0f; // total scroll offset from zero
-    float scroll_step   = 10.0f; // delta induced by single scroll event
+    float scroll_step   = 20.0f; // delta induced by single scroll event
     float scroll_max    = 0.0f;
     float scroll_min    = 0.0f;
 

@@ -202,6 +202,8 @@ struct InputEvent
     bool is_mouse_movement(){return type == EventType::MouseMove  ; }
     bool is_mouse_scroll()  {return type == EventType::MouseScroll; }
     bool is_keystroke()     {return type == EventType::Keystroke  ; }
+
+    bool is_left_click()    {return type == EventType::MouseButton && mouse_button.is_left_down();}
 };
 
 

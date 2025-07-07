@@ -16,7 +16,10 @@ PUI::PUI()
     // UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
     // renderer_base.set_window_info(window_size_f, content_scale);
 
-    base_0.set_pos({100, 100});
+    panel_left.base.box.pos  = {400.0f, 400.0f}; 
+    panel_left.base.box.size = {40.0f, 40.0f}; 
+
+    base_0.set_pos({100, 10});
     base_0.set_size({100, 100});
 
     new_quad_in_root_scene.set_pos({50, 50});
@@ -43,29 +46,25 @@ contains_point(f2 cursor_pos_win_sane)
     cursor.clear_grabbed_widget();
     cursor.clear_hover();
 
+    if(panel_left.base.containsPoint(cursor_pos_win_sane))
+    {
+        cursor.hover((Widget*)&panel_left);
+        return true;
+    }
+
     if(w_object_large.has_cursor(cursor_pos_win_sane))
     {
         cursor.hover(&w_object_large);
         return true;
     }
 
-    if(w_root_scene.has_cursor(cursor_pos_win_sane))
-    {
-        cursor.hover(&w_root_scene);
-        return true;
-    }
+    // if(w_root_scene.has_cursor(cursor_pos_win_sane))
+    // {
+    //     cursor.hover(&w_root_scene);
+    //     return true;
+    // }
 
-    if(list_object.has_cursor(cursor_pos_win_sane))
-    {
-        cursor.hover(&list_object);
-        return true;
-    }
-
-    if(w_camera.has_cursor(cursor_pos_win_sane))
-    {
-        cursor.hover(&w_camera);
-        return true;
-    }
+    
 
 
 
@@ -103,9 +102,11 @@ clear_hovers()
 void PUI::
 reload(Manager3D& manager_3D, f2 framebuffer_size)
 {
-    w_root_scene.reload(manager_3D, {10.0f, 100.0f});
-    list_object.reload(manager_3D.manager_o.objects, {0.0f, framebuffer_size.y-list_object.size.y});
-    w_camera.reload(manager_3D.window_scene->camobj, {10.f, 330.0f});
+    panel_left.update(manager_3D, framebuffer_size);
+
+    // w_root_scene.reload(manager_3D, {10.0f, 100.0f});
+    
+    
     // delete widget_quad;
     // widget_quad = new WidgetQuad();
     // widget_quad->reload();
@@ -127,15 +128,26 @@ reload(Manager3D& manager_3D, f2 framebuffer_size)
 
 
 InputResponse PUI::
-event_all(Manager3D& manager_3D, window::InputEvent& event)
+event_all(Manager3D& manager_3D, window::InputEvent& event, f2 cursor_pos_fb)
 {
-    if(cursor.is_targeted_widget(&w_root_scene))
+    if(cursor.is_targeted_widget((Widget*)&panel_left))
     {
-        InputResponse result = w_root_scene.event_handler(manager_3D, event);
-        cursor.handle_event_result(result, &w_root_scene);
+        InputResponse result = panel_left.event_handler(    manager_3D, 
+                                                            event, 
+                                                            cursor_pos_fb   );
+
+        cursor.handle_event_result(result, (Widget*)&panel_left);
         if(result.is_mouse_grab())
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
+
+    // if(cursor.is_targeted_widget(&w_root_scene))
+    // {
+    //     InputResponse result = w_root_scene.event_handler(manager_3D, event);
+    //     cursor.handle_event_result(result, &w_root_scene);
+    //     if(result.is_mouse_grab())
+    //         return InputResponse(InputResponse::MOUSE_GRAB);
+    // }
 
     if(cursor.is_targeted_widget(&w_object_large))
     {
@@ -145,21 +157,15 @@ event_all(Manager3D& manager_3D, window::InputEvent& event)
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
 
-    if(cursor.is_targeted_widget(&list_object))
-    {
-        InputResponse result = list_object.event_handler(manager_3D, event);
-        cursor.handle_event_result(result, &list_object);
-        if(result.is_mouse_grab())
-            return InputResponse(InputResponse::MOUSE_GRAB);
-    }
+    // if(cursor.is_targeted_widget(&list_object))
+    // {
+    //     InputResponse result = list_object.event_handler(manager_3D, event);
+    //     cursor.handle_event_result(result, &list_object);
+    //     if(result.is_mouse_grab())
+    //         return InputResponse(InputResponse::MOUSE_GRAB);
+    // }
 
-    if(cursor.is_targeted_widget(&w_camera))
-    {
-        InputResponse result = w_camera.event_handler(manager_3D, event);
-        cursor.handle_event_result(result, &w_camera);
-        if(result.is_mouse_grab())
-            return InputResponse(InputResponse::MOUSE_GRAB);
-    }
+    
 
     return InputResponse();
 }
@@ -172,6 +178,8 @@ render(UI::RendererBase& renderer_base){
 
     // UI::RendererBase& renderer_base = Rend::Manager::get_renderer_pui();
 
+    panel_left.render(renderer_base);
+
     renderer_base.draw_base(base_0);
     renderer_base.draw_base(new_quad_in_root_scene);
 
@@ -182,12 +190,12 @@ render(UI::RendererBase& renderer_base){
     base_string.render_string(renderer_base);
 
     // widget_root_scene.populate();
-    w_root_scene.render(renderer_base);
+    // w_root_scene.render(renderer_base);
 
     w_object_large.render(renderer_base);
 
-    list_object.render(renderer_base);
-    w_camera.render(renderer_base);
+    
+    
 }
 
 

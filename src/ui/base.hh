@@ -13,6 +13,7 @@ class Base {
 
 
 protected:
+public:
 
     // UI::Box box;
     Box2D box;
@@ -22,7 +23,6 @@ protected:
 
     unsigned int rgba_color = 0x000000ff;
 
-public:
 
     Base() = default;
 
