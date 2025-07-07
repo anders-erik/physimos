@@ -9,6 +9,8 @@
 
 #include "shader_mesh.hh"
 
+#include "scene/mesh_line.hh"
+
 
 void ShaderMesh::
 init()
@@ -20,6 +22,9 @@ init()
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
+
+    mesh_color_LOC   = glGetUniformLocation(id, "mesh_color");
+    model_matrix_LOC = glGetUniformLocation(id, "model");
 }
 
 
@@ -116,6 +121,27 @@ render(const m4f4& model_matrix, Mesh& mesh, unsigned int color)
     glDrawElements(GL_TRIANGLES, mesh.faces.size() * 3, GL_UNSIGNED_INT, 0);
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+}
+
+
+void ShaderMesh::
+render_linemesh(const m4f4& model_matrix, MeshLine& line_mesh, uint color)
+{
+    glUseProgram(id);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, line_mesh.lines.size() * sizeof(Line), line_mesh.lines.data(), GL_DYNAMIC_DRAW);
+
+    glBindVertexArray(VAO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    glUniformMatrix4fv(model_matrix_LOC, 1, GL_TRUE, model_matrix.pointer());
+    glUniform4fv(mesh_color_LOC, 1, Color::uint_to_f4(color).pointer());
+
+
+    glDrawArrays(GL_LINES, 0, line_mesh.lines.size() * 6);
 }
 
 

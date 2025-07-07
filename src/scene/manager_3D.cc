@@ -58,9 +58,10 @@ update()
 {
     Scene3D& scenew = *window_scene;
 
-    // COLLISION
 
-    // Update bounding box before collision-test
+    // INTERSECTION
+
+    // Update bounding box before intersection-test
     for(auto& object : manager_o.objects)
     {
         if(object.pyh_tag.pid != 0)
@@ -68,28 +69,58 @@ update()
             Physics* phy = manager_p.find_physics(object.pyh_tag);
             if(phy == nullptr) continue;
 
+            if(phy->is_aabb())
+                phy->aabb.set_with_half_size(   object.pos, 
+                                                phy->model_size 
+                                                 * object.scale 
+                                                 * 0.5f );
             
-            phy->aabb.set_with_half_size(   object.pos, 
-                                            phy->model_size * object.scale * 0.5f );
-            phy->colliding = false;
+            if(phy->is_sphere())
+                phy->sphere.pos = object.pos;
+
+            phy->intersecting = false;
         }
     }
-    // Check collisions
+
+    // Check intersections
     for(auto& phy_A : manager_p.physicss)
     {
-        // AABBf aabb_A = {phy_A.YY.aabb.pos, phy_A.YY.aabb.size};
-        
         for(auto& phy_B : manager_p.physicss)
         {
             if(phy_A.XX.pid == phy_B.XX.pid) continue;
 
-            // AABBf aabb_B = {phy_B.YY.aabb.pos, phy_B.YY.aabb.size};
-
-            bool collided = AABBf::collide(phy_A.YY.aabb, phy_B.YY.aabb);
-            if(collided)
+            if(phy_A.YY.is_aabb() && phy_B.YY.is_aabb())
             {
-                phy_A.YY.colliding = true;
-                phy_B.YY.colliding = true;
+                bool collided = AABBf::intersect(phy_A.YY.aabb, phy_B.YY.aabb);
+                if(collided)
+                {
+                    phy_A.YY.intersecting = true;
+                    phy_B.YY.intersecting = true;
+                }
+            }
+            if(phy_A.YY.is_sphere() && phy_B.YY.is_sphere())
+            {
+                bool collided = Sphere::intersect(phy_A.YY.sphere, phy_B.YY.sphere);
+                if(collided)
+                {
+                    phy_A.YY.intersecting = true;
+                    phy_B.YY.intersecting = true;
+                }
+            }
+            else if(   (phy_A.YY.is_sphere() && phy_B.YY.is_aabb())
+                    || (phy_A.YY.is_aabb() && phy_B.YY.is_sphere()) )
+            {
+                bool intersecting = false;
+                if(phy_A.YY.is_sphere())
+                    intersecting = intersect(phy_B.YY.aabb, phy_A.YY.sphere);
+                else
+                    intersecting = intersect(phy_A.YY.aabb, phy_B.YY.sphere);
+
+                if(intersecting)
+                {
+                    phy_A.YY.intersecting = true;
+                    phy_B.YY.intersecting = true;
+                }
             }
         }
     }

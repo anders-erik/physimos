@@ -56,12 +56,12 @@ struct PanelLeft
         if(collapsed)
         {
             base.box.pos  = {5.0f, framebuffer_size.y - 30.0f};
-            base.box.size = {framebuffer_size.x * 0.3f, 30.0f};
+            base.box.size = {framebuffer_size.x * 0.25f, 30.0f};
             return;
         }
 
         base.box.pos  = {5.0f, framebuffer_size.y * 0.1f};
-        base.box.size = {framebuffer_size.x * 0.3f, framebuffer_size.y * 0.9f};
+        base.box.size = {framebuffer_size.x * 0.25f, framebuffer_size.y * 0.9f};
 
         if(base.box.size.x > max_width)
             base.box.size.x = max_width;

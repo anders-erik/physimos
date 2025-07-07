@@ -12,6 +12,8 @@ set(SCENE_OBJS
 
     scene3D.cc
     mesh.cc
+    mesh_line.cc
+
     mesh_texture.cc
 
     manager_3D.cc

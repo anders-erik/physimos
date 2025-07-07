@@ -18,6 +18,8 @@
 
 #include "scene/scene_state.hh"
 
+#include "scene/mesh_line.hh"
+
 
 
 
@@ -214,18 +216,42 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
             Physics* physics = manager_3D.manager_p.find_physics(base->pyh_tag);
             if(physics != nullptr)
             {
-                Mesh aabb_mesh;
-                aabb_mesh.cube_origin_aligned();
-                // aabb_mesh.cube_centered();
-                // aabb_mesh.aabb(physics->aabb);
-                
-                m4f4 mat =    m4f4::translation(physics->aabb.min) 
-                            * m4f4::scale(physics->model_size * base->scale);
+                MeshLine linemesh;
+                m4f4 mat;
 
-                if(physics->colliding)
-                    program_mesh.render(mat, aabb_mesh, 0xab0fdbff);
+                if(physics->type == BBType::AABB)
+                {
+                    linemesh.cube_origin_aligned();
+
+                    mat =   m4f4::translation(physics->aabb.min) 
+                          * m4f4::scale(    physics->model_size 
+                                          * base->scale);
+
+                }
+                else if (physics->type == BBType::Sphere)
+                {
+                    float radius = 1.0f;
+                    uint  circle_point_count = 20;
+                    linemesh.circle(radius, circle_point_count);
+                    MeshLine linemesh_tmp;
+                    linemesh_tmp.circle(radius, circle_point_count);
+                    linemesh_tmp.rotate_x(1.57f);
+                    linemesh.append(linemesh_tmp);
+                    linemesh_tmp.circle(radius, circle_point_count);
+                    linemesh_tmp.rotate_y(1.57f);
+                    linemesh.append(linemesh_tmp);
+
+                    mat =   m4f4::translation(base->pos) 
+                          * m4f4::scale(    physics->sphere.r 
+                                          * base->scale);
+                    
+                }
+
+                if(physics->intersecting)
+                    program_mesh.render_linemesh(mat, linemesh, 0xab0fdbff);
                 else
-                    program_mesh.render(mat, aabb_mesh, 0x000000ff);
+                    program_mesh.render_linemesh(mat, linemesh, 0x000000ff);
+
             }
         }
     }

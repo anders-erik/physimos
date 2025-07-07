@@ -23,7 +23,7 @@
 int main()
 {
 
-	Physimos physimos { 800, 600 };
+	Physimos physimos { 1000, 700 };
 
 	Manager3D& manager_3D = physimos.manager_3D;
 	Scene3D& root_scene = manager_3D.root_scene;
@@ -270,6 +270,7 @@ int main()
 	root_scene.tagos.push_back(phy_0.tag);
 
 	Physics physics_0;
+	physics_0.type = BBType::AABB;
 	physics_0.model_size = {0.5f, 0.5f, 0.5f};
 	phy_0.pyh_tag = manager_3D.manager_p.push_physics(physics_0);
 
@@ -283,8 +284,36 @@ int main()
 	root_scene.tagos.push_back(phy_1.tag);
 
 	Physics physics_1;
+	physics_1.type = BBType::AABB;
 	physics_1.model_size = phy_1.mesh.get_size();
 	phy_1.pyh_tag = manager_3D.manager_p.push_physics(physics_1);
+
+
+	Object& phyo_sph = manager_o.new_object();
+	phyo_sph.tag.type = TagO::Base;
+	phyo_sph.mesh.sheet({1, 2});
+	phyo_sph.mesh.center();
+	phyo_sph.name = "phy_sph";
+	phyo_sph.pos = {4.5f, -2.0f, 0.0f};
+	root_scene.tagos.push_back(phyo_sph.tag);
+
+	Physics physics_sph;
+	physics_sph.type = BBType::Sphere;
+	physics_sph.sphere.r = phyo_sph.mesh.get_max_radius();
+	phyo_sph.pyh_tag = manager_3D.manager_p.push_physics(physics_sph);
+
+	Object& phyo_sph_2 = manager_o.new_object();
+	phyo_sph_2.tag.type = TagO::Base;
+	phyo_sph_2.mesh.cube_centered();
+	phyo_sph_2.mesh.center();
+	phyo_sph_2.name = "phy_sph_2";
+	phyo_sph_2.pos = {5.5f, -1.0f, 0.0f};
+	root_scene.tagos.push_back(phyo_sph_2.tag);
+
+	Physics physics_sph_2;
+	physics_sph_2.type = BBType::Sphere;
+	physics_sph_2.sphere.r = phyo_sph_2.mesh.get_max_radius();
+	phyo_sph_2.pyh_tag = manager_3D.manager_p.push_physics(physics_sph_2);
 
 
 	

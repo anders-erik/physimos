@@ -263,14 +263,14 @@ void m3f3::print(){
     std::cout << z.x << " " << z.y << " " << z.z << " " << std::endl;
 }
 
-f3 f3::operator+(const f3& rhs)
+f3 f3::operator+(const f3& rhs) const
 {
     return {    this->x + rhs.x,
                 this->y + rhs.y,
                 this->z + rhs.z };
 }
 
-f3 f3::operator-(const f3 & rhs)
+f3 f3::operator-(const f3 & rhs) const
 {
     return {    x - rhs.x,
                 y - rhs.y,

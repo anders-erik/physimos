@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <string>
 
 struct s2;
@@ -153,8 +154,8 @@ struct f3
     f3& operator*=(const f3& rhs);
     f3& operator/=(const f3& rhs);
 
-    f3 operator+(const f3& rhs);
-    f3 operator-(const f3& rhs);
+    f3 operator+(const f3& rhs) const;
+    f3 operator-(const f3& rhs) const;
     f3 operator*(const f3& rhs);
 
     f3 operator-();
@@ -265,11 +266,49 @@ struct m3f3
 
     void print();
 
-    m3f3() : 
-        x { f3(1.0f, 0.0f, 0.0f) }, 
-        y { f3(0.0f, 1.0f, 0.0f) }, 
-        z { f3(0.0f, 0.0f, 1.0f) } {};
+    m3f3()
+        : x { f3(1.0f, 0.0f, 0.0f) }
+        , y { f3(0.0f, 1.0f, 0.0f) }
+        , z { f3(0.0f, 0.0f, 1.0f) } 
+    {};
+    m3f3(f3 x, f3 y, f3 z)
+        : x { x }
+        , y { y }
+        , z { z } 
+    {}; 
+    
+
+    static m3f3
+    rotation_x(float angle)
+    {
+        return {{ 1.0f,  0.0f,         0.0f        },
+                { 0.0f,  cosf(angle), -sinf(angle) },
+                { 0.0f,  sinf(angle),  cosf(angle) } };
+    }
+
+    static m3f3
+    rotation_y(float angle)
+    {
+        return {{  cosf(angle),  0.0f,  sinf(angle) },
+                {  0.0f,         1.0f,  0.0f        },
+                { -sinf(angle),  0.0f,  cosf(angle) } };
+    }
+
+    static m3f3
+    rotation_z(float angle)
+    {
+        return {{ cosf(angle),  sinf(angle),    0.0f  },
+                {-sinf(angle),  cosf(angle),    0.0f  },
+                { 0.0f,         0.0f,           1.0f  }  };
+    }
 };
+
+inline f3 operator*(const m3f3& M, const f3& V)
+{
+    return { M.x.x * V.x + M.x.y * V.y + M.x.z * V.z,
+             M.y.x * V.x + M.y.y * V.y + M.y.z * V.z,
+             M.z.x * V.x + M.z.y * V.y + M.z.z * V.z    };
+}
 
 
 struct m4f4 

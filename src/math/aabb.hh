@@ -19,14 +19,14 @@ struct AABBf
         max = pos + half_size;
     }
 
-    static bool collide(AABBf A, AABBf B)
+    static bool intersect(AABBf A, AABBf B)
     {
         return  A.min.x <= B.max.x && A.max.x >= B.min.x &&
                 A.min.y <= B.max.y && A.max.y >= B.min.y &&
                 A.min.z <= B.max.z && A.max.z >= B.min.z    ;
     }
 
-    bool contains_point(const f3& p)
+    bool contains_point(const f3& p) const
     {
         return  p.x >= min.x && p.x <= max.x  && \
                 p.y >= min.y && p.y <= max.y  && \

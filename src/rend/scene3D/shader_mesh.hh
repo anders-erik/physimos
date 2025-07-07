@@ -7,7 +7,7 @@
 
 #include "scene/mesh.hh"
 
-
+struct MeshLine;
 
 class ShaderMesh : protected opengl::ShaderProgram
 {
@@ -15,6 +15,9 @@ class ShaderMesh : protected opengl::ShaderProgram
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
+
+    uint mesh_color_LOC;
+    uint model_matrix_LOC;
 
 public:
 
@@ -28,6 +31,7 @@ public:
 
     void render(Mesh& mesh, unsigned int color);
     void render(const m4f4& model_matrix, Mesh& mesh, unsigned int color);
+    void render_linemesh(const m4f4& model_matrix, MeshLine& line_mesh, uint color);
     void render(const m4f4& model_matrix, Mesh& mesh);
     void render_filled(const m4f4& model_matrix, Mesh& mesh);
 

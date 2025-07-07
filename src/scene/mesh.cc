@@ -74,6 +74,22 @@ f3 Mesh::get_size()
     return max - min;
 }
 
+float Mesh::get_max_radius()
+{
+    if(verts.size() == 0) 
+        return 0.0f;
+ 
+    float max = 0.0f;
+
+    for(auto& vert : verts)
+    {
+        if(vert.norm() > max)
+            max = vert.norm();
+    }
+
+    return max;
+}
+
 
 void Mesh::sheet()
 {

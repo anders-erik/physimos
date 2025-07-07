@@ -40,7 +40,7 @@ void TextureFB::reload(int width, int height)
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     else 
-        std::cout << "FRAMEBUFFER OK!" << std::endl;
+        std::cout << "Framebuffer Reload: " << width << ", " << height << std::endl;
 
 }
 

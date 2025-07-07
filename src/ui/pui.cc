@@ -25,11 +25,11 @@ PUI::PUI()
     new_quad_in_root_scene.set_pos({50, 50});
     new_quad_in_root_scene.set_size({50, 50});
 
-    b_color_texture.set_pos({600, 10});
+    b_color_texture.set_pos({900, 10});
     f2 color_size = {16.0f, 256.0f};
     b_color_texture.set_size(color_size * 2.0f);
 
-    b_color_sample.set_pos({550, 10});
+    b_color_sample.set_pos({850, 10});
     b_color_sample.set_size({45, 45});
     b_color_sample.color = 0x009999;
 

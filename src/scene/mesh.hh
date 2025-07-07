@@ -69,6 +69,7 @@ struct Mesh
 
     f3 get_center();
     f3 get_size();
+    float get_max_radius();
 
     void center();
     void scale(float factor);
