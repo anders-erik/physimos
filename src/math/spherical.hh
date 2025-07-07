@@ -7,10 +7,11 @@
 #include "transform.hh"
 
 /** Not used */
-struct f3_sph : public f3
+struct f3_sphere : public f3
 {
-    // typedef x_t x;
-    // using rho = x;
+    float& get_rho()    { return x; }
+    float& get_theta()  { return y; }
+    float& get_phi()    { return z; }
 };
 
 
@@ -31,7 +32,7 @@ struct Spherical
                     rho * cosf(phi)                 };
     }
 
-    static f3 from_cart(f3 cart)
+    static f3_sphere from_cart(f3 cart)
     {
         f2 xy = cart.to_xy().clamp_nonzero();
 
@@ -41,6 +42,6 @@ struct Spherical
         /** as phi=0 at vertical we subtract horizontal pitch value */
         float phi   = PIHf - atanf( cart.z / xy.norm());
 
-        return {rho, theta, phi};
+        return (f3_sphere)f3{rho, theta, phi};
     }
 };

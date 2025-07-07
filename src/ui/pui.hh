@@ -9,6 +9,7 @@
 #include "ui/string.hh"
 
 #include "ui/widgets/w_root_scene.hh"
+#include "ui/widgets/w_camera.hh"
 #include "ui/widgets/w_object_s.hh"
 #include "ui/widgets/w_object_l.hh"
 #include "ui/widgets/w_list.hh"
@@ -36,7 +37,9 @@ class PUI
 
     UI::W::RootScene w_root_scene;
     UI::W::ObjectLarge w_object_large;
+
     UI::W::List<UI::W::ObjectSmall, Object, 150.0f> list_object;
+    UI::W::Camera w_camera;
 
     PUICursor cursor;
 

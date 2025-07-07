@@ -96,26 +96,37 @@ update()
 
 
     // CAMERA
-
-    CameraFree& cam     = scenew.camobj.cam;
-    Object&     c_obj   = scenew.camobj.obj;
+    CameraObject& camobj    = scenew.camobj;
+    CameraView& cam         = scenew.camobj.view;
+    Object&     c_obj       = scenew.camobj.object;
 
     f3 cam_f = Quarternion::rotate_f3(c_obj.rot, f3::X()).unit();
     f3 cam_l = Quarternion::rotate_f3(c_obj.rot, f3::Y()).unit();
     f3 cam_u = Quarternion::rotate_f3(c_obj.rot, f3::Z()).unit();
 
-    Object* followed_obj = manager_o.get_object(cam.follow_tag);
 
-    float move_factor = 0.2;
-
-    if(followed_obj != nullptr)
+    Object* tag_obj = nullptr;
+    f3 reference_pos = {0.0f, 0.0f, 0.0f}; // default is scene origin
+    if(camobj.state.has_tag())
     {
-        // NOTE: Update angles BEFORE position.
+        tag_obj = manager_o.get_object(camobj.state.tag);
+        if(tag_obj == nullptr)
+            camobj.set_free();
+        else
+            reference_pos = tag_obj->pos;
+    }
+
+
+    if(camobj.state.is_orbit())
+    {
         float rho_factor = 1.0f;
         if(state.camera.deltas.z < 0.0f)
             rho_factor =  1.2f;
         else if(state.camera.deltas.z > 0.0f)
             rho_factor =  0.8f;
+
+
+        // NOTE: Update angles BEFORE position.
         cam.orbit_ctx.rho_scale(  rho_factor                      );
         cam.orbit_ctx.theta_add( -state.camera.deltas.x  / 200.0f );
         cam.orbit_ctx.phi_add(    state.camera.deltas.y  / 400.0f );
@@ -124,8 +135,7 @@ update()
                                                     cam.orbit_ctx.theta, 
                                                     cam.orbit_ctx.phi     });
         
-        c_obj.pos = cam_center_offset + followed_obj->pos;
-        // c_obj.pos = cam_center_offset;
+        c_obj.pos = cam_center_offset + reference_pos;
 
         // Full rotation calculation to match spherical values
         c_obj.rot.reset();
@@ -139,10 +149,10 @@ update()
         float free_pan_factor = 2.0f;
         c_obj.rot.rotate(cam_l,    -state.camera.deltas.y 
                                     * free_pan_factor  
-                                    / cam.perspective.height);
+                                    / camobj.perspective.height);
         c_obj.rot.rotate(cam_u,    -state.camera.deltas.x 
                                     * free_pan_factor  
-                                    / cam.perspective.width);
+                                    / camobj.perspective.width);
 
         // remove tilt
         f3 HL = f3::Z().cross(cam_f); // horizontal left
@@ -154,6 +164,7 @@ update()
         else
             c_obj.rot.rotate(cam_f, -angle_hl_l);
 
+        float move_factor = 0.2;
         if(state.camera.is_forward())
             c_obj.pos +=  cam_f * move_factor;
         if(state.camera.is_backward())
@@ -189,13 +200,13 @@ update()
             f3 cam_to_obj_delta = c_obj.pos - selected_o->pos;
             float obj_distance  = cam_to_obj_delta.norm();
 
-            float tan_fov = tanf(cam.perspective.fov);
+            float tan_fov = tanf(camobj.perspective.fov);
             float view_width_at_obj_dist = obj_distance * tan_fov;
 
             // std::cout << obj_distance << ", " << view_width_at_obj_dist << std::endl;
             
 
-            selected_o->pos -= cam_l * state.selected.pos_delta.x * view_width_at_obj_dist * cam.perspective.AR();
+            selected_o->pos -= cam_l * state.selected.pos_delta.x * view_width_at_obj_dist * camobj.perspective.AR();
             selected_o->pos += cam_u * state.selected.pos_delta.y * view_width_at_obj_dist;
             selected_o->pos += cam_f * state.selected.pos_delta.z;
 

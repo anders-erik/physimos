@@ -247,15 +247,17 @@ int main()
 	cam_o.mesh.cube_centered();
 	cam_o.mesh.scale({0.5f, 0.1f, 0.2f});
 	cam_o.name = "camera_1";
-	CameraFree cam;
-	cam.perspective.set_fov(800, 600);
-	// cam.follow_tag = lampo.tag;
+	CameraView cam;
+	// cam.orbit_tag = lampo.tag;
 	cam_o.tagp = manager_3D.manager_p.push_camera(cam);
 	root_scene.tagos.push_back(cam_o.tag);
 	
-	root_scene.camobj.cam 				= cam;
-	root_scene.camobj.cam.follow_tag 	= lampo.tag;
-	root_scene.camobj.obj.pos 			= {-10.0f, -1.0f, 0.0f};
+	root_scene.camobj.view 				= cam;
+	root_scene.camobj.perspective.set_fov(800, 600);
+	// root_scene.camobj.cam.orbit_tag 	= lampo.tag;
+	root_scene.camobj.set_free();
+	root_scene.camobj.set_orbit_tag(lampo.tag);
+	root_scene.camobj.object.pos 			= {-10.0f, -1.0f, 0.0f};
 
 
 	// PHYSICS BODY

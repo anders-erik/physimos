@@ -31,7 +31,7 @@ public:
     SS::Selected    selected;
     SS::KeyState    keys;
 
-    CameraState     camera;
+    CameraInput     camera;
 
 
     bool try_change_selected(window::InputEvent& event);

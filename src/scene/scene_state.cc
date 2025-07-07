@@ -135,32 +135,32 @@ try_move_camera(window::InputEvent & event)
             switch (event.keystroke.key)
             {
 
-            case CameraState::ForwardKey :
+            case CameraInput::ForwardKey :
                 camera.set_forward();
                 return true;
                 break;
 
-            case CameraState::BackwardKey :
+            case CameraInput::BackwardKey :
                 camera.set_backward();
                 return true;
                 break;
 
-            case CameraState::LeftKey :
+            case CameraInput::LeftKey :
                 camera.set_left();
                 return true;
                 break;
 
-            case CameraState::RightKey :
+            case CameraInput::RightKey :
                 camera.set_right();
                 return true;
                 break;
 
-            case CameraState::UpKey :
+            case CameraInput::UpKey :
                 camera.set_up();
                 return true;
                 break;
 
-            case CameraState::DownKey :
+            case CameraInput::DownKey :
                 camera.set_down();
                 return true;
                 break;
@@ -177,32 +177,32 @@ try_move_camera(window::InputEvent & event)
             switch (event.keystroke.key)
             {
 
-            case CameraState::ForwardKey :
+            case CameraInput::ForwardKey :
                 camera.unset_forward();
                 return true;
                 break;
 
-            case CameraState::BackwardKey :
+            case CameraInput::BackwardKey :
                 camera.unset_backward();
                 return true;
                 break;
 
-            case CameraState::LeftKey :
+            case CameraInput::LeftKey :
                 camera.unset_left();
                 return true;
                 break;
 
-            case CameraState::RightKey :
+            case CameraInput::RightKey :
                 camera.unset_right();
                 return true;
                 break;
 
-            case CameraState::UpKey :
+            case CameraInput::UpKey :
                 camera.unset_up();
                 return true;
                 break;
 
-            case CameraState::DownKey :
+            case CameraInput::DownKey :
                 camera.unset_down();
                 return true;
                 break;
@@ -334,7 +334,7 @@ handle_user_input(Manager3D& manager_3D, window::InputEvent & event, TagO sample
 void SceneState::
 handle_window(Manager3D& manager_3D, window::WindowResizeEvent & window_event)
 {
-    manager_3D.window_scene->camobj.cam.perspective.set_fov(    window_event.size_i.x, 
+    manager_3D.window_scene->camobj.perspective.set_fov(    window_event.size_i.x, 
                                                                 window_event.size_i.y   );
 }
 

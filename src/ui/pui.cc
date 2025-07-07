@@ -61,6 +61,12 @@ contains_point(f2 cursor_pos_win_sane)
         return true;
     }
 
+    if(w_camera.has_cursor(cursor_pos_win_sane))
+    {
+        cursor.hover(&w_camera);
+        return true;
+    }
+
 
 
     Base* base;
@@ -97,9 +103,9 @@ clear_hovers()
 void PUI::
 reload(Manager3D& manager_3D, f2 framebuffer_size)
 {
-    w_root_scene.reload(manager_3D, {10.0f, 200.0f});
+    w_root_scene.reload(manager_3D, {10.0f, 100.0f});
     list_object.reload(manager_3D.manager_o.objects, {0.0f, framebuffer_size.y-list_object.size.y});
-
+    w_camera.reload(manager_3D.window_scene->camobj, {10.f, 330.0f});
     // delete widget_quad;
     // widget_quad = new WidgetQuad();
     // widget_quad->reload();
@@ -147,6 +153,14 @@ event_all(Manager3D& manager_3D, window::InputEvent& event)
             return InputResponse(InputResponse::MOUSE_GRAB);
     }
 
+    if(cursor.is_targeted_widget(&w_camera))
+    {
+        InputResponse result = w_camera.event_handler(manager_3D, event);
+        cursor.handle_event_result(result, &w_camera);
+        if(result.is_mouse_grab())
+            return InputResponse(InputResponse::MOUSE_GRAB);
+    }
+
     return InputResponse();
 }
 
@@ -173,6 +187,7 @@ render(UI::RendererBase& renderer_base){
     w_object_large.render(renderer_base);
 
     list_object.render(renderer_base);
+    w_camera.render(renderer_base);
 }
 
 

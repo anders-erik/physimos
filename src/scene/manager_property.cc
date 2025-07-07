@@ -49,14 +49,14 @@ Lamp* ManagerProperty::find_lamp(TagP lamp_tagp)
     return nullptr;
 }
 
-TagP ManagerProperty::push_camera(const CameraFree& camera)
+TagP ManagerProperty::push_camera(const CameraView& camera)
 {
     TagP tagp {new_pid(), TagP::Camera};
     cameras.push_back({tagp, camera});
     return tagp;
 }
 
-CameraFree* ManagerProperty::find_camera(TagP camera_tagp)
+CameraView* ManagerProperty::find_camera(TagP camera_tagp)
 {
     for(auto& cam_pair : cameras)
     {

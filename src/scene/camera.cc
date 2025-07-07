@@ -216,7 +216,7 @@ print()
     std::cout << "phi   = " << view.phi << std::endl;
 }
 
-m4f4& FreeView::calc_matrix(f3 pos, Quarternion rot)
+m4f4& CameraView::calc_matrix(f3 pos, Quarternion rot)
 {
     m4f4 align_x_rot = m4f4::rotation_x(-PIHf) * m4f4::rotation_z(-PIHf);
 
@@ -229,6 +229,21 @@ m4f4& FreeView::calc_matrix(f3 pos, Quarternion rot)
 
 
 
+
+void OrbitalContext::set_rho(float new_rho)
+{
+    rho = rho_clamp(new_rho);
+}
+
+void OrbitalContext::set_theta(float new_theta)
+{
+    theta = new_theta;
+}
+
+void OrbitalContext::set_phi(float new_phi)
+{
+    phi = phi_clamp(new_phi);
+}
 
 float OrbitalContext::
 rho_clamp(float _rho)
@@ -272,8 +287,35 @@ phi_add(float delta)
     phi = phi_clamp(phi + delta);
 }
 
+
+
+void CameraObject::set_free()
+{
+    state.bits = CameraState::FREE;
+    state.tag = TagO{};
+}
+
+void CameraObject::set_orbit_center()
+{
+    state.bits = CameraState::ORB_CENTER;
+    state.tag = TagO{};
+
+    // Maintain cam position 
+    f3_sphere spherical = Spherical::from_cart(object.pos);
+    view.orbit_ctx.set_rho(      spherical.get_rho()     );
+    view.orbit_ctx.set_theta(    spherical.get_theta()   );
+    view.orbit_ctx.set_phi(      spherical.get_phi()     );
+}
+
+void CameraObject::set_orbit_tag(TagO new_tag)
+{
+    state.bits = CameraState::ORB_TAG;
+    state.tag = new_tag;
+}
+
+
 void CameraObject::update_matrices()
 {
-    cam.view.calc_matrix(obj.pos, obj.rot);
-    cam.perspective.update_matrix();
+    view.calc_matrix(object.pos, object.rot);
+    perspective.update_matrix();
 }

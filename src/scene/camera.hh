@@ -80,12 +80,7 @@ struct CameraOrbital
     void print();
 };
 
-struct FreeView
-{
-    m4f4 matrix;
 
-    m4f4& calc_matrix(f3 pos, Quarternion rot);
-};
 
 struct OrbitalContext
 {
@@ -106,6 +101,9 @@ struct OrbitalContext
     float phi_min       = 0.01f;
     float phi_max       = 3.13f;
 
+    void set_rho(float new_rho);
+    void set_theta(float new_theta);
+    void set_phi(float new_phi);
 
     float rho_clamp(float _rho);
     float phi_clamp(float _phi);
@@ -115,19 +113,52 @@ struct OrbitalContext
     void  phi_add(float delta);
 };
 
-struct CameraFree
+struct CameraView
 {
-    CameraPerspective perspective;
-    FreeView view;
+    m4f4 matrix;
 
-    TagO follow_tag; // by setting a non-zero object tag the camera turns into an orbital camera
     OrbitalContext orbit_ctx;
+
+    m4f4& calc_matrix(f3 pos, Quarternion rot);
 };
+
+struct CameraState
+{
+    using Bits = uint;
+    static constexpr Bits FREE          = 0x0000;
+    static constexpr Bits ORBIT         = 0x0001;
+    static constexpr Bits FOLLOW        = 0x0002;
+    static constexpr Bits RB            = 0x0004;
+
+    static constexpr Bits ORB_CENTER    = ORBIT | 0x0100;
+    static constexpr Bits ORB_TAG       = ORBIT | 0x0200;
+
+    Bits bits = FREE;
+    TagO tag  = TagO{}; // Tag to follow or orbit
+
+    bool is_free()          {return bits == FREE;   }
+    bool is_orbit()         {return bits &  ORBIT;  }
+    bool is_follow()        {return bits &  FOLLOW; }
+    bool is_rigid_body()    {return bits &  RB;     }
+
+    bool is_orbit_center()    {return bits == ORB_CENTER; }
+    bool is_orbit_tag()       {return bits == ORB_TAG; }
+
+    bool has_tag() {return tag.not_null(); }
+};
+
 
 struct CameraObject
 {
-    Object      obj;
-    CameraFree  cam;
+    Object              object;
+    CameraView          view;
+    CameraPerspective   perspective;
+
+    CameraState         state;
+
+    void set_free();
+    void set_orbit_center();
+    void set_orbit_tag(TagO new_tag);
 
     void update_matrices();
 };

@@ -6,7 +6,7 @@
 
 
 
-struct CameraState
+struct CameraInput
 {
     typedef unsigned int BitType;
 

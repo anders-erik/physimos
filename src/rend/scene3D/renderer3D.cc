@@ -85,8 +85,8 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
 
 
     scene3D.camobj.update_matrices();
-    m4f4 cam_persp_mat    = scene3D.camobj.cam.perspective.matrix;
-    m4f4 cam_view_mat   = scene3D.camobj.cam.view.matrix;
+    m4f4 cam_persp_mat    = scene3D.camobj.perspective.matrix;
+    m4f4 cam_view_mat   = scene3D.camobj.view.matrix;
 
     // OLD ORBITAL
     // cam_view_mat = scene3D.camera.view.update_matrix();
@@ -290,8 +290,8 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
 
     CameraObject& camobj = manager_3D.window_scene->camobj;
     camobj.update_matrices();
-    program_object_ids.set_camera_view_projection(  camobj.cam.perspective.matrix, 
-                                                    camobj.cam.view.matrix);
+    program_object_ids.set_camera_view_projection(  camobj.perspective.matrix, 
+                                                    camobj.view.matrix);
 
     fb_object_ids.bind();
 
