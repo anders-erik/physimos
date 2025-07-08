@@ -219,35 +219,18 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
                 MeshLine linemesh;
                 m4f4 mat;
 
-                if(physics->type == BBType::AABB)
+                if(physics->is_aabb())
                 {
-                    linemesh.cube_origin_aligned();
-
-                    mat =   m4f4::translation(physics->aabb.min) 
-                          * m4f4::scale(    physics->model_size 
-                                          * base->scale);
-
+                    linemesh.aabb(physics->isector.aabb);
                 }
-                else if (physics->type == BBType::Sphere)
+                else if (physics->is_sphere())
                 {
-                    float radius = 1.0f;
-                    uint  circle_point_count = 20;
-                    linemesh.circle(radius, circle_point_count);
-                    MeshLine linemesh_tmp;
-                    linemesh_tmp.circle(radius, circle_point_count);
-                    linemesh_tmp.rotate_x(1.57f);
-                    linemesh.append(linemesh_tmp);
-                    linemesh_tmp.circle(radius, circle_point_count);
-                    linemesh_tmp.rotate_y(1.57f);
-                    linemesh.append(linemesh_tmp);
-
-                    mat =   m4f4::translation(base->pos) 
-                          * m4f4::scale(    physics->sphere.r 
-                                          * base->scale);
-                    
+                    linemesh.bounding_sphere(physics->isector.sphere.r);
+                    mat =   m4f4::translation(base->pos)
+                            * m4f4::scale(physics->isector.sphere.r);
                 }
 
-                if(physics->intersecting)
+                if(physics->isect_flag)
                     program_mesh.render_linemesh(mat, linemesh, 0xab0fdbff);
                 else
                     program_mesh.render_linemesh(mat, linemesh, 0x000000ff);

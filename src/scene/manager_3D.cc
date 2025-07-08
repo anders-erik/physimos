@@ -58,78 +58,96 @@ update()
 {
     Scene3D& scenew = *window_scene;
 
+    float dt = 0.01;
 
     // INTERSECTION
 
     // Update bounding box before intersection-test
     for(auto& object : manager_o.objects)
     {
-        if(object.pyh_tag.pid != 0)
+        if(object.pyh_tag.pid == 0)
+            continue;
+        
+        Physics* phy = manager_p.find_physics(object.pyh_tag);
+        if(phy != nullptr)
         {
-            Physics* phy = manager_p.find_physics(object.pyh_tag);
-            if(phy == nullptr) continue;
+            if(phy->is_static())
+                phy->update_static(object.pos);
+            else
+                object.pos = phy->update_dynamic(dt);
+        }
+    }
+    
+    // tmp container for indeces of bodies from confirmed dynamic intersection. 
+    // Dynamic always first index
+    std::vector<s2> dyn_isects; 
 
-            if(phy->is_aabb())
-                phy->aabb.set_with_half_size(   object.pos, 
-                                                phy->model_size 
-                                                 * object.scale 
-                                                 * 0.5f );
-            
-            if(phy->is_sphere())
-                phy->sphere.pos = object.pos;
+    // Check intersections
+    for(size_t i=0; i<manager_p.physicss.size()-1; i++)
+    {
+        for(size_t j=i+1; j<manager_p.physicss.size(); j++)
+        {
+            if(i == j) continue;
 
-            phy->intersecting = false;
+            Physics& I = manager_p.physicss[i].YY;
+            Physics& J = manager_p.physicss[j].YY;
+
+            bool intersecting = isect_physics( I, J );
+
+
+            if(intersecting)
+            {
+                // place dynamic in first index if exists
+                if(I.is_dynamic())
+                    dyn_isects.emplace_back(i, j);
+                else if(J.is_dynamic())
+                    dyn_isects.emplace_back(j, i);
+            }
+
+            // Rend : don't touch if intersection already confirmed
+            if(!I.isect_flag)
+                I.isect_flag = intersecting;
+            if(!J.isect_flag)
+                J.isect_flag = intersecting;
         }
     }
 
-    // Check intersections
-    for(auto& phy_A : manager_p.physicss)
+    
+    // COLLISION RESPONSE
+    for(s2& isect_idxs : dyn_isects)
     {
-        for(auto& phy_B : manager_p.physicss)
+        Physics& X = manager_p.physicss[isect_idxs.x].YY;
+        Physics& Y = manager_p.physicss[isect_idxs.y].YY;
+
+        // Assumes Y is static and not moved by user.
+        for(int back_i=0; back_i<10; back_i++)
         {
-            if(phy_A.XX.pid == phy_B.XX.pid) continue;
+            float dt10 = dt * 0.1f;
 
-            if(phy_A.YY.is_aabb() && phy_B.YY.is_aabb())
-            {
-                bool collided = AABBf::intersect(phy_A.YY.aabb, phy_B.YY.aabb);
-                if(collided)
-                {
-                    phy_A.YY.intersecting = true;
-                    phy_B.YY.intersecting = true;
-                }
-            }
-            if(phy_A.YY.is_sphere() && phy_B.YY.is_sphere())
-            {
-                bool collided = Sphere::intersect(phy_A.YY.sphere, phy_B.YY.sphere);
-                if(collided)
-                {
-                    phy_A.YY.intersecting = true;
-                    phy_B.YY.intersecting = true;
-                }
-            }
-            else if(   (phy_A.YY.is_sphere() && phy_B.YY.is_aabb())
-                    || (phy_A.YY.is_aabb() && phy_B.YY.is_sphere()) )
-            {
-                bool intersecting = false;
-                if(phy_A.YY.is_sphere())
-                    intersecting = intersect(phy_B.YY.aabb, phy_A.YY.sphere);
-                else
-                    intersecting = intersect(phy_A.YY.aabb, phy_B.YY.sphere);
+            X.p -= X.v * dt;
+            
+            X.update_isector(X.p);
 
-                if(intersecting)
-                {
-                    phy_A.YY.intersecting = true;
-                    phy_B.YY.intersecting = true;
-                }
-            }
+            if(isect_physics( X, Y ))
+                continue;
+            
+            // Return body same number of time steps as it was deep in intersection
+            X.p += X.v * dt10 * (float)back_i;
+            break;
         }
+
+        X.v = -X.v;
+
+        
+        if(Y.is_dynamic())
+            Y.v = -Y.v;
     }
 
 
     // CAMERA
-    CameraObject& camobj    = scenew.camobj;
-    CameraView& cam         = scenew.camobj.view;
-    Object&     c_obj       = scenew.camobj.object;
+    CameraObject&   camobj  = scenew.camobj;
+    CameraView&     cam     = scenew.camobj.view;
+    Object&         c_obj   = scenew.camobj.object;
 
     f3 cam_f = Quarternion::rotate_f3(c_obj.rot, f3::X()).unit();
     f3 cam_l = Quarternion::rotate_f3(c_obj.rot, f3::Y()).unit();

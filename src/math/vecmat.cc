@@ -395,6 +395,12 @@ f2 f3::yaw_pitch()
 }
 
 
+float f3::norm_sq()
+{
+    return x*x + y*y + z*z;
+}
+
+
 float f3::norm() const
 {
     return sqrtf(x*x + y*y + z*z);

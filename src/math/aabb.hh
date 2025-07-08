@@ -12,14 +12,15 @@ struct AABBf
     f3 min = {__FLT_MAX__, __FLT_MAX__, __FLT_MAX__};
     f3 max = {__FLT_MIN__, __FLT_MIN__, __FLT_MIN__};
 
+    f3 half_size;
 
-    void set_with_half_size(f3 pos, f3 half_size)
+    void update(f3 pos)
     {
         min = pos - half_size;
         max = pos + half_size;
     }
 
-    static bool intersect(AABBf A, AABBf B)
+    static bool isect_aabb_aabb(AABBf A, AABBf B)
     {
         return  A.min.x <= B.max.x && A.max.x >= B.min.x &&
                 A.min.y <= B.max.y && A.max.y >= B.min.y &&

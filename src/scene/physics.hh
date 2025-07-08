@@ -1,75 +1,133 @@
 #pragma once
 
 #include <vector>
+#include <map>
+#include <cstring>
 #include <cmath>
 
+
 #include "math/vecmat.hh"
-#include "math/aabb.hh"
+
 
 #include "scene/mesh.hh"
 
-/** Bounding Box */
-enum class BBType
-{
-    Point,
-    AABB,
-    Sphere,
-};
+#include "scene/isector.hh"
 
-struct Sphere
-{
-    f3 pos;
-    float r;
 
-    static bool intersect(const Sphere& A, const Sphere& B)
-    {
-        return fabs((A.pos-B.pos).norm()) < (A.r+B.r);
-    }
-};
 
-constexpr bool intersect(const AABBf& A, const Sphere& S)
-{
-    // Algorithm below can fail if sphere-center is inside AABB
-    if(A.contains_point(S.pos))
-        return true;
 
-    float x_closest;
-    if(fabs(A.max.x - S.pos.x) < fabs(A.min.x - S.pos.x))
-        x_closest = A.max.x;
-    else
-        x_closest = A.min.x;
 
-    float y_closest;
-    if(fabs(A.max.y - S.pos.y) < fabs(A.min.y - S.pos.y))
-        y_closest = A.max.y;
-    else
-        y_closest = A.min.y;
 
-    float z_closest;
-    if(fabs(A.max.z - S.pos.z) < fabs(A.min.z - S.pos.z))
-        z_closest = A.max.z;
-    else
-        z_closest = A.min.z;
 
-    f3 p_closest = {    x_closest,
-                        y_closest,
-                        z_closest   };
-    
-    float dist = (p_closest - S.pos).norm();
-
-    return dist < S.r;
-}
 
 struct Physics
 {
-    BBType type = BBType::Point;
+    f3 p;
+    f3 v;
 
-    AABBf aabb;
-    Sphere sphere;
+    bool static_flag = true;
+    bool isect_flag = false;
 
-    bool intersecting = false;
-    f3 model_size;
+    IsectBits isect_bits = ISECT_NONE;
+    Isector   isector;
+    
+    // int afsize = sizeof(f3);
+    // int isize = sizeof(Isector);
+    // int psize = sizeof(Physics);
 
-    bool is_aabb() {return type == BBType::AABB;}
-    bool is_sphere() {return type == BBType::Sphere;}
+    f3 update_dynamic(float dt)
+    {
+        v.z += -9.8f * dt;
+        p.z += v.z * dt;
+
+        isect_flag = false;
+
+        if(is_aabb())
+            isector.aabb.update(p);
+        else if(is_sphere())
+            isector.sphere.update(p);
+
+        return p;
+    }
+
+    /** Position is driven by */
+    void update_static(f3 new_pos)
+    {
+        isect_flag = false;
+
+        if(is_aabb())
+            isector.aabb.update(new_pos);
+        else if(is_sphere())
+            isector.sphere.update(new_pos);
+    }
+
+    void update_isector(f3 new_pos)
+    {
+        if(is_aabb())
+            isector.aabb.update(new_pos);
+        else if(is_sphere())
+            isector.sphere.update(new_pos);
+    }
+
+    void set_static_aabb(f3 pos, f3 half_size)
+    {
+        static_flag = true;
+        isect_bits = ISECT_AABB;
+        isector.aabb.half_size = half_size;
+        isector.aabb.update(pos);
+    }
+
+    void set_static_sphere(f3 pos, float radius)
+    {
+        static_flag = true;
+        isect_bits = ISECT_SPHERE;
+        isector.sphere.r = radius;
+        isector.sphere.update(pos);
+    }
+
+    void set_dynamic_sphere(f3 pos_0, float radius)
+    {
+        p = pos_0;
+
+        static_flag = false;
+        isect_bits = ISECT_SPHERE;
+        isector.sphere.r = radius;
+        isector.sphere.update(p);
+    }
+
+    bool is_dynamic() {return !static_flag;}
+    bool is_static() {return static_flag;}
+    bool has_collider()  { return !ISECT_NONE; }
+    bool is_aabb()      {return isect_bits == ISECT_AABB;     }
+    bool is_sphere()    {return isect_bits == ISECT_SPHERE;   }
 };
+
+
+
+static bool isect_physics(Physics& PA, Physics& PB)
+{
+    // IsectBits bits = (PA.isect_bits << 16) | PB.isect_bits;
+    switch ( (PA.isect_bits << 16) | PB.isect_bits )
+    {
+
+    case ISECT_AABB_AABB:
+        return AABBf::isect_aabb_aabb(  PA.isector.aabb, PB.isector.aabb);
+        break;
+
+    case ISECT_AABB_SPHERE:
+        return isect_aabb_sphere(PA.isector.aabb, PB.isector.sphere);
+        break;
+
+    case ISECT_SPHERE_AABB:
+        return isect_aabb_sphere(PB.isector.aabb, PA.isector.sphere);
+        break;
+
+    case ISECT_SPHERE_SPHERE:
+        return isect_sphere_sphere(PA.isector.sphere, PB.isector.sphere);
+        break;
+
+    default:
+        throw "Unmatched switch in isect_physics.";
+        break;
+    }
+}

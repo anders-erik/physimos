@@ -311,6 +311,12 @@ void CameraObject::set_orbit_tag(TagO new_tag)
 {
     state.bits = CameraState::ORB_TAG;
     state.tag = new_tag;
+
+    // Maintain cam position 
+    f3_sphere spherical = Spherical::from_cart(object.pos);
+    view.orbit_ctx.set_rho(      spherical.get_rho()     );
+    view.orbit_ctx.set_theta(    spherical.get_theta()   );
+    view.orbit_ctx.set_phi(      spherical.get_phi()     );
 }
 
 

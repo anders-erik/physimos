@@ -58,6 +58,7 @@ struct MeshLine
     void cube_origin_aligned();
 
     void aabb(AABBf aabb);
+    void bounding_sphere(float radius);
 
     void circle(float radius, uint pts);
 };

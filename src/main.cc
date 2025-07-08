@@ -236,7 +236,6 @@ int main()
 	lampo.tagp = manager_3D.manager_p.push_lamp(lamp);
 	root_scene.tagos.push_back(lampo.tag);
 
-
 	// CAMERA OBJECT
 	Object& cam_o = manager_o.new_object();
 	// cam_o.tag.type = TagO::Base;
@@ -251,13 +250,6 @@ int main()
 	// cam.orbit_tag = lampo.tag;
 	cam_o.tagp = manager_3D.manager_p.push_camera(cam);
 	root_scene.tagos.push_back(cam_o.tag);
-	
-	root_scene.camobj.view 				= cam;
-	root_scene.camobj.perspective.set_fov(800, 600);
-	// root_scene.camobj.cam.orbit_tag 	= lampo.tag;
-	root_scene.camobj.set_free();
-	root_scene.camobj.set_orbit_tag(lampo.tag);
-	root_scene.camobj.object.pos 			= {-10.0f, -1.0f, 0.0f};
 
 
 	// PHYSICS BODY
@@ -270,8 +262,10 @@ int main()
 	root_scene.tagos.push_back(phy_0.tag);
 
 	Physics physics_0;
-	physics_0.type = BBType::AABB;
-	physics_0.model_size = {0.5f, 0.5f, 0.5f};
+	physics_0.set_static_aabb(	phy_0.pos,
+								phy_0.mesh.get_size() / 2);
+	// physics_0.coll_bits = COLL_AABB;
+	// physics_0.aabb.half_size = phy_0.mesh.get_size() / 2;
 	phy_0.pyh_tag = manager_3D.manager_p.push_physics(physics_0);
 
 
@@ -284,8 +278,10 @@ int main()
 	root_scene.tagos.push_back(phy_1.tag);
 
 	Physics physics_1;
-	physics_1.type = BBType::AABB;
-	physics_1.model_size = phy_1.mesh.get_size();
+	physics_1.set_static_aabb(	phy_1.pos,
+								phy_1.mesh.get_size() / 2);
+	// physics_1.coll_bits = COLL_AABB;
+	// physics_1.aabb.half_size = phy_1.mesh.get_size() / 2;
 	phy_1.pyh_tag = manager_3D.manager_p.push_physics(physics_1);
 
 
@@ -298,8 +294,8 @@ int main()
 	root_scene.tagos.push_back(phyo_sph.tag);
 
 	Physics physics_sph;
-	physics_sph.type = BBType::Sphere;
-	physics_sph.sphere.r = phyo_sph.mesh.get_max_radius();
+	physics_sph.set_static_sphere(	phyo_sph.pos, 
+									phyo_sph.mesh.get_max_radius()	);
 	phyo_sph.pyh_tag = manager_3D.manager_p.push_physics(physics_sph);
 
 	Object& phyo_sph_2 = manager_o.new_object();
@@ -307,17 +303,36 @@ int main()
 	phyo_sph_2.mesh.cube_centered();
 	phyo_sph_2.mesh.center();
 	phyo_sph_2.name = "phy_sph_2";
-	phyo_sph_2.pos = {5.5f, -1.0f, 0.0f};
+	phyo_sph_2.pos = {6.0f, -1.0f, 0.0f};
 	root_scene.tagos.push_back(phyo_sph_2.tag);
 
 	Physics physics_sph_2;
-	physics_sph_2.type = BBType::Sphere;
-	physics_sph_2.sphere.r = phyo_sph_2.mesh.get_max_radius();
+	physics_sph_2.set_static_sphere(	phyo_sph_2.pos, 
+										phyo_sph_2.mesh.get_max_radius()	);
 	phyo_sph_2.pyh_tag = manager_3D.manager_p.push_physics(physics_sph_2);
 
 
+	Object& phyo_dyn_1 = manager_o.new_object();
+	phyo_dyn_1.tag.type = TagO::Base;
+	phyo_dyn_1.mesh.cube_centered();
+	phyo_dyn_1.mesh.center();
+	phyo_dyn_1.name = "phyo_dyn_1";
+	root_scene.tagos.push_back(phyo_dyn_1.tag);
+
+	Physics physics_dyn_1;
+	physics_dyn_1.set_dynamic_sphere(	{3.0f, 1.0f, 2.0f}, 
+										phyo_dyn_1.mesh.get_max_radius()	);
+	phyo_dyn_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_1);
+
+
 	
-	
+	// CAMERA
+	// root_scene.camobj.view = cam;
+	root_scene.camobj.perspective.set_fov(800, 600);
+	// root_scene.camobj.cam.orbit_tag 	= lampo.tag;
+	// root_scene.camobj.set_free();
+	root_scene.camobj.object.pos = {-10.0f, 10.0f, 5.0f};
+	root_scene.camobj.set_orbit_tag(phy_1.tag);
 
 
 	physimos.main_loop();

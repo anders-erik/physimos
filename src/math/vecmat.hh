@@ -169,6 +169,9 @@ struct f3
 
     f2 to_xy() const;
     f2 yaw_pitch();
+    
+    /** x^2 + y^2 + z^2 */
+    float norm_sq();
     /** sqrt ( x^2 + y^2 + z^2 ) */
     float norm() const;
     /** this / norm */
