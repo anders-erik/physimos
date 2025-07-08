@@ -159,6 +159,14 @@ process_user_input()
 
 		if(event.is_keystroke())
 		{
+			// Global UI shortcuts
+			{
+				if(event.keystroke.is_press() && event.modifiers.is_alt_ctrl() && event.keystroke.key == Key::a)
+					pui.do_action(UI::Actions::ToggleLeftPanel);
+				if(event.keystroke.is_press() && event.modifiers.is_alt_ctrl() && event.keystroke.key == Key::d)
+					pui.do_action(UI::Actions::ToggleRightPanel);
+			}
+
 			// Always scene unless explicitly grabbed by others
 			if(!try_send_event_to_grabbed(event))
 				send_event_scene(event);
@@ -196,6 +204,8 @@ update()
 	manager_3D.update();
 	pui.reload(	manager_3D, 
 				auxwin.get_window_fb_size().to_f2()	);
+	// auxwin.get_window_fb_size().to_f2().print("FB size: ");
+	
 }
 
 

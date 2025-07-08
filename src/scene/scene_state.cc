@@ -325,6 +325,14 @@ handle_user_input(Manager3D& manager_3D, window::InputEvent & event, TagO sample
     if(camera.panning)
         return InputResponse{InputResponse::MOUSE_PAN};
 
+    if(selected.KEY_1 && selected.key_1 == SS::ROTATE_KEY)
+        return InputResponse{InputResponse::MOUSE_PAN};
+    if(selected.KEY_1 && selected.key_1 == SS::TRANSLATE_KEY)
+        return InputResponse{InputResponse::MOUSE_PAN};
+    if(selected.KEY_1 && selected.key_1 == SS::SCALE_KEY)
+        return InputResponse{InputResponse::MOUSE_PAN};
+
+
     return InputResponse();
 }
 

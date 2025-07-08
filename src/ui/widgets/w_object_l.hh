@@ -19,6 +19,9 @@
 
 #include "widgets/w_f2.hh"
 #include "widgets/w_f3.hh"
+#include "widgets/w_q.hh"
+
+#include "widgets/w_mesh.hh"
 
 
 namespace UI 
@@ -32,34 +35,37 @@ namespace W
 struct ObjectLarge : public Widget
 {
     Object object; // object copy - read only
-    static constexpr f2 size = {250.0f, 150.0f};
+    static constexpr float H = 300.0f;
+
 
     BaseString object_name;
-    
-    BaseString verts_size_label;
-    BaseString verts_size;
 
-    BaseString faces_size_label;
-    BaseString faces_size;
+    BaseString S_orbit;
 
-    f2 dummy_f2 = {1.0f, 2.0f};
-    W::F2 w_f2;
     W::F3 w_pos;
+    W::Q w_rot;
+
+    W::Mesh w_mesh;
 
 public:
 
 
-    inline InputResponse event_handler(window::InputEvent& event)
+    inline InputResponse event_handler(Manager3D& manager_3D, window::InputEvent& event)
     {
         using namespace window;
 
-        if(w_f2.has_cursor(cursor_sane))
-        {
-            w_f2.event_handler(event);
-        }
         if(w_pos.has_cursor(cursor_sane))
         {
             w_pos.event_handler(event);
+            return {};
+        }
+
+        
+        if(S_orbit.box.contains_point(cursor_sane))
+        {
+            if(event.is_left_click())
+                manager_3D.window_scene->camobj.set_orbit_tag(object.tag);
+            return {};
         }
         
 
@@ -68,43 +74,10 @@ public:
 
         case EventType::MouseButton:
 
-            // Name label grabs mouse
             if(event.mouse_button.is_left_down())
             {
                 if(object_name.containsPoint(cursor_sane))
-                {
-                    // auto& q_manager = ManagerScene::get_quad_manager();
-                    // q_manager.set_selected(quad_id);
-                    is_grabbing_mouse = true;
-                    return InputResponse::MOUSE_GRAB;
-                }
-            }
-            else if(event.mouse_button.is_left_up())
-            {   
-                is_grabbing_mouse = false;
-            }
-            break;
-
-        
-        case EventType::MouseScroll:
-
-            if(verts_size.containsPoint(cursor_sane))
-            {
-                // auto& q_manager = ManagerScene::get_quad_manager();
-                // scene::QuadS2D* quad = q_manager.get_quad_mut(quad_id);
-                // if(quad != nullptr)
-                // {
-                //     Box2D updated_box = quad->get_box();
-
-                //     if(event.mouse_scroll.delta > 0.0f)
-                //         updated_box.pos.x += 10.0f;
-                //     else
-                //         updated_box.pos.x -= 10.0f;
-                    
-                //     quad->set_box(updated_box.pos, updated_box.size);
-                // }
-
-                println("Scroll W::ObjectLarge");
+                    Print::line("click W::ObjectLarge - not in subwidget");
             }
             break;
 
@@ -114,70 +87,55 @@ public:
         }
 
 
-        if(is_grabbing_mouse)
-        {   
-            return InputResponse::MOUSE_GRAB;
-        }
-
         return {};
     }
 
     /** Recreates the whole widget from scene data every call. */
-    inline void reload(Object& new_object, f2 new_pos)
+    inline void reload(Object& new_object, f2 new_pos, float width)
     {
         object = new_object;
 
         // Frame
         frame.pos = new_pos;
-        frame.size = size;
+        frame.size = {width, H};
         frame_base.set_box(frame);
         frame_base.set_rgba_color(0x444444ff);
 
-
-        f2 offset = frame.pos;
-        offset += {5.0f, frame.size.y};
+        float y = frame.pos.y + frame.size.y;
+        float x = frame.pos.x + 5.0f;
+        float child_width = frame.size.x - 10.0f;
+        float y_delta = -10.0f;
 
         // Name
-        f2 name_delta = { 0.0f, -20.0f };
-        Str name_str = object.name;
-        object_name.set_pos(offset += name_delta);
-        object_name.set_str(name_str);
+        y += -20.0f + y_delta;
+        object_name.box.pos = {x, y};
+        object_name.set_str(object.name);
 
-        
-        f2 box_indent = { 10.0f, 0.0f };
-        offset += box_indent;
-
-
-        // POS
-
-        // label
-        f2 verts_label_delta = { 10.0f, -20.0f };
-        verts_size_label.set_pos(offset + verts_label_delta);
-        verts_size_label.set_str(Str("Verts: "));
-        // x
-        f2 pos_x_delta = { 150.0f, -20.0f };
-        verts_size.set_pos(offset + pos_x_delta);
-        verts_size.set_str(Str::SI(object.mesh.verts.size()));
-
-
-        // label
-        f2 faces_label_delta = { 10.0f, -40.0f };
-        faces_size_label.set_pos(offset + faces_label_delta);
-        faces_size_label.set_str(Str("Faces: "));
-        // y
-        f2 faces_size_delta = { 150.0f, -40.0f };
-        faces_size.set_pos(offset + faces_size_delta);
-        faces_size.set_str(Str::SI(object.mesh.faces.size()));
-
-        offset -= box_indent;
-
-        // F2
-        f2 f2_offset = { 0.0f, -80.0f };
-        w_f2.reload(dummy_f2, offset + f2_offset);
+        // ORBIT TOGGLE
+        S_orbit.set_str("Orbit");
+        f2 orbit_delta = {frame.size.x-S_orbit.actual_width-5.0f, 0.0f};
+        S_orbit.box.pos = f2{x, y} + orbit_delta;
 
         // POS
-        f2 pos_offset = { 0.0f, -105.0f };
-        w_pos.reload(new_object.pos, "Pos", offset + pos_offset);
+        y += -w_pos.H + y_delta;
+        w_pos.reload(   new_object.pos, 
+                        "Pos", 
+                        {x, y},
+                        child_width         );
+
+        // ROT
+        y += -w_rot.H + y_delta;
+        w_rot.reload(   new_object.rot, 
+                        "Rot", 
+                        {x, y},
+                        child_width         );
+
+        // MESH
+        y += -w_mesh.H + y_delta;
+        w_mesh.reload(  new_object.mesh,
+                        {x, y},
+                        child_width         );
+
     }
 
 
@@ -186,15 +144,12 @@ public:
         renderer.draw_base(frame_base);
 
         renderer.draw_base_string(object_name);
+        renderer.draw_base_string(S_orbit);
 
-        renderer.draw_base_string(verts_size_label);
-        renderer.draw_base_string(verts_size);
-
-        renderer.draw_base_string(faces_size_label);
-        renderer.draw_base_string(faces_size);
-
-        w_f2.render(renderer);
         w_pos.render(renderer);
+        w_rot.render(renderer);
+
+        w_mesh.render(renderer);
     }
 
 };

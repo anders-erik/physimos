@@ -30,7 +30,15 @@ public:
     /** 
         Check is point is within widget box or is currently grabbing cursor. 
         Stores the cursor position for events. */
-    bool has_cursor(f2 cursor_sane);
+    bool has_cursor(f2 cursor_sane)
+    {
+        if(!frame.contains_point(cursor_sane))
+            return false;
+
+        this->cursor_sane = cursor_sane;
+
+        return true;
+    }
 
 };
 

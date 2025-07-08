@@ -21,8 +21,9 @@ namespace W
 /** Widget reflecting the state of a specific quad */
 struct F3 : public Widget
 {
-    f3 dummy_f3 = {0.0f, 0.0f, 0.0f}; // dummy f3
-    const f2 size = {240.0f, 25.0f};
+    f3 event_delta = {0.0f, 0.0f, 0.0f}; // event delta placeholder
+
+    static constexpr float H = 25.0f;
 
     Str str_label = "f3_label";
 
@@ -49,23 +50,23 @@ public:
             if(base_x.containsPoint(cursor_sane))
             {
                 if(event.mouse_scroll.delta > 0.0f)
-                    dummy_f3.x += scroll_step;
+                    event_delta.x += scroll_step;
                 else
-                    dummy_f3.x -= scroll_step;
+                    event_delta.x -= scroll_step;
             }
             else if(base_y.containsPoint(cursor_sane))
             {
                 if(event.mouse_scroll.delta > 0.0f)
-                    dummy_f3.y += scroll_step;
+                    event_delta.y += scroll_step;
                 else
-                    dummy_f3.y -= scroll_step;
+                    event_delta.y -= scroll_step;
             }
             else if(base_z.containsPoint(cursor_sane))
             {
                 if(event.mouse_scroll.delta > 0.0f)
-                    dummy_f3.z += scroll_step;
+                    event_delta.z += scroll_step;
                 else
-                    dummy_f3.z -= scroll_step;
+                    event_delta.z -= scroll_step;
             }
             break;
 
@@ -78,15 +79,15 @@ public:
     }
 
     /** Recreates the whole widget from scene data every call. */
-    inline void reload(f3& _f3, Str label, f2 new_pos)
+    inline void reload(f3& _f3, Str label, f2 new_pos, float W)
     {
         // Update with info from new events
-        _f3 += dummy_f3;
-        dummy_f3 = {0.0f, 0.0f, 0.0f};
+        _f3 += event_delta;
+        event_delta = {0.0f, 0.0f, 0.0f};
 
         // Frame
         frame.pos = new_pos;
-        frame.size = size;
+        frame.size = {W, H};
         frame_base.set_box(frame);
         frame_base.set_rgba_color(0x836343ff);
 
@@ -95,9 +96,9 @@ public:
 
         // POS
         f2 pos_label_delta = { 5.0f, 5.0f };
-        f2 pos_x_delta = { size.x * 1.0f / 4.0f, 5.0f };
-        f2 pos_y_delta = { size.x * 2.0f / 4.0f, 5.0f };
-        f2 pos_z_delta = { size.x * 3.0f / 4.0f, 5.0f };
+        f2 pos_x_delta = { frame.size.x * 1.0f / 4.0f, 5.0f };
+        f2 pos_y_delta = { frame.size.x * 2.0f / 4.0f, 5.0f };
+        f2 pos_z_delta = { frame.size.x * 3.0f / 4.0f, 5.0f };
 
         // label
         base_label.set_pos(base_offset + pos_label_delta);

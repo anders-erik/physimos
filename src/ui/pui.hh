@@ -15,6 +15,7 @@
 
 
 #include "ui/panel_left.hh"
+#include "ui/panel_right.hh"
 
 #include "ui/pui_cursor.hh"
 
@@ -26,13 +27,20 @@ struct RendererBase;
 
 namespace UI {
 
+enum class Actions
+{
+    ToggleLeftPanel,
+    ToggleRightPanel,
+};
+
 
 /** Physimos UI. */
 class PUI 
 {
     PUICursor cursor;
 
-    UI::PanelLeft panel_left;
+    UI::PanelLeft   panel_left;
+    UI::PanelRight  panel_right;
 
 
     UI::Base base_0;
@@ -63,6 +71,8 @@ public:
     InputResponse event_all(Manager3D& manager_3D, window::InputEvent& event, f2 cursor_pos_fb);
 
     void render(UI::RendererBase& renderer_base);
+
+    void do_action(Actions action);
 
 };
 
