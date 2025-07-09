@@ -201,7 +201,7 @@ process_framebuffer_events()
 void Physimos::
 update()
 {
-	manager_3D.update();
+	manager_3D.update(auxwin.timer.get_s());
 	pui.reload(	manager_3D, 
 				auxwin.get_window_fb_size().to_f2()	);
 	// auxwin.get_window_fb_size().to_f2().print("FB size: ");
@@ -239,9 +239,17 @@ render()
 void Physimos::
 main_loop()
 {
+	auxwin.timer.start(); // make sure timer has been started before first dt is calculated to prevent unix-time-sized deltas
+
 	while (auxwin.is_open())
 	{
 		auxwin.new_frame();
+		// auxwin.timer.print_duration("dt: ");
+		// auxwin.timer.print_ms("dt: ");
+		// auxwin.timer.print_s("dt: ");
+		// auxwin.print_fps();
+		
+
 
 		process_framebuffer_events(); // change framebuffer size, content scale
 		process_user_input();

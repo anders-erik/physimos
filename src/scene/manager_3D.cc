@@ -54,11 +54,11 @@ init(f2 window_scene_f)
 
 
 void Manager3D::
-update()
+update(float dt_s)
 {
     Scene3D& scenew = *window_scene;
 
-    float dt = 0.01;
+    dt_s = 0.016;
 
     // INTERSECTION
 
@@ -74,41 +74,36 @@ update()
             if(phy->is_static())
                 phy->update_static(object.pos);
             else
-                object.pos = phy->update_dynamic(dt);
+                object.pos = phy->update_dynamic(dt_s);
         }
     }
     
     // tmp container for indeces of bodies from confirmed dynamic intersection. 
     // Dynamic always first index
-    std::vector<s2> dyn_isects; 
+    std::vector<s2> dyn_isects;
 
     // Check intersections
     for(size_t i=0; i<manager_p.physicss.size()-1; i++)
     {
         for(size_t j=i+1; j<manager_p.physicss.size(); j++)
         {
-            if(i == j) continue;
-
             Physics& I = manager_p.physicss[i].YY;
             Physics& J = manager_p.physicss[j].YY;
 
-            bool intersecting = isect_physics( I, J );
-
-
-            if(intersecting)
+            if(Physics::isect( I, J ))
             {
                 // place dynamic in first index if exists
                 if(I.is_dynamic())
                     dyn_isects.emplace_back(i, j);
                 else if(J.is_dynamic())
                     dyn_isects.emplace_back(j, i);
+            
+                // Rend : don't touch if intersection already confirmed
+                if(!I.isect_flag)
+                    I.isect_flag = true;
+                if(!J.isect_flag)
+                    J.isect_flag = true;
             }
-
-            // Rend : don't touch if intersection already confirmed
-            if(!I.isect_flag)
-                I.isect_flag = intersecting;
-            if(!J.isect_flag)
-                J.isect_flag = intersecting;
         }
     }
 
@@ -119,28 +114,33 @@ update()
         Physics& X = manager_p.physicss[isect_idxs.x].YY;
         Physics& Y = manager_p.physicss[isect_idxs.y].YY;
 
-        // Assumes Y is static and not moved by user.
-        for(int back_i=0; back_i<10; back_i++)
+        if(Y.is_static())
         {
-            float dt10 = dt * 0.1f;
+            float dt10 = dt_s * 0.1f;
 
-            X.p -= X.v * dt;
-            
-            X.update_isector(X.p);
+            int back_i=1;
+            int backed_max = 11;
 
-            if(isect_physics( X, Y ))
-                continue;
+            // Also assumes Y is not moved by user.
+            for(; back_i<backed_max; back_i++)
+            {
+                X.p -= X.v * dt_s;
+                X.update_isector(X.p);
+                if(Physics::isect( X, Y ))
+                    continue;
+                break;
+            }
             
+            Physics::reflect_dynamic_static(X, Y);
+
             // Return body same number of time steps as it was deep in intersection
             X.p += X.v * dt10 * (float)back_i;
-            break;
+            int x = 1;
         }
+        else
+        {
 
-        X.v = -X.v;
-
-        
-        if(Y.is_dynamic())
-            Y.v = -Y.v;
+        }
     }
 
 

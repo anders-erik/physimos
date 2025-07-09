@@ -37,7 +37,7 @@ public:
     /** Initializes manager and creates the root scene. The root scene is returned. */
     Scene3D& init(f2 window_scene_f);
 
-    void update();
+    void update(float dt);
 
     /** Also samples the  */
     void render_window_scene(i2 window_scene_i, window::CursorPosition cursor_pos);

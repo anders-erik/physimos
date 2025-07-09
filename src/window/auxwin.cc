@@ -219,7 +219,14 @@ is_open(){
 }
 
 
-void Auxwin::new_frame(){
+void Auxwin::new_frame()
+{
+    timer.stop();
+
+    for(int i=1; i<dt_count; i++)
+        dt_s_last_10[i-1] = dt_s_last_10[i];
+    dt_s_last_10[dt_count-1] = timer.get_s();
+    timer.start();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.1f, 0.3f, 0.3f, 1.0f);

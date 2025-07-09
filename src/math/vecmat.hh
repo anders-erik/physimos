@@ -165,7 +165,7 @@ struct f3
     f3 operator+(float scalar);
     f3 operator-(float scalar);
     f3 operator*(float scalar) const;
-    f3 operator/(float scalar);
+    f3 operator/(float scalar) const;
 
     f2 to_xy() const;
     f2 yaw_pitch();
@@ -175,10 +175,12 @@ struct f3
     /** sqrt ( x^2 + y^2 + z^2 ) */
     float norm() const;
     /** this / norm */
-    f3 unit();
+    f3 unit() const;
     f3 cross(const f3& rhs);
     float dot(const f3& rhs);
     float angle(const f3& rhs);
+
+    f3& reflect_z();
 
     void set_zero();
     bool is_zero();

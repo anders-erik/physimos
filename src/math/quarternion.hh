@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+#include "math/const.hh"
 #include "math/vecmat.hh"
 #include "math/transform.hh"
 
@@ -157,12 +158,45 @@ struct Quarternion
     static void 
     rotate_f3(f3& vec_to_rotate, f3 axis, float angle)
     {
-        Quarternion rotated_q = rotate_quart({0.0f, vec_to_rotate}, {0.0f, axis}, angle);
+        Quarternion rotated_q = rotate_quart({0.0f, vec_to_rotate.unit()}, {0.0f, axis.unit()}, angle);
 
-        vec_to_rotate = {   rotated_q.x, 
-                            rotated_q.y, 
-                            rotated_q.z };
-        vec_to_rotate.unit();
+        float vec_norm = vec_to_rotate.norm();
+
+        vec_to_rotate = {   rotated_q.x * vec_norm, 
+                            rotated_q.y * vec_norm, 
+                            rotated_q.z * vec_norm };
+        // vec_to_rotate.unit();
+    }
+
+    /** Rotate vector */
+    static f3 
+    rotate(const f3& vec_to_rotate, f3 axis, float angle)
+    {
+        Quarternion rotated_q = rotate_quart(   {0.0f, vec_to_rotate.unit()},
+                                                {0.0f, axis.unit()}, 
+                                                angle                         );
+
+        float vec_norm = vec_to_rotate.norm();
+
+        return {    rotated_q.x * vec_norm, 
+                    rotated_q.y * vec_norm, 
+                    rotated_q.z * vec_norm };
+    }
+
+
+    /** Rotate vector */
+    static f3 
+    reflect(const f3& vec_to_reflect, const f3& normal)
+    {
+        Quarternion rotated_q = rotate_quart(   {0.0f, -vec_to_reflect.unit()},
+                                                {0.0f, normal.unit()}, 
+                                                PIf                         );
+
+        float vec_norm = vec_to_reflect.norm();
+
+        return {    rotated_q.x * vec_norm, 
+                    rotated_q.y * vec_norm, 
+                    rotated_q.z * vec_norm };
     }
 
     /** Rotates in place */

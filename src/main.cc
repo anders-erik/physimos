@@ -78,6 +78,21 @@ int main()
 	root_scene.color_models.push_back(cube);
 
 
+	// GROUND - PLACED FIRST AS I HAVENT ENABLED DEPTH TEST IN ID FB
+	Object& ground = manager_o.new_object();
+	ground.tag.type = TagO::Base;
+	ground.mesh.sheet({40, 2});
+	ground.mesh.color(0x222222);
+	ground.mesh.center();
+	ground.name = "ground";
+	ground.pos = {0.0f, 0.0f, -1.6f};
+	root_scene.tagos.push_back(ground.tag);
+
+	Physics physics_ground;
+	physics_ground.set_static_aabb(	ground.pos,
+									ground.mesh.get_size() / 2);
+	ground.pyh_tag = manager_3D.manager_p.push_physics(physics_ground);
+
 
 	// FIRST PURE MESH
 	Object& object_base = manager_o.new_object();
@@ -303,7 +318,7 @@ int main()
 	phyo_sph_2.mesh.cube_centered();
 	phyo_sph_2.mesh.center();
 	phyo_sph_2.name = "phy_sph_2";
-	phyo_sph_2.pos = {6.0f, -1.0f, 0.0f};
+	phyo_sph_2.pos = {6.0f, 0.0f, 0.0f};
 	root_scene.tagos.push_back(phyo_sph_2.tag);
 
 	Physics physics_sph_2;
@@ -312,17 +327,43 @@ int main()
 	phyo_sph_2.pyh_tag = manager_3D.manager_p.push_physics(physics_sph_2);
 
 
-	Object& phyo_dyn_1 = manager_o.new_object();
-	phyo_dyn_1.tag.type = TagO::Base;
-	phyo_dyn_1.mesh.cube_centered();
-	phyo_dyn_1.mesh.center();
-	phyo_dyn_1.name = "phyo_dyn_1";
-	root_scene.tagos.push_back(phyo_dyn_1.tag);
+	Object& phyo_dyn_sph_1 = manager_o.new_object();
+	phyo_dyn_sph_1.tag.type = TagO::Base;
+	phyo_dyn_sph_1.mesh.cube_centered();
+	phyo_dyn_sph_1.mesh.center();
+	phyo_dyn_sph_1.name = "phyo_dyn_sph_1";
+	root_scene.tagos.push_back(phyo_dyn_sph_1.tag);
 
-	Physics physics_dyn_1;
-	physics_dyn_1.set_dynamic_sphere(	{3.0f, 1.0f, 2.0f}, 
-										phyo_dyn_1.mesh.get_max_radius()	);
-	phyo_dyn_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_1);
+	Physics physics_dyn_sph_1;
+	physics_dyn_sph_1.set_dynamic_sphere(	{3.0f, 1.0f, 2.0f}, 
+										phyo_dyn_sph_1.mesh.get_max_radius()	);
+	// phyo_dyn_sph_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_sph_1);
+
+
+	Object& phyo_dyn_sph_2 = manager_o.new_object();
+	phyo_dyn_sph_2.tag.type = TagO::Base;
+	phyo_dyn_sph_2.mesh.cube_centered();
+	phyo_dyn_sph_2.mesh.center();
+	phyo_dyn_sph_2.name = "phyo_dyn_sph_2";
+	root_scene.tagos.push_back(phyo_dyn_sph_2.tag);
+
+	Physics physics_dyn_sph_2;
+	physics_dyn_sph_2.set_dynamic_sphere(	{5.9f, 0.0f, 2.0f}, 
+											phyo_dyn_sph_2.mesh.get_max_radius()	);
+	phyo_dyn_sph_2.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_sph_2);
+
+
+	Object& phyo_dyn_cube_1 = manager_o.new_object();
+	phyo_dyn_cube_1.tag.type = TagO::Base;
+	phyo_dyn_cube_1.mesh.cube_centered();
+	phyo_dyn_cube_1.name = "phyo_dyn_cube_1";
+	root_scene.tagos.push_back(phyo_dyn_cube_1.tag);
+
+	Physics physics_dyn_cube_1;
+	physics_dyn_cube_1.set_dynamic_aabb(	{5.0f, -2.0f, 2.0f}, 
+											phyo_dyn_cube_1.mesh.get_size() / 2	);
+	// phyo_dyn_cube_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_cube_1);
+
 
 
 	
@@ -332,7 +373,7 @@ int main()
 	// root_scene.camobj.cam.orbit_tag 	= lampo.tag;
 	// root_scene.camobj.set_free();
 	root_scene.camobj.object.pos = {-10.0f, 10.0f, 5.0f};
-	root_scene.camobj.set_orbit_tag(phy_1.tag);
+	root_scene.camobj.set_orbit_tag(phyo_sph_2.tag);
 
 
 	physimos.main_loop();

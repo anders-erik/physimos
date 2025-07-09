@@ -369,7 +369,7 @@ operator*(float scalar) const
 
 
 f3 f3::
-operator/(float scalar)
+operator/(float scalar) const
 {
     return {    x / scalar,
                 y / scalar,
@@ -406,7 +406,7 @@ float f3::norm() const
     return sqrtf(x*x + y*y + z*z);
 }
 
-f3 f3::unit()
+f3 f3::unit() const
 {
     float n = norm();
     return *this / ( n == 0.0f ? 2.0f : n);
@@ -435,6 +435,14 @@ float f3::angle(const f3 & rhs)
         return 0.0f;
 
     return ang;
+}
+
+f3& f3::reflect_z()
+{
+    m3f3 rot_z = m3f3::rotation_z(3.141592f);
+    f3 neg = -(*this);
+    (*this) = rot_z * neg;
+    return *this;
 }
 
 void f3::set_zero()

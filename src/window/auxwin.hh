@@ -3,6 +3,7 @@
 
 #include <queue>
 
+#include "lib/time.hh"
 #include "math/vecmat.hh"
 
 #include "coordinate_transform.hh"
@@ -28,7 +29,6 @@ class Auxwin
 
     opengl::OpenGL gl;
 
-    
     // Internal window closing logic -- two quick escape-presses for now
     Key close_key = Key::Esc; // The key that will trigger auxwin to close twice in quick succession
     double time_of_last_close_key = -1.0; // Time at which the most recent close keystrok was registered. GlfwGetTime()
@@ -62,6 +62,24 @@ class Auxwin
     Cursor cursor;
 
 public:
+    Timer timer;
+    static const uchar dt_count = 10;
+    float dt_s_last_10[dt_count] {0.016f};
+    void print_fps()
+    {
+        float avg = 0.0f;
+        for(int i=0; i<dt_count; i++)
+            avg += dt_s_last_10[i];
+        avg /= (float) dt_count;
+
+        float avg_fps = 1.0f / avg;
+        
+        // print("avg: ");
+        // Print::ln(Str::FL(avg, 4, Str::FloatRep::Fixed));
+        print("FPS: ");
+        Print::ln(Str::FL(avg_fps, 4, Str::FloatRep::Fixed));
+    }
+
     GLFWwindow *glfw_window;
     bool open = true;
 

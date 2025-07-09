@@ -7,6 +7,7 @@
 #include "str_std.hh"
 #include "opt.hh"
 #include "print.hh"
+#include "time.hh"
 
 // #include "res.hh"
 
@@ -294,32 +295,7 @@ void substr()
     
 }
 
-struct Timer {
-    std::chrono::system_clock::time_point start_tp;
-    std::chrono::system_clock::time_point stop_tp;
-    std::chrono::nanoseconds duration_ns;
 
-    std::chrono::_V2::system_clock::rep reps;
-
-    void start(){
-        start_tp = std::chrono::system_clock::now();
-    }
-    void stop(){
-        stop_tp = std::chrono::system_clock::now();
-
-        duration_ns = stop_tp - start_tp;
-        reps = duration_ns.count();
-    }
-    std::chrono::nanoseconds get_duration(){
-        return duration_ns;
-    }
-    void print_duration(Str str_msg){
-        // str_msg.print();
-        print(str_msg);
-        std::cout << " " << reps << std::endl;
-    }
-
-};
 
 void str_perf(){
 
