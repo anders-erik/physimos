@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cmath>
 
+#include "lib/print.hh"
 
 #include "math/vecmat.hh"
 #include "math/quarternion.hh"
@@ -18,7 +19,8 @@
 
 
 
-
+const float g = 9.8f;
+// const float g = 1.8f;
 
 
 struct Physics
@@ -38,7 +40,8 @@ struct Physics
 
     f3 update_dynamic(float dt)
     {
-        v.z += -9.8f * dt;
+        // "Integrate"
+        v.z += -g * dt;
         p += v * dt;
 
         isect_flag = false;
@@ -142,59 +145,79 @@ struct Physics
         }
     }
 
+
+    /** If pos is purly above one of AABBs faces, the vector is reflected on that face.
+        Returns true if reflected.
+    */
+    static bool try_reflect_on_face(f3& v_to_reflect, f3 pos, AABBf aabb)
+    {
+        bool below_x_min = pos.x < aabb.min.x;
+        bool below_y_min = pos.y < aabb.min.y;
+        bool below_z_min = pos.z < aabb.min.z;
+
+        bool above_x_max = pos.x > aabb.max.x;
+        bool above_y_max = pos.y > aabb.max.y;
+        bool above_z_max = pos.z > aabb.max.z;
+
+        bool between_x = pos.x > aabb.min.x && pos.x < aabb.max.x;
+        bool between_y = pos.y > aabb.min.y && pos.y < aabb.max.y;
+        bool between_z = pos.z > aabb.min.z && pos.z < aabb.max.z;
+
+        bool within_x = between_y && between_z;
+        bool within_y = between_x && between_z;
+        bool within_z = between_x && between_y;
+
+        // Bounce pure face collisions, else reflect dist vector
+        if     (within_x && above_x_max)      v_to_reflect.reflect(Axis::x);
+        else if(within_x && below_x_min)      v_to_reflect.reflect(Axis::nx);
+        else if(within_y && above_y_max)      v_to_reflect.reflect(Axis::y);
+        else if(within_y && below_y_min)      v_to_reflect.reflect(Axis::ny);
+        else if(within_z && above_z_max)      v_to_reflect.reflect(Axis::z);
+        else if(within_z && below_z_min)      v_to_reflect.reflect(Axis::nz);
+        else return false; // return false on no match
+
+        return true;
+    }
+
+
     /** Support:
-        aabb-aabb      [X]
-        aabb-sphere    [X]
-        sphere-aabb    [max-z only]    
+        aabb-aabb      [O]
+        aabb-sphere    [O]
+        sphere-aabb    [O]    
         Sphere-sphere  [O]
     */
-    static void reflect_dynamic_static(Physics& D, Physics& S)
+    static void reflect_dynamic_static(Physics& Dyn, Physics& Stat)
     {
         // IsectBits bits = (PA.isect_bits << 16) | PB.isect_bits;
-        switch ( (D.isect_bits << 16) | S.isect_bits )
+        switch ( (Dyn.isect_bits << 16) | Stat.isect_bits )
         {
 
         case ISECT_AABB_AABB:
-            D.v = -D.v;
+            if(try_reflect_on_face(Dyn.v, Dyn.p, Stat.isector.aabb))
+                return;
+            else
+                Dyn.v = Quarternion::reflect( Dyn.v, Dyn.p - Stat.isector.aabb.pos());
+            break;
+
+
+        case ISECT_SPHERE_AABB:
+            if(try_reflect_on_face(Dyn.v, Dyn.p, Stat.isector.aabb))
+                return;
+            else
+                Dyn.v = Quarternion::reflect( Dyn.v, Dyn.p - Stat.isector.aabb.pos());
             break;
 
         case ISECT_AABB_SPHERE:
-            D.v = -D.v;
-            break;
-
-        case ISECT_SPHERE_AABB:
-            {
-                AABBf& aabb = S.isector.aabb;
-                Sphere& sphere = D.isector.sphere;
-
-                if(sphere.pos.z > aabb.max.z)
-                {
-                    // z-max face collision, no edge/corner
-                    if (       sphere.pos.x > aabb.min.x
-                            && sphere.pos.x < aabb.max.x
-                            && sphere.pos.y > aabb.min.y
-                            && sphere.pos.y > aabb.min.y
-                        )
-                    {
-                        D.v.reflect_z();
-                    }
-                    else
-                    {
-                        D.v = -D.v;
-                    }
-                }
-                else
-                {
-                    D.v = -D.v;
-                }
-                
-            }
+            if(try_reflect_on_face(Dyn.v, Stat.isector.sphere.pos, Dyn.isector.aabb))
+                return;
+            else
+                Dyn.v = Quarternion::reflect( Dyn.v, Dyn.p - Stat.isector.sphere.pos);
             break;
 
         case ISECT_SPHERE_SPHERE:
             // Reflect across collision plane
-            D.v = Quarternion::reflect( D.v, 
-                                        D.p - S.isector.sphere.pos);
+            Dyn.v = Quarternion::reflect( Dyn.v, 
+                                        Dyn.p - Stat.isector.sphere.pos);
             break;
 
         default:

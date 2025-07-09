@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "math/const.hh"
 #include "vecmat.hh"
 
 
@@ -442,6 +443,26 @@ f3& f3::reflect_z()
     m3f3 rot_z = m3f3::rotation_z(3.141592f);
     f3 neg = -(*this);
     (*this) = rot_z * neg;
+    return *this;
+}
+
+f3 & f3::reflect(Axis axis)
+{
+    m3f3 rot;
+    float angle = PIf;
+
+    switch (axis)
+    {
+        case Axis::x:   rot = m3f3::rotation_x(angle);  break;
+        case Axis::y:   rot = m3f3::rotation_y(angle);  break;
+        case Axis::z:   rot = m3f3::rotation_z(angle);  break;
+        case Axis::nx:  rot = m3f3::rotation_x(angle);  break;
+        case Axis::ny:  rot = m3f3::rotation_y(angle);  break;
+        case Axis::nz:  rot = m3f3::rotation_z(angle);  break;
+    }
+
+    f3 neg = -(*this);
+    (*this) = rot * neg;
     return *this;
 }
 

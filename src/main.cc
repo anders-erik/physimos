@@ -268,12 +268,15 @@ int main()
 
 
 	// PHYSICS BODY
+
+	// PHYSICS - STATIC CUBE
 	Object& phy_0 = manager_o.new_object();
 	phy_0.tag.type = TagO::Base;
 	phy_0.mesh.cube_centered();
 	phy_0.mesh.center();
+	phy_0.mesh.scale(3.0f);
 	phy_0.name = "phy_0";
-	phy_0.pos = {3.0f, 1.0f, 0.0f};
+	phy_0.pos = {10.0f, -1.0f, 0.0f};
 	root_scene.tagos.push_back(phy_0.tag);
 
 	Physics physics_0;
@@ -284,12 +287,13 @@ int main()
 	phy_0.pyh_tag = manager_3D.manager_p.push_physics(physics_0);
 
 
+	// PHYSICS - SHEET
 	Object& phy_1 = manager_o.new_object();
 	phy_1.tag.type = TagO::Base;
-	phy_1.mesh.sheet({1, 2});
+	phy_1.mesh.sheet({2, 2});
 	phy_1.mesh.center();
 	phy_1.name = "phy_1";
-	phy_1.pos = {4.5f, 1.0f, 0.0f};
+	phy_1.pos = {5.5f, 1.0f, 1.0f};
 	root_scene.tagos.push_back(phy_1.tag);
 
 	Physics physics_1;
@@ -337,7 +341,7 @@ int main()
 	Physics physics_dyn_sph_1;
 	physics_dyn_sph_1.set_dynamic_sphere(	{3.0f, 1.0f, 2.0f}, 
 										phyo_dyn_sph_1.mesh.get_max_radius()	);
-	// phyo_dyn_sph_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_sph_1);
+	phyo_dyn_sph_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_sph_1);
 
 
 	Object& phyo_dyn_sph_2 = manager_o.new_object();
@@ -348,7 +352,7 @@ int main()
 	root_scene.tagos.push_back(phyo_dyn_sph_2.tag);
 
 	Physics physics_dyn_sph_2;
-	physics_dyn_sph_2.set_dynamic_sphere(	{5.9f, 0.0f, 2.0f}, 
+	physics_dyn_sph_2.set_dynamic_sphere(	{7.7f, 0.0f, 3.0f}, 
 											phyo_dyn_sph_2.mesh.get_max_radius()	);
 	phyo_dyn_sph_2.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_sph_2);
 
@@ -362,7 +366,7 @@ int main()
 	Physics physics_dyn_cube_1;
 	physics_dyn_cube_1.set_dynamic_aabb(	{5.0f, -2.0f, 2.0f}, 
 											phyo_dyn_cube_1.mesh.get_size() / 2	);
-	// phyo_dyn_cube_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_cube_1);
+	phyo_dyn_cube_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_cube_1);
 
 
 
@@ -373,7 +377,7 @@ int main()
 	// root_scene.camobj.cam.orbit_tag 	= lampo.tag;
 	// root_scene.camobj.set_free();
 	root_scene.camobj.object.pos = {-10.0f, 10.0f, 5.0f};
-	root_scene.camobj.set_orbit_tag(phyo_sph_2.tag);
+	root_scene.camobj.set_orbit_tag(phy_0.tag);
 
 
 	physimos.main_loop();

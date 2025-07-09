@@ -19,6 +19,13 @@ struct AABBf
         min = pos - half_size;
         max = pos + half_size;
     }
+    
+    f3 pos()
+    {
+        return {    (max.x + min.x ) * 0.5f,
+                    (max.y + min.y ) * 0.5f,
+                    (max.z + min.z ) * 0.5f     };
+    }
 
     static bool isect_aabb_aabb(AABBf A, AABBf B)
     {
@@ -39,6 +46,11 @@ struct AABBf
         return  pnt.x >= min.x && pnt.x <= min.x  && \
                 pnt.y >= min.y && pnt.y <= min.y  && \
                 pnt.z >= min.z && pnt.z <= min.z;
+    }
+
+    bool is_above_a_face(f3 pnt)
+    {
+
     }
 };
 

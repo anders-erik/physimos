@@ -131,11 +131,27 @@ update(float dt_s)
                 break;
             }
             
+            // reflect velocity of dynamic body
             Physics::reflect_dynamic_static(X, Y);
 
             // Return body same number of time steps as it was deep in intersection
             X.p += X.v * dt10 * (float)back_i;
-            int x = 1;
+
+            // If still intersecting, move until clear
+            while(Physics::isect( X, Y ))
+            {
+                X.p += X.v * dt10;
+                X.update_isector(X.p);
+            }
+
+            // Energy loss
+            X.v *= 0.9f;
+
+            // No effect as gravity keeps accelerating
+            // if(X.v.norm() <= 0.01f)
+            //     X.v.set_zero();
+
+            // int x = 1;
         }
         else
         {
