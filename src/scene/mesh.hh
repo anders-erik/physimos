@@ -33,6 +33,7 @@ struct SheetContext
     int     width_count;
 };
 
+
 using MeshContext = std::variant<   TubeContext, 
                                     SheetContext    >;
 
@@ -65,7 +66,7 @@ struct Mesh
 
     void clear();
 
-    void merge(const Mesh& mesh_2);
+    void append(const Mesh& mesh_2);
 
     f3 get_center();
     f3 get_size();

@@ -31,6 +31,12 @@ struct Spherical
                     rho * sinf(phi) * sinf(theta),
                     rho * cosf(phi)                 };
     }
+    static f3 to_cart(float rho, float theta, float phi)
+    {
+        return {    rho * sinf(phi) * cosf(theta),
+                    rho * sinf(phi) * sinf(theta),
+                    rho * cosf(phi)                 };
+    }
 
     static f3_sphere from_cart(f3 cart)
     {

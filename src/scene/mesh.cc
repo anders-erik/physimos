@@ -19,7 +19,7 @@ clear()
     faces.clear();
 }
 
-void Mesh::merge(const Mesh& mesh_2)
+void Mesh::append(const Mesh& mesh_2)
 {
     size_t vert_c = verts.size();
 
@@ -89,6 +89,8 @@ float Mesh::get_max_radius()
 
     return max;
 }
+
+
 
 
 void Mesh::sheet()
@@ -569,9 +571,9 @@ tube(TubeContext t_context)
         {
             float angle = angle_delta * (float) i_cp;
 
-            verts.emplace_back( cos(angle), 
-                                sin(angle), 
-                                (float) i_fr * frame_gap  );
+            verts.emplace_back(     cos(angle), 
+                                    sin(angle), 
+                                    (float) i_fr * frame_gap  );
             normals.emplace_back(   cos(angle), 
                                     sin(angle), 
                                     0.0f        );
