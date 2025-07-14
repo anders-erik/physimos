@@ -64,7 +64,7 @@ public:
         if(S_orbit.box.contains_point(cursor_sane))
         {
             if(event.is_left_click())
-                manager_3D.window_scene->camobj.set_orbit_tag(object.tag);
+                manager_3D.window_scene->camera.set_orbit_tag(object.tag);
             return {};
         }
         

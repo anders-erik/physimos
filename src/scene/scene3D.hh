@@ -25,14 +25,12 @@ struct Scene3D
     SID sid;
     Str name;
 
-    CameraObject camobj;
+    CameraObject camera;
 
     std::vector<TagO> tagos;
+    std::vector<TagO> quad_tags;
+    std::vector<TagO> lamp_tags;
 
-    std::vector<model::ModelT> texture_models;
-    std::vector<model::ModelColor> color_models;
-
-    model::ModelT tube;
 
     f3 q_vec_100 = {1.0f, 0.0f, 0.0f};
     f3 q_vec_010 = {0.0f, 1.0f, 0.0f};

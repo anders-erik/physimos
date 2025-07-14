@@ -17,6 +17,8 @@ public:
         ManagerObject& 	manager_o 	= physimos.manager_3D.manager_o;
         Manager2D& 	    manager_2D 	= physimos.manager_2D;
 
+        // root_scene
+
         root_scene.name = "ForestPlanet";
 
         MeshSphere planet_sphere({10, 10});
@@ -31,9 +33,9 @@ public:
 
 
         Physics physics_planet;
-        physics_planet.set_static_aabb(	planet.pos,
-                                        planet.mesh.get_size() / 2);
-        // planet.pyh_tag = manager_3D.manager_p.push_physics(physics_planet);
+        physics_planet.set_static_sphere(	planet.pos,
+                                            1.0f        ); // Radius
+        planet.pyh_tag = manager_3D.manager_p.push_physics(physics_planet);
 
 
         // TOADSTOOL
@@ -59,12 +61,12 @@ public:
 
         // CAMERA
         // root_scene.camobj.view = cam;
-        root_scene.camobj.perspective.set_fov(800, 600);
+        root_scene.camera.perspective.set_fov(800, 600);
         // root_scene.camobj.cam.orbit_tag 	= lampo.tag;
         // root_scene.camobj.set_free();
-        root_scene.camobj.object.pos = {-10.0f, 10.0f, 5.0f};
-        root_scene.camobj.set_orbit_tag(planet.tag);
-        root_scene.camobj.set_orbit_center();
+        root_scene.camera.object.pos = {-10.0f, 10.0f, 5.0f};
+        root_scene.camera.set_orbit_tag(planet.tag);
+        root_scene.camera.set_orbit_center();
     }
 
 

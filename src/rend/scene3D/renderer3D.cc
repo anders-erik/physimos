@@ -71,29 +71,12 @@ set_window_fb_size(window::WindowResizeEvent& window_resize_event)
     fb_object_ids.reload(window_resize_event.size_i.x, window_resize_event.size_i.y);
 }
 
-
-
-
 void RendererScene3D::
-render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
+set_camera(CameraObject& camera)
 {
-    ManagerObject& man_o = manager_3D.manager_o;
-    const SceneState& state = manager_3D.state;
-    
-
-    glEnable(GL_DEPTH_TEST);
-    // Defaults to fill. Context flag can overwrite?
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-
-    scene3D.camobj.update_matrices();
-    m4f4 cam_persp_mat    = scene3D.camobj.perspective.matrix;
-    m4f4 cam_view_mat   = scene3D.camobj.view.matrix;
-
-    // OLD ORBITAL
-    // cam_view_mat = scene3D.camera.view.update_matrix();
-    // cam_persp_mat = scene3D.camera.perspective.update_matrix();
-
+    camera.update_matrices();
+    m4f4 cam_persp_mat    = camera.perspective.matrix;
+    m4f4 cam_view_mat   = camera.view.matrix;
 
     // UNIFORMS
     program_model_texture.set_camera_view_projection(   cam_persp_mat,
@@ -115,129 +98,48 @@ render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D)
                                                 cam_view_mat);
     program_color_light.set_camera_view_perspective( cam_view_mat, 
                                                     cam_persp_mat          );
+}
 
+void RendererScene3D::set_lamps(std::vector<TagO> lamp_tags, Manager3D & manager3D)
+{
     // LAMP
-    for(auto tago : scene3D.tagos)
+    for(auto lamp_tag : lamp_tags)
     {
-        if(tago.is_lamp())
-        {
-            Object* lampo = man_o.get_object(tago);
+        Object* lampo = manager3D.manager_o.get_object(lamp_tag);
             if(lampo == nullptr) continue;
-            program_color_light.set_light_pos(lampo->pos);
+        program_color_light.set_light_pos(lampo->pos);
 
-            Lamp* lamp = manager_3D.manager_p.find_lamp(lampo->tagp);
+        Lamp* lamp = manager3D.manager_p.find_lamp(lampo->tagp);
             if(lampo == nullptr) continue;
-            program_color_light.set_light_color(lamp->light_color);
-        }
+        program_color_light.set_light_color(lamp->light_color);
+
     }
+}
 
 
-    // TEXTURE MODELS
-    for(auto& model : scene3D.texture_models)
-    {
-        render_texure_model(model);
-    }
-
-    // COLOR MODELS
-    for(auto& model : scene3D.color_models)
-    {
-        render_color_model(model);
-    }
-
-    // Tube normals
-    for(model::VertexT& vertex : scene3D.tube.mesh.vertices)
-    {
-        program_vector.render(vertex.normal, vertex.pos);
-    }
 
 
+void RendererScene3D::
+render_scene(Scene3D& scene3D, Manager3D& manager_3D)
+{
+    glEnable(GL_DEPTH_TEST);
+    // Defaults to fill. Context flag can overwrite?
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
+    set_camera(scene3D.camera);
+    set_lamps(scene3D.lamp_tags, manager_3D);
+
+    
+
+    for(TagO tag : scene3D.lamp_tags)
+        render_tag(tag, manager_3D);
+
+    for(TagO tag : scene3D.quad_tags)
+        render_tag(tag, manager_3D);
+    
     for(TagO tag : scene3D.tagos)
-    {
-        Object* base = man_o.get_object(tag);
-        if(base == nullptr) continue;
+        render_tag(tag, manager_3D);
 
-        m4f4 scale_matrix       = m4f4::scale(base->scale);
-        m4f4 translation_matrix = m4f4::translation(base->pos);
-        m4f4 rotation_matrix    = base->rot.matrix();
-        m4f4 model_matrix       = translation_matrix * rotation_matrix * scale_matrix;
-
-
-        // MESH - change color of active objects
-        if(tag == state.selected.tag)
-            program_mesh.render(model_matrix, base->mesh, 0x00ff00ff);
-        else if(tag == state.hovered.tag)
-            program_mesh.render(model_matrix, base->mesh, 0xff0000ff);
-
-
-        // QUAD
-        if (tag.type == TagO::Quad)
-        {
-            Quad* quad = manager_3D.manager_q.find_quad_oid(tag.oid);
-            if(quad == nullptr) continue;
-
-            program_quad.render(model_matrix, base->mesh, quad->texture_id);
-            program_axes.render(model_matrix);
-
-            if(manager_3D.manager_q.state.is_capturing())
-            {
-                program_mesh.render(model_matrix, base->mesh, 0x0000ffff);
-            }
-        }
-        else if(tag.is_lamp())
-        {
-            Lamp* lamp = manager_3D.manager_p.find_lamp(base->tagp);
-            if(lamp == nullptr) continue;
-
-            program_mesh.set_color(lamp->light_color);
-            program_mesh.render_filled(model_matrix, base->mesh);
-        }
-        else if(base->mesh.normals.size() > 0) // Draw meshes with normals as color models + normal vectors
-        {
-            program_color_light.render(model_matrix, base->mesh);
-            // Draw normals if selected
-            if(tag == state.selected.tag)
-            {
-                for(size_t i=0; i<base->mesh.verts.size(); i++)
-                {
-                    program_vector.set_color({0.0f, 0.0f, 0.0f});
-                    program_vector.render(  base->mesh.verts[i] + base->pos, 
-                                            base->mesh.normals[i]           );
-                }
-            }
-        }
-        else
-        {
-            program_mesh.render(model_matrix, base->mesh);
-        }
-
-
-        if(base->pyh_tag.pid != 0)
-        {
-            Physics* physics = manager_3D.manager_p.find_physics(base->pyh_tag);
-            if(physics != nullptr)
-            {
-                MeshLine linemesh;
-                m4f4 mat;
-
-                if(physics->is_aabb())
-                {
-                    linemesh.aabb(physics->isector.aabb);
-                }
-                else if (physics->is_sphere())
-                {
-                    linemesh.bounding_sphere(physics->isector.sphere.r);
-                    mat =   m4f4::translation(base->pos)
-                            * m4f4::scale(physics->isector.sphere.r);
-                }
-
-                if(physics->isect_flag)
-                    program_mesh.render_linemesh(mat, linemesh, 0xab0fdbff);
-                else
-                    program_mesh.render_linemesh(mat, linemesh, 0x000000ff);
-
-            }
-        }
-    }
     
 
 
@@ -297,28 +199,42 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
 {
     program_object_ids.use();
 
-    CameraObject& camobj = manager_3D.window_scene->camobj;
-    camobj.update_matrices();
-    program_object_ids.set_camera_view_projection(  camobj.perspective.matrix, 
-                                                    camobj.view.matrix);
+    CameraObject& camera = manager_3D.window_scene->camera;
+    camera.update_matrices();
+    program_object_ids.set_camera_view_projection(  camera.perspective.matrix, 
+                                                    camera.view.matrix);
 
     fb_object_ids.bind();
 
     fb_object_ids.clear_with({0.0f, 0.0f, 0.0f, 0.0f});
-    
+
+
     for(TagO tago : scene.tagos)
     {
         Object* baseo = manager_3D.manager_o.get_object(tago);
         if(baseo == nullptr) continue;
 
-        m4f4 scale_matrix       = m4f4::scale(baseo->scale);
-        m4f4 translation_matrix = m4f4::translation(baseo->pos);
-        m4f4 rotation_matrix    = baseo->rot.matrix();
-        m4f4 model_matrix       = translation_matrix * rotation_matrix * scale_matrix;
-
-        program_object_ids.render(  model_matrix, 
+        program_object_ids.render(  baseo->get_model_matrix(), 
                                     baseo->mesh, 
                                     baseo->tag.oid  );
+    }
+    for(TagO quad_tag : scene.quad_tags)
+    {
+        Object* obj = manager_3D.manager_o.get_object(quad_tag.oid);
+        if(obj == nullptr) continue;
+
+        program_object_ids.render(  obj->get_model_matrix(),
+                                    obj->mesh,
+                                    obj->tag.oid                );
+    }
+    for(TagO lamp_tag : scene.lamp_tags)
+    {
+        Object* obj = manager_3D.manager_o.get_object(lamp_tag.oid);
+        if(obj == nullptr) continue;
+
+        program_object_ids.render(  obj->get_model_matrix(),
+                                    obj->mesh,
+                                    obj->tag.oid                );
     }
 
     fb_object_ids.unbind(window_fb_size);
@@ -327,7 +243,7 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
 
 
 TagO RendererScene3D::
-sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane)
+sample_oid_tag(const Scene3D& scene, const f2 cursor_pos_sane)
 {
     fb_object_ids.bind();
 
@@ -339,46 +255,139 @@ sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane)
     OID sampled_oid = program_object_ids.vec4_to_oid(vec4_color);
 
     
-    for(TagO tag : scene_tags)
-    {
+    for(TagO tag : scene.tagos)
         if(tag.oid == sampled_oid)
             return tag;
-    }
+
+    for(TagO tag : scene.quad_tags)
+        if(tag.oid == sampled_oid)
+            return tag;
+
+    for(TagO tag : scene.lamp_tags)
+        if(tag.oid == sampled_oid)
+            return tag;
 
     return TagO();
 }
 
-
-
-
-void RendererScene3D::
-render_texure_model(model::ModelT model_texture)
+bool RendererScene3D::
+render_tag(TagO tag, Manager3D & manager_3D)
 {
-    ProgramModelTextureContext new_context;
+    Object* object = manager_3D.manager_o.get_object(tag);
+        if(object == nullptr) return false;
 
-    program_model_texture.create_model_rendering_context(   model_texture.mesh,   
-                                                            new_context,
-                                                            model_texture.texture);
+    m4f4 model_matrix = object->get_model_matrix();
+    
+    // MESH - change color of active objects
+    if(tag == manager_3D.state.selected.tag)
+        program_mesh.render(object->get_model_matrix(), object->mesh, 0x00ff00ff);
+    else if(tag == manager_3D.state.hovered.tag)
+        program_mesh.render(object->get_model_matrix(), object->mesh, 0xff0000ff);
 
-    model_texture.transform.set_matrix_model();
 
-    program_model_texture.render_model_rendering_context(   model_texture.mesh,
-                                                            new_context,
-                                                            model_texture.transform.matrix);
+    if     (tag.is_quad())
+    {
+        Quad* quad = manager_3D.manager_q.find_quad_oid(tag.oid);
+            if(quad == nullptr) return false;
+        render_quad(*object, *quad, manager_3D);
+        return true;
+    }
+    else if(tag.is_lamp())
+    {
+        Lamp* lamp = manager_3D.manager_p.find_lamp(object->tagp);
+            if(lamp == nullptr) return false;
+        render_lamp(*object, *lamp);
+        return true;
+    }
+
+
+
+    switch (object->rend_cxt.shading)
+    {
+    
+    case ObjectRenderContext::ColorLight:
+        program_color_light.render(model_matrix, object->mesh);
+        break;
+    
+    case ObjectRenderContext::Wireframe:
+        program_mesh.render(model_matrix, object->mesh);
+        break;
+    
+    default:
+        break;
+    }
+
+
+    if(object->rend_cxt.normals)
+    {
+        for(size_t i=0; i<object->mesh.verts.size(); i++)
+        {
+            program_vector.set_color({0.0f, 0.0f, 0.0f});
+            program_vector.render(  object->mesh.verts[i] + object->pos, 
+                                    object->mesh.normals[i]           );
+        }
+    }
+
+    if(object->pyh_tag.is_physics() && object->rend_cxt.physics)
+    {
+        Physics* physics = manager_3D.manager_p.find_physics(object->pyh_tag);
+        if(physics != nullptr)
+        {
+            MeshLine linemesh;
+            m4f4 mat;
+
+            if(physics->is_aabb())
+            {
+                linemesh.aabb(physics->isector.aabb);
+            }
+            else if (physics->is_sphere())
+            {
+                linemesh.bounding_sphere(physics->isector.sphere.r);
+                mat =   m4f4::translation(physics->p)
+                        * m4f4::scale(physics->isector.sphere.r);
+            }
+
+            if(physics->isect_flag)
+                program_mesh.render_linemesh(mat, linemesh, 0xab0fdbff);
+            else
+                program_mesh.render_linemesh(mat, linemesh, 0x000000ff);
+
+        }
+    }
+    
+    return true;
 }
 
 void RendererScene3D::
-render_color_model(model::ModelColor model)
+render_quad(Object& object, Quad& quad, Manager3D& manager_3D)
 {
-    model.transform.set_matrix_model();
+    m4f4 model_matrix = object.get_model_matrix();
 
-    RenderContextModelColor new_context;
+    program_quad.render(model_matrix, object.mesh, quad.texture_id);
+    program_axes.render(model_matrix);
 
-    program_model_color.create_render_context(new_context, model);
-
-    program_model_color.render( new_context, 
-                                model.transform.matrix, 
-                                model.mesh.faces.size()*3);
+    if(manager_3D.manager_q.state.is_capturing())
+    {
+        program_mesh.render(model_matrix, object.mesh, 0x0000ffff);
+    }   
 }
+
+
+void RendererScene3D::
+render_lamp(Object& object, Lamp& lamp)
+{
+    m4f4 model_matrix = object.get_model_matrix();
+
+    program_mesh.set_color(lamp.light_color);
+    program_mesh.render_filled(model_matrix, object.mesh);
+}
+
+void RendererScene3D::render_physics(Physics * physics, ManagerProperty & manager_p)
+{
+
+}
+
+
+
 
 

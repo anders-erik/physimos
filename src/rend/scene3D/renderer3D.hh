@@ -30,9 +30,13 @@ namespace opengl {
     class TextureFBMS;
 }
 
+struct Manager3D;
+struct ManagerProperty;
+struct Physics;
 struct Scene3D;
 struct SceneState;
-struct Manager3D;
+struct CameraObject;
+struct Lamp;
 
 
 class RendererScene3D 
@@ -61,22 +65,24 @@ public:
     void init(f2 window_fb_size);
 
     void bind_window_fb(i2 window_scene_i);
-
     void set_window_fb_size(window::WindowResizeEvent& window_resize_event);
 
-
-    /** Render scene objects. */
-    void render_scene_3d(Scene3D& scene3D, Manager3D& manager_3D);
+    void set_camera(CameraObject& camera);
+    void set_lamps(std::vector<TagO> lamp_tags, Manager3D& manager3D);
+    void render_scene(Scene3D& scene3D, Manager3D& manager_3D);
 
     /** Object id outlines for cursor interaction */
     void render_object_ids(Scene3D& scene3D, Manager3D& manager_3D);
-    TagO sample_oid_tag(const std::vector<TagO>& scene_tags, const f2 cursor_pos_sane);
+    TagO sample_oid_tag(const Scene3D& scene, const f2 cursor_pos_sane);
 
 
 private:
 
-    void render_texure_model(model::ModelT model_texture);
-    void render_color_model(model::ModelColor model);
+    /** Returns false on invalid object tag. */
+    bool render_tag(TagO tag, Manager3D& manager_3D);
+    void render_quad(Object& object, Quad& quad, Manager3D& manager_3D);
+    void render_lamp(Object & object, Lamp & lamp);
+    void render_physics(Physics* physics, ManagerProperty& manager_p);
 
 };
 

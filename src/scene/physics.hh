@@ -59,6 +59,8 @@ struct Physics
     {
         isect_flag = false;
 
+        p = new_pos; // make the current position queryable if only physics available
+
         if(is_aabb())
             isector.aabb.update(new_pos);
         else if(is_sphere())

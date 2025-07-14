@@ -228,7 +228,7 @@ render()
 	else
 		sample_pos = auxwin.get_cursor_pos().pixels;
 
-	sampled_tag = manager_3D.renderer_3D.sample_oid_tag(  	manager_3D.window_scene->tagos,
+	sampled_tag = manager_3D.renderer_3D.sample_oid_tag(  	*manager_3D.window_scene,
                                                 			sample_pos    					);
 
 	pui.render(renderer_pui); // Render ui on top of scene

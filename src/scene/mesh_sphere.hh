@@ -72,18 +72,14 @@ public:
                                                 phi     );
                 
                 mesh.verts.emplace_back(vert);
-
-                // mesh.normals.emplace_back(  cos(angle), 
-                //                             sin(angle), 
-                //                             0.0f        );
+                mesh.normals.emplace_back(vert);
+                mesh.colors.emplace_back(0.5f, 0.5f, 0.5f);
 
                 theta = theta_delta   * (float) i_lo;   // CCW from +x
 
-                Print::line(Str::FL(phi, 2, Str::FloatRep::Fixed));
+                // Print::line(Str::FL(phi, 2, Str::FloatRep::Fixed));
             }
         }
-        mesh.verts.emplace_back(0.0f, 0.0f,  1.0f);
-        mesh.verts.emplace_back(0.0f, 0.0f, -1.0f);
 
 
         for(i_la=0;i_la<LAC-1;i_la++)
@@ -102,26 +98,28 @@ public:
             }
         }
 
-        // TOP
+
+        // seal top and bottom
+        mesh.verts.emplace_back(0.0f, 0.0f,  1.0f); // top
+        mesh.normals.emplace_back(0.0f, 0.0f,  1.0f); // top
+        mesh.colors.emplace_back(0.5f, 0.5f, 0.5f); // top
+
+        mesh.verts.emplace_back(0.0f, 0.0f, -1.0f); // bottom
+        mesh.normals.emplace_back(0.0f, 0.0f, -1.0f); // bottom
+        mesh.colors.emplace_back(0.5f, 0.5f, 0.5f); // bottom
+
         for(i_lo=0;i_lo<LOC;i_lo++)
         {
             int i_lo_next = (i_lo+1) % LOC;
-
+            // Top
             mesh.faces.emplace_back(    IV( i_lo      , 0   ), 
                                         IV( i_lo_next , 0   ), 
                                         i_top                   );
-        }
-
-        // BOTTOM
-        for(i_lo=0;i_lo<LOC;i_lo++)
-        {
-            int i_lo_next = (i_lo+1) % LOC;
-
+            // bottom
             mesh.faces.emplace_back(    IV( i_lo      , LAC-1   ), 
                                         IV( i_lo_next , LAC-1   ), 
                                         i_bottom                   );
         }
-
 
         
     }

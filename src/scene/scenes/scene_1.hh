@@ -83,7 +83,7 @@ public:
         squad_object.tag.type = TagO::Type::Quad;
         squad_object.pos.x = 0.0f;
         squad_object.pos.z = 1.0f;
-        root_scene.tagos.push_back(squad_object.tag);
+        root_scene.quad_tags.push_back(squad_object.tag);
 
         Quad quad;
         // quad.texture_id = Rend::Manager::get_renderer_scene2D().get_scene_fb_texture_id(graph_sid);
@@ -154,7 +154,7 @@ public:
         Lamp lamp;
         lamp.light_color = {0.8f, 0.6f, 0.6f};
         lampo.tagp = manager_3D.manager_p.push_lamp(lamp);
-        root_scene.tagos.push_back(lampo.tag);
+        root_scene.lamp_tags.push_back(lampo.tag);
 
         // CAMERA OBJECT
         Object& cam_o = manager_o.new_object();
@@ -177,6 +177,7 @@ public:
         // PHYSICS - STATIC CUBE
         Object& phy_0 = manager_o.new_object();
         phy_0.tag.type = TagO::Base;
+        phy_0.rend_cxt.set_shading_wireframe();
         phy_0.mesh.cube_centered();
         phy_0.mesh.center();
         phy_0.mesh.scale(3.0f);
@@ -196,6 +197,7 @@ public:
         Object& phy_1 = manager_o.new_object();
         phy_1.tag.type = TagO::Base;
         // phy_1.mesh.sheet({2, 2});
+        phy_1.rend_cxt.set_shading_wireframe();
         phy_1.mesh.cube_centered();
         phy_1.mesh.scale({2.0f, 2.0f, 0.1f});
         phy_1.mesh.center();
@@ -213,6 +215,7 @@ public:
 
         Object& phyo_sph = manager_o.new_object();
         phyo_sph.tag.type = TagO::Base;
+        phyo_sph.rend_cxt.set_shading_wireframe();
         phyo_sph.mesh.sheet({1, 2});
         phyo_sph.mesh.center();
         phyo_sph.name = "phy_sph";
@@ -226,6 +229,7 @@ public:
 
         Object& phyo_sph_2 = manager_o.new_object();
         phyo_sph_2.tag.type = TagO::Base;
+        phyo_sph_2.rend_cxt.set_shading_wireframe();
         phyo_sph_2.mesh.cube_centered();
         phyo_sph_2.mesh.center();
         phyo_sph_2.name = "phy_sph_2";
@@ -240,6 +244,7 @@ public:
 
         Object& phyo_dyn_sph_1 = manager_o.new_object();
         phyo_dyn_sph_1.tag.type = TagO::Base;
+        phyo_dyn_sph_1.rend_cxt.set_shading_wireframe();
         phyo_dyn_sph_1.mesh.cube_centered();
         phyo_dyn_sph_1.mesh.center();
         phyo_dyn_sph_1.name = "phyo_dyn_sph_1";
@@ -253,6 +258,7 @@ public:
 
         Object& phyo_dyn_sph_2 = manager_o.new_object();
         phyo_dyn_sph_2.tag.type = TagO::Base;
+        phyo_dyn_sph_2.rend_cxt.set_shading_wireframe();
         phyo_dyn_sph_2.mesh.cube_centered();
         phyo_dyn_sph_2.mesh.center();
         phyo_dyn_sph_2.name = "phyo_dyn_sph_2";
@@ -266,6 +272,7 @@ public:
 
         Object& phyo_dyn_cube_1 = manager_o.new_object();
         phyo_dyn_cube_1.tag.type = TagO::Base;
+        phyo_dyn_cube_1.rend_cxt.set_shading_wireframe();
         phyo_dyn_cube_1.mesh.cube_centered();
         phyo_dyn_cube_1.name = "phyo_dyn_cube_1";
         root_scene.tagos.push_back(phyo_dyn_cube_1.tag);
@@ -280,10 +287,11 @@ public:
         
         // CAMERA
         // root_scene.camobj.view = cam;
-        root_scene.camobj.perspective.set_fov(800, 600);
+        root_scene.camera.perspective.set_fov(800, 600);
         // root_scene.camobj.cam.orbit_tag 	= lampo.tag;
         // root_scene.camobj.set_free();
-        root_scene.camobj.object.pos = {-10.0f, 10.0f, 5.0f};
-        root_scene.camobj.set_orbit_tag(phy_0.tag);
+        root_scene.camera.object.pos = {-10.0f, 10.0f, 5.0f};
+        // root_scene.camera.set_orbit_tag(phy_0.tag);
+        root_scene.camera.set_orbit_center();
     }
 };

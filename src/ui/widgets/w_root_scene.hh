@@ -70,7 +70,7 @@ public:
         list_object.reload(manager_3D.manager_o.objects, {x, y + objs_y});
 
         float cam_y = -400.0f;
-        w_camera.reload(manager_3D.window_scene->camobj, {x, y + cam_y});        
+        w_camera.reload(manager_3D.window_scene->camera, {x, y + cam_y});        
     }
 
 

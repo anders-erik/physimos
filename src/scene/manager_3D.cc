@@ -166,9 +166,9 @@ update(float dt_s)
 
 
     // CAMERA
-    CameraObject&   camobj  = scenew.camobj;
-    CameraView&     cam     = scenew.camobj.view;
-    Object&         c_obj   = scenew.camobj.object;
+    CameraObject&   camobj  = scenew.camera;
+    CameraView&     cam     = scenew.camera.view;
+    Object&         c_obj   = scenew.camera.object;
 
     f3 cam_f = Quarternion::rotate_f3(c_obj.rot, f3::X()).unit();
     f3 cam_l = Quarternion::rotate_f3(c_obj.rot, f3::Y()).unit();
@@ -320,7 +320,7 @@ render_window_scene (
 {
     renderer_3D.bind_window_fb(window_size_i);
 
-	renderer_3D.render_scene_3d(    *window_scene, 
+	renderer_3D.render_scene(    *window_scene, 
                                     *this           );
 
 	renderer_3D.render_object_ids(  *window_scene,

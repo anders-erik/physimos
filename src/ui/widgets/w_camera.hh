@@ -57,19 +57,19 @@ public:
 
         if(free_toggle.containsPoint(cursor_sane))
         {
-            manager_3D.window_scene->camobj.set_free();
+            manager_3D.window_scene->camera.set_free();
         }
         else if(orbit_center_toggle.containsPoint(cursor_sane))
         {
-            if(manager_3D.window_scene->camobj.state.is_orbit_center())
-                manager_3D.window_scene->camobj.set_free();
+            if(manager_3D.window_scene->camera.state.is_orbit_center())
+                manager_3D.window_scene->camera.set_free();
             else
-                manager_3D.window_scene->camobj.set_orbit_center();
+                manager_3D.window_scene->camera.set_orbit_center();
         }
         else if(B_orbit_tag_toggle.containsPoint(cursor_sane))
         {
-            if(manager_3D.window_scene->camobj.state.is_orbit_tag())
-                manager_3D.window_scene->camobj.set_free();
+            if(manager_3D.window_scene->camera.state.is_orbit_tag())
+                manager_3D.window_scene->camera.set_free();
         }
 
         return {};
