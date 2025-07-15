@@ -78,6 +78,7 @@ struct Mesh
     void scale_z(float factor);
     void move_z(float delta);
     Mesh& move(const f3& delta);
+    void shear_y(float shear_factor);
     void poly_r(Polynomial<float> poly);
     void color(ColorInt color_i);
 

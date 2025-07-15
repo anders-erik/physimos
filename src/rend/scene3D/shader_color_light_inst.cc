@@ -9,10 +9,10 @@
 #include <iostream>
 #include <cmath>
 
-#include "shader_color_light.hh"
+#include "shader_color_light_inst.hh"
 
 
-void ShaderColorLight::
+void ShaderColorLightInst::
 init()
 {
     build();
@@ -23,6 +23,7 @@ init()
     glGenBuffers(1, &vbo_pos);
     glGenBuffers(1, &vbo_norm);
     glGenBuffers(1, &vbo_color);
+    glGenBuffers(1, &vbo_model_mats);
     glGenBuffers(1, &EBO);
 
     view_mat_LOC        = glGetUniformLocation(id, "view");
@@ -33,7 +34,7 @@ init()
 }
 
 
-void ShaderColorLight::
+void ShaderColorLightInst::
 set_camera_view_perspective(m4f4 view_mat, m4f4 perspective_mat)
 {
     glUseProgram(id);
@@ -41,17 +42,17 @@ set_camera_view_perspective(m4f4 view_mat, m4f4 perspective_mat)
     glUniformMatrix4fv(perspective_mat_LOC, 1, GL_TRUE, (float*) &perspective_mat);
 }
 
-void ShaderColorLight::set_light_pos(f3 light_pos)
+void ShaderColorLightInst::set_light_pos(f3 light_pos)
 {
     glUniform3fv(light_pos_LOC, 1, light_pos.pointer());
 }
 
-void ShaderColorLight::set_light_color(f3 light_color)
+void ShaderColorLightInst::set_light_color(f3 light_color)
 {
     glUniform3fv(light_color_LOC, 1, light_color.pointer());
 }
 
-void ShaderColorLight::set_mesh(Mesh & mesh)
+void ShaderColorLightInst::set_data(Mesh & mesh)
 {
     glUseProgram(id);
 
@@ -75,6 +76,7 @@ void ShaderColorLight::set_mesh(Mesh & mesh)
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(f3), (void*)0);
     glEnableVertexAttribArray(2);
 
+
     // Elements
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.faces.size() * sizeof(TriangleFaceIndeces), mesh.faces.data(), GL_DYNAMIC_DRAW);
@@ -82,17 +84,11 @@ void ShaderColorLight::set_mesh(Mesh & mesh)
     tri_face_count = mesh.faces.size();
 }
 
-void ShaderColorLight::
-set_model_matrix(const m4f4 & model_matrix)
-{
-    glUseProgram(id);
-    glUniformMatrix4fv(glGetUniformLocation(id, "model"), 1, GL_TRUE, model_matrix.pointer());
-}
 
 
 
-void ShaderColorLight::
-render_fill()
+void ShaderColorLightInst::
+render_fill(uint instance_count)
 {
     glUseProgram(id);
 
@@ -100,25 +96,18 @@ render_fill()
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-    glDrawElements( GL_TRIANGLES, 
-                    3 * tri_face_count, 
-                    GL_UNSIGNED_INT,
-                    0                   );
+    // glDrawElements( GL_TRIANGLES, 
+    //                 3 * tri_face_count, 
+    //                 GL_UNSIGNED_INT,
+    //                 0                   );
+    
+    glDrawElementsInstanced(    GL_TRIANGLES, 
+                                3 * tri_face_count, 
+                                GL_UNSIGNED_INT,
+                                0,
+                                instance_count      );
 }
 
-void ShaderColorLight::render_lines()
-{
-    glUseProgram(id);
 
-    glBindVertexArray(VAO);
-
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glLineWidth(2);
-
-    glDrawElements( GL_TRIANGLES, 
-                    3 * tri_face_count, 
-                    GL_UNSIGNED_INT,
-                    0                   );
-}
 
 

@@ -70,6 +70,17 @@ public:
     }
 
 
+    static Mesh grass_1()
+    {
+        Mesh mesh;
+        mesh.sheet({1.0f, 2});
+        mesh.center();
+        mesh.shear_y(3.0f);
+        mesh.scale(0.1f);
+        mesh.color(0x00ff00);
+        return mesh;
+    }
+
     static Mesh toadstool_mesh_1()
     {
         Mesh mesh;

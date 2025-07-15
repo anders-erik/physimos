@@ -283,7 +283,14 @@ public:
         phyo_dyn_cube_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_cube_1);
 
 
-
+        // GRASS
+        Object& grass = manager_o.new_object();
+        grass.tag.type = TagO::Base;
+        grass.mesh = ForestPlanet::grass_1();        
+        grass.name = "grass";
+        grass.rend_cxt.instance_ctx.enabled = true;
+        grass.rend_cxt.instance_ctx.instance_count = 100;
+        root_scene.tagos.push_back(grass.tag);
         
         // CAMERA
         // root_scene.camobj.view = cam;

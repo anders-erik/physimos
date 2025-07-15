@@ -38,6 +38,7 @@ init(f2 window_fb_size)
     program_object_ids.init();
 
     program_color_light.init();
+    shader_color_light_inst.init();
 
     program_quad.init();
 
@@ -98,6 +99,8 @@ set_camera(CameraObject& camera)
                                                 cam_view_mat);
     program_color_light.set_camera_view_perspective( cam_view_mat, 
                                                     cam_persp_mat          );
+    shader_color_light_inst.set_camera_view_perspective(    cam_view_mat, 
+                                                            cam_persp_mat   );
 }
 
 void RendererScene3D::set_lamps(std::vector<TagO> lamp_tags, Manager3D & manager3D)
@@ -108,11 +111,12 @@ void RendererScene3D::set_lamps(std::vector<TagO> lamp_tags, Manager3D & manager
         Object* lampo = manager3D.manager_o.get_object(lamp_tag);
             if(lampo == nullptr) continue;
         program_color_light.set_light_pos(lampo->pos);
+        shader_color_light_inst.set_light_pos(lampo->pos);
 
         Lamp* lamp = manager3D.manager_p.find_lamp(lampo->tagp);
             if(lampo == nullptr) continue;
         program_color_light.set_light_color(lamp->light_color);
-
+        shader_color_light_inst.set_light_color(lamp->light_color);
     }
 }
 
@@ -277,7 +281,7 @@ render_tag(TagO tag, Manager3D & manager_3D)
         if(object == nullptr) return false;
 
     m4f4 model_matrix = object->get_model_matrix();
-    
+
     // MESH - change color of active objects
     if(tag == manager_3D.state.selected.tag)
         program_mesh.render(object->get_model_matrix(), object->mesh, 0x00ff00ff);
@@ -302,19 +306,34 @@ render_tag(TagO tag, Manager3D & manager_3D)
 
 
 
-    switch (object->rend_cxt.shading)
+    
+
+    if(object->rend_cxt.instance_ctx.enabled)
     {
-    
-    case ObjectRenderContext::ColorLight:
-        program_color_light.render(model_matrix, object->mesh);
-        break;
-    
-    case ObjectRenderContext::Wireframe:
-        program_mesh.render(model_matrix, object->mesh);
-        break;
-    
-    default:
-        break;
+        shader_color_light_inst.set_data(object->mesh);
+        shader_color_light_inst.render_fill(object->rend_cxt.instance_ctx.instance_count);
+    }
+    else
+    {
+        switch (object->rend_cxt.shading)
+        {
+
+        case ObjectRenderContext::ColorLight:
+            program_color_light.set_model_matrix(model_matrix);
+            program_color_light.set_mesh(object->mesh);
+            program_color_light.render_fill();
+            break;
+
+        case ObjectRenderContext::Wireframe:
+            // program_color_light.set_model_matrix(model_matrix);
+            // program_color_light.set_mesh(object->mesh);
+            // program_color_light.render_lines();
+            program_mesh.render(model_matrix, object->mesh);
+            break;
+
+        default:
+            break;
+        }
     }
 
 

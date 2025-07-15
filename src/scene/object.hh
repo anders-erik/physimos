@@ -11,6 +11,12 @@
 #include "scene/mesh.hh"
 // #include "scene/physics.hh"
 
+struct InstanceContext
+{
+    bool enabled = false;
+    uint instance_count = 0;
+};
+
 struct ObjectRenderContext
 {
     enum Shading
@@ -21,7 +27,7 @@ struct ObjectRenderContext
 
     Shading shading     = ColorLight;
     bool    visible     = true;
-    int     instance    = 0;
+    InstanceContext     instance_ctx;
     bool    normals     = false;
     bool    physics     = true;
     bool    axes        = false;

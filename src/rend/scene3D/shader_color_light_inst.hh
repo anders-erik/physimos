@@ -9,14 +9,16 @@
 
 
 
-class ShaderColorLight : protected opengl::ShaderProgram
+class ShaderColorLightInst : protected opengl::ShaderProgram
 {
 
     unsigned int VAO;
     unsigned int vbo_pos;
     unsigned int vbo_norm;
     unsigned int vbo_color;
+    unsigned int vbo_model_mats;
     unsigned int EBO;
+
     uint tri_face_count = 0;
 
     uint view_mat_LOC;
@@ -29,7 +31,7 @@ class ShaderColorLight : protected opengl::ShaderProgram
 
 public:
 
-    ShaderColorLight() : ShaderProgram("3D/color_light") {};
+    ShaderColorLightInst() : ShaderProgram("3D/color_light_inst") {};
 
     void init();
 
@@ -37,11 +39,9 @@ public:
     void set_light_pos(f3 light_pos);
     void set_light_color(f3 light_color);
 
-    void set_mesh(Mesh& mesh);
-    void set_model_matrix(const m4f4 & model_matrix);
+    void set_data(Mesh& mesh);
 
-    void render_fill();
-    void render_lines();
+    void render_fill(uint instance_count);
 
 };
 

@@ -530,6 +530,12 @@ move(const f3& delta)
     return *this;
 }
 
+void Mesh::shear_y(float shear_factor)
+{
+    for(auto& vert : verts)
+        vert.y += vert.x * shear_factor;
+}
+
 
 
 
