@@ -73,10 +73,10 @@ set_window_fb_size(window::WindowResizeEvent& window_resize_event)
 }
 
 void RendererScene3D::
-set_camera(CameraObject& camera)
+set_camera(Camera& camera)
 {
     camera.update_matrices();
-    m4f4 cam_persp_mat    = camera.perspective.matrix;
+    m4f4 cam_persp_mat    = camera.projection.matrix;
     m4f4 cam_view_mat   = camera.view.matrix;
 
     // UNIFORMS
@@ -203,9 +203,9 @@ render_object_ids(Scene3D & scene, Manager3D& manager_3D)
 {
     program_object_ids.use();
 
-    CameraObject& camera = manager_3D.window_scene->camera;
+    Camera& camera = manager_3D.window_scene->camera;
     camera.update_matrices();
-    program_object_ids.set_camera_view_projection(  camera.perspective.matrix, 
+    program_object_ids.set_camera_view_projection(  camera.projection.matrix, 
                                                     camera.view.matrix);
 
     fb_object_ids.bind();

@@ -342,7 +342,7 @@ handle_user_input(Manager3D& manager_3D, window::InputEvent & event, TagO sample
 void SceneState::
 handle_window(Manager3D& manager_3D, window::WindowResizeEvent & window_event)
 {
-    manager_3D.window_scene->camera.perspective.set_fov(    window_event.size_i.x, 
+    manager_3D.window_scene->camera.projection.set_viewport(    window_event.size_i.x, 
                                                                 window_event.size_i.y   );
 }
 

@@ -9,7 +9,7 @@
 
 #include "window/auxevent.hh"
 
-#include "camera.hh"
+#include "scene/camera.hh"
 
 
 #include "sid.hh"
@@ -25,7 +25,7 @@ struct Scene3D
     SID sid;
     Str name;
 
-    CameraObject camera;
+    Camera camera;
 
     std::vector<TagO> tagos;
     std::vector<TagO> quad_tags;

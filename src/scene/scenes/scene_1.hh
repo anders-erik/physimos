@@ -294,11 +294,19 @@ public:
         
         // CAMERA
         // root_scene.camobj.view = cam;
-        root_scene.camera.perspective.set_fov(800, 600);
-        // root_scene.camobj.cam.orbit_tag 	= lampo.tag;
+        // root_scene.camera.projection.set_fov(800, 600);
+        // root_scene.camera.projection.set_finite({   1.5f,
+        //                                             0.785f,
+        //                                             100.0f,
+        //                                             0.01f   });
+        root_scene.camera.projection.set_finite();
+        // root_scene.camera.projection.set_infinite();
+        // root_scene.camera.projection.set_ortho();
+        // root_scene.camobj.cam.orbit_tag = lampo.tag;
         // root_scene.camobj.set_free();
         root_scene.camera.object.pos = {-10.0f, 10.0f, 5.0f};
         // root_scene.camera.set_orbit_tag(phy_0.tag);
         root_scene.camera.set_orbit_center();
+        // root_scene.camera.set_free();
     }
 };

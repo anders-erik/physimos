@@ -12,6 +12,7 @@
 
 #include "scene/manager_3D.hh"
 #include "scene/manager_object.hh"
+#include "scene/camera.hh"
 
 #include "widget.hh"
 
@@ -29,7 +30,7 @@ namespace W
 /** Widget reflecting the state of a specific quad */
 struct Camera : public Widget
 {
-    CameraObject camobj; // object copy - read only
+    ::Camera camobj; // object copy - read only
 
     static constexpr f2 size = {200.0f, 100.0f};
 
@@ -77,7 +78,7 @@ public:
 
     /** Recreates the whole widget from scene data every call. */
     void 
-    reload(CameraObject& new_camobj, f2 new_pos)
+    reload(::Camera& new_camobj, f2 new_pos)
     {
         camobj = new_camobj;
 

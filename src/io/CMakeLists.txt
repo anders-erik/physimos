@@ -1,5 +1,6 @@
 
 add_subdirectory(json)
+add_subdirectory(gltf)
 add_subdirectory(bmp)
 add_subdirectory(obj)
 

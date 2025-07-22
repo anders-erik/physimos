@@ -166,7 +166,7 @@ update(float dt_s)
 
 
     // CAMERA
-    CameraObject&   camobj  = scenew.camera;
+    Camera&   camobj  = scenew.camera;
     CameraView&     cam     = scenew.camera.view;
     Object&         c_obj   = scenew.camera.object;
 
@@ -216,13 +216,11 @@ update(float dt_s)
     }
     else
     {
-        float free_pan_factor = 2.0f;
+        float free_pan_factor = 0.002f;
         c_obj.rot.rotate(cam_l,    -state.camera.deltas.y 
-                                    * free_pan_factor  
-                                    / camobj.perspective.height);
+                                    * free_pan_factor       );
         c_obj.rot.rotate(cam_u,    -state.camera.deltas.x 
-                                    * free_pan_factor  
-                                    / camobj.perspective.width);
+                                    * free_pan_factor       );
 
         // remove tilt
         f3 HL = f3::Z().cross(cam_f); // horizontal left
@@ -270,13 +268,27 @@ update(float dt_s)
             f3 cam_to_obj_delta = c_obj.pos - selected_o->pos;
             float obj_distance  = cam_to_obj_delta.norm();
 
-            float tan_fov = tanf(camobj.perspective.fov);
-            float view_width_at_obj_dist = obj_distance * tan_fov;
+            
+            float view_width_at_obj_dist;
+            if(camobj.is_finite())
+            {
+                float tan_fov = tanf(camobj.projection.base.finite.fov);
+                view_width_at_obj_dist = obj_distance * tan_fov;
+            }
+            else if(camobj.is_infinite())
+            {
+                float tan_fov = tanf(camobj.projection.base.finite.fov);
+                view_width_at_obj_dist = obj_distance * tan_fov;
+            }
+            else if(camobj.is_ortho())
+            {
+                view_width_at_obj_dist = 2 * camobj.projection.base.ortho.xmax;
+            }
 
             // std::cout << obj_distance << ", " << view_width_at_obj_dist << std::endl;
             
 
-            selected_o->pos -= cam_l * state.selected.pos_delta.x * view_width_at_obj_dist * camobj.perspective.AR();
+            selected_o->pos -= cam_l * state.selected.pos_delta.x * view_width_at_obj_dist * camobj.projection.AR();
             selected_o->pos += cam_u * state.selected.pos_delta.y * view_width_at_obj_dist;
             selected_o->pos += cam_f * state.selected.pos_delta.z;
 

@@ -61,7 +61,7 @@ public:
 
         // CAMERA
         // root_scene.camobj.view = cam;
-        root_scene.camera.perspective.set_fov(800, 600);
+        root_scene.camera.projection.set_viewport(800, 600);
         // root_scene.camobj.cam.orbit_tag 	= lampo.tag;
         // root_scene.camobj.set_free();
         root_scene.camera.object.pos = {-10.0f, 10.0f, 5.0f};

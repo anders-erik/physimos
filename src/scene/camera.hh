@@ -7,78 +7,124 @@
 #include "scene/tago.hh"
 #include "scene/object.hh"
 
-struct CameraPerspective
+
+/** Three projection types: finite perspective, infinite perspective, and Othographic.
+    Matrices are equal to GLTF specs. */
+struct Projection
 {
-    m4f4 matrix; // Full perspective matrix. Set by calling 'update_matrix()'
+    struct Finite
+    {
+        float AR;
+        float fov;
+        float zn;
+        float zf;
+    };
+    struct Infinite
+    {
+        float AR;
+        float fov;
+        float zn;
+    };
+    struct Ortho
+    {
+        float xmax;
+        float ymax;
+        float zn;
+        float zf;
+    };
 
-    float fov = 0.785f;
-    float width = 600.0f;
-    float height = 400.0f;
-    float zn = 0.1f;
-    float zf = 100.0f;
+    constexpr Finite    default_finite()    { return {1.5f, 0.785f, 0.1f, 100.0f};  }
+    constexpr Infinite  default_infinite()  { return {1.5f, 0.785f, 0.1f};          }
+    constexpr Ortho     default_ortho()     { return {30.0f, 20.0f, 0.1f, 100.0f};  }
 
-    void set_fov(int new_width, int new_height);
-    float AR();
-    
+    union Base
+    {
+        Finite      finite;
+        Infinite    infinite;
+        Ortho       ortho;
+    };
+
+    enum class Tag
+    {
+        Finite,
+        Infinite,
+        Ortho,
+    };
+
+    void set_viewport(int new_width, int new_height)
+    {
+        float ar = (float) new_width / (float) new_height;
+
+        if(tag == Tag::Finite)
+            base.finite.AR = ar;
+        else if(tag == Tag::Infinite)
+            base.infinite.AR = ar;
+        else if(tag == Tag::Ortho)
+            base.ortho.xmax = base.ortho.ymax * ar;
+        else 
+            throw "Updated camera viewport without a matching tag.";
+        
+        update_matrix();
+    }
+
+    float AR()
+    {
+        if(tag == Tag::Finite)
+            return base.finite.AR;
+        else if(tag == Tag::Infinite)
+            return base.infinite.AR;
+        else if(tag == Tag::Ortho)
+            return base.ortho.xmax / base.ortho.ymax;
+        else 
+            throw "Get camera AR without a matching tag.";
+    }
+
+    bool is_perspective() { return tag == Tag::Finite || tag == Tag::Infinite; }
+
+    void set_finite(const Finite& finite)
+    {
+        base.finite = finite;
+        tag = Tag::Finite;
+        update_matrix();
+    }
+    void set_finite()
+    {
+        base.finite = default_finite();
+        tag = Tag::Finite;
+        update_matrix();
+    }
+    void set_infinite(const Infinite& infinite)
+    {
+        base.infinite = infinite;
+        tag = Tag::Infinite;
+        update_matrix();
+    }
+    void set_infinite()
+    {
+        base.infinite = default_infinite();
+        tag = Tag::Infinite;
+        update_matrix();
+    }
+    void set_ortho(const Ortho& ortho)
+    {
+        base.ortho = ortho;
+        tag = Tag::Ortho;
+        update_matrix();
+    }
+    void set_ortho()
+    {
+        base.ortho = default_ortho();
+        tag = Tag::Ortho;
+        update_matrix();
+    }
+
     m4f4& update_matrix();
+
+    Base    base;
+    Tag     tag;
+    m4f4    matrix; // Full perspective matrix. Set by calling 'update_matrix()'
 };
 
-
-
-struct OrbitalView
-{
-    f3 rotational_center;   // the point about which the camera is orbiting
-    m4f4 matrix;            // Full view matrix. Set by calling 'update_matrix()'
-
-    float rho   =  8.0f; // Radius
-    float theta =  4.5f; // x-y plane
-    float phi   =  1.0f; // z-axis
-    // float rho   =  3.0f; // Radius
-    // float theta =  -PIHf; // x-y plane
-    // float phi   =  0.0f; // z-axis
-
-    float rho_min       = 0.5f;
-    float rho_max       = 40.0f;
-    float phi_min       = 0.01f;
-    float phi_max       = 3.13f;
-
-
-    float rho_clamp(float _rho);
-    float phi_clamp(float _phi);
-
-    void rho_change(float delta);
-    void theta_change(float delta);
-    void phi_change(float delta);
-
-    m4f4& update_matrix();
-};
-
-
-
-
-
-struct CameraOrbital
-{
-    CameraPerspective perspective;
-    OrbitalView view;
-
-    /** Makes view and perspective matrices reflect most recent values. */
-    void update();
-
-    f3 get_pos();
-    f3 get_forward();
-    f3 get_right();
-    f3 get_up();
-
-    void forward(float delta);
-    void backward(float delta);
-    void left(float delta);
-    void right(float delta);
-    void up(float delta);
-    void down(float delta);
-
-    void print();
-};
 
 
 
@@ -148,17 +194,22 @@ struct CameraState
 };
 
 
-struct CameraObject
+struct Camera
 {
-    Object              object;
-    CameraView          view;
-    CameraPerspective   perspective;
+    Object      object;
+    CameraView  view;
+    Projection  projection;
 
-    CameraState         state;
+    CameraState state;
 
     void set_free();
     void set_orbit_center();
     void set_orbit_tag(TagO new_tag);
+
+    bool is_perspective()   { return projection.is_perspective(); }
+    bool is_finite()        { return projection.tag == Projection::Tag::Finite;     }
+    bool is_infinite()      { return projection.tag == Projection::Tag::Infinite;   }
+    bool is_ortho()         { return projection.tag == Projection::Tag::Ortho;      }
 
     void update_matrices();
 };

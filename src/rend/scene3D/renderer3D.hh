@@ -36,7 +36,7 @@ struct ManagerProperty;
 struct Physics;
 struct Scene3D;
 struct SceneState;
-struct CameraObject;
+struct Camera;
 struct Lamp;
 
 
@@ -69,7 +69,7 @@ public:
     void bind_window_fb(i2 window_scene_i);
     void set_window_fb_size(window::WindowResizeEvent& window_resize_event);
 
-    void set_camera(CameraObject& camera);
+    void set_camera(Camera& camera);
     void set_lamps(std::vector<TagO> lamp_tags, Manager3D& manager3D);
     void render_scene(Scene3D& scene3D, Manager3D& manager_3D);
 

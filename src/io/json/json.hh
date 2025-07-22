@@ -15,14 +15,14 @@ struct Json
     // char buf[56];
     
     constexpr
-    Json(                       )   : type {json_type::null}        , var {nullptr}   {};
-    Json(j_null     new_null    )   : type {json_type::null}        , var {new_null}   {}
-    Json(j_bool     new_bool    )   : type {json_type::boolean}     , var {new_bool}   {}
-    Json(j_int      new_int     )   : type {json_type::number_int}  , var {new_int}    {}
-    Json(j_float    new_float   )   : type {json_type::number_float}, var {new_float}  {}
-    Json(j_string   new_string  )   : type {json_type::string}      , var {new_string} {}
-    Json(j_array    new_array   )   : type {json_type::array}       , var {new_array}  {}
-    Json(j_object   new_object  )   : type {json_type::object}      , var {new_object} {}
+    Json(                   ) : type {json_type::null}        , var {nullptr}    {}
+    Json(j_null   new_null  ) : type {json_type::null}        , var {new_null}   {}
+    Json(j_bool   new_bool  ) : type {json_type::boolean}     , var {new_bool}   {}
+    Json(j_int    new_int   ) : type {json_type::number_int}  , var {new_int}    {}
+    Json(j_float  new_float ) : type {json_type::number_float}, var {new_float}  {}
+    Json(j_string new_string) : type {json_type::string}      , var {new_string} {}
+    Json(j_array  new_array ) : type {json_type::array}       , var {new_array}  {}
+    Json(j_object new_object) : type {json_type::object}      , var {new_object} {}
 
     Json(json_type new_type)
     {
