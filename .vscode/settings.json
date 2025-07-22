@@ -18,6 +18,8 @@
 	// "binary": "src/io/json/main_json",
 	// "binary": "src/io/gltf/main_gltf",
 	// "binary": "src/render/main_render",
+	// "binary": "src/window/wayland/main_wayland",
+	// "binary": "src/window/wayland/main_wayland_egl",
 
 	// TEST
 	// "binary": "src/test/test_unit",
@@ -118,7 +120,9 @@
 		"wayland-client.h": "c",
 		"queue": "cpp",
 		"any": "cpp",
-		"csignal": "cpp"
+		"csignal": "cpp",
+		"wayland-client-core.h": "c",
+		"wayland-client-protocol.h": "c"
 	},
 	"makefile.configureOnOpen": false,
 	"debug.showVariableTypes": true

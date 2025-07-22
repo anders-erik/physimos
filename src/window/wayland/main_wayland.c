@@ -11,6 +11,8 @@
 #include <wayland-client.h>
 #include "protocols/xdg-shell-client-protocol.h"
 
+// #include "lib/print.hh"
+
 static struct wl_display* display;
 static struct wl_registry* registry;
 // Below tripplet is checked in main to validate wayland globals
@@ -30,7 +32,8 @@ static const struct wl_shm_listener shm_listener = {
 };
 
 static void global_handler(void* data, struct wl_registry* reg, uint32_t id,
-                           const char* interface, uint32_t version) {
+                           const char* interface, uint32_t version)
+{
     if (strcmp(interface, wl_compositor_interface.name) == 0)
         compositor = wl_registry_bind(reg, id, &wl_compositor_interface, 4);
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
@@ -97,6 +100,13 @@ int main() {
         fprintf(stderr, "No Wayland display.\n");
         return 1;
     }
+    fprintf(stderr, "Wayland display connected.\n");
+
+    if(0){
+        wl_display_disconnect(display);
+        fprintf(stderr, "Wayland display disconnected.\n");
+        return 0;
+    }
 
     registry = wl_display_get_registry(display); // protocol
     wl_registry_add_listener(registry, &registry_listener, NULL); // protocol
@@ -123,8 +133,9 @@ int main() {
     int i = 0;
     int target = 6;
 
-    while ( !(i > target) && wl_display_dispatch(display) != -1) {
+    while ( wl_display_dispatch(display) != -1) {
         i++;
+        fprintf(stdout, "Wayland event loop iteration");
         printf("\r%d", i);
         fflush(stdout);
     }

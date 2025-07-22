@@ -1,6 +1,6 @@
 WAYLAND_FLAGS := $(shell pkg-config --cflags --libs wayland-client)
 
-SRCS := main.c protocols/xdg-shell-protocol.c
+SRCS := main_wayland.c protocols/xdg-shell-protocol.c
 BIN := wayland_c_window
 
 all: $(BIN)

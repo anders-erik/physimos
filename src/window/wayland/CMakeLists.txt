@@ -29,14 +29,7 @@ elseif("${libdrm_runtime}" STREQUAL "")
 endif()
 
 
-set(WAYLAND 
-    main.c
-    protocols/xdg-shell-protocol.c
-)
 
-set(CMAKE_C_COMPILER gcc)
-
-add_executable(wayland ${WAYLAND})
 
 # set_target_properties(wayland PROPERTIES LINKER_LANGUAGE C)
 
@@ -53,20 +46,50 @@ execute_process (
 # print client_libs
 message(STATUS "client_libs: _${client_libs}_")
 
+set(WAYLAND 
+    main_wayland.c
+    protocols/xdg-shell-protocol.c
+)
 
-# target_link_libraries(wayland wayland-client)
-target_link_libraries(wayland ${client_libs})
-
-target_compile_options(wayland PRIVATE -g)
-
-target_include_directories(wayland PUBLIC 
+set(CMAKE_C_COMPILER gcc)
+add_executable(main_wayland ${WAYLAND})
+target_link_libraries(main_wayland 
+    ${client_libs}
+    lib
+)
+target_compile_options(main_wayland PRIVATE -g)
+target_include_directories(main_wayland PUBLIC 
     .
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/lib
     ${CMAKE_SOURCE_DIR}/extern/glad/include/
     ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
 )
+unset(CMAKE_C_COMPILER)
 
-# target_link_libraries( window
-#     lib
-# )
+
+
+# set(CMAKE_C_COMPILER gcc)
+set(WAYLAND_EGL 
+    main_wayland_egl.cc
+    protocols/xdg-shell-protocol.c
+    ${CMAKE_SOURCE_DIR}/extern/glad/src/glad.c
+)
+add_executable(main_wayland_egl ${WAYLAND_EGL})
+target_link_libraries(main_wayland_egl 
+    ${client_libs}
+    EGL # eglInitialize, eglGetDisplay, ...
+    wayland-egl # wl_egl_window_create
+    lib
+)
+target_compile_options(main_wayland_egl PRIVATE -g)
+target_include_directories(main_wayland_egl PUBLIC 
+    .
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/lib
+    ${CMAKE_SOURCE_DIR}/extern/glad/include/
+    ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
+)
 # unset(CMAKE_C_COMPILER)
+
+
