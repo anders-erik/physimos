@@ -13,6 +13,7 @@
 
 struct UnitTest;
 
+
 using UnitTestFn = std::function<void(UnitTest& utest)>;
 
 using UnitTestFnArray = std::vector<std::function<void(UnitTest& utest)>>;

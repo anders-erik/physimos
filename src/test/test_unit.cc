@@ -7,6 +7,7 @@
 #include "test/lib/tlib_lib.hh"
 #include "test/math/tlib_math.hh"
 #include "test/io/json/tlib_json.hh"
+#include "test/io/gltf/tlib_gltf.hh"
 
 
 int main()
@@ -20,6 +21,7 @@ int main()
         tclib_lib,
         tclib_math,
         tclib_json,
+        tclib_gltf,
     };
 
 
