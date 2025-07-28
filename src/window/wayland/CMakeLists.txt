@@ -1,3 +1,16 @@
+add_executable(main_wayland_client
+    main_wayland_client.cc
+)
+target_link_libraries(main_wayland_client PUBLIC 
+    wayland-client
+)
+
+add_executable(main_wayland_server
+    main_wayland_server.cc
+)
+target_link_libraries(main_wayland_server PUBLIC 
+    wayland-server
+)
 
 
 add_executable(main_drm

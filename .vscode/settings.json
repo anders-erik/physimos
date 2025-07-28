@@ -20,6 +20,8 @@
 	// "binary": "src/render/main_render",
 	// "binary": "src/window/wayland/main_wayland",
 	// "binary": "src/window/wayland/main_wayland_egl",
+	// "binary": "src/window/wayland/main_wayland_client",
+	// "binary": "src/window/wayland/main_wayland_server",
 
 	// TEST
 	// "binary": "src/test/test_unit",

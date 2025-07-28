@@ -15,10 +15,12 @@
 
 static struct wl_display* display;
 static struct wl_registry* registry;
-// Below tripplet is checked in main to validate wayland globals
+
+// Below triplet is checked in main to validate wayland globals
+// These are all wayland objects
 static struct wl_compositor* compositor;
 static struct xdg_wm_base* wm_base;     // Generated using wayland-scanner
-static struct wl_shm* shm; // part of global handler and pool creation
+static struct wl_shm* shm;              // part of global handler and pool creation
 
 static struct wl_surface* surface;
 static struct xdg_surface* xdg_surface; // Generated using wayland-scanner
@@ -130,13 +132,13 @@ int main() {
 
     wl_surface_commit(surface);
 
-    int i = 0;
-    int target = 6;
+    int iterations = 0;
+    int target = 500; 
 
-    while ( wl_display_dispatch(display) != -1) {
-        i++;
+    while ( iterations < target && wl_display_dispatch(display) != -1) {
+        iterations++; // another event processed
         fprintf(stdout, "Wayland event loop iteration");
-        printf("\r%d", i);
+        printf("\r%d", iterations);
         fflush(stdout);
     }
     return 0;
