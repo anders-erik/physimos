@@ -4,17 +4,18 @@
 
 static void
 registry_handle_global(void *data, struct wl_registry *registry,
-		uint32_t name, const char *interface, uint32_t version)
+		uint32_t id, const char *interface, uint32_t version)
 {
-	printf("registry_handle_global::  interface: '%s', version: %d, name: %d\n",
-			interface, version, name);
+	printf("registry_handle_global:: id: %d, interface: '%s', version: %d\n",
+			id, interface, version);
 }
 
 static void
 registry_handle_global_remove(void *data, struct wl_registry *registry,
-		uint32_t name)
+		uint32_t id)
 {
 	// This space deliberately left blank
+    printf("registry_handle_global_remove");
 }
 
 static const struct wl_registry_listener
@@ -26,7 +27,11 @@ registry_listener = {
 int
 main(int argc, char *argv[])
 {
-    struct wl_display *display = wl_display_connect(NULL);
+    // get explicit wayland display connection
+    const char* socket_name = "wayland-0";
+    
+    struct wl_display *display = wl_display_connect(socket_name);
+    // struct wl_display *display = wl_display_connect(NULL); // Default
     if (!display) {
         fprintf(stderr, "Failed to connect to Wayland display.\n");
         return 1;
@@ -36,6 +41,7 @@ main(int argc, char *argv[])
     struct wl_registry *registry = wl_display_get_registry(display);
 	wl_registry_add_listener(registry, &registry_listener, NULL);
 	wl_display_roundtrip(display);
+    
 
     wl_display_disconnect(display);
     fprintf(stderr, "Disconnected!\n");

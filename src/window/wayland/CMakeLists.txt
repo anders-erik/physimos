@@ -74,9 +74,6 @@ target_compile_options(main_wayland PRIVATE -g)
 target_include_directories(main_wayland PUBLIC 
     .
     ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/lib
-    ${CMAKE_SOURCE_DIR}/extern/glad/include/
-    ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
 )
 unset(CMAKE_C_COMPILER)
 
