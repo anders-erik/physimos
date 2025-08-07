@@ -1,6 +1,8 @@
 
-#define GLAD_IMPLEMENTATION
-#include "glad/glad.h"
+#include <libdecor.h>
+
+#include "gl_triangle.hh"
+#include "input.hh"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,20 +13,98 @@
 #include <EGL/eglext.h>
 #include <GL/gl.h>
 
+#include "protocols/xdg-shell-client-protocol.h"
 
 
-struct wl_display* display;
-struct wl_compositor* compositor;
-struct wl_surface* surface;
-struct wl_egl_window* egl_window;
-EGLDisplay egl_display;
-EGLContext egl_context;
-EGLSurface egl_surface;
+static bool decor_configured = false;
+static struct libdecor *decor_context;
+static struct libdecor_frame *decor_frame;
+
+typedef struct WGlobal {
+    struct wl_compositor* compositor;
+    struct wl_display* display;
+    struct wl_registry* registry;
+    struct wl_shm* shm;
+} WGlobal;
+
+typedef struct WWindow {
+    struct xdg_wm_base* wm_base;
+    struct wl_surface* surface;
+    struct xdg_surface* xdg_surface;
+    struct xdg_toplevel* toplevel;
+} WWindow;
+
+typedef struct WInput {
+    struct wl_seat* seat;
+    struct wl_pointer* pointer;
+    struct wl_keyboard* keyboard;
+} WInput;
+
+
+typedef struct EGLState {
+    EGLDisplay display;
+    EGLContext context;
+    EGLSurface surface;
+    EGLConfig config;
+    struct wl_egl_window* window;
+} EGLState;
+
+typedef struct WState {
+    WGlobal global;
+    WWindow window;
+    EGLState egl;
+    WInput input;
+} WState;
+
+static void
+wl_surface_frame_done(void *data, struct wl_callback *cb, uint32_t time);
+
+static const struct wl_callback_listener wl_surface_frame_listener = {
+    .done = wl_surface_frame_done,
+};
+
+
+static void
+wl_surface_frame_done(void *data, struct wl_callback *cb, uint32_t time)
+{
+    WState *state = (WState *)data;
+
+    // fprintf(stdout, "Frame done at time: %u\n", time);
+    wl_callback_destroy(cb);
+
+    // Recreate the frame callback for the next frame
+    struct wl_callback *new_cb = wl_surface_frame(state->window.surface);
+    wl_callback_add_listener(new_cb, &wl_surface_frame_listener, state);
+
+    // Here you can handle the frame done event, e.g., update the state or trigger a redraw
+    // state.frame.time_prev = time; // Update previous frame time if needed
+
+    // libdecor_frame_commit(decor_frame, NULL, NULL);
+}
+
+
+
 
 static void registry_handler(void* data, struct wl_registry* registry,
-                             uint32_t id, const char* interface, uint32_t version) {
+                             uint32_t id, const char* interface, uint32_t version)
+{
+    WState* state = (WState*)data;
+
     if (strcmp(interface, "wl_compositor") == 0) {
-        compositor = (struct wl_compositor*) wl_registry_bind(registry, id, &wl_compositor_interface, 1);
+        state->global.compositor = (struct wl_compositor*) wl_registry_bind(registry, id, &wl_compositor_interface, 1);
+    }
+    else if (strcmp(interface, xdg_wm_base_interface.name) == 0){
+        state->window.wm_base = (xdg_wm_base *) wl_registry_bind(registry, id, &xdg_wm_base_interface, 1);
+    }
+    else if(strcmp(interface, wl_seat_interface.name) == 0)
+    {
+        state->input.seat = (wl_seat*) wl_registry_bind(registry, id, &wl_seat_interface, 1);
+
+        state->input.pointer = wl_seat_get_pointer(state->input.seat);
+        wl_pointer_add_listener(state->input.pointer, &pointer_listener, NULL);
+
+        state->input.keyboard = wl_seat_get_keyboard(state->input.seat);
+        wl_keyboard_add_listener(state->input.keyboard, &keyboard_listener, NULL);
     }
 }
 
@@ -35,55 +115,146 @@ static const struct wl_registry_listener registry_listener = {
     registry_remover
 };
 
-GLuint compile_shader(GLenum type, const char* src) {
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &src, NULL);
-    glCompileShader(shader);
-    return shader;
+
+
+static void xdg_ping(void* data, struct xdg_wm_base* wm, uint32_t serial) {
+    xdg_wm_base_pong(wm, serial);
+    // fprintf(stderr, "Received ping from compositor with serial: %u\n", serial);
 }
 
-GLuint create_program() {
-    const char* vert_src =
-        "#version 330 core\n"
-        "layout(location = 0) in vec3 aPos;\n"
-        "void main() {\n"
-        "    gl_Position = vec4(aPos, 1.0);\n"
-        "}";
-    const char* frag_src =
-        "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main() {\n"
-        "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
-        "}";
+static const struct xdg_wm_base_listener wm_base_listener = {
+    .ping = xdg_ping
+};
 
-    GLuint vs = compile_shader(GL_VERTEX_SHADER, vert_src);
-    GLuint fs = compile_shader(GL_FRAGMENT_SHADER, frag_src);
-    GLuint prog = glCreateProgram();
-    glAttachShader(prog, vs);
-    glAttachShader(prog, fs);
-    glLinkProgram(prog);
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-    return prog;
+
+static void xdg_surface_configure(void* data, struct xdg_surface* s, uint32_t serial)
+{
+    xdg_surface_ack_configure(s, serial);
+    fprintf(stdout, "xdg_surface_configure:: serial: %u\n", serial);
 }
 
-void init_wayland() {
-    display = wl_display_connect(NULL);
-    if (!display) {
+static const struct xdg_surface_listener xdg_surface_listener = {
+    .configure = xdg_surface_configure
+};
+
+
+// Callback functions for frame events
+static void handle_configure_decor(struct libdecor_frame *frame, struct libdecor_configuration *configuration, void *data)
+{
+    WState *state = (WState *)data;
+
+    fprintf(stdout, "[DECOR] Received configure event\n");
+    int width, height;
+    libdecor_configuration_get_content_size(configuration, frame, &width, &height);
+
+    if (!state->egl.window) {
+        fprintf(stderr, "Error creating EGL surface\n");
+        exit(1);
+    }
+
+    // Create EGL surface if needed
+    if (!state->egl.surface) {
+        fprintf(stderr, "Error creating EGL surface\n");
+        exit(1);
+    }
+
+    
+    if(!decor_configured)
+    {
+        fprintf(stdout, "First configure event received, setting up decor frame.\n");
+        // Segfaults
+        // libdecor_frame_commit(frame, NULL, configuration);
+
+        decor_configured = true;
+    }
+
+    
+}
+
+static void handle_close_decor(struct libdecor_frame *frame, void *data)
+{
+    fprintf(stdout, "[DECOR] Received close event\n");
+    exit(EXIT_SUCCESS);
+}
+
+static void handle_commit(struct libdecor_frame *frame,
+                    void *data)
+{
+    WState *state = (WState *)data;
+    fprintf(stdout, "[DECOR] Frame commit called\n");
+    // commit surface
+    wl_surface_commit(state->window.surface);
+}
+
+static void handle_dismiss_popup(struct libdecor_frame *frame, const char *seat_name, void *user_data)
+{
+}
+
+// Define the interface with your event handlers
+static struct libdecor_frame_interface frame_iface = {
+    .configure = handle_configure_decor,
+    .close = handle_close_decor,
+    .commit = handle_commit,
+    .dismiss_popup = handle_dismiss_popup,
+};
+
+
+
+void init_wayland(WState* state)
+{
+    state->global.display = wl_display_connect(NULL);
+    if (!state->global.display)
+    {
         fprintf(stderr, "Failed to connect to Wayland\n");
         exit(1);
     }
 
-    struct wl_registry* registry = wl_display_get_registry(display);
-    wl_registry_add_listener(registry, &registry_listener, NULL);
-    wl_display_roundtrip(display);
+    state->global.registry = wl_display_get_registry(state->global.display);
+    wl_registry_add_listener(state->global.registry, &registry_listener, state);
+    wl_display_roundtrip(state->global.display);
+    wl_display_roundtrip(state->global.display);
 
-    surface = wl_compositor_create_surface(compositor);
+
+    state->window.surface = wl_compositor_create_surface(state->global.compositor);
 }
 
-void init_egl() {
-    egl_display = eglGetDisplay((EGLNativeDisplayType)display);
-    eglInitialize(egl_display, NULL, NULL);
+
+void init_decor(WState* state)
+{
+     // LIBDECOR
+    decor_context = libdecor_new(state->global.display, NULL);
+    if (!decor_context) {
+        // Handle error
+        fprintf(stderr, "Failed to create libdecor context\n");
+    }
+
+    state->window.surface = wl_compositor_create_surface(state->global.compositor);
+
+    decor_frame = libdecor_decorate(decor_context, state->window.surface, &frame_iface, state);
+    if (!decor_frame)
+    {
+        fprintf(stderr, "Failed to create libdecor frame\n");
+    }
+
+    libdecor_frame_set_app_id(decor_frame, "libdecor-c++-demo");
+    libdecor_frame_set_title(decor_frame, "libdecor C++ demo");
+    libdecor_frame_map(decor_frame);
+
+    // print frame pointer
+    // fprintf(stdout, "[DECOR] Frame pointer: %p\n", decor_frame);
+    
+    // wl_display_roundtrip(state->global.display);
+    // wl_display_dispatch(state->global.display);
+    // while (!decor_configured) {
+    // }
+    
+}
+
+
+void init_egl(WState* state)
+{
+    state->egl.display = eglGetDisplay((EGLNativeDisplayType)state->global.display);
+    eglInitialize(state->egl.display, NULL, NULL);
     eglBindAPI(EGL_OPENGL_API);
 
     EGLint config_attribs[] = {
@@ -92,64 +263,79 @@ void init_egl() {
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
         EGL_NONE
     };
-    EGLConfig config;
     EGLint num_configs;
-    eglChooseConfig(egl_display, config_attribs, &config, 1, &num_configs);
+    eglChooseConfig(    state->egl.display, 
+                        config_attribs, 
+                        &state->egl.config, 
+                        1, 
+                        &num_configs        );
 
-    EGLint ctx_attribs[] = {
+    EGLint ctx_attribs[] ={
         EGL_CONTEXT_MAJOR_VERSION, 3,
         EGL_CONTEXT_MINOR_VERSION, 3,
         EGL_NONE
     };
-    egl_context = eglCreateContext(egl_display, config, EGL_NO_CONTEXT, ctx_attribs);
+    state->egl.context = eglCreateContext(  state->egl.display, 
+                                            state->egl.config, 
+                                            EGL_NO_CONTEXT, 
+                                            ctx_attribs         );
 
-    egl_window = wl_egl_window_create(surface, 800, 600);
-    egl_surface = eglCreateWindowSurface(egl_display, config, egl_window, NULL);
-    eglMakeCurrent(egl_display, egl_surface, egl_surface, egl_context);
+    state->egl.window = wl_egl_window_create(state->window.surface, 800, 600);
+    state->egl.surface = eglCreateWindowSurface(state->egl.display, state->egl.config, state->egl.window, NULL);
+    eglMakeCurrent( state->egl.display, 
+                    state->egl.surface, 
+                    state->egl.surface, 
+                    state->egl.context);
+
+    // eglSwapBuffers(state->egl.display, state->egl.surface);
+
+    EGLint egl_err = eglGetError();
+    if (egl_err != EGL_SUCCESS) {
+        fprintf(stderr, "EGL error: %d\n", egl_err);
+        exit(1);
+    }
 }
 
-int main() {
-    init_wayland();
-    init_egl();
-
-    // No window...
-    // wl_surface_commit(surface);
-    // wl_display_flush(display);
- 
-
+void load_glad()
+{
     if (!gladLoadGLLoader((GLADloadproc)eglGetProcAddress)) {
         fprintf(stderr, "Failed to load OpenGL functions\n");
-        return 1;
+        exit(1);
     }
+} 
 
-    float verts[] = {
-         0.0f,  0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f
-    };
 
-    GLuint vao, vbo;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-    glEnableVertexAttribArray(0);
 
-    GLuint program = create_program();
-    glUseProgram(program);
+int main()
+{
+    WState state;
+    memset(&state, 0, sizeof(WState));
 
-    glViewport(0, 0, 800, 600);
+    init_wayland(&state);
 
-    while (1) {
-        glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+    init_decor(&state);
+    init_egl(&state);
+    load_glad();
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+    // struct wl_callback *cb = wl_surface_frame(state.window.surface);
+    // wl_callback_add_listener(cb, &wl_surface_frame_listener, &state);
 
-        eglSwapBuffers(egl_display, egl_surface);
-        wl_display_dispatch_pending(display);
+    gl_triangle_init();
+
+    // while (libdecor_dispatch(decor_context, -1) >= 0);
+
+    while (1)
+    {
+        gl_triangle_draw();
+
+        eglSwapBuffers(state.egl.display, state.egl.surface);
+        wl_display_dispatch_pending(state.global.display);
+
+        libdecor_dispatch(decor_context, 0);
+        // libdecor_frame_commit(decor_frame, NULL, NULL);
+
+
+        // fprintf(stdout, "Frame rendered\n");
     }
 
     return 0;

@@ -97,11 +97,21 @@ int main(){
 
         std::cout << "Connector " << i
                   << ": ID=" << conn->connector_id
-                  << ", Type=" << conn->connector_type
+                  << ", Type_name=" << drmModeGetConnectorTypeName(conn->connector_type)
                   << ", Connected=" << (conn->connection == DRM_MODE_CONNECTED)
+                  << ", w(mm), h(mm)=" << conn->mmWidth << "x" << conn->mmHeight
                   << std::endl;
 
         drmModeFreeConnector(conn);
+    }
+
+    drmDevicePtr devices[8];
+    int num_devices = drmGetDevices2(0, devices, 8);
+    for (int i = 0; i < num_devices; i++) {
+        printf("Vendor: %04x, Device: %04x\n",
+            devices[i]->deviceinfo.pci->vendor_id,
+            devices[i]->deviceinfo.pci->device_id);
+        // printf("DRM Driver: %s\n", devices[i]->driver);
     }
 
     drmModeFreeResources(res);

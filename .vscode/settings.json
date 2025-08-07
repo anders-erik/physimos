@@ -10,7 +10,7 @@
 
 	// MAIN
 	// "binary": "physimos",
-	// "binary": "src/main_main",
+	"binary": "src/main_main",
 	// "binary": "src/phont/main_phont",
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
@@ -18,8 +18,10 @@
 	// "binary": "src/io/json/main_json",
 	// "binary": "src/io/gltf/main_gltf",
 	// "binary": "src/render/main_render",
-	"binary": "src/window/wayland/main_wayland",
+	// "binary": "src/window/wayland/main_wayland",
 	// "binary": "src/window/wayland/main_wayland_egl",
+	// "binary": "src/window/wayland/main_wayland_decor",
+	// "binary": "src/window/wayland/main_drm",
 	// "binary": "src/window/wayland/main_wayland_client",
 	// "binary": "src/window/wayland/main_wayland_server",
 
@@ -126,7 +128,11 @@
 		"wayland-client-core.h": "c",
 		"wayland-client-protocol.h": "c",
 		"mman.h": "c",
-		"wayland-util.h": "c"
+		"wayland-util.h": "c",
+		"input-event-codes.h": "c",
+		"input.hh": "c",
+		"fcntl.h": "c",
+		"stat.h": "c"
 	},
 	"makefile.configureOnOpen": false,
 	"debug.showVariableTypes": true

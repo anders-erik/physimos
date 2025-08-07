@@ -1,3 +1,17 @@
+# set(CMAKE_VERBOSE_MAKEFILE ON)
+
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBDECOR REQUIRED libdecor-0)
+include_directories(${LIBDECOR_INCLUDE_DIRS})
+link_libraries(${LIBDECOR_LIBRARIES})
+execute_process (
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+
+    COMMAND bash -c "pkg-config --cflags --libs libdecor-0"
+    OUTPUT_VARIABLE libdecor_flags
+)
+
 add_executable(main_wayland_client
     main_wayland_client.cc
 )
@@ -86,20 +100,61 @@ set(WAYLAND_EGL
     ${CMAKE_SOURCE_DIR}/extern/glad/src/glad.c
 )
 add_executable(main_wayland_egl ${WAYLAND_EGL})
+target_link_directories( main_wayland_egl PUBLIC
+    /usr/lib/x86_64-linux-gnu/libdecor/plugins-1/
+)
 target_link_libraries(main_wayland_egl 
     ${client_libs}
     EGL # eglInitialize, eglGetDisplay, ...
     wayland-egl # wl_egl_window_create
     lib
+    # libdecor-0
+    decor-0
+    decor-cairo
 )
 target_compile_options(main_wayland_egl PRIVATE -g)
+# target_compile_options(main_wayland_egl PRIVATE ${libdecor_flags})
 target_include_directories(main_wayland_egl PUBLIC 
     .
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/lib
     ${CMAKE_SOURCE_DIR}/extern/glad/include/
     ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
+    /usr/include/libdecor-0
 )
+
 # unset(CMAKE_C_COMPILER)
 
 
+
+
+
+
+set(WAYLAND_DECOR 
+    main_wayland_decor.cc
+    protocols/xdg-shell-protocol.c
+    ${CMAKE_SOURCE_DIR}/extern/glad/src/glad.c
+)
+add_executable(main_wayland_decor ${WAYLAND_DECOR})
+target_link_directories( main_wayland_decor PUBLIC
+    /usr/lib/x86_64-linux-gnu/libdecor/plugins-1/
+)
+target_link_libraries(main_wayland_decor 
+    ${client_libs}
+    EGL # eglInitialize, eglGetDisplay, ...
+    wayland-egl # wl_egl_window_create
+    lib
+    # libdecor-0
+    decor-0
+    decor-cairo
+)
+target_compile_options(main_wayland_decor PRIVATE -g)
+# target_compile_options(main_wayland_egl PRIVATE ${libdecor_flags})
+target_include_directories(main_wayland_decor PUBLIC 
+    .
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/lib
+    ${CMAKE_SOURCE_DIR}/extern/glad/include/
+    ${CMAKE_SOURCE_DIR}/extern/GLFW/include/
+    /usr/include/libdecor-0
+)

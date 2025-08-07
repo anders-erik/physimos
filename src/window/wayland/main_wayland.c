@@ -10,8 +10,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <linux/input-event-codes.h>
+
 #include <wayland-client.h>
 #include "protocols/xdg-shell-client-protocol.h"
+
+#include "input.hh"
 
 // #include "lib/print.hh"
 // #include "math/vecmat.h"
@@ -33,18 +37,18 @@ static struct wl_surface* surface;
 static struct xdg_surface* xdg_surface; // Generated using wayland-scanner
 static struct xdg_toplevel* toplevel;   // Generated using wayland-scanner
 static struct wl_seat* wl_seat;
-static struct wl_pointer* wl_pointer;
+static struct wl_pointer* pointer;
+static struct wl_keyboard* keyboard;
 
 // event loop variables
 static const struct wl_callback_listener wl_surface_frame_listener;
 float offset;
-uint32_t last_frame;
-uint32_t frame_count = 0;
+
 // int fd;
 // float w_width = 200.0f;
 // float w_height = 100.0f;
 
-typedef struct FB {
+typedef struct WFB {
     int width;
     int height;
     int pixel_size; // 4 bytes for XRGB8888
@@ -54,18 +58,62 @@ typedef struct FB {
     int fd;
     struct wl_shm_pool* pool;
     struct wl_buffer* buf;
-} FB;
-static FB fb = {
-    .width = 200,
-    .height = 100,
-    .pixel_size = 4,
-    .stride = 200 * 4,
-    .size = 200 * 4 * 100,
+} WFB;
+
+#define FB_INIT_WIDTH       200
+#define FB_INIT_HEIGHT      100
+#define FB_INIT_PIXEL_SIZE  4 // XRGB8888
+#define FB_INIT_STRIDE      (FB_INIT_WIDTH * FB_INIT_PIXEL_SIZE)
+#define FB_INIT_SIZE        (FB_INIT_STRIDE * FB_INIT_HEIGHT)
+
+static WFB fb = {
+    .width = FB_INIT_WIDTH,
+    .height = FB_INIT_HEIGHT,
+    .pixel_size = FB_INIT_PIXEL_SIZE,
+    .stride = FB_INIT_STRIDE,
+    .size = FB_INIT_SIZE,
     .data = NULL,
     .fd = -1,
     .pool = NULL,
     .buf = NULL
 };
+
+typedef struct WFrame {
+    uint32_t time_prev; // time of the previous frame
+    uint32_t count;     // number of frames rendered
+} WFrame;
+
+typedef struct WInput {
+    int close_flag;
+    struct wl_seat* wl_seat;
+    struct wl_pointer* pointer;
+    struct wl_keyboard* keyboard;
+} WInput;
+
+typedef struct WWindow {
+    struct wl_surface* surface;
+    struct xdg_surface* xdg_surface;
+    struct xdg_toplevel* toplevel;  
+} WWindow;
+
+typedef struct WGlobal {
+    struct wl_compositor* compositor;
+    struct xdg_wm_base* wm_base;
+    struct wl_shm* shm;
+    struct wl_registry* registry;
+    struct wl_display* display;
+} WGlobal;
+
+typedef struct Wstate {
+    WGlobal global;
+    WWindow window;
+    WInput  input;
+    WFB     fb;
+    WFrame  frame;
+} Wstate;
+
+static Wstate state;
+
 
 
 static void shm_format(void* data, struct wl_shm* shm, uint32_t format)
@@ -82,20 +130,6 @@ static const struct wl_shm_listener shm_listener = {
     .format = shm_format
 };
 
-void empty_fn() {}
-
-void pointer_enter(void *data, struct wl_pointer *pointer, uint32_t serial,
-                   struct wl_surface *surface, wl_fixed_t sx, wl_fixed_t sy)
-{
-    fprintf(stderr, "Pointer entered surface at (%f, %f)\n", wl_fixed_to_double(sx), wl_fixed_to_double(sy));
-}
-static const struct wl_pointer_listener pointer_listener = {
-    .enter  = pointer_enter,
-    .leave  = empty_fn,
-    .motion = empty_fn,
-    .button = empty_fn,
-    .axis   = empty_fn,
-};
 
 
 /** Callback for each available global object after adding linstener to registry */
@@ -115,8 +149,12 @@ static void global_handler(void* data, struct wl_registry* reg, uint32_t id,
     else if(strcmp(interface, wl_seat_interface.name) == 0)
     {
         wl_seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
-        wl_pointer = wl_seat_get_pointer(wl_seat);
-        wl_pointer_add_listener(wl_pointer, &pointer_listener, NULL);
+
+        pointer = wl_seat_get_pointer(wl_seat);
+        wl_pointer_add_listener(pointer, &pointer_listener, NULL);
+
+        keyboard = wl_seat_get_keyboard(wl_seat);
+        wl_keyboard_add_listener(keyboard, &keyboard_listener, NULL);
     }
     // wl_seat_interface
 }
@@ -153,13 +191,13 @@ static const struct xdg_surface_listener xdg_surface_listener = {
 
 void buffer_release_handler(void *data, struct wl_buffer *buffer)
 {
-    printf("Buffer released!\n");
+    // printf("Buffer released!\n");
 }
 static const struct wl_buffer_listener buffer_listener = {
     .release = buffer_release_handler
 };
 
-int fb_init(FB* fb)
+int fb_init(WFB* fb)
 {
     char filename[] = "/tmp/wayland-shm-XXXXXX";
     fb->fd = mkstemp(filename);
@@ -172,19 +210,24 @@ int fb_init(FB* fb)
     return 0;
 }
 
-static int fb_update_buffer(FB* fb_)
+static int fb_update_buffer(WFB* fb_)
 {
-    memset(fb_->data, frame_count, fb_->size);
+    // set contents
+    memset(fb_->data, state.frame.count, fb_->size);
 
     // pool = wl_shm_create_pool(shm, fb_->fd, fb_->size);
-    fb_->buf = wl_shm_pool_create_buffer(fb_->pool, 0,
-        fb_->width, fb_->height, fb_->stride, WL_SHM_FORMAT_XRGB8888);
+    fb_->buf = wl_shm_pool_create_buffer(   fb_->pool, 
+                                            0, 
+                                            fb_->width, 
+                                            fb_->height, 
+                                            fb_->stride, 
+                                            WL_SHM_FORMAT_XRGB8888      );
     // wl_shm_pool_destroy(fb_->pool);
     return 0;
 }
 
 
-void fb_update_size(FB* fb_, int width, int height)
+void fb_update_size(WFB* fb_, int width, int height)
 {
     wl_shm_pool_destroy(fb_->pool);
     munmap(fb_->data, fb_->size);
@@ -225,8 +268,8 @@ void fb_update_size(FB* fb_, int width, int height)
 static void
 wl_surface_frame_done(void *data, struct wl_callback *cb, uint32_t time)
 {
-    frame_count++;
-    fprintf(stderr, "Frame callback:  time: %u, count: %i\n", time, frame_count);
+    state.frame.count++;
+    // fprintf(stderr, "Frame cssallback:  time: %u, count: %i\n", time, frame_count);
 
     // Keep listening for the next frame?
     wl_callback_destroy(cb);
@@ -244,7 +287,7 @@ wl_surface_frame_done(void *data, struct wl_callback *cb, uint32_t time)
 	wl_surface_commit(surface);
 
     
-    last_frame = time;
+    state.frame.time_prev = time;
 }
 
 static const struct wl_callback_listener wl_surface_frame_listener = {
@@ -300,6 +343,12 @@ int wayland_surface_init()
     wl_callback_add_listener(cb, &wl_surface_frame_listener, NULL);
 }
 
+int wayland_close(Wstate* state)
+{
+
+    return 0;
+}
+
 int wayland_cleanup()
 {
     close(fb.fd);
@@ -324,16 +373,21 @@ int main()
     }
 
     
-
     int event_count = 0;
     int target_event_count = 300; 
 
-    while ( event_count < target_event_count && wl_display_dispatch(display) != -1) {
+    while ( event_count < target_event_count && wl_display_dispatch(display) != -1)
+    {
         event_count++; // another event processed
-        printf("\r%d, ", event_count);
-        fprintf(stdout, "Wayland event loop iteration\n");
-        fflush(stdout);
+        // printf("\r%d, ", event_count);
+        // fprintf(stdout, "Wayland event loop iteration\n");
+        // fflush(stdout);
+        if(state.input.close_flag)
+        {
+            fprintf(stderr, "Close flag set, exiting Wayland loop.\n");
+        }
     }
+    wayland_close(&state);
 
     wayland_cleanup();
 
