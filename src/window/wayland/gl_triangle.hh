@@ -3,15 +3,17 @@
 // #define GLAD_IMPLEMENTATION
 #include "glad/glad.h"
 
+// #include <GL/gl.h>
+
 #include <cstddef>
 
 static GLuint program;
 static GLuint vao, vbo;
 
 static float verts[] = {
-    0.0f,  0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f
+     0.0f,  1.0f, 0.0f, // top center
+    -1.0f, -1.0f, 0.0f, // bottom left
+     1.0f, -1.0f, 0.0f  // bottom right
 };
 
 GLuint compile_shader(GLenum type, const char* src) {
@@ -46,6 +48,11 @@ GLuint create_program() {
     return prog;
 }
 
+void gl_triangle_set_viewport(int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
 void gl_triangle_init()
 {
     glGenVertexArrays(1, &vao);
@@ -56,14 +63,16 @@ void gl_triangle_init()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
     glEnableVertexAttribArray(0);
 
-    GLuint program = create_program();
+    program = create_program();
     glUseProgram(program);
 
-    glViewport(0, 0, 800, 600);
+    gl_triangle_set_viewport(800, 600);
 }
 
 void gl_triangle_draw()
 {
+    glUseProgram(program);
+
     // rand clear color 
     // glClearColor((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, 1.0f);
     glClearColor(0.1f, 0.1f, 0.2f, 1.0f);

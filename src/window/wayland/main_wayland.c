@@ -83,31 +83,31 @@ typedef struct WFrame {
     uint32_t count;     // number of frames rendered
 } WFrame;
 
-typedef struct WInput {
+typedef struct WInput_ {
     int close_flag;
     struct wl_seat* wl_seat;
     struct wl_pointer* pointer;
     struct wl_keyboard* keyboard;
-} WInput;
+} WInput_;
 
-typedef struct WWindow {
+typedef struct WWindow_ {
     struct wl_surface* surface;
     struct xdg_surface* xdg_surface;
     struct xdg_toplevel* toplevel;  
-} WWindow;
+} WWindow_;
 
-typedef struct WGlobal {
+typedef struct WGlobal_ {
     struct wl_compositor* compositor;
     struct xdg_wm_base* wm_base;
     struct wl_shm* shm;
     struct wl_registry* registry;
     struct wl_display* display;
-} WGlobal;
+} WGlobal_;
 
 typedef struct Wstate {
-    WGlobal global;
-    WWindow window;
-    WInput  input;
+    WGlobal_ global;
+    WWindow_ window;
+    WInput_  input;
     WFB     fb;
     WFrame  frame;
 } Wstate;

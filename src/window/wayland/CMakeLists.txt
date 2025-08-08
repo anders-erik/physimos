@@ -93,7 +93,7 @@ unset(CMAKE_C_COMPILER)
 
 
 
-# set(CMAKE_C_COMPILER gcc)
+# EGL
 set(WAYLAND_EGL 
     main_wayland_egl.cc
     protocols/xdg-shell-protocol.c
@@ -108,6 +108,7 @@ target_link_libraries(main_wayland_egl
     EGL # eglInitialize, eglGetDisplay, ...
     wayland-egl # wl_egl_window_create
     lib
+    wayland-cursor
     # libdecor-0
     decor-0
     decor-cairo
@@ -123,13 +124,8 @@ target_include_directories(main_wayland_egl PUBLIC
     /usr/include/libdecor-0
 )
 
-# unset(CMAKE_C_COMPILER)
 
-
-
-
-
-
+# DECOR
 set(WAYLAND_DECOR 
     main_wayland_decor.cc
     protocols/xdg-shell-protocol.c
