@@ -21,7 +21,6 @@ struct ManagerProperty
 
     std::vector<Pair<TagP, Lamp>>       lamps;
     std::vector<Pair<TagP, CameraView>> cameras;
-    std::vector<Pair<TagP, Physics>>    physicss;
 
     PID     new_pid();
     TagP    new_tagp();
@@ -33,8 +32,6 @@ struct ManagerProperty
     TagP        push_camera(const CameraView& camera);
     CameraView* find_camera(TagP camera_tagp);
 
-    TagP        push_physics(const Physics& physics);
-    Physics*    find_physics(TagP physics_tagp);
 
 };
 

@@ -50,7 +50,7 @@ public:
         Physics physics_ground;
         physics_ground.set_static_aabb(	ground.pos,
                                         ground.mesh.get_size() / 2);
-        ground.pyh_tag = manager_3D.manager_p.push_physics(physics_ground);
+        ground.id_phy = manager_3D.man_phy.push_physics(physics_ground);
 
 
 
@@ -190,7 +190,7 @@ public:
                                     phy_0.mesh.get_size() / 2);
         // physics_0.coll_bits = COLL_AABB;
         // physics_0.aabb.half_size = phy_0.mesh.get_size() / 2;
-        phy_0.pyh_tag = manager_3D.manager_p.push_physics(physics_0);
+        phy_0.id_phy = manager_3D.man_phy.push_physics(physics_0);
 
 
         // PHYSICS - SHEET
@@ -210,7 +210,7 @@ public:
                                     phy_1.mesh.get_size() / 2);
         // physics_1.coll_bits = COLL_AABB;
         // physics_1.aabb.half_size = phy_1.mesh.get_size() / 2;
-        phy_1.pyh_tag = manager_3D.manager_p.push_physics(physics_1);
+        phy_1.id_phy = manager_3D.man_phy.push_physics(physics_1);
 
 
         Object& phyo_sph = manager_o.new_object();
@@ -225,7 +225,7 @@ public:
         Physics physics_sph;
         physics_sph.set_static_sphere(	phyo_sph.pos, 
                                         phyo_sph.mesh.get_max_radius()	);
-        phyo_sph.pyh_tag = manager_3D.manager_p.push_physics(physics_sph);
+        phyo_sph.id_phy = manager_3D.man_phy.push_physics(physics_sph);
 
         Object& phyo_sph_2 = manager_o.new_object();
         phyo_sph_2.tag.type = TagO::Base;
@@ -239,7 +239,7 @@ public:
         Physics physics_sph_2;
         physics_sph_2.set_static_sphere(	phyo_sph_2.pos, 
                                             phyo_sph_2.mesh.get_max_radius()	);
-        phyo_sph_2.pyh_tag = manager_3D.manager_p.push_physics(physics_sph_2);
+        phyo_sph_2.id_phy = manager_3D.man_phy.push_physics(physics_sph_2);
 
 
         Object& phyo_dyn_sph_1 = manager_o.new_object();
@@ -253,7 +253,7 @@ public:
         Physics physics_dyn_sph_1;
         physics_dyn_sph_1.set_dynamic_sphere(	{3.0f, 1.0f, 2.0f}, 
                                             phyo_dyn_sph_1.mesh.get_max_radius()	);
-        phyo_dyn_sph_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_sph_1);
+        phyo_dyn_sph_1.id_phy = manager_3D.man_phy.push_physics(physics_dyn_sph_1);
 
 
         Object& phyo_dyn_sph_2 = manager_o.new_object();
@@ -267,7 +267,7 @@ public:
         Physics physics_dyn_sph_2;
         physics_dyn_sph_2.set_dynamic_sphere(	{7.7f, 0.0f, 3.0f}, 
                                                 phyo_dyn_sph_2.mesh.get_max_radius()	);
-        phyo_dyn_sph_2.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_sph_2);
+        phyo_dyn_sph_2.id_phy = manager_3D.man_phy.push_physics(physics_dyn_sph_2);
 
 
         Object& phyo_dyn_cube_1 = manager_o.new_object();
@@ -280,7 +280,7 @@ public:
         Physics physics_dyn_cube_1;
         physics_dyn_cube_1.set_dynamic_aabb(	{5.0f, -2.0f, 2.0f}, 
                                                 phyo_dyn_cube_1.mesh.get_size() / 2	);
-        phyo_dyn_cube_1.pyh_tag = manager_3D.manager_p.push_physics(physics_dyn_cube_1);
+        phyo_dyn_cube_1.id_phy = manager_3D.man_phy.push_physics(physics_dyn_cube_1);
 
 
         // GRASS

@@ -35,7 +35,7 @@ public:
         Physics physics_planet;
         physics_planet.set_static_sphere(	planet.pos,
                                             1.0f        ); // Radius
-        planet.pyh_tag = manager_3D.manager_p.push_physics(physics_planet);
+        planet.id_phy = manager_3D.man_phy.push_physics(physics_planet);
 
 
         // TOADSTOOL

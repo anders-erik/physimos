@@ -7,6 +7,7 @@
 
 #include "scene/tago.hh"
 #include "scene/tagp.hh"
+#include "scene/tag_phy.hh"
 
 #include "scene/mesh.hh"
 // #include "scene/physics.hh"
@@ -47,7 +48,7 @@ struct Object
     float       scale = 1.0f;
 
     TagP        tagp;
-    TagP        pyh_tag;
+    IDPhy       id_phy = 0;
 
     ObjectRenderContext rend_cxt;
 

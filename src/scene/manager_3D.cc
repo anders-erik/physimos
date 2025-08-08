@@ -60,7 +60,7 @@ update(float dt_s)
 
     dt_s = 0.016;
 
-    if(manager_p.physicss.size() != 0)
+    if(man_phy.data.size() != 0)
     {
 
         // INTERSECTION
@@ -68,16 +68,20 @@ update(float dt_s)
         // Update bounding box before intersection-test
         for(auto& object : manager_o.objects)
         {
-            if(object.pyh_tag.pid == 0)
+            if(object.id_phy == 0)
                 continue;
-            
-            Physics* phy = manager_p.find_physics(object.pyh_tag);
+
+            Physics* phy = man_phy.find_physics(object.id_phy);
             if(phy != nullptr)
             {
                 if(phy->is_static())
                     phy->update_static(object.pos);
                 else
                     object.pos = phy->update_dynamic(dt_s);
+            }
+            else
+            {
+                Print::line("Physics manager returned nullptr for non null id_phy");
             }
         }
         
@@ -86,12 +90,12 @@ update(float dt_s)
         std::vector<s2> dyn_isects;
 
         // Check intersections
-        for(size_t i=0; i<manager_p.physicss.size()-1; i++)
+        for(size_t i=0; i< man_phy.data.size()-1; i++)
         {
-            for(size_t j=i+1; j<manager_p.physicss.size(); j++)
+            for(size_t j=i+1; j<man_phy.data.size(); j++)
             {
-                Physics& I = manager_p.physicss[i].YY;
-                Physics& J = manager_p.physicss[j].YY;
+                Physics& I = man_phy.data[i].YY;
+                Physics& J = man_phy.data[j].YY;
 
                 if(Physics::isect( I, J ))
                 {
@@ -114,8 +118,8 @@ update(float dt_s)
         // COLLISION RESPONSE
         for(s2& isect_idxs : dyn_isects)
         {
-            Physics& X = manager_p.physicss[isect_idxs.x].YY;
-            Physics& Y = manager_p.physicss[isect_idxs.y].YY;
+            Physics& X = man_phy.data[isect_idxs.x].YY;
+            Physics& Y = man_phy.data[isect_idxs.y].YY;
 
             if(Y.is_static())
             {

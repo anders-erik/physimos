@@ -7,6 +7,7 @@
 #include "scene/scene3D.hh"
 #include "scene/manager_object.hh"
 #include "scene/manager_property.hh"
+#include "scene/manager_physics.hh"
 #include "scene/manager_quad.hh"
 
 #include "scene2D/manager_2D.hh"
@@ -31,6 +32,7 @@ public:
     ManagerObject   manager_o;
     ManagerProperty manager_p;
     ManagerQuad     manager_q;
+    ManagerPhysics  man_phy;
 
     std::list<Scene3D> scenes; // list of non-root 3D scenes
 

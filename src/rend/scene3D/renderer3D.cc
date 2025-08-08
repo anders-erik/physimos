@@ -347,9 +347,9 @@ render_tag(TagO tag, Manager3D & manager_3D)
         }
     }
 
-    if(object->pyh_tag.is_physics() && object->rend_cxt.physics)
+    if(object->id_phy != 0 && object->rend_cxt.physics)
     {
-        Physics* physics = manager_3D.manager_p.find_physics(object->pyh_tag);
+        Physics* physics = manager_3D.man_phy.find_physics(object->id_phy);
         if(physics != nullptr)
         {
             MeshLine linemesh;

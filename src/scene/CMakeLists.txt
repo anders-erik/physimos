@@ -1,6 +1,6 @@
 
 
-set(SCENE_OBJS
+set( SCENE_OBJS
 
     pscene.cc
     pobject.cc
@@ -19,6 +19,7 @@ set(SCENE_OBJS
     manager_3D.cc
     manager_object.cc
     manager_property.cc
+    manager_physics.cc
     manager_quad.cc
 
     scene_state.cc

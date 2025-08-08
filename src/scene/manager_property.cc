@@ -66,22 +66,5 @@ CameraView* ManagerProperty::find_camera(TagP camera_tagp)
     return nullptr;
 }
 
-TagP ManagerProperty::push_physics(const Physics & physics)
-{
-    TagP new_tag = {new_pid(), TagP::Physics};
-    physicss.push_back({new_tag, physics});
-    return new_tag;
-}
-
-Physics * ManagerProperty::find_physics(TagP physics_tagp)
-{
-    for(auto& physics_pair : physicss)
-    {
-        if(physics_pair.XX.pid == physics_tagp.pid)
-            return &physics_pair.YY;
-    }
-    return nullptr;
-}
-
 
 
