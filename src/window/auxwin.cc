@@ -2,7 +2,12 @@
 #include <iostream>
 
 #include <glad/glad.h>
+
+#if PHY_NATWIN == 1
+#include <natwin/natwin.hh>
+#else
 #include <GLFW/glfw3.h>
+#endif
 
 #include "print.hh"
 
@@ -32,23 +37,21 @@ void CursorPosition::print(){
     GLFW C-Style callbacks as indirection layer
 */
 void glfw_framebuffer_callback(GLFWwindow* _window, int _width, int _height) {
-    current_auxwin->framebuffer_callback(_window, _width, _height);
+    current_auxwin->framebuffer_callback(_width, _height);
 }
 void glfw_mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
-    current_auxwin->mouse_button_callback(window, button, action, mods);
+    current_auxwin->mouse_button_callback(button, action, mods);
 }
 void glfw_cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
-    current_auxwin->cursor_position_callback(window, xpos, ypos);
+    current_auxwin->cursor_position_callback(xpos, ypos);
 }
 
 void glfw_scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
-    current_auxwin->scroll_callback(window, xoffset, yoffset);
+    current_auxwin->scroll_callback(xoffset, yoffset);
 }
 void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods){
-    current_auxwin->key_callback(window, key, action, mods);
+    current_auxwin->key_callback(key, action, mods);
 }
-
-
 
 
 
@@ -56,18 +59,17 @@ void Auxwin::init(int width, int height)
 {
     current_auxwin = this;
 
+#ifdef PHY_NATWIN
+    std::cout << "Natwin is not implemented yet. Exiting." << std::endl;
+    exit(1);
+#else
     glfwInit();
-    
     glfw_window_hints();
-
     glfw_create_window({width, height});
-
     glfw_create_cursors();
-
     gl.init(get_auxwin_proc_adr_fn());
-
-    // std::cout <<  << std::endl;
-    
+#endif
+        
 }
 
 
@@ -394,7 +396,7 @@ std::vector<WindowResizeEvent> Auxwin::get_events_window_resize()
 
 
 void Auxwin::
-framebuffer_callback(GLFWwindow* _window, int _width, int _height)
+framebuffer_callback(int _width, int _height)
 {
     // std::cout << "auxwin->framebuffer_callback" << std::endl;
 
@@ -428,7 +430,7 @@ framebuffer_callback(GLFWwindow* _window, int _width, int _height)
 
 
 void Auxwin::
-mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+mouse_button_callback(int button, int action, int mods)
 {
     MouseButtonEvent mouse_button_event;
 
@@ -470,7 +472,7 @@ bool init_flag = false;
 f2 input_prev;
 
 void Auxwin::
-cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+cursor_position_callback(double xpos, double ypos)
 {
     CursorPosition cursor_prev = cursor_pos;
 
@@ -498,7 +500,7 @@ cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 
 
 void Auxwin::
-scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+scroll_callback(double xoffset, double yoffset)
 {
     MouseScrollEvent   mouse_scroll ((float) yoffset);
 
@@ -509,7 +511,7 @@ scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 
 
 void Auxwin::
-key_callback(GLFWwindow *window, int key, int action, int mods)
+key_callback(int key, int action, int mods)
 {
     KeyStrokeEvent keystroke_event;
 

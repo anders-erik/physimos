@@ -122,11 +122,11 @@ public:
     std::vector<InputEvent> get_events_input();
     std::vector<WindowResizeEvent> get_events_window_resize();
 
-    void framebuffer_callback(GLFWwindow* _window, int _width, int _height);
-    void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
-    void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
-    void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-    void key_callback(GLFWwindow *window, int key, int action, int mods);
+    void framebuffer_callback(int _width, int _height);
+    void mouse_button_callback(int button, int action, int mods);
+    void cursor_position_callback(double xpos, double ypos);
+    void scroll_callback(double xoffset, double yoffset);
+    void key_callback(int key, int action, int mods);
 };
 
 

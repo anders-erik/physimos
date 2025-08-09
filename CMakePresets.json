@@ -24,7 +24,8 @@
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/debug_linux",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "PHY_BUILD_NATWIN": "0"
             },
             "hidden": false
         },
