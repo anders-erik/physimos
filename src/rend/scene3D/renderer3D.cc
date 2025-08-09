@@ -371,6 +371,10 @@ render_tag(TagO tag, Manager3D & manager_3D)
             else
                 program_mesh.render_linemesh(mat, linemesh, 0x000000ff);
 
+            program_vector.set_color({0.0f, 0.0f, 0.0f});
+            program_vector.render(  physics->p,
+                                    physics->v);
+
         }
     }
     

@@ -15,6 +15,7 @@
 
 #include "scene/isector.hh"
 
+#include "tag_phy.hh"
 
 
 
@@ -25,6 +26,7 @@ const float g = 9.8f;
 
 struct Physics
 {
+    IDPhy id = 0;
     f3 p;
     f3 v;
 
@@ -41,8 +43,8 @@ struct Physics
     f3 update_dynamic(float dt)
     {
         // "Integrate"
-        v.z += -g * dt;
         p += v * dt;
+        v.z += -g * dt;
 
         isect_flag = false;
 
@@ -54,7 +56,7 @@ struct Physics
         return p;
     }
 
-    /** Position is driven by */
+    /** Position is driven by the editor */
     void update_static(f3 new_pos)
     {
         isect_flag = false;
@@ -119,7 +121,7 @@ struct Physics
 
 
 
-    static bool isect(Physics& PA, Physics& PB)
+    static bool isect(const Physics& PA, const Physics& PB)
     {
         // IsectBits bits = (PA.isect_bits << 16) | PB.isect_bits;
         switch ( (PA.isect_bits << 16) | PB.isect_bits )
@@ -201,11 +203,12 @@ struct Physics
                 Dyn.v = Quarternion::reflect( Dyn.v, Dyn.p - Stat.isector.aabb.pos());
             break;
 
-
+        // CURRENTLY MOST USED
         case ISECT_SPHERE_AABB:
             if(try_reflect_on_face(Dyn.v, Dyn.p, Stat.isector.aabb))
                 return;
             else
+                // Dyn.v.reflect((Dyn.p - Stat.isector.sphere.pos));
                 Dyn.v = Quarternion::reflect( Dyn.v, Dyn.p - Stat.isector.aabb.pos());
             break;
 
@@ -213,6 +216,7 @@ struct Physics
             if(try_reflect_on_face(Dyn.v, Stat.isector.sphere.pos, Dyn.isector.aabb))
                 return;
             else
+                // Dyn.v.reflect((Dyn.p - Stat.isector.sphere.pos));
                 Dyn.v = Quarternion::reflect( Dyn.v, Dyn.p - Stat.isector.sphere.pos);
             break;
 

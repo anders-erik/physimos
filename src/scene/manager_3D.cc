@@ -60,114 +60,28 @@ update(float dt_s)
 
     dt_s = 0.016;
 
-    if(man_phy.data.size() != 0)
+    man_phy.update(dt_s);
+
+
+    // Update dynamic objects
+    for(auto& object : manager_o.objects)
     {
-
-        // INTERSECTION
-
-        // Update bounding box before intersection-test
-        for(auto& object : manager_o.objects)
+        if(object.id_phy == 0)
+            continue; // no physics
+    
+        Physics* phy = man_phy.find_physics(object.id_phy);
+        if(phy == nullptr)
         {
-            if(object.id_phy == 0)
-                continue;
-
-            Physics* phy = man_phy.find_physics(object.id_phy);
-            if(phy != nullptr)
-            {
-                if(phy->is_static())
-                    phy->update_static(object.pos);
-                else
-                    object.pos = phy->update_dynamic(dt_s);
-            }
-            else
-            {
-                Print::line("Physics manager returned nullptr for non null id_phy");
-            }
+            object.id_phy = 0; // physics no longer found
+            continue;
         }
         
-        // tmp container for indeces of bodies from confirmed dynamic intersection. 
-        // Dynamic always first index
-        std::vector<s2> dyn_isects;
-
-        // Check intersections
-        for(size_t i=0; i< man_phy.data.size()-1; i++)
-        {
-            for(size_t j=i+1; j<man_phy.data.size(); j++)
-            {
-                Physics& I = man_phy.data[i].YY;
-                Physics& J = man_phy.data[j].YY;
-
-                if(Physics::isect( I, J ))
-                {
-                    // place dynamic in first index if exists
-                    if(I.is_dynamic())
-                        dyn_isects.emplace_back(i, j);
-                    else if(J.is_dynamic())
-                        dyn_isects.emplace_back(j, i);
-                
-                    // Rend : don't touch if intersection already confirmed
-                    if(!I.isect_flag)
-                        I.isect_flag = true;
-                    if(!J.isect_flag)
-                        J.isect_flag = true;
-                }
-            }
-        }
-
-        
-        // COLLISION RESPONSE
-        for(s2& isect_idxs : dyn_isects)
-        {
-            Physics& X = man_phy.data[isect_idxs.x].YY;
-            Physics& Y = man_phy.data[isect_idxs.y].YY;
-
-            if(Y.is_static())
-            {
-                float dt10 = dt_s * 0.1f;
-
-                int back_i=1;
-                int backed_max = 11;
-
-                // Also assumes Y is not moved by user.
-                for(; back_i<backed_max; back_i++)
-                {
-                    X.p -= X.v * dt_s;
-                    X.update_isector(X.p);
-                    if(Physics::isect( X, Y ))
-                        continue;
-                    break;
-                }
-                
-                // reflect velocity of dynamic body
-                Physics::reflect_dynamic_static(X, Y);
-
-                // Return body same number of time steps as it was deep in intersection
-                X.p += X.v * dt10 * (float)back_i;
-
-                // If still intersecting, move until clear
-                while(Physics::isect( X, Y ))
-                {
-                    X.p += X.v * dt10;
-                    X.update_isector(X.p);
-                }
-
-                // Energy loss
-                X.v *= 0.9f;
-
-                // No effect as gravity keeps accelerating
-                // if(X.v.norm() <= 0.01f)
-                //     X.v.set_zero();
-
-                // int x = 1;
-            }
-            else
-            {
-
-            }
-        }
-
+        if(phy->is_static() && editor_mode)
+            phy->update_static(object.pos);
+        if(phy->is_dynamic())
+            object.pos = phy->p;
     }
-
+    
 
     // CAMERA
     Camera&   camobj  = scenew.camera;

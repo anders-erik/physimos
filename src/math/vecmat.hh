@@ -181,6 +181,7 @@ struct f3
     float angle(const f3& rhs);
 
     f3& reflect_z();
+    f3& reflect(f3 normal);
     f3& reflect(Axis axis);
 
     void set_zero();

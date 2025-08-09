@@ -3,6 +3,7 @@
 
 /** Property ID */
 typedef unsigned int    IDPhy;
+const IDPhy IDPhyNull = 0;
 
 struct TagPhy
 {

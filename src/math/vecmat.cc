@@ -446,6 +446,18 @@ f3& f3::reflect_z()
     return *this;
 }
 
+f3 & f3::reflect(f3 normal)
+{
+    f3 L = unit(); // normalized incident vector
+    f3 N = normal.unit(); // normalized normal vector
+
+    f3 R = 2.0f * (L.dot(N)) * N - L;
+
+    *this = R * norm();
+    
+    return *this; 
+}
+
 f3 & f3::reflect(Axis axis)
 {
     m3f3 rot;

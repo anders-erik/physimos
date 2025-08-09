@@ -23,16 +23,32 @@ new_tagp()
 
 
 
-IDPhy ManagerPhysics::push_physics(const Physics & physics)
+IDPhy ManagerPhysics::push_physics(Physics & physics)
 {
     IDPhy id = new_id();
-    data.push_back({id, physics});
+
+    physics.id = id;
+
+    if(physics.static_flag)
+        data_stat.push_back({id, physics});
+    else
+        data_dyn.push_back({id, physics});
+
     return id;
 }
 
 Physics * ManagerPhysics::find_physics(IDPhy physics_id)
 {
-    for(auto& physics_pair : data)
+    if(physics_id == 0)
+        return nullptr;
+
+    for(auto& physics_pair : data_dyn)
+    {
+        if(physics_pair.XX == physics_id)
+            return &physics_pair.YY;
+    }
+
+    for(auto& physics_pair : data_stat)
     {
         if(physics_pair.XX == physics_id)
             return &physics_pair.YY;

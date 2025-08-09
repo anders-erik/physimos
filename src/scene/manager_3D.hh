@@ -16,6 +16,7 @@
 class Manager3D
 {
     bool init_flag = false;
+    bool editor_mode = true; // editor input will update scene content
 
     SID sid_3D_counter = 2; // Global index count
     SID new_sid_3D();
