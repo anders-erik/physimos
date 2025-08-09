@@ -3,7 +3,7 @@
 // #define GLAD_IMPLEMENTATION
 #include "glad/glad.h"
 
-// #include <GL/gl.h>
+#include <GL/gl.h>
 
 #include <cstddef>
 

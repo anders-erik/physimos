@@ -1,27 +1,20 @@
 
-#include <libdecor.h>
 
 #include "gl_triangle.hh"
 #include "w_types.hh"
-#include "input.hh"
+#include "wwld_input.hh"
+#include "decor.hh"
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wayland-client.h>
-#include <wayland-cursor.h>
 #include <wayland-egl.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <GL/gl.h>
 
 #include "protocols/xdg-shell-client-protocol.h"
-
-
-static bool decor_configured = false;
-static struct libdecor *decor;
-static struct libdecor_frame *decor_frame;
-static bool decor_active = false;
 
 
 
@@ -37,18 +30,15 @@ static void
 wl_surface_frame_done(void *data, struct wl_callback *cb, uint32_t time)
 {
     WState *state = (WState *)data;
+
+    // 
+    gl_triangle_draw();
+
+    eglSwapBuffers(state->egl.display, state->egl.surface);
     
     // fprintf(stdout, "Frame done at time: %u\n", time);
     wl_callback_destroy(cb);
 
-    eglSwapBuffers(state->egl.display, state->egl.surface);
-
-    // print decor active
-    if (decor_active) {
-        // fprintf(stdout, "Decor is active.\n");
-    } else {
-        // fprintf(stdout, "Decor is not active.\n");
-    }
 
     // Recreate the frame callback for the next frame
     struct wl_callback *new_cb = wl_surface_frame(state->window.surface);
@@ -58,6 +48,8 @@ wl_surface_frame_done(void *data, struct wl_callback *cb, uint32_t time)
     // state.frame.time_prev = time; // Update previous frame time if needed
 
     // libdecor_frame_commit(decor_frame, NULL, NULL);
+
+    
 
 }
 
@@ -81,6 +73,9 @@ static void registry_handler(void* data, struct wl_registry* registry,
 {
     WState* state = (WState*)data;
 
+    fprintf(stderr, "Global object added: %u, interface: %s, version: %u\n", id, interface, version);
+
+
     if (strcmp(interface, "wl_compositor") == 0) {
         state->global.compositor = (struct wl_compositor*) wl_registry_bind(registry, id, &wl_compositor_interface, 1);
     }
@@ -90,6 +85,9 @@ static void registry_handler(void* data, struct wl_registry* registry,
     else if (strcmp(interface, wl_shm_interface.name) == 0) {
         state->global.shm = (wl_shm*) wl_registry_bind(registry, id, &wl_shm_interface, 1);
         wl_shm_add_listener(state->global.shm, &shm_listener, NULL);
+    }
+    if (strcmp(interface, "wl_subcompositor") == 0) {
+        state->window.subcompositor = (wl_subcompositor*)wl_registry_bind(registry, id, &wl_subcompositor_interface, 1);
     }
     else if(strcmp(interface, wl_seat_interface.name) == 0)
     {
@@ -133,97 +131,6 @@ static const struct xdg_surface_listener xdg_surface_listener = {
 };
 
 
-// Callback functions for frame events
-static void handle_configure_decor(struct libdecor_frame *frame, struct libdecor_configuration *configuration, void *data)
-{
-    WState *state = (WState *)data;
-    enum libdecor_window_state decor_window_state;
-    struct libdecor_state *decor_state;
-
-    fprintf(stdout, "[DECOR] Received configure event\n");
-    int width, height;
-    libdecor_configuration_get_content_size(configuration, frame, &width, &height);
-    fprintf(stdout, "[DECOR] Configured size: %dx%d\n", width, height);
-
-    if (!libdecor_configuration_get_window_state(configuration, &decor_window_state))
-    {
-		decor_window_state = LIBDECOR_WINDOW_STATE_NONE;
-        fprintf(stdout, "[DECOR] Failed to get window state, using default: LIBDECOR_WINDOW_STATE_NONE\n");
-    }
-    else
-    {
-        if(decor_window_state == LIBDECOR_WINDOW_STATE_TILED_BOTTOM)
-            decor_active = true;
-        else
-            decor_active = false;
-
-        // fprintf(stdout, "[DECOR] Window state: %d\n", decor_window_state);
-    }
-
-
-    
-
-    // SET SIZE
-    {
-        decor_state = libdecor_state_new(width, height);
-        gl_triangle_set_viewport(width, height);
-        wl_egl_window_resize(state->egl.window, width, height, 0, 0);
-    }
-
-    libdecor_frame_commit(frame, decor_state, configuration);
-    libdecor_state_free(decor_state);
-
-    if (!state->egl.window) {
-        fprintf(stderr, "Error creating EGL surface\n");
-        exit(1);
-    }
-
-    // Create EGL surface if needed
-    if (!state->egl.surface) {
-        fprintf(stderr, "Error creating EGL surface\n");
-        exit(1);
-    }
-
-    
-    if(!decor_configured)
-    {
-        fprintf(stdout, "First configure event received, setting up decor frame.\n");
-        // Segfaults
-        // libdecor_frame_commit(frame, NULL, configuration);
-
-        decor_configured = true;
-    }
-
-    // eglSwapBuffers(state->egl.display, state->egl.surface);
-    
-}
-
-static void handle_close_decor(struct libdecor_frame *frame, void *data)
-{
-    fprintf(stdout, "[DECOR] Received close event\n");
-    exit(EXIT_SUCCESS);
-}
-
-static void handle_commit(struct libdecor_frame *frame,
-                    void *data)
-{
-    WState *state = (WState *)data;
-    fprintf(stdout, "[DECOR] Frame commit called\n");
-    // commit surface
-    wl_surface_commit(state->window.surface);
-}
-
-static void handle_dismiss_popup(struct libdecor_frame *frame, const char *seat_name, void *user_data)
-{
-}
-
-// Define the interface with your event handlers
-static struct libdecor_frame_interface frame_iface = {
-    .configure = handle_configure_decor,
-    .close = handle_close_decor,
-    .commit = handle_commit,
-    .dismiss_popup = handle_dismiss_popup,
-};
 
 
 
@@ -243,44 +150,20 @@ void init_wayland(WState* state)
 
 
     state->window.surface = wl_compositor_create_surface(state->global.compositor);
+    state->window.content_surface_id = wl_proxy_get_id((struct wl_proxy *)state->window.surface);
+
+    // I guess libdecor already has two surfaces?
+    // state->window.surface_render = wl_compositor_create_surface(state->global.compositor);
+    // state->window.subsurface = wl_subcompositor_get_subsurface( state->window.subcompositor,
+    //                                                             state->window.surface_render,
+    //                                                             state->window.surface        );
+    // wl_subsurface_set_position( state->window.subsurface, 
+    //                             0, 
+    //                             0                           );
 }
 
 
-void init_decor(WState* state)
-{
-     // CONTEXT
-    decor = libdecor_new(state->global.display, NULL);
-    if (!decor) {
-        // Handle error
-        fprintf(stderr, "Failed to create libdecor context\n");
-    }
 
-    // FRAME
-    decor_frame = libdecor_decorate(decor, state->window.surface, &frame_iface, state);
-    if (!decor_frame)
-    {
-        fprintf(stderr, "Failed to create libdecor frame\n");
-        exit(1);
-    }
-    libdecor_frame_set_app_id(decor_frame, "libdecor-c++-demo");
-    libdecor_frame_set_title(decor_frame, "libdecor C++ demo");
-    libdecor_frame_map(decor_frame);
-
-    // libdecor_frame_commit(decor_frame, NULL, NULL);
-    // libdecor_decorate(  decor, 
-    //                     state->window.surface, 
-    //                     &frame_iface,
-    //                     state                   );
-
-    // print frame pointer
-    // fprintf(stdout, "[DECOR] Frame pointer: %p\n", decor_frame);
-    
-    // wl_display_roundtrip(state->global.display);
-    // wl_display_dispatch(state->global.display);
-    // while (!decor_configured) {
-    // }
-    
-}
 
 
 void check_egl_error(EGLint error_code)
@@ -357,6 +240,17 @@ void load_glad()
     }
 } 
 
+void init_cursor(WState* state)
+{
+    state->cursor.theme = wl_cursor_theme_load(NULL, 24, state->global.shm);
+    state->cursor.wl_cursor = wl_cursor_theme_get_cursor(state->cursor.theme, "left_ptr");
+    state->cursor.image = state->cursor.wl_cursor->images[0];
+    state->cursor.buffer = wl_cursor_image_get_buffer(state->cursor.image);
+
+    state->cursor.surface = wl_compositor_create_surface(state->global.compositor);
+    wl_surface_attach(state->cursor.surface, state->cursor.buffer, 0, 0);
+    wl_surface_commit(state->cursor.surface);
+}
 
 
 int main()
@@ -369,18 +263,9 @@ int main()
     init_decor(&state);
     init_egl(&state);
     load_glad();
+    init_cursor(&state);
 
-    struct wl_cursor_theme *cursor_theme =
-        wl_cursor_theme_load(NULL, 24, state.global.shm);
-    struct wl_cursor *cursor =
-        wl_cursor_theme_get_cursor(cursor_theme, "left_ptr");
-    state.input.cursor_image = cursor->images[0];
-    struct wl_buffer *cursor_buffer =
-        wl_cursor_image_get_buffer(state.input.cursor_image);
-
-    state.input.cursor_surface = wl_compositor_create_surface(state.global.compositor);
-    wl_surface_attach(state.input.cursor_surface, cursor_buffer, 0, 0);
-    wl_surface_commit(state.input.cursor_surface);
+    
 
     struct wl_callback *cb = wl_surface_frame(state.window.surface);
     wl_callback_add_listener(cb, &wl_surface_frame_listener, &state);
@@ -396,7 +281,7 @@ int main()
         eglSwapBuffers(state.egl.display, state.egl.surface);
         wl_display_dispatch_pending(state.global.display);
 
-        libdecor_dispatch(decor, 0);
+        libdecor_dispatch(decor.context, 0);
         // libdecor_frame_commit(decor_frame, NULL, NULL);
 
 

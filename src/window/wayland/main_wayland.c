@@ -15,7 +15,7 @@
 #include <wayland-client.h>
 #include "protocols/xdg-shell-client-protocol.h"
 
-#include "input.hh"
+#include "wwld_input.hh"
 
 // #include "lib/print.hh"
 // #include "math/vecmat.h"

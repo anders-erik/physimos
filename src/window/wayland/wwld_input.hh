@@ -16,29 +16,56 @@ extern "C" {
 #endif
 
 
-
+int is_content_surface(WState* state, struct wl_surface* surface)
+{
+    if (state->window.content_surface_id == wl_proxy_get_id((struct wl_proxy*)surface))
+        return 1;
+    else
+        return 0;
+}
 
 void empty_fn() {}
 
-void pointer_leave(void *data, struct wl_pointer *wl_pointer, uint32_t serial, struct wl_surface *surface) {}
+void pointer_leave(void *data, struct wl_pointer *wl_pointer, uint32_t serial, struct wl_surface *surface)
+{
+    WState *state = (WState *)data;
+
+    if(is_content_surface(state, surface))
+    {
+        // fprintf(stderr, "Pointer left content surface\n");
+        state->window.hovering_content_surface = 0;
+    }
+}
 
 void pointer_enter(void *data, struct wl_pointer *pointer, uint32_t serial,
                    struct wl_surface *surface, wl_fixed_t sx, wl_fixed_t sy)
 {
     WState *state = (WState *)data;
 
+    if(is_content_surface(state, surface))
+    {
+        fprintf(stderr, "Pointer entered content surface\n");
+        state->window.hovering_content_surface = 1;
+
+        // set default pointer
+        // struct wl_cursor *cursor = wl_cursor_theme_get_cursor(cursor_theme, "left_ptr");
+        // wl_pointer_set_cursor(pointer, serial, /* TODO */);
+        wl_pointer_set_cursor(  pointer, 
+                                serial, 
+                                state->cursor.surface,
+                                state->cursor.image->hotspot_x, 
+                                state->cursor.image->hotspot_y);
+    }
+
+
     fprintf(    stderr,
-                "Pointer entered surface at (%f, %f)\n", 
+                "Pointer entered surface (id = %d) at (%f, %f)\n", 
+                wl_proxy_get_id((struct wl_proxy *)surface),
                 wl_fixed_to_double(sx), 
-                wl_fixed_to_double(sy)                  );
-    // set default pointer
-    // struct wl_cursor *cursor = wl_cursor_theme_get_cursor(cursor_theme, "left_ptr");
-    // wl_pointer_set_cursor(pointer, serial, /* TODO */);
-    wl_pointer_set_cursor(  pointer, 
-                            serial, 
-                            state->input.cursor_surface,
-                            state->input.cursor_image->hotspot_x, 
-                            state->input.cursor_image->hotspot_y);
+                wl_fixed_to_double(sy)                          );
+    
+    
+    
 }
 void pointer_motion(void *data, struct wl_pointer *pointer, uint32_t time,
                     wl_fixed_t sx, wl_fixed_t sy)
