@@ -31,6 +31,14 @@ UnitTestArray one_black_pixel = {
         file_header_target.reserved_2           = 0x0000;
         file_header_target.first_pixel_location = 54;
 
+        Str test_str = "a\nb\nc\n";
+        // Arr<Str> split_str = StrUtil::split(test_str, '\n');
+        test_str.indent_space(4);
+        Print::line(test_str);
+        
+        
+
+        // utest.assert(bmp_loader.file_header(), file_header_target);
         utest.assert(bmp_loader.file_header() == file_header_target);
     }},
 

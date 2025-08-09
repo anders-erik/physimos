@@ -26,6 +26,7 @@ add_library(lib
 # Currently lib should be self contained, with the exception of the standard library
 target_include_directories(lib PUBLIC 
     .
+    ${CMAKE_SOURCE_DIR}/src/
 )
 
 

@@ -21,6 +21,7 @@ TCModule str_mod = {
         {"substr", substr},
         {"operator_less_than", operator_less_than},
         {"split", split},
+        {"indent_space", indent_space},
     }
 };
 

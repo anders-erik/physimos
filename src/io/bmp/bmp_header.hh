@@ -3,7 +3,7 @@
 
 #include <vector>
 
-
+struct Str;
 struct Bitmap;
 
 
@@ -36,6 +36,8 @@ struct FileHeader
                 reserved_2              == rhs.reserved_2           &&
                 first_pixel_location    == rhs.first_pixel_location;
     }
+
+    Str to_str();
 };
 
 

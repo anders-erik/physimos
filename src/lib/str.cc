@@ -9,8 +9,10 @@
 #include <cstdio>  // snprintf - float constructor
 
 #include "str.hh"
+#include "str_util.hh"
 #include "alloc.hh"
 #include "print.hh"
+// #include "arr.hh"
 
 
 
@@ -350,6 +352,27 @@ substr(unsigned int pos, unsigned int new_size)
 {
     Str copy = *this;
     return copy.cut_to_substr(pos, new_size);
+}
+
+Str Str::indent_space(unsigned int indent_count)
+{
+    if(indent_count == 0)
+        return *this;
+    
+    Str ret_str;
+    Str indent {indent_count, ' '};
+
+    Arr<Str> split = StrUtil::split(*this, '\n');
+    if(split.last() == "")
+        split.pop_back();
+
+    for(size_t i = 0; i < split.count(); i++)
+        split[i] = indent + split[i] + "\n";
+
+    for(size_t i = 0; i < split.count(); i++)
+        ret_str += split[i];
+
+    return ret_str;
 }
 
 

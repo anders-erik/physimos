@@ -2,6 +2,7 @@
 #pragma once
 
 #include "lib/str.hh"
+#include "lib/str_util.hh"
 #include "lib/print.hh"
 
 #include "test/misc.hh"

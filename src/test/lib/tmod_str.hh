@@ -334,3 +334,25 @@ UnitTestArray split = {
 
 
 };
+
+
+
+
+
+UnitTestArray indent_space = {
+
+
+    {   "indent_space(\"a\nb\n\", '2')",
+    [](UnitTest& utest) -> void
+    {
+        Str str = "a\nb\n";
+        Str target_str = "  a\n  b\n";
+
+        Str result = str.indent_space(2);
+        
+        utest.assert(   result,
+                        target_str  );
+    }},
+
+
+};

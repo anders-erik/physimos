@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <vector>
+#include <type_traits> // std::is_same_v
 
 #include "lib/str.hh"
 
@@ -92,6 +93,7 @@ struct UnitTest
     {
         if(has_been_asserted)
             return;
+
         has_been_asserted = true;
 
         if(actual == expected) // ambigous warning for Err == Err
@@ -112,11 +114,33 @@ struct UnitTest
 
             Str str_indnt {indentation, ' '};
 
-            fail_message = {    "\n",
-                                str_indnt, "Actual:   \n", 
-                                Pretty::StrM(fail_msg_indent, actual),
-                                str_indnt, "Expected: \n", 
-                                Pretty::StrM(fail_msg_indent, expected)
+            Str actual_info   = Str("\nActual: \n").indent_space(indentation);
+            Str actual_str;
+            Str expected_info = Str("Expected: \n").indent_space(indentation);
+            Str expected_str;
+
+            // check if type int
+            if(std::is_same_v<AssertType, bool>)
+            {
+                // actual_str   = StrUtil::to_str(actual);
+                // expected_str =  StrUtil::to_str(expected);
+            }
+            else if(std::is_same_v<AssertType, Str>)
+            {
+                actual_str.to_str();
+                expected_str.to_str();
+            }
+            else
+            {
+                actual_str   = Pretty::StrM(fail_msg_indent, actual);
+                expected_str = Pretty::StrM(fail_msg_indent, expected);
+            }
+
+            fail_message = {
+                                actual_info, 
+                                actual_str,
+                                expected_info, 
+                                expected_str
                             };
             success_flag = false;
         }

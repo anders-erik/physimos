@@ -94,6 +94,17 @@ public:
         return *(t_p + index);
     }
 
+    T& last() const
+    {
+        return *(t_p + elem_count - 1);
+    }
+
+    void pop_back()
+    {
+        elem_count--;
+        t_p[elem_count].~T();
+    }
+
     Arr<T>& set(const T& value)
     {
         elem_count = reserved;

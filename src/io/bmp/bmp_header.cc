@@ -1,5 +1,7 @@
 #include <cstring>
 
+#include "lib/str.hh"
+
 #include <iostream>
 
 #include "rend/bitmap.hh"
@@ -237,6 +239,16 @@ print()
 
     std::cout << "" << std::endl;
     std::cout << "-------------------------------------------" << std::endl;
+}
+
+
+Str FileHeader::to_str()
+{
+    return Str("FileHeader: ") + Str::UI(BM) + ", " +
+            Str::UI(file_size) + ", " +
+            Str::UI(reserved_1) + ", " +
+            Str::UI(reserved_2) + ", " +
+            Str::UI(first_pixel_location);
 }
 
 }

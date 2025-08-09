@@ -3,6 +3,7 @@
 #include <cstddef>  // size_t
 #include <utility>  // enable_if_t, forward
 
+
 typedef unsigned int    uint;
 typedef unsigned char   uchar;
 
@@ -77,12 +78,19 @@ struct Str
     /** Returns new Str as specified substring. */
     Str substr(unsigned int pos, unsigned int new_size);
 
+    Str indent_space(unsigned int indent_count);
+
     const char* to_c_str();
 
     /** Prints string and new line */
     void print() const;
     /** Prints quotes-enclosed string and new line */
     void print_in_quotes();
+
+    Str& to_str()
+    {
+        return *this;
+    }
 
 
 

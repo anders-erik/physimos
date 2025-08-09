@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lib/str.hh"
-#include "lib/arr.hh"
+#include "str.hh"
+#include "arr.hh"
 
 struct StrUtil
 {
@@ -22,8 +22,14 @@ struct StrUtil
             }
         }
 
+        // if(last_match_i != str.size()-1)
         arr.push_back(str.substr(last_match_i, str.size() - last_match_i));
 
         return arr;
+    }
+
+    static Str to_str(bool b)
+    {
+        return b ? "true" : "false";
     }
 };
