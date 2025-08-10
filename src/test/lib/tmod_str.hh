@@ -19,7 +19,7 @@ UnitTestArray constructors = {
         Str str2 {};
         Str str3 = Str{};
 
-        utest.assert(true, true);
+        utest.assert_custom(true, true);
     }},
 
     
@@ -30,50 +30,50 @@ UnitTestArray constructors = {
         Str str1 = "";
         Str str2 = "000";
 
-        utest.assert(true, true);
+        utest.assert_custom(true, true);
     }},
 
 
     {"integer 123456: size",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456).size(),
+        utest.assert_custom(   Str::SI(123456).size(),
                         (uint) 6                );
     }},
     {"integer 123456: [0]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[0],
+        utest.assert_custom(   Str::SI(123456)[0],
                         (char) '1'            );
     }},
     {"integer 123456: [1]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[1],
+        utest.assert_custom(   Str::SI(123456)[1],
                         (char) '2');
     }},
     {"integer 123456: [2]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[2],
+        utest.assert_custom(   Str::SI(123456)[2],
                         (char) '3');
     }},
     {"integer 123456: [3]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[3],
+        utest.assert_custom(   Str::SI(123456)[3],
                         (char) '4');
     }},
     {"integer 123456: [4]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[4],
+        utest.assert_custom(   Str::SI(123456)[4],
                         (char) '5');
     }},
     {"integer 123456: [5]",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::SI(123456)[5],
+        utest.assert_custom(   Str::SI(123456)[5],
                         (char) '6');
     }},
 
@@ -82,19 +82,19 @@ UnitTestArray constructors = {
     {"Str::FL(1.1f, 1)",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::FL(1.1f, (uchar)1, Str::FloatRep::Fixed),
+        utest.assert_custom(   Str::FL(1.1f, (uchar)1, Str::FloatRep::Fixed),
                         Str{"1.1"}          );
     }},
     {"Str::FL(55.7f, 1)",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::FL(55.7f, (uchar)1, Str::FloatRep::Fixed),
+        utest.assert_custom(   Str::FL(55.7f, (uchar)1, Str::FloatRep::Fixed),
                         Str{"55.7"}          );
     }},
     {"Str::FL(55.789f, 2)",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str::FL(55.789f, (uchar)2, Str::FloatRep::Fixed),
+        utest.assert_custom(   Str::FL(55.789f, (uchar)2, Str::FloatRep::Fixed),
                         Str{"55.79"}          );
     }},
 
@@ -103,7 +103,7 @@ UnitTestArray constructors = {
     {"Str{5, 'a'}",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Str{(uint) 5, 'a'}, 
+        utest.assert_custom(   Str{(uint) 5, 'a'}, 
                         Str("aaaaa")    );
     }},
 
@@ -120,14 +120,14 @@ UnitTestArray equality = {
     {
         char chars[] = "hi";
         Str str = "hi";
-        utest.assert(str[0], chars[0]);
+        utest.assert_custom(str[0], chars[0]);
     }},
     {   "hi[1]",
     [](UnitTest& utest) -> void
     {
         char chars[] = "hi";
         Str str = "hi";
-        utest.assert(str[1], chars[1]);
+        utest.assert_custom(str[1], chars[1]);
     }},
 
 
@@ -137,7 +137,7 @@ UnitTestArray equality = {
     {
         Str str_empty_shrunk = "asdfasdfasdlja lskdfjalsdkdfalskd 1111000";
         str_empty_shrunk = "";
-        utest.assert(str_empty_shrunk, Str{});
+        utest.assert_custom(str_empty_shrunk, Str{});
     }},
 };
 
@@ -164,7 +164,7 @@ UnitTestArray concat = {
         Str str_second = second_half;
         Str str = str_first + str_second;
 
-        utest.assert(   str, 
+        utest.assert_custom(   str, 
                         Str{c_str}  );
     }},
 
@@ -179,7 +179,7 @@ UnitTestArray concat = {
         Str str_add = str_first + str_second;
         Str str_manual_concat = "first_half second_half";
 
-        utest.assert(   str_add, 
+        utest.assert_custom(   str_add, 
                         str_manual_concat   );
     }},
 
@@ -197,7 +197,7 @@ UnitTestArray substr = {
         unsigned int rand_size = (unsigned int) 50 + (rand() % 100);
         Str str {rand_size, 'a'};
         
-        utest.assert(   str.cut_to_substr(0, 3),
+        utest.assert_custom(   str.cut_to_substr(0, 3),
                         Str{"aaa"});
     }},
 
@@ -216,7 +216,7 @@ UnitTestArray operator_less_than = {
         Str str_a = "a";
         Str str_b = "b";
         
-        utest.assert(   str_a < str_b,
+        utest.assert_custom(   str_a < str_b,
                         true            );
     }},
 
@@ -226,7 +226,7 @@ UnitTestArray operator_less_than = {
         Str str_a = "a";
         Str str_b = "b";
         
-        utest.assert(   str_a < str_b,
+        utest.assert_custom(   str_a < str_b,
                         true            );
     }},
 
@@ -237,7 +237,7 @@ UnitTestArray operator_less_than = {
         Str str_a = "a";
         Str str_aa = "aa";
         
-        utest.assert(   str_a < str_aa,
+        utest.assert_custom(   str_a < str_aa,
                         true            );
     }},
 
@@ -247,7 +247,7 @@ UnitTestArray operator_less_than = {
         Str str_a = "a";
         Str str_aa = "aa";
         
-        utest.assert(   str_a < str_aa,
+        utest.assert_custom(   str_a < str_aa,
                         true            );
     }},
 
@@ -258,7 +258,7 @@ UnitTestArray operator_less_than = {
         Str str_ka = "ka";
         Str str_cp0 = "cp0";
         
-        utest.assert(   str_cp0 < str_ka,
+        utest.assert_custom(   str_cp0 < str_ka,
                         true            );
     }},
 
@@ -268,7 +268,7 @@ UnitTestArray operator_less_than = {
         Str str_ka = "ka";
         Str str_kb = "kb";
         
-        utest.assert(   str_ka < str_kb,
+        utest.assert_custom(   str_ka < str_kb,
                         true            );
     }},
 
@@ -279,7 +279,7 @@ UnitTestArray operator_less_than = {
         Str str_kb = "kb";
         Str str_kba = "kba";
         
-        utest.assert(   str_kb < str_kba,
+        utest.assert_custom(   str_kb < str_kba,
                         true            );
     }},
 
@@ -289,7 +289,7 @@ UnitTestArray operator_less_than = {
         Str str_cp0 = "cp0";
         Str str_kb  = "kb";
         
-        utest.assert(   str_cp0 < str_kb,
+        utest.assert_custom(   str_cp0 < str_kb,
                         true            );
     }},
 
@@ -300,7 +300,7 @@ UnitTestArray operator_less_than = {
         Str str_k  = "k";
         Str str_cp = "cp";
         
-        utest.assert(   !(str_k < str_cp),
+        utest.assert_custom(   !(str_k < str_cp),
                         true            );
     }},
 
@@ -328,7 +328,7 @@ UnitTestArray split = {
         target_arr.push_back("bb");
         target_arr.push_back("cc");
         
-        utest.assert(   StrUtil::split(str, ','),
+        utest.assert_custom(   StrUtil::split(str, ','),
                         target_arr                  );
     }},
 
@@ -350,7 +350,7 @@ UnitTestArray indent_space = {
 
         Str result = str.indent_space(2);
         
-        utest.assert(   result,
+        utest.assert_custom(   result,
                         target_str  );
     }},
 

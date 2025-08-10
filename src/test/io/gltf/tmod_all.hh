@@ -16,7 +16,7 @@ UnitTestArray camera = {
         Json j_var;
         j_var.try_parse("\"hello\"");
 
-        utest.assert(   j_var.get_string(), 
+        utest.assert_custom(   j_var.get_string(), 
                         (Str)"hesllo"                ); 
     }},
 

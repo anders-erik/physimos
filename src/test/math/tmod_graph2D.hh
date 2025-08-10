@@ -14,7 +14,7 @@ UnitTestArray graph2D_construct = {
     {   "no default",
     [](UnitTest& utest) -> void
     {
-        utest.assert(true, true);
+        utest.assert_custom(true, true);
     }},
 
 
@@ -25,7 +25,7 @@ UnitTestArray graph2D_construct = {
                                 3,
                                 {{0, 0, 1}}       };
 
-        utest.assert(   graph.at(0),
+        utest.assert_custom(   graph.at(0),
                         {-1.0, 1.0});
     }},
     {   "f=x^2, [-1, 1], N=3 : n=1 = (0,0)",
@@ -35,7 +35,7 @@ UnitTestArray graph2D_construct = {
                                 3,
                                 {{0, 0, 1}}       };
 
-        utest.assert(   graph.at(1),
+        utest.assert_custom(   graph.at(1),
                         {0.0, 0.0});
     }},
     {   "f=x^2, [-1, 1], N=3 : n=2 = (1,1)",
@@ -45,7 +45,7 @@ UnitTestArray graph2D_construct = {
                                 3,
                                 {{0, 0, 1}}       };
 
-        utest.assert(   graph.at(2),
+        utest.assert_custom(   graph.at(2),
                         {1.0, 1.0});
     }},
 

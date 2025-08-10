@@ -1,14 +1,16 @@
 
 #pragma once
 
+#include <functional>
+#include <vector>
+#include <type_traits> 
+#include <cassert>
+
 #include "lib/str.hh"
 #include "lib/print.hh"
 
 #include "io/pretty_str.hh"
 
-#include <functional>
-#include <vector>
-#include <type_traits> // std::is_same_v
 
 #include "lib/str.hh"
 
@@ -74,7 +76,7 @@ struct UnitTest
     }
 
     /** Passes the unit test of true assert statement. */
-    void assert(bool assert_statement, Str new_fail_message)
+    void assert_old_msg(bool assert_statement, Str new_fail_message)
     {
         if(has_been_asserted)
             return;
@@ -87,9 +89,54 @@ struct UnitTest
         
     }
 
-    /** Passes the unit test of true assert statement. */
+    // Assert fundmanetal types
+    template<typename AssertBuiltInType>
+    void assert_built_in_type(  const AssertBuiltInType& A, 
+                                const AssertBuiltInType& E
+                             )
+    {
+        static_assert(  std::is_integral_v<AssertBuiltInType> ||
+                        std::is_floating_point_v<AssertBuiltInType>,
+                        "AssertIntegralType must be an integral type."  );
+
+        if(has_been_asserted)
+            return;
+
+        has_been_asserted = true;
+
+        if(A == E) // ambigous warning for Err == Err
+        {
+            fail_message = "";
+            success_flag = true;
+        }
+        else
+        {
+            Str str_indnt {indentation, ' '};
+
+            Str actual_info     = Str("\nActual: \n").indent_space(indentation);
+            Str expected_info   = Str("Expected: \n").indent_space(indentation);
+            
+            Str actual_str      = Str::to_str(A);
+            Str expected_str    = Str::to_str(E);
+            
+            actual_str = actual_str.indent_space(indentation);
+            expected_str = expected_str.indent_space(indentation);
+
+            fail_message = {
+                                actual_info, 
+                                actual_str,
+                                expected_info, 
+                                expected_str
+                            };
+            success_flag = false;
+        }
+
+    }
+
+    /** Passes the unit test of true assert statement.
+        Type must provide a `to_str()` method.  */
     template<typename AssertType>
-    void assert(AssertType actual, AssertType expected)
+    void assert_custom(AssertType actual, AssertType expected)
     {
         if(has_been_asserted)
             return;
@@ -147,7 +194,7 @@ struct UnitTest
     }
 
     /** Passes the unit test of true assert statement. */
-    void assert(bool assert_statement)
+    void assert_old(bool assert_statement)
     {
         if(assert_statement)
             pass();

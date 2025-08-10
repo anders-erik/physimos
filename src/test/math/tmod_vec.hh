@@ -16,7 +16,7 @@ UnitTestArray construct_vec = {
     {   "Vec<double>{}.size() == 0",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Vec<double>{}.size(),
+        utest.assert_custom(   Vec<double>{}.size(),
                         (uint) 0);
     }},
 
@@ -24,7 +24,7 @@ UnitTestArray construct_vec = {
     {   "Vec<double>{100}.size() == 100",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Vec<double>{(uint)100}.size(), 
+        utest.assert_custom(   Vec<double>{(uint)100}.size(), 
                         (uint)100               );
     }},
 
@@ -37,7 +37,7 @@ UnitTestArray construct_vec = {
         expected[1] = 1.0;
         expected[2] = 1.0;
         expected[3] = 1.0;
-        utest.assert(   Vec<double>{(uint)4, 1.0},
+        utest.assert_custom(   Vec<double>{(uint)4, 1.0},
                         expected                    );
     }},
 
@@ -49,7 +49,7 @@ UnitTestArray construct_vec = {
         expected[0] = 5.55;
         expected[1] = 5.55;
 
-        utest.assert(   Vec<double>{2, 5.55},
+        utest.assert_custom(   Vec<double>{2, 5.55},
                         expected                    );
     }},
 
@@ -63,7 +63,7 @@ UnitTestArray construct_vec = {
         for(uint i = 0; i < vec_man.size(); i++)
             vec_man[i] = 123.0;
 
-        utest.assert(   vec_set.set(123.0),
+        utest.assert_custom(   vec_set.set(123.0),
                         vec_man             );
     }},
 
@@ -74,7 +74,7 @@ UnitTestArray construct_vec = {
 
         Vec<double> vec_copy = vec_target;
 
-        utest.assert(   vec_copy,
+        utest.assert_custom(   vec_copy,
                         vec_target  );
     }},
 
@@ -95,7 +95,7 @@ UnitTestArray arithmetic_vec = {
 
         vec *= 2.0;
 
-        utest.assert(   vec,
+        utest.assert_custom(   vec,
                         vec_target  );
     }},
 
@@ -107,7 +107,7 @@ UnitTestArray arithmetic_vec = {
 
         vec /= 2.0;
 
-        utest.assert(   vec,
+        utest.assert_custom(   vec,
                         vec_target  );
     }},
 
@@ -119,7 +119,7 @@ UnitTestArray arithmetic_vec = {
 
         vec += 2.0;
 
-        utest.assert(   vec,
+        utest.assert_custom(   vec,
                         vec_target  );
     }},
 
@@ -131,7 +131,7 @@ UnitTestArray arithmetic_vec = {
 
         vec -= 2.0;
 
-        utest.assert(   vec,
+        utest.assert_custom(   vec,
                         vec_target  );
     }},
 

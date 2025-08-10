@@ -17,7 +17,7 @@ UnitTestArray construct_poly = {
     {"At least one coefficient",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   Polynomial<double>{}.is_valid(),
+        utest.assert_custom(   Polynomial<double>{}.is_valid(),
                         false                            );
     }},
 
@@ -33,7 +33,7 @@ UnitTestArray evaluate = {
     {
         Polynomial<double> p {{5.0}};
 
-        utest.assert(   p.evaluate(0),
+        utest.assert_custom(   p.evaluate(0),
                         5.0             );
     }},
 
@@ -42,7 +42,7 @@ UnitTestArray evaluate = {
     {
         Polynomial<double> p {{0.000001}};
 
-        utest.assert(   p.evaluate(0),
+        utest.assert_custom(   p.evaluate(0),
                         0.000001        );
     }},
 
@@ -51,7 +51,7 @@ UnitTestArray evaluate = {
     {
         Polynomial<double> poly {{0, 1}};
 
-        utest.assert(   poly.evaluate(5.0),
+        utest.assert_custom(   poly.evaluate(5.0),
                         5.0                 );
     }},
 
@@ -61,7 +61,7 @@ UnitTestArray evaluate = {
     {
         Polynomial<double> poly {{0, 1, 0, 1}};
 
-        utest.assert(   poly(5.0),
+        utest.assert_custom(   poly(5.0),
                         130.0       );
     }},
 
@@ -74,7 +74,7 @@ UnitTestArray evaluate = {
         // double expected_calc = -1.0*input + -0.2 * input * input + 0.0001*input*input*input;
         double expected = -9.9875000000000007;;
 
-        utest.assert(   poly(5.0),
+        utest.assert_custom(   poly(5.0),
                         expected );
     }},
 

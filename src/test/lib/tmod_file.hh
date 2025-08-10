@@ -14,7 +14,7 @@ UnitTestArray cat_str = {
         Str path = "/dev/null";
         ResMove<Str> res_str = File::cat_as_str_core_xplat(path);
 
-        utest.assert(   res_str.has_error(),
+        utest.assert_custom(   res_str.has_error(),
                         true);
     }},
 
@@ -33,7 +33,7 @@ UnitTestArray cat_str = {
         err_target.ERRNO = 2;   // expect 2
 
 
-        utest.assert(   err, 
+        utest.assert_custom(   err, 
                         err_target  );
     }},
 

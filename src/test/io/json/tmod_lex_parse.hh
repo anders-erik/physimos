@@ -17,7 +17,7 @@ UnitTestArray json_test_setup = {
         Json j_var;
         j_var.try_parse("\"hello\"");
 
-        utest.assert(   j_var.get_string(), 
+        utest.assert_custom(   j_var.get_string(), 
                         (Str)"hello"                ); 
     }},
 
@@ -33,7 +33,7 @@ UnitTestArray json_test_setup = {
         
         Json jroot = jroot_res.consume_value();
 
-        utest.assert(   jroot.get_string(), 
+        utest.assert_custom(   jroot.get_string(), 
                         (Str) "valid_string"    ); 
     }},
 
@@ -43,7 +43,7 @@ UnitTestArray json_test_setup = {
     {
         Json jroot = parse_json_test_file("primitives/string.json");
 
-        utest.assert(   jroot.get_string(),
+        utest.assert_custom(   jroot.get_string(),
                         (Str) "valid_string"    ); 
     }},
 };
@@ -66,7 +66,7 @@ UnitTestArray json_psps = {
         j_var.try_parse(s1);                                        \
         Str         s2  = j_var.try_serialize();                     \
                                                                         \
-        utest.assert(   s1,                                             \
+        utest.assert_custom(   s1,                                             \
                         s2  );                                          \
     }},                                                                 \
 
@@ -106,7 +106,7 @@ UnitTestArray json_conforms = {
         [](UnitTest& utest) -> void \
         { \
             Str jsource = cat_json_source(name); \
-            utest.assert(   Json::parse(jsource).has_error(), false); \
+            utest.assert_custom(   Json::parse(jsource).has_error(), false); \
         } \
     },
     
@@ -149,7 +149,7 @@ UnitTestArray json_conforms_not = {
         [](UnitTest& utest) -> void                                     \
         {                                                               \
             Str jsource = cat_json_source(name);                        \
-            utest.assert(   Json::parse(jsource).has_error(), true);    \
+            utest.assert_custom(   Json::parse(jsource).has_error(), true);    \
         }                                                               \
     },
     

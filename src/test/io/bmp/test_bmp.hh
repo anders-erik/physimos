@@ -37,9 +37,11 @@ UnitTestArray one_black_pixel = {
         Print::line(test_str);
         
         
+        // utest.assert_built_in_type(false, true);
+        utest.assert_built_in_type(0.0f, 11.1f);
 
-        // utest.assert(bmp_loader.file_header(), file_header_target);
-        utest.assert(bmp_loader.file_header() == file_header_target);
+        // utest.assert_integral(bmp_loader.file_header(), file_header_target);
+        // utest.assert_old(bmp_loader.file_header() == file_header_target);
     }},
 
 
@@ -65,7 +67,7 @@ UnitTestArray one_black_pixel = {
         info_header_target.important_color_count = 0;
 
 
-        utest.assert(bmp_loader.info_header() == info_header_target);
+        utest.assert_old(bmp_loader.info_header() == info_header_target);
     }},
 
 
@@ -100,7 +102,7 @@ UnitTestArray one_black_pixel = {
                                     target_padded_data.data(), 
                                     4 );
         
-        utest.assert(cmp_result == 0);
+        utest.assert_old(cmp_result == 0);
     }},
 
 };
@@ -134,7 +136,7 @@ std::vector<UnitTest> endian_swap = {
         header_a.endian_swap();
 
 
-        utest.assert(       header_a.file_header == header_b.file_header
+        utest.assert_old(       header_a.file_header == header_b.file_header
                                     && header_a.info_header == header_b.info_header);
     }},
 

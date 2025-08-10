@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits> 
 #include <cstddef>  // size_t
 #include <utility>  // enable_if_t, forward
 
@@ -109,6 +110,38 @@ struct Str
     static Str FL(float fl, uchar decimals, Str::FloatRep float_representation);
     /** Double to Str */
     static Str DB(double db, int decimals);
+
+
+    /** Supports the C++ built in, fundamanetal types (integral & floating point) */
+    template <typename T>
+    static Str to_str(T t)
+    {
+        // call appropriate method based on type
+        if constexpr (std::is_same_v<T, bool>)
+        {
+            return t ? "true" : "false";
+        }
+        else if constexpr (std::is_same_v<T, float>)
+        {
+            return Str::FL(static_cast<float>(T{t}), 2, Str::FloatRep::Fixed);
+        }
+        else if constexpr (std::is_same_v<T, double>)
+        {
+            return Str::DB(static_cast<double>(T{t}), 4);
+        }
+        else if constexpr (std::is_signed_v<T>)
+        {
+            return Str::SI(static_cast<long long>(T{t}));
+        }
+        else if constexpr (std::is_unsigned_v<T>)
+        {
+            return Str::UI(static_cast<unsigned long long>(T{t}));
+        }
+        else
+        {
+            static_assert(false, "Unsupported type for to_str");
+        }
+    }
 
     template <typename T>
     static Str Num(T num)

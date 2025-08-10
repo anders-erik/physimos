@@ -16,7 +16,7 @@ UnitTestArray pow_fns = {
     {   "pow(5.0, 3)",
     [](UnitTest& utest) -> void
     {
-        utest.assert(   pow(5.0, 3),
+        utest.assert_custom(   pow(5.0, 3),
                         125.0       );
     }},
 
