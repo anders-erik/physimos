@@ -2,25 +2,30 @@
 #pragma once
 
 #include <queue>
+#include <functional>
 
 #include "lib/time.hh"
 #include "math/vecmat.hh"
+
+#include "opengl/opengl.hh"
 
 #include "coordinate_transform.hh"
 
 #include "auxevent.hh"
 #include "window/cursor.hh"
 
-#include "opengl/opengl.hh"
+#if PHY_NATWIN == 1
 
-// To not require the inclusion of the glfw header
-struct GLFWwindow;
-struct GLFWcursor;
+#else
+#include "window/glfw.hh"
+#endif
+
 
 using AuxwinProcAdrFn = void* (*)(const char* procname);
 
-namespace window {
 
+namespace window
+{
 
 
 class Auxwin 
@@ -29,12 +34,6 @@ class Auxwin
 
     opengl::OpenGL gl;
 
-    // Internal window closing logic -- two quick escape-presses for now
-    Key close_key = Key::Esc; // The key that will trigger auxwin to close twice in quick succession
-    double time_of_last_close_key = -1.0; // Time at which the most recent close keystrok was registered. GlfwGetTime()
-    double dt_to_close = 0.5; // delta time to which compare successive close-button strokes
-    /** Check close condition. If met then the 'close()' method is invoked. */
-    void try_close();
     /** Check keystroke close conditions. If match, close flag is set. */
     void try_close_keystroke(KeyStrokeEvent keystroke, KeyModifiers modifiers);
 
@@ -47,7 +46,7 @@ class Auxwin
         /**    Queries glfw for coordinate system values, then reloads the coord object. 
             Depends on current_window_size_f.
         */
-    void reload_coordinate_constants_using_glfw();
+    void reload_coordinate_constants();
 
     void glfw_window_hints();
     void glfw_create_window(i2 window_size_i);
@@ -62,6 +61,8 @@ class Auxwin
     Cursor cursor;
 
 public:
+    // AuxwinCallbacks callbacks;
+
     Timer timer;
     static const uchar dt_count = 10;
     float dt_s_last_10[dt_count] {0.016f};
@@ -105,7 +106,6 @@ public:
     void close();
     void destroy();
 
-    void glfw_create_cursors();
     void set_cursor_state(Cursor::State new_state);
     CursorPosition get_cursor_pos() const;
     f2 get_center_pos();
@@ -127,8 +127,23 @@ public:
     void cursor_position_callback(double xpos, double ypos);
     void scroll_callback(double xoffset, double yoffset);
     void key_callback(int key, int action, int mods);
+
+
+private:
+
+#if PHY_NATWIN == 1
+
+#else
+    PWGLFW pwglfw;
+#endif
+
 };
 
 
-
 }
+
+
+
+static Auxwin* current_auxwin = nullptr;
+Auxwin* get_current_auxwin();
+

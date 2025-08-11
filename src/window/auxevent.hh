@@ -28,7 +28,7 @@ struct CursorPosition {
 
     void print();
 
-    f2 window_dims; // TODO: move to auxwin when callbacks have been moved into class
+    // f2 window_dims; // TODO: move to auxwin when callbacks have been moved into class
 };
 
 

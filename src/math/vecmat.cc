@@ -707,7 +707,7 @@ i2 i2::operator/(const i2 & rhs)
     return {this->x / rhs.x, this->y / rhs.y};
 }
 
-f2 i2::to_f2()
+f2 i2::to_f2() const
 {
     return f2{  (float) x, 
                 (float) y   };

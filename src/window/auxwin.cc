@@ -6,7 +6,7 @@
 #if PHY_NATWIN == 1
 #include <natwin/natwin.hh>
 #else
-#include <GLFW/glfw3.h>
+#include "window/glfw.hh"
 #endif
 
 #include "print.hh"
@@ -16,42 +16,31 @@
 
 #include "auxwin.hh"
 
-namespace window {
+
+Auxwin* get_current_auxwin()
+{
+    return current_auxwin;
+}
 
 
-Auxwin* current_auxwin;
+namespace window
+{
+
+// Auxwin* current_auxwin;
 
 
-void CursorPosition::print(){
 
+void CursorPosition::print()
+{
     std::cout << std::endl;
     input.print("Input       ");
     sane.print("Sane        ");
     pixels.print("Pixel       ");
     normalized.print("Normalized  ");
     millimeters.print("Millimeters ");
-
 }
 
-/*
-    GLFW C-Style callbacks as indirection layer
-*/
-void glfw_framebuffer_callback(GLFWwindow* _window, int _width, int _height) {
-    current_auxwin->framebuffer_callback(_width, _height);
-}
-void glfw_mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
-    current_auxwin->mouse_button_callback(button, action, mods);
-}
-void glfw_cursor_position_callback(GLFWwindow *window, double xpos, double ypos){
-    current_auxwin->cursor_position_callback(xpos, ypos);
-}
 
-void glfw_scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
-    current_auxwin->scroll_callback(xoffset, yoffset);
-}
-void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods){
-    current_auxwin->key_callback(key, action, mods);
-}
 
 
 
@@ -63,19 +52,18 @@ void Auxwin::init(int width, int height)
     std::cout << "Natwin is not implemented yet. Exiting." << std::endl;
     exit(1);
 #else
-    glfwInit();
-    glfw_window_hints();
-    glfw_create_window({width, height});
-    glfw_create_cursors();
-    gl.init(get_auxwin_proc_adr_fn());
+    pwglfw.init({width, height});
 #endif
-        
+
+    gl.init(get_auxwin_proc_adr_fn());
+
+    reload_coordinate_constants();    
 }
 
 
 
 
-void Auxwin::reload_coordinate_constants_using_glfw()
+void Auxwin::reload_coordinate_constants()
 {
     coords_input.monitor_size_px = get_monitor_size_px();
     coords_input.monitor_size_mm = get_monitor_size_mm();
@@ -85,79 +73,24 @@ void Auxwin::reload_coordinate_constants_using_glfw()
     coord_transformer.set_constants(coords_input);
 }
 
-void Auxwin::glfw_window_hints(){
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    glfwWindowHint(GLFW_SAMPLES, 8);
-
-    // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-}
-
-
-
-void Auxwin::glfw_create_window(i2 window_size_i)
-{
-
-    glfw_window = glfwCreateWindow(window_size_i.x, window_size_i.y, "Auxwin", NULL, NULL);
-
-    f2 content_scale = get_monitor_content_scale();
-
-    f2 window_size_f = {(float)window_size_i.x, (float) window_size_i.y};
-
-    window_fb_size = (window_size_f * content_scale).to_i2();
-
-    cursor_pos.window_dims = window_size_f;
-
-	// GLFWwindow *window = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
-	if (glfw_window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		// return -1;A
-	}
-
-
-    reload_coordinate_constants_using_glfw();
-
-
-    glfwSetFramebufferSizeCallback( glfw_window, 
-                                    glfw_framebuffer_callback      );
-
-    glfwSetMouseButtonCallback(     glfw_window, 
-                                    glfw_mouse_button_callback     );
-
-    glfwSetCursorPosCallback(       glfw_window, 
-                                    glfw_cursor_position_callback  );
-
-    glfwSetScrollCallback(          glfw_window, 
-                                    glfw_scroll_callback           );
-
-    glfwSetKeyCallback(             glfw_window, 
-                                    glfw_key_callback              );
-
-
-    // TODO: THIS SHOULD NOT BE FORCED WHEN CREATING A NEW WINDOW!
-    glfwMakeContextCurrent(glfw_window);
-
-}
 
 
 AuxwinProcAdrFn Auxwin::get_auxwin_proc_adr_fn()
 {
+
+#if PHY_NATWIN == 1
+
+#else 
     return (AuxwinProcAdrFn) glfwGetProcAddress;
+#endif
+
 }
 
 
 
 void Auxwin::make_current()
 {
-    glfwMakeContextCurrent(glfw_window);
+    pwglfw.make_current();
 }
 
 
@@ -167,24 +100,10 @@ bind_window_framebuffer()
     glBindFramebuffer(  GL_FRAMEBUFFER, 
                         0               );
 
-    glViewport( 0,
-                0, 
-                window_fb_size.x, 
-                window_fb_size.y );
+    pwglfw.set_window_viewport();
 }
 
 
-void Auxwin::
-try_close()
-{
-    double current_time = glfwGetTime();
-    double dt = current_time - time_of_last_close_key;
-
-    if(dt < dt_to_close)
-        close();
-    else
-        time_of_last_close_key = current_time;
-}
 
 
 void Auxwin::
@@ -209,15 +128,15 @@ try_close_keystroke(KeyStrokeEvent keystroke, KeyModifiers modifiers)
 
 void Auxwin::
 close(){
-    glfwSetWindowShouldClose(glfw_window, true);
+    pwglfw.close();
     open = false;
 }
 
 
 bool Auxwin::
-is_open(){
-    return !glfwWindowShouldClose(glfw_window);
-    // return open;
+is_open()
+{
+    return pwglfw.is_open();
 }
 
 
@@ -236,84 +155,36 @@ void Auxwin::new_frame()
     // glClear(GL_COLOR_BUFFER_BIT);
     // glEnable(GL_CULL_FACE);
 
-
-
-    // // move all event in current queue to return array
-    // while(other_input_events.size() > 0){
-    //     return_arr.push_back(other_input_events.front());
-    //     other_input_events.pop();
-    // }
-
-
-    // std::vector<InputEvent> return_arr = events_other;
-    // events_other.clear();
-
-    // return return_arr;
-
-}
-bool Auxwin::end_frame(){
-
-    glBindVertexArray(0); 
-
-    glfwSwapBuffers(glfw_window);
-	glfwPollEvents();
-    
-    return is_open();
 }
 
-
-void Auxwin::destroy(){
-
-    // TODO: SHOUDL NOT TERMINATE THE GLFW LIB!
-    glfwTerminate();
-}
-
-
-
-void Auxwin::
-glfw_create_cursors()
+bool Auxwin::end_frame()
 {
-    // Set up cursors
-    cursor.glfw_images.arrow        = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-    cursor.glfw_images.cross_hair   = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-    cursor.glfw_images.hand         = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-    cursor.glfw_images.none         = glfwCreateStandardCursor(GLFW_CURSOR_HIDDEN);
+    glBindVertexArray(0);
+
+    pwglfw.end_frame();
+    
+    return pwglfw.is_open();
 }
+
+
+void Auxwin::destroy()
+{
+    pwglfw.destroy();
+}
+
+
 
 void Auxwin::
 set_cursor_state(Cursor::State new_state)
 {
-    // Prevent unnecesary cursor calls, which can be heavy
+    // Prevent unnecesary cursor calls
     if(cursor.state == new_state)
         return;
 
     cursor.state = new_state;
 
-    switch (cursor.state)
-    {
-    case Cursor::NORMAL:
-        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwSetCursor(glfw_window, cursor.glfw_images.arrow);
-        break;
+    pwglfw.set_cursor_state(new_state);
 
-    case Cursor::INVERTED:
-        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwSetCursor(glfw_window, cursor.glfw_images.cross_hair);
-        break;
-
-    case Cursor::HAND:
-        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwSetCursor(glfw_window, cursor.glfw_images.hand);
-        break;
-
-    case Cursor::CAPTURE:
-        glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glfwSetCursor(glfw_window, cursor.glfw_images.none);
-        // center_cursor_pos();
-        // center_real_cursor();
-        // events_input.clear();
-        break;
-    }
 }
 
 
@@ -333,43 +204,30 @@ get_cursor_pos() const
 i2 Auxwin::
 get_window_fb_size() const
 {
-    return window_fb_size;
+    return pwglfw.dims.fb_size_i;
 }
 
 f2 Auxwin::
 get_window_fb_size_float() const
 {
-    return {(float)window_fb_size.x, (float) window_fb_size.y};
+    return pwglfw.dims.fb_size_i.to_f2();
 }
 
 
 
 f2 Auxwin::get_monitor_content_scale()
 {
-    f2 content_scale;
-
-    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
-    glfwGetMonitorContentScale(primary_monitor, &content_scale.x, &content_scale.y);
-
-    return content_scale;
+    return pwglfw.get_content_scale();
 }
 
 f2 Auxwin::get_monitor_size_px()
 {
-    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
-    const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
-
-    return f2{ (float)mode->width, (float)mode->height };
+    return pwglfw.get_monitor_size_px().to_f2();
 }
 
 f2 Auxwin::get_monitor_size_mm()
 {
-    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
-
-    int width_mm, height_mm;
-    glfwGetMonitorPhysicalSize(primary_monitor, &width_mm, &height_mm);
-
-    return f2 { (float)width_mm, (float)height_mm };
+    return pwglfw.get_monitor_size_mm().to_f2();
 }
 
 
@@ -398,32 +256,15 @@ std::vector<WindowResizeEvent> Auxwin::get_events_window_resize()
 void Auxwin::
 framebuffer_callback(int _width, int _height)
 {
-    // std::cout << "auxwin->framebuffer_callback" << std::endl;
+    i2 frambuffer_size_i = i2{_width, _height};
 
-    window_fb_size = {_width, _height};
-    f2 window_fb_size_f = get_window_fb_size_float();
+    events_resize.emplace_back( frambuffer_size_i,
+                                get_monitor_content_scale() );
 
-    f2 frambuffer_size_f = {(float) _width, (float) _height};
-    i2 frambuffer_size_i = {_width, _height};
-
-    f2 content_scale_f = get_monitor_content_scale();
-    i2 content_scale_i = {(int)content_scale_f.x, (int)content_scale_f.y};
-
-    f2 window_size_f = frambuffer_size_f / content_scale_f;
-    i2 window_size_i = frambuffer_size_i / content_scale_i;
-
-    cursor_pos.window_dims = window_size_f;
-    
-    reload_coordinate_constants_using_glfw();
-
-    EventType event_type = EventType::WindowResize;
-
-    WindowResizeEvent win_resize_event { 
-        frambuffer_size_i,
-        get_monitor_content_scale()
-    };
-
-    events_resize.emplace_back(win_resize_event);
+    // update window structs
+    pwglfw.update_dims_with_fb(frambuffer_size_i);
+    // cursor_pos.window_dims = pwglfw.dims.window_size_f;
+    reload_coordinate_constants();
 
     glViewport(0, 0, frambuffer_size_i.x, frambuffer_size_i.y);
 }
@@ -543,3 +384,5 @@ key_callback(int key, int action, int mods)
 }
 
 }
+
+

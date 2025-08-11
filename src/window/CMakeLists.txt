@@ -7,6 +7,7 @@ endif()
 
 set(WINDOW_SRC 
     auxwin.cc
+    glfw.cc
     glfw_key.cc
     coordinate_transform.cc
 )
