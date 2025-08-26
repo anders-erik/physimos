@@ -7,6 +7,8 @@
 #include <cstring>
 
 typedef unsigned int uint;
+using VecType = unsigned int;
+
 
 template <typename T>
 class Vec

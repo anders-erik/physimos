@@ -6,6 +6,7 @@
 #include "test/math/tmod_vec.hh"
 #include "test/math/tmod_graph2D.hh"
 #include "test/math/tmod_polynomial.hh"
+#include "test/math/tmod_orient.hh"
 
 
 
@@ -37,6 +38,12 @@ TCModule mod_math_graph2D = {
     }
 };
 
+TCModule mod_math_orient = {
+    "Orient2d", {
+        {"Orient2d", orient_2D},
+    }
+};
+
 
 TCLibrary tclib_math = {
     "math",
@@ -45,6 +52,7 @@ TCLibrary tclib_math = {
         mod_math_vec,
         mod_math_polynomial,
         mod_math_graph2D,
+        mod_math_orient,
     }
 };
 

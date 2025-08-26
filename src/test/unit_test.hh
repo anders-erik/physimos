@@ -89,9 +89,9 @@ struct UnitTest
         
     }
 
-    // Assert fundmanetal types
+    // Assert fundamental C++ types
     template<typename AssertBuiltInType>
-    void assert_built_in_type(  const AssertBuiltInType& A, 
+    void assert_fundamental(  const AssertBuiltInType& A, 
                                 const AssertBuiltInType& E
                              )
     {
@@ -133,7 +133,7 @@ struct UnitTest
 
     }
 
-    /** Passes the unit test of true assert statement.
+    /** Assert custom user defined type.
         Type must provide a `to_str()` method.  */
     template<typename AssertType>
     void assert_custom(AssertType actual, AssertType expected)

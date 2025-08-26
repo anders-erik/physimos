@@ -231,6 +231,11 @@ struct m2f2
 
     m2f2& operator=(m2f2& rhs);
 
+    float det()
+    {
+        return x.x * y.y - x.y * y.x;
+    }
+
     f2 mult_vec(f2 _f2); /** Multiply the matrix by a f2 vector e.g. f2 = m2f2 x f2 * */
 
     void set_to_identity();
@@ -240,6 +245,9 @@ struct m2f2
     m2f2() : 
         x { f2(1.0f, 0.0f) }, 
         y { f2(0.0f, 1.0f) } {};
+    m2f2(f2 x, f2 y) : 
+        x { x }, 
+        y { y } {};
 };
 
 

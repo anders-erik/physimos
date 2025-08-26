@@ -35,10 +35,10 @@ UnitTestArray one_black_pixel = {
         // Arr<Str> split_str = StrUtil::split(test_str, '\n');
         test_str.indent_space(4);
         Print::line(test_str);
+         
         
-        
-        // utest.assert_built_in_type(false, true);
-        utest.assert_built_in_type(0.0f, 11.1f);
+        // utest.assert_fundamental(false, true);
+        utest.assert_fundamental(0.0f, 11.1f);
 
         // utest.assert_integral(bmp_loader.file_header(), file_header_target);
         // utest.assert_old(bmp_loader.file_header() == file_header_target);
