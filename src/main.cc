@@ -21,6 +21,7 @@
 
 #include "scene/forest_planet.hh"
 #include "scene/scenes/scene_1.hh"
+#include "scene/scenes/scene_physics.hh"
 
 
 
@@ -28,8 +29,9 @@ int main()
 {
 	Physimos physimos { 1000, 700 };
 
-	Scene1::load(physimos);
+	// Scene1::load(physimos);
 	// ForestPlanet::load(physimos);
+	ScenePhysics::load(physimos);
 
 	physimos.main_loop();
 

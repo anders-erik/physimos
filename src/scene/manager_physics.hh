@@ -77,6 +77,9 @@ struct ManagerPhysics
 
     void update(f32 dt_s)
     {
+        if(data_dyn.empty())
+            return;
+
         // update dynamic
         for(size_t i=0; i< data_dyn.size(); i++)
             data_dyn[i].YY.update_dynamic(dt_s);

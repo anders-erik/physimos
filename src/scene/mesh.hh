@@ -69,7 +69,7 @@ struct Mesh
     void append(const Mesh& mesh_2);
 
     f3 get_center();
-    f3 get_size();
+    f3 get_size(); // smallest AABB containing all vertices
     float get_max_radius();
 
     void center();
