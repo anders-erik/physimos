@@ -118,6 +118,11 @@ struct f2
     void set_zero();
     f2& clamp_nonzero();
 
+    float dot(const f2& rhs)
+    {
+        return this->x * rhs.y - this->y * rhs.x;
+    }
+
     i2 to_i2() const ;
 
     void print(std::string prefix);
@@ -177,6 +182,7 @@ struct f3
     /** this / norm */
     f3 unit() const;
     f3 cross(const f3& rhs);
+    m3f3 skew_symmetric();
     float dot(const f3& rhs);
     float angle(const f3& rhs);
 

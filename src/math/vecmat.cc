@@ -420,6 +420,15 @@ f3 f3::cross(const f3 & rhs)
                 x * rhs.y - y * rhs.x   };
 }
 
+m3f3 f3::skew_symmetric()
+{
+    return m3f3 {
+        {0.0f, -z,    y   },
+        { z,    0.0f, -x  },
+        {-y,    x,    0.0f}
+    };
+}
+
 float f3::dot(const f3 & rhs)
 {
     return x*rhs.x + y*rhs.y + z*rhs.z;
