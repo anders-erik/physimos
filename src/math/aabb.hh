@@ -5,7 +5,17 @@
 #include "math/number.hh"
 
 
+struct AABBfdims
+{
+    f3 min;
+    f3 dims;
+};
 
+struct AABBfcenter
+{
+    f3 center;
+    f3 extent;
+};
 
 struct AABBf
 {

@@ -179,6 +179,8 @@ struct f3
     float norm_sq();
     /** sqrt ( x^2 + y^2 + z^2 ) */
     float norm() const;
+    /** sqrt ( x^2 + y^2 + z^2 ) */
+    f3& normalize();
     /** this / norm */
     f3 unit() const;
     f3 cross(const f3& rhs);

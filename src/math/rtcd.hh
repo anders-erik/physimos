@@ -3,6 +3,32 @@
 #include <cmath>
 #include "math/vecmat.hh"
 
+/**  */
+struct Line3D
+{
+    f3 a;
+    f3 b;
+
+    Line3D() = default;
+    Line3D(f3 a, f3 b) 
+        : a {a}
+        , b {b}
+    {}
+
+    f3 direction() const
+    {
+        return (b - a).unit();
+    }
+
+};
+
+struct Plane3D
+{
+    f3 n;
+    float d; // = \vec{} \cdot \vec{Point} 
+};
+
+
 /**
     If returns positive, C is to the left of line from A to B
 */

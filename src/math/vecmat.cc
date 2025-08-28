@@ -407,6 +407,13 @@ float f3::norm() const
     return sqrtf(x*x + y*y + z*z);
 }
 
+f3& f3::normalize()
+{
+    float n = norm();
+    *this = *this / ( n == 0.0f ? 2.0f : n);
+    return *this;
+}
+
 f3 f3::unit() const
 {
     float n = norm();
