@@ -60,7 +60,7 @@ struct AABBf
 
     bool is_above_a_face(f3 pnt)
     {
-
+        return false;
     }
 };
 

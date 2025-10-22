@@ -78,6 +78,8 @@ struct Str
     Str& cut_to_substr(unsigned int pos, unsigned int new_size);
     /** Returns new Str as specified substring. */
     Str substr(unsigned int pos, unsigned int new_size);
+    /** Remove whitespace */
+    Str& trim();
 
     Str indent_space(unsigned int indent_count);
 

@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cctype>
 #include <iostream>
 
 #include "str_std.hh"
@@ -352,6 +353,27 @@ substr(unsigned int pos, unsigned int new_size)
 {
     Str copy = *this;
     return copy.cut_to_substr(pos, new_size);
+}
+
+Str & Str::trim()
+{
+    // trim from start
+    size_t start_i = 0;
+    while(start_i < size_str && std::isspace(static_cast<unsigned char>((*this)[start_i])))
+    {
+        start_i++;
+    }
+
+    // trim from end
+    size_t end_i = size_str;
+    while(end_i > start_i && std::isspace(static_cast<unsigned char>((*this)[end_i - 1])))
+    {
+        end_i--;
+    }
+
+    size_t new_size = end_i - start_i;
+
+    return cut_to_substr(start_i, new_size);
 }
 
 Str Str::indent_space(unsigned int indent_count)

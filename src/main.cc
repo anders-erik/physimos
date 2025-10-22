@@ -22,7 +22,7 @@
 #include "scene/forest_planet.hh"
 #include "scene/scenes/scene_1.hh"
 #include "scene/scenes/scene_physics.hh"
-
+#include "scene/scenes/scene_gcode.hh"
 
 
 int main()
@@ -31,7 +31,8 @@ int main()
 
 	// Scene1::load(physimos);
 	// ForestPlanet::load(physimos);
-	ScenePhysics::load(physimos);
+	// ScenePhysics::load(physimos);
+	SceneGCode::load(physimos);
 
 	physimos.main_loop();
 

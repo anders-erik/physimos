@@ -4,6 +4,9 @@
 #include <cmath>
 #include <string>
 
+using fl = float;
+using db = double;
+
 struct s2;
 struct ui2;
 struct i2;
@@ -211,6 +214,23 @@ inline f3 operator*(float scalar, const f3& vec)
 {
     return vec * scalar;
 }
+
+
+struct d3
+{
+    db x = 0.0;
+    db y = 0.0;
+    db z = 0.0;
+
+    d3() = default;
+
+    constexpr
+    d3(db x, db y, db z) : x {x}, y {y}, z {z} {};
+    
+    constexpr
+    d3(const f3 _f3) : x {(db)_f3.x}, y {(db)_f3.y}, z {(db)_f3.z} {};
+
+};
 
 
 struct f4 {
