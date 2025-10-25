@@ -6,6 +6,11 @@
 #include "math/vecmat.hh"
 #include "math/transform.hh"
 #include "math/shape.hh"
+// struct Line
+// {
+//     f3 p_start;
+//     f3 p_end;
+// };
 
 #include "opengl/program.hh"
 #include "opengl/texture_fb.hh"
@@ -71,12 +76,15 @@ public:
 
     void set_camera(Camera& camera);
     void set_lamps(std::vector<TagO> lamp_tags, Manager3D& manager3D);
+
     void render_scene(Scene3D& scene3D, Manager3D& manager_3D);
 
     /** Object id outlines for cursor interaction */
     void render_object_ids(Scene3D& scene3D, Manager3D& manager_3D);
     TagO sample_oid_tag(const Scene3D& scene, const f2 cursor_pos_sane);
 
+
+    // void render_line(Line line);
 
 private:
 

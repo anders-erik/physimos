@@ -2,6 +2,9 @@
 #pragma once
 
 #include <vector>
+#include <functional>
+
+#include "lib/arr.hh"
 
 #include "opengl/program.hh"
 
@@ -19,6 +22,26 @@
 #include "scene/manager_object.hh"
 #include "scene/scene_state.hh"
 
+#include "io/gcode/gcode.hh"
+
+
+struct SceneProperty
+{
+    Str name;
+
+};
+
+
+
+struct SceneObject
+{
+    SID sid;
+    Str name;
+    // Arr<SceneProperty> properties;
+    SceneProperty* prop1;
+    // SceneProperty prop2;
+    // SceneProperty prop3;
+};
 
 struct Scene3D
 {
@@ -30,6 +53,8 @@ struct Scene3D
     std::vector<TagO> tagos;
     std::vector<TagO> quad_tags;
     std::vector<TagO> lamp_tags;
+
+    std::vector<GCode> g_codes;
 
 
     f3 q_vec_100 = {1.0f, 0.0f, 0.0f};

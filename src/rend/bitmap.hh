@@ -5,8 +5,23 @@
 #include <filesystem>
 #include <vector>
 
+#include "lib/defs.hh"
+#include "lib/arr.hh"
+
 #include "math/vecmat.hh"
 
+
+struct Image
+{
+    enum PixelFormat {
+        RGBA8,
+        RGB8,
+        G8,
+    } pixel_format;
+    u32 width;
+    u32 height;
+    Arr<u8> data;
+};
 
 
 struct BitmapPixel {
@@ -38,7 +53,6 @@ typedef class Bitmap {
 
         std::vector<BitmapPixel> pixels;
         unsigned int pixelcount;
-
         unsigned int height;
         unsigned int width;
 

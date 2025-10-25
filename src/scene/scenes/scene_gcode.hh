@@ -23,6 +23,9 @@
 #include "script/script_mesh.hh"
 
 
+#include "io/gcode/gcode.hh"
+
+
 class SceneGCode
 {
 public:
@@ -37,15 +40,11 @@ public:
         root_scene.name = "scene_physics";
 
 
-        // GROUND
-        Object& ground = manager_o.new_object();
-        ground.tag.type = TagO::Base;
-        ground.mesh.sheet({40, 2});
-        ground.mesh.color(0x222222);
-        ground.mesh.center();
-        ground.name = "ground";
-        ground.pos = {0.0f, 0.0f, -1.6f};
-        root_scene.tagos.push_back(ground.tag);
+        Object& gcode = manager_o.new_object();
+        gcode.tag.type = TagO::GCode;
+        gcode.name = "g-code 1";
+        gcode.pos = {0.0f, 0.0f, 0.0f};
+        root_scene.tagos.push_back(gcode.tag);
 
 
         root_scene.camera.projection.set_finite();

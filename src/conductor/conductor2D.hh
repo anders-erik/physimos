@@ -28,7 +28,7 @@ using namespace window;
 struct Physimos 
 {
 
-	window::Auxwin auxwin;
+	window::Auxwin auxwin; // Create render context and handle input
 	UI::PUI pui;
 	Manager3D manager_3D;
 	Manager2D manager_2D;
@@ -43,6 +43,11 @@ struct Physimos
 	Physimos(int width, int height);
 
 	Scene3D& get_window_scene();
+
+	/** transfer control to Physimos by entering main rendering loop */
+	void main_loop();
+
+private:
 
 	void update_grab(PhysimosGrab::SubSystemBits subsystem, InputResponse response);
 
@@ -62,8 +67,6 @@ struct Physimos
 
 	void render();
 
-	/** transfer control to Physimos by entering main rendering loop */
-	void main_loop();
 
 };
 

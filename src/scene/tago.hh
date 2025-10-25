@@ -13,10 +13,11 @@ struct TagO
         Quad,
         Lamp,
         Camera,
+        GCode,
         Null,
     };
 
-    OID oid = 0;
+    OID  oid  = 0;
     Type type = Null;
 
 
@@ -39,6 +40,7 @@ struct TagO
     bool is_base() const  {return type == Base;}
     bool is_lamp() const  {return type == Lamp;}
     bool is_camera() const  {return type == Camera;}
+    bool is_g_code() const  {return type == GCode;}
     bool is_null() const  {return type == Null;}
     bool not_null() const  {return type != Null;}
 

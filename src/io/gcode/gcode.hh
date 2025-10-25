@@ -23,7 +23,7 @@ struct G1
 
 // Single size vector blocks, but variable block structure.
 // NOTE: could be done the other way around, with fixed block structure and variable size vectors!
-using g_block = std::variant<G0, G1>;
-using g_code  = std::vector<g_block>;
+using GBlock = std::variant<G0, G1>;
+using GCode  = std::vector<GBlock>;
 
 

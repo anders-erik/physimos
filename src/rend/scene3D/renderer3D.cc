@@ -144,6 +144,10 @@ render_scene(Scene3D& scene3D, Manager3D& manager_3D)
     for(TagO tag : scene3D.tagos)
         render_tag(tag, manager_3D);
 
+    for(GCode& g_code : scene3D.g_codes)
+    {
+        
+    }
     
 
 
