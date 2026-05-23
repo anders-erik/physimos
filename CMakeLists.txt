@@ -80,7 +80,7 @@ message("CXX Flags (Release): ${CMAKE_CXX_FLAGS_RELEASE}")
 message("CMAKE_INCLUDE_CURRENT_DIR: ${CMAKE_INCLUDE_CURRENT_DIR}") # add source and bin dirs automatically
 
 
-
+message("Start of build")
 
 # set up GLAD
 add_library(glad extern/glad/src/glad.c)

@@ -100,7 +100,7 @@ public:
     void new_frame();
     /** Swap buffers, poll events, and check if should close. */
     bool end_frame();  
-
+    /** Check if window lib has been instructed to close. */
     bool is_open();
     // Will trigger the window to close on next end of frame call.
     void close();

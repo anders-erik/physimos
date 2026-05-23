@@ -20,7 +20,7 @@ struct PanelRight
     Base base;
 
     BaseTexture T_collapse;
-    bool collapsed = true;
+    bool collapsed = false;
     bool has_selected = true;
 
     UI::W::ObjectLarge w_object_l;

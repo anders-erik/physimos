@@ -29,10 +29,10 @@ int main()
 {
 	Physimos physimos { 1000, 700 };
 
-	// Scene1::load(physimos);
+	Scene1::load(physimos);
 	// ForestPlanet::load(physimos);
 	// ScenePhysics::load(physimos);
-	SceneGCode::load(physimos);
+	// SceneGCode::load(physimos);
 
 	physimos.main_loop();
 

@@ -219,7 +219,7 @@ render()
 	manager_3D.render_window_scene(	auxwin.get_window_fb_size(),
 									auxwin.get_cursor_pos()	);
 
-
+	// Sample possible oid of current mouse position to enable hover behavior/highlighting
 	f2 sample_pos;
 	if(grab.is_scene_mouse_grab())
 		sample_pos = auxwin.get_center_pos();
