@@ -41,7 +41,7 @@ public:
         Object& ground = manager_o.new_object();
         ground.tag.type = TagO::Base;
         ground.mesh.sheet({40, 2});
-        ground.mesh.color(0x222222);
+        ground.mesh.color(0x777777);
         ground.mesh.center();
         ground.name = "ground";
         ground.pos = {0.0f, 0.0f, -1.6f};
@@ -136,12 +136,12 @@ public:
 
 
         // // TOADSTOOL MERGE
-        // Object& toadst_merge = manager_o.new_object();
-        // toadst_merge.tag.type = TagO::Base;
-        // toadst_merge.name = "toadst_merged";
-        // toadst_merge.pos = {1.0f, -3.0f, 0.0f};
-        // toadst_merge.mesh = ForestPlanet::toadstool_mesh_2();
-        // root_scene.tagos.push_back(toadst_merge.tag);
+        Object& toadst_merge = manager_o.new_object();
+        toadst_merge.tag.type = TagO::Base;
+        toadst_merge.name = "toadst_merged";
+        toadst_merge.pos = {1.0f, -3.0f, 0.0f};
+        toadst_merge.mesh = ForestPlanet::toadstool_mesh_2();
+        root_scene.tagos.push_back(toadst_merge.tag);
 
 
         // LAMP
@@ -157,19 +157,19 @@ public:
         root_scene.lamp_tags.push_back(lampo.tag);
 
         // CAMERA OBJECT
-        Object& cam_o = manager_o.new_object();
-        // cam_o.tag.type = TagO::Base;
-        cam_o.tag.type = TagO::Camera;
-        cam_o.pos = {-10.0f, -1.0f, 0.0f};
-        // cam_o.rot.rotate(f3::Z(), PIHf);
-        // cam_o.rot.rotate(f3::X(), -PIHf);
-        cam_o.mesh.cube_centered();
-        cam_o.mesh.scale({0.5f, 0.1f, 0.2f});
-        cam_o.name = "camera_1";
-        CameraView cam;
-        // cam.orbit_tag = lampo.tag;
-        cam_o.tagp = manager_3D.manager_p.push_camera(cam);
-        root_scene.tagos.push_back(cam_o.tag);
+        // Object& cam_o = manager_o.new_object();
+        // // cam_o.tag.type = TagO::Base;
+        // cam_o.tag.type = TagO::Camera;
+        // cam_o.pos = {-10.0f, -1.0f, 0.0f};
+        // // cam_o.rot.rotate(f3::Z(), PIHf);
+        // // cam_o.rot.rotate(f3::X(), -PIHf);
+        // cam_o.mesh.cube_centered();
+        // cam_o.mesh.scale({0.5f, 0.1f, 0.2f});
+        // cam_o.name = "camera_1";
+        // CameraView cam;
+        // // cam.orbit_tag = lampo.tag;
+        // cam_o.tagp = manager_3D.manager_p.push_camera(cam);
+        // root_scene.tagos.push_back(cam_o.tag);
 
 
         // PHYSICS BODY
@@ -282,6 +282,7 @@ public:
                                                 phyo_dyn_cube_1.mesh.get_size() / 2	);
         phyo_dyn_cube_1.id_phy = manager_3D.man_phy.push_physics(physics_dyn_cube_1);
 
+        
 
         // GRASS
         Object& grass = manager_o.new_object();
@@ -308,5 +309,6 @@ public:
         // root_scene.camera.set_orbit_tag(phy_0.tag);
         root_scene.camera.set_orbit_center();
         // root_scene.camera.set_free();
+
     }
 };

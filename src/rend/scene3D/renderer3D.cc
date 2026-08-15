@@ -142,7 +142,12 @@ render_scene(Scene3D& scene3D, Manager3D& manager_3D)
         render_tag(tag, manager_3D);
     
     for(TagO tag : scene3D.tagos)
+    {
+        size_t tagos_count = scene3D.tagos.size();
+        // println();
         render_tag(tag, manager_3D);
+        // print("20\n");
+    }
 
     for(GCode& g_code : scene3D.g_codes)
     {
