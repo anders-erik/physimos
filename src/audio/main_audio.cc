@@ -18,6 +18,7 @@ int main(int argc, char** argv)
         print(Str::SI(sine_buff[i]));
         print(" ");
     }
+	print("\n");
 
     unsigned int pcm, tmp, dir;
 	unsigned int rate, channels, seconds;

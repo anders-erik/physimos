@@ -1,0 +1,3 @@
+source ~/.bashrc
+
+export TEST_VAR="This string is defined in the physimos bash environment file."

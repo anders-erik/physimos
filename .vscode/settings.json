@@ -10,7 +10,8 @@
 
 	// MAIN
 	// "binary": "physimos",
-	"binary": "src/main_main",
+	// "binary": "src/main_main",
+	"binary": "src/audio/main_audio",
 	// "binary": "src/phont/main_phont",
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
@@ -135,6 +136,17 @@
 		"stat.h": "c"
 	},
 	"makefile.configureOnOpen": false,
-	"debug.showVariableTypes": true
+	"debug.showVariableTypes": true,
+
+	"terminal.integrated.profiles.linux": {
+		"Pash": {
+			"path": "/bin/bash",
+			"args": [
+				"--rcfile", 
+				"${workspaceFolder}/.bash-env"
+			]
+		}
+	},
+	"terminal.integrated.defaultProfile.linux": "Pash"
 }
 

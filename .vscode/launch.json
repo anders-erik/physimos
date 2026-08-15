@@ -3,19 +3,21 @@
     "version": "0.2.0",
     "configurations": 
     [
+
         {
             "name": "Debugger",
             "type": "cppdbg",
             "request": "launch",
 
             "program": "${config:debug_dir}/${config:binary}",
-            "cwd": "${config:cwd}",
+            "cwd": "${workspaceFolder}",
             
-            "args": [],
+            "args": ["48000", "1", "1"],
             "stopAtEntry": false,
             
             "environment": [
-                { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" }
+                { "name": "PHYSIMOS_ROOT_DIR", "value": "${workspaceFolder}" },
+                {"name": "DEBUGINFOD_URLS", "value": ""} // Prevents crash. See ".devcontainer.json"-file
             ],
             "externalConsole": false,
             "MIMode": "gdb",

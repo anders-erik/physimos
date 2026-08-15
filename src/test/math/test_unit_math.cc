@@ -10,6 +10,8 @@ int main()
 
     tclib_math.run();
 
+    tclib_math.print_result();
+
     // TestModule core_module {"Core"};
     //     core_module.add_collection(UnitTestCollection{"pow_fns", pow_fns});
     // core_module.run();

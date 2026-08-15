@@ -1,0 +1,9 @@
+// This file was added to resolve the slow startup of the debugger in vscode.
+// The failure of the debugger to start at all was resolved by adding `DEBUGINFOD_URLS=""` to my .bashrc.
+// These solutions were provided in "https://github.com/microsoft/vscode-cpptools/issues/121". 
+// Anders-Erik, 2026-08-15
+{
+    "remoteEnv": {
+        "DEBUGINFOD_URLS": ""
+    }
+}
