@@ -105,6 +105,7 @@ public:
         t_p[elem_count].~T();
     }
 
+    /* Copies the passed value to all allocated objects. */
     Arr<T>& set(const T& value)
     {
         elem_count = reserved;

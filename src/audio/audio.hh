@@ -9,10 +9,8 @@
 #include "lib/str.hh"
 #include "lib/arr.hh"
 
-void hello()
-{
-    println("Hello from audio header!");
-}
+
+
 
 Arr<int> create_sine_buffer()
 {

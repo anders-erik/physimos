@@ -36,7 +36,10 @@ public:
     Str& get_current_path();
     bool core_exists();
 
+    /** Write Str to file */
     void file_echo_overwrite_first_strsize_chars(Str str);
+    /** Write binary data to file */
+    void write_binary(void* data, size_t data_length);
 
     /** Read whole file as a Str. */
     ResMove<Str> cat_as_str_core_xplat();
