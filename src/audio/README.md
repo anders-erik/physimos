@@ -29,4 +29,6 @@ Audio library and CLI tool for generating and playing audio.
 ## Terminal Commands
 
 `$ ffprobe <audio-file.ext>`
-`$ ./main_audio_c 48000 1 1 < /ae/dev/physimos/resources/audio/sine.wav`
+`$ ./build/debug_linux/src/audio/main_audio 48000 1 1 < /ae/dev/physimos/resources/audio/sine.wav` // set freq - channels - duration
+`$ ./build/debug_linux/src/audio/main_audio < /ae/dev/physimos/resources/audio/sine.wav` // default freq - channels - duration
+

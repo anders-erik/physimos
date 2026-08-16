@@ -7,6 +7,8 @@
             "detail": "Default build and run task.",
             "type": "process",
             "command": "${config:debug_dir}/${config:binary}",
+            // "args": ["<", "${workspaceFolder}/resources/audio/sine.wav"],
+            "args": [],
             "options": 
             {
                 "cwd": "${config:cwd}",
