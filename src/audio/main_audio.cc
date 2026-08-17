@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <cstdint> // fixed width ints
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include "lib/print.hh"
 #include "lib/arr.hh"
 
@@ -146,7 +149,7 @@ public:
     // Arr<int> out 		{(uint)total_sample_count, (int)0};
 	Arr<double> t_arr;
     Arr<double> s_arr;
-    Arr<int> out;
+    Arr<int16_t> wave_arr;
 
 	// Vec<double> t_vec;
 
@@ -177,8 +180,8 @@ public:
 		t_arr.set(0.0);
 		s_arr.reserve(sample_count);
 		s_arr.set(0.0);
-		out.reserve(sample_count);
-		out.set(0);
+		wave_arr.reserve(sample_count);
+		wave_arr.set(0);
 	}
 
 	void generate_wave()
@@ -190,7 +193,7 @@ public:
 
 			s_arr[i] = amp * sin( freq_mult * t_arr[i] );
 
-			out[i] = (int) s_arr[i];
+			wave_arr[i] = (int) s_arr[i];
 		}
 	}
 
@@ -200,7 +203,7 @@ public:
 		{
 			print(Str::FL(t_arr[i], 5, Str::FloatRep::Fixed));
 			print("  ");
-			print(Str::SI(out[i]));
+			print(Str::SI(wave_arr[i]));
 			println();
 		}
 	}
@@ -232,59 +235,108 @@ struct WavDataChunk
 {
 	int32_t DataBlocID;    	// (4 bytes) : Identifier « fmt␣ »  (0x66, 0x6D, 0x74, 0x20)
     int32_t DataSize;      	// (4 bytes) : Chunk size minus 8 bytes, which is 16 bytes here  (0x10)
-	void* SampledData; 		//  Actual data
+	Arr<int16_t> SampledData; 		//  Actual data
 };
 
-class WavSerializer
+
+class WAV
 {
 public:
-	bool is_little_endian = false;
-
-	Str file_path_str = "";
 
 	WavHeaderRIFF header_riff;
 	WavHeaderDataFormat header_format;
 	WavDataChunk data_chunk;
 
-	SineWave wave;
+	bool is_little_endian = false;
 
-	WavSerializer(SineWave wave) : wave {wave}
-	{
-	};
+	WAV() {};
 
 
-	// 1) generates sine wave, 2) populates the headers, and 3) make the chunk data point to the sinewave data
-	void populate_from_wave()
+	void populate_from_wave(SineWave& wave)
 	{
 		is_little_endian = false;
 
-		// 1)
 		wave.generate_wave();
 
-		// 2)
-		header_riff.FileTypeBlocID = 0x52494646;
+		// Size: 12 bytes
+		// header_riff.FileTypeBlocID = 0x52494646;
+		header_riff.FileTypeBlocID = 0x46464952;
 		header_riff.FileSize = 44 + wave.sample_count * 2 - 8;
-		header_riff.FileFormatID = 0x57415645;
+		// header_riff.FileFormatID = 0x57415645;
+		header_riff.FileFormatID = 0x45564157;
 
-		header_format.FormatBlocID = 0x666D7420;
+		// Size: 24 bytes
+		// header_format.FormatBlocID = 0x666D7420;
+		header_format.FormatBlocID = 0x20746D66;
 		header_format.BlocSize = 0x10; // size of the format header
 		header_format.AudioFormat = 1; // PCM : integer
-		header_format.NbrChannels = 1;
-		header_format.Frequency = 48000; 
-		header_format.BytePerSec = 96000;
-		header_format.BytePerBloc = 2;
+		header_format.NbrChannels = 1; 
+		header_format.Frequency = wave.wave_freq; 
 		header_format.BitsPerSample = 16;
-
-		data_chunk.DataBlocID = 0x64617461;
+		header_format.BytePerBloc = header_format.BitsPerSample * header_format.NbrChannels / 8;
+		header_format.BytePerSec = wave.sample_rate * header_format.BytePerBloc;
+		
+		// Size: 8 + data_size
+		// data_chunk.DataBlocID = 0x64617461;
+		data_chunk.DataBlocID = 0x61746164;
 		data_chunk.DataSize = wave.sample_count * 2;
-		data_chunk.SampledData = wave.out.data_mut();
+		data_chunk.SampledData = wave.wave_arr; // TODO: make the WAV object own the data. Currently we store a pointer to data on the heap that could be deallocated at any point before writing to file.
+	}
+
+	int32_t to_little_endian_int32(int32_t integer)
+	{
+		int32_t tmp_int = integer;
+
+		int32_t int_0 = (tmp_int & 0xFF000000) >> 24;
+		int32_t int_1 = (tmp_int & 0x00FF0000) >> 8;
+		int32_t int_2 = (tmp_int & 0x0000FF00) << 8;
+		int32_t int_3 = (tmp_int  & 0x000000FF) << 24;
+
+		return int_0 | int_1 | int_2 | int_3;
+	}
+
+	int16_t to_little_endian_int16(int16_t integer)
+	{
+		int16_t byte_0 = (integer & 0xFF00) >> 8;
+		int16_t byte_1 = (integer & 0x00FF) << 8;
+
+		return byte_0 | byte_1;
 	}
 
 	void to_little_endian()
 	{
 		if(!is_little_endian)
 		{
-			// CONVERT TO LITTLE ENDIAN
+			is_little_endian = true;
+
+			// WavHeaderRIFF riff_tmp = header_riff;
+			// int32_t file_size_0 = (riff_tmp.FileSize & 0xFF000000) >> 24;
+			// int32_t file_size_1 = (riff_tmp.FileSize & 0x00FF0000) >> 8;
+			// int32_t file_size_2 = (riff_tmp.FileSize & 0x0000FF00) << 8;
+			// int32_t file_size_3 = (riff_tmp.FileSize  & 0x000000FF) << 24;
+
+			// header_riff.FileSize = file_size_0 | file_size_1 | file_size_2 | file_size_3;
+
+
+			// RIFF CHUNK
+			header_riff.FileSize = to_little_endian_int32(header_riff.FileSize);
+
+			// FORMAT CHUNK
+			header_format.BlocSize = to_little_endian_int32(header_format.BlocSize);
+			header_format.AudioFormat = to_little_endian_int16(header_format.AudioFormat);
+			header_format.NbrChannels = to_little_endian_int16(header_format.NbrChannels);
+			header_format.BytePerSec = to_little_endian_int32(header_format.BytePerSec);
+			header_format.BytePerBloc = to_little_endian_int16(header_format.BytePerBloc);
+			header_format.BitsPerSample = to_little_endian_int16(header_format.BitsPerSample);
+
+			// DATA CHUNK
+			data_chunk.DataSize = to_little_endian_int32(data_chunk.DataSize);
+			for(uint i = 0; i < data_chunk.SampledData.count(); i++)
+			{
+				data_chunk.SampledData[i] = to_little_endian_int16(data_chunk.SampledData[i]);
+			}
+
+			// print("Conversion to little endian complete.");
 		}
 	}
 
@@ -296,16 +348,62 @@ public:
 		}
 	}
 
-	void write_to_file()
+	void write_to_file(Str file_path)
 	{
-		if(file_path_str == "")
+		int rtrn = -1;
+		void* ptr = nullptr;
+
+		if(file_path == "")
 		{
 			println("Unable to write to WAV file: no file name specified.");
 			return;
 		}
 
-		
+		int fd = open(file_path.to_c_str(), O_RDWR | O_CREAT );
+		if(fd < 0)
+		{
+			println("ERROR: returned file descript is less than 0.");
+			return;
+		}
 
+		ptr = (void*) &header_riff;
+		rtrn = write(fd, ptr, sizeof(header_riff));
+		if(rtrn < 0)
+		{
+			println("ERROR: Failed to write riff header to file.");
+			return;
+		}
+
+		ptr = (void*) &header_format;
+		rtrn = write(fd, ptr, sizeof(header_format));
+		if(rtrn < 0)
+		{
+			println("ERROR: Failed to write format header to file.");
+			return;
+		}
+
+		ptr = (void*) &data_chunk;
+		rtrn = write(fd, ptr, 8);
+		if(rtrn < 0)
+		{
+			println("ERROR: Failed to write data chunk ID and Size to file to file.");
+			return;
+		}
+
+		ptr = (void*) data_chunk.SampledData.data_mut();
+		rtrn = write(fd, ptr, data_chunk.SampledData.count_byte());
+		if(rtrn < 0)
+		{
+			println("ERROR: Failed to write wave data to file.");
+			return;
+		}
+
+		rtrn = close(fd);
+		if(rtrn < 0)
+		{
+			println("ERROR: Failed to close fd.");
+			return;
+		}
 	}
 
 };
@@ -317,6 +415,11 @@ int main(int argc, char** argv)
 	SineWave sine_wave;
 	sine_wave.generate_wave();
 	// sine_wave.print_wave();
+
+	WAV wav; 
+	wav.populate_from_wave(sine_wave);
+	// wav.to_little_endian();
+	wav.write_to_file("tmp/test2.wav");
 
 
     // Arr<int> sine_buff = create_sine_buffer();
