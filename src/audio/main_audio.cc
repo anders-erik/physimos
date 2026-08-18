@@ -4,6 +4,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "lib/print.hh"
 #include "lib/arr.hh"
@@ -21,9 +22,11 @@ public:
 	unsigned int rate, channels, seconds;
 	snd_pcm_t *pcm_handle;
 	snd_pcm_hw_params_t *params;
-	snd_pcm_uframes_t frames;
+	snd_pcm_uframes_t frame_count;
 	char *buff;
 	int buff_size, loops;
+	int bytes_per_sample = 2; // 16 bit integers is default
+	
 
 	Alsa(uint rate, uint channels, uint seconds)
 	{
@@ -86,18 +89,18 @@ public:
 	void allocate()
 	{
 		/* Allocate buffer to hold single period */
-		snd_pcm_hw_params_get_period_size(params, &frames, 0);
+		snd_pcm_hw_params_get_period_size(params, &frame_count, 0);
 
-		buff_size = frames * channels * 2 /* 2 -> sample size */;
+		buff_size = frame_count * channels * bytes_per_sample /* 2 -> sample size */;
 		buff = (char *) malloc(buff_size);
-
-		snd_pcm_hw_params_get_period_time(params, &tmp, NULL);
 	}
 
 	int play()
 	{
+		snd_pcm_hw_params_get_period_time(params, &tmp, NULL);
+
 		// printf("loopy about to start  ");
-		for (loops = (seconds * 1000000) / tmp; loops > 0; loops--) {
+		for (loops = (seconds * 100000) / tmp; loops > 0; loops--) {
 		// for (loops = (seconds * 100000) / tmp; loops > 0; loops--) {
 			// printf("loopy.  ");
 			// printf("buff size: %i \n", buff_size);
@@ -107,7 +110,7 @@ public:
 				return 0;
 			}
 
-			if (pcm = snd_pcm_writei(pcm_handle, buff, frames) == -EPIPE) {
+			if (pcm = snd_pcm_writei(pcm_handle, buff, frame_count) == -EPIPE) {
 				printf("XRUN.\n");
 				snd_pcm_prepare(pcm_handle);
 			} else if (pcm < 0) {
@@ -136,22 +139,19 @@ public:
 	uint duration = 1; // Total duration of the generated data in seconds
 	uint sample_rate = 48000; // samples per second
 	uint sample_depth = 16; // 2^(sample_depth) number of available discrete values during sampling
-	uint wave_freq = 200; // Hz = osc. / s
+	uint wave_freq = 1000; // Hz = osc. / s
 
 	/* Derived quantities based on provided values above */
 	uint sample_count; // total number of samples ( sample_rate * duration )
 	double dt; // time between samplings
 	double amp; // amplitude of the wave
+	double gain = 0.5; // amp multiplier
 	double freq_mult; // frequency multiplier for the sine argument
 
-	// Arr<double> t_arr 	{(uint)total_sample_count, (double)0.0};
-    // Arr<double> s_arr 	{(uint)total_sample_count, (double)0.0};
-    // Arr<int> out 		{(uint)total_sample_count, (int)0};
 	Arr<double> t_arr;
     Arr<double> s_arr;
     Arr<int16_t> wave_arr;
 
-	// Vec<double> t_vec;
 
 	SineWave()
 	{
@@ -191,7 +191,7 @@ public:
 			double i_d = (double)i;
 			t_arr[i] = dt * i_d;
 
-			s_arr[i] = amp * sin( freq_mult * t_arr[i] );
+			s_arr[i] = gain * amp * sin( freq_mult * t_arr[i] );
 
 			wave_arr[i] = (int) s_arr[i];
 		}
@@ -214,14 +214,14 @@ public:
 
 struct WavHeaderRIFF
 {
-	int32_t FileTypeBlocID;		// (4 bytes) : Identifier « RIFF »  (0x52, 0x49, 0x46, 0x46)
+	int8_t FileTypeBlocID[4] = { 0x52, 0x49, 0x46, 0x46};		// (4 bytes) : Identifier « RIFF »  (0x52, 0x49, 0x46, 0x46)
 	int32_t FileSize;			// (4 bytes) : Overall file size minus 8 bytes
-	int32_t FileFormatID;		// (4 bytes) : Format = « WAVE »  (0x57, 0x41, 0x56, 0x45)
+	int8_t FileFormatID[4] = {0x57, 0x41, 0x56, 0x45};		// (4 bytes) : Format = « WAVE »  (0x57, 0x41, 0x56, 0x45)
 };
 
 struct WavHeaderDataFormat
 {
-	int32_t FormatBlocID;    // (4 bytes) : Identifier « fmt␣ »  (0x66, 0x6D, 0x74, 0x20)
+	int8_t FormatBlocID[4] = {0x66, 0x6D, 0x74, 0x20};    // (4 bytes) : Identifier « fmt␣ »  (0x66, 0x6D, 0x74, 0x20)
     int32_t BlocSize;        // (4 bytes) : Chunk size minus 8 bytes, which is 16 bytes here  (0x10)
     int16_t AudioFormat;     // (2 bytes) : Audio format (1: PCM integer, 3: IEEE 754 float)
     int16_t NbrChannels;     // (2 bytes) : Number of channels
@@ -233,7 +233,7 @@ struct WavHeaderDataFormat
 
 struct WavDataChunk
 {
-	int32_t DataBlocID;    	// (4 bytes) : Identifier « fmt␣ »  (0x66, 0x6D, 0x74, 0x20)
+	int8_t DataBlocID[4] = {0x64, 0x61, 0x74, 0x61};    	// (4 bytes) : Identifier « data »  (0x64, 0x61, 0x74, 0x61)
     int32_t DataSize;      	// (4 bytes) : Chunk size minus 8 bytes, which is 16 bytes here  (0x10)
 	Arr<int16_t> SampledData; 		//  Actual data
 };
@@ -259,31 +259,28 @@ public:
 		wave.generate_wave();
 
 		// Size: 12 bytes
-		// header_riff.FileTypeBlocID = 0x52494646;
-		header_riff.FileTypeBlocID = 0x46464952;
+		// header_riff.FileTypeBlocID = ...; // set in struct declaration
 		header_riff.FileSize = 44 + wave.sample_count * 2 - 8;
-		// header_riff.FileFormatID = 0x57415645;
-		header_riff.FileFormatID = 0x45564157;
+		// header_riff.FileFormatID = ...; // set in struct declaration
 
 		// Size: 24 bytes
-		// header_format.FormatBlocID = 0x666D7420;
-		header_format.FormatBlocID = 0x20746D66;
+		// header_format.FormatBlocID = ...; // set in struct declaration
 		header_format.BlocSize = 0x10; // size of the format header
 		header_format.AudioFormat = 1; // PCM : integer
 		header_format.NbrChannels = 1; 
-		header_format.Frequency = wave.wave_freq; 
+		header_format.Frequency = wave.sample_rate; 
 		header_format.BitsPerSample = 16;
 		header_format.BytePerBloc = header_format.BitsPerSample * header_format.NbrChannels / 8;
 		header_format.BytePerSec = wave.sample_rate * header_format.BytePerBloc;
 		
 		// Size: 8 + data_size
-		// data_chunk.DataBlocID = 0x64617461;
-		data_chunk.DataBlocID = 0x61746164;
+		// data_chunk.DataBlocID = ...; // set in struct declaration
 		data_chunk.DataSize = wave.sample_count * 2;
 		data_chunk.SampledData = wave.wave_arr; // TODO: make the WAV object own the data. Currently we store a pointer to data on the heap that could be deallocated at any point before writing to file.
+
 	}
 
-	int32_t to_little_endian_int32(int32_t integer)
+	int32_t change_endinaness_int32(int32_t integer)
 	{
 		int32_t tmp_int = integer;
 
@@ -295,7 +292,7 @@ public:
 		return int_0 | int_1 | int_2 | int_3;
 	}
 
-	int16_t to_little_endian_int16(int16_t integer)
+	int16_t change_endinaness_int16(int16_t integer)
 	{
 		int16_t byte_0 = (integer & 0xFF00) >> 8;
 		int16_t byte_1 = (integer & 0x00FF) << 8;
@@ -309,31 +306,22 @@ public:
 		{
 			is_little_endian = true;
 
-			// WavHeaderRIFF riff_tmp = header_riff;
-			// int32_t file_size_0 = (riff_tmp.FileSize & 0xFF000000) >> 24;
-			// int32_t file_size_1 = (riff_tmp.FileSize & 0x00FF0000) >> 8;
-			// int32_t file_size_2 = (riff_tmp.FileSize & 0x0000FF00) << 8;
-			// int32_t file_size_3 = (riff_tmp.FileSize  & 0x000000FF) << 24;
-
-			// header_riff.FileSize = file_size_0 | file_size_1 | file_size_2 | file_size_3;
-
-
 			// RIFF CHUNK
-			header_riff.FileSize = to_little_endian_int32(header_riff.FileSize);
+			header_riff.FileSize = change_endinaness_int32(header_riff.FileSize);
 
 			// FORMAT CHUNK
-			header_format.BlocSize = to_little_endian_int32(header_format.BlocSize);
-			header_format.AudioFormat = to_little_endian_int16(header_format.AudioFormat);
-			header_format.NbrChannels = to_little_endian_int16(header_format.NbrChannels);
-			header_format.BytePerSec = to_little_endian_int32(header_format.BytePerSec);
-			header_format.BytePerBloc = to_little_endian_int16(header_format.BytePerBloc);
-			header_format.BitsPerSample = to_little_endian_int16(header_format.BitsPerSample);
+			header_format.BlocSize = change_endinaness_int32(header_format.BlocSize);
+			header_format.AudioFormat = change_endinaness_int16(header_format.AudioFormat);
+			header_format.NbrChannels = change_endinaness_int16(header_format.NbrChannels);
+			header_format.BytePerSec = change_endinaness_int32(header_format.BytePerSec);
+			header_format.BytePerBloc = change_endinaness_int16(header_format.BytePerBloc);
+			header_format.BitsPerSample = change_endinaness_int16(header_format.BitsPerSample);
 
 			// DATA CHUNK
-			data_chunk.DataSize = to_little_endian_int32(data_chunk.DataSize);
+			data_chunk.DataSize = change_endinaness_int32(data_chunk.DataSize);
 			for(uint i = 0; i < data_chunk.SampledData.count(); i++)
 			{
-				data_chunk.SampledData[i] = to_little_endian_int16(data_chunk.SampledData[i]);
+				data_chunk.SampledData[i] = change_endinaness_int16(data_chunk.SampledData[i]);
 			}
 
 			// print("Conversion to little endian complete.");
@@ -406,7 +394,71 @@ public:
 		}
 	}
 
+	void read_file(Str file_path)
+	{
+		int fd, ret;
+
+		fd = open(file_path.to_c_str(), O_RDONLY);
+		if(fd < 0)
+		{
+			println("ERROR: Failed to open WAV file.");
+			return;
+		}
+
+		ret = read(fd, this, 52);
+		if(ret < 0)
+		{
+			println("ERROR: Failed to read first 44 bytes of WAV file.");
+			return;
+		}
+
+		// ret = read(fd, data_chunk.SampledData);
+
+		print("Reading Wav file. Size = ");
+		println(Str::SI(data_chunk.DataSize));
+
+
+
+
+		ret = close(fd);
+		if(ret < 0)
+		{
+			println("ERROR: Failed to close WAV file.");
+			return;
+		}
+	}
+
 };
+
+
+void bin_dump(Str file_path, void* ptr, uint byte_count)
+{
+	int fd, ret;
+
+	fd = open(file_path.to_c_str(), O_WRONLY | O_CREAT);
+	if(fd < 0)
+	{
+		println("ERROR: Failed to open bin_dump-file for writing.");
+		return;
+	}
+	ret = fchmod(fd, 00777);
+
+
+	ret = write(fd, ptr, byte_count);
+	if(ret < 0)
+	{
+		println("ERROR: Failed to write to bin_dump-file.");
+		return;
+	}
+
+	ret = close(fd);
+	if(ret < 0)
+	{
+		println("ERROR: Failed to close bin_dump-file.");
+		return;
+	}
+}
+
 
 int main(int argc, char** argv)
 {
@@ -417,9 +469,15 @@ int main(int argc, char** argv)
 	// sine_wave.print_wave();
 
 	WAV wav; 
-	wav.populate_from_wave(sine_wave);
+	// wav.populate_from_wave(sine_wave);
 	// wav.to_little_endian();
-	wav.write_to_file("tmp/test2.wav");
+	// wav.write_to_file("tmp/test2.wav");
+	wav.read_file("resources/audio/sine.wav");
+	print("Reading Wav file. Size = ");
+	print(Str::CH(wav.data_chunk.DataBlocID[1]));
+	println(Str::SI(wav.data_chunk.DataSize));
+	bin_dump("tmp/dump.bin", &wav, 44);
+
 
 
     // Arr<int> sine_buff = create_sine_buffer();
