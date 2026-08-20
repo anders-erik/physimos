@@ -29,9 +29,13 @@ public:
 	Arr<int16_t> data;
 
 	AudioData() {};
+	AudioData(Arr<int16_t>& data)
+	{
+		this->data = data;
+	};
 
 
-	int sample_rate() { return 42100; }
+	int sample_rate() { return 44100; }
 	int channel_count() { return 1; }
 	int sample_size_bit() { return 16; }
 	int sample_size_byte() { return 2; }
@@ -40,7 +44,7 @@ public:
 	int data_size_byte() { return data.count() * 2; }
 
 	double duration_double() { return ((double)sample_count()) / ((double)sample_rate()); }
-	int duration_int() { return (int) duration_double(); }
+	int duration_int() { return (int) duration_double(); } // rounds according to double to int cast rounding rules
 };
 
 
@@ -49,17 +53,25 @@ class Alsa
 {
 public:
 
+	unsigned int rate = 44100;
+	unsigned int channels = 1;
+	int bytes_per_sample = 2; // 16 bit integers is default
+	
+	Str file_path = "";
+
 	unsigned int ret, tmp, dir;
-	unsigned int rate, channels;
+
 	unsigned int period_time; // variable provided by ALSA that specifies the time (in microseconds) between play/capture hardware interrupts
 	snd_pcm_t *pcm_handle;
 	snd_pcm_hw_params_t *params;
 	snd_pcm_uframes_t frame_count; // Some fixed size of number of frames (frame: a different word for sample that also includes all available channels) used by the current configuration space
 	char *buff;
 	int buff_size, loops;
-	int bytes_per_sample = 2; // 16 bit integers is default
-	Str file_path = "";
 	
+	Alsa()
+	{
+		setup();
+	}
 
 	Alsa(uint rate, uint channels, Str file_path)
 	{
@@ -67,6 +79,11 @@ public:
 		this->channels = channels;
 		this->file_path = file_path;
 
+		setup();
+	}
+
+	void setup()
+	{
 		/* Open the PCM device in playback mode */
 		if (ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0) < 0) 
 			printf("ERROR: Can't open \"%s\" PCM device. %s\n", PCM_DEVICE, snd_strerror(ret));
@@ -187,9 +204,10 @@ public:
 	{
 		int loop_counter = 0;
 
-		for (loops = (1000000 / period_time); loops > 0; loops--)
+		for (loops = (  (uint)(audio_data.duration_double() * 1000000.0) / period_time); loops > 0; loops--)
 		{
 			int element_offset = (loop_counter++) * ( frame_count ); // number of elements in one 'period_time'
+			
 			memcpy(	buff,
 					audio_data.data.data_mut() + element_offset,
 					buff_size);
@@ -217,10 +235,10 @@ class SineWave
 public:
 
 	/* Provided quantities for wave generation */
-	uint duration = 1; // Total duration of the generated data in seconds
-	uint sample_rate = 48000; // samples per second
+	double duration = 1.0; // Total duration of the generated data in seconds
+	uint sample_rate = 44100; // samples per second
 	uint sample_depth = 16; // 2^(sample_depth) number of available discrete values during sampling
-	uint wave_freq = 1000; // Hz = osc. / s
+	double wave_freq = 1000.0; // Hz = osc. / s
 
 	/* Derived quantities based on provided values above */
 	uint sample_count; // total number of samples ( sample_rate * duration )
@@ -238,7 +256,18 @@ public:
 	{
 		calculate_derived_quantities();
 	}
-	SineWave(uint duration, uint sample_rate, uint sample_depth, uint wave_freq)
+	SineWave(double duration)
+	{
+		this->duration = duration;
+		calculate_derived_quantities();
+	}
+	SineWave(double duration, uint frequency)
+	{
+		this->duration = duration;
+		this->wave_freq = frequency;
+		calculate_derived_quantities();
+	}
+	SineWave(double duration, uint sample_rate, uint sample_depth, uint wave_freq)
 	{
 		this->duration = duration;
 		this->sample_rate = sample_rate;
@@ -250,7 +279,7 @@ public:
 
 	void calculate_derived_quantities()
 	{
-		sample_count = duration * sample_rate;
+		sample_count = (uint) (duration * (double)sample_rate);
 		dt = 1.0 / ((double)sample_rate);
 
 		// Sine constants
@@ -289,6 +318,10 @@ public:
 		}
 	}
 
+	AudioData get_audio_data()
+	{
+		return AudioData {wave_arr};
+	}
 };
 
 
@@ -541,12 +574,47 @@ void bin_dump(Str file_path, void* ptr, uint byte_count)
 }
 
 
+void twinkle_twinkle()
+{
+
+	SineWave C5(0.5, 523.3);
+	C5.generate_wave();
+
+	SineWave G5(0.5, 784.0);
+	G5.generate_wave();
+	
+	SineWave A5(0.5, 880.0);
+	A5.generate_wave();
+
+	Alsa alsa;
+
+	alsa.play(C5.get_audio_data());
+	alsa.play(C5.get_audio_data());
+	alsa.play(G5.get_audio_data());
+	alsa.play(G5.get_audio_data());
+	alsa.play(A5.get_audio_data());
+	alsa.play(A5.get_audio_data());
+	alsa.play(G5.get_audio_data());
+
+	alsa.end();
+}
+
+
+class Phyano
+{
+public:
+	// struct Note {NoteName /*A4, C5*/ , Duration /*whole, half*/}
+	// AudioData generate_note(Note note) {}
+
+	// AudioData generate_song(Arr<Note> notes) {}
+
+};
 
 int main(int argc, char** argv)
 {
     println("Physimos::audio starting!");
 
-	SineWave sine_wave;
+	SineWave sine_wave {1.0};
 	sine_wave.generate_wave();
 	// sine_wave.print_wave();
 
@@ -585,24 +653,39 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		rate 	 = 48000;
+		rate 	 = 44100;
 		channels = 1;
 	}
 
 
-	Alsa alsa { 
-		rate, 
-		channels,
-		"resources/audio/sine.wav"
-	};
+	SineWave wave_100hz(0.5, 300.0);
+	wave_100hz.generate_wave();
+
+	SineWave wave_1000hz(0.5, 1000.0);
+	wave_1000hz.generate_wave();
+
+	
+
+	// Alsa alsa { 
+	// 	rate, 
+	// 	channels,
+	// 	"resources/audio/sine.wav"
+	// };
+	Alsa alsa;
 
 	AudioData audio_data;
 	audio_data.data = sine_wave.wave_arr;
 
 	alsa.print_pcm_info();
 	// alsa.play();
-	alsa.play(audio_data);
+	// alsa.play(audio_data);
+	alsa.play(wave_100hz.get_audio_data());
+	// alsa.play(wave_1000hz.get_audio_data());
+
+	twinkle_twinkle();
+
 	alsa.end();
+
 
 
     printf("End Alsa test\n");
