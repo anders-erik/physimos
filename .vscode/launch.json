@@ -12,7 +12,7 @@
             "program": "${config:debug_dir}/${config:binary}",
             "cwd": "${workspaceFolder}",
             
-            // "args": ["48000", "1", "1"],
+            // "args": ["48000", "1"],
             "args": [],
             "stopAtEntry": false,
             

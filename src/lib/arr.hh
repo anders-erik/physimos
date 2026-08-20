@@ -125,6 +125,8 @@ public:
     uint      count()           const   {return elem_count ;}
     uint      count_byte()      const   {return (elem_count * sizeof(T)) ;}
 
+    int       size_of_type()      const   {return sizeof(T);}
+
     void reserve(uint new_count) 
     {
         if(t_p == nullptr)

@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <string.h> // memcpy
 
 #include "lib/print.hh"
 #include "lib/arr.hh"
@@ -14,55 +15,91 @@
 #define PCM_DEVICE "default"
 
 
+
+/* 	Central audio data container. 
+	Implicit info:
+		- Sample rate: 42100
+		- Channels: 1 (mono)
+		- DataType: 16bit signed integer
+*/
+class AudioData
+{
+public:
+
+	Arr<int16_t> data;
+
+	AudioData() {};
+
+
+	int sample_rate() { return 42100; }
+	int channel_count() { return 1; }
+	int sample_size_bit() { return 16; }
+	int sample_size_byte() { return 2; }
+
+	int sample_count() { return data.count(); }
+	int data_size_byte() { return data.count() * 2; }
+
+	double duration_double() { return ((double)sample_count()) / ((double)sample_rate()); }
+	int duration_int() { return (int) duration_double(); }
+};
+
+
+
 class Alsa
 {
 public:
 
-	unsigned int pcm, tmp, dir;
-	unsigned int rate, channels, seconds;
+	unsigned int ret, tmp, dir;
+	unsigned int rate, channels;
+	unsigned int period_time; // variable provided by ALSA that specifies the time (in microseconds) between play/capture hardware interrupts
 	snd_pcm_t *pcm_handle;
 	snd_pcm_hw_params_t *params;
-	snd_pcm_uframes_t frame_count;
+	snd_pcm_uframes_t frame_count; // Some fixed size of number of frames (frame: a different word for sample that also includes all available channels) used by the current configuration space
 	char *buff;
 	int buff_size, loops;
 	int bytes_per_sample = 2; // 16 bit integers is default
+	Str file_path = "";
 	
 
-	Alsa(uint rate, uint channels, uint seconds)
+	Alsa(uint rate, uint channels, Str file_path)
 	{
 		this->rate = rate;
 		this->channels = channels;
-		this->seconds = seconds;
+		this->file_path = file_path;
 
 		/* Open the PCM device in playback mode */
-		if (pcm = snd_pcm_open(&pcm_handle, PCM_DEVICE,
-						SND_PCM_STREAM_PLAYBACK, 0) < 0) 
-			printf("ERROR: Can't open \"%s\" PCM device. %s\n",
-						PCM_DEVICE, snd_strerror(pcm));
+		if (ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0) < 0) 
+			printf("ERROR: Can't open \"%s\" PCM device. %s\n", PCM_DEVICE, snd_strerror(ret));
 
 		/* Allocate parameters object and fill it with default values */
 		snd_pcm_hw_params_alloca(&params);
 		snd_pcm_hw_params_any(pcm_handle, params);
 
 		/* Set parameters */
-		if (pcm = snd_pcm_hw_params_set_access(pcm_handle, params,
+		if (ret = snd_pcm_hw_params_set_access(pcm_handle, params,
 						SND_PCM_ACCESS_RW_INTERLEAVED) < 0) 
-			printf("ERROR: Can't set interleaved mode. %s\n", snd_strerror(pcm));
+			printf("ERROR: Can't set interleaved mode. %s\n", snd_strerror(ret));
 
-		if (pcm = snd_pcm_hw_params_set_format(pcm_handle, params,
+		if (ret = snd_pcm_hw_params_set_format(pcm_handle, params,
 							SND_PCM_FORMAT_S16_LE) < 0) 
-			printf("ERROR: Can't set format. %s\n", snd_strerror(pcm));
+			printf("ERROR: Can't set format. %s\n", snd_strerror(ret));
 
-		if (pcm = snd_pcm_hw_params_set_channels(pcm_handle, params, channels) < 0) 
-			printf("ERROR: Can't set channels number. %s\n", snd_strerror(pcm));
+		if (ret = snd_pcm_hw_params_set_channels(pcm_handle, params, channels) < 0) 
+			printf("ERROR: Can't set channels number. %s\n", snd_strerror(ret));
 
-		if (pcm = snd_pcm_hw_params_set_rate_near(pcm_handle, params, &rate, 0) < 0) 
-			printf("ERROR: Can't set rate. %s\n", snd_strerror(pcm));
+		if (ret = snd_pcm_hw_params_set_rate_near(pcm_handle, params, &rate, 0) < 0) 
+			printf("ERROR: Can't set rate. %s\n", snd_strerror(ret));
 
 		/* Write parameters */
-		if (pcm = snd_pcm_hw_params(pcm_handle, params) < 0)
-			printf("ERROR: Can't set harware parameters. %s\n", snd_strerror(pcm));
-	
+		if (ret = snd_pcm_hw_params(pcm_handle, params) < 0)
+			printf("ERROR: Can't set harware parameters. %s\n", snd_strerror(ret));
+		
+		/* Allocate buffer to hold single period */
+		snd_pcm_hw_params_get_period_size(params, &frame_count, 0);
+		snd_pcm_hw_params_get_period_time(params, &period_time, NULL);
+
+		buff_size = frame_count * channels * bytes_per_sample /* 2 -> sample size */;
+		buff = (char *) malloc(buff_size);
 	}
 
 	void print_pcm_info()
@@ -83,46 +120,90 @@ public:
 		snd_pcm_hw_params_get_rate(params, &tmp, 0);
 		printf("rate: %d bps\n", tmp);
 
-		printf("seconds: %d\n", seconds);
-	}
-
-	void allocate()
-	{
-		/* Allocate buffer to hold single period */
-		snd_pcm_hw_params_get_period_size(params, &frame_count, 0);
-
-		buff_size = frame_count * channels * bytes_per_sample /* 2 -> sample size */;
-		buff = (char *) malloc(buff_size);
 	}
 
 	int play()
 	{
-		snd_pcm_hw_params_get_period_time(params, &tmp, NULL);
+		snd_pcm_hw_params_get_period_time(params, &period_time, NULL);
 
-		// printf("loopy about to start  ");
-		for (loops = (seconds * 100000) / tmp; loops > 0; loops--) {
-		// for (loops = (seconds * 100000) / tmp; loops > 0; loops--) {
-			// printf("loopy.  ");
-			// printf("buff size: %i \n", buff_size);
+		// pcm = read(0, buff, buff_size);
+		// pcm = snd_pcm_writei(pcm_handle, buff, frame_count);
 
-			if (pcm = read(0, buff, buff_size) == 0) {
-				printf("Early end of file.\n");
-				return 0;
+
+		if(false)
+		{
+			short buf[128];
+			for (int i = 0; i < 100; ++i) {
+				if ((ret = snd_pcm_writei (pcm_handle, buf, 128)) != 128) {
+					fprintf (stderr, "write to audio interface failed (%s)\n",
+						snd_strerror (ret));
+					exit (1);
+				}
+			}
+		}
+
+		if(true)
+		{
+			int fd = open(file_path.to_c_str(), O_RDONLY);
+			if(fd < 0)
+			{
+				println("ERROR: filed to open audio file in Alsa.play(). Trying stdin instead.");
+				fd = 0;
 			}
 
-			if (pcm = snd_pcm_writei(pcm_handle, buff, frame_count) == -EPIPE) {
-				printf("XRUN.\n");
-				snd_pcm_prepare(pcm_handle);
-			} else if (pcm < 0) {
-				printf("ERROR. Can't write to PCM device. %s\n", snd_strerror(pcm));
+			// printf("loopy about to start  ");
+			for (loops = (1000000 / period_time); loops > 0; loops--) {
+			// // for (loops = (seconds * 100000) / tmp; loops > 0; loops--) {
+				// printf("loopy.  ");
+			// 	// printf("buff size: %i \n", buff_size);
+
+				if ((ret = read(fd, buff, buff_size)) == 0) {
+					printf("Early end of file.\n");
+					return 0;
+				}
+
+				if ((ret = snd_pcm_writei(pcm_handle, buff, frame_count)) == -EPIPE) {
+					printf("XRUN.\n");
+					snd_pcm_prepare(pcm_handle);
+				} else if (ret < 0) {
+					printf("ERROR. Can't write to PCM device. %s\n", snd_strerror(ret));
+				}
+				
 			}
-			
+
+			ret = close(fd);
+			if(ret < 0)
+			{
+				println("ERROR: filed to close audio file in Alsa.play()");
+				return 1;
+			}
 		}
 
 		return 1;
 	}
 
-	void close()
+
+	void play(AudioData audio_data)
+	{
+		int loop_counter = 0;
+
+		for (loops = (1000000 / period_time); loops > 0; loops--)
+		{
+			int element_offset = (loop_counter++) * ( frame_count ); // number of elements in one 'period_time'
+			memcpy(	buff,
+					audio_data.data.data_mut() + element_offset,
+					buff_size);
+
+			if ((ret = snd_pcm_writei(pcm_handle, buff, frame_count)) == -EPIPE) {
+				printf("XRUN.\n");
+				snd_pcm_prepare(pcm_handle);
+			} else if (ret < 0) {
+				printf("ERROR. Can't write to PCM device. %s\n", snd_strerror(ret));
+			}	
+		}
+	}
+
+	void end()
 	{
 		snd_pcm_drain(pcm_handle);
 		snd_pcm_close(pcm_handle);
@@ -405,7 +486,7 @@ public:
 			return;
 		}
 
-		ret = read(fd, this, 52);
+		ret = read(fd, this, 60);
 		if(ret < 0)
 		{
 			println("ERROR: Failed to read first 44 bytes of WAV file.");
@@ -460,6 +541,7 @@ void bin_dump(Str file_path, void* ptr, uint byte_count)
 }
 
 
+
 int main(int argc, char** argv)
 {
     println("Physimos::audio starting!");
@@ -492,34 +574,35 @@ int main(int argc, char** argv)
 	// print("\n");
 
 	
-	unsigned int rate, channels, seconds;
+	unsigned int rate, channels;
 
-	if (argc > 3)
+	if (argc > 2)
     {
 		// printf("Usage: %s <sample_rate> <channels> <seconds>\n", argv[0]);
 		// return -1;
 		rate 	 = atoi(argv[1]);
 		channels = atoi(argv[2]);
-		seconds  = atoi(argv[3]);
 	}
 	else
 	{
 		rate 	 = 48000;
 		channels = 1;
-		seconds  = 1;
 	}
 
 
 	Alsa alsa { 
 		rate, 
-		channels, 
-		seconds
+		channels,
+		"resources/audio/sine.wav"
 	};
 
+	AudioData audio_data;
+	audio_data.data = sine_wave.wave_arr;
+
 	alsa.print_pcm_info();
-	alsa.allocate();
-	alsa.play();
-	alsa.close();
+	// alsa.play();
+	alsa.play(audio_data);
+	alsa.end();
 
 
     printf("End Alsa test\n");
