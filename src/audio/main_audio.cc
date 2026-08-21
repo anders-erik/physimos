@@ -720,6 +720,7 @@ int main(int argc, char** argv)
 	// frequencies.push_back({80.0, 0.15});
 
 	SineWave sine_wave {1.0, frequencies};
+	sine_wave.gain_out = 0.2;
 	sine_wave.generate_wave();
 	// sine_wave.print_wave();
 
@@ -795,7 +796,7 @@ int main(int argc, char** argv)
 	// alsa.play(wave_1000hz.get_audio_data());
 	alsa.end();
 
-	twinkle_twinkle();
+	// twinkle_twinkle();
 
 
     printf("End Alsa test\n");
