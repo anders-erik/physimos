@@ -115,7 +115,16 @@ public:
         return *this;
     }
 
+    /* Pass a pointer with data */
+    Arr<T>& set_from_pointer(T* _ptr, uint _count)
+    {
+        allocate(_count);
+        elem_count = _count;
+        for(SizeArr i=0; i < elem_count; i++)
+            (*this)[i] = *(_ptr + i);
 
+        return *this;
+    }
 
 
     T*        data_mut()                {return t_p ;}

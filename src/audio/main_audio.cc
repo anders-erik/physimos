@@ -508,6 +508,28 @@ public:
 		}
 	}
 
+	template <typename T>
+	Arr<T>&& read_bin_file(Str file_path)
+	{
+		int fd, ret;
+
+		fd = open(file_path.to_c_str(), O_RDONLY);
+		if(fd < 0)
+		{
+			println("ERROR: Failed to open WAV file.");
+			return Arr<T> {};
+		}
+
+		ret = close(fd);
+		if(ret < 0)
+		{
+			println("ERROR: Failed to close WAV file.");
+			return Arr<T> {};
+		}
+
+		return Arr<T> {};
+	}
+
 	void read_file(Str file_path)
 	{
 		int fd, ret;
@@ -519,19 +541,36 @@ public:
 			return;
 		}
 
-		ret = read(fd, this, 60);
+		ret = read(fd, &header_riff, 12);
 		if(ret < 0)
 		{
-			println("ERROR: Failed to read first 44 bytes of WAV file.");
+			println("ERROR: Failed to read first 12 bytes of WAV file.");
+			return;
+		}
+		
+		ret = read(fd, &header_format, 24);
+		if(ret < 0)
+		{
+			println("ERROR: Failed to read bytes 13-36 of WAV file.");
 			return;
 		}
 
-		// ret = read(fd, data_chunk.SampledData);
+		ret = read(fd, &data_chunk, 8);
+		if(ret < 0)
+		{
+			println("ERROR: Failed to read bytes 37-44 of WAV file.");
+			return;
+		}
 
-		print("Reading Wav file. Size = ");
-		println(Str::SI(data_chunk.DataSize));
 
+		{
+			void* buf = malloc(data_chunk.DataSize);
 
+			ret = read(fd, buf, data_chunk.DataSize);
+			data_chunk.SampledData.set_from_pointer( (int16_t*)buf, data_chunk.DataSize / sizeof(int16_t));
+
+			free(buf);
+		}
 
 
 		ret = close(fd);
@@ -623,11 +662,18 @@ int main(int argc, char** argv)
 	// wav.to_little_endian();
 	// wav.write_to_file("tmp/test2.wav");
 	wav.read_file("resources/audio/sine.wav");
+	wav.write_to_file("tmp/sine_out.wav");
 	print("Reading Wav file. Size = ");
 	print(Str::CH(wav.data_chunk.DataBlocID[1]));
 	println(Str::SI(wav.data_chunk.DataSize));
 	bin_dump("tmp/dump.bin", &wav, 44);
 
+	// Print sizes of Wav structs
+	println(Str::SI(sizeof(WavHeaderRIFF)));
+	println(Str::SI(sizeof(WavHeaderDataFormat)));
+	println(Str::SI(sizeof(WavDataChunk)));
+
+	println(Str::SI(sizeof(WAV)));
 
 
     // Arr<int> sine_buff = create_sine_buffer();
