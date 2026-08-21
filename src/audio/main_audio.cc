@@ -230,6 +230,17 @@ public:
 };
 
 
+struct D01
+{
+	// D01 = [0, 1]
+}; 
+
+struct Frequency
+{
+	double frequency;
+	double amp; // [0, 1]
+};
+
 class SineWave
 {
 public:
@@ -239,12 +250,14 @@ public:
 	uint sample_rate = 44100; // samples per second
 	uint sample_depth = 16; // 2^(sample_depth) number of available discrete values during sampling
 	double wave_freq = 1000.0; // Hz = osc. / s
+	Frequency default_frequency = {1000.0, 0.25}; // Hz = osc. / s
+	Arr<Frequency> wave_freqs;
 
 	/* Derived quantities based on provided values above */
 	uint sample_count; // total number of samples ( sample_rate * duration )
 	double dt; // time between samplings
-	double amp; // amplitude of the wave
-	double gain = 0.5; // amp multiplier
+	// double amp_out; // amplitude of the output wave in int16_t
+	double gain_out = 0.5; // output gain multiplier
 	double freq_mult; // frequency multiplier for the sine argument
 
 	Arr<double> t_arr;
@@ -254,17 +267,26 @@ public:
 
 	SineWave()
 	{
+		this->wave_freqs.set(default_frequency, 1);
 		calculate_derived_quantities();
 	}
 	SineWave(double duration)
 	{
 		this->duration = duration;
+		this->wave_freqs.set(default_frequency, 1);
 		calculate_derived_quantities();
 	}
 	SineWave(double duration, uint frequency)
 	{
 		this->duration = duration;
 		this->wave_freq = frequency;
+		this->wave_freqs.set({(double)frequency, default_frequency.amp}, 1);
+		calculate_derived_quantities();
+	}
+	SineWave(double duration, Arr<Frequency> frequencies)
+	{
+		this->duration = duration;
+		this->wave_freqs = frequencies;
 		calculate_derived_quantities();
 	}
 	SineWave(double duration, uint sample_rate, uint sample_depth, uint wave_freq)
@@ -273,6 +295,7 @@ public:
 		this->sample_rate = sample_rate;
 		this->sample_depth = sample_depth;
 		this->wave_freq = wave_freq;
+		this->wave_freqs.set({(double)wave_freq, default_frequency.amp}, 1);
 
 		calculate_derived_quantities();
 	}
@@ -283,8 +306,9 @@ public:
 		dt = 1.0 / ((double)sample_rate);
 
 		// Sine constants
-		amp = pow(2.0, sample_depth-1) - 1.0;
-		freq_mult = PI2 * wave_freq;
+		// amp_out = pow(2.0, sample_depth-1) - 1.0;
+		// freq_mult = PI2 * wave_freq;
+		freq_mult = PI2 * wave_freqs[0].frequency;
 
 		t_arr.reserve(sample_count);
 		t_arr.set(0.0);
@@ -296,15 +320,39 @@ public:
 
 	void generate_wave()
 	{
+		for(uint freq_i = 0; freq_i < wave_freqs.count(); freq_i++)
+		{
+			double freq = wave_freqs[freq_i].frequency;
+			double gain = wave_freqs[freq_i].amp;
+			freq_mult = PI2 * freq;
+
+
+			// Assemble individual frequencies
+			for(uint i = 0; i < sample_count; i++)
+			{
+				double i_d = (double)i;
+
+				t_arr[i] = dt * i_d;
+				s_arr[i] += gain * sin( freq_mult * t_arr[i] );
+
+			}
+		}
+
+		// find max frequency magnitude
+		double max_value = 0.0;
 		for(uint i = 0; i < sample_count; i++)
 		{
-			double i_d = (double)i;
-			t_arr[i] = dt * i_d;
-
-			s_arr[i] = gain * amp * sin( freq_mult * t_arr[i] );
-
-			wave_arr[i] = (int) s_arr[i];
+			if(s_arr[i] > max_value)
+				max_value = s_arr[i];
 		}
+
+		// normalize wave to [-1, 1]
+		for(uint i = 0; i < sample_count; i++)
+			s_arr[i] /= max_value;
+
+		// generate output wave
+		for(uint i = 0; i < sample_count; i++)
+			wave_arr[i] = s_arr[i] * 32767.0 * gain_out;
 	}
 
 	void print_wave()
@@ -649,11 +697,29 @@ public:
 
 };
 
+
+
 int main(int argc, char** argv)
 {
     println("Physimos::audio starting!");
 
-	SineWave sine_wave {1.0};
+	// SineWave sine_wave {1.0};
+	Arr<Frequency> frequencies;
+	// frequencies.push_back({2000.0, 0.1});
+	frequencies.push_back({1760.0, 0.1});
+	frequencies.push_back({880.0, 0.5});
+	// frequencies.push_back(900.0);
+	// frequencies.push_back(800.0);
+	// frequencies.push_back(700.0);
+	// frequencies.push_back(600.0);
+	frequencies.push_back({440.0, 0.15});
+	frequencies.push_back({220.0, 0.10});
+	frequencies.push_back({110.0, 0.10});
+	// frequencies.push_back({560.0, 0.02});
+	// frequencies.push_back({760.0, 0.02});
+	// frequencies.push_back({80.0, 0.15});
+
+	SineWave sine_wave {1.0, frequencies};
 	sine_wave.generate_wave();
 	// sine_wave.print_wave();
 
@@ -724,14 +790,12 @@ int main(int argc, char** argv)
 
 	alsa.print_pcm_info();
 	// alsa.play();
-	// alsa.play(audio_data);
-	alsa.play(wave_100hz.get_audio_data());
+	alsa.play(audio_data);
+	// alsa.play(wave_100hz.get_audio_data());
 	// alsa.play(wave_1000hz.get_audio_data());
-
-	twinkle_twinkle();
-
 	alsa.end();
 
+	twinkle_twinkle();
 
 
     printf("End Alsa test\n");

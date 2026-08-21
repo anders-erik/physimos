@@ -115,6 +115,18 @@ public:
         return *this;
     }
 
+    /* Copies the passed value to all allocated objects. */
+    Arr<T>& set(const T& value, uint _count)
+    {
+        reallocate(_count);
+        elem_count = reserved;
+
+        for(uint i = 0; i < elem_count; i++)
+            *(t_p + i) = value;
+
+        return *this;
+    }
+
     /* Pass a pointer with data */
     Arr<T>& set_from_pointer(T* _ptr, uint _count)
     {
