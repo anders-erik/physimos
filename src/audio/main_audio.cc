@@ -240,135 +240,194 @@ struct Frequency
 	double frequency;
 	double amp; // [0, 1]
 };
+Frequency default_frequency = {1000.0, 0.25}; // Hz = osc. / s
 
-class SineWave
+
+/** Generates a frequency domain profile based on input functions. Purpose is to experiment with resulting timbres when tranformed into time domain.  */
+struct FrequencyProfile
 {
-public:
+	Arr<Frequency> frequencies;
 
-	/* Provided quantities for wave generation */
-	double duration = 1.0; // Total duration of the generated data in seconds
+	void generate_3_overtones(double base_frequency)
+	{
+		Arr<Frequency> freq_tmp;
+
+		freq_tmp.push_back({base_frequency * 1.0, 1.00});
+		freq_tmp.push_back({base_frequency * 2.0, 0.30});
+		freq_tmp.push_back({base_frequency * 3.0, 0.10});
+		// freq_tmp.push_back({base_frequency * 4.0, 0.10});
+
+		frequencies = freq_tmp;
+	}
+};
+
+struct WaveConfig
+{
+	double duration = 1.0;
 	uint sample_rate = 44100; // samples per second
-	uint sample_depth = 16; // 2^(sample_depth) number of available discrete values during sampling
-	double wave_freq = 1000.0; // Hz = osc. / s
-	Frequency default_frequency = {1000.0, 0.25}; // Hz = osc. / s
-	Arr<Frequency> wave_freqs;
+	uint sample_depth_bit = 16; // 2^(sample_depth) number of available discrete values during sampling
+	double gain = 0.5; // [0, 1]: maximum amplitude relative to the maximum values for the chosen bit depth.
 
-	/* Derived quantities based on provided values above */
-	uint sample_count; // total number of samples ( sample_rate * duration )
-	double dt; // time between samplings
-	// double amp_out; // amplitude of the output wave in int16_t
-	double gain_out = 0.5; // output gain multiplier
-	double freq_mult; // frequency multiplier for the sine argument
-
-	Arr<double> t_arr;
-    Arr<double> s_arr;
-    Arr<int16_t> wave_arr;
+	double damping = 0.0; // [0,1]: 0 = no damping. 1 = maximum damping. Damping model is subject to change, thus the input does not mean more than the magnitude of the hidden damping model
 
 
-	SineWave()
+	// Derived quantities -- need getter & setters!
+	uint sample_count;
+	double dt;
+
+	WaveConfig()
 	{
-		this->wave_freqs.set(default_frequency, 1);
 		calculate_derived_quantities();
-	}
-	SineWave(double duration)
+	};
+
+	WaveConfig(double _duration, uint _sample_rate, uint _sample_depth_bit)
 	{
-		this->duration = duration;
-		this->wave_freqs.set(default_frequency, 1);
-		calculate_derived_quantities();
-	}
-	SineWave(double duration, uint frequency)
-	{
-		this->duration = duration;
-		this->wave_freq = frequency;
-		this->wave_freqs.set({(double)frequency, default_frequency.amp}, 1);
-		calculate_derived_quantities();
-	}
-	SineWave(double duration, Arr<Frequency> frequencies)
-	{
-		this->duration = duration;
-		this->wave_freqs = frequencies;
-		calculate_derived_quantities();
-	}
-	SineWave(double duration, uint sample_rate, uint sample_depth, uint wave_freq)
-	{
-		this->duration = duration;
-		this->sample_rate = sample_rate;
-		this->sample_depth = sample_depth;
-		this->wave_freq = wave_freq;
-		this->wave_freqs.set({(double)wave_freq, default_frequency.amp}, 1);
+		duration = _duration;
+		sample_rate = _sample_rate;
+		sample_depth_bit = _sample_depth_bit;
 
 		calculate_derived_quantities();
+	};
+
+	void set_duration(double _duration)
+	{
+		duration = _duration;
+		calculate_derived_quantities();
 	}
+
+private:
 
 	void calculate_derived_quantities()
 	{
-		sample_count = (uint) (duration * (double)sample_rate);
-		dt = 1.0 / ((double)sample_rate);
+		sample_count = (uint) ((double)sample_rate * duration);
+		dt = (double) (1.0 / (double)sample_rate);
+	}
 
-		// Sine constants
-		// amp_out = pow(2.0, sample_depth-1) - 1.0;
-		// freq_mult = PI2 * wave_freq;
-		freq_mult = PI2 * wave_freqs[0].frequency;
+};
 
-		t_arr.reserve(sample_count);
+WaveConfig default_wave_config = {1.0, 44100, 16};
+
+
+class WaveGen
+{
+public:
+
+	WaveConfig config = default_wave_config;
+	Arr<Frequency> wave_freqs;
+
+	Arr<double> t_arr; // Time step array
+    Arr<double> w_arr;	// Wave array
+    Arr<int16_t> out_arr; // Output array
+
+
+	WaveGen()
+	{
+		this->wave_freqs.set(default_frequency, 1);
+		array_allocation();
+	}
+	WaveGen(double duration)
+	{
+		config.duration = duration;
+		this->wave_freqs.set(default_frequency, 1);
+		array_allocation();
+	}
+	WaveGen(double _duration, uint _frequency)
+	{
+		config.set_duration(_duration);
+		this->wave_freqs.set({(double)_frequency, default_frequency.amp}, 1);
+		// array_allocation();
+	}
+	WaveGen(double duration, Arr<Frequency> frequencies)
+	{
+		config.duration = duration;
+		this->wave_freqs = frequencies;
+		array_allocation();
+	}
+	// WaveGen(double duration, uint sample_rate, uint sample_depth, uint wave_freq)
+	// {
+	// 	this->wave_freqs.set({(double)wave_freq, default_frequency.amp}, 1);
+	// 	array_allocation();
+	// }
+
+	void set_config(WaveConfig _config)
+	{
+		config = _config;
+	}
+
+	void set_frequencies(Arr<Frequency> _frequencies)
+	{
+		wave_freqs = _frequencies;
+	}
+
+	void array_allocation()
+	{
+		t_arr.reserve(config.sample_count);
 		t_arr.set(0.0);
-		s_arr.reserve(sample_count);
-		s_arr.set(0.0);
-		wave_arr.reserve(sample_count);
-		wave_arr.set(0);
+		w_arr.reserve(config.sample_count);
+		w_arr.set(0.0);
+		out_arr.reserve(config.sample_count);
+		out_arr.set(0);
 	}
 
 	void generate_wave()
 	{
+		array_allocation();
+
 		for(uint freq_i = 0; freq_i < wave_freqs.count(); freq_i++)
 		{
 			double freq = wave_freqs[freq_i].frequency;
-			double gain = wave_freqs[freq_i].amp;
-			freq_mult = PI2 * freq;
+			double amp = wave_freqs[freq_i].amp;
+			double freq_mult = PI2 * freq;
 
 
 			// Assemble individual frequencies
-			for(uint i = 0; i < sample_count; i++)
+			for(uint i = 0; i < config.sample_count; i++)
 			{
 				double i_d = (double)i;
 
-				t_arr[i] = dt * i_d;
-				s_arr[i] += gain * sin( freq_mult * t_arr[i] );
+				t_arr[i] = config.dt * i_d;
+				w_arr[i] += amp * sin( freq_mult * t_arr[i] );
 
 			}
 		}
 
 		// find max frequency magnitude
+		// TODO: this does only find the maximum, not the maximum absolute value of the wave
 		double max_value = 0.0;
-		for(uint i = 0; i < sample_count; i++)
+		for(uint i = 0; i < config.sample_count; i++)
 		{
-			if(s_arr[i] > max_value)
-				max_value = s_arr[i];
+			if(w_arr[i] > max_value)
+				max_value = w_arr[i];
 		}
 
+		// Apply damping
+		for(uint i = 0; i < config.sample_count; i++)
+			w_arr[i] /= ((double)config.sample_count / (double)(config.sample_count - i) );
+
 		// normalize wave to [-1, 1]
-		for(uint i = 0; i < sample_count; i++)
-			s_arr[i] /= max_value;
+		for(uint i = 0; i < config.sample_count; i++)
+			w_arr[i] /= max_value; 
 
 		// generate output wave
-		for(uint i = 0; i < sample_count; i++)
-			wave_arr[i] = s_arr[i] * 32767.0 * gain_out;
+		double max_amplitude = pow(2.0, (double)(config.sample_depth_bit-1) ) - 1.0;
+		for(uint i = 0; i < config.sample_count; i++)
+			out_arr[i] = (int16_t) (w_arr[i] * max_amplitude * config.gain); // 32767.0
 	}
 
 	void print_wave()
 	{
-		for(uint i = 0; i < sample_count; i++)
+		for(uint i = 0; i < config.sample_count; i++)
 		{
 			print(Str::FL(t_arr[i], 5, Str::FloatRep::Fixed));
 			print("  ");
-			print(Str::SI(wave_arr[i]));
+			print(Str::SI(out_arr[i]));
 			println();
 		}
 	}
 
 	AudioData get_audio_data()
 	{
-		return AudioData {wave_arr};
+		return AudioData {out_arr};
 	}
 };
 
@@ -414,7 +473,7 @@ public:
 	WAV() {};
 
 
-	void populate_from_wave(SineWave& wave)
+	void populate_from_wave(WaveGen& wave)
 	{
 		is_little_endian = false;
 
@@ -422,7 +481,7 @@ public:
 
 		// Size: 12 bytes
 		// header_riff.FileTypeBlocID = ...; // set in struct declaration
-		header_riff.FileSize = 44 + wave.sample_count * 2 - 8;
+		header_riff.FileSize = 44 + wave.config.sample_count * 2 - 8;
 		// header_riff.FileFormatID = ...; // set in struct declaration
 
 		// Size: 24 bytes
@@ -430,15 +489,15 @@ public:
 		header_format.BlocSize = 0x10; // size of the format header
 		header_format.AudioFormat = 1; // PCM : integer
 		header_format.NbrChannels = 1; 
-		header_format.Frequency = wave.sample_rate; 
+		header_format.Frequency = wave.config.sample_rate; 
 		header_format.BitsPerSample = 16;
 		header_format.BytePerBloc = header_format.BitsPerSample * header_format.NbrChannels / 8;
-		header_format.BytePerSec = wave.sample_rate * header_format.BytePerBloc;
+		header_format.BytePerSec = wave.config.sample_rate * header_format.BytePerBloc;
 		
 		// Size: 8 + data_size
 		// data_chunk.DataBlocID = ...; // set in struct declaration
-		data_chunk.DataSize = wave.sample_count * 2;
-		data_chunk.SampledData = wave.wave_arr; // TODO: make the WAV object own the data. Currently we store a pointer to data on the heap that could be deallocated at any point before writing to file.
+		data_chunk.DataSize = wave.config.sample_count * 2;
+		data_chunk.SampledData = wave.out_arr; // TODO: make the WAV object own the data. Currently we store a pointer to data on the heap that could be deallocated at any point before writing to file.
 
 	}
 
@@ -663,14 +722,17 @@ void bin_dump(Str file_path, void* ptr, uint byte_count)
 
 void twinkle_twinkle()
 {
-
-	SineWave C5(0.5, 523.3);
+	
+	WaveGen C5(0.5, 523.3);
+	FrequencyProfile profile_c5;
+	profile_c5.generate_3_overtones(523.3);
+	C5.set_frequencies(profile_c5.frequencies);
 	C5.generate_wave();
 
-	SineWave G5(0.5, 784.0);
+	WaveGen G5(0.5, 784.0);
 	G5.generate_wave();
 	
-	SineWave A5(0.5, 880.0);
+	WaveGen A5(0.5, 880.0);
 	A5.generate_wave();
 
 	Alsa alsa;
@@ -705,22 +767,30 @@ int main(int argc, char** argv)
 
 	// SineWave sine_wave {1.0};
 	Arr<Frequency> frequencies;
-	// frequencies.push_back({2000.0, 0.1});
-	frequencies.push_back({1760.0, 0.1});
-	frequencies.push_back({880.0, 0.5});
+	// frequencies.push_back({3520.0, 0.05});
+	// frequencies.push_back({1760.0, 0.1});
+	// frequencies.push_back({880.0, 0.5});
+	// frequencies.push_back({440.0, 0.15});
+	// frequencies.push_back({220.0, 0.10});
+	// frequencies.push_back({110.0, 0.10});
+
+	frequencies.push_back({880.0, 	0.15});
+	frequencies.push_back({660.0, 	0.15});
+	frequencies.push_back({440.0, 	0.20});
+	frequencies.push_back({220.0, 	0.50});
+
 	// frequencies.push_back(900.0);
 	// frequencies.push_back(800.0);
 	// frequencies.push_back(700.0);
 	// frequencies.push_back(600.0);
-	frequencies.push_back({440.0, 0.15});
-	frequencies.push_back({220.0, 0.10});
-	frequencies.push_back({110.0, 0.10});
 	// frequencies.push_back({560.0, 0.02});
 	// frequencies.push_back({760.0, 0.02});
 	// frequencies.push_back({80.0, 0.15});
 
-	SineWave sine_wave {1.0, frequencies};
-	sine_wave.gain_out = 0.2;
+	WaveConfig w_config;
+	WaveGen sine_wave {1.0, frequencies};
+	// sine_wave.set_config(default_wave_config);
+	// sine_wave.w_config.gain = 0.2;
 	sine_wave.generate_wave();
 	// sine_wave.print_wave();
 
@@ -771,10 +841,10 @@ int main(int argc, char** argv)
 	}
 
 
-	SineWave wave_100hz(0.5, 300.0);
+	WaveGen wave_100hz(0.5, 300.0);
 	wave_100hz.generate_wave();
 
-	SineWave wave_1000hz(0.5, 1000.0);
+	WaveGen wave_1000hz(0.5, 1000.0);
 	wave_1000hz.generate_wave();
 
 	
@@ -787,7 +857,7 @@ int main(int argc, char** argv)
 	Alsa alsa;
 
 	AudioData audio_data;
-	audio_data.data = sine_wave.wave_arr;
+	audio_data.data = sine_wave.out_arr;
 
 	alsa.print_pcm_info();
 	// alsa.play();
@@ -796,7 +866,7 @@ int main(int argc, char** argv)
 	// alsa.play(wave_1000hz.get_audio_data());
 	alsa.end();
 
-	// twinkle_twinkle();
+	twinkle_twinkle();
 
 
     printf("End Alsa test\n");
