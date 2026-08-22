@@ -3,7 +3,10 @@
 #include <unistd.h>
 #include <stdio.h>
 
+
 #include "lib/print.hh"
+
+#include "hiddev.hh"
 
 int main()
 {
@@ -26,10 +29,16 @@ int main()
         if (entry->d_name[0] == '.')
             continue;
 
-        printf("%s\n", entry->d_name);
+        // printf("%s\n", entry->d_name);
     }
 
     int close_dir_ret = closedir(dir);
+
+    listen_mouse_hiddev("/dev/usb/hiddev2");
+
+    // Keyboard devices: "/dev/hidraw7", "/dev/input/event9" 
+    // Problem: permission are 0XX0, thus a regular user cannot read the files..
+    // Also, I don't know what format the data from /dev/input/eventX output
 
     print("~~ end main input ~~ \n");
 
