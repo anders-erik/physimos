@@ -3,10 +3,30 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include <stdlib.h>
 
 #include "lib/print.hh"
 
 #include "hiddev.hh"
+
+
+void add_current_user_to_input_group()
+{
+    // system("echo 123");
+    system("sudo usermod -a -G input $USER");
+}
+
+void remove_current_user_to_input_group()
+{
+    // system("echo 123");
+    system("sudo usermod -r -G input $USER");
+}
+
+void user_info()
+{
+    // system("echo 123");
+    system("id");
+}
 
 int main()
 {
@@ -34,11 +54,51 @@ int main()
 
     int close_dir_ret = closedir(dir);
 
-    listen_mouse_hiddev("/dev/usb/hiddev2");
+    // listen_mouse_hiddev("/dev/usb/hiddev2");
 
     // Keyboard devices: "/dev/hidraw7", "/dev/input/event9" 
     // Problem: permission are 0XX0, thus a regular user cannot read the files..
     // Also, I don't know what format the data from /dev/input/eventX output
+
+
+    // add_current_user_to_input_group();
+    // remove_current_user_to_input_group();
+    // user_info();
+
+
+    // Trying to read /dev/input/event9
+    // Source: https://stackoverflow.com/questions/15949163/read-from-dev-input
+    if(false)
+    {
+        const char* file_path = "/dev/input/event9"; 
+        int fd = open(file_path, O_RDONLY);
+        if(fd < 0)
+        {
+            printf("Error: failed to open file %c", file_path);
+            return 1;
+        }
+        
+        struct input_event
+        {
+        struct timeval time;
+        unsigned short type;
+        unsigned short code;
+        unsigned int value;
+        };
+        input_event ev;
+
+        while(1)
+        {
+            int ret = read(fd, &ev, sizeof(ev));
+            if(ret < 0)
+            {
+                print("failed to read \n");
+                continue;
+            }
+
+            printf("%d", ev.value);
+        }
+    }
 
     print("~~ end main input ~~ \n");
 
