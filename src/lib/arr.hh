@@ -105,6 +105,12 @@ public:
         t_p[elem_count].~T();
     }
 
+    void clear()
+    {
+        while(count() > 0)
+            pop_back();
+    }
+
     /* Copies the passed value to all allocated objects. */
     Arr<T>& set(const T& value)
     {

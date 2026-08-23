@@ -280,6 +280,12 @@ struct WaveConfig
 		calculate_derived_quantities();
 	};
 
+	WaveConfig(double _duration)
+	{
+		duration = _duration;
+		calculate_derived_quantities();
+	};
+
 	WaveConfig(double _duration, uint _sample_rate, uint _sample_depth_bit)
 	{
 		duration = _duration;
@@ -361,6 +367,10 @@ public:
 
 	void array_allocation()
 	{
+		t_arr.clear();
+		w_arr.clear();
+		out_arr.clear();
+
 		t_arr.reserve(config.sample_count);
 		t_arr.set(0.0);
 		w_arr.reserve(config.sample_count);
@@ -720,30 +730,166 @@ void bin_dump(Str file_path, void* ptr, uint byte_count)
 }
 
 
+
+enum class NoteType
+{
+	whole,
+	half,
+	quarter
+};
+
+enum class NoteName
+{
+	C4,
+	D4,
+	E4,
+	F4,
+	G4,
+	A4,
+	B4,
+};
+
+struct Note 
+{
+	NoteName name;
+	NoteType type;
+
+	bool operator==(Note b)
+	{
+		if(this->name == b.name && this->type == b.type)
+			return true;
+		
+		return false;
+	}
+};
+
+// const Note A4 { "A4", 440.0, NoteType::quarter};
+// const Note A4 { NoteName::A4, NoteType::quarter};
+
+#include "lib/pair.hh"
+
+class Song
+{
+public:
+
+	double bpm = 120; // beat / minute
+	Arr<Pair<Note, AudioData>> notes_data;
+	Arr<Note> notes;
+
+	Song() {}
+
+	void generate()
+	{
+		WaveGen wave_gen;
+
+		for(int i = 0; i < notes.count(); i++)
+		{
+			Note note = notes[i];
+
+			// TODO:  make sure the note is not already generated
+
+			// Duration
+			double duration = 1.0 / (bpm / 60.0); // seconds / beat
+			if(notes[i].type == NoteType::whole)
+				duration *= 4.0; // four beats
+			else if(notes[i].type == NoteType::half)
+				duration *= 2.0; // two beats
+			else if(notes[i].type == NoteType::quarter)
+				duration *= 1.0; // one beats
+			
+			// Frequency
+			wave_gen.wave_freqs.clear();
+
+			if(note.name == NoteName::C4)
+				wave_gen.wave_freqs.push_back({261.63, 1.0});
+			else if(note.name == NoteName::D4)
+				wave_gen.wave_freqs.push_back({293.66, 1.0});
+			else if(note.name == NoteName::E4)
+				wave_gen.wave_freqs.push_back({329.63, 1.0});
+			else if(note.name == NoteName::F4)
+				wave_gen.wave_freqs.push_back({349.23, 1.0});
+			else if(note.name == NoteName::G4)
+				wave_gen.wave_freqs.push_back({392.0, 1.0});
+			else if(note.name == NoteName::A4)
+				wave_gen.wave_freqs.push_back({440.0, 1.0});
+			else if(note.name == NoteName::B4)
+				wave_gen.wave_freqs.push_back({493.88, 1.0});
+			
+			wave_gen.config.set_duration(duration);
+			wave_gen.generate_wave();
+
+			notes_data.push_back({note, wave_gen.out_arr});
+		}
+	}
+
+	void play(Alsa alsa)
+	{
+		for(uint i = 0; i < notes.count(); i++)
+		{
+			Note note = notes[i];
+
+			// Find the already generated audio data for the note
+			for(uint j = 0; j < notes_data.count(); j++)
+			{
+				if(note == notes_data[j].XX)
+				{
+					alsa.play(notes_data[j].YY);
+					break;
+				}
+			}
+		}
+	}
+};
+
 void twinkle_twinkle()
 {
-	
-	WaveGen C5(0.5, 523.3);
-	FrequencyProfile profile_c5;
-	profile_c5.generate_3_overtones(523.3);
-	C5.set_frequencies(profile_c5.frequencies);
-	C5.generate_wave();
-
-	WaveGen G5(0.5, 784.0);
-	G5.generate_wave();
-	
-	WaveGen A5(0.5, 880.0);
-	A5.generate_wave();
-
 	Alsa alsa;
 
-	alsa.play(C5.get_audio_data());
-	alsa.play(C5.get_audio_data());
-	alsa.play(G5.get_audio_data());
-	alsa.play(G5.get_audio_data());
-	alsa.play(A5.get_audio_data());
-	alsa.play(A5.get_audio_data());
-	alsa.play(G5.get_audio_data());
+	Song twinkle;
+	twinkle.bpm = 120;
+
+	twinkle.notes.push_back({ NoteName::C4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::C4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::G4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::G4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::A4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::A4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::G4, NoteType::half	 });
+	twinkle.notes.push_back({ NoteName::F4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::F4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::E4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::E4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::D4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::D4, NoteType::quarter});
+	twinkle.notes.push_back({ NoteName::C4, NoteType::half   });
+
+	twinkle.generate();
+	twinkle.play(alsa);
+
+	if(false)
+	{
+		WaveGen gen_C5(0.5, 523.3);
+		FrequencyProfile profile_c5;
+		profile_c5.generate_3_overtones(523.3);
+		gen_C5.set_frequencies(profile_c5.frequencies);
+		gen_C5.generate_wave();
+
+		WaveGen gen_G5(0.5, 784.0);
+		gen_G5.generate_wave();
+		
+		WaveGen gen_A5(0.5, 880.0);
+		gen_A5.generate_wave();
+
+		
+
+		alsa.play(gen_C5.get_audio_data());
+		alsa.play(gen_C5.get_audio_data());
+		alsa.play(gen_G5.get_audio_data());
+		alsa.play(gen_G5.get_audio_data());
+		alsa.play(gen_A5.get_audio_data());
+		alsa.play(gen_A5.get_audio_data());
+		alsa.play(gen_G5.get_audio_data());
+	}
 
 	alsa.end();
 }
