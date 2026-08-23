@@ -760,10 +760,72 @@ public:
 };
 
 
+#include <complex>
+using namespace std::complex_literals;
+
+class DFT
+{
+public: 
+	// Arr<std::complex<float>> input;
+	// Arr<std::complex<float>> output;
+
+	// DFT(Arr<std::complex<float>> _input, Arr<std::complex<float>> _output)
+	// 	: 	input {_input},
+	// 		output {_output}
+	// {}
+
+	static Arr<std::complex<double>> calculate(Arr<std::complex<double>> input)
+	{
+		Arr<std::complex<double>> output = {};
+
+		int N = input.count();
+
+		for(int k = 0; k < N; k++)
+		{
+			std::complex<double> X = 0.0 + 0.0i;
+
+			for(int n = 0; n < N; n++)
+			{
+				double n_db = (double) n;
+				double k_db = (double) k;
+				double N_db = (double) N;
+				std::complex<double> exponent = 0.0 + -1.0i * 2.0 * 3.1415 * n_db * k_db / N_db;
+				// std::complex<double> exponent = 0.0 + 1.0i;
+				X += input[n] * std::pow(2.718, exponent);
+			}
+
+			output.push_back(X);
+
+		}
+		// std::complex<double> A =
+		return output;
+	}
+};
+
 
 int main(int argc, char** argv)
 {
     println("Physimos::audio starting!");
+
+	std::complex<double> a = 1;
+	std::complex<double> b = 2.0 - 1.0i;
+	std::complex<double> c = -1.0i;
+	std::complex<double> d = -1.0 + 2.0i;
+	Arr<std::complex<double>> input;
+	input.push_back(a);
+	input.push_back(b);
+	input.push_back(c);
+	input.push_back(d);
+
+	Arr<std::complex<double>> output = DFT::calculate(input);
+	for(uint i = 0; i < output.count(); i++)
+	{
+		print(Str::FL(output[i].real(), 3, Str::FloatRep::Fixed));
+		print(" + ");
+		print(Str::FL(output[i].imag(), 3, Str::FloatRep::Fixed));
+		print(" i \n");
+	}
+
 
 	// SineWave sine_wave {1.0};
 	Arr<Frequency> frequencies;
@@ -777,7 +839,7 @@ int main(int argc, char** argv)
 	frequencies.push_back({880.0, 	0.15});
 	frequencies.push_back({660.0, 	0.15});
 	frequencies.push_back({440.0, 	0.20});
-	frequencies.push_back({220.0, 	0.50});
+	frequencies.push_back({220.0, 	0.70});
 
 	// frequencies.push_back(900.0);
 	// frequencies.push_back(800.0);
@@ -788,10 +850,10 @@ int main(int argc, char** argv)
 	// frequencies.push_back({80.0, 0.15});
 
 	WaveConfig w_config;
-	WaveGen sine_wave {1.0, frequencies};
+	WaveGen wave_generator {1.0, frequencies};
 	// sine_wave.set_config(default_wave_config);
 	// sine_wave.w_config.gain = 0.2;
-	sine_wave.generate_wave();
+	wave_generator.generate_wave();
 	// sine_wave.print_wave();
 
 	WAV wav; 
@@ -857,7 +919,7 @@ int main(int argc, char** argv)
 	Alsa alsa;
 
 	AudioData audio_data;
-	audio_data.data = sine_wave.out_arr;
+	audio_data.data = wave_generator.out_arr;
 
 	alsa.print_pcm_info();
 	// alsa.play();
