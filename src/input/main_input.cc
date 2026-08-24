@@ -5,6 +5,11 @@
 
 #include <stdlib.h>
 
+#include <linux/input.h>
+#include <linux/input-event-codes.h>
+
+#include <iostream>
+
 #include "lib/print.hh"
 
 #include "hiddev.hh"
@@ -68,9 +73,9 @@ int main()
 
     // Trying to read /dev/input/event9
     // Source: https://stackoverflow.com/questions/15949163/read-from-dev-input
-    if(false)
+    if(true)
     {
-        const char* file_path = "/dev/input/event9"; 
+        const char* file_path = "/dev/input/event9";
         int fd = open(file_path, O_RDONLY);
         if(fd < 0)
         {
@@ -80,23 +85,71 @@ int main()
         
         struct input_event
         {
-        struct timeval time;
-        unsigned short type;
-        unsigned short code;
-        unsigned int value;
+            struct timeval time;
+            unsigned short type;
+            unsigned short code;
+            unsigned int value;
         };
+        // sizeof(input_event);
         input_event ev;
+
+
 
         while(1)
         {
-            int ret = read(fd, &ev, sizeof(ev));
-            if(ret < 0)
+            int ret = read(fd, &ev, sizeof(input_event));
+            if(ret <= 0)
             {
                 print("failed to read \n");
                 continue;
             }
 
-            printf("%d", ev.value);
+
+            // print whole event object
+            if(true)
+            {
+                // std::cout << "ev.code = " << ev.code << ", ev.type = " << ev.type << ", ev.value = " << ev.value << std::endl;
+                // printf("read size = %d \n", ret);
+            }
+
+            // printf("read size = %d \n", ret);
+            // printf("read ev.time = %d \n", ev.time);
+            
+            // printf("ev.type = %d \n", ev.type);
+            // printf("ev.value = %d \n", ev.value);
+            // printf("Code: %d \n", ev.code);
+            
+            if(ev.type == EV_KEY)
+            {
+                // print(" ");
+
+                // printf("%d \n", ev.code);
+
+                switch (ev.value)
+                {
+                    case 0:
+                        printf("Key %d released \n", ev.code);
+                        // print("released ");
+                        break;
+                    case 1:
+                        // print("pressed ");
+                        printf("Key %d pressed \n", ev.code);
+                        break;
+                    case 2:
+                        // print("held ");
+                        printf("Key %d held \n", ev.code);
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+            // printf("read ev.value = %d ", ev.value);
+            // print("\n");
+
+            std::cout << std::flush;
+
+            // printf("%d", ev.value);
         }
     }
 
