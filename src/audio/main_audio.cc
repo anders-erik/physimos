@@ -34,13 +34,18 @@ public:
 		this->data = data;
 	};
 
+	// force vector to hold a specific sample count, all set to zero
+	void set_sample_count(uint _count)
+	{
+		data.set(0, _count);
+	}
 
 	int sample_rate() { return 44100; }
 	int channel_count() { return 1; }
 	int sample_size_bit() { return 16; }
 	int sample_size_byte() { return 2; }
 
-	int sample_count() { return data.count(); }
+	uint sample_count() { return data.count(); }
 	int data_size_byte() { return data.count() * 2; }
 
 	double duration_double() { return ((double)sample_count()) / ((double)sample_rate()); }
@@ -768,76 +773,124 @@ struct Note
 
 #include "lib/pair.hh"
 
+
+class Instrument
+{
+public:
+
+	static AudioData get_note_audio(Note note, double tempo_bpm)
+	{
+		WaveGen wave_gen;
+
+		// Duration
+		double duration = 1.0 / (tempo_bpm / 60.0); // seconds / beat (for quarter note)
+
+		if(note.type == NoteType::whole)
+			duration *= 4.0; // four beats
+		else if(note.type == NoteType::half)
+			duration *= 2.0; // two beats
+		else if(note.type == NoteType::quarter)
+			duration *= 1.0; // one beats
+		
+		// Frequency
+		wave_gen.wave_freqs.clear();
+
+		if(note.name == NoteName::C4)
+			wave_gen.wave_freqs.push_back({261.63, 1.0});
+		else if(note.name == NoteName::D4)
+			wave_gen.wave_freqs.push_back({293.66, 1.0});
+		else if(note.name == NoteName::E4)
+			wave_gen.wave_freqs.push_back({329.63, 1.0});
+		else if(note.name == NoteName::F4)
+			wave_gen.wave_freqs.push_back({349.23, 1.0});
+		else if(note.name == NoteName::G4)
+			wave_gen.wave_freqs.push_back({392.0, 1.0});
+		else if(note.name == NoteName::A4)
+			wave_gen.wave_freqs.push_back({440.0, 1.0});
+		else if(note.name == NoteName::B4)
+			wave_gen.wave_freqs.push_back({493.88, 1.0});
+		
+		wave_gen.config.set_duration(duration);
+		wave_gen.generate_wave();
+
+		return wave_gen.out_arr;
+	}
+};
+
 class Song
 {
 public:
 
-	double bpm = 120; // beat / minute
-	Arr<Pair<Note, AudioData>> notes_data;
-	Arr<Note> notes;
+	double bpm = 120.0; // beat / minute
+	uint beat_count = 16;
+	Arr<Arr<Note>> notes;
+	AudioData song_data;
 
-	Song() {}
+	Arr<Pair<Note, AudioData>> notes_data;
+	// Arr<Note> notes;
+
+	Song() : notes {beat_count, {}}
+	{
+	}
+
+
+	void add_wave_to_audiodata_at_beat_count(AudioData& _audio_data, uint beat_index)
+	{
+		uint samples_per_beat = (uint)(44100.0 * (60.0 / bpm));
+
+		uint first_sample_offset = samples_per_beat * beat_index;
+		// uint last_sample_offset = first_sample_offset + _audio_data.sample_count();
+
+		for(uint i = 0; i < _audio_data.sample_count(); i++)
+		{
+			song_data.data[first_sample_offset + i] += _audio_data.data[i];
+		}
+	}
 
 	void generate()
-	{
-		WaveGen wave_gen;
+	{	
+		double song_duration_s = (double)beat_count * 60.0 / bpm;
+		double sample_count = 44100 * song_duration_s;
 
-		for(int i = 0; i < notes.count(); i++)
+		song_data.set_sample_count(sample_count);
+
+
+		for(uint beat_i = 0; beat_i < notes.count(); beat_i++)
 		{
-			Note note = notes[i];
+			// if(notes[beat_i].count() == 0)
+			// 	continue;
 
-			// TODO:  make sure the note is not already generated
-
-			// Duration
-			double duration = 1.0 / (bpm / 60.0); // seconds / beat
-			if(notes[i].type == NoteType::whole)
-				duration *= 4.0; // four beats
-			else if(notes[i].type == NoteType::half)
-				duration *= 2.0; // two beats
-			else if(notes[i].type == NoteType::quarter)
-				duration *= 1.0; // one beats
-			
-			// Frequency
-			wave_gen.wave_freqs.clear();
-
-			if(note.name == NoteName::C4)
-				wave_gen.wave_freqs.push_back({261.63, 1.0});
-			else if(note.name == NoteName::D4)
-				wave_gen.wave_freqs.push_back({293.66, 1.0});
-			else if(note.name == NoteName::E4)
-				wave_gen.wave_freqs.push_back({329.63, 1.0});
-			else if(note.name == NoteName::F4)
-				wave_gen.wave_freqs.push_back({349.23, 1.0});
-			else if(note.name == NoteName::G4)
-				wave_gen.wave_freqs.push_back({392.0, 1.0});
-			else if(note.name == NoteName::A4)
-				wave_gen.wave_freqs.push_back({440.0, 1.0});
-			else if(note.name == NoteName::B4)
-				wave_gen.wave_freqs.push_back({493.88, 1.0});
-			
-			wave_gen.config.set_duration(duration);
-			wave_gen.generate_wave();
-
-			notes_data.push_back({note, wave_gen.out_arr});
+			for(uint note_i = 0; note_i < notes[beat_i].count(); note_i++)
+			{
+				AudioData note_data = Instrument::get_note_audio(notes[beat_i][note_i], bpm);
+				add_wave_to_audiodata_at_beat_count(note_data, beat_i);
+			}
 		}
+			
+		// {
+
+		// 	notes_data.push_back({notes[beat_i], Instrument::get_note_audio(notes[beat_i], bpm)});
+		// }
 	}
 
 	void play(Alsa alsa)
 	{
-		for(uint i = 0; i < notes.count(); i++)
-		{
-			Note note = notes[i];
+		alsa.play(song_data);
 
-			// Find the already generated audio data for the note
-			for(uint j = 0; j < notes_data.count(); j++)
-			{
-				if(note == notes_data[j].XX)
-				{
-					alsa.play(notes_data[j].YY);
-					break;
-				}
-			}
-		}
+		// for(uint i = 0; i < notes.count(); i++)
+		// {
+			// Note note = notes[i];
+
+			// // Find the already generated audio data for the note
+			// for(uint j = 0; j < notes_data.count(); j++)
+			// {
+			// 	if(note == notes_data[j].XX)
+			// 	{
+			// 		alsa.play(notes_data[j].YY);
+			// 		break;
+			// 	}
+			// }
+		// }
 	}
 };
 
@@ -848,20 +901,23 @@ void twinkle_twinkle()
 	Song twinkle;
 	twinkle.bpm = 120;
 
-	twinkle.notes.push_back({ NoteName::C4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::C4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::G4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::G4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::A4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::A4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::G4, NoteType::half	 });
-	twinkle.notes.push_back({ NoteName::F4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::F4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::E4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::E4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::D4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::D4, NoteType::quarter});
-	twinkle.notes.push_back({ NoteName::C4, NoteType::half   });
+	twinkle.notes[0].push_back({ NoteName::C4, NoteType::quarter});
+	// twinkle.notes[0].push_back({ NoteName::E4, NoteType::quarter});
+	// twinkle.notes[0].push_back({ NoteName::G4, NoteType::quarter});
+
+	twinkle.notes[1].push_back({ NoteName::C4, NoteType::quarter});
+	twinkle.notes[2].push_back({ NoteName::G4, NoteType::quarter});
+	twinkle.notes[3].push_back({ NoteName::G4, NoteType::quarter});
+	twinkle.notes[4].push_back({ NoteName::A4, NoteType::quarter});
+	twinkle.notes[5].push_back({ NoteName::A4, NoteType::quarter});
+	twinkle.notes[6].push_back({ NoteName::G4, NoteType::half	 });
+	twinkle.notes[8].push_back({ NoteName::F4, NoteType::quarter});
+	twinkle.notes[9].push_back( { NoteName::F4, NoteType::quarter});
+	twinkle.notes[10].push_back( { NoteName::E4, NoteType::quarter});
+	twinkle.notes[11].push_back( { NoteName::E4, NoteType::quarter});
+	twinkle.notes[12].push_back( { NoteName::D4, NoteType::quarter});
+	twinkle.notes[13].push_back( { NoteName::D4, NoteType::quarter});
+	twinkle.notes[14].push_back( { NoteName::C4, NoteType::half   });
 
 	twinkle.generate();
 	twinkle.play(alsa);
