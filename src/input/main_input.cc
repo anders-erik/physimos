@@ -38,13 +38,13 @@ void user_info()
 
 int read_and_print_keypresses()
 {
-    struct input_event
-    {
-        struct timeval time;
-        unsigned short type;
-        unsigned short code;
-        unsigned int value;
-    };
+    // struct input_event
+    // {
+    //     struct timeval time;
+    //     unsigned short type;
+    //     unsigned short code;
+    //     unsigned int value;
+    // };
 
     input_event ev;
 
@@ -57,11 +57,20 @@ int read_and_print_keypresses()
     }
 
 
-    int read_byte_count = read(fd, &ev, sizeof(input_event));
+    int read_byte_count = 1; // enter loop
+
+    // int read_byte_count = read(fd, &ev, sizeof(input_event));
 
     // while(read_byte_count > 0)
     while(1)
     {
+
+        read_byte_count = read(fd, &ev, sizeof(input_event));
+        if(read_byte_count == -1)
+        {
+            continue;
+        }
+
         if(ev.type == EV_KEY)
         {
 
@@ -86,9 +95,13 @@ int read_and_print_keypresses()
 
         // std::cout << std::flush;
 
-        sleep(1);
-        read_byte_count = read(fd, &ev, sizeof(input_event));
-        printf("read_byte_count = %d \n", read_byte_count);
+        // sleep(1);
+        // read_byte_count = read(fd, &ev, sizeof(input_event));
+        // if(read_byte_count == -1)
+        // {
+        //     continue;
+        // }
+        // printf("read_byte_count = %d \n", read_byte_count);
     }
 
     int ret = close(fd);
@@ -100,6 +113,78 @@ int read_and_print_keypresses()
 
     return 0;
 }
+
+
+class EvdevReader
+{
+public: 
+
+    Str file_path;
+    input_event ev;
+    int fd = -1;
+
+    EvdevReader(Str _file_path) : file_path {_file_path}
+    {
+        open_file();
+    };
+
+
+    int open_file()
+    {
+        fd = open(file_path.to_c_str(), O_RDONLY | O_NONBLOCK);
+        if(fd < 0)
+        {
+            printf("Error: failed to open file %c \n", file_path.to_c_str());
+            return 1;
+        }
+
+        return 0;
+    }
+
+    void read_and_print()
+    {
+        int read_byte_count = 1; // Make sure we always enter loop at least once (do-while-esqe)
+
+        while(1)
+        {
+            read_byte_count = read(fd, &ev, sizeof(input_event));
+            if(read_byte_count == -1)
+            {
+                return;
+            }
+
+            if(ev.type == EV_KEY)
+            {
+
+                switch (ev.value)
+                {
+                    case 0:
+                        printf("Key %d released \n", ev.code);
+                        break;
+                    case 1:
+                        printf("Key %d pressed \n", ev.code);
+                        break;
+                    case 2:
+                        printf("Key %d held \n", ev.code);
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    ~EvdevReader()
+    {
+        int ret = close(fd);
+        if(ret < 0)
+        {
+            printf("Error: failed to close file %c \n", file_path.to_c_str());
+        }
+    }
+
+};
 
 int main()
 {
@@ -138,11 +223,15 @@ int main()
     // remove_current_user_to_input_group();
     // user_info();
 
-    // while(1)
+    EvdevReader evdev_reader {"/dev/input/event9"};
+    
+    while(1)
     {
         // sleep(1);
+        usleep(100000);
 
-        read_and_print_keypresses();
+        // read_and_print_keypresses();
+        evdev_reader.read_and_print();
     }
     // read_and_print_keypresses();
 
