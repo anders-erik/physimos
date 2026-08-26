@@ -811,6 +811,7 @@ public:
 			wave_gen.wave_freqs.push_back({493.88, 1.0});
 		
 		wave_gen.config.set_duration(duration);
+
 		wave_gen.generate_wave();
 
 		return wave_gen.out_arr;
@@ -823,10 +824,11 @@ public:
 
 	double bpm = 120.0; // beat / minute
 	uint beat_count = 16;
+
 	Arr<Arr<Note>> notes;
 	AudioData song_data;
 
-	Arr<Pair<Note, AudioData>> notes_data;
+	// Arr<Pair<Note, AudioData>> notes_data;
 	// Arr<Note> notes;
 
 	Song() : notes {beat_count, {}}
@@ -834,8 +836,9 @@ public:
 	}
 
 
-	void add_wave_to_audiodata_at_beat_count(AudioData& _audio_data, uint beat_index)
+	void add_wave_to_audiodata_at_beat_count(AudioData& _audio_data, uint beat_index, double beat_note_gain/*gain for specific note during the current beat index*/)
 	{
+
 		uint samples_per_beat = (uint)(44100.0 * (60.0 / bpm));
 
 		uint first_sample_offset = samples_per_beat * beat_index;
@@ -843,7 +846,8 @@ public:
 
 		for(uint i = 0; i < _audio_data.sample_count(); i++)
 		{
-			song_data.data[first_sample_offset + i] += _audio_data.data[i];
+			int16_t wave_data_with_gain_adjusted = (int16_t) (beat_note_gain * (double)_audio_data.data[i]);
+			song_data.data[first_sample_offset + i] += wave_data_with_gain_adjusted;
 		}
 	}
 
@@ -854,23 +858,20 @@ public:
 
 		song_data.set_sample_count(sample_count);
 
-
 		for(uint beat_i = 0; beat_i < notes.count(); beat_i++)
 		{
-			// if(notes[beat_i].count() == 0)
-			// 	continue;
+
+			// double beat_note_gain = 1.0 / sqrt( (double) notes[beat_i].count() ) ; // reduce frequency amplitude when multiple keys are pressed at the same beat
+			double beat_note_gain = 0.6 / sqrt( (double) notes[beat_i].count() ) ; // sqrt is good, only need default single key gain be < 1.0
+			// double beat_note_gain = 1.0 / (double) notes[beat_i].count();
+			// double beat_note_gain = 0.1;
 
 			for(uint note_i = 0; note_i < notes[beat_i].count(); note_i++)
 			{
 				AudioData note_data = Instrument::get_note_audio(notes[beat_i][note_i], bpm);
-				add_wave_to_audiodata_at_beat_count(note_data, beat_i);
+				add_wave_to_audiodata_at_beat_count(note_data, beat_i, beat_note_gain);
 			}
 		}
-			
-		// {
-
-		// 	notes_data.push_back({notes[beat_i], Instrument::get_note_audio(notes[beat_i], bpm)});
-		// }
 	}
 
 	void play(Alsa alsa)
@@ -899,18 +900,17 @@ void twinkle_twinkle()
 	Alsa alsa;
 
 	Song twinkle;
+	twinkle.beat_count = 16;
 	twinkle.bpm = 120;
-
+	
 	twinkle.notes[0].push_back({ NoteName::C4, NoteType::quarter});
-	// twinkle.notes[0].push_back({ NoteName::E4, NoteType::quarter});
-	// twinkle.notes[0].push_back({ NoteName::G4, NoteType::quarter});
-
 	twinkle.notes[1].push_back({ NoteName::C4, NoteType::quarter});
 	twinkle.notes[2].push_back({ NoteName::G4, NoteType::quarter});
 	twinkle.notes[3].push_back({ NoteName::G4, NoteType::quarter});
 	twinkle.notes[4].push_back({ NoteName::A4, NoteType::quarter});
 	twinkle.notes[5].push_back({ NoteName::A4, NoteType::quarter});
 	twinkle.notes[6].push_back({ NoteName::G4, NoteType::half	 });
+
 	twinkle.notes[8].push_back({ NoteName::F4, NoteType::quarter});
 	twinkle.notes[9].push_back( { NoteName::F4, NoteType::quarter});
 	twinkle.notes[10].push_back( { NoteName::E4, NoteType::quarter});
@@ -946,6 +946,38 @@ void twinkle_twinkle()
 		alsa.play(gen_A5.get_audio_data());
 		alsa.play(gen_G5.get_audio_data());
 	}
+
+	alsa.end();
+}
+
+
+void ambiance_song()
+{
+	Alsa alsa;
+
+	Song ambiance;
+	ambiance.beat_count = 4;
+	ambiance.bpm = 60;
+
+	ambiance.notes[0].push_back({ NoteName::C4, NoteType::half});
+	ambiance.notes[0].push_back({ NoteName::D4, NoteType::half});
+	ambiance.notes[0].push_back({ NoteName::E4, NoteType::half});
+	ambiance.notes[0].push_back({ NoteName::F4, NoteType::half});
+	ambiance.notes[0].push_back({ NoteName::G4, NoteType::half});
+
+	ambiance.notes[1].push_back({ NoteName::C4, NoteType::half});
+
+	ambiance.notes[2].push_back({ NoteName::C4, NoteType::half});
+	ambiance.notes[2].push_back({ NoteName::D4, NoteType::half});
+	// ambiance.notes[2].push_back({ NoteName::E4, NoteType::half});
+	ambiance.notes[2].push_back({ NoteName::F4, NoteType::half});
+	ambiance.notes[2].push_back({ NoteName::G4, NoteType::half});
+
+	ambiance.notes[3].push_back({ NoteName::D4, NoteType::half});
+	
+
+	ambiance.generate();
+	ambiance.play(alsa);
 
 	alsa.end();
 }
@@ -1039,9 +1071,9 @@ int main(int argc, char** argv)
 	// frequencies.push_back({110.0, 0.10});
 
 	frequencies.push_back({880.0, 	0.15});
-	frequencies.push_back({660.0, 	0.15});
-	frequencies.push_back({440.0, 	0.20});
-	frequencies.push_back({220.0, 	0.70});
+	// frequencies.push_back({660.0, 	0.15});
+	// frequencies.push_back({440.0, 	0.20});
+	// frequencies.push_back({220.0, 	0.70});
 
 	// frequencies.push_back(900.0);
 	// frequencies.push_back(800.0);
@@ -1125,12 +1157,13 @@ int main(int argc, char** argv)
 
 	alsa.print_pcm_info();
 	// alsa.play();
-	alsa.play(audio_data);
+	// alsa.play(audio_data);
 	// alsa.play(wave_100hz.get_audio_data());
 	// alsa.play(wave_1000hz.get_audio_data());
 	alsa.end();
 
-	twinkle_twinkle();
+	// twinkle_twinkle();
+	ambiance_song();
 
 
     printf("End Alsa test\n");
