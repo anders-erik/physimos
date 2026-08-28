@@ -17,11 +17,12 @@
 
 class EvdevReader
 {
+    Str file_path;
+    int fd = -1;
+
 public: 
 
-    Str file_path;
     input_event ev;
-    int fd = -1;
 
     EvdevReader(Str _file_path) : file_path {_file_path}
     {
@@ -39,6 +40,46 @@ public:
         }
 
         return 0;
+    }
+
+    bool keypress_detected()
+    {
+        bool ret_value = false;
+        int read_byte_count = 1; // Make sure we always enter loop at least once (do-while-esqe)
+
+        while(1)
+        {
+            read_byte_count = read(fd, &ev, sizeof(input_event));
+
+            if(read_byte_count == -1)
+            {
+                break;
+            }
+
+            if(ev.type == EV_KEY)
+            {
+                
+
+                switch (ev.value)
+                {
+                    case 0:
+                        printf("Key %d released \n", ev.code);
+                        break;
+                    case 1:
+                        printf("Key %d pressed \n", ev.code);
+                        ret_value = true;
+                        break;
+                    case 2:
+                        printf("Key %d held \n", ev.code);
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return ret_value;
     }
 
     void read_and_print()

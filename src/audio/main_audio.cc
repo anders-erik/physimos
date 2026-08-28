@@ -32,6 +32,10 @@ public:
 	Arr<int16_t> data;
 
 	AudioData() {};
+	AudioData(uint _data_count)
+	{
+		data.set(0, _data_count);
+	};
 	AudioData(Arr<int16_t>& data)
 	{
 		this->data = data;
@@ -90,9 +94,17 @@ public:
 		setup();
 	}
 
+	// ~Alsa()
+	// {
+	// 	snd_pcm_drain(pcm_handle);
+	// 	snd_pcm_close(pcm_handle);
+	// 	free(buff);
+	// }
+
 	void setup()
 	{
 		/* Open the PCM device in playback mode */
+		// if (ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK) < 0) 
 		if (ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0) < 0) 
 			printf("ERROR: Can't open \"%s\" PCM device. %s\n", PCM_DEVICE, snd_strerror(ret));
 
@@ -986,16 +998,6 @@ void ambiance_song()
 }
 
 
-class Phyano
-{
-public:
-	// struct Note {NoteName /*A4, C5*/ , Duration /*whole, half*/}
-	// AudioData generate_note(Note note) {}
-
-	// AudioData generate_song(Arr<Note> notes) {}
-
-};
-
 
 #include <complex>
 using namespace std::complex_literals;
@@ -1117,9 +1119,86 @@ public:
 };
 
 
+class Phyano
+{
+public:
+	// struct Note {NoteName /*A4, C5*/ , Duration /*whole, half*/}
+	// AudioData generate_note(Note note) {}
+
+	// AudioData generate_song(Arr<Note> notes) {}
+
+	Alsa alsa;
+	AudioData adata; // 1 second databuffer
+
+	Phyano()
+	{
+		adata.set_sample_count(44100); // 1 sec
+	}
+
+	void add_press(Instrument _instument, NoteName _note_name)
+	{
+		AudioData note_data = _instument.get_note_audio({_note_name, NoteType::quarter}, 120.0);
+
+		if(note_data.sample_count() > 44100)
+		{
+			println("ERROR: trying to play Phyano note longer than buffer size.");
+			return;
+		}
+
+		for(uint i = 0; i < note_data.sample_count(); i++)
+		{
+			adata.data[i] += note_data.data[i];
+		}
+	}
+
+	AudioData consume_ms(uint ms)
+	{
+		if(ms > 1000)
+		{
+			println("ERROR: can't consume more than 1000 ms of Phyano data.");
+			return AudioData {};
+		}
+
+		uint samples_per_ms = 44;
+		uint samples_to_consume = ms * samples_per_ms;
+
+		AudioData return_adata;
+		return_adata.set_sample_count(samples_to_consume);
+
+		for(uint i = 0; i < return_adata.sample_count(); i++)
+		{
+			return_adata.data[i] += adata.data[i];
+		}
+
+		shift_data(samples_to_consume);
+
+		return return_adata;
+	}
+
+
+	void shift_data(uint shift_count)
+	{
+		// Copy
+		for(uint i = shift_count; i < adata.sample_count(); i++)
+		{
+			adata.data[i-shift_count] = adata.data[i];
+		}
+
+		// Clear data tail
+		for(uint i = (adata.sample_count() - shift_count); i < adata.sample_count(); i++)
+		{
+			adata.data[i] = 0;
+		}
+	}
+
+};
+
+
 int main(int argc, char** argv)
 {
     println("Physimos::audio starting!");
+
+	// ambiance_song();
 
 	Clock clock;
 
@@ -1127,10 +1206,12 @@ int main(int argc, char** argv)
 	clock.print_tv_start();
 
 	SleepTimer sleep_timer;
-	sleep_timer.sleep(1000);
+	// sleep_timer.sleep(1000);sss
 
 
 	Alsa alsa0;
+	Alsa alsa1;
+	Alsa alsa2;
 
 	Arr<Frequency> freqs;
 	freqs.clear();
@@ -1142,20 +1223,36 @@ int main(int argc, char** argv)
 	AudioData audiodata;
 	audiodata.data = wave_gen.out_arr;
 
-	alsa0.play(audiodata);
+	// alsa0.play(audiodata);
+	alsa0.play(Instrument::get_note_audio({NoteName::C4, NoteType::quarter}, 120));
+	alsa1.play(Instrument::get_note_audio({NoteName::E4, NoteType::quarter}, 120));
+	alsa2.play(Instrument::get_note_audio({NoteName::G4, NoteType::quarter}, 120));
+	// alsa2.play(audiodata);
 
 	EvdevReader evdev_kbd {"/dev/input/event9"};
-	for(int i = 0; i < 20; i++)
+
+	Phyano phyano;
+	phyano.add_press({}, NoteName::C4); 
+
+	for(int i = 0; i < 1000; i++)
 	{
-		sleep_timer.sleep(100); // poll every 0.1 seconds
+		// println("Loop");
+		sleep_timer.sleep(1); // poll every 0.1 seconds
 
-		evdev_kbd.read_and_print();
-
+		// evdev_kbd.read_and_print();
+		if(evdev_kbd.keypress_detected())
+		{
+			println("keypress detected!");  
+			// phyano.add_press({}, NoteName::C4); 
+			// alsa0.play( Instrument::get_note_audio({NoteName::C4, NoteType::quarter}, 120) );
+		}
 		
-		// alsa0.play(audiodata); 
+		// alsa0.play(audiodata);
+		// alsa0.play(phyano.consume_ms(100)); 
+		
 	}
 
-	alsa0.end();
+	// alsa0.end();    
 
 	// while(1) {}
 
