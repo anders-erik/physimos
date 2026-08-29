@@ -14,6 +14,7 @@
 
 #include "audio.hh"
 #include "input.hh"
+#include "DFT.hh"
 
 #define PCM_DEVICE "default"
 
@@ -1003,48 +1004,6 @@ void ambiance_song()
 
 
 
-#include <complex>
-using namespace std::complex_literals;
-
-class DFT
-{
-public: 
-	// Arr<std::complex<float>> input;
-	// Arr<std::complex<float>> output;
-
-	// DFT(Arr<std::complex<float>> _input, Arr<std::complex<float>> _output)
-	// 	: 	input {_input},
-	// 		output {_output}
-	// {}
-
-	static Arr<std::complex<double>> calculate(Arr<std::complex<double>> input)
-	{
-		Arr<std::complex<double>> output = {};
-
-		int N = input.count();
-
-		for(int k = 0; k < N; k++)
-		{
-			std::complex<double> X = 0.0 + 0.0i;
-
-			for(int n = 0; n < N; n++)
-			{
-				double n_db = (double) n;
-				double k_db = (double) k;
-				double N_db = (double) N;
-				std::complex<double> exponent = 0.0 + -1.0i * 2.0 * 3.1415 * n_db * k_db / N_db;
-				// std::complex<double> exponent = 0.0 + 1.0i;
-				X += input[n] * std::pow(2.718, exponent);
-			}
-
-			output.push_back(X);
-
-		}
-		// std::complex<double> A =
-		return output;
-	}
-};
-
 
 
 #include <sys/time.h>
@@ -1296,7 +1255,7 @@ int main(int argc, char** argv)
     println("Physimos::audio starting!");
 
 	CLI cli (argc, argv);
-	cli.print();
+	// cli.print();
 
 	if(cli[1] == "sheet")
 	{
@@ -1330,6 +1289,67 @@ int main(int argc, char** argv)
 
 			Print::ln(opt_string.get_ref().get_string());
 		}
+
+	}
+	else if(cli[1] == "DFT")
+	{
+		std::complex<double> a = 1;
+		std::complex<double> b = 2.0 - 1.0i;
+		std::complex<double> c = -1.0i;
+		std::complex<double> d = -1.0 + 2.0i;
+	
+		Arr<std::complex<double>> input_arr;
+		input_arr.push_back(a);
+		input_arr.push_back(b);
+		input_arr.push_back(c);
+		input_arr.push_back(d);
+		Vec<std::complex<double>> input_vec {4};
+		input_vec[0]= a;
+		input_vec[1]= b;
+		input_vec[2]= c;
+		input_vec[3]= d;
+
+		// Soinusoid
+		uint sample_count = 21;
+		double t0 = 0;
+		double tf = 1.0;
+		double dt = (tf - t0) / ((double) (sample_count-1));
+
+		Vec<std::complex<double>> sinusoid { sample_count };
+		std::complex<double> ampl = 10.0;
+		std::complex<double> freq = 2.0;
+
+		
+		
+		double i_d;
+		for(uint i = 0; i < sample_count; i++)
+		{
+			i_d = (double) i;
+			sinusoid[i] = ampl * std::sin( 2 * 3.1415 * freq * (i_d * dt) );
+		}
+
+		print_complex_vec(sinusoid);
+
+		// Arr<std::complex<double>> output = DFT::calculate(input_arr);
+		// Vec<std::complex<double>> output = DFT::calculate(input_vec);
+		Vec<std::complex<double>> output = DFT::calculate(sinusoid);
+
+		print_complex_vec(output);
+
+		print_vec(complex_vec_to_mag_vec(output));
+
+		
+
+		// for(uint i = 0; i < output.count(); i++)
+		// for(uint i = 0; i < output.size(); i++)
+		// {
+		// 	print(Str::FL(output[i].real(), 3, Str::FloatRep::Fixed));
+		// 	print(" + ");
+		// 	print(Str::FL(output[i].imag(), 3, Str::FloatRep::Fixed));
+		// 	print(" i \n");
+		// }
+
+		return 0;
 	}
 
 
@@ -1441,29 +1461,6 @@ int main(int argc, char** argv)
 
 	// while(1) {}
 
-
-	
-
-
-	std::complex<double> a = 1;
-	std::complex<double> b = 2.0 - 1.0i;
-	std::complex<double> c = -1.0i;
-	std::complex<double> d = -1.0 + 2.0i;
-	Arr<std::complex<double>> input;
-	input.push_back(a);
-	input.push_back(b);
-	input.push_back(c);
-	input.push_back(d);
-
-	Arr<std::complex<double>> output = DFT::calculate(input);
-
-	for(uint i = 0; i < output.count(); i++)
-	{
-		print(Str::FL(output[i].real(), 3, Str::FloatRep::Fixed));
-		print(" + ");
-		print(Str::FL(output[i].imag(), 3, Str::FloatRep::Fixed));
-		print(" i \n");
-	}
 
 
 	// SineWave sine_wave {1.0};

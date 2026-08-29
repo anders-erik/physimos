@@ -140,6 +140,15 @@ public:
     uint      size() const        {return count ;}
     uint      size_byte() const   {return (count * sizeof(T)) ;}
 
+    /** removes any existing data, allocates the requested size without inizalizing the data. */
+    uint set_size(uint _size)
+    {
+        deallocate();
+        allocate(_size);
+
+        return count;
+    }
+
 
     Str to_str()
     {
