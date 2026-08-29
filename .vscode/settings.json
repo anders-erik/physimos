@@ -7,6 +7,10 @@
 	"debug_dir": "${workspaceFolder}/build/debug_linux/",
 	"perf_dir": "${workspaceFolder}/build/perf_linux/",
 
+	// ARG
+	"arg1": "sheet",
+	"arg2": "play",
+	"arg3": "resources/audio/twinkle.sheet.json",
 
 	// MAIN
 	// "binary": "physimos",

@@ -1247,9 +1247,91 @@ public:
 };
 
 
+class CLI
+{
+public:
+
+	uint argc;
+	Arr<Str> argv;
+
+	CLI(int _argc, char** _argv)
+	{
+		if(_argc < 1)
+		{
+			println("ERROR: CLI argc is < 1.");
+			return;
+		}
+
+		argc = (uint)_argc;
+		
+		for(uint i = 0; i < argc; i++)
+		{
+			argv.push_back(_argv[i]);
+		}
+	}
+
+	Str operator[](uint _argument_index)
+	{
+		return argv[_argument_index];
+	}
+
+	void print()
+	{
+		Print::ln("CLI::print ");
+		for(uint i = 0; i < argc; i++)
+		{
+			Print::buf("    ");
+			Print::buf(Str::UI(i));
+			Print::buf(": ");
+			Print::ln(argv[i]);
+		}
+	}
+};
+
+#include "io/json/json.hh"
+#include "lib/file.hh"
+
 int main(int argc, char** argv)
 {
     println("Physimos::audio starting!");
+
+	CLI cli (argc, argv);
+	cli.print();
+
+	if(cli[1] == "sheet")
+	{
+		Print::ln("Sheet music mode selected");
+
+		if(cli[2] == "play")
+		{
+			Print::ln("Play music sheet selected");
+
+			Str sheet_file_path = cli[3];
+
+			Print::buf("Song file: ");
+			Print::ln(sheet_file_path);
+			
+			ResMove<Str> file_contents_mv = File::cat_as_str_core_xplat(sheet_file_path);
+			if(file_contents_mv.has_error())
+			{
+				Print::ln("Error: unable to read json sheet file.");
+				return -1;
+			}
+			Str file_contents = file_contents_mv.consume_value();
+			Json json;
+			json.try_parse(file_contents);
+			j_object obj = json.get_object();
+			OptPtr<Json> opt_string = json.object_find("format");
+			if(opt_string.is_null())
+			{
+				Print::ln("Error: unable to find json format entry.");
+				return -1;
+			}
+
+			Print::ln(opt_string.get_ref().get_string());
+		}
+	}
+
 
 	// Print argv
 	print("\n");

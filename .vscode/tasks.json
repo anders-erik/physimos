@@ -8,7 +8,7 @@
             "type": "process",
             "command": "${config:debug_dir}/${config:binary}",
             // "args": ["<", "${workspaceFolder}/resources/audio/sine.wav"],
-            "args": [],
+            "args": ["${config:arg1}", "${config:arg2}", "${config:arg3}"],
             "options": 
             {
                 "cwd": "${config:cwd}",
