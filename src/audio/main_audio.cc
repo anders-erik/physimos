@@ -72,6 +72,7 @@ public:
 	Str file_path = "";
 
 	unsigned int ret, tmp, dir;
+	long long_ret;
 
 	unsigned int period_time; // variable provided by ALSA that specifies the time (in microseconds) between play/capture hardware interrupts
 	snd_pcm_t *pcm_handle;
@@ -94,12 +95,14 @@ public:
 		setup();
 	}
 
-	// ~Alsa()
-	// {
-	// 	snd_pcm_drain(pcm_handle);
-	// 	snd_pcm_close(pcm_handle);
-	// 	free(buff);
-	// }
+	Alsa(const Alsa&) = delete;
+
+	~Alsa()
+	{
+		snd_pcm_drain(pcm_handle);
+		snd_pcm_close(pcm_handle);
+		free(buff);
+	}
 
 	void setup()
 	{
@@ -232,21 +235,22 @@ public:
 					audio_data.data.data_mut() + element_offset,
 					buff_size);
 
-			if ((ret = snd_pcm_writei(pcm_handle, buff, frame_count)) == -EPIPE) {
-				printf("XRUN.\n");
+			if ((long_ret = snd_pcm_writei(pcm_handle, buff, frame_count)) == -EPIPE) {
+				printf("XRUN. snd_pcm_writei return value: %li \n", long_ret);
 				snd_pcm_prepare(pcm_handle);
-			} else if (ret < 0) {
+			} else if (long_ret < 0) {
 				printf("ERROR. Can't write to PCM device. %s\n", snd_strerror(ret));
-			}	
+			}
+			// printf("     snd_pcm_writei return value: %li \n", long_ret);
 		}
 	}
 
-	void end()
-	{
-		snd_pcm_drain(pcm_handle);
-		snd_pcm_close(pcm_handle);
-		free(buff);
-	}
+	// void end()
+	// {
+	// 	snd_pcm_drain(pcm_handle);
+	// 	snd_pcm_close(pcm_handle);
+	// 	free(buff);
+	// }
 };
 
 
@@ -889,7 +893,7 @@ public:
 		}
 	}
 
-	void play(Alsa alsa)
+	void play(Alsa& alsa)
 	{
 		alsa.play(song_data);
 
@@ -962,7 +966,7 @@ void twinkle_twinkle()
 		alsa.play(gen_G5.get_audio_data());
 	}
 
-	alsa.end();
+	// alsa.end();
 }
 
 
@@ -994,7 +998,7 @@ void ambiance_song()
 	ambiance.generate();
 	ambiance.play(alsa);
 
-	alsa.end();
+	// alsa.end();
 }
 
 
@@ -1127,12 +1131,61 @@ public:
 
 	// AudioData generate_song(Arr<Note> notes) {}
 
-	Alsa alsa;
+
+	Alsa alsa_0;
+	Alsa alsa_1;
+	Alsa alsa_2;
+	Alsa alsa_3;
+
+	uint available_alsa_count = 4;
+	uint alsa_index = 0;
+
+	// Arr<Alsa> alsas {2};
+
 	AudioData adata; // 1 second databuffer
 
 	Phyano()
 	{
 		adata.set_sample_count(44100); // 1 sec
+
+		
+		for(uint i = 0; i < available_alsa_count; i++)
+		{
+			// Alsa alsa_tmp;
+			// alsas.push_back(alsa_tmp);
+			// alsas.emplace_back({});
+		}
+		// alsas.expand();
+		// alsas.set({});
+	}
+
+	void press(NoteName _note_name)
+	{
+		AudioData note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0);
+
+		if(++alsa_index >= available_alsa_count)
+			alsa_index = 0;
+
+		switch (alsa_index)
+		{
+			case 0:
+				alsa_0.play(note_data);
+				break;
+			case 1:
+				alsa_1.play(note_data);
+				break;
+			case 2:
+				alsa_2.play(note_data);
+				break;
+			case 3:
+				alsa_3.play(note_data);
+				break;
+		
+		default:
+			break;
+		}
+
+		// alsa.play(note_data);
 	}
 
 	void add_press(Instrument _instument, NoteName _note_name)
@@ -1198,6 +1251,14 @@ int main(int argc, char** argv)
 {
     println("Physimos::audio starting!");
 
+	// Print argv
+	print("\n");
+	for(int i = 0; i < argc; i++)
+	{
+		print(argv[i]);
+		print("\n");
+	}
+
 	// ambiance_song();
 
 	Clock clock;
@@ -1226,26 +1287,68 @@ int main(int argc, char** argv)
 	// alsa0.play(audiodata);
 	alsa0.play(Instrument::get_note_audio({NoteName::C4, NoteType::quarter}, 120));
 	alsa1.play(Instrument::get_note_audio({NoteName::E4, NoteType::quarter}, 120));
-	alsa2.play(Instrument::get_note_audio({NoteName::G4, NoteType::quarter}, 120));
+	// alsa2.play(Instrument::get_note_audio({NoteName::G4, NoteType::quarter}, 120));
 	// alsa2.play(audiodata);
 
 	EvdevReader evdev_kbd {"/dev/input/event9"};
 
 	Phyano phyano;
 	phyano.add_press({}, NoteName::C4); 
+	phyano.press(NoteName::C4); 
 
-	for(int i = 0; i < 1000; i++)
+	Arr<Key> keys;
+
+	for(int i = 0; i < 2000; i++)
 	{
 		// println("Loop");
-		sleep_timer.sleep(1); // poll every 0.1 seconds
+		sleep_timer.sleep(10); // poll every 0.1 seconds
 
 		// evdev_kbd.read_and_print();
-		if(evdev_kbd.keypress_detected())
+
+		// if(evdev_kbd.keypress_detected())
+		// {
+		// 	println("keypress detected!");
+		// 	phyano.press(NoteName::C4); 
+
+		// 	// phyano.add_press({}, NoteName::C4); 
+		// 	// alsa0.play( Instrument::get_note_audio({NoteName::C4, NoteType::quarter}, 120) );
+		// }
+
+		keys = evdev_kbd.get_key_presses();
+		for(uint i = 0; i < keys.count(); i++)
 		{
-			println("keypress detected!");  
-			// phyano.add_press({}, NoteName::C4); 
-			// alsa0.play( Instrument::get_note_audio({NoteName::C4, NoteType::quarter}, 120) );
+			switch (keys[i])
+				{
+				case Key::A:
+					phyano.press(NoteName::C4); 
+					break;
+				case Key::S:
+					phyano.press(NoteName::D4); 
+					break;
+				case Key::D:
+					phyano.press(NoteName::E4); 
+					break;
+				case Key::F:
+					phyano.press(NoteName::F4); 
+					break;
+				case Key::G:
+					phyano.press(NoteName::G4); 
+					break;
+				case Key::H:
+					phyano.press(NoteName::A4); 
+					break;
+				case Key::J:
+					phyano.press(NoteName::B4); 
+					break;
+				case Key::K:
+					//
+					break;
+				
+				default:
+					break;
+				}
 		}
+		keys.clear();
 		
 		// alsa0.play(audiodata);
 		// alsa0.play(phyano.consume_ms(100)); 
@@ -1380,7 +1483,23 @@ int main(int argc, char** argv)
 	// alsa.play(audio_data);
 	// alsa.play(wave_100hz.get_audio_data());
 	// alsa.play(wave_1000hz.get_audio_data());
-	alsa.end();
+	// alsa.end();
+
+	// twinkle_twinkle();
+	ambiance_song();
+
+
+    printf("End Alsa test\n");
+
+	return 0;
+}
+
+
+
+int main_2(int argc, char** argv)
+{
+    println("Physimos::audio starting!");
+
 
 	// twinkle_twinkle();
 	ambiance_song();

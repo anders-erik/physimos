@@ -169,6 +169,13 @@ public:
         (*this)[elem_count++] = t;
     }
 
+    void emplace_back(const T&& t)
+    {
+        if(elem_count >= reserved)
+            expand();
+        (*this)[elem_count++] = t;
+    }
+
     void expand()
     {
         if(t_p == nullptr)

@@ -14,6 +14,58 @@
 #include "lib/print.hh"
 
 
+enum class Key
+{
+    A,
+    S,
+    D,
+    F,
+    G,
+    H,
+    J,
+    K,
+    UNKNOWN,
+};
+
+Key get_key_from_key_code(unsigned short key_code)
+{
+    Key key;
+
+    switch (key_code)
+    {
+    case 30:
+        key = Key::A;
+        break;
+    case 31:
+        key = Key::S;
+        break;
+    case 32:
+        key = Key::D;
+        break;
+    case 33:
+        key = Key::F;
+        break;
+    case 34:
+        key = Key::G;
+        break;
+    case 35:
+        key = Key::H;
+        break;
+    case 36:
+        key = Key::J;
+        break;
+    case 37:
+        key = Key::K;
+        break;
+    
+    default:
+        key = Key::UNKNOWN;
+        break;
+    }
+
+    return key;
+}
+
 
 class EvdevReader
 {
@@ -42,6 +94,37 @@ public:
         return 0;
     }
 
+
+    Arr<Key> get_key_presses()
+    {
+        Arr<Key> keys;
+
+        bool ret_value = false;
+        int read_byte_count = 1; // Make sure we always enter loop at least once (do-while-esqe)
+
+        while(1)
+        {
+            read_byte_count = read(fd, &ev, sizeof(input_event));
+
+            // End of available input data
+            if(read_byte_count == -1)
+            {
+                break;
+            }
+
+            // Only return true on key*PRESS* (ev.value == 1)
+            if(ev.type == EV_KEY && ev.value == 1)
+            {
+                // ret_value = true;
+                // printf("Key %d pressed \n", ev.code);
+                keys.push_back(get_key_from_key_code(ev.code));
+            }
+        }
+
+        return keys;
+    }
+
+
     bool keypress_detected()
     {
         bool ret_value = false;
@@ -51,31 +134,16 @@ public:
         {
             read_byte_count = read(fd, &ev, sizeof(input_event));
 
+            // End of available input data
             if(read_byte_count == -1)
             {
                 break;
             }
 
-            if(ev.type == EV_KEY)
+            // Only return true on key*PRESS* (ev.value == 1)
+            if(ev.type == EV_KEY && ev.value == 1)
             {
-                
-
-                switch (ev.value)
-                {
-                    case 0:
-                        printf("Key %d released \n", ev.code);
-                        break;
-                    case 1:
-                        printf("Key %d pressed \n", ev.code);
-                        ret_value = true;
-                        break;
-                    case 2:
-                        printf("Key %d held \n", ev.code);
-                        break;
-                    
-                    default:
-                        break;
-                }
+                ret_value = true;
             }
         }
 
