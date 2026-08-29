@@ -13,6 +13,7 @@
 	// "binary": "src/main_main",
 	"binary": "src/audio/main_audio",
 	// "binary": "src/input/main_input",
+	// "binary": "src/electronics/main_electronics",
 	// "binary": "src/phont/main_phont",
 	// "binary": "src/lib/main_lib",
 	// "binary": "src/lib/main_str",
