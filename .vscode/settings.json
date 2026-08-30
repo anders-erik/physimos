@@ -24,6 +24,7 @@
 	// "binary": "src/main_main",
 	"binary": "src/audio/main_audio",
 	// "binary": "src/input/main_input",
+	// "binary": "src/swrend/main_swrend",
 	// "binary": "src/ARM/main_ARM",
 	// "binary": "src/electronics/main_electronics",
 	// "binary": "src/phont/main_phont",
