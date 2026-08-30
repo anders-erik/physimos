@@ -46,6 +46,8 @@ public:
     /** Static: Read whole file as a Str. */
     static ResMove<Str> cat_as_str_core_xplat(const Str& path_str);
 
+    static Str try_cat(const Str& path_str);
+
 private:
 
     const char* get_current_path_c_str();

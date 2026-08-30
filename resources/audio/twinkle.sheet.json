@@ -4,27 +4,25 @@
 
     "name": "twinkle",
     "instrument": "pure",
-    "beat_count": "16",
-    "bpm": "120",
+    "beat_count": 16,
+    "bpm": 120,
 
     "beats": {
-        "0": [
-            { "note": "C4", "type": "quarter"}
-        ],
-        "1": [],
-        "2": [],
-        "3": [],
-        "4": [],
-        "5": [],
-        "6": [],
+        "0": [ { "note": "C4", "type": "quarter"} ],
+        "1": [ { "note": "C4", "type": "quarter"} ],
+        "2": [ { "note": "G4", "type": "quarter"} ],
+        "3": [ { "note": "G4", "type": "quarter"} ],
+        "4": [ { "note": "A4", "type": "quarter"} ],
+        "5": [ { "note": "A4", "type": "quarter"} ],
+        "6": [ { "note": "G4", "type": "half"} ],
         "7": [],
-        "8": [],
-        "9": [],
-        "10": [],
-        "11": [],
-        "12": [],
-        "13": [],
-        "14": [],
+        "8": [ { "note": "F4", "type": "quarter"} ],
+        "9": [ { "note": "F4", "type": "quarter"} ],
+        "10": [ { "note": "E4", "type": "quarter"} ],
+        "11": [ { "note": "E4", "type": "quarter"} ],
+        "12": [ { "note": "D4", "type": "quarter"} ],
+        "13": [ { "note": "D4", "type": "quarter"} ],
+        "14": [ { "note": "C4", "type": "half"} ],
         "15": []
     }
 }

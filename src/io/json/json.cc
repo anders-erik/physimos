@@ -21,6 +21,19 @@ object_find(j_string str_to_match)
         return {};
 }
 
+Json Json::
+object_try_find(j_string str_to_match)
+{
+    if(type != json_type::object)
+            throw std::runtime_error("Error: tried to get kv from non object variant.");
+
+    auto search = get_object().find(str_to_match);
+    if(search->first == str_to_match)
+        return {search->second};
+    else
+        return {};
+}
+
 
 
 void Json::object_push(const j_kv & kv)

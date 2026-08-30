@@ -117,7 +117,17 @@ ResMove<Str> File::cat_as_str_core_xplat(const Str & path_str){
     //     return static_cat.consume_error();
 }
 
+Str File::try_cat(const Str& path_str)
+{
+    File file (path_str);
 
+    ResMove<Str> res_mv = file.cat_as_str_core_xplat();
+
+    if(res_mv.has_error())
+        throw std::runtime_error("ERROR: Failed to cat file. [lib/file.cc]");
+
+    return res_mv.consume_value();
+}
 
 
 

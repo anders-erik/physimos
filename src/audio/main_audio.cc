@@ -865,6 +865,14 @@ public:
 	{
 	}
 
+	void set_beat_count(uint _beat_count)
+	{
+		beat_count = _beat_count;
+
+		notes.clear();
+		notes.set({}, beat_count);
+	}
+
 
 	void add_wave_to_audiodata_at_beat_count(AudioData& _audio_data, uint beat_index, double beat_note_gain/*gain for specific note during the current beat index*/)
 	{
@@ -978,6 +986,144 @@ void twinkle_twinkle()
 	}
 
 	// alsa.end();
+}
+
+#include "io/json/json.hh"
+#include "lib/file.hh"
+
+void twinkle_json(Str file_path)
+{
+	// Print::buf("Song file: ");
+	// Print::ln(sheet_file_path);
+	
+	// ResMove<Str> file_contents_mv = File::cat_as_str_core_xplat(file_path);
+	// if(file_contents_mv.has_error())
+	// {
+	// 	Print::ln("Error: unable to read json sheet file.");
+	// 	return;
+	// }
+	// Str file_contents = file_contents_mv.consume_value();
+
+	Alsa alsa;
+
+	Song twinkle_json;
+
+
+	Str file_contents = File::try_cat(file_path);
+
+	Json json;
+	json.try_parse(file_contents);
+
+
+	// READ FORMAT
+	OptPtr<Json> opt_format = json.object_find("format");
+	OptPtr<Json> opt_version = json.object_find("version");
+	OptPtr<Json> opt_name = json.object_find("name");
+	OptPtr<Json> opt_instrument = json.object_find("instrument");
+	OptPtr<Json> opt_beat_count = json.object_find("beat_count");
+	OptPtr<Json> opt_bpm = json.object_find("bpm");
+	OptPtr<Json> opt_beats = json.object_find("beats");
+
+	if(	opt_format.is_null() 		|| 
+		opt_version.is_null() 		|| 
+		opt_name.is_null() 			|| 
+		opt_instrument.is_null() 	|| 
+		opt_beat_count.is_null() 	|| 
+		opt_bpm.is_null() 			|| 
+		opt_beats.is_null()
+	)
+	{
+		Print::ln("Error: unable to parse json format in twinkle.sheet.json.");
+		return;
+	}
+
+	// All objects were found. Extract the values from the Json containers
+	Str format = opt_format.get_ref().get_string();
+	Str version = opt_version.get_ref().get_string();
+	Str name = opt_name.get_ref().get_string();
+	Str instrument = opt_instrument.get_ref().get_string();
+	uint beat_count = (uint) opt_beat_count.get_ref().get_int();
+	uint bpm =  (uint) opt_bpm.get_ref().get_int();
+	Json beats_json = opt_beats.get_ref();
+
+	// PRINT FORMAT
+	if(false)
+	{
+		Print::ln(format);
+		Print::ln(version);
+		Print::ln(name);
+		Print::ln(instrument);
+		Print::ln(Str::SI(beat_count));
+		Print::ln(Str::SI(bpm));
+	}
+
+	// Update actual song data
+	twinkle_json.beat_count = beat_count;
+	twinkle_json.bpm = bpm;
+
+
+	for(uint b_i = 0; b_i < beat_count; b_i++)
+	{
+		Str b_i_str = Str::UI(b_i);
+		// Print::ln(b_i_str);
+
+		OptPtr<Json> opt_b_i_array = beats_json.object_find(b_i_str);
+		// Currently all beat entries has to be present in the beats-map/object
+		if(opt_b_i_array.is_null())
+		{
+			Print::ln("ERROR: unable to find beat index array.");
+			return;
+		}
+
+		j_array b_i_array = opt_b_i_array.get_ref().get_array();
+
+		for(size_t a_i = 0; a_i < b_i_array.size(); a_i++)
+		{
+			Json note_obj = b_i_array[a_i];
+			Str note_name_str = note_obj.object_try_find("note").get_string();
+			Str note_type_str = note_obj.object_try_find("type").get_string();
+
+			Note note;
+
+			if(note_type_str == "quarter")
+				note.type = NoteType::quarter;
+			else if(note_type_str == "half")
+				note.type = NoteType::half;
+			else if(note_type_str == "whole")
+				note.type = NoteType::whole;
+
+			if(note_name_str == "C4")
+				note.name = NoteName::C4;
+			else if(note_name_str == "D4")
+				note.name = NoteName::D4;
+			else if(note_name_str == "E4")
+				note.name = NoteName::E4;
+			else if(note_name_str == "F4")
+				note.name = NoteName::F4;
+			else if(note_name_str == "G4")
+				note.name = NoteName::G4;
+			else if(note_name_str == "A4")
+				note.name = NoteName::A4;
+			else if(note_name_str == "B4")
+				note.name = NoteName::B4;
+			else if(note_name_str == "C5")
+				note.name = NoteName::C5;
+
+			twinkle_json.notes[b_i].push_back(note);
+
+
+			// Print
+			// Print::buf(note_name_str);
+			// Print::buf(", ");
+			// Print::ln(note_type_str);
+		}
+	}
+
+	twinkle_json.generate();
+	twinkle_json.play(alsa);
+	
+
+	return;
 }
 
 
@@ -1272,8 +1418,6 @@ public:
 	}
 };
 
-#include "io/json/json.hh"
-#include "lib/file.hh"
 
 int main(int argc, char** argv)
 {
@@ -1366,35 +1510,11 @@ int main(int argc, char** argv)
 	}
 	else if(cli[1] == "sheet")
 	{
-		Print::ln("Sheet music mode selected");
-
 		if(cli[2] == "play")
 		{
-			Print::ln("Play music sheet selected");
-
-			Str sheet_file_path = cli[3];
-
-			Print::buf("Song file: ");
-			Print::ln(sheet_file_path);
+			if(cli[3] == "resources/audio/twinkle.sheet.json")
+				twinkle_json(cli[3]);
 			
-			ResMove<Str> file_contents_mv = File::cat_as_str_core_xplat(sheet_file_path);
-			if(file_contents_mv.has_error())
-			{
-				Print::ln("Error: unable to read json sheet file.");
-				return -1;
-			}
-			Str file_contents = file_contents_mv.consume_value();
-			Json json;
-			json.try_parse(file_contents);
-			j_object obj = json.get_object();
-			OptPtr<Json> opt_string = json.object_find("format");
-			if(opt_string.is_null())
-			{
-				Print::ln("Error: unable to find json format entry.");
-				return -1;
-			}
-
-			Print::ln(opt_string.get_ref().get_string());
 		}
 
 	}

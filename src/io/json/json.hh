@@ -145,6 +145,7 @@ struct Json
 
 
     OptPtr<Json>    object_find(j_string str_to_match);
+    Json            object_try_find(j_string str_to_match);
     void            object_push(const j_kv& kv);
 
 
