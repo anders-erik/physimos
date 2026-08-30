@@ -1,4 +1,5 @@
 
+add_subdirectory(ARM)
 add_subdirectory(audio)
 add_subdirectory(conductor)
 add_subdirectory(draw)
