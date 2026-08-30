@@ -98,6 +98,29 @@ Vec<double> complex_vec_to_mag_vec(Vec<std::complex<double>> vec)
     return ret_vec;
 }
 
+Vec<double> complex_vec_to_real_vec(Vec<std::complex<double>> vec)
+{
+    Vec<double> ret_vec;
+    ret_vec.set_size(vec.size());
+
+    for(uint i = 0; i < vec.size(); i++)
+        ret_vec[i] = vec[i].real();
+    
+    return ret_vec;
+}
+
+Vec<double> complex_vec_to_imag_vec(Vec<std::complex<double>> vec)
+{
+    Vec<double> ret_vec;
+
+    ret_vec.set_size(vec.size());
+
+    for(uint i = 0; i < vec.size(); i++)
+        ret_vec[i] = vec[i].imag();
+    
+    return ret_vec;
+}
+
 void print_complex_vec(Vec<std::complex<double>> vec)
 {
     print("\n");
@@ -117,6 +140,44 @@ void print_vec(Vec<double> vec)
     for(uint i = 0; i < vec.size(); i++)
     {
         Print::ln(Str::FL(vec[i], 3, Str::FloatRep::Fixed));
+    }
+    print("\n");
+};
+
+void print_vecs(Arr<Vec<double>>& arr_vec, Arr<Str>& col_names)
+{
+
+    print("\n");
+
+	if(arr_vec.count() != col_names.count())
+	{
+		Print::ln("ERROR: 'arr_vec.count() != col_names.count()' in print_vecs.");
+		return;
+	}
+
+	uint data_length = arr_vec[0].size();
+	uint vector_count = arr_vec.count();
+
+	// Print column names
+	for(uint i = 0; i < vector_count; i++)
+	{
+		Print::buf(col_names[i]);
+
+		if(i != vector_count-1)
+			Print::buf(", ");
+	}
+	Print::buf("\n");
+
+	// Out loop steps through all the entries of the data arrays
+    for(uint i = 0; i < data_length; i++)
+    {
+		for(uint j = 0; j < vector_count; j++)
+		{
+        	Print::buf(Str::FL(arr_vec[j][i], 3, Str::FloatRep::Fixed));
+			if(j != vector_count-1)
+				Print::buf(", ");
+		}
+		Print::buf("\n");
     }
     print("\n");
 };

@@ -9,7 +9,7 @@
 typedef unsigned int uint;
 using VecType = unsigned int;
 
-
+/** Vector container used for numeric types. */
 template <typename T>
 class Vec
 {
@@ -66,7 +66,8 @@ public:
         if(count != rhs.size())
         {
             deallocate();
-            count = rhs.size(); 
+            count = rhs.size();
+            allocate(count);
         }
         memcpy(t_p, rhs.t_p, count*sizeof(T));
         return *this;

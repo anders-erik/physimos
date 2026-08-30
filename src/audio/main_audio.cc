@@ -1520,6 +1520,8 @@ int main(int argc, char** argv)
 	}
 	else if(cli[1] == "DFT")
 	{
+		#include "math/const.hh"
+
 		std::complex<double> a = 1;
 		std::complex<double> b = 2.0 - 1.0i;
 		std::complex<double> c = -1.0i;
@@ -1537,14 +1539,41 @@ int main(int argc, char** argv)
 		input_vec[3]= d;
 
 		// Soinusoid
-		uint sample_count = 21;
-		double t0 = 0;
-		double tf = 1.0;
-		double dt = (tf - t0) / ((double) (sample_count-1));
+		uint sample_count = 25;
+		double sample_count_db = (double) sample_count;
+		double t0 = 0; // Starting time
+		double tf = 24.0; // End Time
+		double Dt = (tf - t0); // Total temporal duration of all samples
+		double dt = Dt / ((double) (sample_count-1)); // dime between samples
+		double Fs = 1 / dt; // Sampling frequency : samples / sec
+
+		Vec<double> T;
+		T.set_size(sample_count);
+		Vec<double> F;
+		F.set_size(sample_count);
+
+		for(uint i = 0; i < sample_count; i++)
+		{
+			double i_d = (double) i;
+			double t = i_d * dt;
+			T[i] = t;
+			
+			// The BELOW div(index, total_time) is not the confirmed correct way to get the frequencies!
+			// if(i > sample_count / 2)
+			// 	F[i] = (double) (sample_count - i) / Dt;
+			// else
+			// 	F[i] = (double) i / Dt;
+			if(i > sample_count / 2)
+				F[i] = (double) (sample_count - i) * Fs / sample_count_db;
+			else
+				F[i] = (double) i * Fs / sample_count_db;
+		}
+		// print_vec(T);
+		// print_vec(F);
 
 		Vec<std::complex<double>> sinusoid { sample_count };
-		std::complex<double> ampl = 10.0;
-		std::complex<double> freq = 2.0;
+		// std::complex<double> ampl = 10.0;
+		// std::complex<double> freq = 2.0;
 
 		
 		
@@ -1552,7 +1581,10 @@ int main(int argc, char** argv)
 		for(uint i = 0; i < sample_count; i++)
 		{
 			i_d = (double) i;
-			sinusoid[i] = ampl * std::sin( 2 * 3.1415 * freq * (i_d * dt) );
+			double t = i_d * dt;
+			// sinusoid[i] = ampl * std::sin( 2 * 3.1415 * freq * (i_d * dt) );
+			// sinusoid[i] = 2.0 * sin( PI2 *  t / 25.0 ) + cos(PI2 * 4.0 * t / 25.0);
+			sinusoid[i] = cos(PI2 * t * (0.400)) + 2.0 * sin( PI2 *  t * (0.320) );
 		}
 
 		print_complex_vec(sinusoid);
@@ -1563,7 +1595,32 @@ int main(int argc, char** argv)
 
 		print_complex_vec(output);
 
+		Vec<double> mag_vec = complex_vec_to_mag_vec(output);
+		Vec<double> real_vec = complex_vec_to_real_vec(output);
+		Vec<double> imag_vec = complex_vec_to_imag_vec(output);
+		Vec<double> freq_vec; // frequencies associated with the DFT output
+
 		print_vec(complex_vec_to_mag_vec(output));
+
+		Arr<Vec<double>> arr_vecs;
+		// arr_vecs.reserve(10);
+
+		arr_vecs.push_back(F);
+		arr_vecs.push_back(real_vec);
+		arr_vecs.push_back(imag_vec);
+
+		// vec_vec.set_size(2);
+
+		// vec_vec[0] = mag_vec;
+		// vec_vec[1] = mag_vec;
+		Arr<Str> col_names;
+		col_names.push_back("Freq");
+		col_names.push_back("Cos/real");
+		col_names.push_back("Sin/imag");
+
+		print_vecs(arr_vecs, col_names);
+
+
 
 		
 
