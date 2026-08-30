@@ -139,7 +139,7 @@ public:
 		snd_pcm_hw_params_get_period_size(params, &frame_count, 0);
 		snd_pcm_hw_params_get_period_time(params, &period_time, NULL);
 
-		buff_size = frame_count * channels * bytes_per_sample /* 2 -> sample size */;
+		buff_size = frame_count * channels * bytes_per_sample * 1.5/* 2 -> sample size */;
 		buff = (char *) malloc(buff_size);
 	}
 
@@ -323,6 +323,12 @@ struct WaveConfig
 	void set_duration(double _duration)
 	{
 		duration = _duration;
+		calculate_derived_quantities();
+	}
+
+	void set_gain(double _gain)
+	{
+		gain = _gain;
 		calculate_derived_quantities();
 	}
 
@@ -772,6 +778,7 @@ enum class NoteName
 	G4,
 	A4,
 	B4,
+	C5,
 };
 
 struct Note 
@@ -798,7 +805,7 @@ class Instrument
 {
 public:
 
-	static AudioData get_note_audio(Note note, double tempo_bpm)
+	static AudioData get_note_audio(Note note, double tempo_bpm, double _gain)
 	{
 		WaveGen wave_gen;
 
@@ -829,8 +836,11 @@ public:
 			wave_gen.wave_freqs.push_back({440.0, 1.0});
 		else if(note.name == NoteName::B4)
 			wave_gen.wave_freqs.push_back({493.88, 1.0});
+		else if(note.name == NoteName::C5)
+			wave_gen.wave_freqs.push_back({523.25, 1.0});
 		
 		wave_gen.config.set_duration(duration);
+		wave_gen.config.set_gain(_gain);
 
 		wave_gen.generate_wave();
 
@@ -888,7 +898,7 @@ public:
 
 			for(uint note_i = 0; note_i < notes[beat_i].count(); note_i++)
 			{
-				AudioData note_data = Instrument::get_note_audio(notes[beat_i][note_i], bpm);
+				AudioData note_data = Instrument::get_note_audio(notes[beat_i][note_i], bpm, 0.5);
 				add_wave_to_audiodata_at_beat_count(note_data, beat_i, beat_note_gain);
 			}
 		}
@@ -1085,24 +1095,27 @@ public:
 class Phyano
 {
 public:
-	// struct Note {NoteName /*A4, C5*/ , Duration /*whole, half*/}
-	// AudioData generate_note(Note note) {}
 
-	// AudioData generate_song(Arr<Note> notes) {}
-
+	// Alsa object were intended to be placed in a container, but the alsa object did not comply.
+	// Should be resolved in the near future.
+	// Should be trivial with proper move sematins in place for Alsa. Currently copy construction is disabled.
+	// Arr<Alsa> alsas;
 
 	Alsa alsa_0;
 	Alsa alsa_1;
 	Alsa alsa_2;
 	Alsa alsa_3;
+	Alsa alsa_4;
+	Alsa alsa_5;
+	Alsa alsa_6;
+	Alsa alsa_7;
 
-	uint available_alsa_count = 4;
+	uint available_alsa_count = 8;
 	uint alsa_index = 0;
-
-	// Arr<Alsa> alsas {2};
 
 	AudioData adata; // 1 second databuffer
 
+	// Phyano() : alsas {10}
 	Phyano()
 	{
 		adata.set_sample_count(44100); // 1 sec
@@ -1115,12 +1128,12 @@ public:
 			// alsas.emplace_back({});
 		}
 		// alsas.expand();
-		// alsas.set({});
+		// alsas.set({}); 
 	}
 
 	void press(NoteName _note_name)
 	{
-		AudioData note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0);
+		AudioData note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
 
 		if(++alsa_index >= available_alsa_count)
 			alsa_index = 0;
@@ -1139,6 +1152,18 @@ public:
 			case 3:
 				alsa_3.play(note_data);
 				break;
+			case 4:
+				alsa_4.play(note_data);
+				break;
+			case 5:
+				alsa_5.play(note_data);
+				break;
+			case 6:
+				alsa_6.play(note_data);
+				break;
+			case 7:
+				alsa_7.play(note_data);
+				break;
 		
 		default:
 			break;
@@ -1149,7 +1174,7 @@ public:
 
 	void add_press(Instrument _instument, NoteName _note_name)
 	{
-		AudioData note_data = _instument.get_note_audio({_note_name, NoteType::quarter}, 120.0);
+		AudioData note_data = _instument.get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.5);
 
 		if(note_data.sample_count() > 44100)
 		{
@@ -1257,7 +1282,89 @@ int main(int argc, char** argv)
 	CLI cli (argc, argv);
 	// cli.print();
 
-	if(cli[1] == "sheet")
+
+	// CLOCK STUFF
+	Clock clock;
+	printf("Unix time ms: %li \n", clock.get_unix_epoch_ms());
+	clock.print_tv_start();
+
+	SleepTimer sleep_timer;
+	// sleep_timer.sleep(1000);
+
+
+	if(cli[1] == "phyano")
+	{
+		Phyano phyano;
+
+		Arr<Key> keys;
+		EvdevReader evdev_kbd {"/dev/input/event9"};
+
+		// Start-up jingle
+		sleep_timer.sleep(200);
+		phyano.press(NoteName::C4); 
+		sleep_timer.sleep(200);
+		phyano.press(NoteName::G4); 
+
+		for(int i = 0; i < 12000; i++)
+		{
+			sleep_timer.sleep(10); // poll 1000/X times / second
+
+			keys = evdev_kbd.get_key_presses();
+			// evdev_kbd.read_and_print(); // figure out keycodes for adding new keystrokes
+
+			for(uint i = 0; i < keys.count(); i++)
+			{
+				switch (keys[i])
+				{
+					case Key::A:
+						phyano.press(NoteName::C4); 
+						break;
+					case Key::S:
+						phyano.press(NoteName::D4); 
+						break;
+					case Key::D:
+						phyano.press(NoteName::E4); 
+						break;
+					case Key::F:
+						phyano.press(NoteName::F4); 
+						break;
+					case Key::G:
+						phyano.press(NoteName::G4); 
+						break;
+					case Key::H:
+						phyano.press(NoteName::A4); 
+						break;
+					case Key::J:
+						phyano.press(NoteName::B4); 
+						break;
+					case Key::K:
+						phyano.press(NoteName::C5); 
+						break;
+
+					case Key::ESC:
+						Print::ln("Escape key pressed. Exiting Phyano.");
+
+						// Shut-down jingle
+						sleep_timer.sleep(200);
+						phyano.press(NoteName::G4); 
+						sleep_timer.sleep(350);
+						phyano.press(NoteName::C4); 
+
+						return 0; 
+
+						break;
+					
+					default:
+						break;
+				}
+			}
+
+			keys.clear();
+			
+		}
+
+	}
+	else if(cli[1] == "sheet")
 	{
 		Print::ln("Sheet music mode selected");
 
@@ -1354,108 +1461,15 @@ int main(int argc, char** argv)
 
 
 	// Print argv
-	print("\n");
-	for(int i = 0; i < argc; i++)
-	{
-		print(argv[i]);
-		print("\n");
-	}
+	// print("\n");
+	// for(int i = 0; i < argc; i++)
+	// {
+	// 	print(argv[i]);
+	// 	print("\n");
+	// }
 
 	// ambiance_song();
 
-	Clock clock;
-
-	printf("Unix time ms: %li \n", clock.get_unix_epoch_ms());
-	clock.print_tv_start();
-
-	SleepTimer sleep_timer;
-	// sleep_timer.sleep(1000);sss
-
-
-	Alsa alsa0;
-	Alsa alsa1;
-	Alsa alsa2;
-
-	Arr<Frequency> freqs;
-	freqs.clear();
-	freqs.push_back({440.0, 1.0});
-
-	WaveGen wave_gen {1.0, freqs};
-	wave_gen.generate_wave();
-
-	AudioData audiodata;
-	audiodata.data = wave_gen.out_arr;
-
-	// alsa0.play(audiodata);
-	alsa0.play(Instrument::get_note_audio({NoteName::C4, NoteType::quarter}, 120));
-	alsa1.play(Instrument::get_note_audio({NoteName::E4, NoteType::quarter}, 120));
-	// alsa2.play(Instrument::get_note_audio({NoteName::G4, NoteType::quarter}, 120));
-	// alsa2.play(audiodata);
-
-	EvdevReader evdev_kbd {"/dev/input/event9"};
-
-	Phyano phyano;
-	phyano.add_press({}, NoteName::C4); 
-	phyano.press(NoteName::C4); 
-
-	Arr<Key> keys;
-
-	for(int i = 0; i < 2000; i++)
-	{
-		// println("Loop");
-		sleep_timer.sleep(10); // poll every 0.1 seconds
-
-		// evdev_kbd.read_and_print();
-
-		// if(evdev_kbd.keypress_detected())
-		// {
-		// 	println("keypress detected!");
-		// 	phyano.press(NoteName::C4); 
-
-		// 	// phyano.add_press({}, NoteName::C4); 
-		// 	// alsa0.play( Instrument::get_note_audio({NoteName::C4, NoteType::quarter}, 120) );
-		// }
-
-		keys = evdev_kbd.get_key_presses();
-		for(uint i = 0; i < keys.count(); i++)
-		{
-			switch (keys[i])
-				{
-				case Key::A:
-					phyano.press(NoteName::C4); 
-					break;
-				case Key::S:
-					phyano.press(NoteName::D4); 
-					break;
-				case Key::D:
-					phyano.press(NoteName::E4); 
-					break;
-				case Key::F:
-					phyano.press(NoteName::F4); 
-					break;
-				case Key::G:
-					phyano.press(NoteName::G4); 
-					break;
-				case Key::H:
-					phyano.press(NoteName::A4); 
-					break;
-				case Key::J:
-					phyano.press(NoteName::B4); 
-					break;
-				case Key::K:
-					//
-					break;
-				
-				default:
-					break;
-				}
-		}
-		keys.clear();
-		
-		// alsa0.play(audiodata);
-		// alsa0.play(phyano.consume_ms(100)); 
-		
-	}
 
 	// alsa0.end();    
 

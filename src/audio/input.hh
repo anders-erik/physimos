@@ -24,6 +24,9 @@ enum class Key
     H,
     J,
     K,
+
+    ESC,
+
     UNKNOWN,
 };
 
@@ -33,6 +36,12 @@ Key get_key_from_key_code(unsigned short key_code)
 
     switch (key_code)
     {
+
+    case 1:
+        key = Key::ESC;
+        break;
+
+
     case 30:
         key = Key::A;
         break;
