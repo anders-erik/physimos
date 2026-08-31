@@ -1,0 +1,26 @@
+{
+    "format": "physimos.sheet",
+    "version": "0",
+
+    "name": "ambience",
+    "instrument": "pure",
+    "beat_count": 4,
+    "bpm": 60,
+
+    "beats": {
+        "0": [  { "note": "C4", "type": "half"},
+                { "note": "D4", "type": "half"},
+                { "note": "E4", "type": "half"},
+                { "note": "F4", "type": "half"},
+                { "note": "G4", "type": "half"} ],
+
+        "1": [  { "note": "C4", "type": "half"} ],
+
+        "2": [  { "note": "C4", "type": "half"},
+                { "note": "D4", "type": "half"},
+                { "note": "F4", "type": "half"},
+                { "note": "G4", "type": "half"}],
+
+        "3": [ { "note": "D4", "type": "half"} ]
+    }
+}
