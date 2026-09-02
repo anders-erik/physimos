@@ -33,6 +33,12 @@ public:
         allocate(count);
         set(inital_value);
     }
+    explicit
+    Vec(uint count, T* _data)
+    {
+        allocate(count);
+        memcpy(t_p, _data, count*sizeof(T));
+    }
     /** Copy construct. */
     Vec(const Vec<T>& vec) 
     {
