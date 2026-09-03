@@ -1151,7 +1151,7 @@ public:
 		}
 
 		// Update actual song data
-		song.beat_count = beat_count;
+		song.set_beat_count(beat_count);
 		song.bpm = bpm;
 
 
