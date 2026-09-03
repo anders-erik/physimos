@@ -115,7 +115,7 @@ public:
 
     uint get_pixel_index(uint _x, uint _y)
     {
-        return _y * stride() + _x;
+        return _y * stride() + _x*3;
     }
 
     Pixel& operator[](uint _x, uint _y)
@@ -185,18 +185,62 @@ int file_echo(const char* _file_path_c, void* data, uint _data_length)
 
 struct BMPFileInfoHeader
 {
-    Vec<uint8_t> buff {14};
+    Vec<uint8_t> BM {2};
+    uint32_t file_size;
+    Vec<uint8_t> reserved_1 {2};
+    Vec<uint8_t> reserved_2 {2};
+    uint32_t data_offset;
 
-    uint file_info_header_size = 14;
+    Vec<uint8_t> buff {14};
 
 
     BMPFileInfoHeader(const Bitmap& _bitmap)
     {
-        set_BM();
-        set_file_size(_bitmap);
-        set_reserved_1();
-        set_reserved_2();
-        set_first_pixel_location();
+        // set_BM();
+        // set_file_size(_bitmap);
+        // set_reserved_1();
+        // set_reserved_2();
+        // set_first_pixel_location();
+
+        BM[0] = 'B';
+        BM[1] = 'M';
+
+        file_size = 54 + get_padded_BPM_stride(_bitmap) * _bitmap.h();
+
+        reserved_1[0] = 0;
+        reserved_1[1] = 0;
+
+        reserved_2[0] = 0;
+        reserved_2[1] = 0;
+
+        data_offset = 54;
+    }
+
+    Vec<uint8_t> get_header_buff()
+    {
+        Vec<uint8_t> buffer {14};
+
+        bool arch_is_big_endian = false;
+
+        if(arch_is_big_endian)
+        {
+            // flip_integer_endianess
+        }
+
+        buffer[0] = BM[0];
+        buffer[1] = BM[1];
+
+        memcpy(buffer.data_mut() + 2, &file_size, 4);
+
+        buffer[6] = reserved_1[0];
+        buffer[7] = reserved_1[1];
+
+        buffer[8] = reserved_2[0];
+        buffer[9] = reserved_2[1];
+
+        memcpy(buffer.data_mut() + 10, &data_offset, 4);
+
+        return buffer;
     }
 
     void set_BM()
@@ -204,7 +248,7 @@ struct BMPFileInfoHeader
         buff[0] = 'B';
         buff[1] = 'M';
     }
-    Vec<uint8_t> get_BM()
+    Vec<uint8_t> get_BM_buff()
     {
         return Vec<uint8_t>(2, (buff.data_mut()+0));
     }
@@ -217,9 +261,18 @@ struct BMPFileInfoHeader
         buff[4] = (file_size & 0x00FF0000) >> 16;
         buff[5] = (file_size & 0xFF000000) >> 24;
     }
-    Vec<uint8_t> get_file_size()
+    Vec<uint8_t> get_file_size_buff()
     {
         return Vec<uint8_t>(4, (buff.data_mut()+2));
+    }
+    uint get_file_size()
+    {
+        uint file_size = 0;
+        file_size += (buff[2] << 24);
+        file_size += (buff[3] << 16);
+        file_size += (buff[4] << 8 );
+        file_size += (buff[5] << 0 );
+        return file_size;
     }
 
     void set_reserved_1()
@@ -227,7 +280,7 @@ struct BMPFileInfoHeader
         buff[6] = 0x00;
         buff[7] = 0x00;
     }
-    Vec<uint8_t> get_reserved_1()
+    Vec<uint8_t> get_reserved_1_buff()
     {
         return Vec<uint8_t>(2, (buff.data_mut()+6));
     }
@@ -237,7 +290,7 @@ struct BMPFileInfoHeader
         buff[8] = 0x00;
         buff[9] = 0x00;
     }
-    Vec<uint8_t> get_reserved_2()
+    Vec<uint8_t> get_reserved_2_buff()
     {
         return Vec<uint8_t>(2, (buff.data_mut()+8));
     }
@@ -250,7 +303,7 @@ struct BMPFileInfoHeader
         buff[12] = (first_pixel_location & 0x00FF0000) >> 16;
         buff[13] = (first_pixel_location & 0xFF000000) >> 24;
     }
-    Vec<uint8_t> get_first_pixel_location()
+    Vec<uint8_t> get_first_pixel_location_buff()
     {
         return Vec<uint8_t>(4, (buff.data_mut()+10));
     }
@@ -276,14 +329,84 @@ struct BMPFileInfoHeader
     //             first_pixel_location    == rhs.first_pixel_location;
     // }
 
-    // Str to_str()
-    // {
-    //     return  Str("FileHeader: ") + Str::UI(BM) + ", " +
-    //             Str::UI(file_size) + ", " +
-    //             Str::UI(reserved_1) + ", " +
-    //             Str::UI(reserved_2) + ", " +
-    //             Str::UI(first_pixel_location);
-    // }
+    Str to_str()
+    {
+        Str info_header_str;
+        info_header_str += "info_header_str: \n   ";
+
+        info_header_str += Str::CH(BM[0]);
+        info_header_str += Str::CH(BM[1]) + ", "; 
+
+        info_header_str += Str::UI(file_size)  + ", ";
+
+        info_header_str += Str::CH(reserved_1[0]);
+        info_header_str += Str::CH(reserved_1[1])  + ", ";
+
+        info_header_str += Str::CH(reserved_2[0]);
+        info_header_str += Str::CH(reserved_2[1])  + ", ";
+
+        info_header_str += Str::UI(data_offset);
+
+        info_header_str += "\n";
+
+        // return  Str("FileHeader: ") + Str::UI(BM) + ", " +
+        //         Str::UI(get_file_size()) + ", " +
+        //         Str::UI(reserved_1) + ", " +
+        //         Str::UI(reserved_2) + ", " +
+        //         Str::UI(first_pixel_location);
+        
+        return info_header_str;
+    }
+};
+
+
+class BMPDIBHeader
+{
+public:
+
+    uint32_t DIB_bytes;
+    uint32_t width_pixels;
+    uint32_t height_pixels;
+    uint16_t planes;
+    uint16_t bits_per_pixel;
+    uint32_t compression;
+    uint32_t data_bytes;
+    uint32_t res_hori;
+    uint32_t res_vert;
+    uint32_t color_count;
+    uint32_t important_colors;
+
+    BMPDIBHeader(Bitmap& _bitmap)
+    {
+        DIB_bytes = 40;
+        width_pixels = _bitmap.w();
+        height_pixels = _bitmap.h();
+        planes = 1;
+        bits_per_pixel = 24;
+        compression = 0;
+        data_bytes = _bitmap.h() * get_padded_BPM_stride(_bitmap);
+        res_hori = 2835;
+        res_vert = 2835;
+        color_count = 0;
+        important_colors = 0;
+    }
+
+    Vec<uint8_t> get_DIB_buffer()
+    {
+        Vec<uint8_t> ret_buff {DIB_bytes};
+
+        memcpy(ret_buff.data_mut(), this, DIB_bytes);
+
+        return ret_buff;
+    }
+
+    /** Returns number of bytes */
+    static uint get_padded_BPM_stride(const Bitmap& _bitmap)
+    {
+        uint stride_byte_count = _bitmap.w() * 3;
+        uint padding_count = 4 - (stride_byte_count % 4);
+        return stride_byte_count + padding_count;
+    }
 };
 
 
@@ -291,14 +414,82 @@ class BPMIO
 {
 public:
 
-    static void Export(Str _file_path, Bitmap& _bitmap)
+    Bitmap bitmap;
+    BMPFileInfoHeader finfo_header;
+    BMPDIBHeader DIB_Header;
+
+    BPMIO(Bitmap& _bitmap)
+        :   bitmap {_bitmap},
+            finfo_header { BMPFileInfoHeader(bitmap) },
+            DIB_Header { BMPDIBHeader(bitmap) }
     {
-        file_echo(_file_path.to_c_str(), _bitmap.get_data_mut(), _bitmap.count_bytes());
     }
 
-    static Bitmap Import(Str _file_path)
+
+
+
+    void Export(Str _file_path)
+    {
+        Vec<uint8_t> export_buff {finfo_header.file_size};
+
+        Vec<uint8_t> info_header_buf = finfo_header.get_header_buff();
+        Vec<uint8_t> DIB_header_buf = DIB_Header.get_DIB_buffer();
+        Vec<uint8_t> padded_data_buf = pad_bitmap_data();
+
+        // uint8_t* info_header_ptr = finfo_header.get_header_buff().data_mut();
+        // uint8_t* DIB_header_ptr = DIB_Header.get_DIB_buffer().data_mut();
+        // uint8_t* padded_data_ptr = pad_bitmap_data().data_mut();
+
+        memcpy( export_buff.data_mut() + 0 , 
+                info_header_buf.data_mut(), 
+                14);
+        memcpy( export_buff.data_mut() + 14, 
+                DIB_header_buf.data_mut(), 
+                40);
+        memcpy( export_buff.data_mut() + finfo_header.data_offset, 
+                padded_data_buf.data_mut(), 
+                DIB_Header.data_bytes);
+
+        file_echo(  _file_path.to_c_str(), 
+                    export_buff.data_mut(), 
+                    finfo_header.file_size);
+    }
+
+    Bitmap Import(Str _file_path)
     {
 
+        return Bitmap{0,0};
+    }
+
+
+    Vec<uint8_t> pad_bitmap_data()
+    {
+        uint stride = bitmap.stride();
+        uint padded_stride = get_padded_BPM_stride(bitmap);
+
+        Vec<uint8_t> padded_data {bitmap.h() * padded_stride};
+        padded_data.set(0x00);
+
+        // uint8_t* bitmap_base_ptr = bitmap.get_data_mut();
+        // uint8_t* padded_base_ptr = padded_data.data_mut();
+
+        for(uint i = 0; i < bitmap.h(); i++)
+        {
+            // uint index_start_of_row = i * padded_stride;
+            memcpy( padded_data.data_mut() + i * padded_stride,
+                    bitmap.get_data_mut() + i * stride,
+                    stride                                  );
+        }
+
+        return padded_data;
+    }
+
+    /** Returns number of bytes */
+    static uint get_padded_BPM_stride(const Bitmap& _bitmap)
+    {
+        uint stride_byte_count = _bitmap.w() * 3;
+        uint padding_count = 4 - (stride_byte_count % 4);
+        return stride_byte_count + padding_count;
     }
 };
 
@@ -325,11 +516,25 @@ int main(int argc, const char** argv)
     bmp[0, 0] = {0, 100, 200};
     Print::ln(bmp[0, 0].to_str_hex());
 
-    BPMIO::Export("tmp/2x2.bmp", bmp);
+    // BPMIO::Export("tmp/2x2.bmp", bmp);
 
 
     BMPFileInfoHeader file_info_header {bmp};
+    Vec<uint8_t> header_buff = file_info_header.get_header_buff();
     // auto vec = file_info_header.get_BM();
+    Print::ln(file_info_header.to_str());
+
+    BMPDIBHeader file_DIB_header {bmp};
+    Vec<uint8_t> DIB_buff = file_DIB_header.get_DIB_buffer();
+
+    
+    bmp[0, 0] = {25, 25, 25};
+    bmp[1, 0] = {100, 100, 100};
+    bmp[0, 1] = {150, 150, 150};
+    bmp[1, 1] = {200, 200, 200};
+
+    BPMIO bmp_io {bmp};
+    bmp_io.Export("tmp/2x2.bmp");
     
 
     Print::ln("Bye, from main_swrend.cc. \n");
