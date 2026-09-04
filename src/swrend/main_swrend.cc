@@ -10,6 +10,7 @@
 #include "lib/file.hh"
 
 #include "math/vec.hh"
+#include "math/vecmat.hh"
 
 
 
@@ -72,8 +73,8 @@ class Bitmap
     // Arr<Col> cols;
     Vec<uint8_t> data;
 
-    uint height = 0;
     uint width = 0;
+    uint height = 0;
 
 public:
 
@@ -101,6 +102,13 @@ public:
         return data.data_mut();
     }
 
+    bool is_in_bounds(u2 _p)
+    {
+        if( _p.x >= width || _p.y >= height)
+            return false;
+        
+        return true;
+    }
 
     // Returns a column of pixels at x=col_index
     // Col& operator[](uint _col_index)
@@ -118,10 +126,27 @@ public:
         return _y * stride() + _x*3;
     }
 
+    /** Checks bounds before access. If outside of bounds, it will return the first pixel in bitmap. */
     Pixel& operator[](uint _x, uint _y)
     {
-    
+        if(_x >= width || _y >= height)
+        {
+            Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
+            return (Pixel&) *(data.data_mut());
+        }
+
         return (Pixel&) *(data.data_mut() + get_pixel_index(_x, _y));
+    }
+
+    Pixel& operator[](u2 _p)
+    {
+        if( _p.x >= width || _p.y >= height)
+        {
+            Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
+            return (Pixel&) *(data.data_mut());
+        }
+
+        return (Pixel&) *(data.data_mut() + get_pixel_index(_p.x, _p.y));
     }
 
     void clear(Pixel _pixel)
@@ -136,7 +161,7 @@ public:
 
     void clear(uint8_t _byte)
     {
-        for(uint i = 0; i < width; i++)
+        for(uint i = 0; i < count_bytes(); i++)
         {
             data[i] = _byte;
         }
@@ -494,10 +519,8 @@ public:
 };
 
 
-int main(int argc, const char** argv)
+void test_bitmap_2x2()
 {
-    Print::ln("Hello from main_swrend.cc");
-
     Bitmap bmp {2, 2};
 
     bmp.clear({1, 2, 3});
@@ -533,9 +556,151 @@ int main(int argc, const char** argv)
     bmp[0, 1] = {150, 150, 150};
     bmp[1, 1] = {200, 200, 200};
 
+
+    
+
+
     BPMIO bmp_io {bmp};
     bmp_io.Export("tmp/2x2.bmp");
+}
+
+// Str logf_path = "tmp/log.txt";
+// void logf(Str _msg, )
+// {
+
+// }
+
+
+// y = kx + m
+class Line
+{
+public:
+
+    d2 p1;
+    d2 p2;
+
+    double k;
+    double m;
+
+    Line(d2 _p1, d2 _p2) : p1 {_p1}, p2 {_p2}
+    {
+        // y = kx + m
+        k = (p2.y - p1.y)/(p2.x - p1.x);
+        m = p1.y - p1.x*k;
+    }
+
+    double operator[](double _x)
+    {
+        return k*_x + m;
+    }
+
+};
+
+class BitmapDrawer
+{
+public: 
+
+    static void point(Bitmap& _bmp, u2 _p, Pixel _px)
+    {
+        if(_bmp.is_in_bounds(_p))
+            _bmp[_p] = _px;
+        else
+            Print::ln("WARN: tried drawing point outseide bitmap bounds.");
+    }
     
+    /** Draw pixelated line using kx + m where pixels are filled in from the gaps made from k-values greater than 2. */
+    static void line_kxm_1(Bitmap& _bmp, u2 _p1, u2 _p2, Pixel _px)
+    {
+        if(!_bmp.is_in_bounds(_p1) || !_bmp.is_in_bounds(_p2))
+        {
+            Print::ln("WARN: tried drawing point outseide bitmap bounds.");
+            return;
+        }
+
+        Line line {{_p1.x, _p1.y}, {_p2.x, _p2.y}};
+
+        uint y_prev = _p1.y;
+
+        for(uint x = _p1.x; x < _p2.x; x++)
+        {
+            uint y = (uint) line[(double) x];
+
+            _bmp[x, y] = _px;
+
+            // keep track of changes in y larger than one pixel
+            uint y_change = abs(((int)y_prev - (int)y)); 
+
+            // Fill in gaps from large k-values
+            if(y_change > 1)
+            {
+                for(uint i = 0; i < abs(y_change); i++)
+                {
+                    if(line.k > 0)
+                        _bmp[x, y-i] = _px;
+                    else
+                        _bmp[x, y+i] = _px;
+                }
+            }
+
+            y_prev = y;
+        }
+            
+    }
+
+    /** Draw pixelated line using kx + m where pixels are drawn using step sizes related to the k-value to generate the intermediate pixels when the slope is large. */
+    static void line_kxm_2(Bitmap& _bmp, u2 _p1, u2 _p2, Pixel _px)
+    {
+        if(!_bmp.is_in_bounds(_p1) || !_bmp.is_in_bounds(_p2))
+        {
+            Print::ln("WARN: tried drawing point outseide bitmap bounds.");
+            return;
+        }
+
+        Line line {{_p1.x, _p1.y}, {_p2.x, _p2.y}};
+
+        double step_size = fabs(1/(line.k));
+
+        for(double x = line.p1.x; x < line.p2.x; x = x + step_size)
+        {
+            double y = line[x];
+            _bmp[(uint)x, (uint)y] = _px;
+        }
+    }
+};
+
+int main(int argc, const char** argv)
+{
+    Print::ln("Hello from main_swrend.cc");
+
+    // test_bitmap_2x2();
+
+    Bitmap bmp {30, 20};
+
+    bmp.clear(25);
+
+    bmp[1, 1] = {255, 255, 255};
+    bmp[29, 19] = {255, 255, 255};
+
+    // bmp[30, 19] = {255, 255, 255}; // out of bounds. Will alter the first pixel per out of bounds access return
+
+    BitmapDrawer::point(bmp, {7, 2}, {100, 100, 100});
+    // BitmapDrawer::point(bmp, {16, 8}, {200, 200, 200});
+
+    // BitmapDrawer::line_kxm_1(bmp, {2, 3}, {15, 19}, {100, 100, 100});
+    // BitmapDrawer::line_kxm_1(bmp, {12, 2}, {16, 18}, {100, 100, 100});
+    // BitmapDrawer::line_kxm_1(bmp, {20, 18}, {25, 2}, {100, 100, 100});
+
+    // TODO: 3 bugs: swpping point order, x1=x2, y1=y2
+    BitmapDrawer::line_kxm_2(bmp, {2, 3}, {15, 19}, {100, 100, 100});
+    BitmapDrawer::line_kxm_2(bmp, {12, 2}, {16, 18}, {100, 100, 100});
+    BitmapDrawer::line_kxm_2(bmp, {20, 18}, {25, 2}, {100, 100, 100});
+    // BitmapDrawer::line_kxm_2(bmp, {20, 18}, {25, 2}, {100, 100, 100});
+    // BitmapDrawer::line_kxm_2(bmp, {1, 1}, {1, 5}, {100, 100, 100});
+    // BitmapDrawer::line_kxm_2(bmp, {10, 1}, {15, 1}, {100, 100, 100});
+    
+    BPMIO bmp_io {bmp};
+
+    bmp_io.Export("tmp/spots.bmp");
 
     Print::ln("Bye, from main_swrend.cc. \n");
     return 0;

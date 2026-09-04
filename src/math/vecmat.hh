@@ -9,6 +9,7 @@ using db = double;
 
 struct s2;
 struct ui2;
+typedef ui2 u2;
 struct i2;
 struct f2;
 struct d2;
@@ -133,12 +134,14 @@ struct f2
 
 struct d2
 {
-    float x;
-    float y;
+    double x;
+    double y;
 
     constexpr d2() : x {0.0}, y { 0.0 } {};
-
-    d2(f2 float_2) : x ((double)float_2.x), y {(float) float_2.y} {}
+    d2(double _x, double _y) : x (_x), y {_y} {}
+    d2(int _x, int _y) : x ((double)_x), y {(double)_y} {}
+    d2(uint _x, uint _y) : x ((double)_x), y {(double)_y} {}
+    d2(f2 float_2) : x ((double)float_2.x), y {(double) float_2.y} {}
 
 };
 
