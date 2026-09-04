@@ -633,7 +633,7 @@ public:
             // Fill in gaps from large k-values
             if(y_change > 1)
             {
-                for(uint i = 0; i < abs(y_change); i++)
+                for(uint i = 0; i < abs((int)y_change); i++)
                 {
                     if(line.k > 0)
                         _bmp[x, y-i] = _px;
@@ -668,9 +668,115 @@ public:
     }
 };
 
+#include <wayland-client.h>
+#include "swrend/wayland.hh"
+
+static void registry_global(
+    void *data,
+    struct wl_registry *registry,
+    uint32_t name,
+    const char *interface,
+    uint32_t version)
+{
+    printf("global: %s, version: %u, name: %u\n",
+           interface, version, name);
+}
+
+static void registry_global_remove(
+    void *data,
+    struct wl_registry *registry,
+    uint32_t name)
+{
+    printf("global removed: %u\n", name);
+}
+
+static const struct wl_registry_listener listener = {
+    .global        = registry_global,
+    .global_remove = registry_global_remove,
+};
+
+#include "wayland_keyboard.hh"
+
+void wayland_stuff()
+{
+    // opaque object passed to qayland server during communication
+    struct wl_display *display = wl_display_connect(NULL);
+    if (!display) {
+        Print::ln("Failed to connect to Wayland display\n");
+        return;
+    }
+    Print::ln("wl_display_connect: OK");
+
+    // think: wl_display.get_registry(); !!
+    struct wl_registry *registry = wl_display_get_registry(display);
+    if (!registry)
+    {
+        Print::ln("Failed to get Wayland registry.\n");
+        return;
+    }
+    Print::ln("wl_display_get_registry: OK");
+
+    // Event listener
+    // wl_registry_listener: an object containging a 'global' and a 'global_remove' callback functions
+    wl_registry_add_listener(registry, &listener, NULL);
+    Print::ln("wl_registry_add_listener: OK");
+
+    // Process al pending requests (and will block until completed)
+    int ret = wl_display_roundtrip(display) < 0;
+    if (ret) {
+        // communication/protocol failure
+        Print::ln("communication/protocol failure");
+        return;
+    }
+    Print::ln("wl_display_roundtrip: OK");
+
+
+    printf("roundtrip returned value: %d\n", ret);
+    if (ret < 0) {
+        printf("display error: %d\n", wl_display_get_error(display));
+    }
+
+
+    printf("display fd = %d\n", wl_display_get_fd(display));
+    printf("error = %d\n", wl_display_get_error(display));
+
+
+    int loop_count = 0;
+    // wl_display_dispatch will not return until a plroprly registered global event has been registered. I think..
+    // while (wl_display_dispatch(display) != -1)
+    // {
+    //     printf("Loop!\n");
+    //     if(loop_count++ > 100)
+    //         break;
+    //     // Main loop ??
+    // }
+
+    Print::buf("\n");
+
+    Str xdg_rt_dir = XDG::get_runtime_dir();
+    Print::buf("xdg_rt_dir = ");
+    Print::ln(xdg_rt_dir);
+
+    Str xdg_wayland_socket = XDG::get_wayland_display_socket_name();
+    Print::buf("xdg_wayland_socket = ");
+    Print::ln(xdg_wayland_socket);
+
+    Str wl_socket_path = xdg_rt_dir + "/" + xdg_wayland_socket;
+    Print::buf("wl_socket_path = ");
+    Print::ln(wl_socket_path);
+
+    Str wl_socket_read = Socket::read_from_socket(wl_socket_path);
+    Print::buf("wl_socket_read = ");
+    Print::ln(wl_socket_read);
+
+}
+
 int main(int argc, const char** argv)
 {
     Print::ln("Hello from main_swrend.cc");
+
+
+    // wayland_stuff();
 
     // test_bitmap_2x2();
 
