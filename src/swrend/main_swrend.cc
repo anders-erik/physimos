@@ -104,7 +104,7 @@ public:
 
     bool is_in_bounds(u2 _p)
     {
-        if( _p.x >= width || _p.y >= height)
+        if( _p.x > width || _p.y > height)
             return false;
         
         return true;
@@ -124,6 +124,26 @@ public:
     uint get_pixel_index(uint _x, uint _y)
     {
         return _y * stride() + _x*3;
+    }
+
+    // Copies the passed bitmap onto this bitmap. The lower left corner of the passed bitmap is placed at the provided x/y values
+    void copy(Bitmap& _bmp_to_copy, u2 _offset)
+    {
+        uint x_start = _offset.x;
+        uint x_end = x_start + _bmp_to_copy.w();
+        uint y_start = _offset.y;
+        uint y_end = y_start + _bmp_to_copy.h();
+
+        for(uint x = 0; x < _bmp_to_copy.w(); x++)
+        {
+            for(uint y = 0; y < _bmp_to_copy.h(); y++)
+            {
+                uint x_this = x + _offset.x;
+                uint y_this = y + _offset.y;
+
+                (*this)[x_this, y_this] = _bmp_to_copy[x, y];
+            }
+        }
     }
 
     /** Checks bounds before access. If outside of bounds, it will return the first pixel in bitmap. */
@@ -180,6 +200,8 @@ public:
 
 int file_echo(const char* _file_path_c, void* data, uint _data_length)
 {
+    remove(_file_path_c);
+
     int fd = open(_file_path_c, O_WRONLY | O_CREAT );
     if(fd < 0)
     {
@@ -513,7 +535,15 @@ public:
     static uint get_padded_BPM_stride(const Bitmap& _bitmap)
     {
         uint stride_byte_count = _bitmap.w() * 3;
-        uint padding_count = 4 - (stride_byte_count % 4);
+    
+        uint padding_count;
+
+        // BMP always pads the stride to multiples of 4 bytes
+        if( (stride_byte_count % 4) == 0)
+            padding_count = 0;
+        else
+            padding_count = 4 - (stride_byte_count % 4);
+
         return stride_byte_count + padding_count;
     }
 };
@@ -596,11 +626,34 @@ public:
 
 };
 
+
+uint Min(uint a, uint b)
+{
+    return a > b ? b : a;
+}
+
+uint Max(uint a, uint b)
+{
+    return a > b ? a : b;
+}
+
+double orient_2d_line(d2 p, d2 p1, d2 p2)
+{
+    
+}
+
 class BitmapDrawer
 {
-public: 
+public:
 
-    static void point(Bitmap& _bmp, u2 _p, Pixel _px)
+    Pixel pixel;
+
+    void set_pixel_color(Pixel _pixel)
+    {
+        pixel = _pixel;
+    }
+
+    void point(Bitmap& _bmp, u2 _p, Pixel _px)
     {
         if(_bmp.is_in_bounds(_p))
             _bmp[_p] = _px;
@@ -609,7 +662,7 @@ public:
     }
     
     /** Draw pixelated line using kx + m where pixels are filled in from the gaps made from k-values greater than 2. */
-    static void line_kxm_1(Bitmap& _bmp, u2 _p1, u2 _p2, Pixel _px)
+    void line_kxm_1(Bitmap& _bmp, u2 _p1, u2 _p2, Pixel _px)
     {
         if(!_bmp.is_in_bounds(_p1) || !_bmp.is_in_bounds(_p2))
         {
@@ -648,12 +701,44 @@ public:
     }
 
     /** Draw pixelated line using kx + m where pixels are drawn using step sizes related to the k-value to generate the intermediate pixels when the slope is large. */
-    static void line_kxm_2(Bitmap& _bmp, u2 _p1, u2 _p2, Pixel _px)
+    void line_kxm_2(Bitmap& _bmp, u2 _p1, u2 _p2)
     {
+
         if(!_bmp.is_in_bounds(_p1) || !_bmp.is_in_bounds(_p2))
         {
             Print::ln("WARN: tried drawing point outseide bitmap bounds.");
             return;
+        }
+
+        // Vertical line
+        if(_p1.x == _p2.x)
+        {
+            uint x = _p1.x;
+            uint y_min = _p1.y > _p2.y ? _p2.y : _p1.y;
+            uint y_max = _p1.y > _p2.y ? _p1.y : _p2.y;
+
+            for(uint y = y_min; y < y_max; y++)
+                _bmp[x, y] = pixel;
+        }
+
+        // Horizontal line
+        if(_p1.y == _p2.y)
+        {
+            uint y = _p1.y;
+            uint x_min = _p1.x > _p2.x ? _p2.x : _p1.x;
+            uint x_max = _p1.x > _p2.x ? _p1.x : _p2.x;
+
+            for(uint x = x_min; x < x_max; x++)
+                _bmp[x, y] = pixel;
+        }
+
+        // enforce p1 to have the lower x-value
+        // This was done to keep the algorithm intact, which relies on left to right drawing
+        if(_p1.x > _p2.x)
+        {
+            u2 p_tmp = _p1;
+            _p1 = _p2;
+            _p2 = p_tmp;
         }
 
         Line line {{_p1.x, _p1.y}, {_p2.x, _p2.y}};
@@ -663,10 +748,38 @@ public:
         for(double x = line.p1.x; x < line.p2.x; x = x + step_size)
         {
             double y = line[x];
-            _bmp[(uint)x, (uint)y] = _px;
+            _bmp[(uint)x, (uint)y] = pixel;
+        }
+    }
+
+
+    void triangle_no_fill(Bitmap& _bitmap, u2 _p1, u2 _p2, u2 _p3)
+    {
+        line_kxm_2(_bitmap, _p1, _p2);
+        line_kxm_2(_bitmap, _p2, _p3);
+        line_kxm_2(_bitmap, _p3, _p1);
+    }
+
+    void triangle(Bitmap& _bitmap, u2 _p1, u2 _p2, u2 _p3)
+    {
+        // uint x_min_23 = Min(_p2.x, _p3.x);
+        uint x_min = Min(_p1.x, Min(_p2.x, _p3.x));
+        uint x_max = Max(_p1.x, Max(_p2.x, _p3.x));
+        uint y_min = Min(_p1.y, Min(_p2.y, _p3.y));
+        uint y_max = Max(_p1.y, Max(_p2.y, _p3.y));
+
+        for(uint x = x_min; x < x_max; x++)
+        {
+            for(uint y = y_min; y < y_max; y++)
+            {
+                // _bitmap[x, y] = pixel;
+            }
         }
     }
 };
+
+
+
 
 #include <wayland-client.h>
 #include "swrend/wayland.hh"
@@ -780,7 +893,13 @@ int main(int argc, const char** argv)
 
     // test_bitmap_2x2();
 
-    Bitmap bmp {30, 20};
+    Bitmap white_2x2 {2, 2};
+    white_2x2.clear({200, 200, 200});
+
+    // Bitmap bmp {30, 20};
+    // Bitmap bmp {4, 4};
+    Bitmap bmp {60, 40};
+    
 
     bmp.clear(25);
 
@@ -789,20 +908,31 @@ int main(int argc, const char** argv)
 
     // bmp[30, 19] = {255, 255, 255}; // out of bounds. Will alter the first pixel per out of bounds access return
 
-    BitmapDrawer::point(bmp, {7, 2}, {100, 100, 100});
-    // BitmapDrawer::point(bmp, {16, 8}, {200, 200, 200});
+    BitmapDrawer drawer;
 
-    // BitmapDrawer::line_kxm_1(bmp, {2, 3}, {15, 19}, {100, 100, 100});
-    // BitmapDrawer::line_kxm_1(bmp, {12, 2}, {16, 18}, {100, 100, 100});
-    // BitmapDrawer::line_kxm_1(bmp, {20, 18}, {25, 2}, {100, 100, 100});
+    drawer.point(bmp, {7, 2}, {100, 100, 100});
+    // drawer.point(bmp, {16, 8}, {200, 200, 200});
+
+    // drawer.line_kxm_1(bmp, {2, 3}, {15, 19}, {100, 100, 100});
+    // drawer.line_kxm_1(bmp, {12, 2}, {16, 18}, {100, 100, 100});
+    // drawer.line_kxm_1(bmp, {20, 18}, {25, 2}, {100, 100, 100});
 
     // TODO: 3 bugs: swpping point order, x1=x2, y1=y2
-    BitmapDrawer::line_kxm_2(bmp, {2, 3}, {15, 19}, {100, 100, 100});
-    BitmapDrawer::line_kxm_2(bmp, {12, 2}, {16, 18}, {100, 100, 100});
-    BitmapDrawer::line_kxm_2(bmp, {20, 18}, {25, 2}, {100, 100, 100});
-    // BitmapDrawer::line_kxm_2(bmp, {20, 18}, {25, 2}, {100, 100, 100});
-    // BitmapDrawer::line_kxm_2(bmp, {1, 1}, {1, 5}, {100, 100, 100});
-    // BitmapDrawer::line_kxm_2(bmp, {10, 1}, {15, 1}, {100, 100, 100});
+    drawer.set_pixel_color({100, 100, 150});
+
+    drawer.line_kxm_2(bmp, {2, 3}, {15, 19});
+    drawer.line_kxm_2(bmp, {12, 2}, {16, 18}); // positive k
+    drawer.line_kxm_2(bmp, {20, 18}, {25, 2}); // negative k
+    // drawer.line_kxm_2(bmp, {25, 2}, {20, 18}); // x1 > x2
+    // drawer.line_kxm_2(bmp, {15, 1}, {15, 5}); // vert
+    drawer.line_kxm_2(bmp, {20, 1}, {30, 1}); // hori
+
+    // drawer.triangle_no_fill(bmp, {1, 10}, {5, 15}, {4, 19});
+    drawer.triangle_no_fill(bmp, {1, 15}, {15, 30}, {9, 35});
+
+    // drawer.triangle(bmp, {1, 10}, {5, 15}, {4, 19});
+
+    bmp.copy(white_2x2, {40, 25});
     
     BPMIO bmp_io {bmp};
 
