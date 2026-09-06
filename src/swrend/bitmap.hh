@@ -114,24 +114,109 @@ public:
         return _y * stride() + _x*3;
     }
 
-    // Copies the passed bitmap onto this bitmap. The lower left corner of the passed bitmap is placed at the provided x/y values
-    void copy(Bitmap& _bmp_to_copy, u2 _offset)
+    Bitmap get_subbitmap(u2 _pos, u2 _size)
     {
-        uint x_start = _offset.x;
-        uint x_end = x_start + _bmp_to_copy.w();
-        uint y_start = _offset.y;
-        uint y_end = y_start + _bmp_to_copy.h();
+        Bitmap bitmap {_size.x, _size.y};
 
-        for(uint x = 0; x < _bmp_to_copy.w(); x++)
+        for(uint x = 0; x < bitmap.w(); x++)
         {
-            for(uint y = 0; y < _bmp_to_copy.h(); y++)
+            for(uint y = 0; y < bitmap.h(); y++)
+            {
+                bitmap[x,y] = (*this)[x+_pos.x, y+_pos.y];
+            }
+        }
+
+        return bitmap;
+    }
+
+    // Copies the passed bitmap onto this bitmap. The lower left corner of the passed bitmap is placed at the provided x/y values
+    // NOTE: pasting will fail if the pasted bitmap is not fully contained in the current bitmap
+    void paste(Bitmap& _bmp_to_paste, u2 _offset)
+    {
+        for(uint x = 0; x < _bmp_to_paste.w(); x++)
+        {
+            for(uint y = 0; y < _bmp_to_paste.h(); y++)
             {
                 uint x_this = x + _offset.x;
                 uint y_this = y + _offset.y;
 
-                (*this)[x_this, y_this] = _bmp_to_copy[x, y];
+                (*this)[x_this, y_this] = _bmp_to_paste[x, y];
             }
         }
+    }
+
+    // Returns a cropped bitmap equal to the intersection of the two bitmaps. 
+    // The position parameters is the location of the bitmap to crop.
+    static Bitmap intersection(Bitmap& _target, Bitmap& _bmp_to_crop, u2 _pos)
+    {
+        uint new_width;
+        uint new_height;
+
+        if(_pos.x > _target.w()) // outside target bitmap dimensions
+        {
+            new_width = 0;
+        }
+        else if( _target.w() < (_bmp_to_crop.w() + _pos.x)) // crop
+        {
+            // Need to crop width
+            new_width = _target.w() - _pos.x;
+        }
+        else // no need to crop
+        {
+            new_width = _bmp_to_crop.w();
+        }
+
+
+        if(_pos.y > _target.h()) // outside target bitmap dimensions
+        {
+            new_height = 0;
+        }
+        else if(_target.h() < (_bmp_to_crop.h() + _pos.y))
+        {
+            // Need to crop height
+            new_height = _target.h() - _pos.y;
+        }
+        else
+        {
+            new_height = _bmp_to_crop.h();
+        }
+
+
+        if(new_width == 0 || new_height == 0)
+            return {0, 0};
+
+        Bitmap bmp {new_width, new_height};
+
+        for(uint x = 0; x < bmp.w(); x++)
+        {
+            for(uint y = 0; y < bmp.h(); y++)
+            {
+                bmp[x, y] = _bmp_to_crop[x, y];
+            }
+        }
+
+        return bmp;
+    }
+
+    Bitmap scale(double _scaling_factor)
+    {
+        uint new_width = (uint) ((double)width * _scaling_factor);
+        uint new_height = (uint) ((double)height * _scaling_factor);
+        
+        Bitmap bmp {new_width, new_height};
+
+        for(uint x = 0; x < bmp.w(); x++)
+        {
+            for(uint y = 0; y < bmp.h(); y++)
+            {
+                uint x_sample = x / _scaling_factor;
+                uint y_sample = y / _scaling_factor;
+
+                bmp[x, y] = (*this)[x_sample, y_sample];
+            }
+        }
+
+        return bmp;
     }
 
     /** Checks bounds before access. If outside of bounds, it will return the first pixel in bitmap. */

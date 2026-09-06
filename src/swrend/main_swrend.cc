@@ -59,7 +59,7 @@ void test_bitmap_2x2()
     
 
 
-    BPMIO bmp_io {bmp};
+    BMPIO bmp_io {bmp};
     bmp_io.Export("tmp/2x2.bmp");
 }
 
@@ -401,13 +401,13 @@ int main(int argc, const char** argv)
 
     // drawer.triangle(bmp, {1, 10}, {5, 15}, {4, 19});
 
-    bmp.copy(white_2x2, {40, 25});
+    bmp.paste(white_2x2, {40, 25});
 
 
 
     // BMP IO
     
-    BPMIO bmp_io {bmp};
+    BMPIO bmp_io {bmp};
 
     bmp_io.Export("tmp/spots.bmp");
 
@@ -417,17 +417,43 @@ int main(int argc, const char** argv)
     bmp_io.Export("tmp/spots_export.bmp");
 
 
-    BPMIO bmp_io_2 {imported_bmp};
+    BMPIO bmp_io_2 {imported_bmp};
     bmp_io.Export("tmp/spots_export_2.bmp");
 
 
-    BPMIO::SExport("tmp/static_export.bmp", bmp);
-    Bitmap simport_bmp = BPMIO::SImport("tmp/static_export.bmp");
-    BPMIO::SExport("tmp/static_export_1.bmp", simport_bmp);
+    BMPIO::SExport("tmp/static_export.bmp", bmp);
+    Bitmap simport_bmp = BMPIO::SImport("tmp/static_export.bmp");
+    BMPIO::SExport("tmp/static_export_1.bmp", simport_bmp);
 
 
-    Bitmap font_tall = BPMIO::SImport("resources/ui/font/characters-2-tall.bmp");
-    BPMIO::SExport("tmp/font_tall.bmp", font_tall);
+    Bitmap font_tall = BMPIO::SImport("resources/ui/font/characters-2-tall.bmp");
+    BMPIO::SExport("tmp/font_tall.bmp", font_tall);
+
+    char letter = 'a';
+    uint letter_height_offset = (letter - 30) * 150;
+    u2 pos = {0, letter_height_offset};
+    u2 size = {80, 150};
+    Bitmap bmp_a = font_tall.get_subbitmap(pos, size);
+    BMPIO::SExport("tmp/a.bmp", bmp_a);
+
+    Bitmap intersected_a = Bitmap::intersection(bmp, bmp_a, {20, 5});
+    bmp.paste(intersected_a, {20, 5}); // out of bounds copy
+    BMPIO::SExport("tmp/static_export_2.bmp", bmp);
+
+    Bitmap a_scale_2 = bmp_a.scale(2.0);
+    BMPIO::SExport("tmp/a_scale_2.bmp", a_scale_2);
+
+    Bitmap a_scale_05 = bmp_a.scale(0.5);
+    BMPIO::SExport("tmp/a_scale_05.bmp", a_scale_05);
+
+    Bitmap a_scale_01 = bmp_a.scale(0.1);
+    BMPIO::SExport("tmp/a_scale_01.bmp", a_scale_01);
+
+    Bitmap a_scale_02 = bmp_a.scale(0.2);
+    BMPIO::SExport("tmp/a_scale_02.bmp", a_scale_02);
+
+    bmp.paste(a_scale_02, {20, 5}); // out of bounds copy
+    BMPIO::SExport("tmp/static_export_3.bmp", bmp);
 
 
 

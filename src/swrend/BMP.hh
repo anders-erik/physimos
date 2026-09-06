@@ -443,7 +443,7 @@ public:
 };
 
 
-class BPMIO
+class BMPIO
 {
 public:
 
@@ -451,7 +451,7 @@ public:
     BMPFileInfoHeader finfo_header;
     BMPDIBHeader DIB_Header;
 
-    BPMIO(Bitmap& _bitmap)
+    BMPIO(Bitmap& _bitmap)
         :   bitmap {_bitmap},
             finfo_header { BMPFileInfoHeader(bitmap) },
             DIB_Header { BMPDIBHeader(bitmap) }
