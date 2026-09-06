@@ -36,3 +36,4 @@ tmp/
 
 
 src/window/wayland/protocols
+src/swrend/xdg_wl_extension

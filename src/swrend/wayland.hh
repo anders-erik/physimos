@@ -5,7 +5,11 @@
 #include <sys/socket.h> // socket
 #include <sys/un.h> // sockaddr_un
 
+
+
 #include "lib/str.hh"
+
+#include "wl-state.hh"
 
 
 struct XDG
@@ -75,3 +79,149 @@ public:
 
 
 };
+
+
+
+
+
+
+
+#include <wayland-client.h>
+#include "swrend/wayland.hh"
+
+#include "wl-book.hh"
+#include "wl-pointer.hh"
+
+// static void registry_global(
+//     void *data,
+//     struct wl_registry *registry,
+//     uint32_t name,
+//     const char *interface,
+//     uint32_t version)
+// {
+//     printf("global: %s, version: %u, name: %u \n",
+//            interface, version, name);
+
+           
+// }
+
+struct WLRegistry
+{
+    typedef struct wl_registry_listener Listener;
+};
+
+
+static void registry_global_remove(
+    void *data,
+    struct wl_registry *registry,
+    uint32_t name)
+{
+    printf("global removed: %u\n", name);
+}
+
+static const WLRegistry::Listener wl_registry_listener = {
+    .global        = registry_global,
+    .global_remove = registry_global_remove,
+};
+
+
+void wayland_stuff()
+{
+    struct client_state state = { 0 };
+
+    // opaque object passed to qayland server during communication
+    // struct wl_display *display = wl_display_connect(NULL);
+    state.wl_display = wl_display_connect(NULL);
+    if (!state.wl_display) {
+        Print::ln("Failed to connect to Wayland display\n");
+        return;
+    }
+    Print::ln("wl_display_connect: OK");
+
+    // think: wl_display.get_registry(); !!
+    // struct wl_registry *registry = wl_display_get_registry(state.wl_display);
+    state.wl_registry = wl_display_get_registry(state.wl_display);
+    if (!state.wl_registry)
+    {
+        Print::ln("Failed to get Wayland registry.\n");
+        return;
+    }
+    Print::ln("wl_display_get_registry: OK");
+
+    // Event listener
+    // wl_registry_listener: an object containging a 'global' and a 'global_remove' callback functions
+    wl_registry_add_listener(state.wl_registry, &wl_registry_listener, &state);
+    Print::ln("wl_registry_add_listener: OK");
+
+    // Process al pending requests (and will block until completed)
+    int ret = wl_display_roundtrip(state.wl_display) < 0;
+    if (ret) {
+        // communication/protocol failure
+        Print::ln("communication/protocol failure");
+        return;
+    }
+    Print::ln("wl_display_roundtrip: OK");
+
+
+    printf("roundtrip returned value: %d\n", ret);
+    if (ret < 0) {
+        printf("display error: %d\n", wl_display_get_error(state.wl_display));
+    }
+
+    
+
+    printf("display fd = %d\n", wl_display_get_fd(state.wl_display));
+    printf("error = %d\n", wl_display_get_error(state.wl_display));
+
+    int loop_count = 0;
+    // wl_display_dispatch will not return until a plroprly registered global event has been registered. I think..
+    // while (wl_display_dispatch(display) != -1)
+    // {
+    //     printf("Loop!\n");
+    //     if(loop_count++ > 100)
+    //         break;
+    //     // Main loop ??
+    // }
+
+
+    state.wl_surface = wl_compositor_create_surface(state.wl_compositor);
+    state.xdg_surface = xdg_wm_base_get_xdg_surface(
+            state.xdg_wm_base, state.wl_surface);
+    xdg_surface_add_listener(state.xdg_surface, &xdg_surface_listener, &state);
+    state.xdg_toplevel = xdg_surface_get_toplevel(state.xdg_surface);
+    xdg_toplevel_set_title(state.xdg_toplevel, "Example client");
+    wl_surface_commit(state.wl_surface);
+
+    while (wl_display_dispatch(state.wl_display))
+    {
+        if(state.running == 0)
+        {
+            Print::ln("exit");
+            // wl_display_disconnect(state.wl_display);
+            break;
+        }
+        /* This space deliberately left blank */
+    }
+
+    wl_display_disconnect(state.wl_display);
+
+
+    Print::buf("\n");
+
+    Str xdg_rt_dir = XDG::get_runtime_dir();
+    Print::buf("xdg_rt_dir = ");
+    Print::ln(xdg_rt_dir);
+
+    Str xdg_wayland_socket = XDG::get_wayland_display_socket_name();
+    Print::buf("xdg_wayland_socket = ");
+    Print::ln(xdg_wayland_socket);
+
+    Str wl_socket_path = xdg_rt_dir + "/" + xdg_wayland_socket;
+    Print::buf("wl_socket_path = ");
+    Print::ln(wl_socket_path);
+
+    Str wl_socket_read = Socket::read_from_socket(wl_socket_path);
+    Print::buf("wl_socket_read = ");
+    Print::ln(wl_socket_read);
+
+}
