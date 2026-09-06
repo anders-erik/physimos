@@ -3,7 +3,11 @@
 
 #include <stdio.h>
 
+#include <linux/input-event-codes.h>
+
 #include "wayland-client.h"
+
+#include "wl-state.hh"
 
 
 static void
@@ -33,10 +37,29 @@ pointer_motion(void *data,
                wl_fixed_t x,
                wl_fixed_t y)
 {
+    client_state *state = (client_state*) data;
+
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
-    printf("mouse: %f %f\n", px, py);
+    state->raw_pointer = {px, py};
+
+    double win_w = state->window_dims.x;
+    double win_h = state->window_dims.y;
+
+    state->sane_pointer.x = px;
+    state->sane_pointer.y = win_h - py;
+
+
+
+    // printf("mouse: %f %f\n", px, py);
+    uint x_uint = (uint) px;
+    uint y_uint = (uint) py;
+
+    // printf("mouse: %d %d\n", x_uint, y_uint);
+    printf("pointer_sane: %d %d\n", 
+        (uint) state->sane_pointer.x, 
+        (uint) state->sane_pointer.y);
 }
 
 static void
@@ -47,6 +70,49 @@ pointer_button(void *data,
                uint32_t button,
                uint32_t state)
 {
+    Print::ln(Str::SI(button));
+
+    Str btn_name;
+    Str btn_action;
+    
+    switch(button)
+    {
+        case BTN_LEFT:
+            btn_name = "BTN_LEFT";
+            break;
+
+        case BTN_RIGHT:
+            btn_name = "BTN_RIGHT";
+            break;
+
+         case BTN_MIDDLE:
+            btn_name = "BTN_MIDDLE";
+            break;
+
+        default:
+            break;
+    }
+    
+
+    switch(state)
+    {
+        case 0:
+            btn_action = "release";
+            break;
+
+        case 1:
+            btn_action = "press";
+            break;
+
+        default:
+            break;
+    }
+
+    Print::buf("mouse btn: ");
+    Print::buf(btn_name);
+    Print::buf(" ");
+    Print::buf(btn_action);
+    Print::buf("\n");
 }
 
 static void

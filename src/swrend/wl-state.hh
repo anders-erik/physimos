@@ -20,4 +20,7 @@ typedef struct client_state {
     /* Input*/
     struct wl_seat *wl_seat;
     int running = 1;
+    u2 window_dims;
+    d2 raw_pointer;
+    d2 sane_pointer;
 } client_state;
