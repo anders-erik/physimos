@@ -5,6 +5,9 @@
 
 #include "wayland-client.h"
 
+#include "math/vecmat.hh"
+
+
 /* Wayland code */
 typedef struct client_state {
     /* Globals */
