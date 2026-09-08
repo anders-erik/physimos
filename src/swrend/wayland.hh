@@ -8,7 +8,7 @@
 
 class Wayland
 {
-    struct client_state state = { 0 };
+    struct client_state state = { 0 }; 
 
 public:
     bool setup_ok = 0;

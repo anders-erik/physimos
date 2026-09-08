@@ -8,6 +8,15 @@
 #include "math/vecmat.hh"
 
 
+
+struct WLFB
+{
+    uint32_t *data = 0; // pointer to the mmaped framebuffer
+    struct wl_buffer *buffer = 0; 
+    struct wl_shm_pool *pool;
+    int shm_fd;
+};
+
 /* Wayland code */
 typedef struct client_state {
     /* Globals */
@@ -20,6 +29,8 @@ typedef struct client_state {
     struct wl_surface *wl_surface;
     struct xdg_surface *xdg_surface;
     struct xdg_toplevel *xdg_toplevel;
+    /* Buffer objects */
+    WLFB fb;
     /* Input*/
     struct wl_seat *wl_seat;
     int running = 1;

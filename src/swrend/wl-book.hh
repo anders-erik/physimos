@@ -71,60 +71,73 @@ allocate_shm_file(size_t size)
 
 
 
+// this callback is called every time the compositor is done using the buffer
+// Maybe do not destroy the buffer every render if I want the buffer to be reused! (or maybe just rebind it every time..)
 static void
 wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
 {
+    // Print::ln("wl_buffer_destroy!");
     /* Sent by the compositor when it's no longer using this buffer */
-    wl_buffer_destroy(wl_buffer);
+    // wl_buffer_destroy(wl_buffer);
 }
 
 static const struct wl_buffer_listener wl_buffer_listener = {
     .release = wl_buffer_release,
 };
 
-static struct wl_buffer *
+// static struct wl_buffer *
+void
 draw_frame(struct client_state *state)
 {
-    Print::ln("draw_frame called!");
+    
 
     // const int width = 640, height = 480;
     const int width = (int) state->window_dims.x;
     const int height = (int) state->window_dims.y;
 
-    int stride = width * 4;
-    int size = stride * height;
+    // int stride = width * 4;
+    // int size = stride * height;
 
-    int fd = allocate_shm_file(size);
-    if (fd == -1) {
-        return NULL;
-    }
+    // int fd = allocate_shm_file(size);
+    // if (fd == -1) {
+    //     return NULL;
+    // }
 
-    uint32_t *data = (uint32_t*)mmap(NULL, size,
-            PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (data == MAP_FAILED) {
-        close(fd);
-        return NULL;
-    }
+    // // we unmap data before a reallocation
+    // if(state->fb.data != 0)
+    //     munmap(state->fb.data, size);
 
-    struct wl_shm_pool *pool = wl_shm_create_pool(state->wl_shm, fd, size);
-    struct wl_buffer *buffer = wl_shm_pool_create_buffer(pool, 0,
-            width, height, stride, WL_SHM_FORMAT_XRGB8888);
-    wl_shm_pool_destroy(pool);
-    close(fd);
+    // state->fb.data = (uint32_t*)mmap(NULL, size,
+    //         PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    // if (state->fb.data == MAP_FAILED) {
+    //     close(fd);
+    //     return NULL;
+    // }
+
+    // Note: compositor allocates its own memory pool based on the fd. AFter the compoistor-allocation the currently mmaped file is no longer of any use?
+    // struct wl_shm_pool *pool = wl_shm_create_pool(state->wl_shm, fd, size);
+    // state->fb.buffer = wl_shm_pool_create_buffer(pool, 0, width, height, stride, WL_SHM_FORMAT_XRGB8888);
+    // wl_shm_pool_destroy(pool);
+    // close(fd);
+
+    Print::ln("draw_frame called!");
 
     /* Draw checkerboxed background */
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            if ((x + y / 8 * 8) % 16 < 8)
-                data[y * width + x] = 0xFF666666;
-            else
-                data[y * width + x] = 0xFFEEEEEE;
-        }
-    }
+    // for (int y = 0; y < height; ++y) {
+    //     for (int x = 0; x < width; ++x) {
+    //         if ((x + y / 8 * 8) % 16 < 8)
+    //             state->fb.data[y * width + x] = 0xFF666666;
+    //         else
+    //             state->fb.data[y * width + x] = 0xFFEEEEEE;
+    //     }
+    // }
 
-    munmap(data, size);
-    wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
-    return buffer;
+    
+
+    
+
+    // wl_buffer_add_listener(state->fb.buffer, &wl_buffer_listener, NULL);
+    // return state->fb.buffer;
 }
 
 
@@ -134,12 +147,109 @@ void render_wayland(void *data)
 
     client_state *state = (client_state *)data;
 
-    state->window_dims = {640, 480};
+    
+    // state->fb.buffer = draw_frame(state);
+    // draw_frame(state);
 
-    struct wl_buffer *buffer = draw_frame(state);
 
-    wl_surface_attach(state->wl_surface, buffer, 0, 0);
+    const int width = (int) state->window_dims.x;
+    const int height = (int) state->window_dims.y;
+
+    
+
+    wl_surface_attach(state->wl_surface, state->fb.buffer, 0, 0);
     wl_surface_commit(state->wl_surface);
+}
+
+void rebind_wl_buffer(struct client_state& state)
+{
+    const int width = (int) state.window_dims.x;
+    const int height = (int) state.window_dims.y;
+
+    int size = width * height * 4;
+    int stride = width * 4;
+
+    state.fb.buffer = wl_shm_pool_create_buffer(state.fb.pool, 0, width, height, stride, WL_SHM_FORMAT_XRGB8888);
+    wl_buffer_add_listener(state.fb.buffer, &wl_buffer_listener, NULL);
+}
+
+void clear_fb_gray(struct client_state& state)
+{
+    const int width = (int) state.window_dims.x;
+    const int height = (int) state.window_dims.y;
+
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+                state.fb.data[y * width + x] = 0xFF999999;
+        }
+    }
+}
+
+void clear_fb_green(struct client_state& state)
+{
+    const int width = (int) state.window_dims.x;
+    const int height = (int) state.window_dims.y;
+
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+                state.fb.data[y * width + x] = 0xFF55AA55;
+        }
+    }
+}
+
+void init_fb(struct client_state& state)
+{
+    const int width = (int) state.window_dims.x;
+    const int height = (int) state.window_dims.y;
+
+    int size = width * height * 4;
+    int stride = width * 4;
+
+    state.fb.shm_fd = allocate_shm_file(size);
+    if (state.fb.shm_fd == -1)
+    {
+        Print::ln("Failed to allocate shm file in 'init_fb'");
+        return;
+    }
+
+    // we unmap data before a reallocation
+    // if(state.fb.data != 0)
+    //     munmap(state.fb.data, size);
+
+    state.fb.data = (uint32_t*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, state.fb.shm_fd, 0);
+    if (state.fb.data == MAP_FAILED)
+    {
+        close(state.fb.shm_fd);
+        return;
+    }
+
+    // Note: compositor allocates its own memory pool based on the fd. AFter the compoistor-allocation the currently mmaped file is no longer of any use?
+    // struct wl_shm_pool *pool = wl_shm_create_pool(state.wl_shm, state.fb.shm_fd, size);
+    state.fb.pool = wl_shm_create_pool(state.wl_shm, state.fb.shm_fd, size);
+    // if(state.fb.buffer != 0)
+    //     wl_buffer_destroy(state.fb.buffer);
+    state.fb.buffer = wl_shm_pool_create_buffer(state.fb.pool, 0, width, height, stride, WL_SHM_FORMAT_XRGB8888);
+    // wl_shm_pool_destroy(pool);
+    // close(fd);
+
+
+    wl_buffer_add_listener(state.fb.buffer, &wl_buffer_listener, NULL);
+}
+
+void destroy_fb(struct client_state& state)
+{
+    const int width = (int) state.window_dims.x;
+    const int height = (int) state.window_dims.y;
+    const int size = width*height*4;
+
+    munmap(state.fb.data, size);
+    wl_buffer_destroy(state.fb.buffer);
+    wl_shm_pool_destroy(state.fb.pool);
+    close(state.fb.shm_fd);
 }
 
 static void

@@ -17,10 +17,18 @@ target_compile_options(xdg_wl_shell PRIVATE -g)
 unset(CMAKE_C_COMPILER)
 
 
+add_library(wayland-rend wayland-rend.cc)
+target_link_libraries(wayland-rend
+    lib
+    math
+)
+
+
 add_library(wayland wayland.cc)
 target_link_libraries(wayland
     lib
     math
+    wayland-rend
 )
 
 add_executable(main_swrend main_swrend.cc)

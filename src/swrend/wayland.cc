@@ -9,6 +9,7 @@
 
 
 #include "wayland.hh"
+#include "wayland-rend.hh"
 #include "swrend/wayland.hh"
 
 #include "wl-state.hh"
@@ -164,10 +165,21 @@ Wayland::Wayland()
 
 void Wayland::run()
 {
+    wayland_render(0);
+
+    state.window_dims = {640, 480};
+
+    init_fb(state);
+    clear_fb_gray(state);
     render_wayland(&state); // initial render to display the window
+
+    uint dummy_i = 0;
 
     while (wl_display_dispatch(state.wl_display))
     {
+        // rebind_wl_buffer(state);
+        // render_wayland(&state); 
+
         if(state.running == 0)
         {
             Print::ln("exit");
@@ -176,10 +188,28 @@ void Wayland::run()
         }
         if(state.sane_pointer.y > 400.0)
         {
+            rebind_wl_buffer(state);
             render_wayland(&state);
+            // init_fb(state);
+            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            // wl_surface_commit(state.wl_surface);
+        }
+        if(state.sane_pointer.x > 400.0)
+        {
+            Print::ln("x > 400");
+            dummy_i++;
+            // state.fb.data[dummy_i] += 65000;
+
+            // destroy_fb(state);
+            // init_fb(state);
+            clear_fb_green(state);
+            rebind_wl_buffer(state);
+            render_wayland(&state); 
         }
         /* This space deliberately left blank */
     }
+
+    destroy_fb(state);
 
     wl_display_disconnect(state.wl_display);
 }
