@@ -167,11 +167,21 @@ void Wayland::run()
 {
     wayland_render(0);
 
-    state.window_dims = {640, 480};
+    // state.window_dims = {640, 480};
+    state.fb.w = 640;
+    state.fb.h = 480;
 
-    init_fb(state);
-    clear_fb_gray(state);
+    // init_fb(state);
+    state.fb.init();
+    
+    // clear_fb_gray(state);
+
+    state.fb.clear_gray();
+
     render_wayland(&state); // initial render to display the window
+
+    // const int width = (int) state.window_dims.x;
+    // const int height = (int) state.window_dims.y;
 
     uint dummy_i = 0;
 
@@ -179,6 +189,8 @@ void Wayland::run()
     {
         // rebind_wl_buffer(state);
         // render_wayland(&state); 
+
+       
 
         if(state.running == 0)
         {
@@ -188,23 +200,53 @@ void Wayland::run()
         }
         if(state.sane_pointer.y > 400.0)
         {
-            rebind_wl_buffer(state);
-            render_wayland(&state);
+            // rebind_wl_buffer(state);
+            // render_wayland(&state);
             // init_fb(state);
             // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
             // wl_surface_commit(state.wl_surface);
+
+            state.fb.clear_gray();
+            // clear_fb_gray(state);
+            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            wl_surface_commit(state.wl_surface);
+
         }
-        if(state.sane_pointer.x > 400.0)
+        if(state.sane_pointer.y > 450.0)
         {
-            Print::ln("x > 400");
+            state.fb.resize({1000, 600});
+            // resize_fb(state, {1000, 600});
+            // resize_fb(state, {500, 300});
+            // wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            // wl_surface_commit(state.wl_surface);
+        }
+        if(state.sane_pointer.x < 50.0)
+        {
+            // resize_fb(state, {640, 480});
+            // resize_fb(state, {1000, 600});
+            // wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            // wl_surface_commit(state.wl_surface);
+        }
+        if(state.sane_pointer.x > 500.0)
+        {
+            // Print::ln("x > 400");
             dummy_i++;
             // state.fb.data[dummy_i] += 65000;
 
             // destroy_fb(state);
             // init_fb(state);
-            clear_fb_green(state);
-            rebind_wl_buffer(state);
+            state.fb.clear_green();
+            // clear_fb_green(state);
+            // rebind_wl_buffer(state);
             render_wayland(&state); 
+
+
+            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            wl_surface_commit(state.wl_surface);
         }
         /* This space deliberately left blank */
     }

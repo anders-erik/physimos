@@ -23,6 +23,13 @@ target_link_libraries(wayland-rend
     math
 )
 
+add_library(wayland-state wl-state.cc)
+target_link_libraries(wayland-state
+    lib
+    math
+    wayland-client
+)
+
 
 add_library(wayland wayland.cc)
 target_link_libraries(wayland
@@ -36,6 +43,7 @@ target_link_libraries(main_swrend
     lib
     math
     wayland
+    wayland-state
     wayland-client # this was all it took to find wayland symbols...
     xdg_wl_shell
 )

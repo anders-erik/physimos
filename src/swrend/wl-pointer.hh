@@ -44,8 +44,8 @@ pointer_motion(void *data,
 
     state->raw_pointer = {px, py};
 
-    double win_w = state->window_dims.x;
-    double win_h = state->window_dims.y;
+    double win_w = state->fb.w;
+    double win_h = state->fb.h;
 
     state->sane_pointer.x = px;
     state->sane_pointer.y = win_h - py;
