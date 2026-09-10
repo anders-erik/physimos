@@ -85,6 +85,13 @@ static const struct wl_buffer_listener wl_buffer_listener = {
 
 void WLFB::init()
 {
+    // format
+
+    if(format == WLFB::RGBA)
+        shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
+    else if(format == WLFB::RGB)
+        shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
+
     const int width =  w;
     const int height = h;
 

@@ -1,6 +1,15 @@
 #pragma once
 
+#include <cstdint>
+#include <fcntl.h>
+#include <unistd.h>
+#include <cstring>
+#include <sys/stat.h>
 
+#include "lib/str.hh"
+#include "lib/arr.hh"
+#include "math/vec.hh"
+#include "math/vecmat.hh"
 
 struct Pixel
 {
@@ -53,7 +62,7 @@ struct Pixel
     }
 };
 
-typedef Arr<Pixel> Col;
+// typedef Arr<Pixel> Col;
 
 /** 24-bit pixel bitmap */
 class Bitmap

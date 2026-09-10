@@ -35,13 +35,28 @@ add_library(wayland wayland.cc)
 target_link_libraries(wayland
     lib
     math
+    swrend
     wayland-rend
+)
+
+add_library(swrend swrend.cc)
+target_link_libraries(swrend
+    lib
+    math
+)
+
+add_library(bitmap bitmap.cc)
+target_link_libraries(bitmap
+    lib
+    math
 )
 
 add_executable(main_swrend main_swrend.cc)
 target_link_libraries(main_swrend
     lib
     math
+    bitmap
+    swrend
     wayland
     wayland-state
     wayland-client # this was all it took to find wayland symbols...

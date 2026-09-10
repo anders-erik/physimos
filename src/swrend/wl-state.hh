@@ -9,8 +9,17 @@
 
 
 
+
 struct WLFB
 {
+    enum Format
+    {
+        RGB,
+        RGBA
+    } format = RGBA;
+
+    wl_shm_format shm_format;
+
     uint32_t *data = 0; // pointer to the mmaped framebuffer
     struct wl_buffer *buffer = 0; 
     struct wl_shm *wl_shm;
@@ -22,6 +31,7 @@ struct WLFB
 
     void init();
     void resize(i2 dims);
+    void* ptr() {return (void*) data;}
 
     void clear_gray()
     {

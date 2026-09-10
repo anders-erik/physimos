@@ -21,7 +21,7 @@
 #include "wl-book.hh"
 #include "wl-pointer.hh"
 
-
+#include "swrend.hh"
 
 
 struct XDG
@@ -163,8 +163,14 @@ Wayland::Wayland()
 }
 
 
+void draw_square(void* )
+{
+
+}
+
 void Wayland::run()
 {
+
     wayland_render(0);
 
     // state.window_dims = {640, 480};
@@ -173,10 +179,20 @@ void Wayland::run()
 
     // init_fb(state);
     state.fb.init();
+
+    SWRend swrend { (uint32_t*)state.fb.ptr(), 
+                    state.fb.w, 
+                    state.fb.h                  };
+
+    
     
     // clear_fb_gray(state);
 
     state.fb.clear_gray();
+
+    swrend.draw_point({10, 10}, 0x12345678);
+    swrend.draw_point({20, 10}, 0x12345678);
+    swrend.draw_point({30, 10}, 0x12345678);
 
     render_wayland(&state); // initial render to display the window
 
@@ -226,7 +242,7 @@ void Wayland::run()
         {
             // resize_fb(state, {640, 480});
             // resize_fb(state, {1000, 600});
-            // wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            // wl_surfac6, 6e_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
             // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
             // wl_surface_commit(state.wl_surface);
         }
@@ -247,6 +263,14 @@ void Wayland::run()
             wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
             wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
             wl_surface_commit(state.wl_surface);
+        }
+        if(state.sane_pointer.x > 700.0)
+        {
+            
+        }
+        if(state.sane_pointer.x > 900.0)
+        {
+            state.fb.resize({640, 480});
         }
         /* This space deliberately left blank */
     }
