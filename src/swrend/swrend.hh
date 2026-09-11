@@ -11,6 +11,8 @@
 #include "math/vec.hh"
 #include "math/vecmat.hh"
 
+#include "bitmap.hh"
+
 
 namespace SWR
 {
@@ -62,7 +64,7 @@ struct Buf
         if(y_zero == Bottom)
             offset = _y*w + _x;
         else
-            offset = (h-_y)*w + _x;
+            offset = (h-_y-1)*w + _x;
 
         return buf + offset;
     }
@@ -77,11 +79,12 @@ struct Buf
 
     void draw_point(i2 _p, uint32_t _px);
     void clear(uint32_t _px);
-    
 
     int count_pixels() {return h*w;}
     int count_bytes() {return count_pixels() * bytes_per_pixel;}
 
+    // Bitmap interface
+    void paste(Bitmap& _bmp, i2 _pos);
 };
 
 };

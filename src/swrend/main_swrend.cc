@@ -32,21 +32,21 @@ void test_bitmap_2x2()
 {
     Bitmap bmp {2, 2};
 
-    bmp.clear({1, 2, 3});
+    bmp.clear(0x010203FF);
 
     Str pixel_str;
 
-    pixel_str = bmp[0, 0].to_str();
+    pixel_str = PX::to_str(bmp[0, 0]);
     Print::ln(pixel_str);
 
-    bmp[0, 0] = {255, 255, 255};
-    pixel_str = bmp[0, 0].to_str();
+    bmp[0, 0] = 0xFFFFFFFF;
+    pixel_str = PX::to_str(bmp[0, 0]);
     Print::ln(pixel_str);
 
-    bmp[0, 0] = {255, 255, 255};
-    Print::ln(bmp[0, 0].to_str_hex());
-    bmp[0, 0] = {0, 100, 200};
-    Print::ln(bmp[0, 0].to_str_hex());
+    bmp[0, 0] = 0xFFFFFFFF;
+    Print::ln(PX::to_str_hex(bmp[0, 0]));
+    bmp[0, 0] = 0x004080FF;
+    Print::ln(PX::to_str_hex(bmp[0, 0]));
 
     // BPMIO::Export("tmp/2x2.bmp", bmp);
 
@@ -60,13 +60,11 @@ void test_bitmap_2x2()
     Vec<uint8_t> DIB_buff = file_DIB_header.get_DIB_buffer();
 
     
-    bmp[0, 0] = {25, 25, 25};
-    bmp[1, 0] = {100, 100, 100};
-    bmp[0, 1] = {150, 150, 150};
-    bmp[1, 1] = {200, 200, 200};
+    bmp[0, 0] = 0x222222FF;
+    bmp[1, 0] = 0x555555FF;
+    bmp[0, 1] = 0x999999FF;
+    bmp[1, 1] = 0xBBBBBBFF;
 
-
-    
 
 
     BMPIO bmp_io {bmp};
@@ -125,14 +123,28 @@ class BitmapDrawer
 {
 public:
 
-    Pixel pixel;
+    // Pixel pixel;
+    PX32RGBA pixel;
 
-    void set_pixel_color(Pixel _pixel)
+    // void set_pixel_color(Pixel _pixel)
+    // {
+    //     pixel = _pixel;
+    // }
+
+    void set_pixel_color(PX32RGBA _pixel)
     {
         pixel = _pixel;
     }
 
     void point(Bitmap& _bmp, u2 _p, Pixel _px)
+    {
+        if(_bmp.is_in_bounds(_p))
+            _bmp[_p] = _px.to_PX32RGBA();
+        else
+            Print::ln("WARN: tried drawing point outseide bitmap bounds.");
+    }
+
+    void point(Bitmap& _bmp, u2 _p, PX32RGBA _px)
     {
         if(_bmp.is_in_bounds(_p))
             _bmp[_p] = _px;
@@ -157,7 +169,7 @@ public:
         {
             uint y = (uint) line[(double) x];
 
-            _bmp[x, y] = _px;
+            _bmp[x, y] = _px.to_PX32RGBA();
 
             // keep track of changes in y larger than one pixel
             uint y_change = abs(((int)y_prev - (int)y)); 
@@ -168,9 +180,9 @@ public:
                 for(uint i = 0; i < abs((int)y_change); i++)
                 {
                     if(line.k > 0)
-                        _bmp[x, y-i] = _px;
+                        _bmp[x, y-i] = _px.to_PX32RGBA();
                     else
-                        _bmp[x, y+i] = _px;
+                        _bmp[x, y+i] = _px.to_PX32RGBA();
                 }
             }
 
@@ -265,20 +277,23 @@ int main(int argc, const char** argv)
 {
     Print::ln("Hello from main_swrend.cc");
 
-    Wayland wayland;
+    if(true)
+    {
+        Wayland wayland;
 
-    if(wayland.setup_ok)
-        wayland.run();
-
+        if(wayland.setup_ok)
+            wayland.run();
+        
+        return 0;
+    }
     // WL_SHM_FORMAT_RGB888
     // WL_SHM_FORMAT_RGBA8888
 
-    return 0;
 
     // test_bitmap_2x2();
 
     Bitmap white_2x2 {2, 2};
-    white_2x2.clear({200, 200, 200});
+    white_2x2.clear(0xAAAAAAFF);
 
     // Bitmap bmp {30, 20};
     // Bitmap bmp {4, 4};
@@ -287,8 +302,8 @@ int main(int argc, const char** argv)
 
     bmp.clear(25);
 
-    bmp[1, 1] = {255, 255, 255};
-    bmp[29, 19] = {255, 255, 255};
+    bmp[1, 1] = 0xFFFFFFFF;
+    bmp[29, 19] = 0xFFFFFFFF;
 
     // bmp[30, 19] = {255, 255, 255}; // out of bounds. Will alter the first pixel per out of bounds access return
 
@@ -302,7 +317,10 @@ int main(int argc, const char** argv)
     // drawer.line_kxm_1(bmp, {20, 18}, {25, 2}, {100, 100, 100});
 
     // TODO: 3 bugs: swpping point order, x1=x2, y1=y2
-    drawer.set_pixel_color({100, 100, 150});
+    // drawer.set_pixel_color({100, 100, 150});
+    // drawer.set_pixel_color(0x555588FF);
+    // drawer.set_pixel_color(0xFFFFFFFF);
+    drawer.set_pixel_color(0x000000FF);
 
     drawer.line_kxm_2(bmp, {2, 3}, {15, 19});
     drawer.line_kxm_2(bmp, {12, 2}, {16, 18}); // positive k
@@ -322,53 +340,56 @@ int main(int argc, const char** argv)
 
     // BMP IO
     
-    BMPIO bmp_io {bmp};
+    // BMPIO bmp_io {bmp};
 
-    bmp_io.Export("tmp/spots.bmp");
+    // bmp_io.Export("tmp/spots.bmp");
 
-    Bitmap imported_bmp = bmp_io.Import("tmp/spots.bmp");
+    // Bitmap imported_bmp = bmp_io.Import("tmp/spots.bmp");
 
-    bmp_io.set_bitmap(imported_bmp);
-    bmp_io.Export("tmp/spots_export.bmp");
-
-
-    BMPIO bmp_io_2 {imported_bmp};
-    bmp_io.Export("tmp/spots_export_2.bmp");
+    // bmp_io.set_bitmap(imported_bmp);
+    // bmp_io.Export("tmp/spots_export.bmp");
 
 
-    BMPIO::SExport("tmp/static_export.bmp", bmp);
-    Bitmap simport_bmp = BMPIO::SImport("tmp/static_export.bmp");
-    BMPIO::SExport("tmp/static_export_1.bmp", simport_bmp);
+    // BMPIO bmp_io_2 {imported_bmp};
+    // bmp_io.Export("tmp/spots_export_2.bmp");
 
 
-    Bitmap font_tall = BMPIO::SImport("resources/ui/font/characters-2-tall.bmp");
-    BMPIO::SExport("tmp/font_tall.bmp", font_tall);
+    // BMPIO::SExport_PX32RGBA("tmp/white2x2.bmp", white_2x2);
 
-    char letter = 'a';
-    uint letter_height_offset = (letter - 30) * 150;
-    u2 pos = {0, letter_height_offset};
-    u2 size = {80, 150};
-    Bitmap bmp_a = font_tall.get_subbitmap(pos, size);
-    BMPIO::SExport("tmp/a.bmp", bmp_a);
 
-    Bitmap intersected_a = Bitmap::intersection(bmp, bmp_a, {20, 5});
-    bmp.paste(intersected_a, {20, 5}); // out of bounds copy
-    BMPIO::SExport("tmp/static_export_2.bmp", bmp);
+    // BMPIO::SExport("tmp/static_export.bmp", bmp);
+    // Bitmap simport_bmp = BMPIO::SImport("tmp/static_export.bmp");
+    // BMPIO::SExport("tmp/static_export_1.bmp", simport_bmp);
 
-    Bitmap a_scale_2 = bmp_a.scale(2.0);
-    BMPIO::SExport("tmp/a_scale_2.bmp", a_scale_2);
 
-    Bitmap a_scale_05 = bmp_a.scale(0.5);
-    BMPIO::SExport("tmp/a_scale_05.bmp", a_scale_05);
+    // Bitmap font_tall = BMPIO::SImport("resources/ui/font/characters-2-tall.bmp");
+    // BMPIO::SExport("tmp/font_tall.bmp", font_tall);
 
-    Bitmap a_scale_01 = bmp_a.scale(0.1);
-    BMPIO::SExport("tmp/a_scale_01.bmp", a_scale_01);
+    // char letter = 'a';
+    // uint letter_height_offset = (letter - 30) * 150;
+    // u2 pos = {0, letter_height_offset};
+    // u2 size = {80, 150};
+    // Bitmap bmp_a = font_tall.get_subbitmap(pos, size);
+    // BMPIO::SExport("tmp/a.bmp", bmp_a);
 
-    Bitmap a_scale_02 = bmp_a.scale(0.2);
-    BMPIO::SExport("tmp/a_scale_02.bmp", a_scale_02);
+    // Bitmap intersected_a = Bitmap::intersection(bmp, bmp_a, {20, 5});
+    // bmp.paste(intersected_a, {20, 5}); // out of bounds copy
+    // BMPIO::SExport("tmp/static_export_2.bmp", bmp);
 
-    bmp.paste(a_scale_02, {20, 5}); // out of bounds copy
-    BMPIO::SExport("tmp/static_export_3.bmp", bmp);
+    // Bitmap a_scale_2 = bmp_a.scale(2.0);
+    // BMPIO::SExport("tmp/a_scale_2.bmp", a_scale_2);
+
+    // Bitmap a_scale_05 = bmp_a.scale(0.5);
+    // BMPIO::SExport("tmp/a_scale_05.bmp", a_scale_05);
+
+    // Bitmap a_scale_01 = bmp_a.scale(0.1);
+    // BMPIO::SExport("tmp/a_scale_01.bmp", a_scale_01);
+
+    // Bitmap a_scale_02 = bmp_a.scale(0.2);
+    // BMPIO::SExport("tmp/a_scale_02.bmp", a_scale_02);
+
+    // bmp.paste(a_scale_02, {20, 5}); // out of bounds copy
+    // BMPIO::SExport("tmp/static_export_3.bmp", bmp);
 
 
 

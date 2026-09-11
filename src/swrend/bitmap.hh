@@ -13,6 +13,41 @@
 
 typedef uint32_t PX32RGBA;
 
+struct PX
+{
+    static inline uint8_t R(PX32RGBA _px) { return (uint8_t)(_px >> 24); }
+    static inline uint8_t G(PX32RGBA _px) { return (uint8_t)(_px >> 16); }
+    static inline uint8_t B(PX32RGBA _px) { return (uint8_t)(_px >> 8 ); }
+    static inline uint8_t A(PX32RGBA _px) { return (uint8_t)(_px >> 0 ); }
+
+    static Str to_str(PX32RGBA _px)
+    {
+        return {
+            "(",
+            Str::UI(PX::R(_px)),
+            ", ",
+            Str::UI(PX::G(_px)),
+            ", ",
+            Str::UI(PX::B(_px)),
+            ", ",
+            Str::UI(PX::A(_px)),
+            ")",
+        };
+    }
+
+    static Str to_str_hex(PX32RGBA _px)
+    {
+        char hex[16];
+        memset(hex, 0, 16);
+
+        sprintf(hex, "%x", _px);
+    
+        return {
+            Str(hex),
+        };
+    }
+};
+
 struct Pixel
 {
     uint8_t r;
@@ -62,6 +97,18 @@ struct Pixel
             Str(hex),
         };
     }
+
+    PX32RGBA to_PX32RGBA()
+    {
+        PX32RGBA ret_px = 0;
+
+        ret_px += r << 24;
+        ret_px += g << 16;
+        ret_px += b << 8 ;
+        ret_px += 0x000000FF ;
+
+        return ret_px;
+    }
 };
 
 // typedef Arr<Pixel> Col;
@@ -70,7 +117,7 @@ struct Pixel
 class Bitmap
 {
     // Arr<Col> cols;
-    Vec<uint8_t> data;
+    Vec<PX32RGBA> data;
 
     uint width = 0;
     uint height = 0;
@@ -82,7 +129,7 @@ public:
         height = _height;
         width = _width;
 
-        data.set_size(height*width*3);
+        data.set_size(height*width);
         // data.set(0);
         clear(0);
 
@@ -95,8 +142,9 @@ public:
 
     uint h() const {return height;}
     uint w() const {return width;}
+    uint bytes_per_pixel() const {return sizeof(PX32RGBA);}
     
-    uint8_t* get_data_mut()
+    PX32RGBA* get_data_mut()
     {
         return data.data_mut();
     }
@@ -117,12 +165,12 @@ public:
 
     uint stride()
     {
-        return 3 * width;
+        return width;
     }
 
     uint get_pixel_index(uint _x, uint _y)
     {
-        return _y * stride() + _x*3;
+        return _y * stride() + _x;
     }
 
     Bitmap get_subbitmap(u2 _pos, u2 _size)
@@ -231,45 +279,47 @@ public:
     }
 
     /** Checks bounds before access. If outside of bounds, it will return the first pixel in bitmap. */
-    Pixel& operator[](uint _x, uint _y)
+    PX32RGBA& operator[](uint _x, uint _y)
     {
         if(_x >= width || _y >= height)
         {
             Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
-            return (Pixel&) *(data.data_mut());
+            return (PX32RGBA&) *(data.data_mut());
         }
 
-        return (Pixel&) *(data.data_mut() + get_pixel_index(_x, _y));
+        return (PX32RGBA&) *(data.data_mut() + get_pixel_index(_x, _y));
     }
 
-    Pixel& operator[](u2 _p)
+    PX32RGBA& operator[](u2 _p)
     {
         if( _p.x >= width || _p.y >= height)
         {
             Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
-            return (Pixel&) *(data.data_mut());
+            return (PX32RGBA&) *(data.data_mut());
         }
 
-        return (Pixel&) *(data.data_mut() + get_pixel_index(_p.x, _p.y));
+        return (PX32RGBA&) *(data.data_mut() + get_pixel_index(_p.x, _p.y));
     }
 
-    void clear(Pixel _pixel)
+    void clear(PX32RGBA _pixel)
     {
-        for(uint p = 0; p < data.size(); p = p + 3)
-        {
-            data[p] = _pixel.r;
-            data[p+1] = _pixel.g;
-            data[p+2] = _pixel.b;
-        }
+        // for(uint p = 0; p < data.size(); p = p + 3)
+        // {
+        //     data[p] = _pixel.r;
+        //     data[p+1] = _pixel.g;
+        //     data[p+2] = _pixel.b;
+        // }
+        for(uint p = 0; p < count_pixels(); p++)
+            data[p] = _pixel;
     }
 
-    void clear(uint8_t _byte)
-    {
-        for(uint i = 0; i < count_bytes(); i++)
-        {
-            data[i] = _byte;
-        }
-    }
+    // void clear(uint8_t _byte)
+    // {
+    //     for(uint i = 0; i < count_bytes(); i++)
+    //     {
+    //         data[i] = _byte;
+    //     }
+    // }
 
     constexpr uint count_pixels()
     {

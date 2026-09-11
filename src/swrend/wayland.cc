@@ -200,6 +200,10 @@ void Wayland::run()
     swr_buf.draw_point({12, 10}, 0x00FFFFFF);
     swr_buf.draw_point({13, 10}, 0x00FFFFFF);
 
+    Bitmap white_4x4 {4, 4};
+    white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
+    swr_buf.paste(white_4x4, {0, 476});
+
     render_wayland(&state); // initial render to display the window
 
     // const int width = (int) state.window_dims.x;

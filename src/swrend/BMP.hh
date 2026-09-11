@@ -135,7 +135,7 @@ struct BMPFileInfoHeader
         BM[0] = 'B';
         BM[1] = 'M';
 
-        file_size = 54 + get_padded_BPM_stride(_bitmap) * _bitmap.h();
+        file_size = 54 + _bitmap.bytes_per_pixel() * _bitmap.w() * _bitmap.h();
 
         reserved_1[0] = 0;
         reserved_1[1] = 0;
@@ -321,9 +321,11 @@ public:
         width_pixels = _bitmap.w();
         height_pixels = _bitmap.h();
         planes = 1;
-        bits_per_pixel = 24;
+        // bits_per_pixel = 24;
+        bits_per_pixel = 32;
         compression = 0;
-        data_bytes = _bitmap.h() * get_padded_BPM_stride(_bitmap);
+        // data_bytes = _bitmap.h() * get_padded_BPM_stride(_bitmap);
+        data_bytes = _bitmap.h() * _bitmap.w() * _bitmap.bytes_per_pixel();
         res_hori = 2835;
         res_vert = 2835;
         color_count = 0;
@@ -470,6 +472,33 @@ public:
     {
         BMPFileInfoHeader finfo_header {_bitmap};
         BMPDIBHeader DIB_Header {_bitmap};
+        Vec<uint8_t> padded_data_buf = BMPUtil::pad_bitmap_data(_bitmap);
+
+        Vec<uint8_t> info_header_buf = finfo_header.get_header_buff();
+        Vec<uint8_t> DIB_header_buf = DIB_Header.get_DIB_buffer();
+
+        Vec<uint8_t> export_buff {finfo_header.file_size};
+
+        memcpy( export_buff.data_mut() + 0 , 
+                info_header_buf.data_mut(), 
+                14);
+        memcpy( export_buff.data_mut() + 14, 
+                DIB_header_buf.data_mut(), 
+                40);
+        memcpy( export_buff.data_mut() + finfo_header.data_offset, 
+                padded_data_buf.data_mut(), 
+                DIB_Header.data_bytes);
+
+        file_echo(  _file_path.to_c_str(), 
+                    export_buff.data_mut(), 
+                    finfo_header.file_size);
+    }
+
+    static void SExport_PX32RGBA(Str _file_path, Bitmap& _bitmap)
+    {
+        BMPFileInfoHeader finfo_header {_bitmap};
+        BMPDIBHeader DIB_Header {_bitmap};
+
         Vec<uint8_t> padded_data_buf = BMPUtil::pad_bitmap_data(_bitmap);
 
         Vec<uint8_t> info_header_buf = finfo_header.get_header_buff();

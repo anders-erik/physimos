@@ -20,3 +20,16 @@ void SWR::Buf::clear(uint32_t _px)
         buf[i] = _px;
     }
 }
+
+
+void SWR::Buf::paste(Bitmap& _bmp, i2 _pos)
+{
+    for(int x = 0; x < (int)_bmp.w(); x++)
+    {
+        for(int y = 0; y < (int)_bmp.h(); y++)
+        {   
+            *((*this)[_pos.x + x, _pos.y + y]) = _bmp[x, y];
+            // *((*this)[_pos.x + x, _pos.y + y]) = 0xffffffff;
+        }
+    }
+}

@@ -89,6 +89,7 @@ void WLFB::init()
 
     if(format == WLFB::RGBA)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
+        // shm_format = wl_shm_format::WL_SHM_FORMAT_RGBA8888;
     else if(format == WLFB::RGB)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
 
