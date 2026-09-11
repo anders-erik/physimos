@@ -11,6 +11,8 @@
 #include "math/vec.hh"
 #include "math/vecmat.hh"
 
+typedef uint32_t PX32RGBA;
+
 struct Pixel
 {
     uint8_t r;

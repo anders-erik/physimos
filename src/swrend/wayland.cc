@@ -180,9 +180,10 @@ void Wayland::run()
     // init_fb(state);
     state.fb.init();
 
-    SWRend swrend { (uint32_t*)state.fb.ptr(), 
+    SWR::Buf swr_buf { (uint32_t*)state.fb.ptr(), 
                     state.fb.w, 
                     state.fb.h                  };
+    swr_buf.y_zero = SWR::Buf::Top;
 
     
     
@@ -190,9 +191,14 @@ void Wayland::run()
 
     state.fb.clear_gray();
 
-    swrend.draw_point({10, 10}, 0x12345678);
-    swrend.draw_point({20, 10}, 0x12345678);
-    swrend.draw_point({30, 10}, 0x12345678);
+    swr_buf.clear(0x00663333);
+
+    swr_buf.draw_point({10, 10}, 0x12345678);
+    swr_buf.draw_point({20, 10}, 0x12345678);
+    swr_buf.draw_point({30, 10}, 0x12345678);
+    swr_buf.draw_point({11, 10}, 0x00FFFFFF);
+    swr_buf.draw_point({12, 10}, 0x00FFFFFF);
+    swr_buf.draw_point({13, 10}, 0x00FFFFFF);
 
     render_wayland(&state); // initial render to display the window
 
