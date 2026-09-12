@@ -146,6 +146,7 @@ public:
     const T*    data()              {return t_p ;} const
     uint      size() const        {return count ;}
     uint      size_byte() const   {return (count * sizeof(T)) ;}
+    uint      count_bytes() const   {return (count * sizeof(T)) ;}
 
     /** removes any existing data, allocates the requested size without inizalizing the data. */
     uint set_size(uint _size)

@@ -226,6 +226,34 @@ public:
         return padding_count;
     }
 
+    // Input logical: BGR
+    // Input real LE: BGR
+    // output logical: RGBA
+    // output real LE: ABGR
+    static Vec<uint32_t> RGB_to_RGBA_buf(Vec<uint8_t>& _RGB_buf)
+    {
+        uint RGB_byte_count = _RGB_buf.count_bytes();
+        uint RGB_pixel_count = RGB_byte_count / 3;
+        uint RGBA_byte_count = RGB_byte_count + RGB_pixel_count;
+        uint RGBA_pixel_count = RGB_pixel_count;
+
+        Vec<uint32_t> RGBA_buf {RGBA_byte_count};
+
+
+        for(uint pi = 0; pi < RGBA_pixel_count; pi++)
+        {
+            // RGB_buff is assumed to already be in little endian 24bit format, thus no need to flip it again!
+            uint32_t R = _RGB_buf[pi * 3 + 2] << 24 ;
+            uint32_t G = _RGB_buf[pi * 3 + 1] << 16;
+            uint32_t B = _RGB_buf[pi * 3 + 0] << 8;
+
+            uint32_t A = 0x000000FF;
+
+            RGBA_buf[pi] = R | G | B | A;
+        }
+
+        return RGBA_buf;
+    }
 
     static Vec<uint8_t> unpad_bitmap_data(Vec<uint8_t>& _padded_buf, uint _unpadded_stride, uint _bitmap_height)
     {
@@ -605,6 +633,66 @@ public:
         file_echo(  _file_path.to_c_str(), 
                     export_buff.data_mut(), 
                     finfo_header.file_size);
+    }
+
+    static Bitmap SImport_PX32(Str _file_path)
+    {
+        Vec<uint8_t> file_data = file_cat(_file_path.to_c_str());
+
+        uint info_header_size = 14;
+        
+        Vec<uint8_t> info_header_buf {info_header_size};
+        memcpy( info_header_buf.data_mut(),
+                file_data.data() + 0,
+                info_header_buf.size_byte() );
+        BMPFileInfoHeader iheader;
+        iheader.set_from_buffer(info_header_buf);
+
+
+        uint dib_header_size = iheader.data_offset - info_header_size;
+
+        Vec<uint8_t> DIB_header_buf {dib_header_size};
+        memcpy( DIB_header_buf.data_mut(),
+                file_data.data() + 14,
+                DIB_header_buf.size_byte() );
+        BMPDIBHeader dheader;
+        dheader.set_from_buffer(DIB_header_buf);
+
+
+        uint padded_data_size = file_data.size_byte() - info_header_buf.size_byte() - DIB_header_buf.size_byte();
+        Vec<uint8_t> padded_data_buf {padded_data_size};
+            
+        memcpy( padded_data_buf.data_mut(),
+                file_data.data() + iheader.data_offset,
+                padded_data_buf.size_byte() );
+
+
+        // Padded buffer to Bitmap
+
+        // Calculate image 
+        uint width = dheader.width_pixels;
+        uint height = dheader.height_pixels;
+        Bitmap bmp {    width, 
+                        height    };
+        uint pixel_count = bmp.count_pixels();
+
+        uint bits_per_pixel = dheader.bits_per_pixel;
+        uint unpadded_24bit_stride = (bits_per_pixel / 8) * width;
+
+        // STEP 1: unpad into densly packed 24bit RGB
+        Vec<uint8_t> unpadded_RGB_image_data = BMPUtil::unpad_bitmap_data(padded_data_buf, unpadded_24bit_stride, height);
+
+        // STEP 2: expand into 32 bit RGBA format
+        Vec<uint32_t> px32_buf = BMPUtil::RGB_to_RGBA_buf(unpadded_RGB_image_data);
+
+        // Create the Bitmap object and return
+        
+
+        memcpy( bmp.get_data_mut(),
+                px32_buf.data(),
+                bmp.count_bytes()           );
+
+        return bmp;
     }
 
 

@@ -277,7 +277,7 @@ int main(int argc, const char** argv)
 {
     Print::ln("Hello from main_swrend.cc");
 
-    if(true)
+    if(false)
     {
         Wayland wayland;
 
@@ -362,41 +362,42 @@ int main(int argc, const char** argv)
 
 
     BMPIO::SExport_PX32RGBA("tmp/white2x2.bmp", white_2x2);
-
+    Bitmap simport_white2x2 = BMPIO::SImport_PX32("tmp/white2x2.bmp");
+    BMPIO::SExport_PX32RGBA("tmp/white2x2_export.bmp", simport_white2x2);
 
     BMPIO::SExport_PX32RGBA("tmp/static_export.bmp", bmp);
-    // Bitmap simport_bmp = BMPIO::SImport("tmp/static_export.bmp");
-    // BMPIO::SExport("tmp/static_export_1.bmp", simport_bmp);
+    Bitmap simport_bmp = BMPIO::SImport_PX32("tmp/static_export.bmp");
+    BMPIO::SExport_PX32RGBA("tmp/static_export_1.bmp", simport_bmp);
 
 
-    // Bitmap font_tall = BMPIO::SImport("resources/ui/font/characters-2-tall.bmp");
-    // BMPIO::SExport("tmp/font_tall.bmp", font_tall);
+    Bitmap font_tall = BMPIO::SImport_PX32("resources/ui/font/characters-2-tall.bmp");
+    BMPIO::SExport_PX32RGBA("tmp/font_tall.bmp", font_tall);
 
-    // char letter = 'a';
-    // uint letter_height_offset = (letter - 30) * 150;
-    // u2 pos = {0, letter_height_offset};
-    // u2 size = {80, 150};
-    // Bitmap bmp_a = font_tall.get_subbitmap(pos, size);
-    // BMPIO::SExport("tmp/a.bmp", bmp_a);
+    char letter = 'a';
+    uint letter_height_offset = (letter - 30) * 150;
+    u2 pos = {0, letter_height_offset};
+    u2 size = {80, 150};
+    Bitmap bmp_a = font_tall.get_subbitmap(pos, size);
+    BMPIO::SExport_PX32RGBA("tmp/a.bmp", bmp_a);
 
-    // Bitmap intersected_a = Bitmap::intersection(bmp, bmp_a, {20, 5});
-    // bmp.paste(intersected_a, {20, 5}); // out of bounds copy
-    // BMPIO::SExport("tmp/static_export_2.bmp", bmp);
+    Bitmap intersected_a = Bitmap::intersection(bmp, bmp_a, {20, 5});
+    bmp.paste(intersected_a, {20, 5}); // out of bounds copy
+    BMPIO::SExport_PX32RGBA("tmp/static_export_2.bmp", bmp);
 
-    // Bitmap a_scale_2 = bmp_a.scale(2.0);
-    // BMPIO::SExport("tmp/a_scale_2.bmp", a_scale_2);
+    Bitmap a_scale_2 = bmp_a.scale(2.0);
+    BMPIO::SExport_PX32RGBA("tmp/a_scale_2.bmp", a_scale_2);
 
-    // Bitmap a_scale_05 = bmp_a.scale(0.5);
-    // BMPIO::SExport("tmp/a_scale_05.bmp", a_scale_05);
+    Bitmap a_scale_05 = bmp_a.scale(0.5);
+    BMPIO::SExport_PX32RGBA("tmp/a_scale_05.bmp", a_scale_05);
 
-    // Bitmap a_scale_01 = bmp_a.scale(0.1);
-    // BMPIO::SExport("tmp/a_scale_01.bmp", a_scale_01);
+    Bitmap a_scale_01 = bmp_a.scale(0.1);
+    BMPIO::SExport_PX32RGBA("tmp/a_scale_01.bmp", a_scale_01);
 
-    // Bitmap a_scale_02 = bmp_a.scale(0.2);
-    // BMPIO::SExport("tmp/a_scale_02.bmp", a_scale_02);
+    Bitmap a_scale_02 = bmp_a.scale(0.2);
+    BMPIO::SExport_PX32RGBA("tmp/a_scale_02.bmp", a_scale_02);
 
-    // bmp.paste(a_scale_02, {20, 5}); // out of bounds copy
-    // BMPIO::SExport("tmp/static_export_3.bmp", bmp);
+    bmp.paste(a_scale_02, {20, 5}); // out of bounds copy
+    BMPIO::SExport_PX32RGBA("tmp/static_export_3.bmp", bmp);
 
 
 
