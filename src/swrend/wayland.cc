@@ -113,6 +113,10 @@ static const WLRegistry::Listener wl_registry_listener = {
 
 
 
+Wayland::Wayland(i2 dims)
+{
+    init(dims);
+}
 
 Wayland::Wayland()
 {
@@ -163,9 +167,281 @@ Wayland::Wayland()
 }
 
 
+void Wayland::init(i2 dims)
+{
+    // opaque object passed to qayland server during communication
+    // struct wl_display *display = wl_display_connect(NULL);
+    state.wl_display = wl_display_connect(NULL);
+    if (!state.wl_display) {
+        Print::ln("Failed to connect to Wayland display\n");
+        return;
+    }
+    Print::ln("wl_display_connect: OK");
+
+    // think: wl_display.get_registry(); !!
+    // struct wl_registry *registry = wl_display_get_registry(state.wl_display);
+    state.wl_registry = wl_display_get_registry(state.wl_display);
+    if (!state.wl_registry)
+    {
+        Print::ln("Failed to get Wayland registry.\n");
+        return;
+    }
+    Print::ln("wl_display_get_registry: OK");
+
+    wl_registry_add_listener(state.wl_registry, &wl_registry_listener, &state);
+
+    // Process all pending requests (and will block until completed)
+    int ret = wl_display_roundtrip(state.wl_display);
+    if (ret < 0) {
+        printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.wl_display));
+        return;
+    }
+
+    // printf("display fd = %d\n", wl_display_get_fd(state.wl_display));
+    // printf("error = %d\n", wl_display_get_error(state.wl_display));
+
+
+    state.wl_surface = wl_compositor_create_surface(state.wl_compositor);
+    state.xdg_surface = xdg_wm_base_get_xdg_surface(state.xdg_wm_base, state.wl_surface);
+    xdg_surface_add_listener(state.xdg_surface, &xdg_surface_listener, &state);
+    state.xdg_toplevel = xdg_surface_get_toplevel(state.xdg_surface);
+    xdg_toplevel_set_title(state.xdg_toplevel, "Example client");
+    wl_surface_commit(state.wl_surface);
+
+
+
+
+    wayland_render(0);
+
+    // state.window_dims = {640, 480};
+    state.fb.w = 640;
+    state.fb.h = 480;
+
+    // init_fb(state);
+    state.fb.init();
+
+    SWR::Buf swr_buf {  (PX32*)state.fb.ptr(), 
+                        state.fb.w, 
+                        state.fb.h,
+                        PX32F::ARGB,
+                        SWR::Buf::Top                  };
+    
+
+    // clear_fb_gray(state);
+
+    state.fb.clear_gray();
+
+    swr_buf.clear(0x00663333);
+
+    swr_buf.draw_point({10, 10}, 0x12345678);
+    swr_buf.draw_point({20, 10}, 0x12345678);
+    swr_buf.draw_point({30, 10}, 0x12345678);
+    swr_buf.draw_point({11, 10}, 0x00FFFFFF);
+    swr_buf.draw_point({12, 10}, 0x00FFFFFF);
+    swr_buf.draw_point({13, 10}, 0x00FFFFFF);
+
+    swr_buf.draw_line({30, 30}, {50, 170}, 0x00FFFFFF);
+    swr_buf.draw_line({34, 30}, {54, 170}, 0xFFFFFF00);
+    swr_buf.draw_line({38, 30}, {58, 170}, PX::RGBA_to_ARGB(0xFFFFFF00));
+
+    swr_buf.draw_rectangle({300, 100}, {340, 120}, PX::RGBA_to_ARGB(0x88f888800));
+
+    swr_buf.draw_triangle_no_fill({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+
+    swr_buf.draw_triangle({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+
+    Bitmap white_4x4 {4, 4, PX32F::ARGB};
+    // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
+    // white_4x4.clear(0xFFFFFF00); //
+    white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
+    // white_4x4.set_format(PX32F::ARGB);
+    swr_buf.bm_paste(white_4x4, {0, 476});
+
+
+    Bitmap triangle_bmp {40, 40, PX32F::ARGB};
+    triangle_bmp.clear_RGBA(0x994444FF);
+    swr_buf.bm_paste(triangle_bmp, {100, 100});
+    
+    
+
+    render_wayland(&state); // initial render to display the window
+
+    // const int width = (int) state.window_dims.x;
+    // const int height = (int) state.window_dims.y;
+
+    
+
+    main_loop();
+
+
+    setup_ok = true;
+}
+
 void draw_square(void* )
 {
 
+}
+
+void Wayland::update()
+{
+    uint dummy_i = 0;
+
+    wl_display_dispatch(state.wl_display);
+    
+    if(state.running == 0)
+    {
+        Print::ln("exit");
+        // wl_display_disconnect(state.wl_display);
+        return;
+    }
+    if(state.sane_pointer.y > 400.0)
+    {
+        // rebind_wl_buffer(state);
+        // render_wayland(&state);
+        // init_fb(state);
+        // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+        // wl_surface_commit(state.wl_surface);
+
+        state.fb.clear_gray();
+        // clear_fb_gray(state);
+        wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+        wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+        wl_surface_commit(state.wl_surface);
+
+    }
+    if(state.sane_pointer.y > 450.0)
+    {
+        state.fb.resize({1000, 600});
+        // resize_fb(state, {1000, 600});
+        // resize_fb(state, {500, 300});
+        // wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+        // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+        // wl_surface_commit(state.wl_surface);
+    }
+    if(state.sane_pointer.x < 50.0)
+    {
+        // resize_fb(state, {640, 480});
+        // resize_fb(state, {1000, 600});
+        // wl_surfac6, 6e_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+        // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+        // wl_surface_commit(state.wl_surface);
+    }
+    if(state.sane_pointer.x > 500.0)
+    {
+        // Print::ln("x > 400");
+        dummy_i++;
+        // state.fb.data[dummy_i] += 65000;
+
+        // destroy_fb(state);
+        // init_fb(state);
+        state.fb.clear_green();
+        // clear_fb_green(state);
+        // rebind_wl_buffer(state);
+        render_wayland(&state); 
+
+
+        wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+        wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+        wl_surface_commit(state.wl_surface);
+    }
+    if(state.sane_pointer.x > 700.0)
+    {
+        
+    }
+    if(state.sane_pointer.x > 900.0)
+    {
+        state.fb.resize({640, 480});
+    }
+    /* This space deliberately left blank */
+}
+
+void Wayland::close()
+{
+
+    destroy_fb(state);
+
+    wl_display_disconnect(state.wl_display);
+}
+
+void Wayland::main_loop()
+{
+    uint dummy_i = 0;
+
+    while (wl_display_dispatch(state.wl_display))
+    {
+        // rebind_wl_buffer(state);
+        // render_wayland(&state); 
+        
+        if(state.running == 0)
+        {
+            Print::ln("exit");
+            // wl_display_disconnect(state.wl_display);
+            break;
+        }
+        if(state.sane_pointer.y > 400.0)
+        {
+            // rebind_wl_buffer(state);
+            // render_wayland(&state);
+            // init_fb(state);
+            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            // wl_surface_commit(state.wl_surface);
+
+            state.fb.clear_gray();
+            // clear_fb_gray(state);
+            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            wl_surface_commit(state.wl_surface);
+
+        }
+        if(state.sane_pointer.y > 450.0)
+        {
+            state.fb.resize({1000, 600});
+            // resize_fb(state, {1000, 600});
+            // resize_fb(state, {500, 300});
+            // wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            // wl_surface_commit(state.wl_surface);
+        }
+        if(state.sane_pointer.x < 50.0)
+        {
+            // resize_fb(state, {640, 480});
+            // resize_fb(state, {1000, 600});
+            // wl_surfac6, 6e_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            // wl_surface_commit(state.wl_surface);
+        }
+        if(state.sane_pointer.x > 500.0)
+        {
+            // Print::ln("x > 400");
+            dummy_i++;
+            // state.fb.data[dummy_i] += 65000;
+
+            // destroy_fb(state);
+            // init_fb(state);
+            state.fb.clear_green();
+            // clear_fb_green(state);
+            // rebind_wl_buffer(state);
+            render_wayland(&state); 
+
+
+            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
+            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
+            wl_surface_commit(state.wl_surface);
+        }
+        if(state.sane_pointer.x > 700.0)
+        {
+            
+        }
+        if(state.sane_pointer.x > 900.0)
+        {
+            state.fb.resize({640, 480});
+        }
+        /* This space deliberately left blank */
+    }
+
+    destroy_fb(state);
+
+    wl_display_disconnect(state.wl_display);
 }
 
 void Wayland::run()

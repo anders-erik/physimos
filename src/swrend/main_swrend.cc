@@ -8,6 +8,7 @@
 #include "lib/print.hh"
 #include "lib/arr.hh"
 #include "lib/file.hh"
+#include "lib/cli.hh"
 
 #include "math/vec.hh"
 #include "math/vecmat.hh"
@@ -15,6 +16,7 @@
 #include "swrend/bitmap.hh"
 #include "swrend/BMP.hh"
 #include "swrend/line.hh"
+#include "swrend/ui.hh"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -247,12 +249,8 @@ public:
 
 
 
-
-
-int main(int argc, const char** argv)
+void fn_wayland()
 {
-    Print::ln("Hello from main_swrend.cc");
-
     if(true)
     {
         Wayland wayland;
@@ -260,12 +258,14 @@ int main(int argc, const char** argv)
         if(wayland.setup_ok)
             wayland.run();
         
-        return 0;
+        return;
     }
     // WL_SHM_FORMAT_RGB888
     // WL_SHM_FORMAT_RGBA8888
+}
 
-
+Bitmap fn_bitmap()
+{
     // test_bitmap_2x2();
 
     Bitmap white_2x2 {2, 2};
@@ -288,6 +288,15 @@ int main(int argc, const char** argv)
     bmp[29, 19] = 0xFFFFFFFF;
 
     // bmp[30, 19] = {255, 255, 255}; // out of bounds. Will alter the first pixel per out of bounds access return
+
+    return bmp;
+}
+
+Bitmap fn_bitmap_drawer(Bitmap bmp)
+{
+    Bitmap white_2x2 {2, 2};
+    // white_2x2.clear(0xAABBCCFF);
+    white_2x2.clear(0xAABBCCFF);
 
     BitmapDrawer drawer;
 
@@ -319,6 +328,15 @@ int main(int argc, const char** argv)
 
     bmp.paste(white_2x2, {40, 25});
 
+    return bmp;
+}
+
+
+void fn_bitmap_io(Bitmap& bmp)
+{
+    Bitmap white_2x2 {2, 2};
+    // white_2x2.clear(0xAABBCCFF);
+    white_2x2.clear(0xAABBCCFF);
 
 
     // BMP IO
@@ -375,7 +393,79 @@ int main(int argc, const char** argv)
     bmp.paste(a_scale_02, {20, 5}); // out of bounds copy
     BMPIO::SExport_PX32RGBA("tmp/static_export_3.bmp", bmp);
 
+}
 
+
+int main(int argc, char** argv)
+{
+    Print::ln("Hello from main_swrend.cc");
+
+    CLI cli {argc, argv};
+
+    if(cli[1] == "wayland")
+    {
+        fn_wayland();
+    }
+    else if(cli[1] == "bitmap_draw")
+    {
+
+        Bitmap bmp = fn_bitmap();
+
+        bmp = fn_bitmap_drawer(bmp);
+    }
+    else if(cli[1] == "bitmap_io")
+    {
+        Bitmap bmp = fn_bitmap();
+
+        fn_bitmap_io(bmp);
+    }
+    else if(cli[1] == "ui")
+    {
+        int w = 400;
+        int h = 200;
+
+        UI_Node root_node { {w, h}, {0, 0} };
+
+        struct Window
+        {
+            Wayland wayland;
+            Tree<UI_Node> UI;
+
+            Window(i2 dims, UI_Node _ui_root)
+                :   wayland {Wayland{dims}},
+                    UI { Tree<UI_Node> {_ui_root} }
+            {
+
+            }
+
+            void open()
+            {
+                // wayland.main_loop();
+
+                while(wayland.get_state().running)
+                {
+                    // frame update!
+                    wayland.update();
+
+                    
+                }
+            }
+        };
+
+        // Tree<UI_Node> ui {root_node};
+
+        Window window { {w, h}, root_node };
+        
+        window.open();
+        // Wayland wayland {{w, h}};
+        
+
+    }
+    else
+    {
+        Print::ln("No valid command detected.");
+    }
+    
 
     Print::ln("Bye, from main_swrend.cc. \n");
     return 0;

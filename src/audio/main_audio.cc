@@ -9,6 +9,7 @@
 
 #include "lib/print.hh"
 #include "lib/arr.hh"
+#include "lib/cli.hh"
 // #include "lib/pair.hh"
 
 #include "math/vec.hh"
@@ -26,7 +27,6 @@
 #include "sheet_io.hh"
 #include "time.hh"
 #include "phyano.hh"
-#include "cli.hh"
 
 
 

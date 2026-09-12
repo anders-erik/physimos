@@ -8,7 +8,11 @@
 	"perf_dir": "${workspaceFolder}/build/perf_linux/",
 
 	// ARG
-	"arg1": "",
+	// "arg1": "",
+	"arg1": "ui",
+	// "arg1": "wayland",
+	// "arg1": "bitmap_draw",
+	// "arg1": "bitmap_io",
 	// "arg1": "phyano",
 	// "arg1": "sheet",
 	// "arg1": "DFT",
