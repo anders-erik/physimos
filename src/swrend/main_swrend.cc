@@ -277,7 +277,7 @@ int main(int argc, const char** argv)
 {
     Print::ln("Hello from main_swrend.cc");
 
-    if(true)
+    if(false)
     {
         Wayland wayland;
 
@@ -293,7 +293,8 @@ int main(int argc, const char** argv)
     // test_bitmap_2x2();
 
     Bitmap white_2x2 {2, 2};
-    white_2x2.clear(0xAAAAAAFF);
+    // white_2x2.clear(0xAABBCCFF);
+    white_2x2.clear(0xAABBCCFF);
 
     // Bitmap bmp {30, 20};
     // Bitmap bmp {4, 4};
@@ -319,8 +320,9 @@ int main(int argc, const char** argv)
     // TODO: 3 bugs: swpping point order, x1=x2, y1=y2
     // drawer.set_pixel_color({100, 100, 150});
     // drawer.set_pixel_color(0x555588FF);
+    drawer.set_pixel_color(0x885555FF);
     // drawer.set_pixel_color(0xFFFFFFFF);
-    drawer.set_pixel_color(0x000000FF);
+    // drawer.set_pixel_color(0x000000FF);
 
     drawer.line_kxm_2(bmp, {2, 3}, {15, 19});
     drawer.line_kxm_2(bmp, {12, 2}, {16, 18}); // positive k
@@ -354,10 +356,10 @@ int main(int argc, const char** argv)
     // bmp_io.Export("tmp/spots_export_2.bmp");
 
 
-    // BMPIO::SExport_PX32RGBA("tmp/white2x2.bmp", white_2x2);
+    BMPIO::SExport_PX32RGBA("tmp/white2x2.bmp", white_2x2);
 
 
-    // BMPIO::SExport("tmp/static_export.bmp", bmp);
+    BMPIO::SExport_PX32RGBA("tmp/static_export.bmp", bmp);
     // Bitmap simport_bmp = BMPIO::SImport("tmp/static_export.bmp");
     // BMPIO::SExport("tmp/static_export_1.bmp", simport_bmp);
 

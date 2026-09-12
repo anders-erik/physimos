@@ -12,6 +12,11 @@
 #include "math/vecmat.hh"
 
 typedef uint32_t PX32RGBA;
+typedef uint32_t PX32;
+enum class PX32F
+{
+    RGBA,
+};
 
 struct PX
 {
@@ -122,6 +127,8 @@ class Bitmap
     uint width = 0;
     uint height = 0;
 
+    PX32F format = PX32F::RGBA;
+
 public:
 
     Bitmap(uint _width, uint _height)
@@ -163,14 +170,14 @@ public:
     //     return cols[_col_index];
     // }
 
-    uint stride()
+    uint stride_byte()
     {
-        return width;
+        return width * 4;
     }
 
     uint get_pixel_index(uint _x, uint _y)
     {
-        return _y * stride() + _x;
+        return _y * w() + _x;
     }
 
     Bitmap get_subbitmap(u2 _pos, u2 _size)

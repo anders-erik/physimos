@@ -88,6 +88,167 @@ Vec<uint8_t> file_cat(const char* _file_path_c)
 }
 
 
+
+
+
+class BMPUtil
+{
+public:
+
+    static uint get_padded_stride(Bitmap& _bitmap)
+    {
+        uint stride_byte_count = _bitmap.w() * 3;
+    
+        uint padding_count;
+
+        // BMP always pads the stride to multiples of 4 bytes
+        if( (stride_byte_count % 4) == 0)
+            padding_count = 0;
+        else
+            padding_count = 4 - (stride_byte_count % 4);
+
+        return stride_byte_count + padding_count;
+    }
+
+    static uint get_padded_stride_from_24bit_stride(uint _stride_24bit)
+    {
+        uint padding_count;
+
+        // BMP always pads the stride to multiples of 4 bytes
+        if( (_stride_24bit % 4) == 0)
+            padding_count = 0;
+        else
+            padding_count = 4 - (_stride_24bit % 4);
+
+        return _stride_24bit + padding_count;
+    }
+
+    static uint get_padded_stride_PX32RGBA(const Bitmap& _bitmap)
+    {
+        uint stride_byte_count = _bitmap.w() * 3; // final stride count before padding
+    
+        uint padding_count;
+
+        // BMP always pads the stride to multiples of 4 bytes
+        if( (stride_byte_count % 4) == 0)
+            padding_count = 0;
+        else
+            padding_count = 4 - (stride_byte_count % 4);
+
+        return stride_byte_count + padding_count;
+    }
+
+    static Vec<uint8_t> pad_bitmap_data(Bitmap& _bitmap)
+    {
+        uint stride = _bitmap.stride_byte();
+
+        uint padded_stride = get_padded_stride(_bitmap);
+
+        Vec<uint8_t> padded_data {_bitmap.h() * padded_stride};
+        padded_data.set(0x00);
+
+        // uint8_t* bitmap_base_ptr = bitmap.get_data_mut();
+        // uint8_t* padded_base_ptr = padded_data.data_mut();
+
+        for(uint i = 0; i < _bitmap.h(); i++)
+        {
+            // uint index_start_of_row = i * padded_stride;
+            memcpy( padded_data.data_mut() + i * padded_stride,
+                    _bitmap.get_data_mut() + i * stride,
+                    stride                                  );
+        }
+
+        return padded_data;
+    }
+
+    static Vec<uint8_t> remove_alpha(Bitmap& _bitmap)
+    {
+        uint width_px = _bitmap.w();
+    
+        // STEP 1: convert to 3-byte buffer
+        Vec<uint8_t> bitmap_data_24bit {_bitmap.w() * _bitmap.h() * 3};
+        for(uint i = 0; i < _bitmap.count_pixels(); i++)
+        {
+            PX32RGBA px_32 = *(_bitmap.get_data_mut() + i);
+            bitmap_data_24bit[i * 3 + 0] = PX::B(px_32);
+            bitmap_data_24bit[i * 3 + 1] = PX::G(px_32);
+            bitmap_data_24bit[i * 3 + 2] = PX::R(px_32);
+        }
+
+        return bitmap_data_24bit;
+    }
+
+
+    static Vec<uint8_t> bitmap_to_bmp_buf(Bitmap& _bitmap)
+    {
+        uint width_px = _bitmap.w();
+    
+        // STEP 1: convert to 3-byte buffer
+        Vec<uint8_t> bitmap_data_24bit {_bitmap.w() * _bitmap.h() * 3};
+        for(uint i = 0; i < _bitmap.count_pixels(); i++)
+        {
+            PX32RGBA px_32 = *(_bitmap.get_data_mut() + i);
+            bitmap_data_24bit[i * 3 + 0] = PX::B(px_32);
+            bitmap_data_24bit[i * 3 + 1] = PX::G(px_32);
+            bitmap_data_24bit[i * 3 + 2] = PX::R(px_32);
+        }
+
+
+        // STEP 2: convert to padded 3-byte buffer
+        uint stride_bitmap_data_24bit = width_px * 3;
+        uint stride_bitmap_data_24bit_padded = get_padded_stride_from_24bit_stride(stride_bitmap_data_24bit);
+
+        Vec<uint8_t> padded_data {_bitmap.h() * stride_bitmap_data_24bit_padded};
+        padded_data.set(0x00);
+        for(uint i = 0; i < _bitmap.h(); i++)
+        {
+            
+            // uint index_start_of_row = i * padded_stride;
+            memcpy( padded_data.data_mut() + i * stride_bitmap_data_24bit_padded,
+                    bitmap_data_24bit.data_mut() + i * stride_bitmap_data_24bit,
+                    stride_bitmap_data_24bit                                  );
+        }
+
+        return padded_data;
+    }
+
+
+    static uint get_padding(uint _unpadded_stride_bytes)
+    {
+        uint padding_count;
+
+        // BMP always pads the stride to multiples of 4 bytes
+        if( (_unpadded_stride_bytes % 4) == 0)
+            padding_count = 0;
+        else
+            padding_count = 4 - (_unpadded_stride_bytes % 4);
+
+        return padding_count;
+    }
+
+
+    static Vec<uint8_t> unpad_bitmap_data(Vec<uint8_t>& _padded_buf, uint _unpadded_stride, uint _bitmap_height)
+    {
+        uint padded_stride = _unpadded_stride + BMPUtil::get_padding(_unpadded_stride);
+
+        uint unpadded_buffer_size = _unpadded_stride * _bitmap_height;
+
+        Vec<uint8_t> unpadded_buf {unpadded_buffer_size};
+
+
+        for(uint i = 0; i < _bitmap_height; i++)
+        {
+            // uint index_start_of_row = i * padded_stride;
+            memcpy( unpadded_buf.data_mut() + i * _unpadded_stride,
+                    _padded_buf.data_mut() + i * padded_stride,
+                    _unpadded_stride                                  );
+        }
+
+        return unpadded_buf;
+    }
+};
+
+
 struct BMPFileInfoHeader
 {
     Vec<uint8_t> BM {2};
@@ -135,7 +296,8 @@ struct BMPFileInfoHeader
         BM[0] = 'B';
         BM[1] = 'M';
 
-        file_size = 54 + _bitmap.bytes_per_pixel() * _bitmap.w() * _bitmap.h();
+        // We currently only support BMP with 3 byte RGB values
+        file_size = 54 + _bitmap.h() * BMPUtil::get_padded_stride_PX32RGBA(_bitmap);
 
         reserved_1[0] = 0;
         reserved_1[1] = 0;
@@ -321,11 +483,11 @@ public:
         width_pixels = _bitmap.w();
         height_pixels = _bitmap.h();
         planes = 1;
-        // bits_per_pixel = 24;
-        bits_per_pixel = 32;
+        bits_per_pixel = 24;
+        // bits_per_pixel = 32;
         compression = 0;
-        // data_bytes = _bitmap.h() * get_padded_BPM_stride(_bitmap);
-        data_bytes = _bitmap.h() * _bitmap.w() * _bitmap.bytes_per_pixel();
+        data_bytes = _bitmap.h() * BMPUtil::get_padded_stride_PX32RGBA(_bitmap);
+        // data_bytes = _bitmap.h() * _bitmap.w() * 3; // we currently 
         res_hori = 2835;
         res_vert = 2835;
         color_count = 0;
@@ -366,83 +528,6 @@ public:
 
 };
 
-
-class BMPUtil
-{
-public:
-
-    static uint get_padded_stride(Bitmap& _bitmap)
-    {
-        uint stride_byte_count = _bitmap.w() * 3;
-    
-        uint padding_count;
-
-        // BMP always pads the stride to multiples of 4 bytes
-        if( (stride_byte_count % 4) == 0)
-            padding_count = 0;
-        else
-            padding_count = 4 - (stride_byte_count % 4);
-
-        return stride_byte_count + padding_count;
-    }
-
-    static Vec<uint8_t> pad_bitmap_data(Bitmap& _bitmap)
-    {
-        uint stride = _bitmap.stride();
-        uint padded_stride = get_padded_stride(_bitmap);
-
-        Vec<uint8_t> padded_data {_bitmap.h() * padded_stride};
-        padded_data.set(0x00);
-
-        // uint8_t* bitmap_base_ptr = bitmap.get_data_mut();
-        // uint8_t* padded_base_ptr = padded_data.data_mut();
-
-        for(uint i = 0; i < _bitmap.h(); i++)
-        {
-            // uint index_start_of_row = i * padded_stride;
-            memcpy( padded_data.data_mut() + i * padded_stride,
-                    _bitmap.get_data_mut() + i * stride,
-                    stride                                  );
-        }
-
-        return padded_data;
-    }
-
-
-    static uint get_padding(uint _unpadded_stride_bytes)
-    {
-        uint padding_count;
-
-        // BMP always pads the stride to multiples of 4 bytes
-        if( (_unpadded_stride_bytes % 4) == 0)
-            padding_count = 0;
-        else
-            padding_count = 4 - (_unpadded_stride_bytes % 4);
-
-        return padding_count;
-    }
-
-
-    static Vec<uint8_t> unpad_bitmap_data(Vec<uint8_t>& _padded_buf, uint _unpadded_stride, uint _bitmap_height)
-    {
-        uint padded_stride = _unpadded_stride + BMPUtil::get_padding(_unpadded_stride);
-
-        uint unpadded_buffer_size = _unpadded_stride * _bitmap_height;
-
-        Vec<uint8_t> unpadded_buf {unpadded_buffer_size};
-
-
-        for(uint i = 0; i < _bitmap_height; i++)
-        {
-            // uint index_start_of_row = i * padded_stride;
-            memcpy( unpadded_buf.data_mut() + i * _unpadded_stride,
-                    _padded_buf.data_mut() + i * padded_stride,
-                    _unpadded_stride                                  );
-        }
-
-        return unpadded_buf;
-    }
-};
 
 
 class BMPIO
@@ -499,10 +584,11 @@ public:
         BMPFileInfoHeader finfo_header {_bitmap};
         BMPDIBHeader DIB_Header {_bitmap};
 
-        Vec<uint8_t> padded_data_buf = BMPUtil::pad_bitmap_data(_bitmap);
-
         Vec<uint8_t> info_header_buf = finfo_header.get_header_buff();
         Vec<uint8_t> DIB_header_buf = DIB_Header.get_DIB_buffer();
+
+        // Vec<uint8_t> bitmap_buf_no_alpha = BMPUtil::remove_alpha(_bitmap);
+        Vec<uint8_t> padded_data_buf = BMPUtil::bitmap_to_bmp_buf(_bitmap);
 
         Vec<uint8_t> export_buff {finfo_header.file_size};
 
@@ -665,7 +751,7 @@ public:
 
     Vec<uint8_t> pad_bitmap_data()
     {
-        uint stride = bitmap.stride();
+        uint stride = bitmap.stride_byte();
         uint padded_stride = get_padded_BPM_stride(bitmap);
 
         Vec<uint8_t> padded_data {bitmap.h() * padded_stride};

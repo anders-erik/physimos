@@ -89,7 +89,9 @@ void WLFB::init()
 
     if(format == WLFB::RGBA)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
+        // shm_format = wl_shm_format::WL_SHM_FORMAT_ARGB8888;
         // shm_format = wl_shm_format::WL_SHM_FORMAT_RGBA8888;
+        // shm_format = wl_shm_format::WL_SHM_FORMAT_RGBX8888;
     else if(format == WLFB::RGB)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
 
@@ -122,7 +124,7 @@ void WLFB::init()
     pool = wl_shm_create_pool(wl_shm, shm_fd, size);
     // if(state.fb.buffer != 0)
     //     wl_buffer_destroy(state.fb.buffer);
-    buffer = wl_shm_pool_create_buffer(pool, 0, w, h, stride, WL_SHM_FORMAT_XRGB8888);
+    buffer = wl_shm_pool_create_buffer(pool, 0, w, h, stride, shm_format);
     // wl_shm_pool_destroy(pool);
     // close(fd);
 
@@ -174,7 +176,7 @@ void WLFB::resize(i2 dims)
     pool = wl_shm_create_pool(wl_shm, shm_fd, size);
     // if(state.fb.buffer != 0)
     //     wl_buffer_destroy(state.fb.buffer);
-    buffer = wl_shm_pool_create_buffer(pool, 0, w, h, stride, WL_SHM_FORMAT_XRGB8888);
+    buffer = wl_shm_pool_create_buffer(pool, 0, w, h, stride, shm_format);
     // wl_shm_pool_destroy(pool);
     // close(fd);
 
