@@ -24,19 +24,55 @@
 #include "scene/scenes/scene_physics.hh"
 #include "scene/scenes/scene_gcode.hh"
 
+#include "lib/cmd.hh"
 
-int main()
+int main(int argc, char** argv)
 {
-	Physimos physimos { 1000, 700 };
+	CLI cli {argc, argv};
 
-	Scene1::load(physimos);
-	// ForestPlanet::load(physimos);
-	// ScenePhysics::load(physimos);
-	// SceneGCode::load(physimos);
+	if(cli[1] == "main")
+	{
+		Physimos physimos { 1000, 700 };
 
-	physimos.main_loop();
+		Scene1::load(physimos);
+		// ForestPlanet::load(physimos);
+		// ScenePhysics::load(physimos);
+		// SceneGCode::load(physimos);
+
+		physimos.main_loop();
+	}
+	else if(cli[1] == "")
+	{
+		Print::ln("No command selected. Running default.");
+	}
+	else if(cli[1] == "bash")
+	{
+		Print::ln("Running bash script through physimos.");
+
+		if(cli[2] == "hello")
+		{
+			Print::ln("Hello!");
+		}
+		else // default CLI command
+		{
+			Print::buf("Runnig bash through popen: \n");
+			Str output = CMD_popen(cli[2]);
+			Print::buf(output);
+		}
+	}
+	else if(cli[1] == "install")
+	{
+		Print::ln("Installing all physimos binaries locally.");
+
+		
+	}
+	else
+	{
+		Print::ln("No supported CLI command detected.");
+	}
 
 
+	Print::ln("\nExiting Physimos.");
 	return 0;
 }
 
