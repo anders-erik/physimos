@@ -11,21 +11,38 @@
 #include "math/vec.hh"
 #include "math/vecmat.hh"
 
-typedef uint32_t PX32RGBA;
+// typedef uint32_t PX32RGBA;
 typedef uint32_t PX32;
+
+/** Logical ordering if pixel bytes when manipulated in-code. Actual layout is reversed in little-endian memory. */
 enum class PX32F
 {
     RGBA,
+    ARGB,
 };
 
 struct PX
 {
-    static inline uint8_t R(PX32RGBA _px) { return (uint8_t)(_px >> 24); }
-    static inline uint8_t G(PX32RGBA _px) { return (uint8_t)(_px >> 16); }
-    static inline uint8_t B(PX32RGBA _px) { return (uint8_t)(_px >> 8 ); }
-    static inline uint8_t A(PX32RGBA _px) { return (uint8_t)(_px >> 0 ); }
+    static inline PX32 RGBA_to_ARGB(PX32 _px)
+    {
+        PX32 A___ = (_px & 0x000000FF) << 24;
+        PX32 _RGB = (_px & 0xFFFFFF00) >> 8;
+        return (A___ | _RGB);
+    }
 
-    static Str to_str(PX32RGBA _px)
+    static inline PX32 ARGB_to_RGBA(PX32 _px)
+    {
+        PX32 ___A = (_px & 0xFF000000) >> 24;
+        PX32 RGB_ = (_px & 0x00FFFFFF) << 8;
+        return (___A | RGB_);
+    }
+
+    static inline uint8_t R(PX32 _px) { return (uint8_t)(_px >> 24); }
+    static inline uint8_t G(PX32 _px) { return (uint8_t)(_px >> 16); }
+    static inline uint8_t B(PX32 _px) { return (uint8_t)(_px >> 8 ); }
+    static inline uint8_t A(PX32 _px) { return (uint8_t)(_px >> 0 ); }
+
+    static Str to_str(PX32 _px)
     {
         return {
             "(",
@@ -40,7 +57,7 @@ struct PX
         };
     }
 
-    static Str to_str_hex(PX32RGBA _px)
+    static Str to_str_hex(PX32 _px)
     {
         char hex[16];
         memset(hex, 0, 16);
@@ -103,9 +120,9 @@ struct Pixel
         };
     }
 
-    PX32RGBA to_PX32RGBA()
+    PX32 to_PX32RGBA()
     {
-        PX32RGBA ret_px = 0;
+        PX32 ret_px = 0;
 
         ret_px += r << 24;
         ret_px += g << 16;
@@ -118,16 +135,15 @@ struct Pixel
 
 // typedef Arr<Pixel> Col;
 
-/** 24-bit pixel bitmap */
+/** 32-bit pixel bitmap */
 class Bitmap
 {
-    // Arr<Col> cols;
-    Vec<PX32RGBA> data;
+    Vec<PX32> data;
 
     uint width = 0;
     uint height = 0;
 
-    PX32F format = PX32F::RGBA;
+    PX32F format = PX32F::RGBA; // Pixel format
 
 public:
 
@@ -137,21 +153,27 @@ public:
         width = _width;
 
         data.set_size(height*width);
-        // data.set(0);
-        clear(0);
 
-        // for(uint i = 0; i < width; i++)
-        // {
-        //     cols.push_back({});
-        //     cols[i].set({}, height);
-        // }
+        clear(0x00000000);
+    }
+
+    Bitmap(uint _width, uint _height, PX32F _format)
+    {
+        height = _height;
+        width = _width;
+
+        data.set_size(height*width);
+
+        format = _format;
+
+        clear(0x00000000);
     }
 
     uint h() const {return height;}
     uint w() const {return width;}
-    uint bytes_per_pixel() const {return sizeof(PX32RGBA);}
+    uint bytes_per_pixel() const {return sizeof(PX32);}
     
-    PX32RGBA* get_data_mut()
+    PX32* get_data_mut()
     {
         return data.data_mut();
     }
@@ -169,6 +191,38 @@ public:
     // {
     //     return cols[_col_index];
     // }
+
+    PX32F get_format() { return format; }
+    /** Updates the format-value AND move all data bits to match the bit-format while aligning all R-G-B-A-values. */
+    void set_format(PX32F _new_format)
+    {
+        if(format == _new_format)
+            return;
+
+        // RGBA -> ARGB
+        if(format == PX32F::RGBA && _new_format == PX32F::ARGB)
+        {
+            for(uint i = 0; i < count_pixels(); i++)
+            {
+                PX32 A___ = (data[i] & 0x000000FF) << 24;
+                PX32 _RGB = (data[i] & 0xFFFFFF00) >> 8;
+                data[i] = (A___ | _RGB);
+            }
+        }
+
+        // ARGB -> RGBA 
+        if(format == PX32F::ARGB && _new_format == PX32F::RGBA)
+        {
+            for(uint i = 0; i < count_pixels(); i++)
+            {
+                PX32 ___A = (data[i] & 0xFF000000) >> 24;
+                PX32 RGB_ = (data[i] & 0x00FFFFFF) << 8;
+                data[i] = (___A | RGB_);
+            }
+        }
+
+        format = _new_format;
+    }
 
     uint stride_byte()
     {
@@ -286,38 +340,48 @@ public:
     }
 
     /** Checks bounds before access. If outside of bounds, it will return the first pixel in bitmap. */
-    PX32RGBA& operator[](uint _x, uint _y)
+    PX32& operator[](uint _x, uint _y)
     {
         if(_x >= width || _y >= height)
         {
             Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
-            return (PX32RGBA&) *(data.data_mut());
+            return (PX32&) *(data.data_mut());
         }
 
-        return (PX32RGBA&) *(data.data_mut() + get_pixel_index(_x, _y));
+        return (PX32&) *(data.data_mut() + get_pixel_index(_x, _y));
     }
 
-    PX32RGBA& operator[](u2 _p)
+    PX32& operator[](u2 _p)
     {
         if( _p.x >= width || _p.y >= height)
         {
             Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
-            return (PX32RGBA&) *(data.data_mut());
+            return (PX32&) *(data.data_mut());
         }
 
-        return (PX32RGBA&) *(data.data_mut() + get_pixel_index(_p.x, _p.y));
+        return (PX32&) *(data.data_mut() + get_pixel_index(_p.x, _p.y));
     }
 
-    void clear(PX32RGBA _pixel)
+    /** Does NOT check the current pixel format, but will set the provided Pixel data directly as recieved. */
+    void clear(PX32 _pixel)
     {
-        // for(uint p = 0; p < data.size(); p = p + 3)
-        // {
-        //     data[p] = _pixel.r;
-        //     data[p+1] = _pixel.g;
-        //     data[p+2] = _pixel.b;
-        // }
         for(uint p = 0; p < count_pixels(); p++)
             data[p] = _pixel;
+    }
+
+    // A call to clear the whole bitmap using the provided pixel in RGBA format.
+    // If the bitmap is currently configured for another pixel format, then the pixel data is adjusted before writing to the bitmap buffer.
+    void clear_RGBA(PX32 _rgba_pixel)
+    {
+        PX32 bit_adjusted_px;
+
+        if(format == PX32F::RGBA)
+            bit_adjusted_px = _rgba_pixel;
+        else if(format == PX32F::ARGB)
+            bit_adjusted_px = PX::RGBA_to_ARGB(_rgba_pixel);
+
+        for(uint p = 0; p < count_pixels(); p++)
+            data[p] = bit_adjusted_px;
     }
 
     // void clear(uint8_t _byte)
@@ -334,6 +398,6 @@ public:
     }
     constexpr uint count_bytes()
     {
-        return height * width * 3;
+        return height * width * sizeof(PX32);
     }
 };

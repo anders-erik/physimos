@@ -124,14 +124,14 @@ class BitmapDrawer
 public:
 
     // Pixel pixel;
-    PX32RGBA pixel;
+    PX32 pixel;
 
     // void set_pixel_color(Pixel _pixel)
     // {
     //     pixel = _pixel;
     // }
 
-    void set_pixel_color(PX32RGBA _pixel)
+    void set_pixel_color(PX32 _pixel)
     {
         pixel = _pixel;
     }
@@ -144,7 +144,7 @@ public:
             Print::ln("WARN: tried drawing point outseide bitmap bounds.");
     }
 
-    void point(Bitmap& _bmp, u2 _p, PX32RGBA _px)
+    void point(Bitmap& _bmp, u2 _p, PX32 _px)
     {
         if(_bmp.is_in_bounds(_p))
             _bmp[_p] = _px;
@@ -277,7 +277,7 @@ int main(int argc, const char** argv)
 {
     Print::ln("Hello from main_swrend.cc");
 
-    if(false)
+    if(true)
     {
         Wayland wayland;
 
@@ -295,6 +295,11 @@ int main(int argc, const char** argv)
     Bitmap white_2x2 {2, 2};
     // white_2x2.clear(0xAABBCCFF);
     white_2x2.clear(0xAABBCCFF);
+
+    Bitmap white_2x2_ARGB {2, 2, PX32F::ARGB};
+    white_2x2_ARGB.clear(0xFFAABBCC);
+    // white_2x2_ARGB.set_format(PX32F::ARGB);
+
 
     // Bitmap bmp {30, 20};
     // Bitmap bmp {4, 4};

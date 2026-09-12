@@ -169,7 +169,7 @@ public:
         Vec<uint8_t> bitmap_data_24bit {_bitmap.w() * _bitmap.h() * 3};
         for(uint i = 0; i < _bitmap.count_pixels(); i++)
         {
-            PX32RGBA px_32 = *(_bitmap.get_data_mut() + i);
+            PX32 px_32 = *(_bitmap.get_data_mut() + i);
             bitmap_data_24bit[i * 3 + 0] = PX::B(px_32);
             bitmap_data_24bit[i * 3 + 1] = PX::G(px_32);
             bitmap_data_24bit[i * 3 + 2] = PX::R(px_32);
@@ -187,7 +187,7 @@ public:
         Vec<uint8_t> bitmap_data_24bit {_bitmap.w() * _bitmap.h() * 3};
         for(uint i = 0; i < _bitmap.count_pixels(); i++)
         {
-            PX32RGBA px_32 = *(_bitmap.get_data_mut() + i);
+            PX32 px_32 = *(_bitmap.get_data_mut() + i);
             bitmap_data_24bit[i * 3 + 0] = PX::B(px_32);
             bitmap_data_24bit[i * 3 + 1] = PX::G(px_32);
             bitmap_data_24bit[i * 3 + 2] = PX::R(px_32);

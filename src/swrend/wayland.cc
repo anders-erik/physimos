@@ -180,13 +180,13 @@ void Wayland::run()
     // init_fb(state);
     state.fb.init();
 
-    SWR::Buf swr_buf { (uint32_t*)state.fb.ptr(), 
-                    state.fb.w, 
-                    state.fb.h                  };
-    swr_buf.y_zero = SWR::Buf::Top;
+    SWR::Buf swr_buf {  (PX32*)state.fb.ptr(), 
+                        state.fb.w, 
+                        state.fb.h,
+                        PX32F::ARGB,
+                        SWR::Buf::Top                  };
+    
 
-    
-    
     // clear_fb_gray(state);
 
     state.fb.clear_gray();
@@ -200,9 +200,19 @@ void Wayland::run()
     swr_buf.draw_point({12, 10}, 0x00FFFFFF);
     swr_buf.draw_point({13, 10}, 0x00FFFFFF);
 
-    Bitmap white_4x4 {4, 4};
-    white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
+    Bitmap white_4x4 {4, 4, PX32F::ARGB};
+    // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
+    // white_4x4.clear(0xFFFFFF00); //
+    white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
+    // white_4x4.set_format(PX32F::ARGB);
     swr_buf.paste(white_4x4, {0, 476});
+
+
+    Bitmap triangle_bmp {40, 40, PX32F::ARGB};
+    triangle_bmp.clear_RGBA(0x994444FF);
+    swr_buf.paste(triangle_bmp, {100, 100});
+    
+    
 
     render_wayland(&state); // initial render to display the window
 
