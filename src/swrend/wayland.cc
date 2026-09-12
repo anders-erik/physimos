@@ -200,17 +200,27 @@ void Wayland::run()
     swr_buf.draw_point({12, 10}, 0x00FFFFFF);
     swr_buf.draw_point({13, 10}, 0x00FFFFFF);
 
+    swr_buf.draw_line({30, 30}, {50, 170}, 0x00FFFFFF);
+    swr_buf.draw_line({34, 30}, {54, 170}, 0xFFFFFF00);
+    swr_buf.draw_line({38, 30}, {58, 170}, PX::RGBA_to_ARGB(0xFFFFFF00));
+
+    swr_buf.draw_rectangle({300, 100}, {340, 120}, PX::RGBA_to_ARGB(0x88f888800));
+
+    swr_buf.draw_triangle_no_fill({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+
+    swr_buf.draw_triangle({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+
     Bitmap white_4x4 {4, 4, PX32F::ARGB};
     // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
     // white_4x4.clear(0xFFFFFF00); //
     white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
     // white_4x4.set_format(PX32F::ARGB);
-    swr_buf.paste(white_4x4, {0, 476});
+    swr_buf.bm_paste(white_4x4, {0, 476});
 
 
     Bitmap triangle_bmp {40, 40, PX32F::ARGB};
     triangle_bmp.clear_RGBA(0x994444FF);
-    swr_buf.paste(triangle_bmp, {100, 100});
+    swr_buf.bm_paste(triangle_bmp, {100, 100});
     
     
 

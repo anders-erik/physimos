@@ -97,13 +97,18 @@ struct Buf
     }
 
     void draw_point(i2 _p, PX32 _px);
+    void draw_line(i2 _p1, i2 _p2, PX32 _px);
+    void draw_rectangle(i2 _p1, i2 _p2, PX32 _px);
+    void draw_triangle_no_fill(i2 _p1, i2 _p2, i2 _p3, PX32 _px);
+    void draw_triangle(i2 _p1, i2 _p2, i2 _p3, PX32 _px);
+
     void clear(PX32 _px);
 
     int count_pixels() {return h*w;}
     int count_bytes() {return count_pixels() * bytes_per_pixel;}
 
     // Bitmap interface
-    void paste(Bitmap& _bmp, i2 _pos);
+    void bm_paste(Bitmap& _bmp, i2 _pos);
 };
 
 };

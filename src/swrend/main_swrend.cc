@@ -14,7 +14,7 @@
 
 #include "swrend/bitmap.hh"
 #include "swrend/BMP.hh"
-
+#include "swrend/line.hh"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -78,30 +78,6 @@ void test_bitmap_2x2()
 // }
 
 
-// y = kx + m
-class Line
-{
-public:
-
-    d2 p1;
-    d2 p2;
-
-    double k;
-    double m;
-
-    Line(d2 _p1, d2 _p2) : p1 {_p1}, p2 {_p2}
-    {
-        // y = kx + m
-        k = (p2.y - p1.y)/(p2.x - p1.x);
-        m = p1.y - p1.x*k;
-    }
-
-    double operator[](double _x)
-    {
-        return k*_x + m;
-    }
-
-};
 
 
 uint Min(uint a, uint b)
@@ -277,7 +253,7 @@ int main(int argc, const char** argv)
 {
     Print::ln("Hello from main_swrend.cc");
 
-    if(false)
+    if(true)
     {
         Wayland wayland;
 
