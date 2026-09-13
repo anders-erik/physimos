@@ -25,6 +25,7 @@
 
 
 #include "lib/str.hh"
+#include "lib/clock.hh"
 
 
 #include "swrend/wayland.hh"
@@ -424,21 +425,22 @@ int main(int argc, char** argv)
         int w = 400;
         int h = 200;
 
-        UI_Node root_node { {w, h}, {0, 0} };
+        UI_Node root_node { {0, 0}, {w, h} };
 
-        struct Window
+
+        struct App
         {
             Wayland wayland;
             Tree<UI_Node> UI;
 
-            Window(i2 dims, UI_Node _ui_root)
+
+            App(i2 dims, UI_Node _ui_root)
                 :   wayland {Wayland{dims}},
                     UI { Tree<UI_Node> {_ui_root} }
             {
-
             }
 
-            void open()
+            void open_window()
             {
                 // wayland.main_loop();
 
@@ -452,11 +454,14 @@ int main(int argc, char** argv)
             }
         };
 
+        Clock clock;
+        clock.print_tv_start();
+
         // Tree<UI_Node> ui {root_node};
 
-        Window window { {w, h}, root_node };
+        App app { {w, h}, root_node };
         
-        window.open();
+        app.open_window();
         // Wayland wayland {{w, h}};
         
 

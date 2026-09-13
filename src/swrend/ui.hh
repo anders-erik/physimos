@@ -17,6 +17,7 @@ struct UI_Node
     UI_Node(d2 _pos, d2 _size) : pos {_pos}, size {_size} {}
 };
 
+
 template <typename T>
 struct Tree
 {

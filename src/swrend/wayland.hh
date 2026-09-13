@@ -22,6 +22,7 @@ public:
 
     void update();
     void main_loop();
+    void render();
     void run();
     void close();
 

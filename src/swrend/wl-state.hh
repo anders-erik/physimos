@@ -56,23 +56,44 @@ struct WLFB
     }
 };
 
+/** Wyaland callbacks */
+struct WLCB
+{
+    
+};
+
+/** Wyaland objects */
+struct WLOBJ
+{
+    struct wl_display *display;
+    struct wl_registry *registry;
+    struct wl_compositor *compositor;
+    struct wl_surface *surface;
+    struct wl_seat *seat;
+};
+
+/** Wyaland objects */
+struct XDGOBJ
+{
+    struct xdg_wm_base *wm_base;
+    struct xdg_surface *surface;
+    struct xdg_toplevel *toplevel;
+};
+
 /* Wayland code */
 typedef struct client_state {
-    /* Globals */
-    struct wl_display *wl_display;
-    struct wl_registry *wl_registry;
-    struct wl_compositor *wl_compositor;
-    struct xdg_wm_base *xdg_wm_base;
-    /* Objects */
-    struct wl_surface *wl_surface;
-    struct xdg_surface *xdg_surface;
-    struct xdg_toplevel *xdg_toplevel;
+    /* Wayland Objects */
+    WLOBJ wl;
+    /* XDG Objects */
+    XDGOBJ xdg;
     /* Buffer objects */
     WLFB fb;
+    /* Callbacks*/
+    WLCB callbacks;
+
     /* Input*/
-    struct wl_seat *wl_seat;
-    int running = 1;
-    // u2 window_dims;
     d2 raw_pointer;
     d2 sane_pointer;
+
+    int running = 1;
 } client_state;

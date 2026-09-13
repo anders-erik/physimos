@@ -18,10 +18,13 @@
 #include <wayland-client.h>
 // #include "swrend/wayland.hh"
 
-#include "wl-book.hh"
+// #include "wl-book.hh"
 #include "wl-pointer.hh"
+#include "wl-registry.hh"
 
 #include "swrend.hh"
+
+
 
 
 struct XDG
@@ -92,24 +95,32 @@ struct Socket
 
 
 
-struct WLRegistry
-{
-    typedef struct wl_registry_listener Listener;
-};
 
-
-static void registry_global_remove(
-    void *data,
-    struct wl_registry *registry,
-    uint32_t name)
+void Wayland::render()
 {
-    printf("global removed: %u\n", name);
+    wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
+    wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
+    wl_surface_commit(state.wl.surface);
 }
 
-static const WLRegistry::Listener wl_registry_listener = {
-    .global        = registry_global,
-    .global_remove = registry_global_remove,
-};
+
+void destroy_fb(struct client_state& state)
+{
+    const int width = state.fb.w;
+    const int height = state.fb.h;
+    const int size = width*height*4;
+
+    munmap(state.fb.data, size);
+    wl_buffer_destroy(state.fb.buffer);
+    wl_shm_pool_destroy(state.fb.pool);
+    close(state.fb.shm_fd);
+
+    state.fb.allocated = false;
+}
+
+
+
+
 
 
 
@@ -122,47 +133,10 @@ Wayland::Wayland()
 {
     Print::ln("Default Wayland constructor!");
 
+    i2 default_window_dims = {720, 480};
 
-    // opaque object passed to qayland server during communication
-    // struct wl_display *display = wl_display_connect(NULL);
-    state.wl_display = wl_display_connect(NULL);
-    if (!state.wl_display) {
-        Print::ln("Failed to connect to Wayland display\n");
-        return;
-    }
-    Print::ln("wl_display_connect: OK");
+    init(default_window_dims);
 
-    // think: wl_display.get_registry(); !!
-    // struct wl_registry *registry = wl_display_get_registry(state.wl_display);
-    state.wl_registry = wl_display_get_registry(state.wl_display);
-    if (!state.wl_registry)
-    {
-        Print::ln("Failed to get Wayland registry.\n");
-        return;
-    }
-    Print::ln("wl_display_get_registry: OK");
-
-    wl_registry_add_listener(state.wl_registry, &wl_registry_listener, &state);
-
-    // Process all pending requests (and will block until completed)
-    int ret = wl_display_roundtrip(state.wl_display);
-    if (ret < 0) {
-        printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.wl_display));
-        return;
-    }
-
-    // printf("display fd = %d\n", wl_display_get_fd(state.wl_display));
-    // printf("error = %d\n", wl_display_get_error(state.wl_display));
-
-
-    state.wl_surface = wl_compositor_create_surface(state.wl_compositor);
-    state.xdg_surface = xdg_wm_base_get_xdg_surface(state.xdg_wm_base, state.wl_surface);
-    xdg_surface_add_listener(state.xdg_surface, &xdg_surface_listener, &state);
-    state.xdg_toplevel = xdg_surface_get_toplevel(state.xdg_surface);
-    xdg_toplevel_set_title(state.xdg_toplevel, "Example client");
-    wl_surface_commit(state.wl_surface);
-
-    setup_ok = true;
     return;
 }
 
@@ -171,29 +145,27 @@ void Wayland::init(i2 dims)
 {
     // opaque object passed to qayland server during communication
     // struct wl_display *display = wl_display_connect(NULL);
-    state.wl_display = wl_display_connect(NULL);
-    if (!state.wl_display) {
+    state.wl.display = wl_display_connect(NULL);
+    if (!state.wl.display)
+    {
         Print::ln("Failed to connect to Wayland display\n");
         return;
     }
-    Print::ln("wl_display_connect: OK");
 
     // think: wl_display.get_registry(); !!
-    // struct wl_registry *registry = wl_display_get_registry(state.wl_display);
-    state.wl_registry = wl_display_get_registry(state.wl_display);
-    if (!state.wl_registry)
+    state.wl.registry = wl_display_get_registry(state.wl.display);
+    if (!state.wl.registry)
     {
         Print::ln("Failed to get Wayland registry.\n");
         return;
     }
-    Print::ln("wl_display_get_registry: OK");
 
-    wl_registry_add_listener(state.wl_registry, &wl_registry_listener, &state);
+    wl_registry_add_listener(state.wl.registry, &wl_registry_listener, &state);
 
     // Process all pending requests (and will block until completed)
-    int ret = wl_display_roundtrip(state.wl_display);
+    int ret = wl_display_roundtrip(state.wl.display);
     if (ret < 0) {
-        printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.wl_display));
+        printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.wl.display));
         return;
     }
 
@@ -201,12 +173,12 @@ void Wayland::init(i2 dims)
     // printf("error = %d\n", wl_display_get_error(state.wl_display));
 
 
-    state.wl_surface = wl_compositor_create_surface(state.wl_compositor);
-    state.xdg_surface = xdg_wm_base_get_xdg_surface(state.xdg_wm_base, state.wl_surface);
-    xdg_surface_add_listener(state.xdg_surface, &xdg_surface_listener, &state);
-    state.xdg_toplevel = xdg_surface_get_toplevel(state.xdg_surface);
-    xdg_toplevel_set_title(state.xdg_toplevel, "Example client");
-    wl_surface_commit(state.wl_surface);
+    state.wl.surface = wl_compositor_create_surface(state.wl.compositor);
+    state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.wl.surface);
+    xdg_surface_add_listener(state.xdg.surface, &xdg_surface_listener, &state);
+    state.xdg.toplevel = xdg_surface_get_toplevel(state.xdg.surface);
+    xdg_toplevel_set_title(state.xdg.toplevel, "Example client");
+    wl_surface_commit(state.wl.surface);
 
 
 
@@ -264,7 +236,7 @@ void Wayland::init(i2 dims)
     
     
 
-    render_wayland(&state); // initial render to display the window
+    render(); // initial render to display the window
 
     // const int width = (int) state.window_dims.x;
     // const int height = (int) state.window_dims.y;
@@ -286,7 +258,7 @@ void Wayland::update()
 {
     uint dummy_i = 0;
 
-    wl_display_dispatch(state.wl_display);
+    wl_display_dispatch(state.wl.display);
     
     if(state.running == 0)
     {
@@ -304,9 +276,9 @@ void Wayland::update()
 
         state.fb.clear_gray();
         // clear_fb_gray(state);
-        wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-        wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-        wl_surface_commit(state.wl_surface);
+        wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
+        wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
+        wl_surface_commit(state.wl.surface);
 
     }
     if(state.sane_pointer.y > 450.0)
@@ -337,12 +309,12 @@ void Wayland::update()
         state.fb.clear_green();
         // clear_fb_green(state);
         // rebind_wl_buffer(state);
-        render_wayland(&state); 
+        // render_wayland(&state); 
 
 
-        wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-        wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-        wl_surface_commit(state.wl_surface);
+        wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
+        wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
+        wl_surface_commit(state.wl.surface);
     }
     if(state.sane_pointer.x > 700.0)
     {
@@ -360,14 +332,14 @@ void Wayland::close()
 
     destroy_fb(state);
 
-    wl_display_disconnect(state.wl_display);
+    wl_display_disconnect(state.wl.display);
 }
 
 void Wayland::main_loop()
 {
     uint dummy_i = 0;
 
-    while (wl_display_dispatch(state.wl_display))
+    while (wl_display_dispatch(state.wl.display))
     {
         // rebind_wl_buffer(state);
         // render_wayland(&state); 
@@ -388,9 +360,9 @@ void Wayland::main_loop()
 
             state.fb.clear_gray();
             // clear_fb_gray(state);
-            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-            wl_surface_commit(state.wl_surface);
+            wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
+            wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
+            wl_surface_commit(state.wl.surface);
 
         }
         if(state.sane_pointer.y > 450.0)
@@ -421,12 +393,12 @@ void Wayland::main_loop()
             state.fb.clear_green();
             // clear_fb_green(state);
             // rebind_wl_buffer(state);
-            render_wayland(&state); 
+            // render_wayland(&state); 
 
 
-            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-            wl_surface_commit(state.wl_surface);
+            wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
+            wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
+            wl_surface_commit(state.wl.surface);
         }
         if(state.sane_pointer.x > 700.0)
         {
@@ -441,7 +413,7 @@ void Wayland::main_loop()
 
     destroy_fb(state);
 
-    wl_display_disconnect(state.wl_display);
+    wl_display_disconnect(state.wl.display);
 }
 
 void Wayland::run()
@@ -500,19 +472,15 @@ void Wayland::run()
     
     
 
-    render_wayland(&state); // initial render to display the window
+    render(); // initial render to display the window
 
     // const int width = (int) state.window_dims.x;
     // const int height = (int) state.window_dims.y;
 
     uint dummy_i = 0;
 
-    while (wl_display_dispatch(state.wl_display))
+    while (wl_display_dispatch(state.wl.display))
     {
-        // rebind_wl_buffer(state);
-        // render_wayland(&state); 
-
-       
 
         if(state.running == 0)
         {
@@ -522,53 +490,19 @@ void Wayland::run()
         }
         if(state.sane_pointer.y > 400.0)
         {
-            // rebind_wl_buffer(state);
-            // render_wayland(&state);
-            // init_fb(state);
-            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-            // wl_surface_commit(state.wl_surface);
-
             state.fb.clear_gray();
-            // clear_fb_gray(state);
-            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-            wl_surface_commit(state.wl_surface);
+            render();
 
         }
         if(state.sane_pointer.y > 450.0)
         {
             state.fb.resize({1000, 600});
-            // resize_fb(state, {1000, 600});
-            // resize_fb(state, {500, 300});
-            // wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-            // wl_surface_commit(state.wl_surface);
-        }
-        if(state.sane_pointer.x < 50.0)
-        {
-            // resize_fb(state, {640, 480});
-            // resize_fb(state, {1000, 600});
-            // wl_surfac6, 6e_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-            // wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-            // wl_surface_commit(state.wl_surface);
         }
         if(state.sane_pointer.x > 500.0)
         {
-            // Print::ln("x > 400");
             dummy_i++;
-            // state.fb.data[dummy_i] += 65000;
-
-            // destroy_fb(state);
-            // init_fb(state);
             state.fb.clear_green();
-            // clear_fb_green(state);
-            // rebind_wl_buffer(state);
-            render_wayland(&state); 
-
-
-            wl_surface_damage_buffer(state.wl_surface, 0, 0, state.fb.w, state.fb.h);
-            wl_surface_attach(state.wl_surface, state.fb.buffer, 0, 0);
-            wl_surface_commit(state.wl_surface);
+            render(); 
         }
         if(state.sane_pointer.x > 700.0)
         {
@@ -583,7 +517,7 @@ void Wayland::run()
 
     destroy_fb(state);
 
-    wl_display_disconnect(state.wl_display);
+    wl_display_disconnect(state.wl.display);
 }
 
 void Wayland::socket_test()
