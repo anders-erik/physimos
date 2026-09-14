@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "print.hh"
-#include "list.hh"
+#include "llist.hh"
 #include "hash.hh"
 
 
@@ -23,24 +23,36 @@ void prints(){
 
 }
 
-void list(){
+void list()
+{
+    LList<Str> llist;
+    // llist.head->value = "head;"
 
 
-    LListNode<Str>* head = new LListNode<Str>;
-    head->value = "head";
-    println(head->value);
-    std::cout << head->count_back() << std::endl;
+    Print::buf("LList count = ");
+    Print::ln(Str::SI(llist.count()));
+
+    llist.append();
+    Print::buf("LList count = ");
+    Print::ln(Str::SI(llist.count()));
+
+    llist.head->value = "head";
+    Print::buf("LList.head.value = ");
+    Print::ln(llist.head->value);
+    // std::cout << head->count_back() << std::endl;
     
-    LListNode<Str>* first = head->append();
+    LLNode<Str>* first = llist.append();;
     first->value = "first";
-    println(first->value);
-    std::cout << head->count_back() << std::endl;
+    Print::ln(first->value);
+    // std::cout << head->count_back() << std::endl;
 
-    LListNode<Str>* second = head->append();
+    LLNode<Str>* second = llist.append();;
     second->value = "second";
-    println(second->value);
-    std::cout << head->count_back() << std::endl;
+    Print::ln(second->value);
+    // std::cout << head->count_back() << std::endl;
 
+    Print::buf("LList count = ");
+    Print::ln(Str::SI(llist.count()));
 }
 
 void hash_uint_to_uchar(){
@@ -69,8 +81,8 @@ int main() {
 
 
     // prints();
-    // list();
-    hash_uint_to_uchar();
+    list();
+    // hash_uint_to_uchar();
 
 
     println( "\nEnd main_lib \n" );

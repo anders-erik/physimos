@@ -1,20 +1,21 @@
 #pragma once
 
 #include "lib/arr.hh"
+#include "lib/llist.hh"
 
 #include "math/vecmat.hh"
 
 #include "swrend/bitmap.hh"
 
-struct UI_Node
+struct UINode
 {
     d2 pos;
     d2 size;
 
-    PX32 color;
+    PX32 color = 0x558855FF;
 
-    UI_Node() {}
-    UI_Node(d2 _pos, d2 _size) : pos {_pos}, size {_size} {}
+    UINode() {}
+    UINode(d2 _pos, d2 _size) : pos {_pos}, size {_size} {}
 };
 
 
@@ -33,5 +34,15 @@ struct Tree
 };
 
 
+struct UI
+{
+    LList<UINode> nodes;
 
+
+    void add_node(UINode _node)
+    {
+        LLNode<UINode> * llnode = nodes.append();
+        llnode->value = _node;
+    }
+};
 

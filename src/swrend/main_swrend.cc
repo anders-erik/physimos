@@ -425,18 +425,18 @@ int main(int argc, char** argv)
         int w = 400;
         int h = 200;
 
-        UI_Node root_node { {0, 0}, {w, h} };
+        UINode root_node { {0, 0}, {w, h} };
 
 
         struct App
         {
             Wayland wayland;
-            Tree<UI_Node> UI;
+            UI ui;
 
 
-            App(i2 dims, UI_Node _ui_root)
+            App(i2 dims)
                 :   wayland {Wayland{dims}},
-                    UI { Tree<UI_Node> {_ui_root} }
+                    ui { }
             {
             }
 
@@ -452,6 +452,13 @@ int main(int argc, char** argv)
                     
                 }
             }
+
+            void render_ui()
+            {
+                // Bitmap ui_bitmap { 40, 40, PX32F::ARGB };
+                // ui_bitmap.clear_RGBA(0x555588FF);
+                // wayland.get_state().
+            }
         };
 
         Clock clock;
@@ -459,7 +466,11 @@ int main(int argc, char** argv)
 
         // Tree<UI_Node> ui {root_node};
 
-        App app { {w, h}, root_node };
+        App app { {w, h} };
+
+        app.ui.add_node( {{300, 300}, {50, 50}} );
+
+        
         
         app.open_window();
         // Wayland wayland {{w, h}};
