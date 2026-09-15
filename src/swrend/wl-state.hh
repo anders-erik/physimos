@@ -5,9 +5,12 @@
 
 #include "wayland-client.h"
 
+#include "lib/arr.hh"
+
 #include "math/vecmat.hh"
 
-
+#include "window/key.hh"
+#include "swrend/event.hh"
 
 
 struct WLFB
@@ -80,6 +83,15 @@ struct XDGOBJ
     struct xdg_toplevel *toplevel;
 };
 
+struct WLINPUT
+{
+    Arr<WEvent> w_events;
+
+    // Pointer state
+    d2 pointer_pos_raw = {0.0, 0.0};
+    // d2 pointer_sane = {0.0, 0.0};
+};
+
 /* Wayland code */
 typedef struct client_state {
     /* Wayland Objects */
@@ -92,6 +104,7 @@ typedef struct client_state {
     WLCB callbacks;
 
     /* Input*/
+    WLINPUT input;
     d2 raw_pointer;
     d2 sane_pointer;
 

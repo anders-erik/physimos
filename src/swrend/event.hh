@@ -1,0 +1,55 @@
+
+#pragma once
+
+#include "math/vecmat.hh"
+
+
+enum class WEventType
+{
+    MouseMove,
+    MouseClick,
+};
+
+
+struct WMouseMove
+{
+    WEventType event_type = WEventType::MouseMove;
+    d2 new_pos;
+
+    WMouseMove(d2 _new_pos) : new_pos {_new_pos} {}
+};
+
+
+struct WMouseClick
+{
+    WEventType event_type = WEventType::MouseClick;
+    enum Button
+    {
+        Primary
+    } button;
+
+    WMouseClick(WMouseClick::Button _mouse_button) : button {_mouse_button} {}
+};
+
+union WEventData
+{
+    WMouseMove move;
+    WMouseClick mouse_click;
+
+    WEventData() {}
+    WEventData(WMouseMove _move) : move{_move} {}
+    WEventData(WMouseClick _mouse_click) : mouse_click{_mouse_click} {}
+};
+
+struct WEvent
+{
+    WEventType event_type;
+    WEventData event_data;
+
+    WEvent() {}
+    WEvent(WEventType _event_type, WEventData _event_data) 
+        :   event_type {_event_type},
+            event_data {_event_data}
+    {}
+
+};

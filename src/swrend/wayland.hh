@@ -20,6 +20,7 @@ public:
 
     void init(i2 dims);
 
+    Arr<WEvent> process_events(); // returns a copy all buffered events and clears the wayland buffer
     void update();
     void main_loop();
     void render();

@@ -7,7 +7,7 @@
 
 #include "wayland-client.h"
 
-#include "wl-state.hh"
+// #include "wl-state.hh"
 
 
 static void
@@ -42,6 +42,17 @@ pointer_motion(void *data,
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
+    // NEW EVENT ARRAY
+    // WMouseMove mouse_move = {{px, py}};
+    // WEventData event_data = { WMouseMove{ {px, py} } } ;
+    // event_data.move = mouse_move;
+    WEvent pointer_move_ev = { 
+        WEventType::MouseMove, 
+        WMouseMove{ {px, py} }
+    };
+    state->input.w_events.push_back(pointer_move_ev);
+
+
     state->raw_pointer = {px, py};
 
     double win_w = state->fb.w;
@@ -49,8 +60,6 @@ pointer_motion(void *data,
 
     state->sane_pointer.x = px;
     state->sane_pointer.y = win_h - py;
-
-
 
     // printf("mouse: %f %f\n", px, py);
     uint x_uint = (uint) px;
@@ -70,10 +79,22 @@ pointer_button(void *data,
                uint32_t button,
                uint32_t state)
 {
+    client_state *w_app = (client_state*) data;
+    // struct client_state *state = (struct client_state*) data;
+
     Print::ln(Str::SI(button));
 
     Str btn_name;
     Str btn_action;
+
+    if(button == BTN_LEFT)
+    {
+        WEvent pointer_click_ev = { 
+            WEventType::MouseClick, 
+            WMouseClick{ WMouseClick::Primary }
+        };
+        w_app->input.w_events.push_back(pointer_click_ev);
+    }
     
     switch(button)
     {
