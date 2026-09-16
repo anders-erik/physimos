@@ -42,33 +42,31 @@ pointer_motion(void *data,
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
-    // NEW EVENT ARRAY
-    // WMouseMove mouse_move = {{px, py}};
-    // WEventData event_data = { WMouseMove{ {px, py} } } ;
-    // event_data.move = mouse_move;
-    WEvent pointer_move_ev = { 
-        WEventType::MouseMove, 
-        WMouseMove{ {px, py} }
-    };
-    state->input.w_events.push_back(pointer_move_ev);
-
-
     state->raw_pointer = {px, py};
-
-    double win_w = state->fb.w;
-    double win_h = state->fb.h;
-
     state->sane_pointer.x = px;
-    state->sane_pointer.y = win_h - py;
-
-    // printf("mouse: %f %f\n", px, py);
-    uint x_uint = (uint) px;
-    uint y_uint = (uint) py;
+    state->sane_pointer.y = state->fb.h - py;
 
     // printf("mouse: %d %d\n", x_uint, y_uint);
     printf("pointer_sane: %d %d\n", 
         (uint) state->sane_pointer.x, 
         (uint) state->sane_pointer.y);
+
+
+    // ----- New below -----
+
+    double win_h = state->fb.h;
+
+    d2 pos_old_sane = state->input.pointer_pos_last_sane;
+    d2 pos_current_sane = {px, -( py - win_h) };
+
+    state->input.pointer_pos_last_sane = pos_current_sane;
+
+    
+    WEvent pointer_move_ev = { 
+        WEventType::MouseMove, 
+        WMouseMove{ pos_old_sane, pos_current_sane }
+    };
+    state->input.w_events.push_back(pointer_move_ev);
 }
 
 static void

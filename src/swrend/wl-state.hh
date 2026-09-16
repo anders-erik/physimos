@@ -89,6 +89,7 @@ struct WLINPUT
 
     // Pointer state
     d2 pointer_pos_raw = {0.0, 0.0};
+    d2 pointer_pos_last_sane = {0.0, 0.0};
     // d2 pointer_sane = {0.0, 0.0};
 };
 

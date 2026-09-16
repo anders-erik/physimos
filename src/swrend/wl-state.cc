@@ -37,7 +37,7 @@ create_shm_file(void)
     do {
         char name[] = "/wl_shm-XXXXXX";
         randname(name + sizeof(name) - 7);
-        Print::ln(name);
+        // Print::ln(name);
         --retries;
         int fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, 0600);
         if (fd >= 0) {

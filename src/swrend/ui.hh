@@ -6,16 +6,47 @@
 #include "math/vecmat.hh"
 
 #include "swrend/bitmap.hh"
+#include "swrend/event.hh"
+
+
+struct Box
+{
+    d2 pos; // position
+    d2 size; // size
+
+    Box() {}
+    Box(d2 _pos, d2 _size) : pos {_pos}, size {_size} {}
+
+    bool contains(d2 _p)
+    {
+        bool x_check = _p.x > pos.x && _p.x < pos.x + size.x;
+        bool y_check = _p.y > pos.y && _p.y < pos.y + size.y;
+
+        return x_check && y_check;
+    }
+};  
 
 struct UINode
 {
-    d2 pos;
-    d2 size;
+    Box box;
+    
 
     PX32 color = 0x558855FF;
 
     UINode() {}
-    UINode(d2 _pos, d2 _size) : pos {_pos}, size {_size} {}
+    UINode(d2 _pos, d2 _size) : box {_pos, _size} {}
+
+    /** 
+        Params: state available to te ui node
+        Return: state changes made by the current ui node & 'instructions' for the caller */
+    void* event(void* _data)
+    {
+
+        return nullptr;
+    }
+
+    void dim() { color = 0x335533FF; }
+    void undim() { color = 0x558855FF; }
 };
 
 
@@ -34,15 +65,49 @@ struct Tree
 };
 
 
+struct UIEventData
+{
+    WEvent* i_event = nullptr;
+    void* data; // arbitrary data made available to the UI
+};
+
 struct UI
 {
     LList<UINode> nodes;
-
+    UIEventData event_data;
 
     void add_node(UINode _node)
     {
         LLNode<UINode> * llnode = nodes.append();
         llnode->value = _node;
     }
+
+    void* event(UIEventData* _data)
+    {
+
+        return nullptr;
+    }
+    
+    void* event(WEvent _ievent)
+    {
+        if(_ievent.event_type == WEventType::MouseMove)
+        {
+            WMouseMove& move = _ievent.event_data.move;
+
+            UINode& node = nodes.back()->value;
+            if(node.box.contains(move.new_pos))
+            {
+                Print::ln("INSIDE!");
+                node.dim();
+            }
+            else
+            {
+                node.undim();
+            }
+        }
+
+        return nullptr;
+    }
 };
+
 

@@ -31,6 +31,8 @@ registry_global(void *data, struct wl_registry *wl_registry,
 {
     struct client_state *state = (struct client_state *)data;
 
+    // printf("%s \n", interface);
+
     if (strcmp(interface, wl_shm_interface.name) == 0)
     {
         state->fb.wl_shm = (wl_shm *)wl_registry_bind(

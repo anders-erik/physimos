@@ -65,7 +65,8 @@ struct i2 {
     int y = 0;
 
     i2(int x, int y) : x {x}, y {y} {}; 
-    i2(int xy) : x {xy}, y {xy} {}; 
+    i2(int xy) : x {xy}, y {xy} {};
+    i2(double x, double y) : x {(int)x}, y {(int)y} {}; 
     i2() = default;
 
     bool operator==(const i2& rhs) const;
@@ -142,6 +143,11 @@ struct d2
     d2(int _x, int _y) : x ((double)_x), y {(double)_y} {}
     d2(uint _x, uint _y) : x ((double)_x), y {(double)_y} {}
     d2(f2 float_2) : x ((double)float_2.x), y {(double) float_2.y} {}
+
+    d2 operator-(d2& rhs)
+    {
+        return d2{this->x - rhs.x, this->y - rhs.y};
+    }
 
 };
 

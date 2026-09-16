@@ -44,7 +44,13 @@ struct Buf
     //     h = _h;
     // }
 
+    Buf() {}
     Buf(PX32* _buf, int _w, int _h, PX32F _pixel_format, YZero _y_zero)
+    {
+        set(_buf, _w, _h, _pixel_format, _y_zero);
+    }
+
+    void set(PX32* _buf, int _w, int _h, PX32F _pixel_format, YZero _y_zero)
     {
         buf = _buf;
         w = _w;

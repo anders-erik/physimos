@@ -17,6 +17,7 @@
 #include "swrend/BMP.hh"
 #include "swrend/line.hh"
 #include "swrend/ui.hh"
+#include "swrend/swrend.hh"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -428,33 +429,105 @@ int main(int argc, char** argv)
         UINode root_node { {0, 0}, {w, h} };
 
 
+        struct Input
+        {
+            d2 cursor_raw = {0.0, 0.0};
+            // d2 cursor_sane = {0.0, 0.0};
+            bool left_click_down = false;
+
+            Input() {}
+
+            void set_from_events(Arr<WEvent> events)
+            {
+                for(uint i = 0; i < events.count(); i++)
+                {
+                    set_from_event(events[i]);
+                }
+            }
+
+            void set_from_event(WEvent _event)
+            {
+                if(_event.event_type == WEventType::MouseMove)
+                {
+                    WMouseMove mouse_move_ev = _event.event_data.move;
+                    cursor_raw = {mouse_move_ev.new_pos.x, mouse_move_ev.new_pos.y};
+
+
+                    Print::buf("Mouse move event: x = ");
+                    Print::buf(Str::FL(mouse_move_ev.new_pos.x, 4, Str::FloatRep::Fixed));
+                    Print::buf("  y = ");
+                    Print::ln(Str::FL(mouse_move_ev.new_pos.y, 4, Str::FloatRep::Fixed));
+                }
+                if(_event.event_type == WEventType::MouseClick)
+                {
+                    WMouseClick mouse_click_ev = _event.event_data.mouse_click;
+                    Print::buf("Mouse click event: button = ");
+                    if(mouse_click_ev.button == WMouseClick::Primary)
+                        Print::ln("Primary");
+                }
+            }
+        };
+
         struct App
         {
             Wayland wayland;
             UI ui;
+            Input input;
+            SWR::Buf renderer; // Main frame buffer provided by window lib
 
 
             App(i2 dims)
                 :   wayland {Wayland{dims}},
                     ui { }
             {
+
+                renderer.set(   (PX32*)wayland.state.fb.ptr(), 
+                                wayland.state.fb.w, 
+                                wayland.state.fb.h,
+                                PX32F::ARGB,
+                                SWR::Buf::Top                  );
+                
             }
 
             void open_window()
             {
                 // wayland.main_loop();
+                // wayland.dispatch();
 
                 while(wayland.get_state().running)
                 {
                     // frame update!
+                    wayland.dispatch();
                     wayland.update();
 
-                    
+                    Arr<WEvent> events = wayland.process_events();
+                    for(uint i = 0; i < events.count(); i++)
+                    {
+                        // send event to active listener/reciever in app
+                        ui.event(events[i]);
+
+                        input.set_from_event(events[i]);
+                    }
+
+                    // render_ui();
+
+                    wayland.render();
+
+                    // sleep(1);
                 }
             }
 
             void render_ui()
             {
+                LLNode<UINode> *ll_node = ui.nodes.back();
+
+                UINode& ui_node = ll_node->value;
+                i2 pos_0_i = {ui_node.box.pos.x, ui_node.box.pos.y};
+                i2 pos_1_i = {  ui_node.box.pos.x + ui_node.box.size.x, 
+                                ui_node.box.pos.y + ui_node.box.size.y      };
+                renderer.draw_rectangle( pos_0_i, pos_1_i, ui_node.color);
+
+
                 // Bitmap ui_bitmap { 40, 40, PX32F::ARGB };
                 // ui_bitmap.clear_RGBA(0x555588FF);
                 // wayland.get_state().
@@ -470,7 +543,7 @@ int main(int argc, char** argv)
 
         app.ui.add_node( {{300, 300}, {50, 50}} );
 
-        
+        app.render_ui();
         
         app.open_window();
         // Wayland wayland {{w, h}};

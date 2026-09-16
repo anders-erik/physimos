@@ -14,9 +14,12 @@ enum class WEventType
 struct WMouseMove
 {
     WEventType event_type = WEventType::MouseMove;
+    d2 old_pos;
     d2 new_pos;
 
-    WMouseMove(d2 _new_pos) : new_pos {_new_pos} {}
+    WMouseMove(d2 _old_pos, d2 _new_pos) : old_pos {_old_pos}, new_pos {_new_pos} {}
+
+    d2 delta() { return d2{new_pos-old_pos}; }
 };
 
 

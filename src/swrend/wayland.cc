@@ -261,39 +261,19 @@ Arr<WEvent> Wayland::process_events()
     return events;
 }
 
+
+
 void Wayland::update()
 {
+    
+
     uint dummy_i = 0;
 
     // Print::ln("asdf");
 
-    // Print Input Events
-    // uint start_count = state.input.w_events.count();
-    Arr<WEvent> new_events = process_events();
-    for(uint i = 0; i < new_events.count(); i++)
-    {
-        if(new_events[i].event_type == WEventType::MouseMove)
-        {
-            WMouseMove mouse_move_ev = new_events[i].event_data.move;
-            Print::buf("Mouse move event: x = ");
-            Print::buf(Str::FL(mouse_move_ev.new_pos.x, 4, Str::FloatRep::Fixed));
-            Print::buf("  y = ");
-            Print::ln(Str::FL(mouse_move_ev.new_pos.y, 4, Str::FloatRep::Fixed));
-        }
-        if(new_events[i].event_type == WEventType::MouseClick)
-        {
-            WMouseClick mouse_click_ev = new_events[i].event_data.mouse_click;
-            Print::buf("Mouse click event: buton = ");
-            if(mouse_click_ev.button == WMouseClick::Primary)
-                Print::ln("Primary");
-        }
-    }
-    // if(state.input.w_events.count() == start_count)
-    // {
-        // state.input.w_events.clear();
-    // }
+    
 
-    wl_display_dispatch(state.wl.display);
+    
     
     if(state.running == 0)
     {
