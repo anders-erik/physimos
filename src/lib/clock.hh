@@ -34,4 +34,10 @@ public:
 		printf("time s : %li \n", tv_start.tv_sec);
 		printf("time us: %li \n", tv_start.tv_usec);
 	}
+
+	void print_current_m_sec()
+	{
+		
+		printf("Microsecond: %li \n", get_unix_epoch_ms());
+	}
 };

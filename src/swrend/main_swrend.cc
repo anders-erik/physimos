@@ -431,7 +431,7 @@ int main(int argc, char** argv)
 
         struct Input
         {
-            d2 cursor_raw = {0.0, 0.0};
+            d2 cursor_sane = {0.0, 0.0};
             // d2 cursor_sane = {0.0, 0.0};
             bool left_click_down = false;
 
@@ -450,7 +450,7 @@ int main(int argc, char** argv)
                 if(_event.event_type == WEventType::MouseMove)
                 {
                     WMouseMove mouse_move_ev = _event.event_data.move;
-                    cursor_raw = {mouse_move_ev.new_pos.x, mouse_move_ev.new_pos.y};
+                    cursor_sane = {mouse_move_ev.new_pos.x, mouse_move_ev.new_pos.y};
 
 
                     Print::buf("Mouse move event: x = ");
@@ -468,19 +468,29 @@ int main(int argc, char** argv)
             }
         };
 
+        struct AppState
+        {
+            enum class InputTarget
+            {
+                UI,
+                None,
+            } input_target = InputTarget::None;
+        };
+
         struct App
         {
             Wayland wayland;
             UI ui;
             Input input;
             SWR::Buf renderer; // Main frame buffer provided by window lib
-
+            Clock clock;
+            AppState state;
 
             App(i2 dims)
                 :   wayland {Wayland{dims}},
                     ui { }
             {
-
+                
                 renderer.set(   (PX32*)wayland.state.fb.ptr(), 
                                 wayland.state.fb.w, 
                                 wayland.state.fb.h,
@@ -497,23 +507,44 @@ int main(int argc, char** argv)
                 while(wayland.get_state().running)
                 {
                     // frame update!
-                    wayland.dispatch();
-                    wayland.update();
+                    wayland.dispatch(); // Trigger input event callbacks, for instance
+                    wayland.update(); // Current resizing 
 
                     Arr<WEvent> events = wayland.process_events();
                     for(uint i = 0; i < events.count(); i++)
                     {
-                        // send event to active listener/reciever in app
-                        ui.event(events[i]);
-
                         input.set_from_event(events[i]);
+
+                        // Dispatch events to app
+                        if(state.input_target == AppState::InputTarget::UI)
+                        {
+                            // send event to active listener/reciever in app
+                            ui.event(events[i]);
+                        }
+                        else
+                        {
+                            // No current input target. Find default target!
+                            if(ui.contains_pointer_pos(input.cursor_sane))
+                            {
+                                // state.input_target = AppState::InputTarget::UI;
+                                ui.event(events[i]);
+                            }
+                            else // default target!
+                            {
+                                ui.reset();
+                            }
+                        }
+
                     }
 
-                    // render_ui();
+                    render_ui();
 
                     wayland.render();
 
+
                     // sleep(1);
+                    usleep(16000); // ~60fps
+                    // clock.print_current_m_sec();
                 }
             }
 

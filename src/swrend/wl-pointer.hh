@@ -47,9 +47,9 @@ pointer_motion(void *data,
     state->sane_pointer.y = state->fb.h - py;
 
     // printf("mouse: %d %d\n", x_uint, y_uint);
-    printf("pointer_sane: %d %d\n", 
-        (uint) state->sane_pointer.x, 
-        (uint) state->sane_pointer.y);
+    // printf("pointer_sane: %d %d\n", 
+    //     (uint) state->sane_pointer.x, 
+    //     (uint) state->sane_pointer.y);
 
 
     // ----- New below -----
@@ -80,32 +80,30 @@ pointer_button(void *data,
     client_state *w_app = (client_state*) data;
     // struct client_state *state = (struct client_state*) data;
 
-    Print::ln(Str::SI(button));
+    // Print::ln(Str::SI(button));
 
     Str btn_name;
     Str btn_action;
 
-    if(button == BTN_LEFT)
-    {
-        WEvent pointer_click_ev = { 
-            WEventType::MouseClick, 
-            WMouseClick{ WMouseClick::Primary }
-        };
-        w_app->input.w_events.push_back(pointer_click_ev);
-    }
+    // WEventType event_type = WEventType::MouseClick;
+    // WEventButtonAction button_action;
+    WMouseClick mouse_click;
     
     switch(button)
     {
         case BTN_LEFT:
             btn_name = "BTN_LEFT";
+            mouse_click.button = WMouseClick::Primary;
             break;
 
         case BTN_RIGHT:
             btn_name = "BTN_RIGHT";
+            mouse_click.button = WMouseClick::Secondary;
             break;
 
          case BTN_MIDDLE:
             btn_name = "BTN_MIDDLE";
+            mouse_click.button = WMouseClick::Tertiary;
             break;
 
         default:
@@ -117,21 +115,30 @@ pointer_button(void *data,
     {
         case 0:
             btn_action = "release";
+            mouse_click.action = WEventButtonAction::Release;
             break;
 
         case 1:
             btn_action = "press";
+            mouse_click.action = WEventButtonAction::Press;
             break;
 
         default:
             break;
     }
 
-    Print::buf("mouse btn: ");
-    Print::buf(btn_name);
-    Print::buf(" ");
-    Print::buf(btn_action);
-    Print::buf("\n");
+
+    WEvent pointer_click_ev = { 
+        WEventType::MouseClick, 
+        mouse_click
+    };
+    w_app->input.w_events.push_back(pointer_click_ev);
+
+    // Print::buf("mouse btn: ");
+    // Print::buf(btn_name);
+    // Print::buf(" ");
+    // Print::buf(btn_action);
+    // Print::buf("\n");
 }
 
 static void

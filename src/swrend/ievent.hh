@@ -10,6 +10,12 @@ enum class WEventType
     MouseClick,
 };
 
+enum class WEventButtonAction
+{
+    Press,
+    Release,
+    Hold,
+};
 
 struct WMouseMove
 {
@@ -28,10 +34,14 @@ struct WMouseClick
     WEventType event_type = WEventType::MouseClick;
     enum Button
     {
-        Primary
+        Primary,
+        Secondary, 
+        Tertiary
     } button;
+    WEventButtonAction action;
 
-    WMouseClick(WMouseClick::Button _mouse_button) : button {_mouse_button} {}
+    WMouseClick() {}
+    WMouseClick(WMouseClick::Button _mouse_button, WEventButtonAction _action) : button {_mouse_button}, action {_action} {}
 };
 
 union WEventData

@@ -6,7 +6,7 @@
 #include "math/vecmat.hh"
 
 #include "swrend/bitmap.hh"
-#include "swrend/event.hh"
+#include "swrend/ievent.hh"
 
 
 struct Box
@@ -107,6 +107,25 @@ struct UI
         }
 
         return nullptr;
+    }
+
+    bool contains_pointer_pos(d2 _pointer_pos)
+    {
+        UINode& node = nodes.back()->value;
+        if(node.box.contains(_pointer_pos))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /** When no events are being handled by the ui, we undo all the highting that was added when the UI was the input target */
+    void reset()
+    {
+        nodes.back()->value.undim();
     }
 };
 

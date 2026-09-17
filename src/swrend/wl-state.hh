@@ -10,7 +10,7 @@
 #include "math/vecmat.hh"
 
 #include "window/key.hh"
-#include "swrend/event.hh"
+#include "swrend/ievent.hh"
 
 
 struct WLFB
