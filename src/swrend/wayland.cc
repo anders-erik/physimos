@@ -186,8 +186,8 @@ void Wayland::init(i2 dims)
     wayland_render(0);
 
     // state.window_dims = {640, 480};
-    state.fb.w = 640;
-    state.fb.h = 480;
+    state.fb.w = dims.x;
+    state.fb.h = dims.y;
 
     // init_fb(state);
     state.fb.init();
@@ -254,13 +254,24 @@ void draw_square(void* )
     
 }
 
-Arr<WEvent> Wayland::process_events()
+Arr<WEvent> Wayland::get_new_input_events()
 {
     Arr<WEvent> events = state.input.w_events;
     state.input.w_events.clear();
     return events;
 }
 
+bool Wayland::frame_step()
+{
+    render();
+
+    dispatch();
+
+    if(state.running)
+        return true;
+    
+    return false;
+}
 
 
 void Wayland::update()
