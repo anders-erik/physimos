@@ -69,6 +69,16 @@ struct i2 {
     i2(double x, double y) : x {(int)x}, y {(int)y} {}; 
     i2() = default;
 
+    int& operator[](int _index)
+    {
+        if(_index == 0)
+            return this->x;
+        else if(_index == 1)
+            return this->y;
+        else
+            throw;
+    }
+
     bool operator==(const i2& rhs) const;
 
     i2 operator/(const i2& rhs);

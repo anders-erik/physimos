@@ -34,6 +34,7 @@ __pycache__/
 
 tmp/
 
+src/pico/pico_sdk/pico-sdk
 
 src/window/wayland/protocols
 src/swrend/xdg_wl_extension

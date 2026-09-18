@@ -29,6 +29,33 @@
             }
         },
         {
+            "label": "script:::pico",
+            "detail": "Build and upload pico library when in 'USB Mass Storage Mode' (enabled by plugging in device and holding down BOOTSEL-button)",
+            "type": "process",
+            "command": "./src/pico/script.sh",
+            // "args": ["<", "${workspaceFolder}/resources/audio/sine.wav"],
+            "args": ["${config:arg1}", "${config:arg2}", "${config:arg3}"],
+            "options": 
+            {
+                // "cwd": "${workspaceFolder}/src/pico/pico_sdk",
+                "cwd": "${workspaceFolder}",
+
+                "env": {
+                    "PHYSIMOS_ROOT_DIR": "${workspaceFolder}"
+                }
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "Debug build"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared",
+                "close": false
+            }
+        },
+        {
             "label": "Valgrind - run",
             "type": "shell",
 
