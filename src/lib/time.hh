@@ -1,7 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <sys/time.h>
+#include <unistd.h>
 
+#include "lib/clock.hh"
 #include "print.hh"
 
 struct Time
@@ -70,4 +73,49 @@ struct Timer
         Print::ln(Str::FL(get_s(), 4, Str::FloatRep::Fixed));
     }
 
+};
+
+
+
+
+
+
+class SleepTimer
+{
+public:
+
+	Clock clock;
+
+	uint64_t start_time;
+	uint64_t duration_ms;
+
+	uint64_t end_time;
+
+
+	SleepTimer() {}
+
+
+	void sleep_ms(uint64_t ms)
+	{
+		usleep(ms * 1000);
+	}
+
+
+	void sleep(uint64_t _duration_ms)
+	{
+		start_time = clock.get_unix_epoch_ms();
+		duration_ms = _duration_ms;
+		end_time = start_time + duration_ms;
+
+		uint64_t current_time_ms = clock.get_unix_epoch_ms();
+
+		while(current_time_ms < end_time)
+		{
+			uint64_t delta_ms = end_time - current_time_ms;
+			uint64_t sleep_time_ms = delta_ms * 0.5; // Do not sleep full duration to prevent 
+			sleep_ms(sleep_time_ms);
+
+			current_time_ms = clock.get_unix_epoch_ms();
+		}
+	}
 };

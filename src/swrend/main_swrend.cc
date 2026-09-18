@@ -15,6 +15,8 @@
 #include "math/vec.hh"
 #include "math/vecmat.hh"
 
+#include "audio/audio.hh"
+
 #include "app.hh"
 #include "swrend/bitmap.hh"
 #include "swrend/BMP.hh"
@@ -436,6 +438,8 @@ int main(int argc, char** argv)
     {
         Print::ln("No valid command detected.");
     }
+
+    Audio::play_note();
     
 
     Print::ln("Bye, from main_swrend.cc. \n");

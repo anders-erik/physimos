@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include "lib/arr.hh"
 
 /* 	Central audio data container. 
 	Implicit info:

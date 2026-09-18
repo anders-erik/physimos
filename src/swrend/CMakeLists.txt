@@ -61,4 +61,5 @@ target_link_libraries(main_swrend
     wayland-state
     wayland-client # this was all it took to find wayland symbols...
     xdg_wl_shell
+    audio
 )

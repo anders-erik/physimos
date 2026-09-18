@@ -10,54 +10,26 @@
 #include "lib/print.hh"
 #include "lib/arr.hh"
 #include "lib/cli.hh"
+#include "lib/time.hh"
+#include "lib/io.hh"
 // #include "lib/pair.hh"
 
 #include "math/vec.hh"
+#include "math/DFT.hh"
 
-#include "create_sine_buffer.hh"
-#include "input.hh"
-#include "DFT.hh"
+#include "io/evdev/evdev_reader.hh"
+
 #include "audio_data.hh"
 #include "alsa.hh"
 #include "wave_gen.hh"
 #include "wav.hh"
-#include "note.hh"
 #include "instrument.hh"
 #include "song.hh"
 #include "sheet_io.hh"
-#include "time.hh"
+#include "note.hh"
 #include "phyano.hh"
 
 
-
-
-void bin_dump(Str file_path, void* ptr, uint byte_count)
-{
-	int fd, ret;
-
-	fd = open(file_path.to_c_str(), O_WRONLY | O_CREAT);
-	if(fd < 0)
-	{
-		println("ERROR: Failed to open bin_dump-file for writing.");
-		return;
-	}
-	ret = fchmod(fd, 00777);
-
-
-	ret = write(fd, ptr, byte_count);
-	if(ret < 0)
-	{
-		println("ERROR: Failed to write to bin_dump-file.");
-		return;
-	}
-
-	ret = close(fd);
-	if(ret < 0)
-	{
-		println("ERROR: Failed to close bin_dump-file.");
-		return;
-	}
-}
 
 
 
@@ -304,7 +276,8 @@ int play_phyano()
 	Phyano phyano;
 
 	Arr<Key> keys;
-	EvdevReader evdev_kbd {"/dev/input/event9"};
+	// EvdevReader evdev_kbd {"/dev/input/event9"};
+	EvdevReader evdev_kbd {"/dev/input/event6"};
 
 	// Start-up jingle
 	sleep_timer.sleep(200);
@@ -621,7 +594,8 @@ int main(int argc, char** argv)
 	print("Reading Wav file. Size = ");
 	print(Str::CH(wav.data_chunk.DataBlocID[1]));
 	println(Str::SI(wav.data_chunk.DataSize));
-	bin_dump("tmp/dump.bin", &wav, 44);
+	// bin_dump("tmp/dump.bin", &wav, 44);
+	IO::dump("tmp/dump.bin", &wav, 44);
 
 	// Print sizes of Wav structs
 	println(Str::SI(sizeof(WavHeaderRIFF)));

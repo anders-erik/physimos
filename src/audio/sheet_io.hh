@@ -1,9 +1,11 @@
 #pragma once
 
 
-
 #include "io/json/json.hh"
 #include "lib/file.hh"
+
+#include "note.hh"
+#include "song.hh"
 
 class SheetIO
 {

@@ -86,60 +86,60 @@ public:
 		// alsa.play(note_data);
 	}
 
-	void add_press(Instrument _instument, NoteName _note_name)
-	{
-		AudioData note_data = _instument.get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.5);
+	// void add_press(Instrument _instument, NoteName _note_name)
+	// {
+	// 	AudioData note_data = _instument.get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.5);
 
-		if(note_data.sample_count() > 44100)
-		{
-			println("ERROR: trying to play Phyano note longer than buffer size.");
-			return;
-		}
+	// 	if(note_data.sample_count() > 44100)
+	// 	{
+	// 		println("ERROR: trying to play Phyano note longer than buffer size.");
+	// 		return;
+	// 	}
 
-		for(uint i = 0; i < note_data.sample_count(); i++)
-		{
-			adata.data[i] += note_data.data[i];
-		}
-	}
+	// 	for(uint i = 0; i < note_data.sample_count(); i++)
+	// 	{
+	// 		adata.data[i] += note_data.data[i];
+	// 	}
+	// }
 
-	AudioData consume_ms(uint ms)
-	{
-		if(ms > 1000)
-		{
-			println("ERROR: can't consume more than 1000 ms of Phyano data.");
-			return AudioData {};
-		}
+	// AudioData consume_ms(uint ms)
+	// {
+	// 	if(ms > 1000)
+	// 	{
+	// 		println("ERROR: can't consume more than 1000 ms of Phyano data.");
+	// 		return AudioData {};
+	// 	}
 
-		uint samples_per_ms = 44;
-		uint samples_to_consume = ms * samples_per_ms;
+	// 	uint samples_per_ms = 44;
+	// 	uint samples_to_consume = ms * samples_per_ms;
 
-		AudioData return_adata;
-		return_adata.set_sample_count(samples_to_consume);
+	// 	AudioData return_adata;
+	// 	return_adata.set_sample_count(samples_to_consume);
 
-		for(uint i = 0; i < return_adata.sample_count(); i++)
-		{
-			return_adata.data[i] += adata.data[i];
-		}
+	// 	for(uint i = 0; i < return_adata.sample_count(); i++)
+	// 	{
+	// 		return_adata.data[i] += adata.data[i];
+	// 	}
 
-		shift_data(samples_to_consume);
+	// 	shift_data(samples_to_consume);
 
-		return return_adata;
-	}
+	// 	return return_adata;
+	// }
 
 
-	void shift_data(uint shift_count)
-	{
-		// Copy
-		for(uint i = shift_count; i < adata.sample_count(); i++)
-		{
-			adata.data[i-shift_count] = adata.data[i];
-		}
+	// void shift_data(uint shift_count)
+	// {
+	// 	// Copy
+	// 	for(uint i = shift_count; i < adata.sample_count(); i++)
+	// 	{
+	// 		adata.data[i-shift_count] = adata.data[i];
+	// 	}
 
-		// Clear data tail
-		for(uint i = (adata.sample_count() - shift_count); i < adata.sample_count(); i++)
-		{
-			adata.data[i] = 0;
-		}
-	}
+	// 	// Clear data tail
+	// 	for(uint i = (adata.sample_count() - shift_count); i < adata.sample_count(); i++)
+	// 	{
+	// 		adata.data[i] = 0;
+	// 	}
+	// }
 
 };
