@@ -8,39 +8,14 @@
 
 #include "math/const.hh"
 
+#include "frequency.hh"
+#include "frequency_profile.hh"
 #include "audio_data.hh"
 
 
 
 
-
-struct Frequency
-{
-	double frequency;
-	double amp; // [0, 1]
-};
-Frequency default_frequency = {1000.0, 0.25}; // Hz = osc. / s
-
-
-/** Generates a frequency domain profile based on input functions. Purpose is to experiment with resulting timbres when tranformed into time domain.  */
-struct FrequencyProfile
-{
-	Arr<Frequency> frequencies;
-
-	void generate_3_overtones(double base_frequency)
-	{
-		Arr<Frequency> freq_tmp;
-
-		freq_tmp.push_back({base_frequency * 1.0, 1.00});
-		freq_tmp.push_back({base_frequency * 2.0, 0.30});
-		freq_tmp.push_back({base_frequency * 3.0, 0.10});
-		// freq_tmp.push_back({base_frequency * 4.0, 0.10});
-
-		frequencies = freq_tmp;
-	}
-};
-
-struct WaveConfig
+struct AudioWaveConfig
 {
 	double duration = 1.0;
 	uint sample_rate = 44100; // samples per second
@@ -54,18 +29,18 @@ struct WaveConfig
 	uint sample_count;
 	double dt;
 
-	WaveConfig()
+	AudioWaveConfig()
 	{
 		calculate_derived_quantities();
 	};
 
-	WaveConfig(double _duration)
+	AudioWaveConfig(double _duration)
 	{
 		duration = _duration;
 		calculate_derived_quantities();
 	};
 
-	WaveConfig(double _duration, uint _sample_rate, uint _sample_depth_bit)
+	AudioWaveConfig(double _duration, uint _sample_rate, uint _sample_depth_bit)
 	{
 		duration = _duration;
 		sample_rate = _sample_rate;
@@ -96,39 +71,41 @@ private:
 
 };
 
-WaveConfig default_wave_config = {1.0, 44100, 16};
 
-
-class WaveGen
+class AudioWaveGenerator
 {
 public:
+	AudioFrequency default_frequency = {	1000.0, 
+											0.25	};
+	AudioWaveConfig config = {	1.0, 
+								44100, 
+								16		};
 
-	WaveConfig config = default_wave_config;
-	Arr<Frequency> wave_freqs;
+	Arr<AudioFrequency> wave_freqs;
 
 	Arr<double> t_arr; // Time step array
     Arr<double> w_arr;	// Wave array
     Arr<int16_t> out_arr; // Output array
 
 
-	WaveGen()
+	AudioWaveGenerator()
 	{
 		this->wave_freqs.set(default_frequency, 1);
 		array_allocation();
 	}
-	WaveGen(double duration)
+	AudioWaveGenerator(double duration)
 	{
 		config.duration = duration;
 		this->wave_freqs.set(default_frequency, 1);
 		array_allocation();
 	}
-	WaveGen(double _duration, uint _frequency)
+	AudioWaveGenerator(double _duration, uint _frequency)
 	{
 		config.set_duration(_duration);
 		this->wave_freqs.set({(double)_frequency, default_frequency.amp}, 1);
 		// array_allocation();
 	}
-	WaveGen(double duration, Arr<Frequency> frequencies)
+	AudioWaveGenerator(double duration, Arr<AudioFrequency> frequencies)
 	{
 		config.duration = duration;
 		this->wave_freqs = frequencies;
@@ -140,12 +117,12 @@ public:
 	// 	array_allocation();
 	// }
 
-	void set_config(WaveConfig _config)
+	void set_config(AudioWaveConfig _config)
 	{
 		config = _config;
 	}
 
-	void set_frequencies(Arr<Frequency> _frequencies)
+	void set_frequencies(Arr<AudioFrequency> _frequencies)
 	{
 		wave_freqs = _frequencies;
 	}

@@ -39,6 +39,7 @@
 	// "binary": "src/input/main_input",
 	// "binary": "src/apps/swrend/main_swrend",
 	"binary": "src/apps/piano/main_piano",
+	// "binary": "src/apps/wayland/main_wayland",
 	// "binary": "src/pico/main_pico",
 	// "binary": "src/electronics/main_electronics",
 	// "binary": "src/phont/main_phont",

@@ -4,7 +4,7 @@
 #include "lib/str.hh"
 #include "lib/arr.hh"
 
-#include "wave_gen.hh"
+#include "wave_generator.hh"
 
 
 
@@ -49,7 +49,7 @@ public:
 	WAV() {};
 
 
-	void populate_from_wave(WaveGen& wave)
+	void populate_from_wave(AudioWaveGenerator& wave)
 	{
 		is_little_endian = false;
 

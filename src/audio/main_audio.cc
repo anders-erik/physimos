@@ -21,7 +21,7 @@
 
 #include "audio_data.hh"
 #include "alsa.hh"
-#include "wave_gen.hh"
+#include "wave_generator.hh"
 #include "wav.hh"
 #include "instrument.hh"
 #include "song.hh"
@@ -62,16 +62,16 @@ void twinkle_twinkle()
 
 	if(false)
 	{
-		WaveGen gen_C5(0.5, 523.3);
+		AudioWaveGenerator gen_C5(0.5, 523.3);
 		FrequencyProfile profile_c5;
 		profile_c5.generate_3_overtones(523.3);
 		gen_C5.set_frequencies(profile_c5.frequencies);
 		gen_C5.generate_wave();
 
-		WaveGen gen_G5(0.5, 784.0);
+		AudioWaveGenerator gen_G5(0.5, 784.0);
 		gen_G5.generate_wave();
 		
-		WaveGen gen_A5(0.5, 880.0);
+		AudioWaveGenerator gen_A5(0.5, 880.0);
 		gen_A5.generate_wave();
 
 		
@@ -557,7 +557,7 @@ int main(int argc, char** argv)
 
 
 	// SineWave sine_wave {1.0};
-	Arr<Frequency> frequencies;
+	Arr<AudioFrequency> frequencies;
 	// frequencies.push_back({3520.0, 0.05});
 	// frequencies.push_back({1760.0, 0.1});
 	// frequencies.push_back({880.0, 0.5});
@@ -578,8 +578,8 @@ int main(int argc, char** argv)
 	// frequencies.push_back({760.0, 0.02});
 	// frequencies.push_back({80.0, 0.15});
 
-	WaveConfig w_config;
-	WaveGen wave_generator {1.0, frequencies};
+	AudioWaveConfig w_config;
+	AudioWaveGenerator wave_generator {1.0, frequencies};
 	// sine_wave.set_config(default_wave_config);
 	// sine_wave.w_config.gain = 0.2;
 	wave_generator.generate_wave();
@@ -633,10 +633,10 @@ int main(int argc, char** argv)
 	}
 
 
-	WaveGen wave_100hz(0.5, 300.0);
+	AudioWaveGenerator wave_100hz(0.5, 300.0);
 	wave_100hz.generate_wave();
 
-	WaveGen wave_1000hz(0.5, 1000.0);
+	AudioWaveGenerator wave_1000hz(0.5, 1000.0);
 	wave_1000hz.generate_wave();
 
 	

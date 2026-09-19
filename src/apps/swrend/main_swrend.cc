@@ -22,7 +22,7 @@
 #include "math/line.hh"
 
 #include "audio/audio.hh"
-#include "wayland/wayland.hh"
+#include "window/wayland1/wayland.hh"
 #include "ui/ui4/ui.hh"
 
 // #include "piano_app.hh"
@@ -259,8 +259,7 @@ void fn_wayland()
     {
         Wayland wayland;
 
-        if(wayland.setup_ok)
-            wayland.run();
+        wayland.run();
         
         return;
     }

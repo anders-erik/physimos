@@ -1,9 +1,11 @@
 #pragma once
 
 #include "lib/arr.hh"
+
 #include "alsa.hh"
-#include "note.hh"
 #include "audio_data.hh"
+#include "instrument.hh"
+#include "note.hh"
 
 
 class Song

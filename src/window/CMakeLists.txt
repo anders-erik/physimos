@@ -1,9 +1,13 @@
 
+add_subdirectory(wayland1)
+
+
 if(LINUX)
     # TODO: add wayland support
     message(WARNING "Wayland support is not yet implemented. Defaulting to GLFW.")
     # add_subdirectory(wayland)
 endif()
+
 
 
 

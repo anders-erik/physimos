@@ -27,9 +27,9 @@ function swrend_wayland()
     cd -
 }
 
-function src_wayland_wayland()
+function src_window_wayland1()
 {
-    dest_dir=src/wayland/xdg_wl_extension
+    dest_dir=src/window/wayland1/xdg_wl_extension
     mkdir -p $dest_dir && cd $dest_dir
 
     echo
@@ -42,4 +42,4 @@ function src_wayland_wayland()
 }
 
 # swrend_wayland
-src_wayland_wayland
+src_window_wayland1

@@ -17,7 +17,10 @@ target_link_libraries(alsa
     io
 )
 
-add_library(audio audio.cc)
+add_library(audio
+    audio.cc
+    wave_generator.cc
+)
 target_link_libraries(audio 
     lib
     alsa
@@ -28,6 +31,7 @@ target_link_libraries(audio
 add_executable(main_audio main_audio.cc)
 target_link_libraries(main_audio
     lib
+    audio
     asound
     io
     alsa

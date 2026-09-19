@@ -6,11 +6,11 @@
 
 #include "math/vecmat.hh"
 
-// #include "audio/alsa.hh"
-// #include "audio/song.hh"
+#include "audio/alsa.hh"
+#include "audio/song.hh"
 // #include "audio/phyano.hh"
 
-#include "wayland/wayland.hh"
+#include "window/wayland1/wayland.hh"
 
 #include "io/input/user_input.hh"
 #include "ui/ui4/ui.hh"
@@ -78,20 +78,26 @@ struct PianoApp
     SWR::Buf renderer; // Main frame buffer provided by window lib
     Clock clock;
 
-    // Alsa alsa;
-    // Song song;
+    Alsa alsa;
+    Song song;
     // Phyano phyano;
 
     PianoApp(i2 dims)
-        :   wayland {Wayland{dims}},
-            ui { }
+        :   wayland {Wayland{dims}}
     {
         
-        renderer.set(   (PX32*)wayland.state.fb.ptr(), 
-                        wayland.state.fb.w, 
-                        wayland.state.fb.h,
+        renderer.set(   (PX32*)wayland.get_framebuffer_ptr(), 
+                        wayland.get_framebuffer_width(), 
+                        wayland.get_framebuffer_height(),
                         PX32F::ARGB,
                         SWR::Buf::Top                  );
+        
+        song.beat_count = 4;
+        song.bpm = 90;
+        song.notes[0].push_back({ NoteName::C4, NoteType::half});
+	    song.notes[1].push_back({ NoteName::D4, NoteType::half});
+        song.generate();
+        // song.play(alsa); // Trigger interactively in ui!
         
 
 

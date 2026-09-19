@@ -4,8 +4,9 @@
 
 #include "lib/arr.hh"
 
-/* 	Central audio data container. 
-	Implicit info:
+/* 	
+	Core object for raw audio data.
+	Implicit audio settings:
 		- Sample rate: 44100
 		- Channels: 1 (mono)
 		- DataType: 16bit signed integer

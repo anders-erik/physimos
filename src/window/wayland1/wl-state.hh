@@ -2,6 +2,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <sys/mman.h>
 
 #include "wayland-client.h"
 
@@ -57,6 +58,18 @@ struct WLFB
             }
         }
     }
+
+    void destroy()
+    {
+        const int size = w*h*4;
+
+        munmap(data, size);
+        wl_buffer_destroy(buffer);
+        wl_shm_pool_destroy(pool);
+        close(shm_fd);
+
+        allocated = false;
+    }
 };
 
 /** Wyaland callbacks */
@@ -110,4 +123,4 @@ typedef struct client_state {
     d2 sane_pointer;
 
     int running = 1;
-} client_state;
+} WaylandState;

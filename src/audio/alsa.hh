@@ -1,17 +1,18 @@
 
 #pragma once
 
-#include <alsa/asoundlib.h>
-#include <stdio.h>
 #include <cstdint> // fixed width ints
+#include <stdio.h>
 
-#include "audio_data.hh"
+#include <alsa/asoundlib.h>
+#define PCM_DEVICE "default"
 
 #include "lib/str.hh"
 #include "lib/print.hh"
 #include "lib/arr.hh"
 
-#define PCM_DEVICE "default"
+#include "audio_data.hh"
+
 
 class Alsa
 {
