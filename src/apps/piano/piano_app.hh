@@ -70,6 +70,13 @@ struct InputState
 };
 
 
+struct PianoState
+{
+    Alsa alsa;
+    Song song;
+    // Phyano phyano;
+};
+
 struct PianoApp
 {
     Wayland wayland;
@@ -78,9 +85,7 @@ struct PianoApp
     SWR::Buf renderer; // Main frame buffer provided by window lib
     Clock clock;
 
-    Alsa alsa;
-    Song song;
-    // Phyano phyano;
+    PianoState piano_state;
 
     PianoApp(i2 dims)
         :   wayland {Wayland{dims}}
@@ -92,11 +97,11 @@ struct PianoApp
                         PX32F::ARGB,
                         SWR::Buf::Top                  );
         
-        song.beat_count = 4;
-        song.bpm = 90;
-        song.notes[0].push_back({ NoteName::C4, NoteType::half});
-	    song.notes[1].push_back({ NoteName::D4, NoteType::half});
-        song.generate();
+        piano_state.song.beat_count = 4;
+        piano_state.song.bpm = 90;
+        piano_state.song.notes[0].push_back({ NoteName::C4, NoteType::half});
+	    piano_state.song.notes[1].push_back({ NoteName::D4, NoteType::half});
+        piano_state.song.generate();
         // song.play(alsa); // Trigger interactively in ui!
         
 
@@ -150,25 +155,35 @@ struct PianoApp
             {
                 input_state.set_from_event(events[i]);
 
-                // Dispatch events to app
-                if(input_state.subsystem == InputState::Subsystem::UI)
+                if(ui.contains_pointer_pos(input_state.cursor_sane))
                 {
-                    // send event to active listener/reciever in app
+                    // state.input_target = AppState::InputTarget::UI;
                     ui.event(events[i]);
                 }
-                else
+                else // default target!
                 {
-                    // No current input target. Find default target!
-                    if(ui.contains_pointer_pos(input_state.cursor_sane))
-                    {
-                        // state.input_target = AppState::InputTarget::UI;
-                        ui.event(events[i]);
-                    }
-                    else // default target!
-                    {
-                        ui.reset();
-                    }
+                    ui.reset();
                 }
+
+                // // Dispatch events to app
+                // if(input_state.subsystem == InputState::Subsystem::UI)
+                // {
+                //     // send event to active listener/reciever in app
+                //     ui.event(events[i]);
+                // }
+                // else
+                // {
+                //     // No current input target. Find default target!
+                //     if(ui.contains_pointer_pos(input_state.cursor_sane))
+                //     {
+                //         // state.input_target = AppState::InputTarget::UI;
+                //         ui.event(events[i]);
+                //     }
+                //     else // default target!
+                //     {
+                //         ui.reset();
+                //     }
+                // }
 
             }
 

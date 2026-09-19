@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src/pico/pico_sdk/pico-sdk/src/common/pico_stdlib_headers/include/",
-                "${workspaceFolder}/src/pico/pico_sdk/pico-sdk/src/rp2_common/hardware_gpio/include/"
+                "${workspaceFolder}/src/pico/pico_sdk/pico-sdk/src/rp2_common/hardware_gpio/include/",
+                "${workspaceFolder}/src/pico/pico_sdk/pico-sdk/lib/tinyusb/src/class/hid/"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

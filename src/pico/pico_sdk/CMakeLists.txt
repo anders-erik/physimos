@@ -13,17 +13,26 @@ pico_sdk_init()
 
 add_executable(main_pico_sdk
     main_pico_sdk.cc
-)
-target_link_libraries(main_pico_sdk 
-    pico_stdlib
+    usb_descriptors.c
 )
 
 # target_include_directories(main_pico_sdk
-#     pico-sdk/src/common/pico_stdlib_headers/include
+#     ${CMAKE_CURRENT_LIST_DIR}/pico-sdk/lib/tinyusb/src
 # )
-# src/pico/pico_sdk/pico-sdk/src/common/pico_stdlib_headers
+target_link_libraries(main_pico_sdk 
+    pico_stdlib
+    tinyusb_device
+)
 
-pico_enable_stdio_usb(main_pico_sdk 1)
+# tusb_config.h lives next to this CMakeLists.txt; tinyusb includes it with
+# quotes relative to its own source directory, so it must be on the include path.
+target_include_directories(main_pico_sdk PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}
+)
+
+# Disabled: pico's canned USB-CDC stdio driver would conflict with our own
+# raw TinyUSB HID device (both would try to own the USB stack/descriptors).
+pico_enable_stdio_usb(main_pico_sdk 0)
 pico_enable_stdio_uart(main_pico_sdk 0)
 
 pico_add_extra_outputs(main_pico_sdk)

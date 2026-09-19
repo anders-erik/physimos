@@ -21,6 +21,13 @@ function install_pico_stuff()
     sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi
 }
 
+function download_pico_sdk_submodules()
+{
+    cd ./src/pico/pico_sdk/pico-sdk
+    git submodule update --init --recursive
+    cd -
+}
+
 function build_pico_main()
 {
     cd ./src/pico/pico_sdk

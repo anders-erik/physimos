@@ -26,6 +26,14 @@ Str(const char *c_str)
 }
 
 Str::
+Str(const char* _buffer, uint _bytes_to_copy)
+{
+    size_str = _bytes_to_copy;
+    allocate(size());
+    memcpy(mem, _buffer, size());
+}
+
+Str::
 Str(unsigned int size, char set_char)
 {
     size_str = size;
@@ -374,6 +382,19 @@ Str & Str::trim()
     size_t new_size = end_i - start_i;
 
     return cut_to_substr(start_i, new_size);
+}
+
+void Str::paste(uint _this_offset, const char* _buf, uint _chars_to_copy)
+{
+    uint last_index_of_paste = _this_offset + _chars_to_copy;
+
+    if( last_index_of_paste > size_alloc)
+        reallocate(last_index_of_paste);
+
+    for(uint i = 0; i < _chars_to_copy; i++)
+    {
+        *(mem + _this_offset) = *(_buf + i);
+    }
 }
 
 Str Str::indent_space(unsigned int indent_count)

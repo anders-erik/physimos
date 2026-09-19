@@ -20,6 +20,8 @@ struct Str
     Str() = default;
     Str(const char *c_str);
     explicit
+    Str(const char* _buffer, uint _bytes_to_copy);
+    explicit
     Str(unsigned int size, char set_char);
     Str(const Str& other);
     Str(Str&& other);
@@ -52,6 +54,7 @@ struct Str
 
     char& operator[](size_t index); // mutable char
     const char operator[](size_t index) const; // read only
+    
 
 
 
@@ -80,6 +83,8 @@ struct Str
     Str substr(unsigned int pos, unsigned int new_size);
     /** Remove whitespace */
     Str& trim();
+    /** Copies specified chars from passed buffer to this str. Offset refers to this string, so copying begins at 0 for passed buffer. */
+    void paste(uint _this_offset, const char* _buf, uint _chars_to_copy);
 
     Str indent_space(unsigned int indent_count);
 

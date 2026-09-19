@@ -6,6 +6,7 @@
 
 #include "lib/str.hh"
 #include "lib/print.hh"
+#include "lib/unix.hh"
 
 #include "math/vecmat.hh"
 
@@ -88,112 +89,6 @@ struct command
 // }
 
 
-struct ErrorNo
-{
-    static Str str(int _errno)
-    {
-        return Str(strerror(errno));
-    }
-};
-
-struct Pipe
-{
-    // i2 fd;
-    int fd[2];
-
-    // int write_fd() { return fd[1]; }
-    // int read_fd() { return fd.x; }
-
-    // int read_fd() {return fd.x;}
-    // int write_fd() {return fd.y;}
-
-    Pipe()
-    {
-        // int fd_array[2];
-        int pipe_ret = pipe(fd);
-
-        // fd = {fd_array[0], fd_array[1]};
-
-        if(pipe_ret == 0)
-        {
-            Print::ln("Pipe command succesful!");
-        }
-        else
-        {
-            Print::ln("Pipe command NOT succesful!");
-        }
-
-
-        // char buf_write[10] = "Jello!";
-        // write(fd[1], buf_write, 7);
-
-        // // Read on recieving end of buffer!
-        // char buf_read[10];
-        // read(fd[0], buf_read, 7);
-
-        // Print::ln(buf_read);
-
-    }
-
-    void Write(Str _str)
-    {
-        Str strr = "Jello!";
-        // ssize_t bytes_writen = write(fd[1], _str.to_c_str(), _str.size());
-        // Print::buf("Bytes written = ");
-        // Print::ln(Str::SI(bytes_writen));
-
-        // char buf_write[10] = "Jello!";
-        write(fd[1], _str.to_c_str(), 7);
-    }
-
-    Str Read()
-    {
-        // Str return_str;
-
-        // int BUF_SIZE = 101;
-        // char buf[BUF_SIZE] {0x00};
-        // // buf[BUF_SIZE-1] = 0x00;
-
-        // ssize_t bytesread = 0;
-
-        // while ( (bytesread = read( fd[0], buf, BUF_SIZE-1)) > 0)
-        // {
-        //     return_str += buf;
-        // }
-
-        // // get errorno
-        // if (bytesread < 0)
-        // {
-        //     Print::buf("Error: ");
-        //     Print::ln(ErrorNo::str(bytesread));
-        // }
-        // else
-        // {
-        //     Print::buf("Bytes read: ");
-        //     Print::ln(Str::SI(bytesread));
-        // }
-
-
-        // return return_str;
-
-
-
-
-        char buf_read[10];
-
-        size_t read_size = 7;
-        
-        read(fd[0], buf_read, read_size);
-
-        return Str{buf_read};
-    }
-
-    ~Pipe()
-    {
-        close(fd[0]);
-        close(fd[1]);
-    }
-};
 
 struct Fork
 {
@@ -235,15 +130,21 @@ int main()
     bool download = false;
 
 
-    Str echo_output = command::run("echo 'asdf'");
+    // Str echo_output = command::run("echo 'asdf'");
     // Print::ln(echo_output);
+    
+    Unix::Popen("echo 'asdf'");
+    // Print::ln(Unix::Popen("echo 'asdf'"));
 
 
-    Pipe pipe;
+    Unix::Pipe pipe;
 
-    pipe.Write("Looser!");
+    pipe.Write("111111111111111111111111111111111111111111111111112222222222222222222222222222222222222222222222222233333333333333333333333333333333333333333333333333");
     Str pipe_read = pipe.Read();
     Print::ln(pipe_read);
+
+
+    
 
     // Str pipe_read = pipe.Read();
     // printf("%s", pipe_read.to_c_str());
