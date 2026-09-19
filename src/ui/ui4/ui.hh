@@ -1,12 +1,12 @@
 #pragma once
 
 #include "lib/arr.hh"
+#include "lib/bitmap.hh"
 #include "lib/llist.hh"
 
 #include "math/vecmat.hh"
 
-#include "swrend/bitmap.hh"
-#include "swrend/ievent.hh"
+#include "io/input/user_input.hh"
 
 
 struct Box
@@ -67,7 +67,7 @@ struct Tree
 
 struct UIEventData
 {
-    WEvent* i_event = nullptr;
+    UserInput* i_event = nullptr;
     void* data; // arbitrary data made available to the UI
 };
 
@@ -87,12 +87,13 @@ struct UI
 
         return nullptr;
     }
-    
-    void* event(WEvent _ievent)
+
+    /** Entry points for passing input events to the ui  */
+    void* event(UserInput _ievent)
     {
-        if(_ievent.event_type == WEventType::MouseMove)
+        if(_ievent.event_type == UserInputType::MouseMove)
         {
-            WMouseMove& move = _ievent.event_data.move;
+            MouseMovement& move = _ievent.event_data.move;
 
             UINode& node = nodes.back()->value;
             if(node.box.contains(move.new_pos))

@@ -17,12 +17,6 @@ target_compile_options(xdg_wl_shell PRIVATE -g)
 unset(CMAKE_C_COMPILER)
 
 
-add_library(wayland-rend wayland-rend.cc)
-target_link_libraries(wayland-rend
-    lib
-    math
-)
-
 add_library(wayland-state wl-state.cc)
 target_link_libraries(wayland-state
     lib
@@ -36,30 +30,8 @@ target_link_libraries(wayland
     lib
     math
     swrend
-    wayland-rend
-)
-
-add_library(swrend swrend.cc)
-target_link_libraries(swrend
-    lib
-    math
-)
-
-add_library(bitmap bitmap.cc)
-target_link_libraries(bitmap
-    lib
-    math
-)
-
-add_executable(main_swrend main_swrend.cc)
-target_link_libraries(main_swrend
-    lib
-    math
-    bitmap
-    swrend
-    wayland
     wayland-state
     wayland-client # this was all it took to find wayland symbols...
     xdg_wl_shell
-    audio
 )
+

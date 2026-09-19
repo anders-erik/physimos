@@ -1,9 +1,10 @@
 
 
 add_subdirectory(math)
+add_subdirectory(pui)
 add_subdirectory(scene3D)
 add_subdirectory(scene2D)
-add_subdirectory(pui)
+add_subdirectory(sw)
 
 
 set(RENDER_OBJS 

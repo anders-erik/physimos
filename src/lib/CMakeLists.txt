@@ -2,21 +2,18 @@
 
 add_library(lib
 
-    string.cc
-    fs.cc
-    result.cc
-    toml.cc
-
-    log.cc
-    process.cc
-
-    str.cc
-    file.cc
-
     alloc.cc
-    print.cc
-
+    bitmap.cc
     err.cc
+    file.cc
+    fs.cc
+    log.cc
+    print.cc
+    process.cc
+    result.cc
+    str.cc
+    string.cc
+    toml.cc
 
     fs/linux.cc
     fs/windows.cc

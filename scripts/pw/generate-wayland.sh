@@ -27,4 +27,19 @@ function swrend_wayland()
     cd -
 }
 
-swrend_wayland
+function src_wayland_wayland()
+{
+    dest_dir=src/wayland/xdg_wl_extension
+    mkdir -p $dest_dir && cd $dest_dir
+
+    echo
+
+    cp /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml .
+    wayland-scanner client-header xdg-shell.xml xdg-shell-client-protocol.h
+    wayland-scanner private-code xdg-shell.xml xdg-shell-protocol.c
+
+    cd -
+}
+
+# swrend_wayland
+src_wayland_wayland

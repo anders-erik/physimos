@@ -10,7 +10,7 @@
 #include "math/vecmat.hh"
 
 #include "window/key.hh"
-#include "swrend/ievent.hh"
+#include "io/input/user_input.hh"
 
 
 struct WLFB
@@ -85,7 +85,7 @@ struct XDGOBJ
 
 struct WLINPUT
 {
-    Arr<WEvent> w_events;
+    Arr<UserInput> w_events;
 
     // Pointer state
     d2 pointer_pos_raw = {0.0, 0.0};

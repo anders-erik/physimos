@@ -1,11 +1,12 @@
 
 add_subdirectory(json)
 add_subdirectory(gltf)
-add_subdirectory(bmp)
+add_subdirectory(bmp0)
+add_subdirectory(bmp1)
+add_subdirectory(bmp2)
 add_subdirectory(obj)
 
 add_library(io 
-    bmp_loader.cpp 
     png_loader.cpp 
     obj_loader.cpp
     pso_loader.cc
@@ -16,7 +17,8 @@ add_library(io
 )
 
 target_link_libraries(io 
-    bmp
+    bmp1
+    bmp0
     json
     lib
 )

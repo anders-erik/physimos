@@ -9,8 +9,6 @@
 
 
 #include "wayland.hh"
-#include "wayland-rend.hh"
-#include "swrend/wayland.hh"
 
 #include "wl-state.hh"
 
@@ -22,7 +20,7 @@
 #include "wl-pointer.hh"
 #include "wl-registry.hh"
 
-#include "swrend.hh"
+// #include "swrend/swrend.hh"
 
 
 
@@ -182,9 +180,6 @@ void Wayland::init(i2 dims)
 
 
 
-
-    wayland_render(0);
-
     // state.window_dims = {640, 480};
     state.fb.w = dims.x;
     state.fb.h = dims.y;
@@ -192,47 +187,47 @@ void Wayland::init(i2 dims)
     // init_fb(state);
     state.fb.init();
 
-    SWR::Buf swr_buf {  (PX32*)state.fb.ptr(), 
-                        state.fb.w, 
-                        state.fb.h,
-                        PX32F::ARGB,
-                        SWR::Buf::Top                  };
+    // SWR::Buf swr_buf {  (PX32*)state.fb.ptr(), 
+    //                     state.fb.w, 
+    //                     state.fb.h,
+    //                     PX32F::ARGB,
+    //                     SWR::Buf::Top                  };
     
 
     // clear_fb_gray(state);
 
     state.fb.clear_gray();
 
-    swr_buf.clear(0x00663333);
+    // swr_buf.clear(0x00663333);
 
-    swr_buf.draw_point({10, 10}, 0x12345678);
-    swr_buf.draw_point({20, 10}, 0x12345678);
-    swr_buf.draw_point({30, 10}, 0x12345678);
-    swr_buf.draw_point({11, 10}, 0x00FFFFFF);
-    swr_buf.draw_point({12, 10}, 0x00FFFFFF);
-    swr_buf.draw_point({13, 10}, 0x00FFFFFF);
+    // swr_buf.draw_point({10, 10}, 0x12345678);
+    // swr_buf.draw_point({20, 10}, 0x12345678);
+    // swr_buf.draw_point({30, 10}, 0x12345678);
+    // swr_buf.draw_point({11, 10}, 0x00FFFFFF);
+    // swr_buf.draw_point({12, 10}, 0x00FFFFFF);
+    // swr_buf.draw_point({13, 10}, 0x00FFFFFF);
 
-    swr_buf.draw_line({30, 30}, {50, 170}, 0x00FFFFFF);
-    swr_buf.draw_line({34, 30}, {54, 170}, 0xFFFFFF00);
-    swr_buf.draw_line({38, 30}, {58, 170}, PX::RGBA_to_ARGB(0xFFFFFF00));
+    // swr_buf.draw_line({30, 30}, {50, 170}, 0x00FFFFFF);
+    // swr_buf.draw_line({34, 30}, {54, 170}, 0xFFFFFF00);
+    // swr_buf.draw_line({38, 30}, {58, 170}, PX::RGBA_to_ARGB(0xFFFFFF00));
 
-    swr_buf.draw_rectangle({300, 100}, {340, 120}, PX::RGBA_to_ARGB(0x88f888800));
+    // swr_buf.draw_rectangle({300, 100}, {340, 120}, PX::RGBA_to_ARGB(0x88f888800));
 
-    swr_buf.draw_triangle_no_fill({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+    // swr_buf.draw_triangle_no_fill({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
 
-    swr_buf.draw_triangle({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+    // swr_buf.draw_triangle({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
 
-    Bitmap white_4x4 {4, 4, PX32F::ARGB};
-    // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
-    // white_4x4.clear(0xFFFFFF00); //
-    white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
-    // white_4x4.set_format(PX32F::ARGB);
-    swr_buf.bm_paste(white_4x4, {0, 476});
+    // Bitmap white_4x4 {4, 4, PX32F::ARGB};
+    // // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
+    // // white_4x4.clear(0xFFFFFF00); //
+    // white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
+    // // white_4x4.set_format(PX32F::ARGB);
+    // swr_buf.bm_paste(white_4x4, {0, 476});
 
 
-    Bitmap triangle_bmp {40, 40, PX32F::ARGB};
-    triangle_bmp.clear_RGBA(0x994444FF);
-    swr_buf.bm_paste(triangle_bmp, {100, 100});
+    // Bitmap triangle_bmp {40, 40, PX32F::ARGB};
+    // triangle_bmp.clear_RGBA(0x994444FF);
+    // swr_buf.bm_paste(triangle_bmp, {100, 100});
     
     
 
@@ -254,9 +249,9 @@ void draw_square(void* )
     
 }
 
-Arr<WEvent> Wayland::get_new_input_events()
+Arr<UserInput> Wayland::get_new_input_events()
 {
-    Arr<WEvent> events = state.input.w_events;
+    Arr<UserInput> events = state.input.w_events;
     state.input.w_events.clear();
     return events;
 }
@@ -445,7 +440,6 @@ void Wayland::main_loop()
 void Wayland::run()
 {
 
-    wayland_render(0);
 
     // state.window_dims = {640, 480};
     state.fb.w = 640;
@@ -454,47 +448,47 @@ void Wayland::run()
     // init_fb(state);
     state.fb.init();
 
-    SWR::Buf swr_buf {  (PX32*)state.fb.ptr(), 
-                        state.fb.w, 
-                        state.fb.h,
-                        PX32F::ARGB,
-                        SWR::Buf::Top                  };
+    // SWR::Buf swr_buf {  (PX32*)state.fb.ptr(), 
+    //                     state.fb.w, 
+    //                     state.fb.h,
+    //                     PX32F::ARGB,
+    //                     SWR::Buf::Top                  };
     
 
-    // clear_fb_gray(state);
+    // // clear_fb_gray(state);
 
-    state.fb.clear_gray();
+    // state.fb.clear_gray();
 
-    swr_buf.clear(0x00663333);
+    // swr_buf.clear(0x00663333);
 
-    swr_buf.draw_point({10, 10}, 0x12345678);
-    swr_buf.draw_point({20, 10}, 0x12345678);
-    swr_buf.draw_point({30, 10}, 0x12345678);
-    swr_buf.draw_point({11, 10}, 0x00FFFFFF);
-    swr_buf.draw_point({12, 10}, 0x00FFFFFF);
-    swr_buf.draw_point({13, 10}, 0x00FFFFFF);
+    // swr_buf.draw_point({10, 10}, 0x12345678);
+    // swr_buf.draw_point({20, 10}, 0x12345678);
+    // swr_buf.draw_point({30, 10}, 0x12345678);
+    // swr_buf.draw_point({11, 10}, 0x00FFFFFF);
+    // swr_buf.draw_point({12, 10}, 0x00FFFFFF);
+    // swr_buf.draw_point({13, 10}, 0x00FFFFFF);
 
-    swr_buf.draw_line({30, 30}, {50, 170}, 0x00FFFFFF);
-    swr_buf.draw_line({34, 30}, {54, 170}, 0xFFFFFF00);
-    swr_buf.draw_line({38, 30}, {58, 170}, PX::RGBA_to_ARGB(0xFFFFFF00));
+    // swr_buf.draw_line({30, 30}, {50, 170}, 0x00FFFFFF);
+    // swr_buf.draw_line({34, 30}, {54, 170}, 0xFFFFFF00);
+    // swr_buf.draw_line({38, 30}, {58, 170}, PX::RGBA_to_ARGB(0xFFFFFF00));
 
-    swr_buf.draw_rectangle({300, 100}, {340, 120}, PX::RGBA_to_ARGB(0x88f888800));
+    // swr_buf.draw_rectangle({300, 100}, {340, 120}, PX::RGBA_to_ARGB(0x88f888800));
 
-    swr_buf.draw_triangle_no_fill({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+    // swr_buf.draw_triangle_no_fill({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
 
-    swr_buf.draw_triangle({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
+    // swr_buf.draw_triangle({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
 
-    Bitmap white_4x4 {4, 4, PX32F::ARGB};
-    // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
-    // white_4x4.clear(0xFFFFFF00); //
-    white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
-    // white_4x4.set_format(PX32F::ARGB);
-    swr_buf.bm_paste(white_4x4, {0, 476});
+    // Bitmap white_4x4 {4, 4, PX32F::ARGB};
+    // // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
+    // // white_4x4.clear(0xFFFFFF00); //
+    // white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
+    // // white_4x4.set_format(PX32F::ARGB);
+    // swr_buf.bm_paste(white_4x4, {0, 476});
 
 
-    Bitmap triangle_bmp {40, 40, PX32F::ARGB};
-    triangle_bmp.clear_RGBA(0x994444FF);
-    swr_buf.bm_paste(triangle_bmp, {100, 100});
+    // Bitmap triangle_bmp {40, 40, PX32F::ARGB};
+    // triangle_bmp.clear_RGBA(0x994444FF);
+    // swr_buf.bm_paste(triangle_bmp, {100, 100});
     
     
 

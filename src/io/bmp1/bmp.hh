@@ -6,7 +6,7 @@
 
 #include "rend/bitmap.hh"
 
-#include "io/bmp/bmp_header.hh"
+#include "io/bmp1/bmp_header.hh"
 
 
 namespace BMP 

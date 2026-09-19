@@ -1,9 +1,8 @@
 
 #include "lib/print.hh"
-
 #include "lib/minmax.hh"
 
-#include "swrend/line.hh"
+#include "math/line.hh"
 
 #include "swrend.hh"
 

@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "rend/bitmap.hh"
-#include "io/bmp/bmp.hh"
+#include "io/bmp1/bmp.hh"
 
 #include "ui/ui_globals.hh"
 

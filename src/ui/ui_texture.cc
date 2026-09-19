@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 
 #include "ui/ui_texture.hh"
-#include "io/bmp/bmp.hh"
+#include "io/bmp1/bmp.hh"
 #include "lib/process.hh"
 
 

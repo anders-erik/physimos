@@ -62,9 +62,9 @@ pointer_motion(void *data,
     state->input.pointer_pos_last_sane = pos_current_sane;
 
     
-    WEvent pointer_move_ev = { 
-        WEventType::MouseMove, 
-        WMouseMove{ pos_old_sane, pos_current_sane }
+    UserInput pointer_move_ev = { 
+        UserInputType::MouseMove, 
+        MouseMovement{ pos_old_sane, pos_current_sane }
     };
     state->input.w_events.push_back(pointer_move_ev);
 }
@@ -87,23 +87,23 @@ pointer_button(void *data,
 
     // WEventType event_type = WEventType::MouseClick;
     // WEventButtonAction button_action;
-    WMouseClick mouse_click;
+    MouseClick mouse_click;
     
     switch(button)
     {
         case BTN_LEFT:
             btn_name = "BTN_LEFT";
-            mouse_click.button = WMouseClick::Primary;
+            mouse_click.button = MouseClick::Primary;
             break;
 
         case BTN_RIGHT:
             btn_name = "BTN_RIGHT";
-            mouse_click.button = WMouseClick::Secondary;
+            mouse_click.button = MouseClick::Secondary;
             break;
 
          case BTN_MIDDLE:
             btn_name = "BTN_MIDDLE";
-            mouse_click.button = WMouseClick::Tertiary;
+            mouse_click.button = MouseClick::Tertiary;
             break;
 
         default:
@@ -115,12 +115,12 @@ pointer_button(void *data,
     {
         case 0:
             btn_action = "release";
-            mouse_click.action = WEventButtonAction::Release;
+            mouse_click.action = MouseButtonAction::Release;
             break;
 
         case 1:
             btn_action = "press";
-            mouse_click.action = WEventButtonAction::Press;
+            mouse_click.action = MouseButtonAction::Press;
             break;
 
         default:
@@ -128,8 +128,8 @@ pointer_button(void *data,
     }
 
 
-    WEvent pointer_click_ev = { 
-        WEventType::MouseClick, 
+    UserInput pointer_click_ev = { 
+        UserInputType::MouseClick, 
         mouse_click
     };
     w_app->input.w_events.push_back(pointer_click_ev);

@@ -1,6 +1,6 @@
 #include "glad/glad.h"
 
-#include "io/bmp/bmp.hh"
+#include "io/bmp1/bmp.hh"
 #include "lib/process.hh"
 
 #include "opengl/texture_unit.hh"

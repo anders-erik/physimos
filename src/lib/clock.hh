@@ -1,7 +1,8 @@
 #pragma once
 
 #include <sys/time.h>
-
+#include <stdio.h>
+#include <cstdint>
 
 class Clock
 {

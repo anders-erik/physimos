@@ -20,7 +20,7 @@ public:
 
     void init(i2 dims);
 
-    Arr<WEvent> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer
+    Arr<UserInput> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer
     void update();
     bool frame_step(); // renders current frame, process new events, and returns true if new frame will begin, or false if exit-input detected
     void dispatch() {wl_display_dispatch(state.wl.display);} // process all wayland events

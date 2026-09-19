@@ -7,7 +7,7 @@
 
 #include "obj_loader.hpp"
 
-#include "bmp_loader.hpp"
+#include "bmp0/bmp_loader.hpp"
 
 
 

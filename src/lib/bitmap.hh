@@ -6,8 +6,10 @@
 #include <cstring>
 #include <sys/stat.h>
 
-#include "lib/str.hh"
 #include "lib/arr.hh"
+#include "lib/print.hh"
+#include "lib/str.hh"
+
 #include "math/vec.hh"
 #include "math/vecmat.hh"
 

@@ -4,31 +4,31 @@
 #include <unistd.h>
 #include <cstring>
 #include <sys/stat.h>
-
-#include "lib/print.hh"
-#include "lib/arr.hh"
-#include "lib/file.hh"
-#include "lib/cli.hh"
-#include "lib/str.hh"
-#include "lib/clock.hh"
-
-#include "math/vec.hh"
-#include "math/vecmat.hh"
-
-#include "audio/audio.hh"
-
-#include "app.hh"
-#include "swrend/bitmap.hh"
-#include "swrend/BMP.hh"
-#include "swrend/line.hh"
-#include "swrend/ui.hh"
-#include "swrend/swrend.hh"
-#include "swrend/wayland.hh"
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h> // socket
 #include <sys/un.h> // sockaddr_un
+
+#include "lib/arr.hh"
+#include "lib/bitmap.hh"
+#include "lib/cli.hh"
+#include "lib/clock.hh"
+#include "lib/file.hh"
+#include "lib/print.hh"
+#include "lib/str.hh"
+
+#include "math/vec.hh"
+#include "math/vecmat.hh"
+#include "math/line.hh"
+
+#include "audio/audio.hh"
+#include "wayland/wayland.hh"
+#include "ui/ui4/ui.hh"
+
+// #include "piano_app.hh"
+#include "io/bmp2/BMP.hh"
+#include "rend/sw/swrend.hh"
+
 
 
 
@@ -428,18 +428,18 @@ int main(int argc, char** argv)
         Clock clock;
         clock.print_tv_start();
 
-        i2 win_dims = {640, 480};
+        // i2 win_dims = {640, 480};
 
-        App app { win_dims };
-        app.open_window();
+        // PianoApp piano_app { win_dims };
+        // piano_app.open_window();
 
+        Audio::play_note();
     }
     else
     {
         Print::ln("No valid command detected.");
     }
 
-    Audio::play_note();
     
 
     Print::ln("Bye, from main_swrend.cc. \n");

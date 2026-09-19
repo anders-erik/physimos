@@ -1,4 +1,5 @@
 
+add_subdirectory(apps)
 add_subdirectory(audio)
 add_subdirectory(conductor)
 add_subdirectory(draw)
@@ -15,9 +16,9 @@ add_subdirectory(rend)
 add_subdirectory(scene)
 add_subdirectory(scene2D)
 add_subdirectory(simulator)
-add_subdirectory(swrend)
 add_subdirectory(test)
 add_subdirectory(ui)
+add_subdirectory(wayland)
 add_subdirectory(window)
 
 

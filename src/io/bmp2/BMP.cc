@@ -6,7 +6,7 @@
 #include <cstring>
 #include <sys/stat.h>
 
-#include "swrend/bitmap.hh"
+#include "lib/bitmap.hh"
 
 
 

@@ -7,7 +7,7 @@
 
 #include "pso_loader.hh"
 
-#include "bmp_loader.hpp"
+#include "bmp0/bmp_loader.hpp"
 
 #include "resources.hh"
 
