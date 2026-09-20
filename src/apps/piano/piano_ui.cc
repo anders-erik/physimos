@@ -6,7 +6,24 @@
 #include "ui/ui4/ui.hh"
 #include "apps/piano/piano_app.hh"
 
+#define _CAST_PIANO_UI_ (void (*)(UINode*, void*))
 
+void stop_button_hover(UINode* _node, PianoApp* piano_app)
+{
+    _node->color = 0xFFBB3333;
+}
+void stop_button_unhover(UINode* _node, PianoApp* piano_app)
+{
+    _node->color = 0xFF994444;
+}
+void start_button_hover(UINode* _node, PianoApp* piano_app)
+{
+    _node->color = 0xFF33BB33;
+}
+void start_button_unhover(UINode* _node, PianoApp* piano_app)
+{
+    _node->color = 0xFF449944;
+}
 
 void handle_click_print(UINode* _node, void* _data)
 {
@@ -43,6 +60,34 @@ void play_current_piano_song(UINode* _node, void* _data)
 }
 
 
+
+PianoUI::PianoUI()
+{
+    ui.root.box = Box({300, 300}, {100, 100});
+
+    UINode* play_button =  ui.new_node(&ui.root);
+    play_button->box = Box({320, 320}, {25, 25});
+    play_button->color = 0xFF449944;
+
+    play_button->handle_click = play_current_piano_song;
+    play_button->handle_hover = _CAST_PIANO_UI_ start_button_hover;
+    play_button->handle_unhover = _CAST_PIANO_UI_ start_button_unhover;
+
+    UINode* stop_button =  ui.new_node(&ui.root);
+    stop_button->box = Box({360, 320}, {25, 25});
+    stop_button->color = 0xFF994444;
+    stop_button->handle_hover = _CAST_PIANO_UI_ stop_button_hover;
+    stop_button->handle_unhover = _CAST_PIANO_UI_ stop_button_unhover;
+    
+
+    // root.children.push_back(play_button);
+
+    // UINode* stop_button = allocator.new_node();
+    // root.children.push_back(stop_button);
+
+    // UINode* export_button = allocator.new_node();
+    // root.child = export_button;
+}
 
 void PianoUI::init(PianoApp* _piano_app)
 {

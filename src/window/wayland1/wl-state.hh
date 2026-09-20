@@ -13,6 +13,8 @@
 #include "window/key.hh"
 #include "io/input/user_input.hh"
 
+// struct WaylandState;
+typedef struct client_state WaylandState;
 
 struct WLFB
 {
@@ -32,8 +34,9 @@ struct WLFB
     int w;
     int h;
     bool allocated = false;
+    bool buffer_busy = false;
 
-    void init();
+    void init(WaylandState* _state);
     void resize(i2 dims);
     void* ptr() {return (void*) data;}
 

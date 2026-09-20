@@ -73,9 +73,12 @@ allocate_shm_file(size_t size)
 static void
 wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
 {
+    WaylandState* state = (WaylandState*) data;
     // Print::ln("wl_buffer_destroy!");
     /* Sent by the compositor when it's no longer using this buffer */
     // wl_buffer_destroy(wl_buffer);
+    // Print::ln("wl_buffer_release!");
+    state->fb.buffer_busy = false;
 }
 
 static const struct wl_buffer_listener wl_buffer_listener = {
@@ -83,7 +86,7 @@ static const struct wl_buffer_listener wl_buffer_listener = {
 };
 
 
-void WLFB::init()
+void WLFB::init(WaylandState* _state)
 {
     // format
 
@@ -129,7 +132,7 @@ void WLFB::init()
     // close(fd);
 
 
-    wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
+    wl_buffer_add_listener(buffer, &wl_buffer_listener, _state);
 
     allocated = true;
 }

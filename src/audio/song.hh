@@ -91,4 +91,9 @@ public:
 			// }
 		// }
 	}
+
+	void stop(Alsa& alsa)
+	{
+		// TODO: Figure out how to stop alsa from reading the data we have already written
+	}
 };

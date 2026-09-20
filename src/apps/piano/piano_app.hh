@@ -85,7 +85,7 @@ struct PianoState
 struct PianoApp
 {
     Wayland wayland;
-    PianoUI pui;
+    PianoUI piano_ui;
     InputState input_state;
     SWR::Buf renderer; // Main frame buffer provided by window lib
     Clock clock;
@@ -102,12 +102,12 @@ struct PianoApp
                         PX32F::ARGB,
                         SWR::Buf::Top                  );
 
-        pui.init(this);
+        piano_ui.init(this);
         
-        piano_state.song.beat_count = 4;
-        piano_state.song.bpm = 90;
-        piano_state.song.notes[0].push_back({ NoteName::C4, NoteType::half});
-	    piano_state.song.notes[1].push_back({ NoteName::D4, NoteType::half});
+        piano_state.song.beat_count = 2;
+        piano_state.song.bpm = 120;
+        piano_state.song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
+	    piano_state.song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
         piano_state.song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
         
@@ -143,90 +143,84 @@ struct PianoApp
         Bitmap triangle_bmp {40, 40, PX32F::ARGB};
         triangle_bmp.clear_RGBA(0x994444FF);
         renderer.bm_paste(triangle_bmp, {100, 100});
-        
-
-        // Populate UI
-        // ui.add_node( {{300, 300}, {50, 50}} );
-        
     }
 
     void open_window()
     {
 
-        
-        
         while(wayland.frame_step())
         {
 
             Arr<UserInput> events = wayland.get_new_input_events();
 
             
-            pui.handle_events(events);
+            piano_ui.handle_events(events);
 
             for(uint i = 0; i < events.count(); i++)
             {
                 input_state.set_from_event(events[i]);
 
-                pui.ui.process_user_input(events[i], this);
-
-                // if(pui.contains_pointer_pos(input_state.cursor_sane))
-                // {
-                //     pui.process_user_input(events[i], this);
-                //     // state.input_target = AppState::InputTarget::UI;
-                //     // ui.event(events[i]);
-                // }
-                // else // default target!
-                // {
-                //     // pui.set_no_active_events();
-                // }
-
-                // // Dispatch events to app
-                // if(input_state.subsystem == InputState::Subsystem::UI)
-                // {
-                //     // send event to active listener/reciever in app
-                //     ui.event(events[i]);
-                // }
-                // else
-                // {
-                //     // No current input target. Find default target!
-                //     if(ui.contains_pointer_pos(input_state.cursor_sane))
-                //     {
-                //         // state.input_target = AppState::InputTarget::UI;
-                //         ui.event(events[i]);
-                //     }
-                //     else // default target!
-                //     {
-                //         ui.reset();
-                //     }
-                // }
+                piano_ui.ui.process_user_input(events[i], this);
 
             }
 
-            render_ui();
 
+            // render_ui();
 
             // sleep(1);
             usleep(16000); // ~60fps
             // clock.print_current_m_sec();
+
+            render_ui();
         }
     }
 
-    InputState::Subsystem get_current_subsystem_target()
+
+
+    void render_ui_node(UINode* _node)
     {
-        
+        i2 pos_0_i = {(int)_node->box.pos.x, (int)_node->box.pos.y};
+
+        i2 pos_1_i = { _node->box.pos.x + _node->box.size.x, 
+                    _node->box.pos.y + _node->box.size.y      };
+
+        renderer.draw_rectangle( pos_0_i, pos_1_i, _node->color);
     }
+
 
     void render_ui()
     {
+        if(wayland.state.fb.buffer_busy)
+            Print::ln("rendering ui while wayland buffer still busy!");
+
+        i2 pos_0_i;
+        i2 pos_1_i;
         // LLNode<UINode> *ll_node = ui.nodes.back();
         // UINode& ui_node = ll_node->value;
-        UINode& ui_node = pui.ui.root;
+
+        render_ui_node(&piano_ui.ui.root);
+
+        render_ui_node(piano_ui.ui.root.children[0]);
+        render_ui_node(piano_ui.ui.root.children[1]);
+
+        // UINode& ui_node = piano_ui.ui.root;
+
+        // pos_0_i = {(int)ui_node.box.pos.x, (int)ui_node.box.pos.y};
+
+        // pos_1_i = { ui_node.box.pos.x + ui_node.box.size.x, 
+        //             ui_node.box.pos.y + ui_node.box.size.y      };
+
+        // renderer.draw_rectangle( pos_0_i, pos_1_i, ui_node.color);
 
 
-        i2 pos_0_i = {ui_node.box.pos.x, ui_node.box.pos.y};
-        i2 pos_1_i = {  ui_node.box.pos.x + ui_node.box.size.x, 
-                        ui_node.box.pos.y + ui_node.box.size.y      };
-        renderer.draw_rectangle( pos_0_i, pos_1_i, ui_node.color);
+        // UINode* stop_btn = piano_ui.ui.root.children[0];
+
+        // pos_0_i = {stop_btn->box.pos.x, stop_btn->box.pos.y};
+
+        // pos_1_i = { stop_btn->box.pos.x + stop_btn->box.size.x, 
+        //             stop_btn->box.pos.y + stop_btn->box.size.y      };
+
+        // renderer.draw_rectangle( pos_0_i, pos_1_i, stop_btn->color);
 
 
         // Bitmap ui_bitmap { 40, 40, PX32F::ARGB };

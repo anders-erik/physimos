@@ -28,6 +28,7 @@ void Wayland::render()
     wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
     wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
     wl_surface_commit(state.wl.surface);
+    state.fb.buffer_busy = true;
 }
 
 
@@ -95,7 +96,7 @@ void Wayland::init(i2 dims)
     state.fb.w = dims.x;
     state.fb.h = dims.y;
 
-    state.fb.init();
+    state.fb.init(&(this->state));
     state.fb.clear_gray();    
 
     render(); // initial render to display the window
