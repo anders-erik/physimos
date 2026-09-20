@@ -26,24 +26,22 @@ struct Box
     }
 };  
 
+
 struct UINode
 {
-    Box box;
+    UINode* parent = nullptr;
+    UINode* child = nullptr;
+
+    void (*handle_click)(UINode*, void*) = nullptr;
+    void (*handle_hover)(UINode*, void*) = nullptr;
+    void (*handle_unhover)(UINode*, void*) = nullptr;
     
 
+    Box box;
     PX32 color = 0x558855FF;
 
     UINode() {}
     UINode(d2 _pos, d2 _size) : box {_pos, _size} {}
-
-    /** 
-        Params: state available to te ui node
-        Return: state changes made by the current ui node & 'instructions' for the caller */
-    void* event(void* _data)
-    {
-
-        return nullptr;
-    }
 
     void dim() { color = 0x335533FF; }
     void undim() { color = 0x558855FF; }
@@ -65,68 +63,115 @@ struct Tree
 };
 
 
-struct UIEventData
-{
-    UserInput* i_event = nullptr;
-    void* data; // arbitrary data made available to the UI
-};
 
 struct UI
 {
-    LList<UINode> nodes;
-    UIEventData event_data;
 
-    void add_node(UINode _node)
+    UINode root;
+
+    d2 current_pointer_pos = {0.0, 0.0};
+    UINode* current_hover_target = nullptr; 
+
+    UI()
     {
-        LLNode<UINode> * llnode = nodes.append();
-        llnode->value = _node;
+        root.box = Box({300, 300}, {50, 50});
     }
 
-    void* event(UIEventData* _data)
+    // void add_node(UINode _node)
+    // {
+    //     LLNode<UINode> * llnode = nodes.append();
+    //     llnode->value = _node;
+    // }
+
+    // void* event(UIEventData* _data)
+    // {
+
+    //     return nullptr;
+    // }
+
+    /** 
+        Update the internal state of the ui based on user input.
+        The data field will be passed to the callbacks.
+    */
+    void process_user_input(UserInput _user_input, void* _data)
     {
 
+        if(_user_input.event_type == UserInputType::MouseMove)
+        {
+            MouseMovement& move = _user_input.event_data.move;
+            current_pointer_pos = move.new_pos;
+
+            UINode* new_hover_target = get_current_pointer_target();
+
+            bool hover_target_changed = new_hover_target != current_hover_target;
+            if(!hover_target_changed) // only trigger callbacks when a change in target took place!
+                return;
+
+            bool current_hover_target_exists = current_hover_target != nullptr;
+            
+            // unhover old target
+            if(current_hover_target_exists && hover_target_changed)
+            {
+                bool hover_target_has_unhover_handler = current_hover_target->handle_unhover != nullptr;
+                if(hover_target_has_unhover_handler)
+                    current_hover_target->handle_unhover(current_hover_target, _data);
+            }
+            
+
+            // hover new target
+            bool new_hover_target_exists = new_hover_target != nullptr;
+            if(new_hover_target_exists)
+            {
+                if(new_hover_target->handle_hover != nullptr)
+                    new_hover_target->handle_hover(new_hover_target, _data);
+            }
+
+            current_hover_target = new_hover_target;
+        }
+        else if(_user_input.event_type == UserInputType::MouseClick)
+        {
+            MouseClick& click = _user_input.event_data.mouse_click;
+            MouseButtonAction button_action = click.action;
+
+            UINode* hover_target = get_current_pointer_target();
+
+            if(hover_target == nullptr)
+                return;
+
+            if(hover_target->handle_click == nullptr)
+                return;
+
+            // Only handle presses, not releases
+            if(button_action == MouseButtonAction::Press)
+                hover_target->handle_click(hover_target, _data);
+        }
+    }
+
+
+
+    UINode* get_element_at_pos(d2 _pointer_pos)
+    // bool contains_pointer_pos(d2 _pointer_pos)
+    {
+        // UINode& node = nodes.back()->value;
+        if(root.box.contains(_pointer_pos))
+            return &root;
+        
         return nullptr;
     }
 
-    /** Entry points for passing input events to the ui  */
-    void* event(UserInput _ievent)
+    UINode* get_current_pointer_target()
     {
-        if(_ievent.event_type == UserInputType::MouseMove)
-        {
-            MouseMovement& move = _ievent.event_data.move;
-
-            UINode& node = nodes.back()->value;
-            if(node.box.contains(move.new_pos))
-            {
-                Print::ln("INSIDE!");
-                node.dim();
-            }
-            else
-            {
-                node.undim();
-            }
-        }
-
-        return nullptr;
-    }
-
-    bool contains_pointer_pos(d2 _pointer_pos)
-    {
-        UINode& node = nodes.back()->value;
-        if(node.box.contains(_pointer_pos))
-        {
-            return true;
-        }
+        if(root.box.contains(current_pointer_pos))
+            return &root;
         else
-        {
-            return false;
-        }
+            return nullptr;
     }
+
 
     /** When no events are being handled by the ui, we undo all the highting that was added when the UI was the input target */
-    void reset()
+    void set_no_active_events()
     {
-        nodes.back()->value.undim();
+        root.undim();
     }
 };
 

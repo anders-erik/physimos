@@ -36,4 +36,6 @@ struct UserInput
             event_data {_event_data}
     {}
 
+    bool is_mouse_move() { return (event_type == UserInputType::MouseMove) ? true : false; }
+    bool is_mouse_click() { return (event_type == UserInputType::MouseClick) ? true : false; }
 };

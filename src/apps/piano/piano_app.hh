@@ -3,6 +3,7 @@
 
 #include "lib/print.hh"
 #include "lib/arr.hh"
+#include "lib/clock.hh"
 
 #include "math/vecmat.hh"
 
@@ -15,6 +16,10 @@
 #include "io/input/user_input.hh"
 #include "ui/ui4/ui.hh"
 #include "rend/sw/swrend.hh"
+
+
+#include "piano_ui.hh"
+
 
 /** Keeps track of what part of the app is shoudl recieve the input event objects */
 struct InputState
@@ -38,13 +43,13 @@ struct InputState
         return subsystem;
     }
 
-    void set_from_events(Arr<UserInput> events)
-    {
-        for(uint i = 0; i < events.count(); i++)
-        {
-            set_from_event(events[i]);
-        }
-    }
+    // void set_from_events(Arr<UserInput> events)
+    // {
+    //     for(uint i = 0; i < events.count(); i++)
+    //     {
+    //         set_from_event(events[i]);
+    //     }
+    // }
 
     void set_from_event(UserInput _event)
     {
@@ -80,7 +85,7 @@ struct PianoState
 struct PianoApp
 {
     Wayland wayland;
-    UI ui;
+    PianoUI pui;
     InputState input_state;
     SWR::Buf renderer; // Main frame buffer provided by window lib
     Clock clock;
@@ -96,13 +101,15 @@ struct PianoApp
                         wayland.get_framebuffer_height(),
                         PX32F::ARGB,
                         SWR::Buf::Top                  );
+
+        pui.init(this);
         
         piano_state.song.beat_count = 4;
         piano_state.song.bpm = 90;
         piano_state.song.notes[0].push_back({ NoteName::C4, NoteType::half});
 	    piano_state.song.notes[1].push_back({ NoteName::D4, NoteType::half});
         piano_state.song.generate();
-        // song.play(alsa); // Trigger interactively in ui!
+        // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
         
 
 
@@ -139,31 +146,39 @@ struct PianoApp
         
 
         // Populate UI
-        ui.add_node( {{300, 300}, {50, 50}} );
+        // ui.add_node( {{300, 300}, {50, 50}} );
         
     }
 
     void open_window()
     {
 
+        
+        
         while(wayland.frame_step())
         {
 
             Arr<UserInput> events = wayland.get_new_input_events();
 
+            
+            pui.handle_events(events);
+
             for(uint i = 0; i < events.count(); i++)
             {
                 input_state.set_from_event(events[i]);
 
-                if(ui.contains_pointer_pos(input_state.cursor_sane))
-                {
-                    // state.input_target = AppState::InputTarget::UI;
-                    ui.event(events[i]);
-                }
-                else // default target!
-                {
-                    ui.reset();
-                }
+                pui.ui.process_user_input(events[i], this);
+
+                // if(pui.contains_pointer_pos(input_state.cursor_sane))
+                // {
+                //     pui.process_user_input(events[i], this);
+                //     // state.input_target = AppState::InputTarget::UI;
+                //     // ui.event(events[i]);
+                // }
+                // else // default target!
+                // {
+                //     // pui.set_no_active_events();
+                // }
 
                 // // Dispatch events to app
                 // if(input_state.subsystem == InputState::Subsystem::UI)
@@ -203,9 +218,11 @@ struct PianoApp
 
     void render_ui()
     {
-        LLNode<UINode> *ll_node = ui.nodes.back();
+        // LLNode<UINode> *ll_node = ui.nodes.back();
+        // UINode& ui_node = ll_node->value;
+        UINode& ui_node = pui.ui.root;
 
-        UINode& ui_node = ll_node->value;
+
         i2 pos_0_i = {ui_node.box.pos.x, ui_node.box.pos.y};
         i2 pos_1_i = {  ui_node.box.pos.x + ui_node.box.size.x, 
                         ui_node.box.pos.y + ui_node.box.size.y      };

@@ -3,6 +3,7 @@
 // #include "hid.h"
 // #include "hid_device.h"
 
+
 bool spacebar = false;
 const int SPACEBAR_PIN = 6;
 const int SPACEBAR_LED_PIN = 7;
@@ -29,11 +30,13 @@ void update_spacebar_hid()
     enum Output
     {
         SPACE,
+        A,
         ALT_SHIFT_Z
     } output;
 
     // output = ALT_SHIFT_Z;
-    output = SPACE;
+    // output = SPACE;
+    output = A;
 
     if (spacebar)
     {
@@ -41,6 +44,9 @@ void update_spacebar_hid()
         {
             case SPACE:
                 keycode[0] = HID_KEY_SPACE;
+                break;
+            case A:
+                keycode[0] = HID_KEY_A;
                 break;
             case ALT_SHIFT_Z:
                 modifier = KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_LEFTALT;
