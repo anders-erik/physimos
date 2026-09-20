@@ -36,6 +36,7 @@ tusb_desc_device_t const desc_device =
 // Invoked when received GET DEVICE DESCRIPTOR
 uint8_t const *tud_descriptor_device_cb(void)
 {
+    // sizeof(tusb_desc_device_t);
     return (uint8_t const *) &desc_device;
 }
 

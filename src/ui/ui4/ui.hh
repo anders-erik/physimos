@@ -68,6 +68,7 @@ struct UIAllocator
     ~UIAllocator()
     {
         free(nodes);
+        nodes = nullptr;
     }
 };
 

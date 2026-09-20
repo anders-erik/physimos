@@ -8,9 +8,25 @@ bool spacebar = false;
 const int SPACEBAR_PIN = 6;
 const int SPACEBAR_LED_PIN = 7;
 
+bool build = false;
+const int BUILD_PIN_IN = 8;
+const int BUILD_PIN_OUT = 9;
+
+void register_build_pins()
+{
+    // gpio_init(BUILD_PIN_IN);
+    // gpio_set_dir(BUILD_PIN_OUT, GPIO_IN);
+    // gpio_init(BUILD_PIN_IN);
+    // gpio_set_dir(BUILD_PIN_OUT, GPIO_OUT);
+}
+
 // Whether the last HID report we sent already had space held down.
 // Used to only send a new report when the pressed state actually changes.
 static bool space_key_reported = false;
+
+// Whether the last HID report we sent already had space held down.
+// Used to only send a new report when the pressed state actually changes.
+static bool build_key_reported = false;
     
 
 // Send (or release) the HID space key based on the current `spacebar` value.
@@ -56,8 +72,57 @@ void update_spacebar_hid()
         
     }
 
-    tud_hid_keyboard_report(0, modifier, keycode);
+    tud_hid_keyboard_report(0, modifier, keycode); // ADD MODIFIERS!!!
     space_key_reported = spacebar;
+}
+
+
+
+// Send (or release) the HID space key based on the current `spacebar` value.
+// Only sends a report when the state changes, and only once the host has
+// finished enumerating the HID interface (tud_hid_ready()).
+void update_build_hid()
+{
+    if (!tud_hid_ready())
+        return;
+
+    if (build == build_key_reported)
+        return;
+
+    uint8_t keycode[6] = { 0 };
+    uint8_t modifier = 0;
+
+    enum Output
+    {
+        SPACE,
+        A,
+        ALT_SHIFT_Z
+    } output;
+
+    output = ALT_SHIFT_Z;
+    // output = SPACE;
+    // output = A;
+
+    if (build)
+    {
+        switch (output)
+        {
+            case SPACE:
+                keycode[0] = HID_KEY_SPACE;
+                break;
+            case A:
+                keycode[0] = HID_KEY_A;
+                break;
+            case ALT_SHIFT_Z:
+                modifier = KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_LEFTALT;
+                keycode[0] = HID_KEY_Z;
+                break;
+        }
+        
+    }
+
+    tud_hid_keyboard_report(0, modifier, keycode); // ADD MODIFIERS!!!
+    build_key_reported = spacebar;
 }
 
 // Sleeps for `total_ms`, while still calling tud_task() and servicing the
@@ -70,9 +135,15 @@ void delay_and_service_usb(uint32_t total_ms)
     {
         tud_task(); // If this is removed, the input on my computer does note work /AE, 2026-09-19
 
+// tud_hid_keyboard_report
         spacebar = gpio_get(SPACEBAR_PIN);
         gpio_put(SPACEBAR_LED_PIN, spacebar ? 1 : 0);
+        // gpio_put(SPACEBAR_LED_PIN, spacebar ? 0 : 1);
         update_spacebar_hid();
+
+        build = gpio_get(BUILD_PIN_IN);
+        gpio_put(BUILD_PIN_OUT, build ? 1 : 0);
+        update_build_hid();
 
         sleep_ms(step_ms);
     }
@@ -100,6 +171,13 @@ int main() {
     gpio_init(SPACEBAR_LED_PIN);
     gpio_set_dir(SPACEBAR_LED_PIN, GPIO_OUT);
 
+    gpio_init(BUILD_PIN_IN);
+    gpio_set_dir(BUILD_PIN_IN, GPIO_IN);
+    gpio_init(BUILD_PIN_OUT);
+    gpio_set_dir(BUILD_PIN_OUT, GPIO_OUT);
+
+    // register_build_pins();
+
     tusb_init();
 
     while (true)
@@ -113,6 +191,10 @@ int main() {
 
         spacebar = gpio_get(SPACEBAR_PIN);
         gpio_put(SPACEBAR_LED_PIN, spacebar ? 1 : 0);
+
+        build = gpio_get(BUILD_PIN_IN);
+        gpio_put(BUILD_PIN_OUT, build);
+        // gpio_put(BUILD_PIN_OUT, build ? 1 : 0);
 
         // Spacebar HID report
         // tud_task();
