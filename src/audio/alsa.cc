@@ -165,3 +165,10 @@ void Alsa::play(AudioData audio_data)
 		// printf("     snd_pcm_writei return value: %li \n", long_ret);
 	}
 }
+
+
+void Alsa::stop()
+{
+	snd_pcm_drop(pcm_handle);
+	setup(); // recreate the handle that we just dropped!
+}

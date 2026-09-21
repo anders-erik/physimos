@@ -10,19 +10,23 @@
 
 void stop_button_hover(UINode* _node, PianoApp* piano_app)
 {
-    _node->color = 0xFFBB3333;
+    _node->visibility.set_color(0xFFBB3333);
+    // _node->color = 0xFFBB3333;
 }
 void stop_button_unhover(UINode* _node, PianoApp* piano_app)
 {
-    _node->color = 0xFF994444;
+    _node->visibility.set_color(0xFF994444);
+    // _node->color = 0xFF994444;
 }
 void start_button_hover(UINode* _node, PianoApp* piano_app)
 {
-    _node->color = 0xFF33BB33;
+    _node->visibility.set_color(0xFF33BB33);
+    // _node->color = 0xFF33BB33;
 }
 void start_button_unhover(UINode* _node, PianoApp* piano_app)
 {
-    _node->color = 0xFF449944;
+    _node->visibility.set_color(0xFF449944);
+    // _node->color = 0xFF449944;
 }
 
 void handle_click_print(UINode* _node, void* _data)
@@ -36,7 +40,8 @@ void handle_hover_recolor(UINode* _node, void* _data)
 {
     PianoApp* piano_app = (PianoApp*) _data;
 
-    _node->color = 0x12345678;
+    _node->visibility.set_color(0x12345678);
+    // _node->color = 0x12345678;
     // _node->color = 0xFFFFFFFF;
     Print::ln("Hover handler!");
 }
@@ -44,8 +49,9 @@ void handle_hover_recolor(UINode* _node, void* _data)
 void handle_unhover_reset(UINode* _node, void* _data)
 {
 
+    _node->visibility.set_color(0x66666666);
     // _node->color = 0x558855FF;
-    _node->color = 0x66666666;
+    // _node->color = 0x66666666;
     Print::ln("Unhover handler!");
 }
 
@@ -60,6 +66,16 @@ void play_current_piano_song(UINode* _node, void* _data)
 }
 
 
+void stop_current_piano_song(UINode* _node, void* _data)
+{
+    PianoApp* piano_app = (PianoApp*) _data;
+
+    piano_app->piano_state.song.stop(piano_app->piano_state.alsa);
+
+    // Print::ln("Unhover handler!");
+}
+
+
 
 PianoUI::PianoUI()
 {
@@ -67,7 +83,9 @@ PianoUI::PianoUI()
 
     UINode* play_button =  ui.new_node(&ui.root);
     play_button->box = Box({320, 320}, {25, 25});
-    play_button->color = 0xFF449944;
+    // play_button->color = 0xFF449944;
+    play_button->visibility.set_color(0xFF449944);
+    
 
     play_button->handle_click = play_current_piano_song;
     play_button->handle_hover = _CAST_PIANO_UI_ start_button_hover;
@@ -75,7 +93,9 @@ PianoUI::PianoUI()
 
     UINode* stop_button =  ui.new_node(&ui.root);
     stop_button->box = Box({360, 320}, {25, 25});
-    stop_button->color = 0xFF994444;
+    // stop_button->color = 0xFF994444;
+    stop_button->visibility.set_color(0xFF994444);
+    stop_button->handle_click = stop_current_piano_song;
     stop_button->handle_hover = _CAST_PIANO_UI_ stop_button_hover;
     stop_button->handle_unhover = _CAST_PIANO_UI_ stop_button_unhover;
     
@@ -99,11 +119,6 @@ void PianoUI::init(PianoApp* _piano_app)
     ui.root.handle_unhover = handle_unhover_reset;
 }
 
-
-void PianoUI::handle_events(Arr<UserInput>& _events)
-{
-    
-}
 
 
 void PianoUI::process_user_input(UserInput _user_input, PianoApp* _piano_app)

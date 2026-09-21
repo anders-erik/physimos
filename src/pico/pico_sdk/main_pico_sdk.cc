@@ -135,7 +135,6 @@ void delay_and_service_usb(uint32_t total_ms)
     {
         tud_task(); // If this is removed, the input on my computer does note work /AE, 2026-09-19
 
-// tud_hid_keyboard_report
         spacebar = gpio_get(SPACEBAR_PIN);
         gpio_put(SPACEBAR_LED_PIN, spacebar ? 1 : 0);
         // gpio_put(SPACEBAR_LED_PIN, spacebar ? 0 : 1);
@@ -143,7 +142,7 @@ void delay_and_service_usb(uint32_t total_ms)
 
         build = gpio_get(BUILD_PIN_IN);
         gpio_put(BUILD_PIN_OUT, build ? 1 : 0);
-        update_build_hid();
+        // update_build_hid();
 
         sleep_ms(step_ms);
     }
@@ -199,13 +198,16 @@ int main() {
         // Spacebar HID report
         // tud_task();
         update_spacebar_hid();
-        delay_and_service_usb(1000);
 
         v2_read_bool = gpio_get(V2_READ);
         v2_read_int = v2_read_bool ? 1 : 0;
         gpio_put(V3_WRITE, v2_read_int);
 
         gpio_put(LED_0, 0);
+
+        // update_build_hid();
+        // delay_and_service_usb(1000);aa
+
 
         delay_and_service_usb(1000);
     }

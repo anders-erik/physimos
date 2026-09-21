@@ -44,5 +44,8 @@ public:
 	void print_pcm_info();
 	int play();
 	void play(AudioData audio_data);
+
+	void stop();
+	
 	
 };

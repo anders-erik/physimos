@@ -94,6 +94,7 @@ public:
 
 	void stop(Alsa& alsa)
 	{
+		alsa.stop();
 		// TODO: Figure out how to stop alsa from reading the data we have already written
 	}
 };

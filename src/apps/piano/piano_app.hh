@@ -147,29 +147,23 @@ struct PianoApp
 
     void open_window()
     {
+        
 
         while(wayland.frame_step())
         {
-
             Arr<UserInput> events = wayland.get_new_input_events();
-
-            
-            piano_ui.handle_events(events);
 
             for(uint i = 0; i < events.count(); i++)
             {
                 input_state.set_from_event(events[i]);
 
                 piano_ui.ui.process_user_input(events[i], this);
-
             }
 
 
-            // render_ui();
+            // render_ui(); // if rendering before the sleep the render looks terrible
 
-            // sleep(1);
             usleep(16000); // ~60fps
-            // clock.print_current_m_sec();
 
             render_ui();
         }
@@ -184,14 +178,42 @@ struct PianoApp
         i2 pos_1_i = { _node->box.pos.x + _node->box.size.x, 
                     _node->box.pos.y + _node->box.size.y      };
 
-        renderer.draw_rectangle( pos_0_i, pos_1_i, _node->color);
+        // renderer.draw_rectangle( pos_0_i, pos_1_i, _node->color);
+        switch(_node->visibility.type)
+        {
+            case UINodeVisibility::COLOR:   
+                renderer.draw_rectangle( pos_0_i, pos_1_i, _node->visibility.value.color);
+                break;
+
+            case UINodeVisibility::BITMAP:
+                // renderer.draw_rectangle( pos_0_i, pos_1_i, _node->visibility.value.color);
+                renderer.bm_paste(*(_node->visibility.value.bitmap), pos_0_i);
+                break;
+            
+            case UINodeVisibility::NONE:   
+                
+                break;
+
+            default:
+                break;
+        }
+
     }
+
 
 
     void render_ui()
     {
         if(wayland.state.fb.buffer_busy)
             Print::ln("rendering ui while wayland buffer still busy!");
+
+
+        // Render the first node with bitmap-visibility
+        UIString ui_string { "asdf", {400, 75} };
+        ui_string.visibility.set_bitmap();
+        ui_string.visibility.value.bitmap->set_format(PX32F::ARGB);
+        render_ui_node(&ui_string);
+        
 
         i2 pos_0_i;
         i2 pos_1_i;

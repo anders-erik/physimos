@@ -12,6 +12,44 @@
 
 #include "box.hh"
 
+// struct Bitmap;
+
+struct UINodeVisibility
+{
+    enum Type
+    {
+        COLOR,
+        BITMAP,
+        NONE,
+    } type;
+
+    union Value
+    {
+        PX32 color;
+        Bitmap* bitmap;
+        void* null;
+    } value;
+
+    void set_color(PX32 _color)
+    {
+        type = COLOR;
+        value.color = _color;
+    }
+
+    void set_bitmap()
+    {
+        type = BITMAP;
+        value.bitmap = new Bitmap(20, 30);
+        value.bitmap->clear(0xFFFFFFFF);
+    }
+
+
+    ~UINodeVisibility()
+    {
+        if(type == BITMAP)
+            delete value.bitmap;
+    }
+};
 
 struct UINode
 {
@@ -19,16 +57,46 @@ struct UINode
     Arr<UINode*> children;
 
     Box box;
-    PX32 color = 0x558855FF;
+    UINodeVisibility visibility;
+    // PX32 color = 0x558855FF;
 
     void (*handle_click)(UINode*, void*) = nullptr;
     void (*handle_hover)(UINode*, void*) = nullptr;
     void (*handle_unhover)(UINode*, void*) = nullptr;
     
 
-    UINode() {}
-    UINode(d2 _pos, d2 _size) : box {_pos, _size} {}
+    UINode() { init();}
+    UINode(d2 _pos, d2 _size) : box {_pos, _size} {init();}
 
+    void init()
+    {
+        visibility.type = UINodeVisibility::COLOR;
+        visibility.value.color = 0x558855FF;
+    }
+};
+
+struct UIString: public UINode
+{
+    Str str;
+
+    UIString() {}
+    UIString(Str _str) : str {_str} {}
+    UIString(Str _str, d2 _pos)
+    {
+        box.pos = _pos;
+        set_str(_str);
+    }
+
+
+    void set_str(Str _str)
+    {
+        double char_width = 10;
+        double char_height = 15;
+
+        str = _str;
+        box.size.x = char_width * str.size();
+        box.size.y = char_height;
+    }
 };
 
 
