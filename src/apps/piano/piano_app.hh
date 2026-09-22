@@ -210,8 +210,10 @@ struct PianoApp
 
         // Render the first node with bitmap-visibility
         UIString ui_string { "asdf", {400, 75} };
-        ui_string.visibility.set_bitmap();
+        // ui_string.visibility.set_bitmap();
         ui_string.visibility.value.bitmap->set_format(PX32F::ARGB);
+
+
         render_ui_node(&ui_string);
         
 

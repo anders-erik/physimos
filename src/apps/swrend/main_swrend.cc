@@ -74,7 +74,7 @@ void test_bitmap_2x2()
 
 
     BMPIO bmp_io {bmp};
-    bmp_io.Export("tmp/2x2.bmp");
+    // bmp_io.Export("tmp/2x2.bmp");
 }
 
 // Str logf_path = "tmp/log.txt";

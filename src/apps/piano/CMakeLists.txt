@@ -3,7 +3,8 @@
 add_library(piano_ui piano_ui.cc)
 target_link_libraries(piano_ui
     lib
-    ui
+    bmp2
+    ui4
 )
 
 
@@ -16,6 +17,7 @@ target_link_libraries(main_piano
     swrend
     wayland
     audio
-
+    bmp2
+    ui4
     piano_ui
 )

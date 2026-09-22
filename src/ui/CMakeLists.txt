@@ -1,4 +1,5 @@
 
+add_subdirectory(ui4)
 add_subdirectory(uic)
 add_subdirectory(render)
 

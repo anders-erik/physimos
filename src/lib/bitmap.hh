@@ -72,6 +72,8 @@ struct PX
     }
 };
 
+
+
 struct Pixel
 {
     uint8_t r;
@@ -151,24 +153,27 @@ public:
 
     Bitmap(uint _width, uint _height)
     {
-        height = _height;
-        width = _width;
-
-        data.set_size(height*width);
+        allocate(_width, _height);
 
         clear(0x00000000);
     }
 
     Bitmap(uint _width, uint _height, PX32F _format)
     {
-        height = _height;
-        width = _width;
-
-        data.set_size(height*width);
+        allocate(_width, _height);
 
         format = _format;
 
         clear(0x00000000);
+    }
+
+    Bitmap& allocate(uint _width, uint _height)
+    {
+        height = _height;
+        width = _width;
+        data.set_size(height*width);
+
+        return *this;
     }
 
     uint h() const {return height;}

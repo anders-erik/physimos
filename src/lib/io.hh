@@ -67,4 +67,41 @@ struct IO
             return;
         }
     }
+
+
+
+
+    static int echo(const char* _file_path_c, void* data, uint _data_length)
+    {
+        remove(_file_path_c);
+
+        int fd = open(_file_path_c, O_WRONLY | O_CREAT );
+        if(fd < 0)
+        {
+            Print::ln("Error: Failed to open file for echo function.");
+            return -1;
+        }
+        fchmod(fd, 0777);
+
+
+        int write_ret = write(fd, data, _data_length);
+        if(write_ret < 0)
+        {
+            Print::ln("Error: Failed to write to file in echo function.");
+            return -1;
+        }
+
+
+        fd = close(fd);
+        if(fd < 0)
+        {
+            Print::ln("Error: Failed to close file in echo function.");
+            return -1;
+        }
+
+        return 0;
+    }
+
+
+
 };

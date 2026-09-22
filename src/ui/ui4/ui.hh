@@ -9,6 +9,7 @@
 #include "math/vecmat.hh"
 
 #include "io/input/user_input.hh"
+#include "io/bmp2/BMP.hh"
 
 #include "box.hh"
 
@@ -30,10 +31,22 @@ struct UINodeVisibility
         void* null;
     } value;
 
+    UINodeVisibility() = default;
+
     void set_color(PX32 _color)
     {
+        delete_bitmap();
+
         type = COLOR;
         value.color = _color;
+    }
+
+    void set_none()
+    {
+        delete_bitmap();
+
+        type = NONE;
+        value.null = nullptr;
     }
 
     void set_bitmap()
@@ -43,11 +56,16 @@ struct UINodeVisibility
         value.bitmap->clear(0xFFFFFFFF);
     }
 
-
-    ~UINodeVisibility()
+    void delete_bitmap()
     {
         if(type == BITMAP)
             delete value.bitmap;
+    }
+
+
+    ~UINodeVisibility()
+    {
+        delete_bitmap();
     }
 };
 
@@ -75,29 +93,6 @@ struct UINode
     }
 };
 
-struct UIString: public UINode
-{
-    Str str;
-
-    UIString() {}
-    UIString(Str _str) : str {_str} {}
-    UIString(Str _str, d2 _pos)
-    {
-        box.pos = _pos;
-        set_str(_str);
-    }
-
-
-    void set_str(Str _str)
-    {
-        double char_width = 10;
-        double char_height = 15;
-
-        str = _str;
-        box.size.x = char_width * str.size();
-        box.size.y = char_height;
-    }
-};
 
 
 struct UIAllocator
@@ -144,6 +139,8 @@ struct UI
 {
     UINode root;
     UIAllocator allocator;
+    // Arr<Bitmap> bitmap_assets;
+    static Bitmap font;
 
     d2 current_pointer_pos = {0.0, 0.0};
     UINode* current_hover_target = nullptr; 
@@ -151,14 +148,20 @@ struct UI
     UI(unsigned long _max_number_ui_nodes)
         : allocator {_max_number_ui_nodes}
     {
+        init_bitmap_assets();
     }
 
     UI()
         : allocator { 2 }
     {
         root.parent = nullptr;
+        init_bitmap_assets();
     }
 
+    static void init_bitmap_assets();
+    static Bitmap& get_bitmap_assets();
+
+    
     /** Appends a new node to the provided parent node. Returns new node. */
     UINode* new_node(UINode* _parent)
     {
@@ -166,6 +169,7 @@ struct UI
         _parent->children.push_back(child);
         return child;
     }
+
 
 
     /** 
@@ -263,3 +267,49 @@ struct UI
 };
 
 
+
+struct UIString: public UINode
+{
+    Str str;
+
+    UIString() {}
+    UIString(Str _str) : str {_str} {}
+    UIString(Str _str, d2 _pos)
+    {
+        box.pos = _pos;
+        visibility.set_bitmap();
+        Bitmap& bitmap = get_string_bitmap();
+        set_str(_str);
+    }
+
+    Bitmap& get_string_bitmap()
+    {
+        return *visibility.value.bitmap;
+    }
+
+    void set_str(Str _str)
+    {
+        double char_width = 20;
+        double char_height = 30;
+
+        str = _str;
+        box.size.x = char_width * str.size();
+        box.size.y = char_height;
+
+        Bitmap& font_bitmap = UI::get_bitmap_assets();
+
+        Bitmap& str_bitmap = UI::get_bitmap_assets();
+        str_bitmap.allocate(box.size.x, box.size.y);
+        str_bitmap.clear(0xFFFFFFFF);
+
+
+        char letter = 'a';
+        uint letter_height_offset = (letter - 30) * 150;
+        u2 pos = {0, letter_height_offset};
+        u2 size = {80, 150};
+        // Bitmap bmp_a = font_bitmap.get_subbitmap(pos, size);
+
+        // str_bitmap.paste(bmp_a, {0,0});
+
+    }
+};
