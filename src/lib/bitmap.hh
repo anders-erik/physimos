@@ -13,6 +13,8 @@
 #include "math/vec.hh"
 #include "math/vecmat.hh"
 
+
+
 // typedef uint32_t PX32RGBA;
 typedef uint32_t PX32;
 
@@ -258,14 +260,68 @@ public:
 
     // Copies the passed bitmap onto this bitmap. The lower left corner of the passed bitmap is placed at the provided x/y values
     // NOTE: pasting will fail if the pasted bitmap is not fully contained in the current bitmap
-    void paste(Bitmap& _bmp_to_paste, u2 _offset)
+    void paste(Bitmap& _bmp_to_paste, i2 _offset)
     {
-        for(uint x = 0; x < _bmp_to_paste.w(); x++)
+        // Intersection box check
+        int H = (int)height;
+        int W = (int)width;
+        int h = (int)_bmp_to_paste.height;
+        int w = (int)_bmp_to_paste.width;
+        
+        bool pasted_bitmap_is_above_current_bitmap = _offset.y > H;
+        bool pasted_bitmap_is_below_current_bitmap = (_offset.y + h) < 0;
+        bool pasted_bitmap_is_to_the_right_of_current_bitmap = _offset.x > W;
+        bool pasted_bitmap_is_to_the_left_of_current_bitmap = (_offset.x + w) < 0;
+
+        bool pasted_bitmap_not_in_current_bitmap =  pasted_bitmap_is_above_current_bitmap ||
+                                                    pasted_bitmap_is_below_current_bitmap ||
+                                                    pasted_bitmap_is_to_the_right_of_current_bitmap ||
+                                                    pasted_bitmap_is_to_the_left_of_current_bitmap;
+
+        bool pasted_bitmap_is_fully_contained_in_current_bitmap =   _offset.x > 0 && 
+                                                                    _offset.y > 0 &&
+                                                                    _offset.x + w <= W &&
+                                                                    _offset.y + h <= H;
+
+        u2 size_to_paste;
+        u2 offset_to_paste;
+
+        if(!pasted_bitmap_is_fully_contained_in_current_bitmap)
         {
-            for(uint y = 0; y < _bmp_to_paste.h(); y++)
+            if(pasted_bitmap_not_in_current_bitmap)
+                return;
+
+            // TODO: DO PARTIAL INTERSECTION TESTS HERE!
+            
+            // X Checks
+            bool offset_x_to_paste_starts_at_0 = _offset.x < 0; // since we've already checked if pasted is whole to the left of the current bitmap
+            offset_to_paste.x = offset_x_to_paste_starts_at_0 ? 0 : _offset.x;
+            bool size_to_paste_exceeds_W = (offset_to_paste.x + _bmp_to_paste.width) > W;
+            size_to_paste.x = size_to_paste_exceeds_W ? W - offset_to_paste.x : _bmp_to_paste.width;
+
+            // Y Checks
+            bool offset_y_to_paste_starts_at_0 = _offset.y < 0;
+            offset_to_paste.y = offset_y_to_paste_starts_at_0 ? 0 : _offset.y;
+            bool size_to_paste_exceeds_H = (offset_to_paste.y + _bmp_to_paste.height) > H;
+            size_to_paste.y = size_to_paste_exceeds_H ? H - offset_to_paste.y : _bmp_to_paste.height;
+
+        }
+        else
+        {
+            size_to_paste.x = _bmp_to_paste.width;
+            size_to_paste.y = _bmp_to_paste.height;
+            offset_to_paste.x = _offset.x;
+            offset_to_paste.y = _offset.y;
+        }
+
+        // if(_offset.x > width || _offset.y >
+
+        for(uint x = 0; x < size_to_paste.x; x++)
+        {
+            for(uint y = 0; y < size_to_paste.y; y++)
             {
-                uint x_this = x + _offset.x;
-                uint y_this = y + _offset.y;
+                uint x_this = x + offset_to_paste.x;
+                uint y_this = y + offset_to_paste.y;
 
                 (*this)[x_this, y_this] = _bmp_to_paste[x, y];
             }

@@ -114,7 +114,7 @@ struct Buf
     int count_bytes() {return count_pixels() * bytes_per_pixel;}
 
     // Bitmap interface
-    void bm_paste(Bitmap& _bmp, i2 _pos);
+    void paste_bitmap(Bitmap& _bmp, i2 _pos);
 };
 
 };

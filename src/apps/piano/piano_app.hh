@@ -137,12 +137,12 @@ struct PianoApp
         // white_4x4.clear(0xFFFFFF00); //
         white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
         // white_4x4.set_format(PX32F::ARGB);
-        renderer.bm_paste(white_4x4, {0, 476});
+        renderer.paste_bitmap(white_4x4, {0, 476});
 
 
         Bitmap triangle_bmp {40, 40, PX32F::ARGB};
         triangle_bmp.clear_RGBA(0x994444FF);
-        renderer.bm_paste(triangle_bmp, {100, 100});
+        renderer.paste_bitmap(triangle_bmp, {100, 100});
     }
 
     void open_window()
@@ -187,7 +187,7 @@ struct PianoApp
 
             case UINodeVisibility::BITMAP:
                 // renderer.draw_rectangle( pos_0_i, pos_1_i, _node->visibility.value.color);
-                renderer.bm_paste(*(_node->visibility.value.bitmap), pos_0_i);
+                renderer.paste_bitmap(*(_node->visibility.value.bitmap), pos_0_i);
                 break;
             
             case UINodeVisibility::NONE:   
@@ -212,8 +212,6 @@ struct PianoApp
         UIString ui_string { "asdf", {400, 75} };
         // ui_string.visibility.set_bitmap();
         ui_string.visibility.value.bitmap->set_format(PX32F::ARGB);
-
-
         render_ui_node(&ui_string);
         
 

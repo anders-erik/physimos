@@ -35,7 +35,7 @@ struct UINodeVisibility
 
     void set_color(PX32 _color)
     {
-        delete_bitmap();
+        try_delete_bitmap();
 
         type = COLOR;
         value.color = _color;
@@ -43,7 +43,7 @@ struct UINodeVisibility
 
     void set_none()
     {
-        delete_bitmap();
+        try_delete_bitmap();
 
         type = NONE;
         value.null = nullptr;
@@ -51,12 +51,23 @@ struct UINodeVisibility
 
     void set_bitmap()
     {
+        try_delete_bitmap();
+
         type = BITMAP;
         value.bitmap = new Bitmap(20, 30);
         value.bitmap->clear(0xFFFFFFFF);
     }
 
-    void delete_bitmap()
+    void set_bitmap(uint _width, uint _height)
+    {
+        try_delete_bitmap();
+
+        type = BITMAP;
+        value.bitmap = new Bitmap(_width, _height);
+        value.bitmap->clear(0xFFFFFFFF);
+    }
+
+    void try_delete_bitmap()
     {
         if(type == BITMAP)
             delete value.bitmap;
@@ -65,7 +76,7 @@ struct UINodeVisibility
 
     ~UINodeVisibility()
     {
-        delete_bitmap();
+        try_delete_bitmap();
     }
 };
 
@@ -271,6 +282,7 @@ struct UI
 struct UIString: public UINode
 {
     Str str;
+    uint font_size = 12;
 
     UIString() {}
     UIString(Str _str) : str {_str} {}
@@ -289,27 +301,41 @@ struct UIString: public UINode
 
     void set_str(Str _str)
     {
-        double char_width = 20;
+        // double char_width = 20;
         double char_height = 30;
+        // int font_pixel_size = font_size * 1.5;
+
+        double size_factor =  (char_height / 150.0);
+        double char_width = char_height * (80.0 / 150.0);
 
         str = _str;
         box.size.x = char_width * str.size();
         box.size.y = char_height;
 
+        visibility.set_bitmap(box.size.x, box.size.y);
+        Bitmap& str_bitmap = *visibility.value.bitmap;
+
         Bitmap& font_bitmap = UI::get_bitmap_assets();
 
-        Bitmap& str_bitmap = UI::get_bitmap_assets();
-        str_bitmap.allocate(box.size.x, box.size.y);
-        str_bitmap.clear(0xFFFFFFFF);
+        for(uint i = 0; i < str.size(); i++)
+        {
+            // char letter = 'a';
+            char letter = str[i];
+            uint letter_height_offset = (letter - 30) * 150;
+            u2 pos = {0, letter_height_offset};
+            u2 size = {80, 150};
 
+            Bitmap bmp_letter = font_bitmap.get_subbitmap(pos, size).scale(size_factor);
 
-        char letter = 'a';
-        uint letter_height_offset = (letter - 30) * 150;
-        u2 pos = {0, letter_height_offset};
-        u2 size = {80, 150};
-        // Bitmap bmp_a = font_bitmap.get_subbitmap(pos, size);
+            // TODO: Negative y-value-pastes are not pasted with offset.
+            // I believe that the problem is that I am not sampling the pasted bitmap at the proper indeces after persforming intersection tests!
+            // For intersections we need not only return the interection box, but also the sample offset where we begin the sampling of the pasted bitmap!!
 
-        // str_bitmap.paste(bmp_a, {0,0});
+            // str_bitmap.paste(bmp_letter, {(double)i*char_width, -30.0});
+            str_bitmap.paste(bmp_letter, {(double)i*char_width, 0.0});
+        }
+
+        
 
     }
 };

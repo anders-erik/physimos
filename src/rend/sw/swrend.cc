@@ -143,7 +143,7 @@ void SWR::Buf::clear(PX32 _px)
 }
 
 
-void SWR::Buf::bm_paste(Bitmap& _bmp, i2 _pos)
+void SWR::Buf::paste_bitmap(Bitmap& _bmp, i2 _pos)
 {
     if(_bmp.get_format() != pixel_format)
     {
