@@ -139,6 +139,83 @@ struct Pixel
     }
 };
 
+/** 
+    Handles 6 scenarios of the pasting of a 1D span/size to the position of a 0-origined 1D destination span.
+    See media/1D_paste_box.png for visual description
+*/
+struct PasteBox1D
+{
+    int size_intersection; // size of the box resulting from logical intersection operation
+
+    int origin_dest; // location where the paste begins in the destination bitmap (the bitmap onto wich we are pasting)
+    int origin_src;  // location of the sampling origin in the source bitmap (the bitmap from which we are copying data)
+
+
+
+    void set_box(int size_dest, int size_src, int pos_src)
+    {
+
+        bool src_is_outside_dest_to_the_left = (pos_src + size_src) < 0;
+        bool src_is_outside_dest_to_the_right = pos_src > size_dest;
+
+        if(src_is_outside_dest_to_the_left || src_is_outside_dest_to_the_right)
+        {
+            size_intersection = 0;
+            return;
+        }
+        
+        // intersection guaranteed!
+
+        bool src_start_at_negative_pos = pos_src < 0;
+        // bool src_start_at_positive_pos = !src_start_at_negative_pos;
+
+        if(src_start_at_negative_pos)
+        {
+            bool src_intersect_both_left_and_right_of_dest = pos_src + size_src > size_dest;
+
+            if(src_intersect_both_left_and_right_of_dest)
+            {
+                size_intersection = size_dest;
+                origin_dest = 0;
+                origin_src = -pos_src;
+            }
+            else
+            {
+                size_intersection = pos_src + size_src;
+                origin_dest = 0;
+                origin_src = -pos_src;
+            }
+        }
+        else // src is pasted at location within the size of the destination box
+        {
+            bool src_is_contained_within_dest = pos_src + size_src < size_dest;
+
+            if(src_is_contained_within_dest)
+            {
+                size_intersection = size_src;
+                origin_dest = pos_src;
+                origin_src = 0;
+            }
+            else // paste intersects only right side of destination box
+            {
+                size_intersection = size_dest - pos_src;
+                origin_dest = pos_src;
+                origin_src = 0;
+            }
+        }
+
+    }
+
+private:
+
+
+    void set_intersection()
+    {
+        
+    }
+};
+
+
 // typedef Arr<Pixel> Col;
 
 /** 32-bit pixel bitmap */
@@ -256,6 +333,28 @@ public:
         }
 
         return bitmap;
+    }
+
+
+    void paste2(Bitmap& _bmp_to_paste, i2 _offset)
+    {
+        PasteBox1D paste_box_x;
+        paste_box_x.set_box((*this).width, _bmp_to_paste.width, _offset.x);
+        PasteBox1D paste_box_y;
+        paste_box_y.set_box((*this).height, _bmp_to_paste.height, _offset.y);
+
+        for(uint x = 0; x < paste_box_x.size_intersection; x++)
+        {
+            for(uint y = 0; y < paste_box_y.size_intersection; y++)
+            {
+                int dest_x = paste_box_x.origin_dest + x;
+                int dest_y = paste_box_y.origin_dest + y;
+                int src_x = paste_box_x.origin_src + x;
+                int src_y = paste_box_y.origin_src + y;
+
+                (*this)[dest_x, dest_y] = _bmp_to_paste[src_x, src_y];
+            }
+        }
     }
 
     // Copies the passed bitmap onto this bitmap. The lower left corner of the passed bitmap is placed at the provided x/y values

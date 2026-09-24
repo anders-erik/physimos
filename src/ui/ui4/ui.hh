@@ -332,7 +332,11 @@ struct UIString: public UINode
             // For intersections we need not only return the interection box, but also the sample offset where we begin the sampling of the pasted bitmap!!
 
             // str_bitmap.paste(bmp_letter, {(double)i*char_width, -30.0});
-            str_bitmap.paste(bmp_letter, {(double)i*char_width, 0.0});
+            // str_bitmap.paste(bmp_letter, {(double)i*char_width, 0.0});
+
+            str_bitmap.paste2(bmp_letter, {(double)i*char_width-100, -10.0});
+            str_bitmap.paste2(bmp_letter, {(double)i*char_width, 20.0});
+            str_bitmap.paste2(bmp_letter, {(double)i*char_width+20, 0.0});
         }
 
         
