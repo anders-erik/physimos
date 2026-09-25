@@ -9,135 +9,13 @@
 #include "lib/arr.hh"
 #include "lib/print.hh"
 #include "lib/str.hh"
+#include "lib/pixel_buffer.hh"
 
 #include "math/vec.hh"
 #include "math/vecmat.hh"
 
 
 
-// typedef uint32_t PX32RGBA;
-typedef uint32_t PX32;
-
-/** Logical ordering if pixel bytes when manipulated in-code. Actual layout is reversed in little-endian memory. */
-enum class PX32F
-{
-    RGBA,
-    ARGB,
-};
-
-struct PX
-{
-    static inline PX32 RGBA_to_ARGB(PX32 _px)
-    {
-        PX32 A___ = (_px & 0x000000FF) << 24;
-        PX32 _RGB = (_px & 0xFFFFFF00) >> 8;
-        return (A___ | _RGB);
-    }
-
-    static inline PX32 ARGB_to_RGBA(PX32 _px)
-    {
-        PX32 ___A = (_px & 0xFF000000) >> 24;
-        PX32 RGB_ = (_px & 0x00FFFFFF) << 8;
-        return (___A | RGB_);
-    }
-
-    static inline uint8_t R(PX32 _px) { return (uint8_t)(_px >> 24); }
-    static inline uint8_t G(PX32 _px) { return (uint8_t)(_px >> 16); }
-    static inline uint8_t B(PX32 _px) { return (uint8_t)(_px >> 8 ); }
-    static inline uint8_t A(PX32 _px) { return (uint8_t)(_px >> 0 ); }
-
-    static Str to_str(PX32 _px)
-    {
-        return {
-            "(",
-            Str::UI(PX::R(_px)),
-            ", ",
-            Str::UI(PX::G(_px)),
-            ", ",
-            Str::UI(PX::B(_px)),
-            ", ",
-            Str::UI(PX::A(_px)),
-            ")",
-        };
-    }
-
-    static Str to_str_hex(PX32 _px)
-    {
-        char hex[16];
-        memset(hex, 0, 16);
-
-        sprintf(hex, "%x", _px);
-    
-        return {
-            Str(hex),
-        };
-    }
-};
-
-
-
-struct Pixel
-{
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-
-    constexpr
-    Pixel() : r {0}, g {0}, b {0} 
-    {
-    }
-    Pixel(uint8_t _r, uint8_t _g, uint8_t _b) : r {_r}, g {_g}, b {_b} 
-    {
-    }
-
-    Pixel& operator=(const Pixel& rhs)
-    {
-        r = rhs.r;
-        g = rhs.g;
-        b = rhs.b;
-        return *this;
-    }
-
-    Str to_str()
-    {
-        return {
-            "(",
-            Str::UI(r),
-            ", ",
-            Str::UI(g),
-            ", ",
-            Str::UI(b),
-            ")",
-        };
-    }
-    Str to_str_hex()
-    {
-        int  num = r << 24;
-        num += g << 16;
-        num += b << 8;
-
-        char hex[16];
-        memset(hex, 0, 16);
-
-        sprintf(hex, "%x", num);
-    
-        return {
-            Str(hex),
-        };
-    }
-
-    PX32 to_PX32RGBA()
-    {
-        PX32 ret_px = 0;
-
-        ret_px += r << 24;
-        ret_px += g << 16;
-        ret_px += b << 8 ;
-        ret_px += 0x000000FF ;
-
-        return ret_px;
-    }
-};
 
 /** 
     Handles 6 scenarios of the pasting of a 1D span/size to the position of a 0-origined 1D destination span.
@@ -205,15 +83,85 @@ struct PasteBox1D
         }
 
     }
-
-private:
-
-
-    void set_intersection()
-    {
-        
-    }
 };
+
+
+
+/** 
+    Handles 6 scenarios of the pasting of a 1D source span/size to 1D destination span.
+    Also calculates the coordinate of the source and destination boxes at which the intersection took place!
+    See media/1D_paste_box.png for visual description
+*/
+struct BoxIntersection1D
+{
+    int size_intersection; // size of the box resulting from logical intersection operation
+    int pos_intersection; // position of the box resulting from logical intersection operation
+
+    int cutting_coord_dest; // coordinate of destination box at which the resulting intersection box begins
+    int cutting_coord_src;  // coordinate of source box at which the resulting intersection box begins
+
+
+
+    void set_box(int dest_pos, int dest_size, int src_pos, int src_size)
+    {
+
+        bool src_is_outside_dest_to_the_left = (src_pos + src_size) < dest_pos;
+        bool src_is_outside_dest_to_the_right = src_pos > dest_pos + dest_size;
+
+        if(src_is_outside_dest_to_the_left || src_is_outside_dest_to_the_right)
+        {
+            size_intersection = 0;
+            return;
+        }
+        
+        // intersection guaranteed!
+
+        bool src_pos_less_than_dest_pos = src_pos < dest_pos;
+        // bool src_start_at_positive_pos = !src_start_at_negative_pos;
+
+        if(src_pos_less_than_dest_pos)
+        {
+            bool src_intersect_both_left_and_right_of_dest = src_pos + src_size > dest_pos + dest_size;
+
+            if(src_intersect_both_left_and_right_of_dest)
+            {
+                size_intersection = dest_size;
+                pos_intersection = dest_pos;
+                cutting_coord_dest = 0;
+                cutting_coord_src = dest_pos - src_pos;
+            }
+            else
+            {
+                size_intersection = (src_pos + src_size) - dest_pos;
+                pos_intersection = dest_pos;
+                cutting_coord_dest = 0;
+                cutting_coord_src = dest_pos - src_pos;
+            }
+        }
+        else // src is pasted at location within the size of the destination box
+        {
+            bool src_is_contained_within_dest = src_pos + src_size < dest_pos + dest_size;
+
+            if(src_is_contained_within_dest)
+            {
+                size_intersection = src_size;
+                pos_intersection = src_pos;
+                cutting_coord_dest = src_pos - dest_pos;
+                cutting_coord_src = 0;
+            }
+            else // paste intersects only right side of destination box
+            {
+                size_intersection = dest_size - (src_pos - dest_pos);
+                pos_intersection = src_pos;
+                cutting_coord_dest = src_pos - dest_pos;
+                cutting_coord_src = 0;
+            }
+        }
+
+    }
+
+};
+
 
 
 // typedef Arr<Pixel> Col;
@@ -244,6 +192,15 @@ public:
         format = _format;
 
         clear(0x00000000);
+    }
+
+    Bitmap(uint _width, uint _height, PX32F _format, PX32 _pixel)
+    {
+        allocate(_width, _height);
+
+        format = _format;
+
+        clear(_pixel);
     }
 
     Bitmap& allocate(uint _width, uint _height)
@@ -335,6 +292,28 @@ public:
         return bitmap;
     }
 
+    // specify the global position of the current bitmap when pasting to be used as a mask
+    void paste_with_mask(Bitmap& _bmp_to_paste, i2 _offset, i2 _this_position)
+    {   
+
+        BoxIntersection1D intersection_x;
+        intersection_x.set_box(_this_position.x, (*this).width, _offset.x, _bmp_to_paste.width);
+        BoxIntersection1D intersection_y;
+        intersection_y.set_box(_this_position.y, (*this).height, _offset.y, _bmp_to_paste.height);
+
+        for(uint x = 0; x < intersection_x.size_intersection; x++)
+        {
+            for(uint y = 0; y < intersection_y.size_intersection; y++)
+            {
+                int dest_x = intersection_x.pos_intersection + intersection_x.cutting_coord_dest + x;
+                int dest_y = intersection_y.pos_intersection + intersection_y.cutting_coord_dest + y;
+                int src_x = intersection_x.cutting_coord_src + x;
+                int src_y = intersection_y.cutting_coord_src + y;
+
+                (*this)[dest_x, dest_y] = _bmp_to_paste[src_x, src_y];
+            }
+        }
+    }
 
     void paste2(Bitmap& _bmp_to_paste, i2 _offset)
     {

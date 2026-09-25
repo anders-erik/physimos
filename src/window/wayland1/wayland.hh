@@ -1,25 +1,33 @@
 #pragma once
 
+#include "lib/pixel_buffer.hh"
 
 #include "wl-state.hh"
 
 
 class Wayland
 {
+    WaylandState state = { 0 }; 
 
     void init(i2 dims);
     void render(); // damage buffer and commit surface
 
 public:
-    WaylandState state = { 0 }; 
 
     Wayland(i2 dims);  
     Wayland();
 
-    uint32_t* get_framebuffer_ptr() { return state.fb.data; }
-    int get_framebuffer_width() {return state.fb.w; }
-    int get_framebuffer_height() {return state.fb.h; }
-    // const WaylandState& state() const { return state; };
+
+    PixelBuffer get_pixel_buffer()
+    {
+        return PixelBuffer {    (PX32*) state.fb.data, 
+                                        state.fb.w, 
+                                        state.fb.h,
+                                        PX32F::ARGB,
+                                        PixelBuffer::Top    };
+    }
+
+    bool buffer_is_busy() { return state.fb.buffer_busy; }
 
     Arr<UserInput> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer    
 

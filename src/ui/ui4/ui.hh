@@ -151,7 +151,7 @@ struct UI
     UINode root;
     UIAllocator allocator;
     // Arr<Bitmap> bitmap_assets;
-    static Bitmap font;
+    // static Bitmap font;
 
     d2 current_pointer_pos = {0.0, 0.0};
     UINode* current_hover_target = nullptr; 

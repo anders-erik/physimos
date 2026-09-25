@@ -16,6 +16,7 @@
 #include "io/input/user_input.hh"
 #include "ui/ui4/ui.hh"
 #include "rend/sw/swrend.hh"
+#include "lib/pixel_buffer.hh"
 
 
 #include "piano_ui.hh"
@@ -87,7 +88,6 @@ struct PianoApp
     Wayland wayland;
     PianoUI piano_ui;
     InputState input_state;
-    SWR::Buf renderer; // Main frame buffer provided by window lib
     Clock clock;
 
     PianoState piano_state;
@@ -95,14 +95,9 @@ struct PianoApp
     PianoApp(i2 dims)
         :   wayland {Wayland{dims}}
     {
-        
-        renderer.set(   (PX32*)wayland.get_framebuffer_ptr(), 
-                        wayland.get_framebuffer_width(), 
-                        wayland.get_framebuffer_height(),
-                        PX32F::ARGB,
-                        SWR::Buf::Top                  );
 
-        piano_ui.init(this);
+        piano_ui.init(  this, 
+                        wayland.get_pixel_buffer()   );
         
         piano_state.song.beat_count = 2;
         piano_state.song.bpm = 120;
@@ -111,47 +106,16 @@ struct PianoApp
         piano_state.song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
         
-
-
-        renderer.clear(0x00663333);
-
-        renderer.draw_point({10, 10}, 0x12345678);
-        renderer.draw_point({20, 10}, 0x12345678);
-        renderer.draw_point({30, 10}, 0x12345678);
-        renderer.draw_point({11, 10}, 0x00FFFFFF);
-        renderer.draw_point({12, 10}, 0x00FFFFFF);
-        renderer.draw_point({13, 10}, 0x00FFFFFF);
-
-        renderer.draw_line({30, 30}, {50, 170}, 0x00FFFFFF);
-        renderer.draw_line({34, 30}, {54, 170}, 0xFFFFFF00);
-        renderer.draw_line({38, 30}, {58, 170}, PX::RGBA_to_ARGB(0xFFFFFF00));
-
-        renderer.draw_rectangle({300, 100}, {340, 120}, PX::RGBA_to_ARGB(0x88f888800));
-
-        renderer.draw_triangle_no_fill({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
-
-        renderer.draw_triangle({200, 30}, {250, 80}, {220, 120}, 0x00FFFFFF);
-
-        Bitmap white_4x4 {4, 4, PX32F::ARGB};
-        // white_4x4.clear(0x00FFFFFF); // XRGB format for wayland compatibility
-        // white_4x4.clear(0xFFFFFF00); //
-        white_4x4.clear_RGBA(0xFFFFFF00); // automatically converts the pixel to match underlying format
-        // white_4x4.set_format(PX32F::ARGB);
-        renderer.paste_bitmap(white_4x4, {0, 476});
-
-
-        Bitmap triangle_bmp {40, 40, PX32F::ARGB};
-        triangle_bmp.clear_RGBA(0x994444FF);
-        renderer.paste_bitmap(triangle_bmp, {100, 100});
     }
 
     void open_window()
     {
-        
 
         while(wayland.frame_step())
         {
             Arr<UserInput> events = wayland.get_new_input_events();
+
+            
 
             for(uint i = 0; i < events.count(); i++)
             {
@@ -165,88 +129,16 @@ struct PianoApp
 
             usleep(16000); // ~60fps
 
-            render_ui();
-        }
-    }
+            // renderer.clear(0xFF383333);
 
-
-
-    void render_ui_node(UINode* _node)
-    {
-        i2 pos_0_i = {(int)_node->box.pos.x, (int)_node->box.pos.y};
-
-        i2 pos_1_i = { _node->box.pos.x + _node->box.size.x, 
-                    _node->box.pos.y + _node->box.size.y      };
-
-        // renderer.draw_rectangle( pos_0_i, pos_1_i, _node->color);
-        switch(_node->visibility.type)
-        {
-            case UINodeVisibility::COLOR:   
-                renderer.draw_rectangle( pos_0_i, pos_1_i, _node->visibility.value.color);
-                break;
-
-            case UINodeVisibility::BITMAP:
-                // renderer.draw_rectangle( pos_0_i, pos_1_i, _node->visibility.value.color);
-                renderer.paste_bitmap(*(_node->visibility.value.bitmap), pos_0_i);
-                break;
             
-            case UINodeVisibility::NONE:   
-                
-                break;
+            // renderer.paste_bitmap(black_100x100, {200, 50});
 
-            default:
-                break;
+            if(wayland.buffer_is_busy())
+                Print::ln("rendering ui while wayland buffer still busy!");
+            piano_ui.render();
+
         }
-
     }
 
-
-
-    void render_ui()
-    {
-        if(wayland.state.fb.buffer_busy)
-            Print::ln("rendering ui while wayland buffer still busy!");
-
-
-        // Render the first node with bitmap-visibility
-        UIString ui_string { "Physimos!", {400, 75} };
-        // ui_string.visibility.set_bitmap();
-        ui_string.visibility.value.bitmap->set_format(PX32F::ARGB);
-        render_ui_node(&ui_string);
-        
-
-        i2 pos_0_i;
-        i2 pos_1_i;
-        // LLNode<UINode> *ll_node = ui.nodes.back();
-        // UINode& ui_node = ll_node->value;
-
-        render_ui_node(&piano_ui.ui.root);
-
-        render_ui_node(piano_ui.ui.root.children[0]);
-        render_ui_node(piano_ui.ui.root.children[1]);
-
-        // UINode& ui_node = piano_ui.ui.root;
-
-        // pos_0_i = {(int)ui_node.box.pos.x, (int)ui_node.box.pos.y};
-
-        // pos_1_i = { ui_node.box.pos.x + ui_node.box.size.x, 
-        //             ui_node.box.pos.y + ui_node.box.size.y      };
-
-        // renderer.draw_rectangle( pos_0_i, pos_1_i, ui_node.color);
-
-
-        // UINode* stop_btn = piano_ui.ui.root.children[0];
-
-        // pos_0_i = {stop_btn->box.pos.x, stop_btn->box.pos.y};
-
-        // pos_1_i = { stop_btn->box.pos.x + stop_btn->box.size.x, 
-        //             stop_btn->box.pos.y + stop_btn->box.size.y      };
-
-        // renderer.draw_rectangle( pos_0_i, pos_1_i, stop_btn->color);
-
-
-        // Bitmap ui_bitmap { 40, 40, PX32F::ARGB };
-        // ui_bitmap.clear_RGBA(0x555588FF);
-        // wayland.get_state().
-    }
 };
