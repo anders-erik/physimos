@@ -115,7 +115,6 @@ struct PianoApp
         {
             Arr<UserInput> events = wayland.get_new_input_events();
 
-            
 
             for(uint i = 0; i < events.count(); i++)
             {

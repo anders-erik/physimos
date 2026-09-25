@@ -4,13 +4,13 @@
 #include "math/vecmat.hh"
 
 
-struct Box
+struct UIBox
 {
     d2 pos; // position
     d2 size; // size
 
-    Box() {}
-    Box(d2 _pos, d2 _size) : pos {_pos}, size {_size} {}
+    UIBox() {}
+    UIBox(d2 _pos, d2 _size) : pos {_pos}, size {_size} {}
 
     bool contains(d2 _p)
     {

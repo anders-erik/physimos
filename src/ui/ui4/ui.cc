@@ -11,7 +11,7 @@
 #include "io/input/user_input.hh"
 #include "io/bmp2/BMP.hh"
 
-#include "box.hh"
+#include "ui_box.hh"
 
 #include "ui/ui4/ui.hh"
 

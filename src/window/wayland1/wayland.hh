@@ -11,11 +11,28 @@ class Wayland
 
     void init(i2 dims);
     void render(); // damage buffer and commit surface
-
+    
+    void destroy(); // destroy framebuffer & disconnect from compositor
+    
+    
 public:
 
-    Wayland(i2 dims);  
-    Wayland();
+    Wayland()
+    {
+        i2 default_window_dims = {640, 480};
+
+        init(default_window_dims);
+
+        return;
+    }
+    Wayland(i2 dims)
+    {
+        init(dims);
+    }
+    ~Wayland()
+    {
+        destroy();
+    }
 
 
     PixelBuffer get_pixel_buffer()
@@ -34,8 +51,10 @@ public:
     bool frame_step(); // renders current frame, process queued events, and returns true if new frame will begin, or false if exit-input detected
     void run(); // transfer process execution into wayland object
 
-    void close(); // destroy framebuffer & disconnect from compositor
-
+    void close()
+    {
+        state.running = false;
+    }
 };
 
 

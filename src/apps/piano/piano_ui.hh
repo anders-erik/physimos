@@ -26,7 +26,6 @@ public:
 
     PianoUI()
     {
-        ui.root.box = Box({300, 300}, {100, 100});
     }
 
     PianoUI(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
@@ -35,8 +34,6 @@ public:
     } 
 
     void init(PianoApp* _piano_app, PixelBuffer _pixel_buffer);
-
-    void process_user_input(UserInput _user_input, PianoApp* _piano_app);
 
     void render_ui_node(UINode* _node);
     void render();

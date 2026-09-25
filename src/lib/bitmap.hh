@@ -485,7 +485,16 @@ public:
     {
         if(_x >= width || _y >= height)
         {
-            Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
+            Print::buf("ERROR: accessing pixel outside bounds of bitmap.   ");
+            Print::buf("x = "); 
+            Print::buf(Str::SI(_x));
+            Print::buf(" y = "); 
+            Print::buf(Str::SI(_y));
+            Print::buf("   w = "); 
+            Print::buf(Str::SI(width));
+            Print::buf("   h = "); 
+            Print::buf(Str::SI(height));
+            Print::ln("");
             return (PX32&) *(data.data_mut());
         }
 
@@ -496,7 +505,7 @@ public:
     {
         if( _p.x >= width || _p.y >= height)
         {
-            Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
+            Print::ln("ERROR: accessing pixel outside bounds of bitmap.aaaa");
             return (PX32&) *(data.data_mut());
         }
 

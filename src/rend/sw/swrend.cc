@@ -160,3 +160,36 @@ void SWR::Renderer::paste_bitmap(Bitmap& _bmp, i2 _pos)
         }
     }
 }
+
+void SWR::Renderer::paste_bitmap_with_mask(Bitmap& _bmp, i2 _bmp_pos, i2 _mask_pos, i2 _mask_size)
+{
+    if(_bmp.get_format() != buffer.pixel_format)
+    {
+        Print::ln("ERROR: Tried to paste bitmap onto SWR::Buf with non-matching pixel formats.");
+        throw;
+    }
+
+    BoxIntersection1D intersection_x;
+    intersection_x.set_box(_mask_pos.x, _mask_size.x, _bmp_pos.x, _bmp.w());
+
+    BoxIntersection1D intersection_y;
+    intersection_y.set_box(_mask_pos.y, _mask_size.y, _bmp_pos.y, _bmp.h());
+
+
+    for(int x = 0; x < intersection_x.size_intersection; x++)
+    {
+        for(int y = 0; y < intersection_y.size_intersection; y++)
+        {
+            int x_real  =   x + _mask_pos.x + intersection_x.cutting_coord_dest;
+            int y_real  =   y + _mask_pos.y + intersection_y.cutting_coord_dest;
+
+            int x_src   =   x + intersection_x.cutting_coord_src;
+            int y_src   =   y + intersection_x.cutting_coord_src;
+
+            *(buffer[x_real, y_real]) = _bmp[x_src, y_src];
+            // *((*this)[_pos.x + x, _pos.y + y]) = 0xffffffff;
+        }
+    }
+}
+
+    

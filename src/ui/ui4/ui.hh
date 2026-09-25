@@ -1,150 +1,16 @@
 #pragma once
 
-#include <cstdlib>
 
-#include "lib/arr.hh"
 #include "lib/bitmap.hh"
 #include "lib/llist.hh"
 
 #include "math/vecmat.hh"
 
 #include "io/input/user_input.hh"
-#include "io/bmp2/BMP.hh"
 
-#include "box.hh"
+#include "ui_node.hh"
+#include "ui_allocator.hh"
 
-// struct Bitmap;
-
-struct UINodeVisibility
-{
-    enum Type
-    {
-        COLOR,
-        BITMAP,
-        NONE,
-    } type;
-
-    union Value
-    {
-        PX32 color;
-        Bitmap* bitmap;
-        void* null;
-    } value;
-
-    UINodeVisibility() = default;
-
-    void set_color(PX32 _color)
-    {
-        try_delete_bitmap();
-
-        type = COLOR;
-        value.color = _color;
-    }
-
-    void set_none()
-    {
-        try_delete_bitmap();
-
-        type = NONE;
-        value.null = nullptr;
-    }
-
-    void set_bitmap()
-    {
-        try_delete_bitmap();
-
-        type = BITMAP;
-        value.bitmap = new Bitmap(20, 30);
-        value.bitmap->clear(0xFFFFFFFF);
-    }
-
-    void set_bitmap(uint _width, uint _height)
-    {
-        try_delete_bitmap();
-
-        type = BITMAP;
-        value.bitmap = new Bitmap(_width, _height);
-        value.bitmap->clear(0xFFFFFFFF);
-    }
-
-    void try_delete_bitmap()
-    {
-        if(type == BITMAP)
-            delete value.bitmap;
-    }
-
-
-    ~UINodeVisibility()
-    {
-        try_delete_bitmap();
-    }
-};
-
-struct UINode
-{
-    UINode* parent = nullptr;
-    Arr<UINode*> children;
-
-    Box box;
-    UINodeVisibility visibility;
-    // PX32 color = 0x558855FF;
-
-    void (*handle_click)(UINode*, void*) = nullptr;
-    void (*handle_hover)(UINode*, void*) = nullptr;
-    void (*handle_unhover)(UINode*, void*) = nullptr;
-    
-
-    UINode() { init();}
-    UINode(d2 _pos, d2 _size) : box {_pos, _size} {init();}
-
-    void init()
-    {
-        visibility.type = UINodeVisibility::COLOR;
-        visibility.value.color = 0x558855FF;
-    }
-};
-
-
-
-struct UIAllocator
-{
-    UINode* nodes;
-    unsigned long node_count;
-    Arr<bool> occupied_slots; // value of true if occupied
-
-    UIAllocator(unsigned long _node_count)
-        :   occupied_slots {Arr<bool> {_node_count, false}}
-    {
-        node_count = _node_count;
-        nodes = (UINode*) malloc(sizeof(UINode) * node_count);
-        occupied_slots.set(0);
-    }
-
-    UINode* new_node()
-    {
-        for(uint i = 0; i < occupied_slots.count(); i++)
-        {
-
-            if(!occupied_slots[i])
-            {
-                occupied_slots[i] = true;
-                return (nodes + i);
-            }
-        }
-
-        Print::ln("ERROR: requested new UINode from allocator but there were no available space. ");
-
-        return nullptr;
-    }
-
-
-
-    ~UIAllocator()
-    {
-        free(nodes);
-        nodes = nullptr;
-    }
-};
 
 struct UI
 {
@@ -163,7 +29,7 @@ struct UI
     }
 
     UI()
-        : allocator { 2 }
+        : allocator { 10 }
     {
         root.parent = nullptr;
         init_bitmap_assets();
@@ -177,7 +43,13 @@ struct UI
     UINode* new_node(UINode* _parent)
     {
         UINode* child = allocator.new_node();
+
+        *child = UINode(); // initialize memory to prevent garbage data
+
+        child->parent = _parent;
+
         _parent->children.push_back(child);
+
         return child;
     }
 
@@ -261,17 +133,14 @@ struct UI
         if(!root.box.contains(current_pointer_pos))
             return nullptr;
         
-        // Confirmed inside root box
-        // Now check descendants. If all descrendants are false, then return root
-        bool start_button_check = root.children[0]->box.contains(current_pointer_pos);
-        bool stop_button_check = root.children[1]->box.contains(current_pointer_pos);
-
-        if(start_button_check)
-            return root.children[0];
-        else if(stop_button_check)
-            return root.children[1];
-        else
-            return &root;
+        // Currently only one level below the root
+        for(uint i = 0; i < root.children.count(); i++)
+        {
+            if(root.children[i]->box.contains(current_pointer_pos))
+                return root.children[i];
+        }
+        
+        return &root;
     }
 
 
@@ -338,8 +207,6 @@ struct UIString: public UINode
             str_bitmap.paste2(bmp_letter, {(double)i*char_width, 20.0});
             str_bitmap.paste2(bmp_letter, {(double)i*char_width+20, 0.0});
         }
-
-        
 
     }
 };

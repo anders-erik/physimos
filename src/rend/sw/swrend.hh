@@ -42,6 +42,7 @@ struct Renderer
     void draw_triangle(i2 _p1, i2 _p2, i2 _p3, PX32 _px);
 
     void paste_bitmap(Bitmap& _bmp, i2 _pos);
+    void paste_bitmap_with_mask(Bitmap& _bmp, i2 _bmp_pos, i2 _mask_pos, i2 _mask_size);
 };
 
 };

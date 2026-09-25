@@ -35,21 +35,7 @@ void Wayland::render()
 
 
 
-Wayland::Wayland(i2 dims)
-{
-    init(dims);
-}
 
-Wayland::Wayland()
-{
-    // Print::ln("Default Wayland constructor!");
-
-    i2 default_window_dims = {640, 480};
-
-    init(default_window_dims);
-
-    return;
-}
 
 
 void Wayland::init(i2 dims)
@@ -128,7 +114,7 @@ bool Wayland::frame_step()
 
 
 
-void Wayland::close()
+void Wayland::destroy()
 {
     state.fb.destroy();
 
@@ -177,6 +163,6 @@ void Wayland::run()
 
     }
 
-    close();
+    destroy();
 }
 
