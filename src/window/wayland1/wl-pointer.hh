@@ -9,6 +9,7 @@
 
 // #include "wl-state.hh"
 
+static uint32_t pointer_serial;
 
 static void
 pointer_enter(void *data,
@@ -19,6 +20,16 @@ pointer_enter(void *data,
               wl_fixed_t y)
 {
     print("mouse enter\n");
+
+    // pointer_serial = serial;
+
+    // wl_pointer_set_cursor(
+    //     pointer,
+    //     serial,
+    //     cursor_surface,
+    //     hotspot_x,
+    //     hotspot_y
+    // );
 }
 
 static void
@@ -37,7 +48,7 @@ pointer_motion(void *data,
                wl_fixed_t x,
                wl_fixed_t y)
 {
-    client_state *state = (client_state*) data;
+    WaylandState *state = (WaylandState*) data;
 
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);

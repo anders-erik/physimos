@@ -6,39 +6,38 @@
 #include "ui/ui4/ui.hh"
 #include "apps/piano/piano_app.hh"
 
-#define _CAST_PIANO_UI_ (void (*)(UINode*, void*))
+#define PIANO_UI_CALLBACK_CAST (void (*)(UINode*, UserInput, void*))    // enable the UI to dispatch any data using void*
+#define PIANO_UI_CALLBACK_PARAMETERS UINode* _node, UserInput _user_input,  PianoApp* _piano_app // useful for API changes!
 
-void stop_button_hover(UINode* _node, PianoApp* piano_app)
+void stop_button_hover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
     _node->visibility.set_color(0xFFAA4433);
     // _node->color = 0xFFBB3333;
 }
-void stop_button_unhover(UINode* _node, PianoApp* piano_app)
+void stop_button_unhover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
     _node->visibility.set_color(0xFF995544);
     // _node->color = 0xFF994444;
 }
-void start_button_hover(UINode* _node, PianoApp* piano_app)
+void start_button_hover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
     _node->visibility.set_color(0xFF33BB33);
     // _node->color = 0xFF33BB33;
 }
-void start_button_unhover(UINode* _node, PianoApp* piano_app)
+void start_button_unhover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
     _node->visibility.set_color(0xFF449944);
     // _node->color = 0xFF449944;
 }
 
-void handle_click_print(UINode* _node, void* _data)
+void handle_click_print(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
-    PianoApp* piano_app = (PianoApp*) _data;
 
     Print::ln("Click handler!");
 }
 
-void handle_hover_recolor(UINode* _node, void* _data)
+void handle_hover_recolor(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
-    PianoApp* piano_app = (PianoApp*) _data;
 
     _node->visibility.set_color(0x12345678);
     // _node->color = 0x12345678;
@@ -46,7 +45,7 @@ void handle_hover_recolor(UINode* _node, void* _data)
     Print::ln("Hover handler!");
 }
 
-void handle_unhover_reset(UINode* _node, void* _data)
+void handle_unhover_reset(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
 
     _node->visibility.set_color(0x66666666);
@@ -56,9 +55,8 @@ void handle_unhover_reset(UINode* _node, void* _data)
 }
 
 
-void play_current_piano_song(UINode* _node, void* _data)
+void play_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
-    PianoApp* piano_app = (PianoApp*) _data;
 
     piano_app->piano_state.song.play(piano_app->piano_state.alsa);
 
@@ -66,16 +64,72 @@ void play_current_piano_song(UINode* _node, void* _data)
 }
 
 
-void stop_current_piano_song(UINode* _node, void* _data)
+void stop_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
 {
-    PianoApp* piano_app = (PianoApp*) _data;
 
     piano_app->piano_state.song.stop(piano_app->piano_state.alsa);
 
     // Print::ln("Unhover handler!");
 }
 
-void close_app(UINode* _node, void* _data)
+void press_C4(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::C4);
+}
+void press_D4(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::D4);
+}
+void press_E4(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::E4);
+}
+void press_F4(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::F4);
+}
+void press_G4(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::G4);
+}
+void press_A4(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::A4);
+}
+void press_B4(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::B4);
+}
+void press_C5(UINode* _node, UserInput _user_input,  PianoApp* _piano_app)
+{
+    _piano_app->phyano.press(NoteName::C5);
+}
+
+void phyano_keypress_callback(PIANO_UI_CALLBACK_PARAMETERS)
+{
+    if(_user_input.is_key_press() && _user_input.event_data.key_press.action == KeyButtonAction::Press)
+    {
+        NoteName note_name; 
+
+        switch (_user_input.event_data.key_press.key)
+        {
+            case Keys::A:   note_name = NoteName::C4;   break;
+            case Keys::S:   note_name = NoteName::D4;   break;
+            case Keys::D:   note_name = NoteName::E4;   break;
+            case Keys::F:   note_name = NoteName::F4;   break;
+            case Keys::G:   note_name = NoteName::G4;   break;
+            case Keys::H:   note_name = NoteName::A4;   break;
+            case Keys::J:   note_name = NoteName::B4;   break;
+            case Keys::K:   note_name = NoteName::C5;   break;
+            
+            default:        return;                     break;
+        }
+
+        _piano_app->phyano.press(note_name);
+    }
+}
+
+void close_app(UINode* _node, UserInput _user_input,  void* _data)
 {
     PianoApp* piano_app = (PianoApp*) _data;
 
@@ -91,7 +145,7 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // ui.root.box = Box({300, 300}, {100, 100});
     ui.root.box = UIBox({0, 0}, {_pixel_buffer.w, _pixel_buffer.h});
     ui.root.visibility.set_color(0xFF222222);
-
+    ui.root.handle_key_press = PIANO_UI_CALLBACK_CAST phyano_keypress_callback;
     // ui.root.handle_click = handle_click_print;
     // ui.root.handle_click = play_current_piano_song;
     // ui.root.handle_hover = handle_hover_recolor;
@@ -100,20 +154,20 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     
 
     UINode* play_button =  ui.new_node(&ui.root);
-    play_button->box = UIBox({320, 320}, {50, 50});
+    play_button->box = UIBox({360, 320}, {50, 50});
     // play_button->color = 0xFF449944;
     play_button->visibility.set_color(0xFF449944);
-    play_button->handle_click = play_current_piano_song;
-    play_button->handle_hover = _CAST_PIANO_UI_ start_button_hover;
-    play_button->handle_unhover = _CAST_PIANO_UI_ start_button_unhover;
+    play_button->handle_click = PIANO_UI_CALLBACK_CAST play_current_piano_song;
+    play_button->handle_hover = PIANO_UI_CALLBACK_CAST start_button_hover;
+    play_button->handle_unhover = PIANO_UI_CALLBACK_CAST start_button_unhover;
 
     UINode* stop_button =  ui.new_node(&ui.root);
-    stop_button->box = UIBox({390, 320}, {50, 50});
+    stop_button->box = UIBox({410, 320}, {50, 50});
     // stop_button->color = 0xFF994444;
     stop_button->visibility.set_color(0xFF995544);
-    stop_button->handle_click = stop_current_piano_song;
-    stop_button->handle_hover = _CAST_PIANO_UI_ stop_button_hover;
-    stop_button->handle_unhover = _CAST_PIANO_UI_ stop_button_unhover;
+    stop_button->handle_click = PIANO_UI_CALLBACK_CAST stop_current_piano_song;
+    stop_button->handle_hover = PIANO_UI_CALLBACK_CAST stop_button_hover;
+    stop_button->handle_unhover = PIANO_UI_CALLBACK_CAST stop_button_unhover;
     
 
     UINode* third_button =  ui.new_node(&ui.root);
@@ -144,6 +198,54 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // renderer.clear(0x00663333);
 
     
+    UINode* phyano_node =  ui.new_node(&ui.root);
+    phyano_node->box = UIBox({50, 300}, {300, 100});
+    phyano_node->visibility.set_color(0xFF444444);
+
+    PX32 white_key_color = 0xFFCCCCCC;
+    d2 white_key_size = {30, 80};
+    // double white_key_x_pos = 60.0;
+    double white_key_y_pos = 310.0;
+
+    UINode* C4_node =  ui.new_node(phyano_node);
+    C4_node->box = UIBox({60.0, white_key_y_pos}, white_key_size);
+    C4_node->visibility.set_color(white_key_color);
+    C4_node->handle_click = PIANO_UI_CALLBACK_CAST press_C4;
+
+    UINode* D4_node =  ui.new_node(phyano_node);
+    D4_node->box = UIBox({95.0, white_key_y_pos}, white_key_size);
+    D4_node->visibility.set_color(white_key_color);
+    D4_node->handle_click = PIANO_UI_CALLBACK_CAST press_D4;
+
+    UINode* E4_node =  ui.new_node(phyano_node);
+    E4_node->box = UIBox({130.0, white_key_y_pos}, white_key_size);
+    E4_node->visibility.set_color(white_key_color);
+    E4_node->handle_click = PIANO_UI_CALLBACK_CAST press_E4;
+
+    UINode* F4_node =  ui.new_node(phyano_node);
+    F4_node->box = UIBox({165.0, white_key_y_pos}, white_key_size);
+    F4_node->visibility.set_color(white_key_color);
+    F4_node->handle_click = PIANO_UI_CALLBACK_CAST press_F4;
+
+    UINode* G4_node =  ui.new_node(phyano_node);
+    G4_node->box = UIBox({200.0, white_key_y_pos}, white_key_size);
+    G4_node->visibility.set_color(white_key_color);
+    G4_node->handle_click = PIANO_UI_CALLBACK_CAST press_G4;
+
+    UINode* A4_node =  ui.new_node(phyano_node);
+    A4_node->box = UIBox({235.0, white_key_y_pos}, white_key_size);
+    A4_node->visibility.set_color(white_key_color);
+    A4_node->handle_click = PIANO_UI_CALLBACK_CAST press_A4;
+
+    UINode* B4_node =  ui.new_node(phyano_node);
+    B4_node->box = UIBox({270.0, white_key_y_pos}, white_key_size);
+    B4_node->visibility.set_color(white_key_color);
+    B4_node->handle_click = PIANO_UI_CALLBACK_CAST press_B4;
+
+    UINode* C5_node =  ui.new_node(phyano_node);
+    C5_node->box = UIBox({305.0, white_key_y_pos}, white_key_size);
+    C5_node->visibility.set_color(white_key_color);
+    C5_node->handle_click = PIANO_UI_CALLBACK_CAST press_C5;
 }
 
 
@@ -151,8 +253,16 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
 
 void PianoUI::render_ui_node(UINode* _node)
 {
-    i2 pos_0_i = {(int)_node->box.pos.x, (int)_node->box.pos.y};
+    i2 parent_pos = {0, 0};
+    i2 parent_size = {0, 0};
 
+    if(_node->parent != nullptr)
+    {
+        parent_pos = {_node->parent->box.pos.x, _node->parent->box.pos.y};
+        parent_size = {_node->parent->box.size.x, _node->parent->box.size.y};
+    }
+
+    i2 pos_0_i = {(int)_node->box.pos.x, (int)_node->box.pos.y};
     i2 pos_1_i = {  _node->box.pos.x + _node->box.size.x, 
                     _node->box.pos.y + _node->box.size.y      };
 
@@ -169,8 +279,6 @@ void PianoUI::render_ui_node(UINode* _node)
             // renderer.paste_bitmap(*(_node->visibility.value.bitmap), pos_0_i);
 
             // Currently all bitmap rendering are being drawn using the parent size as the mask
-            i2 parent_pos = {_node->parent->box.pos.x, _node->parent->box.pos.y};
-            i2 parent_size = {_node->parent->box.size.x, _node->parent->box.size.y};
             renderer.paste_bitmap_with_mask(    *(_node->visibility.value.bitmap), 
                                                 pos_0_i,
                                                 parent_pos,
@@ -186,6 +294,12 @@ void PianoUI::render_ui_node(UINode* _node)
             break;
     }
 
+
+    for(uint i = 0; i < _node->children.count(); i++)
+    {
+        render_ui_node(_node->children[i]);
+    }
+
 }
 
 
@@ -194,10 +308,10 @@ void PianoUI::render()
     render_ui_node(&ui.root);
 
     // Currently onle one level
-    for(uint i = 0; i < ui.root.children.count(); i++)
-    {
-        render_ui_node(ui.root.children[i]);
-    }
+    // for(uint i = 0; i < ui.root.children.count(); i++)
+    // {
+    //     render_ui_node(ui.root.children[i]);
+    // }
 
 
     if(false)

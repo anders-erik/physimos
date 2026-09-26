@@ -9,7 +9,7 @@
 
 #include "audio/alsa.hh"
 #include "audio/song.hh"
-// #include "audio/phyano.hh"
+#include "audio/phyano.hh"
 
 #include "window/wayland1/wayland.hh"
 
@@ -44,14 +44,6 @@ struct InputState
         return subsystem;
     }
 
-    // void set_from_events(Arr<UserInput> events)
-    // {
-    //     for(uint i = 0; i < events.count(); i++)
-    //     {
-    //         set_from_event(events[i]);
-    //     }
-    // }
-
     void set_from_event(UserInput _event)
     {
         if(_event.event_type == UserInputType::MouseMove)
@@ -80,7 +72,6 @@ struct PianoState
 {
     Alsa alsa;
     Song song;
-    // Phyano phyano;
 };
 
 struct PianoApp
@@ -89,6 +80,8 @@ struct PianoApp
     PianoUI piano_ui;
     InputState input_state;
     Clock clock;
+
+    Phyano phyano;
 
     PianoState piano_state;
 

@@ -3,6 +3,12 @@
 // #include "hid.h"
 // #include "hid_device.h"
 
+bool v2_read_bool = false; // Read value at gpio_2
+int v2_read_int = 0; // boolean conveted to int
+
+const int LED_0 = 0;
+const int V2_READ = 2;
+const int V3_WRITE = 3;
 
 bool spacebar = false;
 const int SPACEBAR_PIN = 6;
@@ -149,14 +155,8 @@ void delay_and_service_usb(uint32_t total_ms)
 }
 
 
-int main() {
-    const int LED_0 = 0;
-    const int V2_READ = 2;
-    const int V3_WRITE = 3;
-
-    bool v2_read_bool = false; // Read value at gpio_2
-    int v2_read_int = 0; // boolean conveted to int
-
+int main()
+{
     gpio_init(LED_0);
     gpio_set_dir(LED_0, GPIO_OUT);
 
@@ -205,9 +205,11 @@ int main() {
 
         gpio_put(LED_0, 0);
 
-        // update_build_hid();
+        update_build_hid();
         // delay_and_service_usb(1000);aa
 
+        // Release everything
+        tud_hid_keyboard_report(0, 0, NULL);
 
         delay_and_service_usb(1000);
     }

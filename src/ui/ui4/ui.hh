@@ -20,16 +20,18 @@ struct UI
     // static Bitmap font;
 
     d2 current_pointer_pos = {0.0, 0.0};
-    UINode* current_hover_target = nullptr; 
+    UINode* current_hover_target = nullptr;
+    UINode* current_keyboard_target = &root;
 
     UI(unsigned long _max_number_ui_nodes)
         : allocator {_max_number_ui_nodes}
     {
         init_bitmap_assets();
+        // current_keyboard_target = &root;
     }
 
     UI()
-        : allocator { 10 }
+        : allocator { 100 }
     {
         root.parent = nullptr;
         init_bitmap_assets();
@@ -83,7 +85,7 @@ struct UI
             {
                 bool hover_target_has_unhover_handler = current_hover_target->handle_unhover != nullptr;
                 if(hover_target_has_unhover_handler)
-                    current_hover_target->handle_unhover(current_hover_target, _data);
+                    current_hover_target->handle_unhover(current_hover_target, _user_input, _data);
             }
             
 
@@ -92,7 +94,7 @@ struct UI
             if(new_hover_target_exists)
             {
                 if(new_hover_target->handle_hover != nullptr)
-                    new_hover_target->handle_hover(new_hover_target, _data);
+                    new_hover_target->handle_hover(new_hover_target, _user_input, _data);
             }
 
             current_hover_target = new_hover_target;
@@ -112,7 +114,18 @@ struct UI
 
             // Only handle presses, not releases
             if(button_action == MouseButtonAction::Press)
-                hover_target->handle_click(hover_target, _data);
+                hover_target->handle_click(hover_target, _user_input, _data);
+        }
+        else if(_user_input.event_type == UserInputType::KeyPress)
+        {
+            // Print::ln("Keypress recieved in the UI!");
+            if(current_keyboard_target == nullptr)
+                return;
+            
+            if(current_keyboard_target->handle_key_press == nullptr)
+                return;
+            
+            current_keyboard_target->handle_key_press(current_keyboard_target, _user_input, _data);
         }
     }
 
@@ -133,16 +146,31 @@ struct UI
         if(!root.box.contains(current_pointer_pos))
             return nullptr;
         
-        // Currently only one level below the root
-        for(uint i = 0; i < root.children.count(); i++)
-        {
-            if(root.children[i]->box.contains(current_pointer_pos))
-                return root.children[i];
-        }
+        UINode* matched_node = search_tree(&root);
         
-        return &root;
+        return matched_node;
     }
 
+private:
+
+    bool contains_pointer(UINode* _node)
+    {
+        return _node->box.contains(current_pointer_pos);
+    }
+
+    /* Returns the matched child. If there is no match the provided parent node is returned instead. */
+    UINode* search_tree(UINode* _node)
+    {
+        for(uint i = 0; i < _node->children.count(); i++)
+        {
+            if(contains_pointer(_node->children[i]))
+            {
+                return search_tree(_node->children[i]);
+            }
+        }
+
+        return _node;
+    }
 
 };
 

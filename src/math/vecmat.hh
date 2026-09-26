@@ -82,6 +82,7 @@ struct i2 {
     bool operator==(const i2& rhs) const;
 
     i2 operator/(const i2& rhs);
+    i2 operator+(const i2& rhs);
 
     f2 to_f2() const;
 };

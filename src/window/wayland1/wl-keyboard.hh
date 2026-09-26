@@ -49,17 +49,39 @@ static void keyboard_key(
     struct wl_keyboard *keyboard,
     uint32_t serial,
     uint32_t time,
-    uint32_t key,
+    uint32_t wlkey,
     uint32_t state)
 {
-    
-    printf("key: %u, state: %u\n", key, state);
+    WaylandState* wl_state = (WaylandState*) data;
 
-    if(key == 1) // Escape
+    printf("key: %u, state: %u\n", wlkey, state);
+
+    Keys key;
+    KeyButtonAction action = state == 1 ? KeyButtonAction::Press : KeyButtonAction::Release;
+
+    switch (wlkey)
     {
-        client_state *state = (client_state *)data;
-        state->running = 0;
-        Print::ln("Escape! Exiting!");
+        case 30: key = Keys::A; break;
+        case 31: key = Keys::S; break;
+        case 32: key = Keys::D; break;
+        case 33: key = Keys::F; break;
+        case 34: key = Keys::G; break;
+        case 35: key = Keys::H; break;
+        case 36: key = Keys::J; break;
+        case 37: key = Keys::K; break;
+        case 38: key = Keys::L; break;
+    
+        default:    break;
+    }
+
+    KeyPress key_press = {key, action};
+    UserInput user_input = { UserInputType::KeyPress, key_press};
+    wl_state->input.w_events.push_back(user_input);
+
+    if(wlkey == 1) // Escape
+    {
+        wl_state->running = 0;
+        Print::ln("Exit input detected in Wayland lib. State set to not running. Exiting!");
     }
 }
 

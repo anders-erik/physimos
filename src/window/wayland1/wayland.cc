@@ -18,6 +18,7 @@
 
 // #include "wl-book.hh"
 #include "wl-pointer.hh"
+#include "wl-keyboard.hh"
 #include "wl-registry.hh"
 
 
