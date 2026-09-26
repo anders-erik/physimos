@@ -61,6 +61,8 @@ static void keyboard_key(
 
     switch (wlkey)
     {
+        case 14: key = Keys::Backspace; break;
+
         case 30: key = Keys::A; break;
         case 31: key = Keys::S; break;
         case 32: key = Keys::D; break;

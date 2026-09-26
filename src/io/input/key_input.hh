@@ -25,6 +25,8 @@ enum class Keys
     J,
     K,
     L,
+
+    Backspace,
 };
 
 

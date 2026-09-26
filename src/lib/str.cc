@@ -268,10 +268,12 @@ capacity() const
     return size_alloc;
 }
 
-void Str::
+Str& Str::
 pop_back()
 {
-    size_str--;
+    if(size_str != 0)
+        size_str--;
+    return *(this);
 }
 
 void Str::

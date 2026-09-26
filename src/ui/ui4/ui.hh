@@ -10,6 +10,7 @@
 
 #include "ui_node.hh"
 #include "ui_allocator.hh"
+#include "ui_font_bitmap.hh"
 
 
 struct UI
@@ -26,7 +27,7 @@ struct UI
     UI(unsigned long _max_number_ui_nodes)
         : allocator {_max_number_ui_nodes}
     {
-        init_bitmap_assets();
+        // init_bitmap_assets();
         // current_keyboard_target = &root;
     }
 
@@ -34,11 +35,10 @@ struct UI
         : allocator { 100 }
     {
         root.parent = nullptr;
-        init_bitmap_assets();
+        // init_bitmap_assets();
     }
 
-    static void init_bitmap_assets();
-    static Bitmap& get_bitmap_assets();
+    
 
     
     /** Appends a new node to the provided parent node. Returns new node. */
@@ -212,7 +212,7 @@ struct UIString: public UINode
         visibility.set_bitmap(box.size.x, box.size.y);
         Bitmap& str_bitmap = *visibility.value.bitmap;
 
-        Bitmap& font_bitmap = UI::get_bitmap_assets();
+        Bitmap& font_bitmap = get_font_bitmap();
 
         for(uint i = 0; i < str.size(); i++)
         {

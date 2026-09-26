@@ -61,7 +61,7 @@ struct Str
     char* data() const;
     unsigned int size() const;
     unsigned int capacity() const;
-    void pop_back();
+    Str& pop_back();
     void reserve(unsigned int new_alloc_size);
     bool has_size() const;
     bool has_capacity() const;
