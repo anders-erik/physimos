@@ -7,6 +7,10 @@
 uint8_t keycode[6] = { 0 };
 uint8_t modifier = 0;
 
+// A "key up" report is pending from a previous press.
+// 
+static bool clear_pending = false;
+
 bool v2_read_bool = false; // Read value at gpio_2
 int v2_read_int = 0; // boolean conveted to int
 
@@ -159,9 +163,9 @@ struct PhysicalButtonWithPin
 };
 
 
+unsigned long btn_3_modifier = KEYBOARD_MODIFIER_LEFTALT | KEYBOARD_MODIFIER_LEFTSHIFT;
 
-
-PhysicalButtonWithPin physical_button_with_pin_3 {10, 11, {HID_KEY_B, 0}};
+PhysicalButtonWithPin physical_button_with_pin_3 {10, 11, {HID_KEY_B, btn_3_modifier}};
 
 
 void init_GPIO()
@@ -224,42 +228,57 @@ void write_usb(KeyPressInput _key_press_input)
 
 void report_usb()
 {
+    if (clear_pending)
+    {
+        tud_hid_keyboard_report(0, 0, NULL);
+        clear_pending = false;
+        return;
+    }
+
     button_0 = gpio_get(BUTTON_0_PIN);
     gpio_put(BUTTON_0_LED_PIN, button_0);
-    if (button_0 != reported_button_0_state)
-    {
-        keycode[0] =  button_0 ? HID_KEY_SPACE : 0;
-        modifier = 0;
-        reported_button_0_state = button_0;
-    }
-    write_usb();
-
+    bool button_0_pressed_edge = button_0 && !reported_button_0_state;
+    reported_button_0_state = button_0;
 
     button_1 = gpio_get(BUTTON_1_PIN_IN);
     gpio_put(BUTTON_1_PIN_OUT, button_1);
-    if (button_1 != reported_button_1_state)
-    {      
-        keycode[0] = button_1 ? HID_KEY_A : 0;
-        // modifier = KEYBOARD_MODIFIER_LEFTCTRL; // DOES NOT WORK!
-        reported_button_1_state = button_1;
-    }
-    write_usb();
-    modifier = 0; // necessary in order to stop LEFT_CTRL! BUT will prevent the 'KEYBOARD_MODIFIER_LEFTCTRL' from registering!
+    bool button_1_pressed_edge = button_1 && !reported_button_1_state;
+    reported_button_1_state = button_1;
 
     button_2 = gpio_get(BUTTON_2_PIN_IN);
     gpio_put(BUTTON_2_PIN_OUT, button_2);
-    if (button_2 != reported_button_2_state)
-    {      
-        keycode[0] = button_2 ? HID_KEY_B : 0;
+    bool button_2_pressed_edge = button_2 && !reported_button_2_state;
+    reported_button_2_state = button_2;
+
+    if (button_0_pressed_edge)
+    {
+        keycode[0] = HID_KEY_SPACE;
         modifier = 0;
-        reported_button_2_state = button_2;
     }
-    write_usb();
+    else if (button_1_pressed_edge)
+    {
+        keycode[0] = HID_KEY_A;
+        // modifier = KEYBOARD_MODIFIER_LEFTCTRL;
+        modifier = physical_button_with_pin_3.press_input.modifier_;
+    }
+    else if (button_2_pressed_edge)
+    {
+        keycode[0] = HID_KEY_B;
+        modifier = 0;
+    }
+    else
+    {
+        return; // No new press this frame -- nothing to report.
+    }
+
+    tud_hid_keyboard_report(0, modifier, keycode);
+    keycode[0] = 0;
+    modifier = 0;
+    clear_pending = true;
+
     
-     
     // tud_hid_keyboard_report(0, modifier, keycode); // ADD MODIFIERS!!!
     // tud_hid_keyboard_report(0, 0, NULL); // Clear input -- We are not interested in holding a button down
-
 
     // BUTTON 3 BELOW
     // NO BTN_1 WORKS BELOW AS OF 2026-09-26T19:43:30Z
