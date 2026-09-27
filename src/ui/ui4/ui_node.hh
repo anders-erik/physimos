@@ -93,6 +93,7 @@ struct UINode
     } type = NodeType::Base;
 
     void (*handle_click)(UINode*, UserInput _user_input, void*) = nullptr;
+    void (*handle_unclick)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_hover)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_unhover)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_key_press)(UINode*, UserInput _user_input, void*) = nullptr;

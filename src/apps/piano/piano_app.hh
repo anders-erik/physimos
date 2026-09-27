@@ -98,7 +98,6 @@ struct PianoApp
 	    piano_state.song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
         piano_state.song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
-        
     }
 
     void open_window()

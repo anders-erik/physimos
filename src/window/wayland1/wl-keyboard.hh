@@ -63,6 +63,17 @@ static void keyboard_key(
     {
         case 14: key = Keys::Backspace; break;
 
+        case 16: key = Keys::Q; break;
+        case 17: key = Keys::W; break;
+        case 18: key = Keys::E; break;
+        case 19: key = Keys::R; break;
+        case 20: key = Keys::T; break;
+        case 21: key = Keys::Y; break;
+        case 22: key = Keys::U; break;
+        case 23: key = Keys::I; break;
+        case 24: key = Keys::O; break;
+        case 25: key = Keys::P; break;
+
         case 30: key = Keys::A; break;
         case 31: key = Keys::S; break;
         case 32: key = Keys::D; break;
@@ -72,12 +83,22 @@ static void keyboard_key(
         case 36: key = Keys::J; break;
         case 37: key = Keys::K; break;
         case 38: key = Keys::L; break;
+
+        case 44: key = Keys::Z; break;
+        case 45: key = Keys::X; break;
+        case 46: key = Keys::C; break;
+        case 47: key = Keys::V; break;
+        case 48: key = Keys::B; break;
+        case 49: key = Keys::N; break;
+        case 50: key = Keys::M; break;
+
+        case 57: key = Keys::Spacebar; break;
     
         default:    break;
     }
 
-    KeyPress key_press = {key, action};
-    UserInput user_input = { UserInputType::KeyPress, key_press};
+    KeyInput key_input = {key, action};
+    UserInput user_input = { UserInputType::KeyInput, key_input};
     wl_state->input.w_events.push_back(user_input);
 
     if(wlkey == 1) // Escape

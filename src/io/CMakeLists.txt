@@ -5,6 +5,7 @@ add_subdirectory(bmp0)
 add_subdirectory(bmp1)
 add_subdirectory(bmp2)
 add_subdirectory(obj)
+add_subdirectory(input)
 
 add_library(io 
     png_loader.cpp 

@@ -8,14 +8,14 @@
 
 #include "rend/sw/swrend.hh"
 
+#include "uic/uic_piano.hh"
+#include "piano_ui_defs.hh"
 
-struct UI;
-struct PianoApp;
 
 /** 
     The ui of the piano app.
     Controls the UI backend and renders using SWR::renderer for rendering.
- */
+*/
 class PianoUI
 {
 
@@ -23,6 +23,7 @@ public:
 
     UI ui;
     SWR::Renderer renderer;
+    UIC_piano uic_piano;
 
     PianoUI()
     {

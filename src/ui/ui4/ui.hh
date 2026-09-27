@@ -21,8 +21,9 @@ struct UI
     // static Bitmap font;
 
     d2 current_pointer_pos = {0.0, 0.0};
-    UINode* current_hover_target = nullptr;
-    UINode* current_keyboard_target = &root;
+    UINode* current_hover_target = nullptr; // the node wthat the pointer is currently hovering on
+    UINode* current_click_target = nullptr; // the node that recieved the most recent mouse click
+    UINode* current_keyboard_target = &root; // the node that is currently recieving keyboard input
 
     UI(unsigned long _max_number_ui_nodes)
         : allocator {_max_number_ui_nodes}
@@ -104,19 +105,37 @@ struct UI
             MouseClick& click = _user_input.event_data.mouse_click;
             MouseButtonAction button_action = click.action;
 
-            UINode* hover_target = get_current_pointer_target();
+            UINode* new_click_target = get_current_pointer_target();
 
-            if(hover_target == nullptr)
+            if(button_action != MouseButtonAction::Press)
                 return;
 
-            if(hover_target->handle_click == nullptr)
-                return;
 
-            // Only handle presses, not releases
-            if(button_action == MouseButtonAction::Press)
-                hover_target->handle_click(hover_target, _user_input, _data);
+            // Unclick previous target
+            if(current_click_target != nullptr)
+            {
+                if(current_click_target->handle_unclick != nullptr)
+                {
+                    current_click_target->handle_unclick(current_click_target, _user_input, _data);
+                }
+            }
+
+            // Try click new target
+            if(new_click_target != nullptr)
+            {
+                if(new_click_target->handle_click != nullptr)
+                {
+                    new_click_target->handle_click(new_click_target, _user_input, _data);
+                }
+            }
+            
+
+            current_click_target = new_click_target;
+
+            Print::buf("New click target: ");
+            Print::ln(Str::UI((unsigned long long)new_click_target));
         }
-        else if(_user_input.event_type == UserInputType::KeyPress)
+        else if(_user_input.event_type == UserInputType::KeyInput)
         {
             // Print::ln("Keypress recieved in the UI!");
             if(current_keyboard_target == nullptr)
@@ -126,6 +145,14 @@ struct UI
                 return;
             
             current_keyboard_target->handle_key_press(current_keyboard_target, _user_input, _data);
+
+            // if(current_click_target == nullptr)
+            //     return;
+            
+            // if(current_click_target->handle_key_press == nullptr)
+            //     return;
+            
+            // current_click_target->handle_key_press(current_click_target, _user_input, _data);
         }
     }
 

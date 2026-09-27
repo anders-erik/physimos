@@ -1,11 +1,18 @@
 
 
-add_library(piano_ui piano_ui.cc)
+add_library(piano_ui
+    piano_ui.cc
+    uic/uic_piano.cc
+)
 target_link_libraries(piano_ui
     lib
     bmp2
     ui4
 )
+include_directories(piano_ui
+    . # enable sane includes from uic directory
+)
+
 
 
 
