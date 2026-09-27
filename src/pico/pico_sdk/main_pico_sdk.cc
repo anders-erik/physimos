@@ -1,7 +1,12 @@
+#include <stdio.h>
 #include "pico/stdlib.h"
+#include "pico/stdio.h"
 #include "tusb.h" // directory: $PHYSIMOS_ROOT_DIR/src/pico/pico_sdk/pico-sdk/lib/tinyusb/src/
 // #include "hid.h"
 // #include "hid_device.h"
+
+#include "TFT_SPI_display.hh"
+
 
 
 uint8_t keycode[6] = { 0 };
@@ -40,7 +45,6 @@ const int BUTTON_2_PIN_OUT = 11;
 struct KeyPressInput
 {
     uint8_t modifier_ = 0;
-    
     uint8_t keycode_[6];
 
     KeyPressInput(uint8_t _key_button_1, uint8_t _modifier)
@@ -178,10 +182,6 @@ void init_GPIO()
     gpio_init(V3_WRITE);
     gpio_set_dir(V3_WRITE, GPIO_OUT);
 
-    // gpio_init(SPACEBAR_PIN);
-    // gpio_set_dir(SPACEBAR_PIN, GPIO_IN);
-    // gpio_init(SPACEBAR_LED_PIN);
-    // gpio_set_dir(SPACEBAR_LED_PIN, GPIO_OUT);
 
     gpio_init(BUTTON_1_PIN_IN);
     gpio_set_dir(BUTTON_1_PIN_IN, GPIO_IN);
@@ -197,8 +197,7 @@ void update_GPIO()
     gpio_put(V3_WRITE, v2_read_int);
 
 
-
-    bool blink = false;
+    bool blink = true;
     if(blink)
     {
         LED_0_state = !LED_0_state;
@@ -211,20 +210,6 @@ void update_GPIO()
 
 }
 
-void write_usb()
-{
-    tud_hid_keyboard_report(0, modifier, keycode);
-    tud_hid_keyboard_report(0, 0, NULL); // Clear input -- We are not interested in hold-states, only registring single presses
-    // modifier = 0;
-    // keycode[0] = 0;
-}
-
-void write_usb(KeyPressInput _key_press_input)
-{
-    tud_hid_keyboard_report(0, _key_press_input.modifier_, _key_press_input.keycode_);
-    tud_hid_keyboard_report(0, 0, NULL); // Clear input -- We are not interested in hold-states, only registring single presses
-    modifier = 0;
-}
 
 void report_usb()
 {
@@ -259,7 +244,8 @@ void report_usb()
     {
         keycode[0] = HID_KEY_A;
         // modifier = KEYBOARD_MODIFIER_LEFTCTRL;
-        modifier = physical_button_with_pin_3.press_input.modifier_;
+        modifier = KEYBOARD_MODIFIER_LEFTALT | KEYBOARD_MODIFIER_LEFTSHIFT;
+        // modifier = physical_button_with_pin_3.press_input.modifier_;
     }
     else if (button_2_pressed_edge)
     {
@@ -276,74 +262,6 @@ void report_usb()
     modifier = 0;
     clear_pending = true;
 
-    
-    // tud_hid_keyboard_report(0, modifier, keycode); // ADD MODIFIERS!!!
-    // tud_hid_keyboard_report(0, 0, NULL); // Clear input -- We are not interested in holding a button down
-
-    // BUTTON 3 BELOW
-    // NO BTN_1 WORKS BELOW AS OF 2026-09-26T19:43:30Z
-    // By adding the 3rd button, the second button is not registing!!
-
-    { // THIS BLOCK WORKS! / AE, 2026-09-26
-        // physical_button_with_pin_3.write_pin();
-        // keycode[0] = physical_button_with_pin_3.read_new_press() ? HID_KEY_B : 0;
-        // modifier = 0;
-        // write_usb();
-    }
-
-    { // THIS BLOCK WORKS! / AE, 2026-09-26
-        // physical_button_with_pin_3.write_pin();
-        // keycode[0] = physical_button_with_pin_3.read_new_press() ? HID_KEY_B : 0;
-        // modifier = 0;
-        // KeyPressInput key_press_input {keycode[0], modifier};
-        // write_usb(key_press_input);
-    }
-
-    // { // THIS BLOCK WORKS! / AE, 2026-09-26T18:24:38Z
-        // physical_button_with_pin_3.write_pin();
-        // if(physical_button_with_pin_3.read_new_press())
-        // {
-        //     keycode[0] = physical_button_with_pin_3.press_input.keycode_[0];
-        // }
-        // else
-        // {
-        //     keycode[0] = 0;
-        // }
-        
-        // modifier = 0;
-        // KeyPressInput key_press_input {keycode[0], modifier};
-        // write_usb(key_press_input);
-    // }
-
-    // { // THIS BLOCK IS *NOT* WORKING / AE, 2026-09-26T19:41:20Z
-        // physical_button_with_pin_3.write_pin();
-        // keycode[0] = HID_KEY_B;
-        // keycode[0] = physical_button_with_pin_3.get_press();
-        // // physical_button_with_pin_3.set_keycode(keycode);
-        // modifier = 0;
-        // KeyPressInput key_press_input {keycode[0], modifier};
-        // write_usb(key_press_input); 
-    // }
-
-
-    { // THIS BLOCK IS *NOT* WORKING / AE, 2026-09-26T18:59:30Z
-        // physical_button_with_pin_3.write_pin();
-        // physical_button_with_pin_3.set_keycode(keycode);
-        // modifier = 0;
-        // KeyPressInput key_press_input {keycode[0], modifier};
-        // write_usb(key_press_input); 
-    }
-
-    // if(physical_button_with_pin_3.read_new_press())
-    // {
-    //     keycode[0] = HID_KEY_B;
-    //     modifier = 0;
-        
-    //     // physical_button_with_pin_3.write_pin();
-    //     // write_usb(physical_button_with_pin_3.press_input);
-    // }
-    // write_usb();
-    // keycode[0] = 0; 
 }   
 
 
@@ -352,7 +270,9 @@ int main()
 {
     init_GPIO();
     tusb_init();
+    stdio_init_all(); // ./src/pico/pico_sdk/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h
 
+    SPI_code(); // will run all the display-code once
 
     while (true)
     {
@@ -360,9 +280,11 @@ int main()
 
         update_GPIO();
 
-        if(tud_hid_ready())
-            report_usb();
+        // if(tud_hid_ready())
+        report_usb();
 
-        sleep_ms(20);
+        sleep_ms(10);
+
+        printf("Booting...\n");
     }
 }

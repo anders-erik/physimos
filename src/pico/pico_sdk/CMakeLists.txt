@@ -22,6 +22,7 @@ add_executable(main_pico_sdk
 target_link_libraries(main_pico_sdk 
     pico_stdlib
     tinyusb_device
+    hardware_spi
 )
 
 # tusb_config.h lives next to this CMakeLists.txt; tinyusb includes it with
