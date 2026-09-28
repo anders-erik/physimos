@@ -154,6 +154,18 @@ struct UI
             
             // current_click_target->handle_key_press(current_click_target, _user_input, _data);
         }
+        else if(_user_input.event_type == UserInputType::ScrollInput)
+        {
+            UINode* new_hover_target = get_current_pointer_target();
+
+            if(current_hover_target == nullptr)
+                return;
+            
+            if(current_hover_target->handle_scroll == nullptr)
+                return;
+            
+            current_hover_target->handle_scroll(current_keyboard_target, _user_input, _data);
+        }
     }
 
 

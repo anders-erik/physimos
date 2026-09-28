@@ -96,6 +96,7 @@ struct UINode
     void (*handle_unclick)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_hover)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_unhover)(UINode*, UserInput _user_input, void*) = nullptr;
+    void (*handle_scroll)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_key_press)(UINode*, UserInput _user_input, void*) = nullptr;
     
 
@@ -150,21 +151,7 @@ struct UINode
 
         for(uint i = 0; i < str.size(); i++)
         {
-            // char letter = 'a';
-            char letter = str[i];
-            uint letter_height_offset = (letter - 30) * 150;
-            u2 pos = {0, letter_height_offset};
-            u2 size = {80, 150};
-
-            Bitmap bmp_letter = font_bitmap.get_subbitmap(pos, size).scale(size_factor);
-
-            // TODO: Negative y-value-pastes are not pasted with offset.
-            // I believe that the problem is that I am not sampling the pasted bitmap at the proper indeces after persforming intersection tests!
-            // For intersections we need not only return the interection box, but also the sample offset where we begin the sampling of the pasted bitmap!!
-
-            // str_bitmap.paste(bmp_letter, {(double)i*char_width, -30.0});
-            // str_bitmap.paste(bmp_letter, {(double)i*char_width, 0.0});
-
+            Bitmap bmp_letter = get_char_bitmap(str[i]).scale(size_factor);
             str_bitmap.paste2(bmp_letter, {(double)i*char_width, 0.0});
 
             // Paste tests

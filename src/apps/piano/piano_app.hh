@@ -115,6 +115,7 @@ struct PianoApp
                 piano_ui.ui.process_user_input(events[i], this);
             }
 
+            
 
             // render_ui(); // if rendering before the sleep the render looks terrible
 
@@ -124,6 +125,8 @@ struct PianoApp
 
             
             // renderer.paste_bitmap(black_100x100, {200, 50});
+
+            piano_ui.update(this);
 
             if(wayland.buffer_is_busy())
                 Print::ln("rendering ui while wayland buffer still busy!");

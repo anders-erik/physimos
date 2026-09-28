@@ -8,8 +8,9 @@
 
 #include "rend/sw/swrend.hh"
 
-#include "uic/uic_piano.hh"
 #include "piano_ui_defs.hh"
+#include "uic/uic_piano.hh"
+#include "uic/uic_beat_count_editor.hh"
 
 
 /** 
@@ -23,7 +24,9 @@ public:
 
     UI ui;
     SWR::Renderer renderer;
+
     UIC_piano uic_piano;
+    UIC_BeatCountEditor uic_beat_count_editor;
 
     PianoUI()
     {
@@ -35,6 +38,8 @@ public:
     } 
 
     void init(PianoApp* _piano_app, PixelBuffer _pixel_buffer);
+
+    void update(PianoApp* _piano_app);
 
     void render_ui_node(UINode* _node);
     void render();

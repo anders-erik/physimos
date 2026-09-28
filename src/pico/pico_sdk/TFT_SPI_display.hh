@@ -144,7 +144,9 @@ static void fill_screen(uint16_t color565)
 void SPI_code()
 {
      // 1 MHz SPI (safe starting point; ST7735 can usually go much faster once this works)
+    // spi_init(SPI_PORT, 10'000'000);
     spi_init(SPI_PORT, 1'000'000);
+    // spi_init(SPI_PORT, 100'000);
 
     gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
     gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);

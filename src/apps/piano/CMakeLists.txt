@@ -3,6 +3,7 @@
 add_library(piano_ui
     piano_ui.cc
     uic/uic_piano.cc
+    uic/uic_beat_count_editor.cc
 )
 target_link_libraries(piano_ui
     lib

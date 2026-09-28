@@ -4,8 +4,8 @@
 
 
 	// BINARY DIR
-	// "debug_dir": "${workspaceFolder}/build/debug_linux/",
-	"debug_dir": "${workspaceFolder}/",
+	"debug_dir": "${workspaceFolder}/build/debug_linux/",
+	// "debug_dir": "${workspaceFolder}/",
 	"perf_dir": "${workspaceFolder}/build/perf_linux/",
 
 	// ARG
@@ -39,8 +39,8 @@
 	// "binary": "src/audio/main_audio",
 	// "binary": "src/input/main_input",
 	// "binary": "src/apps/swrend/main_swrend",
-	// "binary": "src/apps/piano/main_piano",
-	"binary": "./src/pico/script.sh",
+	"binary": "src/apps/piano/main_piano",
+	// "binary": "./src/pico/script.sh",
 	// "binary": "src/apps/wayland/main_wayland",
 	// "binary": "src/pico/main_pico",
 	// "binary": "src/electronics/main_electronics",

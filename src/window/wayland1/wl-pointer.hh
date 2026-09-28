@@ -159,6 +159,21 @@ pointer_axis(void *data,
              uint32_t axis,
              wl_fixed_t value)
 {
+    WaylandState *wl_state = (WaylandState*) data;
+
+    ScrollDirection direction;
+
+    if(value > 0)
+        direction = ScrollDirection::Down;
+    else
+        direction = ScrollDirection::Up;
+    
+    // Print::ln("Axis input");
+    // Print::ln(Str::UI(value));
+
+    ScrollInput scroll_input {direction};
+    UserInput user_input = {UserInputType::ScrollInput, scroll_input};
+    wl_state->input.w_events.push_back(user_input);
 }
 
 static const struct wl_pointer_listener pointer_listener = {
