@@ -117,8 +117,11 @@ struct UINode
         visibility.value.color = 0x558855FF;
 
         handle_click = nullptr;
+        handle_unclick = nullptr;
         handle_hover = nullptr;
         handle_unhover = nullptr;
+        handle_scroll = nullptr;
+        handle_key_press = nullptr;
     }
 
     void set_color(PX32 _color)
@@ -145,9 +148,6 @@ struct UINode
 
         visibility.set_bitmap(box.size.x, box.size.y);
         Bitmap& str_bitmap = *visibility.value.bitmap;
-
-        // Bitmap& font_bitmap = UI::get_bitmap_assets();
-        Bitmap& font_bitmap = get_font_bitmap();
 
         for(uint i = 0; i < str.size(); i++)
         {

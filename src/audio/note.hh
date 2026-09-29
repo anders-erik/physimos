@@ -22,6 +22,7 @@ enum class NoteName
 	A4,
 	B4,
 	C5,
+	None
 };
 
 struct NoteSerializer
@@ -32,14 +33,15 @@ struct NoteSerializer
 
 		switch (_name)
 		{
-			case NoteName::C4: str = "C4";	break;
-			case NoteName::D4: str = "D4";	break;
-			case NoteName::E4: str = "E4";	break;
-			case NoteName::F4: str = "F4";	break;
-			case NoteName::G4: str = "G4";	break;
-			case NoteName::A4: str = "A4";	break;
-			case NoteName::B4: str = "B4";	break;
-			case NoteName::C5: str = "C5";	break;
+			case NoteName::C4: 		str = "C4";	break;
+			case NoteName::D4: 		str = "D4";	break;
+			case NoteName::E4: 		str = "E4";	break;
+			case NoteName::F4: 		str = "F4";	break;
+			case NoteName::G4: 		str = "G4";	break;
+			case NoteName::A4: 		str = "A4";	break;
+			case NoteName::B4: 		str = "B4";	break;
+			case NoteName::C5: 		str = "C5";	break;
+			case NoteName::None: 	str = "  ";	break;
 			
 			default:
 				break;

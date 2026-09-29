@@ -10,7 +10,7 @@
 
 #include "piano_ui_defs.hh"
 #include "uic/uic_piano.hh"
-#include "uic/uic_beat_count_editor.hh"
+#include "uic/uic_song.hh"
 
 
 /** 
@@ -26,7 +26,7 @@ public:
     SWR::Renderer renderer;
 
     UIC_piano uic_piano;
-    UIC_BeatCountEditor uic_beat_count_editor;
+    UIC_Song uic_song;
 
     PianoUI()
     {

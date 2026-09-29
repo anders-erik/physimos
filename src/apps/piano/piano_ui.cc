@@ -12,45 +12,6 @@
 
 
 
-void stop_button_hover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    _node->visibility.set_color(0xFFAA4433);
-    // _node->color = 0xFFBB3333;
-}
-void stop_button_unhover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    _node->visibility.set_color(0xFF995544);
-    // _node->color = 0xFF994444;
-}
-void start_button_hover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    _node->visibility.set_color(0xFF33BB33);
-    // _node->color = 0xFF33BB33;
-}
-void start_button_unhover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    _node->visibility.set_color(0xFF449944);
-    // _node->color = 0xFF449944;
-}
-
-
-
-void play_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-
-    piano_app->piano_state.song.play(piano_app->piano_state.alsa);
-
-    // Print::ln("Unhover handler!");
-}
-
-
-void stop_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-
-    piano_app->piano_state.song.stop(piano_app->piano_state.alsa);
-
-    // Print::ln("Unhover handler!");
-}
 
 void phyano_keypress_callback(PIANO_UI_CALLBACK_PARAMETERS)
 {
@@ -133,29 +94,13 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // ui.root.handle_unhover = handle_unhover_reset;
 
     
-
-    UINode* play_button =  ui.new_node(&ui.root);
-    play_button->box = UIBox({360, 320}, {50, 50});
-    // play_button->color = 0xFF449944;
-    play_button->visibility.set_color(0xFF449944);
-    play_button->handle_click = PIANO_UI_CALLBACK_CAST play_current_piano_song;
-    play_button->handle_hover = PIANO_UI_CALLBACK_CAST start_button_hover;
-    play_button->handle_unhover = PIANO_UI_CALLBACK_CAST start_button_unhover;
-
-    UINode* stop_button =  ui.new_node(&ui.root);
-    stop_button->box = UIBox({410, 320}, {50, 50});
-    // stop_button->color = 0xFF994444;
-    stop_button->visibility.set_color(0xFF995544);
-    stop_button->handle_click = PIANO_UI_CALLBACK_CAST stop_current_piano_song;
-    stop_button->handle_hover = PIANO_UI_CALLBACK_CAST stop_button_hover;
-    stop_button->handle_unhover = PIANO_UI_CALLBACK_CAST stop_button_unhover;
     
 
     UINode* third_button =  ui.new_node(&ui.root);
     // third_button->box = UIBox({ui.root.box.size.x-50, ui.root.box.size.y-50}, {35, 35}); // ORIGINAL
     // third_button->box = UIBox({ui.root.box.size.x-50, ui.root.box.size.y-20}, {35, 35}); // OK
     // third_button->box = UIBox({ui.root.box.size.x-50, -20.0}, {35, 35}); // OK
-    third_button->box = UIBox({ui.root.box.size.x-10, ui.root.box.size.y-50}, {35, 35}); // OK
+    third_button->box = UIBox({ui.root.box.size.x-25, ui.root.box.size.y-50}, {35, 35}); // OK
     // third_button->box = UIBox({-10.0, ui.root.box.size.y-50}, {35, 35}); // BROKEN: tries to write to too large y-values
     // third_button->visibility.set_color(0xFF333366);
     third_button->visibility.set_bitmap(third_button->box.size.x, third_button->box.size.y);
@@ -165,7 +110,7 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
 
     UINode* string_node = ui.new_node(&ui.root);
     // ui_string.visibility.set_bitmap();
-    string_node->box.pos = {400, 75};
+    string_node->box.pos = {400, 50};
     string_node->set_str("Physimos!");
     string_node->handle_click = PIANO_UI_CALLBACK_CAST string_click;
     string_node->handle_unclick = PIANO_UI_CALLBACK_CAST string_unclick;
@@ -177,12 +122,12 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
 
 
     uic_piano.init(ui);
-    uic_beat_count_editor.init(*_piano_app);
+    uic_song.init(*_piano_app);
 }
 
 void PianoUI::update(PianoApp* _piano_app)
 {
-    uic_beat_count_editor.update(*_piano_app);
+    uic_song.update(*_piano_app);
 }
 
 

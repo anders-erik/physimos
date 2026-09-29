@@ -3,7 +3,7 @@
 add_library(piano_ui
     piano_ui.cc
     uic/uic_piano.cc
-    uic/uic_beat_count_editor.cc
+    uic/uic_song.cc
 )
 target_link_libraries(piano_ui
     lib
@@ -23,6 +23,7 @@ target_link_libraries(main_piano
     lib
     math
     swrend
+    
     wayland
     audio
     bmp2

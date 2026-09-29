@@ -27,6 +27,9 @@ public:
 
 	void set_beat_count(uint _beat_count)
 	{
+		if(beat_count == _beat_count)
+			return;
+
 		beat_count = _beat_count;
 
 		notes.clear();

@@ -88,16 +88,15 @@ struct PianoApp
     PianoApp(i2 dims)
         :   wayland {Wayland{dims}}
     {
-
-        piano_ui.init(  this, 
-                        wayland.get_pixel_buffer()   );
-        
         piano_state.song.beat_count = 2;
         piano_state.song.bpm = 120;
         piano_state.song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
 	    piano_state.song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
         piano_state.song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
+
+        piano_ui.init(  this, 
+                        wayland.get_pixel_buffer()   );        
     }
 
     void open_window()
