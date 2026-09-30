@@ -56,6 +56,24 @@ struct UI
         return child;
     }
 
+    /** Recursively deletes all descendants from the allocator. Leaves the current node unchanged. */
+    void delete_node_descendants(UINode* _node)
+    {
+
+        for(uint i = 0; i < _node->children.count(); i++)
+        {
+            UINode* child = _node->children[i];
+            if(child->children.count() > 0)
+            {
+                delete_node_descendants(child);
+            }
+            
+            allocator.delete_node(child);
+        }
+
+        return;
+    }
+
 
 
     /** 

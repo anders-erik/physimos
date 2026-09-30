@@ -4,7 +4,9 @@
 
 #include "piano_ui_defs.hh"
 
+#include "audio/song.hh"
 
+#define UIC_PIANO_CALLBACK_PARAMETERS (UINode* node, UserInput user_input, UIC_Song* uic_song)
 
 void beat_count_label_scroll(PIANO_UI_CALLBACK_PARAMETERS);
 
@@ -19,15 +21,21 @@ void start_button_unhover(UINode* _node, UserInput _user_input,  PianoApp* piano
 
 struct UIC_Song
 {
-    UINode* root;
+    Song* song;
+    UI* ui;
 
+    UINode* root;
     UINode* play_button;
     UINode* stop_button;
+
+    UINode* beat_count_container;
     UINode* beat_count_label;
 
     Arr<UINode*> beat_label_array;
 
     uint* beat_count = nullptr;
+
+    
 
     UIC_Song()
     {
@@ -35,4 +43,6 @@ struct UIC_Song
 
     void init(PianoApp& piano_app);
     void update(PianoApp& piano_app);
+
+    void reload_beat_count();
 };

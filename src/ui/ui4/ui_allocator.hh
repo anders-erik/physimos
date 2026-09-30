@@ -35,6 +35,31 @@ struct UIAllocator
         return nullptr;
     }
 
+    /** Logically clears a slot in the memory, and calls the UINode destructor to clear any held resources. */
+    void delete_node(UINode* _node)
+    {
+        bool node_deletion_confirmed = false;
+
+        for(uint i = 0; i < occupied_slots.count(); i++)
+        {
+            if(occupied_slots[i])
+            {
+                if(_node == (nodes + i))
+                {
+                    occupied_slots[i] = false;
+                    _node->~UINode();
+                    node_deletion_confirmed = true;
+                    break;
+                }
+            }
+        }
+
+        if(!node_deletion_confirmed)
+            Print::ln("ERROR: requested UINode deletion from allocator failed. Unable to find a matching UINode in memory.");
+
+        return;
+    }
+
 
 
     ~UIAllocator()
