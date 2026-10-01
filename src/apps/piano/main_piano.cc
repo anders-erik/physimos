@@ -13,6 +13,9 @@ int main(int argc, char** argv)
 {
     Print::ln("Hello from apps/piano/main_piano.cc! \n");
 
+    UINode node;
+    printf("sizeof(UINode) = %d \n", sizeof(UINode));
+    
     {
         Clock clock;
         clock.print_tv_start();

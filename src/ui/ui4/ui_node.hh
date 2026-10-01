@@ -98,7 +98,17 @@ struct UINode
     void (*handle_unhover)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_scroll)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_key_press)(UINode*, UserInput _user_input, void*) = nullptr;
+
     
+    // Experiment with variadic event handlers
+    // template<typename... Args>
+    // void (*handle_variatic)(UINode*, UserInput _user_input, Args...) = nullptr;
+
+    template<typename... Args>
+    void func(Args... args) // recursive variadic function
+    {
+        func(args...) ;
+    }
 
 
     UINode()

@@ -31,10 +31,24 @@ void beat_count_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
         piano_app->piano_state.song.generate();
 
         // TODO: resolve adding and removing the UINodes from the beat count editor
-        // piano_app->piano_ui.uic_song.reload_beat_count();
+        piano_app->piano_ui.uic_song.reload_beat_count();
+
+        Print::ln("Beat count reloaded");
     }
 }
 
+
+void note_name_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
+{
+    // TODO: I ned to be able to track the index of the target UINode in order to edit the corresponding note in thac backend
+    
+    if(user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
+        piano_app->piano_state.song.notes[0][0].up_half_note();
+    // else
+        
+
+    piano_app->piano_ui.uic_song.reload_beat_count();
+}
 
 
 void stop_button_hover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
@@ -131,7 +145,7 @@ void UIC_Song::update(PianoApp& piano_app)
 void UIC_Song::reload_beat_count()
 {
     ui->delete_node_descendants(beat_count_container);
-    // beat_label_array.clear();
+    beat_label_array.clear();
 
     for(uint i = 0; i < song->beat_count; i++)
     {
@@ -140,6 +154,7 @@ void UIC_Song::reload_beat_count()
         double x_pos = (double) (405 + i*40);
         new_node->box = UIBox({x_pos, 105.0},{5, 5});
         new_node->set_str(NoteSerializer::note_name_to_str(song->notes[i][0].name));
+        new_node->handle_scroll = PIANO_UI_CALLBACK_CAST note_name_label_scroll;
 
         beat_label_array.push_back(new_node);
     }

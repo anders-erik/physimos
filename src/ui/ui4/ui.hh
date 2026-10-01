@@ -71,6 +71,8 @@ struct UI
             allocator.delete_node(child);
         }
 
+        _node->children.clear();
+
         return;
     }
 

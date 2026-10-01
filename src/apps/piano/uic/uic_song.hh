@@ -9,6 +9,7 @@
 #define UIC_PIANO_CALLBACK_PARAMETERS (UINode* node, UserInput user_input, UIC_Song* uic_song)
 
 void beat_count_label_scroll(PIANO_UI_CALLBACK_PARAMETERS);
+void note_name_label_scroll(PIANO_UI_CALLBACK_PARAMETERS);
 
 void stop_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app);
 void play_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app);

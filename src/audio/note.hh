@@ -80,6 +80,23 @@ struct Note
 		
 		return false;
 	}
+
+
+	void up_half_note()
+	{
+		switch (name)
+		{
+			case NoteName::None: name = NoteName::C4; break;
+			case NoteName::C4: name = NoteName::D4; break;
+			case NoteName::D4: name = NoteName::E4; break;
+			case NoteName::E4: name = NoteName::F4; break;
+			case NoteName::F4: name = NoteName::G4; break;
+			case NoteName::G4: name = NoteName::A4; break;
+			case NoteName::A4: name = NoteName::B4; break;
+			case NoteName::B4: name = NoteName::C5; break;
+			case NoteName::C5: name = NoteName::None; break;
+		}
+	}
 };
 
 

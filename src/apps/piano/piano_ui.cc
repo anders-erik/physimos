@@ -119,6 +119,19 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // render_ui_node(&ui_string);
 
 
+    // Add add and remove UInodes for debugging purposes - 2026-10-01
+    // UINode* node_parent = ui.new_node(&ui.root);
+    // for(uint i = 0; i < 5; i++)
+    // {
+    //     UINode* node = ui.new_node(node_parent);
+    //     node->box.pos = {50.0 + 20*i, 300.0};
+    //     node->box.size = {15.0, 15.0};
+    //     node->set_color(0xFF663366);
+    // }
+    // ui.delete_node_descendants(node_parent);
+
+
+
     uic_piano.init(ui);
     uic_song.init(*_piano_app);
 }

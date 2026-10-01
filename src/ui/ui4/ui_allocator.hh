@@ -7,14 +7,15 @@
 struct UIAllocator
 {
     UINode* nodes;
-    unsigned long node_count;
+    unsigned long max_node_count;
+    unsigned long node_count = 0;
     Arr<bool> occupied_slots; // value of true if occupied
 
-    UIAllocator(unsigned long _node_count)
-        :   occupied_slots {Arr<bool> {_node_count, false}}
+    UIAllocator(unsigned long _max_node_count)
+        :   occupied_slots {Arr<bool> {_max_node_count, false}}
     {
-        node_count = _node_count;
-        nodes = (UINode*) malloc(sizeof(UINode) * node_count);
+        max_node_count = _max_node_count;
+        nodes = (UINode*) malloc(sizeof(UINode) * max_node_count);
         occupied_slots.set(0);
     }
 
@@ -26,6 +27,7 @@ struct UIAllocator
             if(!occupied_slots[i])
             {
                 occupied_slots[i] = true;
+                node_count++;
                 return (nodes + i);
             }
         }
@@ -47,6 +49,7 @@ struct UIAllocator
                 if(_node == (nodes + i))
                 {
                     occupied_slots[i] = false;
+                    node_count--;
                     _node->~UINode();
                     node_deletion_confirmed = true;
                     break;
