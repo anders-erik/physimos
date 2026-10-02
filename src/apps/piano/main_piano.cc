@@ -15,6 +15,11 @@ int main(int argc, char** argv)
 
     UINode node;
     printf("sizeof(UINode) = %d \n", sizeof(UINode));
+
+    UINodeT<int> int_node;
+    UINodeT<bool> bool_node;
+    Arr<UINodeT<int>> int_node_arr;
+    Arr<UINodeT<bool>> bool_node_arr;
     
     {
         Clock clock;

@@ -74,6 +74,18 @@ struct UINodeVisibility
     }
 };
 
+
+// NOT POSSIBLE FOR MY USE CASE-- unable to store in the same container
+// INSTEAD WE TYPE THE UICs
+template <typename T>
+struct UINodeT
+{
+    // NORMAL STUFF
+
+    T* value;
+};
+
+
 struct UINode
 {
     UINode* parent = nullptr;
@@ -83,6 +95,8 @@ struct UINode
     UINodeVisibility visibility;
     Str str; // used for rendering a string
     // PX32 color = 0x558855FF;
+
+    void* value; // TODO: Figure out how to associate the type with value. If not possible, we might be FORCED to use UICs to keep track
 
     bool custom_render = false; // This should stop the current rendering tree traversal and rely on external call for rendering
 
