@@ -92,6 +92,11 @@ void stop_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* pi
 }
 
 
+void UIC_Song::init(UI&_ui, UINode& _parent_node, Song& _song)
+{
+
+}
+
 
 void UIC_Song::init(PianoApp& piano_app)
 {

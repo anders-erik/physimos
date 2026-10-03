@@ -1,12 +1,28 @@
 #pragma once
 
 #include "lib/arr.hh"
+#include "lib/pair.hh"
 
 #include "alsa.hh"
 #include "audio_data.hh"
 #include "instrument.hh"
 #include "note.hh"
 
+
+
+struct AudioLine
+{
+	Instrument instrument;
+	double gain = 0.5;
+	Arr<Pair<double, Note>> notes;
+
+	void add_note(Pair<double, Note> _note)
+	{
+		notes.push_back(_note);
+	}
+
+	
+};
 
 class Song
 {
@@ -17,6 +33,8 @@ public:
 
 	Arr<Arr<Note>> notes;
 	AudioData song_data;
+
+	Arr<AudioLine> audio_lines;
 
 	// Arr<Pair<Note, AudioData>> notes_data;
 	// Arr<Note> notes;
@@ -73,6 +91,12 @@ public:
 				add_wave_to_audiodata_at_beat_count(note_data, beat_i, beat_note_gain);
 			}
 		}
+	}
+
+	void play_audio_line_1(Alsa& alsa)
+	{
+
+
 	}
 
 	void play(Alsa& alsa)

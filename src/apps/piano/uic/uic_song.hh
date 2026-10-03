@@ -34,14 +34,13 @@ struct UIC_Song
 
     Arr<UINode*> beat_label_array;
 
-    uint* beat_count = nullptr;
-
     
 
     UIC_Song()
     {
     }
 
+    void init(UI&_ui, UINode& _parent_node, Song& _song);
     void init(PianoApp& piano_app);
     void update(PianoApp& piano_app);
 

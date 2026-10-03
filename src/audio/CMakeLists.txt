@@ -26,13 +26,3 @@ target_link_libraries(audio
     alsa
     io
 )
-
-# CPP
-add_executable(main_audio main_audio.cc)
-target_link_libraries(main_audio
-    lib
-    audio
-    asound
-    io
-    alsa
-)
