@@ -9,7 +9,7 @@
 	"perf_dir": "${workspaceFolder}/build/perf_linux/",
 
 	// ARG
-	"arg1": "",
+	// "arg1": "",
 	// "arg1": "install",
 	// "arg1": "bash",
 	// "arg1": "cmd",
@@ -19,6 +19,7 @@
 	// "arg1": "bitmap_io",
 	// "arg1": "phyano",
 	// "arg1": "sheet",
+	"arg1": "song-with-instrument-lines",
 	// "arg1": "DFT",
 
 	"arg2": "",

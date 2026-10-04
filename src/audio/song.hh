@@ -9,16 +9,17 @@
 #include "note.hh"
 
 
+typedef Pair<int, Note> LineNote;
 
-struct AudioLine
+struct InstrumentLine
 {
 	Instrument instrument;
 	double gain = 0.5;
-	Arr<Pair<double, Note>> notes;
+	Arr<LineNote> line_notes;
 
-	void add_note(Pair<double, Note> _note)
+	void add_note(LineNote _line_note)
 	{
-		notes.push_back(_note);
+		line_notes.push_back(_line_note);
 	}
 
 	
@@ -29,18 +30,20 @@ class Song
 public:
 
 	double bpm = 120.0; // beat / minute
-	uint beat_count = 16;
+	uint beat_count = 8;
 
 	Arr<Arr<Note>> notes;
 	AudioData song_data;
 
-	Arr<AudioLine> audio_lines;
+	// Arr<InstrumentLine> instrument_lines;
+	InstrumentLine piano_line;
 
 	// Arr<Pair<Note, AudioData>> notes_data;
 	// Arr<Note> notes;
 
 	Song() : notes {beat_count, {}}
 	{
+		piano_line.add_note({1000, {NoteName::B4, NoteType::half}});
 	}
 
 	void set_beat_count(uint _beat_count)
@@ -54,6 +57,11 @@ public:
 		notes.set({}, beat_count);
 	}
 
+	double song_length_s()
+	{
+		double seconds_per_beat = (1 / bpm) * 60.0;
+		return seconds_per_beat * (double) beat_count;
+	}
 
 	void add_wave_to_audiodata_at_beat_count(AudioData& _audio_data, uint beat_index, double beat_note_gain/*gain for specific note during the current beat index*/)
 	{
@@ -63,6 +71,22 @@ public:
 		uint first_sample_offset = samples_per_beat * beat_index;
 		// uint last_sample_offset = first_sample_offset + _audio_data.sample_count();
 
+		for(uint i = 0; i < _audio_data.sample_count(); i++)
+		{
+			int16_t wave_data_with_gain_adjusted = (int16_t) (beat_note_gain * (double)_audio_data.data[i]);
+			song_data.data[first_sample_offset + i] += wave_data_with_gain_adjusted;
+		}
+	}
+
+	void add_wave_to_audiodata_at_time(AudioData& _audio_data, double _time_ms, double beat_note_gain/*gain for specific note during the current beat index*/)
+	{
+		if( (_audio_data.duration_double() + _audio_data.duration_double()) > song_length_s())
+		{
+			Print::ln("Added note extensds beyond the length of the song. Note note added!");
+			return;
+		}
+
+		uint first_sample_offset = song_data.sample_rate() * _time_ms / 1000;
 		for(uint i = 0; i < _audio_data.sample_count(); i++)
 		{
 			int16_t wave_data_with_gain_adjusted = (int16_t) (beat_note_gain * (double)_audio_data.data[i]);
@@ -91,12 +115,14 @@ public:
 				add_wave_to_audiodata_at_beat_count(note_data, beat_i, beat_note_gain);
 			}
 		}
-	}
 
-	void play_audio_line_1(Alsa& alsa)
-	{
-
-
+		// PIANO LINE
+		for(uint i = 0; i < piano_line.line_notes.count(); i++)
+		{
+			LineNote line_note = piano_line.line_notes[i];
+			AudioData note_data = Instrument::get_note_audio(line_note.YY, bpm, 0.5);
+			add_wave_to_audiodata_at_time(note_data, line_note.XX, 0.5);
+		}
 	}
 
 	void play(Alsa& alsa)

@@ -13,4 +13,5 @@ target_link_libraries(main_audio
 include_directories(main_audio
     .
     ../..
+    ${CMAKE_SOURCE_DIR}/src
 )

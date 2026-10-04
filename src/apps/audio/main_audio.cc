@@ -508,6 +508,60 @@ int DFT_tests()
 }
 
 
+struct AudioPlayer
+{
+	enum class Type
+	{
+		Alsa
+	} type;
+
+	union Value
+	{
+		Alsa* alsa;
+	} value;
+
+	AudioPlayer() = default;
+
+	~AudioPlayer()
+	{
+		if(type == Type::Alsa)
+		{
+			delete value.alsa;
+		}
+	}
+
+	void play(AudioData& _audio_data)
+	{
+		if(type == Type::Alsa)
+		{
+			value.alsa->play(_audio_data);
+		}
+	}
+
+	void set_backend_to_alsa()
+	{
+		type = AudioPlayer::Type::Alsa;
+		value.alsa = new Alsa();
+	}
+};
+
+int song_with_instrument_lines()
+{
+	Alsa alsa;
+	AudioPlayer audio_player;
+	audio_player.set_backend_to_alsa();
+
+	Song song;
+	song.notes[0].push_back({NoteName::C4, NoteType::quarter});
+	song.generate();
+
+	audio_player.play(song.song_data);
+	// song.play(alsa);
+
+	return 0;
+}
+
+
 
 int main_2(int argc, char** argv)
 {
@@ -543,6 +597,11 @@ int main(int argc, char** argv)
 	else if(cli[1] == "DFT")
 	{
 		return DFT_tests();
+	}
+	else if(cli[1] == "song-with-instrument-lines")
+	{
+		Print::ln("main_audio:: song-with-instrument-lines !");
+		return song_with_instrument_lines();
 	}
 
 
