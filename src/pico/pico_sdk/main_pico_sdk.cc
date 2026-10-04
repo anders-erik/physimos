@@ -274,6 +274,8 @@ int main()
 
     SPI_code(); // will run all the display-code once
 
+    sleep_us(1);
+
     while (true)
     {
         tud_task(); // If this is removed, the input on my computer does note work /AE, 2026-09-19 & 2026-09-26

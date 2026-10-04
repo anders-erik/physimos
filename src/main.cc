@@ -66,6 +66,32 @@ int main(int argc, char** argv)
 
 		
 	}
+	else if(cli[1] == "task")
+	{
+		Print::ln("Physimos task!");
+
+		FILE *fp = popen("echo 'physimos task echo' \n", "r");
+		if (fp == NULL)
+		{
+			printf("Failed to run command\n");
+			return 1;
+		}
+
+		int BUF_SIZE = 128;
+		char buffer[BUF_SIZE];
+
+		// Read the output a line at a time - see cppreference on fgets
+		while (fgets(buffer, sizeof(buffer), fp) != NULL)
+		{
+			printf("%s", buffer);
+			memset(buffer, 0, BUF_SIZE);
+		}
+
+		// Close the stream
+		pclose(fp);
+		return 0;
+		
+	}
 	else
 	{
 		Print::ln("No supported CLI command detected.");

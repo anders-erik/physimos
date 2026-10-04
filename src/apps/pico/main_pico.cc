@@ -7,6 +7,7 @@
 #include "lib/str.hh"
 #include "lib/print.hh"
 #include "lib/unix.hh"
+#include "lib/cli.hh"
 
 #include "math/vecmat.hh"
 
@@ -106,9 +107,36 @@ struct Fork
     }    
 };
 
-int main()
+
+
+void fork_fn()
+{
+
+}
+
+
+void TFT_build_upload_fn()
+{
+    
+}
+
+
+int main(int argc, char** argv)
 {
     Print::ln("Hello from main pico!");
+
+    CLI cli {argc, argv};
+
+    if(cli[1] == "fork")
+    {
+        fork_fn();
+        return 0;
+    }
+    else if(cli[1] == "TFT_build_upload")
+    {
+        TFT_build_upload_fn();
+        return 0;
+    }
 
     // Str pipe_ret = command::piping();
 
