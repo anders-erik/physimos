@@ -41,6 +41,6 @@ public:
 	uint sample_count() { return data.count(); }
 	int data_size_byte() { return data.count() * 2; }
 
-	double duration_double() { return ((double)sample_count()) / ((double)sample_rate()); }
-	int duration_int() { return (int) duration_double(); } // rounds according to double to int cast rounding rules
+	double duration_s_double() { return ((double)sample_count()) / ((double)sample_rate()); }
+	int duration_ms_int() { return (int) (duration_s_double() * 1000); } // rounds according to double to int cast rounding rules
 };

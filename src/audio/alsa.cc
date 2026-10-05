@@ -148,7 +148,7 @@ void Alsa::play(AudioData audio_data)
 {
 	int loop_counter = 0;
 
-	for (loops = (  (uint)(audio_data.duration_double() * 1000000.0) / period_time); loops > 0; loops--)
+	for (loops = (  (uint)(audio_data.duration_s_double() * 1000000.0) / period_time); loops > 0; loops--)
 	{
 		int element_offset = (loop_counter++) * ( frame_count ); // number of elements in one 'period_time'
 		

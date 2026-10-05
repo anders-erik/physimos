@@ -25,6 +25,7 @@ struct InstrumentLine
 	
 };
 
+
 class Song
 {
 public:
@@ -43,7 +44,6 @@ public:
 
 	Song() : notes {beat_count, {}}
 	{
-		piano_line.add_note({1000, {NoteName::B4, NoteType::half}});
 	}
 
 	void set_beat_count(uint _beat_count)
@@ -55,6 +55,11 @@ public:
 
 		notes.clear();
 		notes.set({}, beat_count);
+	}
+
+	void set_tempo_bmp(double _bpm)
+	{
+		bpm = _bpm;
 	}
 
 	double song_length_s()
@@ -80,7 +85,7 @@ public:
 
 	void add_wave_to_audiodata_at_time(AudioData& _audio_data, double _time_ms, double beat_note_gain/*gain for specific note during the current beat index*/)
 	{
-		if( (_audio_data.duration_double() + _audio_data.duration_double()) > song_length_s())
+		if( (_audio_data.duration_s_double() + _audio_data.duration_s_double()) > song_length_s())
 		{
 			Print::ln("Added note extensds beyond the length of the song. Note note added!");
 			return;
@@ -120,7 +125,7 @@ public:
 		for(uint i = 0; i < piano_line.line_notes.count(); i++)
 		{
 			LineNote line_note = piano_line.line_notes[i];
-			AudioData note_data = Instrument::get_note_audio(line_note.YY, bpm, 0.5);
+			AudioData note_data = Instrument::get_note_audio(line_note.YY, bpm, 0.2);
 			add_wave_to_audiodata_at_time(note_data, line_note.XX, 0.5);
 		}
 	}

@@ -7,9 +7,13 @@
 
 enum class NoteType
 {
+	custom, 
+	continuous,
 	whole,
 	half,
-	quarter
+	quarter, // one beat
+	eighth,
+	sixteenth
 };
 
 enum class NoteName
@@ -56,22 +60,37 @@ struct NoteSerializer
 
 		switch (_type)
 		{
-			case NoteType::quarter: str = "quarter";	break;
-			case NoteType::half: 	str = "half";		break;
-			case NoteType::whole: 	str = "whole";		break;
-			
-			default:
-				break;
+			case NoteType::sixteenth: 		str = "sixteenth";	break;
+			case NoteType::eighth: 			str = "eighth";		break;
+			case NoteType::quarter: 		str = "quarter";	break;
+			case NoteType::half: 			str = "half";		break;
+			case NoteType::whole: 			str = "whole";		break;
+			case NoteType::custom: 			str = "custom";		break;
+			case NoteType::continuous: 		str = "continuous";	break;
+			default:											break;
 		}
 
 		return str;
 	}
 };
 
+
 struct Note 
 {
 	NoteName name;
 	NoteType type;
+
+	Note()
+		:	name { NoteName::None },
+			type {NoteType::quarter }
+	{
+	}
+
+	Note(NoteName _name, NoteType _type)
+		:	name {_name},
+			type {_type}
+	{
+	}
 
 	bool operator==(Note b)
 	{
@@ -99,6 +118,3 @@ struct Note
 	}
 };
 
-
-// const Note A4 { "A4", 440.0, NoteType::quarter};
-// const Note A4 { NoteName::A4, NoteType::quarter};

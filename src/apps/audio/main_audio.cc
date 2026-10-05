@@ -507,56 +507,28 @@ int DFT_tests()
 	return 0;
 }
 
+#include "audio/audio_player.hh"
 
-struct AudioPlayer
-{
-	enum class Type
-	{
-		Alsa
-	} type;
-
-	union Value
-	{
-		Alsa* alsa;
-	} value;
-
-	AudioPlayer() = default;
-
-	~AudioPlayer()
-	{
-		if(type == Type::Alsa)
-		{
-			delete value.alsa;
-		}
-	}
-
-	void play(AudioData& _audio_data)
-	{
-		if(type == Type::Alsa)
-		{
-			value.alsa->play(_audio_data);
-		}
-	}
-
-	void set_backend_to_alsa()
-	{
-		type = AudioPlayer::Type::Alsa;
-		value.alsa = new Alsa();
-	}
-};
 
 int song_with_instrument_lines()
 {
-	Alsa alsa;
-	AudioPlayer audio_player;
-	audio_player.set_backend_to_alsa();
+	AudioPlayer audio_player {AudioPlayer::Type::Alsa};
 
 	Song song;
 	song.notes[0].push_back({NoteName::C4, NoteType::quarter});
+
+	song.piano_line.add_note({1000, {NoteName::B4, NoteType::half}});
+	song.piano_line.add_note({1003, {NoteName::B4, NoteType::half}});
+	song.piano_line.add_note({1006, {NoteName::B4, NoteType::half}});
+	song.piano_line.add_note({1009, {NoteName::B4, NoteType::half}});
+	song.piano_line.add_note({1012, {NoteName::B4, NoteType::half}});
+
+	song.piano_line.add_note({1500, {NoteName::C5, NoteType::half}});
+
+
 	song.generate();
 
 	audio_player.play(song.song_data);
-	// song.play(alsa);
 
 	return 0;
 }
