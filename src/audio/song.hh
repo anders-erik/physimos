@@ -9,20 +9,52 @@
 #include "note.hh"
 
 
+/* <start time in ms, Note>*/
 typedef Pair<int, Note> LineNote;
+
+
+
 
 struct InstrumentLine
 {
 	Instrument instrument;
+	Str name;
 	double gain = 0.5;
 	Arr<LineNote> line_notes;
+	AudioDataRaw audio_data_raw;
 
 	void add_note(LineNote _line_note)
 	{
 		line_notes.push_back(_line_note);
 	}
 
-	
+	void set_length(AudioLength _audio_length)
+	{
+		audio_data_raw.set_audio_length(_audio_length);
+	}
+
+	void generate()
+	{
+		// PIANO LINE
+		for(uint i = 0; i < line_notes.count(); i++)
+		{
+			LineNote line_note = line_notes[i];
+
+
+			double note_begin_s = ((double)line_note.XX) / 1000;
+
+			AudioDataRaw note_data = Instrument::get_note_audio(line_note.YY, 3.0);
+
+			double first_sample_offset_db = (double)note_data.sample_rate() * note_begin_s;
+			uint first_sample_offset = (uint) first_sample_offset_db;
+
+			for(uint i = 0; i < note_data.sample_count(); i++)
+			{
+				audio_data_raw.data[first_sample_offset + i] += note_data.data[i];
+			}
+			// add_wave_to_audiodata_at_time(note_data, line_note.XX, 0.5);
+		}
+	}
 };
 
 

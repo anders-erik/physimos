@@ -49,4 +49,38 @@ public:
 
 		return wave_generator.out_arr;
 	}
+
+
+
+	static AudioDataRaw get_note_audio(Note note, double _duration_s)
+	{
+		AudioWaveGenerator wave_generator;
+		
+		// Frequency
+		wave_generator.wave_freqs.clear();
+
+		if(note.name == NoteName::C4)
+			wave_generator.wave_freqs.push_back({261.63, 1.0});
+		else if(note.name == NoteName::D4)
+			wave_generator.wave_freqs.push_back({293.66, 1.0});
+		else if(note.name == NoteName::E4)
+			wave_generator.wave_freqs.push_back({329.63, 1.0});
+		else if(note.name == NoteName::F4)
+			wave_generator.wave_freqs.push_back({349.23, 1.0});
+		else if(note.name == NoteName::G4)
+			wave_generator.wave_freqs.push_back({392.0, 1.0});
+		else if(note.name == NoteName::A4)
+			wave_generator.wave_freqs.push_back({440.0, 1.0});
+		else if(note.name == NoteName::B4)
+			wave_generator.wave_freqs.push_back({493.88, 1.0});
+		else if(note.name == NoteName::C5)
+			wave_generator.wave_freqs.push_back({523.25, 1.0});
+		
+		wave_generator.config.set_duration(_duration_s);
+		wave_generator.config.set_gain(1.0);
+
+		wave_generator.generate_wave();
+
+		return AudioDataRaw { wave_generator.w_arr, AudioLength{44100, wave_generator.w_arr.count()} };
+	}
 };
