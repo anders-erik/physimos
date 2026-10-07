@@ -28,10 +28,15 @@ struct InstrumentLine
 		line_notes.push_back(_line_note);
 	}
 
-	void set_length(AudioLength _audio_length)
+	void set_sampling_config(AudioSamplingConfig _sampling_config)
 	{
-		audio_data_raw.set_audio_length(_audio_length);
+		audio_data_raw.set_sampling_config(_sampling_config);
 	}
+
+	// void set_length(AudioLength _audio_length)
+	// {
+	// 	audio_data_raw.set_audio_length(_audio_length);
+	// }
 
 	void generate()
 	{

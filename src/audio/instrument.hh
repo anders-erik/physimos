@@ -81,6 +81,8 @@ public:
 
 		wave_generator.generate_wave();
 
-		return AudioDataRaw { wave_generator.w_arr, AudioLength{44100, wave_generator.w_arr.count()} };
+		AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, (u64)(_duration_s*1000000)};
+
+		return AudioDataRaw { wave_generator.w_arr, sampling_config };
 	}
 };
