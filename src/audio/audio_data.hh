@@ -112,12 +112,15 @@ struct AudioSamplingConfig
 };
 
 
-/* Audio data with double values. On conversion to output format the values will be cliped at [-1, 1] */
+/*
+	Audio data with 32-bit samples.
+	On conversion to output format the values will be cliped using 24-bit
+*/
 class AudioDataRaw
 {
 public:
 
-	Arr<double> data;
+	Arr<i32> data;
 	AudioSamplingConfig sampling_config;
 
 	AudioDataRaw() {};
@@ -127,7 +130,7 @@ public:
 	// 	audio_length.sample_count = _data_count;
 	// 	data.set(0.0, audio_length.sample_count);
 	// };
-	AudioDataRaw(Arr<double>& _data, AudioSamplingConfig _audio_sampling_config)
+	AudioDataRaw(Arr<i32>& _data, AudioSamplingConfig _audio_sampling_config)
 	{
 		data = _data;
 		sampling_config = _audio_sampling_config;
@@ -148,17 +151,56 @@ public:
 
 
 	/* Returns the absolute value of the sample with the largest absolute sample magnitude */
-	f64 get_abs_max_sample()
+	i32 get_abs_max_sample()
 	{
-		f64 max_abs = 0.0;
+		i32 max_abs = 0.0;
 
 		for(uint i = 0; i < data.count(); i++)
 		{
-			if(fabs(data[i]) > max_abs )
-				max_abs = fabs(data[i]);
+			if(abs(data[i]) > max_abs )
+				max_abs = abs(data[i]);
 		}
 
 		return max_abs;
+	}
+
+	/** 
+		Reduce very loud sections to avoid clipping and keep relevant audio volume constant.
+		Any sample above max the 24-bit signed max is proprtionaly reduced to be contained within 25 bits
+	 */
+	void smoothen_loud_audio_peaks()
+	{
+		// i32 abs_average = 0;
+		// i64 abs_sum = 0;
+		// for(uint i = 0; i < data.count(); i++)
+		// {
+		// 	abs_sum += abs(data[i]);
+		// }
+		// abs_average = (i32) (abs_sum / (i64) data.count());
+
+		i32 max_i24 = 8388607;
+
+		f64 max_i24_db = (f64) max_i24;
+
+		for(uint i = 0; i < data.count(); i++)
+		{
+			// trying to map all values exceeding the max to a 1-bit span above the maximum allowed 'logarithmically' 
+			if(data[i] > max_i24)
+			{
+				// i64 data_i_i64 = data[i] * 1000;
+				f64 data_i_f64 = (f64) data[i];
+				
+				f64 factor = data_i_f64 / max_i24_db;
+
+				f64 bits_above_max = 1 - 1/factor; // OK because we already sorted all samples below max i24
+
+				f64 term_exceeding_max = max_i24_db * bits_above_max;
+
+				f64 final_value = max_i24_db + term_exceeding_max;
+
+				data[i] = (i32) final_value * 0.5;
+			}
+		}
 	}
 
 	/** Normalize all samples using maximum sample magnitude.
@@ -166,34 +208,35 @@ public:
 	*/
 	void normalize()
 	{
-		double max_abs = get_abs_max_sample();
-		if(max_abs == 0.0)
+		i32 max_abs = get_abs_max_sample();
+		if(max_abs == 0)
 			return;
+
 
 		for(uint i = 0; i < data.count(); i++)
 		{
-			data[i] = data[i] / max_abs;
+			data[i] = data[i] / 3;
 		}
 
 		// double new_max_abs = get_abs_max_sample();
 
 	}
 
-	AudioData to_audio_data()
+	AudioData to_audio_data_i16()
 	{
 		AudioData audio_data;
 		audio_data.data = Arr<int16_t>{sample_count(), 0};
 
 		for(uint i = 0; i < data.count(); i++)
 		{
-			if(data[i] > 1.0 || data[i] < -1.0)
-			{
-				Print::ln("WARNING: exporting a non-normalized audio data buffer!");
-				Print::ln(Str::FL(data[i], 6, Str::FloatRep::Fixed));
-				Print::ln(Str::FL(fabs(data[i]), 6, Str::FloatRep::Fixed));
-			}
+			// if(data[i] > 1.0 || data[i] < -1.0)
+			// {
+			// 	Print::ln("WARNING: exporting a non-normalized audio data buffer!");
+			// 	Print::ln(Str::FL(data[i], 6, Str::FloatRep::Fixed));
+			// 	Print::ln(Str::FL(fabs(data[i]), 6, Str::FloatRep::Fixed));
+			// }
 
-			audio_data.data[i] = (int16_t) (data[i]* 32766);
+			audio_data.data[i] = (int16_t) (data[i] / 255); // CLIP AT 24 BIT -> convert to 16 for specific output
 		}
 		
 		return audio_data;

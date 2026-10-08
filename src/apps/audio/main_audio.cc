@@ -540,9 +540,10 @@ int song_with_instrument_lines()
 	instrument_line.add_note({2100, {NoteName::D4, NoteType::half}});
 	instrument_line.add_note({2200, {NoteName::E4, NoteType::half}});
 	instrument_line.generate();
-	instrument_line.audio_data_raw.normalize();
+	instrument_line.audio_data_raw.smoothen_loud_audio_peaks();
+	// instrument_line.audio_data_raw.normalize();
 	AudioDataRaw instrument_audio_data_raw = instrument_line.audio_data_raw;
-	AudioData instrument_audio_data = instrument_audio_data_raw.to_audio_data();
+	AudioData instrument_audio_data = instrument_audio_data_raw.to_audio_data_i16();
 	audio_player.play(instrument_audio_data);
 
 	return 0;

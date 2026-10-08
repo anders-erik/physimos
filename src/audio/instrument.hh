@@ -83,6 +83,14 @@ public:
 
 		AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, (u64)(_duration_s*1000000)};
 
-		return AudioDataRaw { wave_generator.w_arr, sampling_config };
+		Arr<i32> i32_array;
+		i32_array.set(0, wave_generator.out_arr.count());
+		for(uint i = 0; i < wave_generator.out_arr.count(); i++)
+		{
+			i32_array[i] = wave_generator.out_arr[i] * 256;
+		}
+		
+
+		return AudioDataRaw { i32_array, sampling_config };
 	}
 };
