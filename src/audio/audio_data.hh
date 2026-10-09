@@ -5,6 +5,7 @@
 
 #include "lib/arr.hh"
 #include "lib/defs.hh"
+#include "math/vec.hh"
 
 /* 	
 	Core object for raw audio data.
@@ -67,6 +68,8 @@ struct AudioSamplingConfig
 	u64 sample_count = 0;
 	u64 duration_us = 0;
 
+	// u64 bit_depth = 32;
+
 	// AudioSamplingConfig& operator=(AudioSamplingConfig& rhs)
 	// {
 	// 	this->sample_rate_s = rhs.sample_rate_s;
@@ -109,6 +112,17 @@ struct AudioSamplingConfig
 		}
 	}
 	
+	f64 get_duration_s()
+	{
+		return ((f64)duration_us) / 1000000;
+	}
+
+	f64 get_dt_s()
+	{
+		f64 duration_s = get_duration_s();
+		f64 sample_count_f64 = (f64) sample_count;
+		return duration_s / sample_count_f64;
+	}
 };
 
 
@@ -116,21 +130,16 @@ struct AudioSamplingConfig
 	Audio data with 32-bit samples.
 	On conversion to output format the values will be cliped using 24-bit
 */
-class AudioDataRaw
+class AudioData32
 {
 public:
 
-	Arr<i32> data;
+	Vec<i32> data;
 	AudioSamplingConfig sampling_config;
 
-	AudioDataRaw() {};
+	AudioData32() {};
 
-	// AudioDataRaw(uint _data_count)
-	// {
-	// 	audio_length.sample_count = _data_count;
-	// 	data.set(0.0, audio_length.sample_count);
-	// };
-	AudioDataRaw(Arr<i32>& _data, AudioSamplingConfig _audio_sampling_config)
+	AudioData32(Vec<i32>& _data, AudioSamplingConfig _audio_sampling_config)
 	{
 		data = _data;
 		sampling_config = _audio_sampling_config;
@@ -138,8 +147,17 @@ public:
 
 	void set_sampling_config(AudioSamplingConfig _sampling_config)
 	{
+		Vec<i32> data_old = data;
 		sampling_config = _sampling_config;
-		data.set(0.0, sampling_config.sample_count);
+		data.set_size(sampling_config.sample_count);
+		data.set(0.0);
+		
+		// copy old data into new size
+		uint min_count = data.count() < data_old.count() ? data.count() : data_old.count();
+		for(uint i = 0; i < min_count; i++)
+		{
+			data[i] = data_old[i];
+		}
 	}
 
 

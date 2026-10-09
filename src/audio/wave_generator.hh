@@ -14,6 +14,68 @@
 
 
 
+struct SineWave
+{
+
+	static AudioData32 generate_damped_wave(AudioSamplingConfig _sampling_config, f64 _frequency)
+	{
+		i64 sample_count = _sampling_config.sample_count;
+
+		Arr<f64> t_arr; // Time step array
+		Arr<f64> w_arr;	// Wave array
+		Vec<i32> out_arr; // Output array
+
+		t_arr.clear();
+		t_arr.reserve(sample_count);
+		t_arr.set(0.0);
+		w_arr.clear();
+		w_arr.reserve(sample_count);
+		w_arr.set(0.0);
+
+		out_arr.set_size(sample_count);
+		out_arr.set(0);
+
+
+		f64 amp = 2097152.0; // 2^21
+		// f64 amp = 4194304.0; // 2^22
+		f64 freq_mult = PI2 * _frequency;
+		f64 dt = _sampling_config.get_dt_s();
+
+
+		// Assemble individual frequencies
+		for(uint i = 0; i < sample_count; i++)
+		{
+			double i_d = (double)i;
+
+			t_arr[i] = dt * i_d;
+			w_arr[i] += amp * sin( freq_mult * t_arr[i] );
+		}
+
+
+		// find max frequency magnitude
+		double max_value = 0.0;
+		for(uint i = 0; i < sample_count; i++)
+		{
+			f64 abs_value = w_arr[i] > 0 ? w_arr[i] : -w_arr[i];
+
+			if(abs_value > max_value)
+				max_value = abs_value;
+		}
+
+		// Apply damping
+		for(uint i = 0; i < sample_count; i++)
+			w_arr[i] /= ((double)sample_count / (double)(sample_count - i) );
+
+		// output array
+		for(uint i = 0; i < sample_count; i++)
+			out_arr[i] = (i32) w_arr[i];
+		
+		return AudioData32{out_arr, _sampling_config};
+	}
+
+};
+
+
 
 struct AudioWaveConfig
 {

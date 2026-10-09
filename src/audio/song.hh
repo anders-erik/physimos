@@ -9,10 +9,24 @@
 #include "note.hh"
 
 
-/* <start time in ms, Note>*/
-typedef Pair<int, Note> LineNote;
+/* Specifying an arbitrary time at which a note is played in the instrument line */
+struct LineNote
+{
+	i32 start_time_ms;
+	Note note;
 
+	f64 get_start_time_s()
+	{
+		return ((f64)start_time_ms) / 1000;
+	}
 
+	u32 get_starting_sample_index(AudioSamplingConfig _sampling_config)
+	{
+		return (u32) ((f64)_sampling_config.sample_rate_s * get_start_time_s());
+		// double first_sample_offset_db = (double)_sampling_config.sample_rate_s * get_start_time_s();
+		// uint first_sample_offset = (uint) first_sample_offset_db;
+	}	
+};
 
 
 struct InstrumentLine
@@ -21,7 +35,7 @@ struct InstrumentLine
 	Str name;
 	double gain = 0.5;
 	Arr<LineNote> line_notes;
-	AudioDataRaw audio_data_raw;
+	AudioData32 line_audio_data;
 
 	void add_note(LineNote _line_note)
 	{
@@ -30,35 +44,26 @@ struct InstrumentLine
 
 	void set_sampling_config(AudioSamplingConfig _sampling_config)
 	{
-		audio_data_raw.set_sampling_config(_sampling_config);
+		line_audio_data.set_sampling_config(_sampling_config);
 	}
 
-	// void set_length(AudioLength _audio_length)
-	// {
-	// 	audio_data_raw.set_audio_length(_audio_length);
-	// }
 
 	void generate()
 	{
-		// PIANO LINE
+
 		for(uint i = 0; i < line_notes.count(); i++)
 		{
 			LineNote line_note = line_notes[i];
 
+			AudioData32 note_audio_data = SineWave::generate_damped_wave(	line_audio_data.sampling_config, 
+																			NoteFrequencies::to_frequency(line_note.note.name)	);
 
-			double note_begin_s = ((double)line_note.XX) / 1000;
+			u32 index_offset = line_note.get_starting_sample_index(line_audio_data.sampling_config);
 
-			AudioDataRaw note_data = Instrument::get_note_audio(line_note.YY, 3.0);
-
-			double first_sample_offset_db = (double)note_data.sample_rate() * note_begin_s;
-			uint first_sample_offset = (uint) first_sample_offset_db;
-
-			for(uint i = 0; i < note_data.sample_count(); i++)
-			{
-				audio_data_raw.data[first_sample_offset + i] += note_data.data[i];
-			}
-			// add_wave_to_audiodata_at_time(note_data, line_note.XX, 0.5);
+			for(uint i = 0; i < note_audio_data.sample_count(); i++)
+				line_audio_data.data[index_offset + i] += note_audio_data.data[i];
 		}
+
 	}
 };
 
@@ -162,8 +167,8 @@ public:
 		for(uint i = 0; i < piano_line.line_notes.count(); i++)
 		{
 			LineNote line_note = piano_line.line_notes[i];
-			AudioData note_data = Instrument::get_note_audio(line_note.YY, bpm, 0.2);
-			add_wave_to_audiodata_at_time(note_data, line_note.XX, 0.5);
+			AudioData note_data = Instrument::get_note_audio(line_note.note, bpm, 0.2);
+			add_wave_to_audiodata_at_time(note_data, line_note.start_time_ms, 0.5);
 		}
 	}
 

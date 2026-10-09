@@ -528,7 +528,7 @@ int song_with_instrument_lines()
 
 	song.generate();
 	// audio_player.play(song.song_data);
-
+	
 	InstrumentLine instrument_line;
 	AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 4000000};
 	// instrument_line.set_length({44100, 200000});
@@ -536,13 +536,15 @@ int song_with_instrument_lines()
 	instrument_line.add_note({0, {NoteName::C4, NoteType::quarter}});
 	instrument_line.add_note({0, {NoteName::E4, NoteType::quarter}});
 	instrument_line.add_note({0, {NoteName::G4, NoteType::quarter}});
+	// instrument_line.add_note({0, {NoteName::B4, NoteType::quarter}});
+	// instrument_line.add_note({0, {NoteName::C4, NoteType::quarter}});
 	instrument_line.add_note({2000, {NoteName::C4, NoteType::half}});
 	instrument_line.add_note({2100, {NoteName::D4, NoteType::half}});
 	instrument_line.add_note({2200, {NoteName::E4, NoteType::half}});
 	instrument_line.generate();
-	instrument_line.audio_data_raw.smoothen_loud_audio_peaks();
+	// instrument_line.audio_data_raw.smoothen_loud_audio_peaks();
 	// instrument_line.audio_data_raw.normalize();
-	AudioDataRaw instrument_audio_data_raw = instrument_line.audio_data_raw;
+	AudioData32 instrument_audio_data_raw = instrument_line.line_audio_data;
 	AudioData instrument_audio_data = instrument_audio_data_raw.to_audio_data_i16();
 	audio_player.play(instrument_audio_data);
 

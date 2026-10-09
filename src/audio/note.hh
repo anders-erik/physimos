@@ -2,6 +2,7 @@
 
 
 #include "lib/str.hh"
+#include "lib/defs.hh"
 
 
 
@@ -27,6 +28,33 @@ enum class NoteName
 	B4,
 	C5,
 	None
+};
+
+
+struct NoteFrequencies
+{
+	static f64 to_frequency(NoteName _name)
+	{	
+		f64 frequency;
+
+		switch (_name)
+		{
+			case NoteName::C4: 		frequency = 261.63;	break;
+			case NoteName::D4: 		frequency = 293.66;	break;
+			case NoteName::E4: 		frequency = 329.63;	break;
+			case NoteName::F4: 		frequency = 349.23;	break;
+			case NoteName::G4: 		frequency = 392.0 ;	break;
+			case NoteName::A4: 		frequency = 440.0 ;	break;
+			case NoteName::B4: 		frequency = 493.88;	break;
+			case NoteName::C5: 		frequency = 523.25;	break;
+			case NoteName::None: 	frequency = 0.0	  ;	break;
+			
+			default:
+				break;
+		}
+
+		return frequency;
+	}
 };
 
 struct NoteSerializer

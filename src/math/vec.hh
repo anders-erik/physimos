@@ -13,7 +13,7 @@ using VecType = unsigned int;
 template <typename T>
 class Vec
 {
-    uint count = 0;
+    uint alloc_elem_count = 0; // number of allocated elements
 
 public:
     T* t_p = nullptr;
@@ -22,28 +22,28 @@ public:
 
     /** Uninitialized memory? */
     explicit
-    Vec(uint count)
+    Vec(uint _alloc_elem_count)
     { 
-        allocate(count);
+        allocate(_alloc_elem_count);
     }
     /** Size and value to fill with. */
     explicit
-    Vec(uint count, T inital_value)
+    Vec(uint _alloc_elem_count, T inital_value)
     {
-        allocate(count);
+        allocate(_alloc_elem_count);
         set(inital_value);
     }
     explicit
-    Vec(uint count, T* _data)
+    Vec(uint _alloc_elem_count, T* _data)
     {
-        allocate(count);
-        memcpy(t_p, _data, count*sizeof(T));
+        allocate(_alloc_elem_count);
+        memcpy(t_p, _data, alloc_elem_count*sizeof(T));
     }
     /** Copy construct. */
     Vec(const Vec<T>& vec) 
     {
         allocate(vec.size());
-        memcpy(t_p, vec.t_p, count*sizeof(T));
+        memcpy(t_p, vec.t_p, alloc_elem_count*sizeof(T));
     }
 
     /** Beware: implicit conversion to type <T> is done by initializer list! */
@@ -65,17 +65,12 @@ public:
     Vec<T>& operator=(const Vec<T>& rhs) 
     {
         if(this == &rhs)
-        {
             std::cout << "WARN: this == &rhs in Vec copy assignment." << std::endl;
-        }
 
-        if(count != rhs.size())
-        {
-            deallocate();
-            count = rhs.size();
-            allocate(count);
-        }
-        memcpy(t_p, rhs.t_p, count*sizeof(T));
+        if(alloc_elem_count != rhs.size())
+            set_size(rhs.size());
+
+        memcpy(t_p, rhs.t_p, alloc_elem_count*sizeof(T));
         return *this;
     }
 
@@ -83,10 +78,10 @@ public:
     bool operator!=(const Vec<T>& rhs) { return *this == rhs ? false : true; }
     bool operator==(const Vec<T>& rhs)
     {
-        if(count != rhs.size())
+        if(alloc_elem_count != rhs.size())
             return false;
         
-        for(uint i = 0; i < count; i++)
+        for(uint i = 0; i < alloc_elem_count; i++)
         {
             if((*this)[i] != rhs[i])
                 return false;
@@ -103,7 +98,7 @@ public:
 
     Vec<T>& operator*=(T factor)
     {
-        for(uint i = 0; i < count; i++)
+        for(uint i = 0; i < alloc_elem_count; i++)
             *(t_p + i) *= factor;
 
         return *this;
@@ -111,7 +106,7 @@ public:
 
     Vec<T>& operator/=(T factor)
     {
-        for(uint i = 0; i < count; i++)
+        for(uint i = 0; i < alloc_elem_count; i++)
             *(t_p + i) /= factor;
 
         return *this;
@@ -119,7 +114,7 @@ public:
 
     Vec<T>& operator+=(T factor)
     {
-        for(uint i = 0; i < count; i++)
+        for(uint i = 0; i < alloc_elem_count; i++)
             *(t_p + i) += factor;
 
         return *this;
@@ -127,7 +122,7 @@ public:
 
     Vec<T>& operator-=(T factor)
     {
-        for(uint i = 0; i < count; i++)
+        for(uint i = 0; i < alloc_elem_count; i++)
             *(t_p + i) -= factor;
 
         return *this;
@@ -136,35 +131,37 @@ public:
     /** Vec[n] == value */
     Vec<T>& set(T value)
     {
-        for(uint i = 0; i < count; i++)
+        for(uint i = 0; i < alloc_elem_count; i++)
             *(t_p + i) = value;
         
         return *this;
     }
 
+
     T*          data_mut()          {return t_p ;}
     const T*    data()              {return t_p ;} const
-    uint      size() const        {return count ;}
-    uint      size_byte() const   {return (count * sizeof(T)) ;}
-    uint      count_bytes() const   {return (count * sizeof(T)) ;}
+    uint        size() const        {return alloc_elem_count ;}
+    uint        count() const       {return alloc_elem_count ;}
+    uint        size_byte() const   {return (alloc_elem_count * sizeof(T)) ;}
+    uint        count_bytes() const {return (alloc_elem_count * sizeof(T)) ;}
 
     /** removes any existing data, allocates the requested size without inizalizing the data. */
-    uint set_size(uint _size)
+    uint set_size(uint _alloc_size)
     {
         deallocate();
-        allocate(_size);
+        allocate(_alloc_size);
 
-        return count;
+        return alloc_elem_count;
     }
 
 
     Str to_str()
     {
         Str str = "[";
-        for(uint i = 0; i < count; i++)
+        for(uint i = 0; i < alloc_elem_count; i++)
         {
             str += Str::Num(t_p[i]);
-            if(i+1 != count)
+            if(i+1 != alloc_elem_count)
                 str += ", ";
         }
         str += "]";
@@ -173,10 +170,10 @@ public:
 
 private:
 
-    void allocate(uint count)
+    void allocate(uint _alloc_elem_count)
     {
-        t_p = new T[count*sizeof(T)];
-        this->count = count;
+        t_p = new T[_alloc_elem_count*sizeof(T)];
+        alloc_elem_count = _alloc_elem_count;
     }
 
     void deallocate()
@@ -186,6 +183,6 @@ private:
             delete[] t_p; 
             t_p = nullptr;
         }
-        this->count = 0;
+        alloc_elem_count = 0;
     }
 };
