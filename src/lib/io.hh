@@ -1,8 +1,8 @@
 #pragma once
 
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "lib/print.hh"
 #include "lib/str.hh"
@@ -103,5 +103,35 @@ struct IO
     }
 
 
+    static Arr<uint8_t> bincat(Str file_path)
+	{
+        Arr<uint8_t> data;
 
+		int fd, ret;
+        struct stat st;
+        off_t file_size;
+
+		fd = open(file_path.to_c_str(), O_RDONLY);
+		if(fd < 0)
+		{
+			println("ERROR: Failed to open file.");
+			return {};
+		}
+
+        fstat(fd, &st);
+        file_size = st.st_size;
+
+        data.set(file_size, file_size);
+        
+        read(fd, data.data_mut(), (size_t)file_size);
+
+        ret = close(fd);
+		if(ret < 0)
+		{
+			println("ERROR: Failed to close WAV file.");
+			return {};
+		}
+
+		return data;
+	}
 };

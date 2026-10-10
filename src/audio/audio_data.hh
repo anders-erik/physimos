@@ -7,48 +7,6 @@
 #include "lib/defs.hh"
 #include "math/vec.hh"
 
-/* 	
-	Core object for raw audio data.
-	Implicit audio settings:
-		- Sample rate: 44100
-		- Channels: 1 (mono)
-		- DataType: 16bit signed integer
-*/
-class AudioData16
-{
-public:
-
-	Vec<int16_t> data;
-
-	AudioData16() {};
-	AudioData16(uint _data_count)
-	{
-		data.set_count(_data_count);
-		data.set_value(0);
-	};
-	AudioData16(Vec<int16_t>& data)
-	{
-		this->data = data;
-	};
-
-	// force vector to hold a specific sample count, all set to zero
-	void set_sample_count(uint _count)
-	{
-		data.set_count(_count);
-		data.set_value(0);
-	}
-
-	int sample_rate() { return 44100; }
-	int channel_count() { return 1; }
-	int sample_size_bit() { return 16; }
-	int sample_size_byte() { return 2; }
-
-	uint sample_count() { return data.count(); }
-	int data_size_byte() { return data.count() * 2; }
-
-	double duration_s_double() { return ((double)sample_count()) / ((double)sample_rate()); }
-	int duration_ms_int() { return (int) (duration_s_double() * 1000); } // rounds according to double to int cast rounding rules
-};
 
 
 
@@ -114,6 +72,54 @@ struct AudioSamplingConfig
 		return duration_s / sample_count_f64;
 	}
 };
+
+
+
+
+/* 	
+	Core object for raw audio data.
+	Implicit audio settings:
+		- Sample rate: 44100
+		- Channels: 1 (mono)
+		- DataType: 16bit signed integer
+*/
+class AudioData16
+{
+public:
+
+	Vec<int16_t> data;
+
+	AudioData16() {};
+	AudioData16(uint _data_count)
+	{
+		data.set_count(_data_count);
+		data.set_value(0);
+	};
+	AudioData16(Vec<int16_t>& data)
+	{
+		this->data = data;
+	};
+
+	// force vector to hold a specific sample count, all set to zero
+	void set_sample_count(uint _count)
+	{
+		data.set_count(_count);
+		data.set_value(0);
+	}
+
+	int sample_rate() { return 44100; }
+	int channel_count() { return 1; }
+	int sample_size_bit() { return 16; }
+	int sample_size_byte() { return 2; }
+
+	uint sample_count() { return data.count(); }
+	int data_size_byte() { return data.count() * 2; }
+
+	double duration_s_double() { return ((double)sample_count()) / ((double)sample_rate()); }
+	int duration_ms_int() { return (int) (duration_s_double() * 1000); } // rounds according to double to int cast rounding rules
+};
+
+
 
 
 /*

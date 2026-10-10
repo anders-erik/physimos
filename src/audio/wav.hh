@@ -47,17 +47,57 @@ public:
 	WavHeaderDataFormat header_format;
 	WavDataChunk data_chunk;
 
-	void * file_data;
+	void * file_data = nullptr;
 	long file_data_size;
 
 	bool is_little_endian = false;
 
 	WAV() {};
 
+	~WAV()
+	{
+		if(file_data != nullptr)
+		{
+			free(file_data);
+			file_data = nullptr;
+		}
+	}
+
 	void Export(Str _path, AudioData32& audio_data)
 	{
 		populate_from_audio_data(audio_data);
 		IO::dump(_path, file_data, file_data_size);
+	}
+
+	AudioData16 Import(Str _path)
+	{
+		read_file_data(_path);
+		populate_from_file_data();
+		// print();
+
+		return AudioData16{data_chunk.SampledData};
+	}
+
+	void read_file_data(Str _path)
+	{
+		Arr<uint8_t> data_arr = IO::bincat(_path);
+
+		file_data_size = data_arr.count();
+		if(file_data != nullptr)
+			free(file_data);
+		file_data = malloc(file_data_size);
+		memcpy(file_data, data_arr.data_mut(), file_data_size);
+	}
+
+	void populate_from_file_data()
+	{
+		memcpy(&header_riff,	file_data + 0 , 	12	);
+		memcpy(&header_format,	file_data + 12, 	24	);
+		memcpy(&data_chunk,		file_data + 36, 	8	);
+
+		i64 sample_count = data_chunk.DataSize / sizeof(i16);
+		data_chunk.SampledData.set_count(sample_count);
+		memcpy( data_chunk.SampledData.data_mut(),	file_data + 44, 	data_chunk.SampledData.count_bytes());
 	}
 
 	void populate_from_audio_data(AudioData32& audio_data)
@@ -282,6 +322,53 @@ public:
 			println("ERROR: Failed to close WAV file.");
 			return;
 		}
+	}
+
+
+	void print()
+	{
+		// WavHeaderRIFF
+		char file_type_bloc_ID[5] = {	header_riff.FileTypeBlocID[0], 
+										header_riff.FileTypeBlocID[1],
+										header_riff.FileTypeBlocID[2],
+										header_riff.FileTypeBlocID[3],
+										0							};
+		char file_format_ID[5] = {	header_riff.FileFormatID[0], 
+									header_riff.FileFormatID[1],
+									header_riff.FileFormatID[2],
+									header_riff.FileFormatID[3],
+									0};
+		Print::ln(file_type_bloc_ID);
+		Print::ln(Str::UI(header_riff.FileSize));
+		Print::ln(file_format_ID);
+		Print::ln("");
+
+
+		// WavHeaderDataFormat
+		char format_bloc_ID[5] = {	header_format.FormatBlocID[0], 
+									header_format.FormatBlocID[1],
+									header_format.FormatBlocID[2],
+									header_format.FormatBlocID[3],
+									0};
+		Print::ln(format_bloc_ID);
+		Print::ln(Str::UI(header_format.BlocSize));
+		Print::ln(Str::UI(header_format.AudioFormat));
+		Print::ln(Str::UI(header_format.NbrChannels));
+		Print::ln(Str::UI(header_format.Frequency));
+		Print::ln(Str::UI(header_format.BytePerSec));
+		Print::ln(Str::UI(header_format.BytePerBloc));
+		Print::ln(Str::UI(header_format.BitsPerSample));
+		Print::ln("");
+
+
+		char data_bloc_ID[5] = {	data_chunk.DataBlocID[0], 
+									data_chunk.DataBlocID[1],
+									data_chunk.DataBlocID[2],
+									data_chunk.DataBlocID[3],
+									0};
+		Print::ln(data_bloc_ID);
+		Print::ln(Str::UI(data_chunk.DataSize));
+		Print::ln("");
 	}
 
 };

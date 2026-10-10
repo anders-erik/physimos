@@ -568,17 +568,26 @@ int WAV_fn()
 	AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
 	AudioData32 audio_data_32 = SineWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4));
 
-	WAV wav;
-	wav.Export("tmp/A4.wav", audio_data_32);
+	WAV wav_export;
+	wav_export.Export("tmp/sine-A4.wav", audio_data_32);
+	// AudioData16 audio_data_i16 = audio_data_32.to_audio_data_i16();
+	// audio_player.play(audio_data_i16);
 
-
-	AudioData16 audio_data_i16 = audio_data_32.to_audio_data_i16();
-	audio_player.play(audio_data_i16);
+	WAV wav_import;
+	// Vec<i16> vec_i16 = wav_import.Import("resources/audio/A4.wav");
+	// Vec<i16> vec_i16 = wav_import.Import("resources/audio/piano-A4.wav");
+	AudioData16 piano_a4 = wav_import.Import("resources/audio/piano-A4.wav");
+	AudioData16 sine_a4 = wav_import.Import("resources/audio/sine-A4.wav");
+	audio_player.play(piano_a4);
+	audio_player.play(sine_a4);
 
 	// wav.populate_from_audio_data(audio_data_32);
 
 	// IO::dump("tmp/WAV.wav", wav.file_data, wav.file_data_size);
+
+	return 0;
 }
+
 
 int DFT_WAV_fn()
 {
