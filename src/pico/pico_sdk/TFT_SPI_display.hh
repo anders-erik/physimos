@@ -148,7 +148,108 @@ static void fill_screen(uint16_t color565)
 }
 
 
+static void pixel_set(uint16_t _x, uint16_t _y, uint16_t _w, uint16_t _h, uint16_t color565)
+{
+    uint8_t row_buf[DISPLAY_WIDTH * 2];
+    uint8_t hi = (uint8_t)(color565 >> 8);
+    uint8_t lo = (uint8_t)(color565 & 0xFF);
+    for (int i = 0; i < DISPLAY_WIDTH; i++)
+    {
+        row_buf[i * 2]     = hi;
+        row_buf[i * 2 + 1] = lo;
+    }
 
+    set_window(_x, _y, _x + _w, _y + _h);
+    st7735_write_command(ST7735_RAMWR);
+
+    gpio_put(PIN_DC, 1); // data
+    cs_select();
+    for (int y = _h; y < _h + _y; y++)
+    {
+        spi_write_blocking(SPI_PORT, row_buf, sizeof(row_buf));
+    }
+    cs_deselect();
+}
+
+
+void SPI_set_square(uint16_t _x, uint16_t _y, uint16_t _w, uint16_t _h, uint16_t color565)
+{
+    uint8_t row_buf[DISPLAY_WIDTH * 2];
+    uint8_t hi = (uint8_t)(color565 >> 8);
+    uint8_t lo = (uint8_t)(color565 & 0xFF);
+    for (int i = 0; i < DISPLAY_WIDTH; i++)
+    {
+        row_buf[i * 2]     = hi;
+        row_buf[i * 2 + 1] = lo;
+    }
+
+    set_window(_x, _y, _x + _w, _y + _h);
+    st7735_write_command(ST7735_RAMWR);
+
+    gpio_put(PIN_DC, 1); // data
+    cs_select();
+    for (int y = _h; y < _h + _y; y++)
+    {
+        spi_write_blocking(SPI_PORT, row_buf, sizeof(row_buf));
+    }
+    cs_deselect();
+}
+
+void SPI_set_white_square(uint16_t _x, uint16_t _y, uint16_t _w, uint16_t _h)
+{
+    uint16_t white_565 = 0xFFFF;
+    SPI_set_square(_x, _y, _w, _h, white_565);
+}
+
+void SPI_set_black_square(uint16_t _x, uint16_t _y, uint16_t _w, uint16_t _h)
+{
+    uint16_t color565 = 0x0000;
+
+    uint8_t row_buf[DISPLAY_WIDTH * 2];
+    uint8_t hi = (uint8_t)(color565 >> 8);
+    uint8_t lo = (uint8_t)(color565 & 0xFF);
+    for (int i = 0; i < DISPLAY_WIDTH; i++)
+    {
+        row_buf[i * 2]     = hi;
+        row_buf[i * 2 + 1] = lo;
+    }
+
+    set_window(_x, _y, _x + _w, _y + _h);
+    st7735_write_command(ST7735_RAMWR);
+
+    gpio_put(PIN_DC, 1); // data
+    cs_select();
+    for (int y = _h; y < _h + _y; y++)
+    {
+        spi_write_blocking(SPI_PORT, row_buf, sizeof(row_buf));
+    }
+    cs_deselect();
+}
+
+void SPI_set_green_square(uint16_t _x, uint16_t _y, uint16_t _w, uint16_t _h)
+{
+    uint16_t color565 = 0x07E0;
+
+    uint8_t row_buf[DISPLAY_WIDTH * 2];
+    uint8_t hi = (uint8_t)(color565 >> 8);
+    uint8_t lo = (uint8_t)(color565 & 0xFF);
+    for (int i = 0; i < DISPLAY_WIDTH; i++)
+    {
+        row_buf[i * 2]     = hi;
+        row_buf[i * 2 + 1] = lo;
+    }
+
+    set_window(_x, _y, _x + _w, _y + _h);
+    st7735_write_command(ST7735_RAMWR);
+
+    gpio_put(PIN_DC, 1); // data
+    cs_select();
+    for (int y = _h; y < _h + _y; y++)
+    {
+        spi_write_blocking(SPI_PORT, row_buf, sizeof(row_buf));
+    }
+    cs_deselect();
+}
 
 
 void SPI_code()
@@ -179,3 +280,26 @@ void SPI_code()
     const uint16_t RED_565 = 0xF800;
     fill_screen(RED_565);
 }
+
+void SPI_set_black()
+{
+    // Clear the whole screen to red as a minimal end-to-end test.
+    const uint16_t BLACK_565 = 0x0000;
+    fill_screen(BLACK_565);
+}
+
+void SPI_set_white()
+{
+    // Clear the whole screen to red as a minimal end-to-end test.
+    const uint16_t WHITE_565 = 0xFFFF;
+    fill_screen(WHITE_565);
+}
+
+void SPI_set_green()
+{
+    // Clear the whole screen to red as a minimal end-to-end test.
+    const uint16_t GREEN_565 = 0x7E0;
+    fill_screen(GREEN_565);
+    // pixel_set(10, 10, 10, 10, 0x0000);
+}
+

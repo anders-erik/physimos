@@ -9,7 +9,7 @@
 	"perf_dir": "${workspaceFolder}/build/perf_linux/",
 
 	// ARG
-	// "arg1": "",
+	"arg1": "",
 	// "arg1": "install",
 	// "arg1": "bash",
 	// "arg1": "task",
@@ -24,7 +24,7 @@
 	// "arg1": "DFT",
 	// "arg1": "WAV",
 	// "arg1": "DFT-WAV",
-	"arg1": "generate-piano-note",
+	// "arg1": "generate-piano-note",
 
 	"arg2": "",
 	// "arg2": "hello",
@@ -37,6 +37,8 @@
 	// "arg3": "resources/audio/twinkle.sheet.json",
 	// "arg3": "resources/audio/intro.sheet.json",
 	// "arg3": "tmp/sheet.json",
+	// "arg3": "sine",
+	// "arg3": "piano",
 
 	// MAIN
 	// "binary": "physimos",
@@ -44,8 +46,8 @@
 	// "binary": "src/audio/main_audio",
 	// "binary": "src/input/main_input",
 	// "binary": "src/apps/swrend/main_swrend",
-	// "binary": "src/apps/piano/main_piano",
-	"binary": "src/apps/audio/main_audio",
+	"binary": "src/apps/piano/main_piano",
+	// "binary": "src/apps/audio/main_audio",
 	// "binary": "src/apps/pico/main_pico",
 	// "binary": "./src/pico/script.sh",
 	// "binary": "src/apps/wayland/main_wayland",

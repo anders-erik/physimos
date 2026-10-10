@@ -626,7 +626,7 @@ int generate_piano_note_fn()
 
 	AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
 
-	AudioData16 piano_note_A4 = PianoWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4));
+	AudioData16 piano_note_A4 = PianoWave::generate(sampling_config, NoteFrequencies::to_frequency(NoteName::A4));
 	audio_player.play(piano_note_A4);
 
 	AudioData16 sine_wave_A4 = SineWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4)).to_audio_data_i16();

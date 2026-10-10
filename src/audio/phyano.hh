@@ -10,6 +10,12 @@ class Phyano
 {
 public:
 
+	enum SynthType
+	{
+		Pure,
+		Piano,
+	} synth_type = Piano;
+
 	// Alsa object were intended to be placed in a container, but the alsa object did not comply.
 	// Should be resolved in the near future.
 	// Should be trivial with proper move sematins in place for Alsa. Currently copy construction is disabled.
@@ -47,7 +53,18 @@ public:
 
 	void press(NoteName _note_name)
 	{
-		AudioData16 note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
+		AudioData16 note_data;
+		
+		if(synth_type == Pure)
+		{
+			note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
+		}
+		else if(synth_type == Piano)
+		{
+			AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 800000};
+			note_data = PianoWave::generate(sampling_config, NoteFrequencies::to_frequency(_note_name));
+		}
+
 
 		if(++alsa_index >= available_alsa_count)
 			alsa_index = 0;

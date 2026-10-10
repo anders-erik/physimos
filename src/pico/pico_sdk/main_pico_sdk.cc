@@ -30,13 +30,13 @@
 
 struct Pin
 {
-     // IO PINS          // Name printed next to physical display pins
-    enum : unsigned int
+    // IO PINS          // Name printed next to physical display pins
+    enum Num: unsigned int
     {
         POWER = 0,
 
-        TEST_IN = 2,
-        TEST_OUT = 3,
+        LIGHT_IN = 2,
+        LIGHT_OUT = 3,
 
         A_IN = 6,
         A_OUT = 7,
@@ -46,7 +46,26 @@ struct Pin
 
         C_IN = 10,
         C_OUT = 11,
+
+        X_IN = 4,
+        X_OUT = 5,
+
+        Y_IN = 12,
+        Y_OUT = 13,
     };
+};
+
+struct ResponsiveButton
+{
+    Pin::Num pin_in;
+    Pin::Num pin_out;
+    bool read = false;
+    bool state = false;
+
+    void update()
+    {
+
+    }
 };
 
 
@@ -57,18 +76,28 @@ uint8_t modifier = 0;
 // 
 static bool clear_pending = false;
 
-bool v2_read_bool = false; // Read value at gpio_2
-int v2_read_int = 0; // boolean conveted to int
+// bool v2_read_bool = false; // Read value at gpio_2
+// int v2_read_int = 0; // boolean conveted to int
 
-const int BTN_TEST = 0;
-bool BTN_TEST_state = false;
-const int V2_READ = 2;
-const int V3_WRITE = 3;
+ResponsiveButton RB_LIGHT = {   Pin::LIGHT_IN, 
+                                Pin::LIGHT_OUT, 
+                                false, 
+                                false           };
 
-bool button_0 = false;
-static bool reported_button_0_state = false; // stores the most recently reported value
-const int BUTTON_0_PIN = 6;
-const int BUTTON_0_LED_PIN = 7;
+ResponsiveButton RB_A       = { Pin::A_IN, 
+                                Pin::A_OUT, 
+                                false, 
+                                false           };
+
+ResponsiveButton RB_X       = { Pin::X_IN, 
+                                Pin::X_OUT, 
+                                false, 
+                                false           };                                
+
+ResponsiveButton RB_Y       = { Pin::Y_IN, 
+                                Pin::Y_OUT, 
+                                false, 
+                                false       };
 
 bool button_1 = false;
 static bool reported_button_1_state = false; // stores the most recently reported value
@@ -79,7 +108,6 @@ bool button_2 = false;
 static bool reported_button_2_state = false; // stores the most recently reported value
 const int BUTTON_2_PIN_IN = 10;
 const int BUTTON_2_PIN_OUT = 11;
-
 
 
 
@@ -215,46 +243,71 @@ PhysicalButtonWithPin physical_button_with_pin_3 {10, 11, {HID_KEY_B, btn_3_modi
 
 void init_GPIO()
 {
-    gpio_init(BTN_TEST);
-    gpio_set_dir(BTN_TEST, GPIO_OUT);
+    gpio_init(Pin::POWER);
+    gpio_set_dir(Pin::POWER, GPIO_OUT);
 
-    // gpio_init(V2_READ);
-    // gpio_set_dir(V2_READ, GPIO_IN);
-    gpio_init(Pin::TEST_IN);
-    gpio_set_dir(Pin::TEST_IN, GPIO_IN);
-    gpio_init(Pin::TEST_OUT);
-    gpio_set_dir(Pin::TEST_OUT, GPIO_OUT);
+    gpio_init(RB_LIGHT.pin_in);
+    gpio_set_dir(RB_LIGHT.pin_in, GPIO_IN);
+    gpio_init(RB_LIGHT.pin_out);
+    gpio_set_dir(RB_LIGHT.pin_out, GPIO_OUT);
 
-    gpio_init(BUTTON_0_PIN);
-    gpio_set_dir(BUTTON_0_PIN, GPIO_IN);
-    gpio_init(BUTTON_0_LED_PIN);
-    gpio_set_dir(BUTTON_0_LED_PIN, GPIO_OUT);
+
+    // gpio_init(Pin::DRAW_IN);
+    // gpio_set_dir(Pin::DRAW_IN, GPIO_IN);
+    // gpio_init(Pin::DRAW_OUT);
+    // gpio_set_dir(Pin::DRAW_OUT, GPIO_OUT);
+
+    gpio_init(RB_A.pin_in);
+    gpio_set_dir(RB_A.pin_in, GPIO_IN);
+    gpio_init(RB_A.pin_out);
+    gpio_set_dir(RB_A.pin_out, GPIO_OUT);
 
     gpio_init(BUTTON_1_PIN_IN);
     gpio_set_dir(BUTTON_1_PIN_IN, GPIO_IN);
     gpio_init(BUTTON_1_PIN_OUT);
     gpio_set_dir(BUTTON_1_PIN_OUT, GPIO_OUT);
+
+
+    gpio_init(RB_X.pin_in);
+    gpio_set_dir(RB_X.pin_in, GPIO_IN);
+    gpio_init(RB_X.pin_out);
+    gpio_set_dir(RB_X.pin_out, GPIO_OUT);
+
+    gpio_init(RB_Y.pin_in);
+    gpio_set_dir(RB_Y.pin_in, GPIO_IN);
+    gpio_init(RB_Y.pin_out);
+    gpio_set_dir(RB_Y.pin_out, GPIO_OUT);
 }
 
 
 void update_GPIO()
 {
-    v2_read_bool = gpio_get(V2_READ);
-    v2_read_int = v2_read_bool ? 1 : 0;
-    gpio_put(V3_WRITE, v2_read_int);
+    gpio_put(Pin::POWER, true);
 
+    // gpio_put(RB_LIGHT.read, true);
 
-    bool blink = true;
-    if(blink)
-    {
-        BTN_TEST_state = !BTN_TEST_state;
-        gpio_put(BTN_TEST, BTN_TEST_state);
-    }
-    else
-    {
-        gpio_put(BTN_TEST, true);
-    }
+    RB_LIGHT.read = gpio_get(RB_LIGHT.pin_in);
+    RB_LIGHT.state = RB_LIGHT.read ? 1 : 0;
+    gpio_put(RB_LIGHT.pin_out, RB_LIGHT.state);
 
+    // bool blink = true;
+    // if(blink)
+    // {
+    //     RB_TEST.state = !RB_TEST.state;
+    //     gpio_put(RB_TEST.read, RB_TEST.state);
+    // }
+    // else
+    // {
+    //     gpio_put(RB_TEST.read, true);
+    // }
+
+    RB_X.read = gpio_get(Pin::X_IN);
+    RB_X.state = RB_X.read ? 1 : 0;
+    gpio_put(RB_X.pin_out, RB_X.state);
+
+    RB_Y.read = gpio_get(RB_Y.pin_in);
+    RB_Y.state = RB_Y.read ? 1 : 0;
+    gpio_put(RB_Y.pin_out, RB_Y.state);
 }
 
 
@@ -267,10 +320,10 @@ void report_usb()
         return;
     }
 
-    button_0 = gpio_get(BUTTON_0_PIN);
-    gpio_put(BUTTON_0_LED_PIN, button_0);
-    bool button_0_pressed_edge = button_0 && !reported_button_0_state;
-    reported_button_0_state = button_0;
+    RB_A.read = gpio_get(RB_A.pin_in);
+    gpio_put(RB_A.pin_out, RB_A.read);
+    bool button_0_pressed_edge = RB_A.read && !RB_A.state;
+    RB_A.state = RB_A.read;
 
     button_1 = gpio_get(BUTTON_1_PIN_IN);
     gpio_put(BUTTON_1_PIN_OUT, button_1);
@@ -320,6 +373,11 @@ int main()
     stdio_init_all(); // ./src/pico/pico_sdk/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h
 
     SPI_code(); // will run all the display-code once
+    // SPI_set_black();
+    // SPI_set_white();
+    SPI_set_green();
+    // pixel_set(10, 10, 10, 10, 0x0000);
+    SPI_set_black_square(10, 10, 10, 10);
 
     sleep_us(1);
 
@@ -328,6 +386,16 @@ int main()
         tud_task(); // If this is removed, the input on my computer does note work /AE, 2026-09-19 & 2026-09-26
 
         update_GPIO();
+
+        if(RB_X.read)
+            SPI_set_black_square(10, 10, 10, 10);
+        else
+            SPI_set_green_square(10, 10, 10, 10);
+        
+        if(RB_Y.read)
+            SPI_set_white_square(20, 20, 10, 10);
+        else
+            SPI_set_green_square(20, 20, 10, 10);
 
         // if(tud_hid_ready())
         report_usb();
