@@ -591,23 +591,32 @@ int WAV_fn()
 
 int DFT_WAV_fn()
 {
-	AudioPlayer audio_player;
-	audio_player.set_backend_to_alsa();
-	
-	// Generate audio data
-	AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
-	AudioData32 audio_data_32 = SineWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4));
+	WAV wav_import;
 
-	WAV wav;
-	wav.Export("tmp/A4.wav", audio_data_32);
+	AudioData16 audio_data_16 = wav_import.Import("resources/audio/sine-A4.wav");
+	// AudioData16 audio_data_16 = wav_import.Import("resources/audio/piano-A4.wav");
+
+	uint samples_to_use = 1000; // Limit the DFT processing time 
+	Vec<std::complex<double>> audio_data_16_C;
+	audio_data_16_C.set_count(samples_to_use);
 
 
-	AudioData16 audio_data_i16 = audio_data_32.to_audio_data_i16();
-	audio_player.play(audio_data_i16);
+	// copy audio data to complex number
+	for(uint i = 0; i < audio_data_16_C.count(); i++)
+		audio_data_16_C[i] = (f64)audio_data_16.data[i];
 
-	// wav.populate_from_audio_data(audio_data_32);
+	// print_complex_vec_head(sine_a4_C, 100);
+	// print_complex_vec_tail(sine_a4_C, 100);
 
-	// IO::dump("tmp/WAV.wav", wav.file_data, wav.file_data_size);
+	DFT dft;
+	dft.set_time_domain_data(audio_data_16_C, 44100);
+	dft.calculate();
+
+	Str DFT_csv_str = dft.to_csv();
+	Print::ln(DFT_csv_str);
+	IO::dump("tmp/dft.csv", DFT_csv_str);
+
+	return 0;
 }
 
 

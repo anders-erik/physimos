@@ -22,8 +22,8 @@
 	// "arg1": "sheet",
 	// "arg1": "song-with-instrument-lines",
 	// "arg1": "DFT",
-	"arg1": "WAV",
-	// "arg1": "DFT-WAV",
+	// "arg1": "WAV",
+	"arg1": "DFT-WAV",
 
 	"arg2": "",
 	// "arg2": "hello",
