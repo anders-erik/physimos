@@ -7,6 +7,47 @@
 
 #include "TFT_SPI_display.hh"
 
+#define EnumCast() static_cast<uint>(Pin::read_2)
+
+ // IO PINS          // Name printed next to physical display pins
+// enum Pin
+// {
+//     POWER = 0,
+
+//     BTN_TEST_IN = 2,
+//     BTN_TEST_OUT = 3,
+
+//     BTN_A_IN = 6,
+//     BTN_A_OUT = 7,
+
+//     BTN_B_IN = 8,
+//     BTN_B_OUT = 9,
+
+//     BTN_C_IN = 10,
+//     BTN_C_OUT = 11,
+// };
+
+
+struct Pin
+{
+     // IO PINS          // Name printed next to physical display pins
+    enum : unsigned int
+    {
+        POWER = 0,
+
+        TEST_IN = 2,
+        TEST_OUT = 3,
+
+        A_IN = 6,
+        A_OUT = 7,
+
+        B_IN = 8,
+        B_OUT = 9,
+
+        C_IN = 10,
+        C_OUT = 11,
+    };
+};
 
 
 uint8_t keycode[6] = { 0 };
@@ -19,8 +60,8 @@ static bool clear_pending = false;
 bool v2_read_bool = false; // Read value at gpio_2
 int v2_read_int = 0; // boolean conveted to int
 
-const int LED_0 = 0;
-bool LED_0_state = false;
+const int BTN_TEST = 0;
+bool BTN_TEST_state = false;
 const int V2_READ = 2;
 const int V3_WRITE = 3;
 
@@ -174,14 +215,20 @@ PhysicalButtonWithPin physical_button_with_pin_3 {10, 11, {HID_KEY_B, btn_3_modi
 
 void init_GPIO()
 {
-    gpio_init(LED_0);
-    gpio_set_dir(LED_0, GPIO_OUT);
+    gpio_init(BTN_TEST);
+    gpio_set_dir(BTN_TEST, GPIO_OUT);
 
-    gpio_init(V2_READ);
-    gpio_set_dir(V2_READ, GPIO_IN);
-    gpio_init(V3_WRITE);
-    gpio_set_dir(V3_WRITE, GPIO_OUT);
+    // gpio_init(V2_READ);
+    // gpio_set_dir(V2_READ, GPIO_IN);
+    gpio_init(Pin::TEST_IN);
+    gpio_set_dir(Pin::TEST_IN, GPIO_IN);
+    gpio_init(Pin::TEST_OUT);
+    gpio_set_dir(Pin::TEST_OUT, GPIO_OUT);
 
+    gpio_init(BUTTON_0_PIN);
+    gpio_set_dir(BUTTON_0_PIN, GPIO_IN);
+    gpio_init(BUTTON_0_LED_PIN);
+    gpio_set_dir(BUTTON_0_LED_PIN, GPIO_OUT);
 
     gpio_init(BUTTON_1_PIN_IN);
     gpio_set_dir(BUTTON_1_PIN_IN, GPIO_IN);
@@ -200,12 +247,12 @@ void update_GPIO()
     bool blink = true;
     if(blink)
     {
-        LED_0_state = !LED_0_state;
-        gpio_put(LED_0, LED_0_state);
+        BTN_TEST_state = !BTN_TEST_state;
+        gpio_put(BTN_TEST, BTN_TEST_state);
     }
     else
     {
-        gpio_put(LED_0, true);
+        gpio_put(BTN_TEST, true);
     }
 
 }

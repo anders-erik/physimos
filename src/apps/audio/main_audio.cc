@@ -391,6 +391,15 @@ int sheet_command(Str flag1, Str flag2)
 int DFT_tests()
 {
 	#include "math/const.hh"
+	#include "math/complex.hh"
+
+
+	// f32* bit_check = new f32{10.0};
+
+	c64 complex_num = {"asdf"};
+	Print::ln(complex_num.to_str());
+	complex_num = c64{1.0, 2.2};
+	Print::ln(complex_num.to_str());
 
 	std::complex<double> a = 1;
 	std::complex<double> b = 2.0 - 1.0i;

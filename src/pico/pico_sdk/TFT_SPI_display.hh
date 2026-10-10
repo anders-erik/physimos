@@ -6,6 +6,16 @@
 #define SPI_PORT spi0
 
 // IO PINS          // Name printed next to physical display pins
+enum class TFTPin
+{
+    MISO = 16, // SDA
+    CS   = 17, // CD
+    SCK  = 18, // SCK
+    MOSI = 19, //  - (PIN NOT PRESENT)
+    DC   = 21, // A0
+    RST  = 20 // RESET
+};
+
 #define PIN_MISO 16 // SDA
 #define PIN_CS   17 // CD
 #define PIN_SCK  18 // SCK
