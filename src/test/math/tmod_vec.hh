@@ -63,7 +63,7 @@ UnitTestArray construct_vec = {
         for(uint i = 0; i < vec_man.size(); i++)
             vec_man[i] = 123.0;
 
-        utest.assert_custom(   vec_set.set(123.0),
+        utest.assert_custom(   vec_set.set_value(123.0),
                         vec_man             );
     }},
 

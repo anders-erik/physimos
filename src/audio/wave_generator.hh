@@ -32,8 +32,8 @@ struct SineWave
 		w_arr.reserve(sample_count);
 		w_arr.set(0.0);
 
-		out_arr.set_size(sample_count);
-		out_arr.set(0);
+		out_arr.set_count(sample_count);
+		out_arr.set_value(0);
 
 
 		f64 amp = 2097152.0; // 2^21
@@ -147,7 +147,7 @@ public:
 
 	Arr<double> t_arr; // Time step array
     Arr<double> w_arr;	// Wave array
-    Arr<int16_t> out_arr; // Output array
+    Vec<int16_t> out_arr; // Output array
 
 
 	AudioWaveGenerator()
@@ -193,14 +193,14 @@ public:
 	{
 		t_arr.clear();
 		w_arr.clear();
-		out_arr.clear();
+		// out_arr.clear();
 
 		t_arr.reserve(config.sample_count);
 		t_arr.set(0.0);
 		w_arr.reserve(config.sample_count);
 		w_arr.set(0.0);
-		out_arr.reserve(config.sample_count);
-		out_arr.set(0);
+		out_arr.set_count(config.sample_count);
+		out_arr.set_value(0);
 	}
 
 	void generate_wave()
@@ -259,8 +259,8 @@ public:
 		}
 	}
 
-	AudioData get_audio_data()
+	AudioData16 get_audio_data()
 	{
-		return AudioData {out_arr};
+		return AudioData16 {out_arr};
 	}
 };

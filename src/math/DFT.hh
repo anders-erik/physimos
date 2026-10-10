@@ -51,7 +51,7 @@ public:
 
 		uint N = input.size();
 
-        output.set_size(N);
+        output.set_count(N);
         
 
 		for(uint k = 0; k < N; k++)
@@ -88,7 +88,7 @@ double complex_magnitude(std::complex<double> _num)
 Vec<double> complex_vec_to_mag_vec(Vec<std::complex<double>> vec)
 {
     Vec<double> ret_vec;
-    ret_vec.set_size(vec.size());
+    ret_vec.set_count(vec.size());
 
     for(uint i = 0; i < vec.size(); i++)
     {
@@ -101,7 +101,7 @@ Vec<double> complex_vec_to_mag_vec(Vec<std::complex<double>> vec)
 Vec<double> complex_vec_to_real_vec(Vec<std::complex<double>> vec)
 {
     Vec<double> ret_vec;
-    ret_vec.set_size(vec.size());
+    ret_vec.set_count(vec.size());
 
     for(uint i = 0; i < vec.size(); i++)
         ret_vec[i] = vec[i].real();
@@ -113,7 +113,7 @@ Vec<double> complex_vec_to_imag_vec(Vec<std::complex<double>> vec)
 {
     Vec<double> ret_vec;
 
-    ret_vec.set_size(vec.size());
+    ret_vec.set_count(vec.size());
 
     for(uint i = 0; i < vec.size(); i++)
         ret_vec[i] = vec[i].imag();

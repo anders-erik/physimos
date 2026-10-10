@@ -16,6 +16,8 @@
 
 #include "math/vec.hh"
 #include "math/DFT.hh"
+#include "math/const.hh" // DFT
+#include "math/complex.hh" // DFT
 
 #include "io/evdev/evdev_reader.hh"
 
@@ -390,10 +392,6 @@ int sheet_command(Str flag1, Str flag2)
 
 int DFT_tests()
 {
-	#include "math/const.hh"
-	#include "math/complex.hh"
-
-
 	// f32* bit_check = new f32{10.0};
 
 	c64 complex_num = {"asdf"};
@@ -427,9 +425,9 @@ int DFT_tests()
 	double Fs = 1 / dt; // Sampling frequency : samples / sec
 
 	Vec<double> T;
-	T.set_size(sample_count);
+	T.set_count(sample_count);
 	Vec<double> F;
-	F.set_size(sample_count);
+	F.set_count(sample_count);
 
 	for(uint i = 0; i < sample_count; i++)
 	{
@@ -554,13 +552,54 @@ int song_with_instrument_lines()
 	// instrument_line.audio_data_raw.smoothen_loud_audio_peaks();
 	// instrument_line.audio_data_raw.normalize();
 	AudioData32 instrument_audio_data_raw = instrument_line.line_audio_data;
-	AudioData instrument_audio_data = instrument_audio_data_raw.to_audio_data_i16();
+	AudioData16 instrument_audio_data = instrument_audio_data_raw.to_audio_data_i16();
 	audio_player.play(instrument_audio_data);
 
 	return 0;
 }
 
 
+int WAV_fn()
+{
+	AudioPlayer audio_player;
+	audio_player.set_backend_to_alsa();
+	
+	// Generate audio data
+	AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
+	AudioData32 audio_data_32 = SineWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4));
+
+	WAV wav;
+	wav.Export("tmp/A4.wav", audio_data_32);
+
+
+	AudioData16 audio_data_i16 = audio_data_32.to_audio_data_i16();
+	audio_player.play(audio_data_i16);
+
+	// wav.populate_from_audio_data(audio_data_32);
+
+	// IO::dump("tmp/WAV.wav", wav.file_data, wav.file_data_size);
+}
+
+int DFT_WAV_fn()
+{
+	AudioPlayer audio_player;
+	audio_player.set_backend_to_alsa();
+	
+	// Generate audio data
+	AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
+	AudioData32 audio_data_32 = SineWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4));
+
+	WAV wav;
+	wav.Export("tmp/A4.wav", audio_data_32);
+
+
+	AudioData16 audio_data_i16 = audio_data_32.to_audio_data_i16();
+	audio_player.play(audio_data_i16);
+
+	// wav.populate_from_audio_data(audio_data_32);
+
+	// IO::dump("tmp/WAV.wav", wav.file_data, wav.file_data_size);
+}
 
 
 
@@ -592,24 +631,14 @@ int main(int argc, char** argv)
 	else if(cli[1] == "WAV")
 	{
 		Print::ln("main_audio:: WAV !");
-		
-		AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
-		SineWave sine_wave;
-		AudioData32 audio_data_32 = sine_wave.generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::C4));
 
-		WAV wav;
-		wav.Export("tmp/WAV.wav", audio_data_32);
+		return WAV_fn();
+	}
+	else if(cli[1] == "DFT-WAV")
+	{
+		Print::ln("main_audio:: DFT-WAV !");
 
-		AudioPlayer audio_player;
-		audio_player.set_backend_to_alsa();
-		AudioData audio_data_i16 = audio_data_32.to_audio_data_i16();
-		audio_player.play(audio_data_i16);
-
-		// wav.populate_from_audio_data(audio_data_32);
-
-		// IO::dump("tmp/WAV.wav", wav.file_data, wav.file_data_size);
-
-		return 0;
+		return DFT_WAV_fn();
 	}
 
 
@@ -715,7 +744,7 @@ int main(int argc, char** argv)
 	// };
 	Alsa alsa;
 
-	AudioData audio_data;
+	AudioData16 audio_data;
 	audio_data.data = wave_generator.out_arr;
 
 	alsa.print_pcm_info();

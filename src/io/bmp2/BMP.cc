@@ -140,7 +140,7 @@ Vec<uint8_t> BMPUtil::pad_bitmap_data(Bitmap& _bitmap)
     uint padded_stride = get_padded_stride(_bitmap);
 
     Vec<uint8_t> padded_data {_bitmap.h() * padded_stride};
-    padded_data.set(0x00);
+    padded_data.set_value(0x00);
 
     // uint8_t* bitmap_base_ptr = bitmap.get_data_mut();
     // uint8_t* padded_base_ptr = padded_data.data_mut();
@@ -197,7 +197,7 @@ Vec<uint8_t> BMPUtil::bitmap_to_bmp_buf(Bitmap& _bitmap)
     uint stride_bitmap_data_24bit_padded = get_padded_stride_from_24bit_stride(stride_bitmap_data_24bit);
 
     Vec<uint8_t> padded_data {_bitmap.h() * stride_bitmap_data_24bit_padded};
-    padded_data.set(0x00);
+    padded_data.set_value(0x00);
     for(uint i = 0; i < _bitmap.h(); i++)
     {
         
@@ -657,7 +657,7 @@ Vec<uint8_t> BMPIO::pad_bitmap_data()
     uint padded_stride = get_padded_BPM_stride(bitmap);
 
     Vec<uint8_t> padded_data {bitmap.h() * padded_stride};
-    padded_data.set(0x00);
+    padded_data.set_value(0x00);
 
     // uint8_t* bitmap_base_ptr = bitmap.get_data_mut();
     // uint8_t* padded_base_ptr = padded_data.data_mut();

@@ -76,7 +76,7 @@ public:
 	uint beat_count = 8;
 
 	Arr<Arr<Note>> notes;
-	AudioData song_data;
+	AudioData16 song_data;
 
 	// Arr<InstrumentLine> instrument_lines;
 	InstrumentLine piano_line;
@@ -110,7 +110,7 @@ public:
 		return seconds_per_beat * (double) beat_count;
 	}
 
-	void add_wave_to_audiodata_at_beat_count(AudioData& _audio_data, uint beat_index, double beat_note_gain/*gain for specific note during the current beat index*/)
+	void add_wave_to_audiodata_at_beat_count(AudioData16& _audio_data, uint beat_index, double beat_note_gain/*gain for specific note during the current beat index*/)
 	{
 
 		uint samples_per_beat = (uint)(44100.0 * (60.0 / bpm));
@@ -125,7 +125,7 @@ public:
 		}
 	}
 
-	void add_wave_to_audiodata_at_time(AudioData& _audio_data, double _time_ms, double beat_note_gain/*gain for specific note during the current beat index*/)
+	void add_wave_to_audiodata_at_time(AudioData16& _audio_data, double _time_ms, double beat_note_gain/*gain for specific note during the current beat index*/)
 	{
 		if( (_audio_data.duration_s_double() + _audio_data.duration_s_double()) > song_length_s())
 		{
@@ -158,7 +158,7 @@ public:
 
 			for(uint note_i = 0; note_i < notes[beat_i].count(); note_i++)
 			{
-				AudioData note_data = Instrument::get_note_audio(notes[beat_i][note_i], bpm, 0.5);
+				AudioData16 note_data = Instrument::get_note_audio(notes[beat_i][note_i], bpm, 0.5);
 				add_wave_to_audiodata_at_beat_count(note_data, beat_i, beat_note_gain);
 			}
 		}
@@ -167,7 +167,7 @@ public:
 		for(uint i = 0; i < piano_line.line_notes.count(); i++)
 		{
 			LineNote line_note = piano_line.line_notes[i];
-			AudioData note_data = Instrument::get_note_audio(line_note.note, bpm, 0.2);
+			AudioData16 note_data = Instrument::get_note_audio(line_note.note, bpm, 0.2);
 			add_wave_to_audiodata_at_time(note_data, line_note.start_time_ms, 0.5);
 		}
 	}

@@ -43,7 +43,7 @@ public:
 	void setup();
 	void print_pcm_info();
 	int play();
-	void play(AudioData audio_data);
+	void play(AudioData16 audio_data);
 
 	void stop();
 	

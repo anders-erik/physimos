@@ -14,18 +14,19 @@
 		- Channels: 1 (mono)
 		- DataType: 16bit signed integer
 */
-class AudioData
+class AudioData16
 {
 public:
 
-	Arr<int16_t> data;
+	Vec<int16_t> data;
 
-	AudioData() {};
-	AudioData(uint _data_count)
+	AudioData16() {};
+	AudioData16(uint _data_count)
 	{
-		data.set(0, _data_count);
+		data.set_count(_data_count);
+		data.set_value(0);
 	};
-	AudioData(Arr<int16_t>& data)
+	AudioData16(Vec<int16_t>& data)
 	{
 		this->data = data;
 	};
@@ -33,7 +34,8 @@ public:
 	// force vector to hold a specific sample count, all set to zero
 	void set_sample_count(uint _count)
 	{
-		data.set(0, _count);
+		data.set_count(_count);
+		data.set_value(0);
 	}
 
 	int sample_rate() { return 44100; }
@@ -49,12 +51,6 @@ public:
 };
 
 
-struct AudioLength
-{
-	int sample_rate = 44100;
-	int sample_count = 0;
-	// int duration_us = 0;
-};
 
 struct AudioSamplingConfig
 {
@@ -70,12 +66,6 @@ struct AudioSamplingConfig
 
 	// u64 bit_depth = 32;
 
-	// AudioSamplingConfig& operator=(AudioSamplingConfig& rhs)
-	// {
-	// 	this->sample_rate_s = rhs.sample_rate_s;
-	// 	this->sample_count 	= rhs.sample_count;
-	// 	this->duration_us 	= rhs.duration_us;
-	// }
 
 	AudioSamplingConfig() = default;
 
@@ -149,8 +139,8 @@ public:
 	{
 		Vec<i32> data_old = data;
 		sampling_config = _sampling_config;
-		data.set_size(sampling_config.sample_count);
-		data.set(0.0);
+		data.set_count(sampling_config.sample_count);
+		data.set_value(0.0);
 		
 		// copy old data into new size
 		uint min_count = data.count() < data_old.count() ? data.count() : data_old.count();
@@ -240,10 +230,11 @@ public:
 
 	}
 
-	AudioData to_audio_data_i16()
+	AudioData16 to_audio_data_i16()
 	{
-		AudioData audio_data;
-		audio_data.data = Arr<int16_t>{sample_count(), 0};
+		AudioData16 audio_data;
+		audio_data.data.set_count(sample_count());
+		audio_data.data.set_value(0);
 
 		for(uint i = 0; i < data.count(); i++)
 		{
@@ -263,8 +254,8 @@ public:
 	Vec<i16> to_vec_i16()
 	{
 		Vec<i16> vec_i16;
-		vec_i16.set_size(sample_count());
-		vec_i16.set(0);
+		vec_i16.set_count(sample_count());
+		vec_i16.set_value(0);
 
 		for(uint i = 0; i < data.count(); i++)
 			vec_i16[i] = (i16) (data[i] / 255);

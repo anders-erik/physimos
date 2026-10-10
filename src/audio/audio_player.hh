@@ -36,7 +36,7 @@ struct AudioPlayer
 		value.alsa = new Alsa();
 	}
 
-	void play(AudioData& _audio_data)
+	void play(AudioData16& _audio_data)
 	{
 		if(type == Type::Alsa)
 		{

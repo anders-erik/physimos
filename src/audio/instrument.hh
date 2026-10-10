@@ -10,7 +10,7 @@ class Instrument
 {
 public:
 
-	static AudioData get_note_audio(Note note, double tempo_bpm, double _gain)
+	static AudioData16 get_note_audio(Note note, double tempo_bpm, double _gain)
 	{
 		AudioWaveGenerator wave_generator;
 
@@ -72,8 +72,8 @@ public:
 		// AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, (u64)(_duration_s*1000000)};
 
 		Vec<i32> i32_array;
-		i32_array.set_size(wave_generator.out_arr.count());
-		i32_array.set(0);
+		i32_array.set_count(wave_generator.out_arr.count());
+		i32_array.set_value(0);
 		for(uint i = 0; i < wave_generator.out_arr.count(); i++)
 		{
 			i32_array[i] = wave_generator.out_arr[i] * 256;

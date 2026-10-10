@@ -27,7 +27,7 @@ public:
 	uint available_alsa_count = 8;
 	uint alsa_index = 0;
 
-	AudioData adata; // 1 second databuffer
+	AudioData16 adata; // 1 second databuffer
 
 	// Phyano() : alsas {10}
 	Phyano()
@@ -47,7 +47,7 @@ public:
 
 	void press(NoteName _note_name)
 	{
-		AudioData note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
+		AudioData16 note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
 
 		if(++alsa_index >= available_alsa_count)
 			alsa_index = 0;

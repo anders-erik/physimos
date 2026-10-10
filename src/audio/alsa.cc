@@ -144,7 +144,7 @@ int Alsa::play()
 }
 
 
-void Alsa::play(AudioData audio_data)
+void Alsa::play(AudioData16 audio_data)
 {
 	int loop_counter = 0;
 

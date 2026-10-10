@@ -207,7 +207,7 @@ public:
     {
         height = _height;
         width = _width;
-        data.set_size(height*width);
+        data.set_count(height*width);
 
         return *this;
     }
