@@ -3,6 +3,9 @@
 
 #include "lib/str.hh"
 #include "lib/arr.hh"
+#include "lib/io.hh"
+
+#include "math/vec.hh"
 
 #include "wave_generator.hh"
 
@@ -32,7 +35,7 @@ struct WavDataChunk
 {
 	int8_t DataBlocID[4] = {0x64, 0x61, 0x74, 0x61};    	// (4 bytes) : Identifier « data »  (0x64, 0x61, 0x74, 0x61)
     int32_t DataSize;      	// (4 bytes) : Chunk size minus 8 bytes, which is 16 bytes here  (0x10)
-	Arr<int16_t> SampledData; 		//  Actual data
+	Vec<int16_t> SampledData; 		//  Actual data
 };
 
 
@@ -44,20 +47,24 @@ public:
 	WavHeaderDataFormat header_format;
 	WavDataChunk data_chunk;
 
+	void * file_data;
+	long file_data_size;
+
 	bool is_little_endian = false;
 
 	WAV() {};
 
-
-	void populate_from_wave(AudioWaveGenerator& wave)
+	void Export(Str _path, AudioData32& audio_data)
 	{
-		is_little_endian = false;
+		populate_from_audio_data(audio_data);
+		IO::dump(_path, file_data, file_data_size);
+	}
 
-		wave.generate_wave();
-
+	void populate_from_audio_data(AudioData32& audio_data)
+	{
 		// Size: 12 bytes
 		// header_riff.FileTypeBlocID = ...; // set in struct declaration
-		header_riff.FileSize = 44 + wave.config.sample_count * 2 - 8;
+		header_riff.FileSize = 44 + audio_data.sample_count() * 2 - 8;
 		// header_riff.FileFormatID = ...; // set in struct declaration
 
 		// Size: 24 bytes
@@ -65,17 +72,52 @@ public:
 		header_format.BlocSize = 0x10; // size of the format header
 		header_format.AudioFormat = 1; // PCM : integer
 		header_format.NbrChannels = 1; 
-		header_format.Frequency = wave.config.sample_rate; 
+		header_format.Frequency = audio_data.sample_rate(); 
 		header_format.BitsPerSample = 16;
 		header_format.BytePerBloc = header_format.BitsPerSample * header_format.NbrChannels / 8;
-		header_format.BytePerSec = wave.config.sample_rate * header_format.BytePerBloc;
-		
+		header_format.BytePerSec = audio_data.sample_rate() * header_format.BytePerBloc;
+
 		// Size: 8 + data_size
 		// data_chunk.DataBlocID = ...; // set in struct declaration
-		data_chunk.DataSize = wave.config.sample_count * 2;
-		data_chunk.SampledData = wave.out_arr; // TODO: make the WAV object own the data. Currently we store a pointer to data on the heap that could be deallocated at any point before writing to file.
+		data_chunk.DataSize = audio_data.sample_count() * 2;
+		data_chunk.SampledData = audio_data.to_vec_i16(); // TODO: make the WAV object own the data. Currently we store a pointer to data on the heap that could be deallocated at any point before writing to file.
 
+		file_data_size = header_riff.FileSize + 8;
+		file_data = malloc(file_data_size);
+
+		memcpy(file_data + 0 , &header_riff, 12);
+		memcpy(file_data + 12, &header_format, 24);
+		memcpy(file_data + 36, &data_chunk, 8);
+		memcpy(file_data + 44,  data_chunk.SampledData.data_mut(), data_chunk.SampledData.count_bytes());
 	}
+
+	// void populate_from_wave(AudioWaveGenerator& wave)
+	// {
+	// 	is_little_endian = false;
+
+	// 	wave.generate_wave();
+
+	// 	// Size: 12 bytes
+	// 	// header_riff.FileTypeBlocID = ...; // set in struct declaration
+	// 	header_riff.FileSize = 44 + wave.config.sample_count * 2 - 8;
+	// 	// header_riff.FileFormatID = ...; // set in struct declaration
+
+	// 	// Size: 24 bytes
+	// 	// header_format.FormatBlocID = ...; // set in struct declaration
+	// 	header_format.BlocSize = 0x10; // size of the format header
+	// 	header_format.AudioFormat = 1; // PCM : integer
+	// 	header_format.NbrChannels = 1; 
+	// 	header_format.Frequency = wave.config.sample_rate; 
+	// 	header_format.BitsPerSample = 16;
+	// 	header_format.BytePerBloc = header_format.BitsPerSample * header_format.NbrChannels / 8;
+	// 	header_format.BytePerSec = wave.config.sample_rate * header_format.BytePerBloc;
+		
+	// 	// Size: 8 + data_size
+	// 	// data_chunk.DataBlocID = ...; // set in struct declaration
+	// 	data_chunk.DataSize = wave.config.sample_count * 2;
+	// 	data_chunk.SampledData = wave.out_arr; // TODO: make the WAV object own the data. Currently we store a pointer to data on the heap that could be deallocated at any point before writing to file.
+
+	// }
 
 	int32_t change_endinaness_int32(int32_t integer)
 	{
@@ -176,7 +218,7 @@ public:
 		}
 
 		ptr = (void*) data_chunk.SampledData.data_mut();
-		rtrn = write(fd, ptr, data_chunk.SampledData.count_byte());
+		rtrn = write(fd, ptr, data_chunk.SampledData.count_bytes());
 		if(rtrn < 0)
 		{
 			println("ERROR: Failed to write wave data to file.");
@@ -189,28 +231,6 @@ public:
 			println("ERROR: Failed to close fd.");
 			return;
 		}
-	}
-
-	template <typename T>
-	Arr<T>&& read_bin_file(Str file_path)
-	{
-		int fd, ret;
-
-		fd = open(file_path.to_c_str(), O_RDONLY);
-		if(fd < 0)
-		{
-			println("ERROR: Failed to open WAV file.");
-			return Arr<T> {};
-		}
-
-		ret = close(fd);
-		if(ret < 0)
-		{
-			println("ERROR: Failed to close WAV file.");
-			return Arr<T> {};
-		}
-
-		return Arr<T> {};
 	}
 
 	void read_file(Str file_path)
@@ -250,7 +270,7 @@ public:
 			void* buf = malloc(data_chunk.DataSize);
 
 			ret = read(fd, buf, data_chunk.DataSize);
-			data_chunk.SampledData.set_from_pointer( (int16_t*)buf, data_chunk.DataSize / sizeof(int16_t));
+			// data_chunk.SampledData.set_from_pointer( (int16_t*)buf, data_chunk.DataSize / sizeof(int16_t));
 
 			free(buf);
 		}

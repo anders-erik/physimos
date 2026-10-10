@@ -562,19 +562,6 @@ int song_with_instrument_lines()
 
 
 
-int main_2(int argc, char** argv)
-{
-    println("Physimos::audio starting!");
-
-
-	// twinkle_twinkle();
-	ambiance_song();
-
-
-    printf("End Alsa test\n");
-
-	return 0;
-}
 
 
 int main(int argc, char** argv)
@@ -601,6 +588,28 @@ int main(int argc, char** argv)
 	{
 		Print::ln("main_audio:: song-with-instrument-lines !");
 		return song_with_instrument_lines();
+	}
+	else if(cli[1] == "WAV")
+	{
+		Print::ln("main_audio:: WAV !");
+		
+		AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
+		SineWave sine_wave;
+		AudioData32 audio_data_32 = sine_wave.generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::C4));
+
+		WAV wav;
+		wav.Export("tmp/WAV.wav", audio_data_32);
+
+		AudioPlayer audio_player;
+		audio_player.set_backend_to_alsa();
+		AudioData audio_data_i16 = audio_data_32.to_audio_data_i16();
+		audio_player.play(audio_data_i16);
+
+		// wav.populate_from_audio_data(audio_data_32);
+
+		// IO::dump("tmp/WAV.wav", wav.file_data, wav.file_data_size);
+
+		return 0;
 	}
 
 

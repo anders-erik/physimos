@@ -260,6 +260,18 @@ public:
 		return audio_data;
 	}
 
+	Vec<i16> to_vec_i16()
+	{
+		Vec<i16> vec_i16;
+		vec_i16.set_size(sample_count());
+		vec_i16.set(0);
+
+		for(uint i = 0; i < data.count(); i++)
+			vec_i16[i] = (i16) (data[i] / 255);
+		
+		return vec_i16;
+	}
+
 
 	int sample_rate() { return sampling_config.sample_rate_s; }
 	int channel_count() { return 1; }
