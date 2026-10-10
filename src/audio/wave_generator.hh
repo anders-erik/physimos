@@ -63,14 +63,102 @@ struct SineWave
 		}
 
 		// Apply damping
+		f64 damping_factor = 1.5;
 		for(uint i = 0; i < sample_count; i++)
-			w_arr[i] /= ((double)sample_count / (double)(sample_count - i) );
+			w_arr[i] /= damping_factor * ((double)sample_count / (double)(sample_count - i) );
 
 		// output array
 		for(uint i = 0; i < sample_count; i++)
 			out_arr[i] = (i32) w_arr[i];
 		
 		return AudioData32{out_arr, _sampling_config};
+	}
+
+};
+
+
+
+struct PianoWave
+{
+
+	static AudioData16 generate_damped_wave(AudioSamplingConfig _sampling_config, f64 _frequency)
+	{
+		AudioData32 audio_data_32;
+		audio_data_32.set_sampling_config(_sampling_config);
+		audio_data_32.sample_count();
+
+		AudioData32 audio_data_32_099 = SineWave::generate_damped_wave(_sampling_config, _frequency*0.999);
+		// AudioData32 audio_data_32_1 = SineWave::generate_damped_wave(_sampling_config, _frequency);
+		AudioData32 audio_data_32_101 = SineWave::generate_damped_wave(_sampling_config, _frequency*1.001);
+		
+		AudioData32 audio_data_32_199 = SineWave::generate_damped_wave(_sampling_config, _frequency*1.999);
+		// AudioData32 audio_data_32_2 =   SineWave::generate_damped_wave(_sampling_config, _frequency*2.00);
+		AudioData32 audio_data_32_201 = SineWave::generate_damped_wave(_sampling_config, _frequency*2.001);
+
+		AudioData32 audio_data_32_299 = SineWave::generate_damped_wave(_sampling_config, _frequency*2.999);
+		// AudioData32 audio_data_32_3 =   SineWave::generate_damped_wave(_sampling_config, _frequency*3.00);
+		AudioData32 audio_data_32_301 = SineWave::generate_damped_wave(_sampling_config, _frequency*3.001);
+
+		AudioData32 audio_data_32_399 = SineWave::generate_damped_wave(_sampling_config, _frequency*3.999);
+		// AudioData32 audio_data_32_4 =   SineWave::generate_damped_wave(_sampling_config, _frequency*4.00);
+		AudioData32 audio_data_32_401 = SineWave::generate_damped_wave(_sampling_config, _frequency*4.001);
+
+		AudioData32 audio_data_32_1 = SineWave::generate_damped_wave(_sampling_config, _frequency*1.0);
+		AudioData32 audio_data_32_2 = SineWave::generate_damped_wave(_sampling_config, _frequency*2.0);
+		AudioData32 audio_data_32_3 = SineWave::generate_damped_wave(_sampling_config, _frequency*3.01);
+		AudioData32 audio_data_32_4 = SineWave::generate_damped_wave(_sampling_config, _frequency*4.02);
+		AudioData32 audio_data_32_5 = SineWave::generate_damped_wave(_sampling_config, _frequency*5.05);
+		AudioData32 audio_data_32_6 = SineWave::generate_damped_wave(_sampling_config, _frequency*6.08);
+		AudioData32 audio_data_32_7 = SineWave::generate_damped_wave(_sampling_config, _frequency*7.12);
+		AudioData32 audio_data_32_8 = SineWave::generate_damped_wave(_sampling_config, _frequency*8.19);
+		AudioData32 audio_data_32_9 = SineWave::generate_damped_wave(_sampling_config, _frequency*9.25);
+		AudioData32 audio_data_32_10 = SineWave::generate_damped_wave(_sampling_config, _frequency*10.35);
+
+
+		AudioData32 audio_data_32_base_0 = SineWave::generate_damped_wave(_sampling_config, _frequency / 2.0);
+		AudioData32 audio_data_32_base_1 = SineWave::generate_damped_wave(_sampling_config, 481.0);
+		AudioData32 audio_data_32_base_2 = SineWave::generate_damped_wave(_sampling_config, 522.0);
+		AudioData32 audio_data_32_base_3 = SineWave::generate_damped_wave(_sampling_config, 563.0);
+		AudioData32 audio_data_32_base_4 = SineWave::generate_damped_wave(_sampling_config, 604.0);
+		AudioData32 audio_data_32_base_5 = SineWave::generate_damped_wave(_sampling_config, 645.0);
+
+		for(uint i = 0; i < audio_data_32.sample_count(); i++)
+		{
+			audio_data_32.data[i] = 0;
+
+			// audio_data_32.data[i] += audio_data_32_base_0.data[i] / 4;
+			// audio_data_32.data[i] += audio_data_32_base_1.data[i] / 20;
+			// audio_data_32.data[i] += audio_data_32_base_2.data[i] / 20;
+			// audio_data_32.data[i] += audio_data_32_base_3.data[i] / 20;
+			// audio_data_32.data[i] += audio_data_32_base_4.data[i] / 20;
+			// audio_data_32.data[i] += audio_data_32_base_5.data[i] / 20;
+
+			// audio_data_32.data[i] += audio_data_32_099.data[i] / 5;
+			// audio_data_32.data[i] += audio_data_32_101.data[i] / 5;
+
+			// audio_data_32.data[i] += audio_data_32_199.data[i] / 6;
+			// audio_data_32.data[i] += audio_data_32_201.data[i] / 6;
+
+			// audio_data_32.data[i] += audio_data_32_299.data[i] / 8;
+			// audio_data_32.data[i] += audio_data_32_301.data[i] / 8;
+			
+			// audio_data_32.data[i] += audio_data_32_399.data[i] / 8;
+			// audio_data_32.data[i] += audio_data_32_401.data[i] / 8;
+
+			// Based on the analysis of the exported DFT data generated using the sample of a real piano recording
+			audio_data_32.data[i] += audio_data_32_1.data[i] 	* 1.00;
+			audio_data_32.data[i] += audio_data_32_2.data[i] 	* 0.20;
+			audio_data_32.data[i] += audio_data_32_3.data[i] 	* 0.45;
+			audio_data_32.data[i] += audio_data_32_4.data[i] 	* 0.40;
+			audio_data_32.data[i] += audio_data_32_5.data[i] 	* 0.25;
+			audio_data_32.data[i] += audio_data_32_6.data[i] 	* 0.33;
+			audio_data_32.data[i] += audio_data_32_7.data[i] 	* 0.08;
+			audio_data_32.data[i] += audio_data_32_8.data[i] 	* 0.08;
+			audio_data_32.data[i] += audio_data_32_9.data[i] 	* 0.02;
+			audio_data_32.data[i] += audio_data_32_10.data[i] 	* 0.04;
+		}
+
+		return audio_data_32.to_audio_data_i16();
 	}
 
 };

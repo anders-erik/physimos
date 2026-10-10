@@ -620,6 +620,22 @@ int DFT_WAV_fn()
 }
 
 
+int generate_piano_note_fn()
+{
+	AudioPlayer audio_player {AudioPlayer::Type::Alsa};
+
+	AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 1000000};
+
+	AudioData16 piano_note_A4 = PianoWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4));
+	audio_player.play(piano_note_A4);
+
+	AudioData16 sine_wave_A4 = SineWave::generate_damped_wave(sampling_config, NoteFrequencies::to_frequency(NoteName::A4)).to_audio_data_i16();
+	// audio_player.play(sine_wave_A4);
+
+	return 0;
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -657,6 +673,12 @@ int main(int argc, char** argv)
 		Print::ln("main_audio:: DFT-WAV !");
 
 		return DFT_WAV_fn();
+	}
+	else if(cli[1] == "generate-piano-note")
+	{
+		Print::ln("main_audio:: generate-piano-note !");
+
+		return generate_piano_note_fn();
 	}
 
 
