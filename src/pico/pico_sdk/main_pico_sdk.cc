@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include "pico/stdio.h"
 #include "tusb.h" // directory: $PHYSIMOS_ROOT_DIR/src/pico/pico_sdk/pico-sdk/lib/tinyusb/src/
+#include "hardware/pwm.h"
 // #include "hid.h"
 // #include "hid_device.h"
 
@@ -52,6 +53,9 @@ struct Pin
 
         Y_IN = 12,
         Y_OUT = 13,
+
+        SERVO_IN = 14,
+        SERVO_OUT = 15,
     };
 };
 
@@ -108,6 +112,42 @@ bool button_2 = false;
 static bool reported_button_2_state = false; // stores the most recently reported value
 const int BUTTON_2_PIN_IN = 10;
 const int BUTTON_2_PIN_OUT = 11;
+
+// const unsigned int SERVO_PIN = 14;
+// Pulse widths in microseconds
+constexpr unsigned int SERVO_MIN_US = 1000;
+constexpr unsigned int SERVO_CENTER_US = 1500;
+constexpr unsigned int SERVO_MAX_US = 2000;
+bool servo_read = false;
+unsigned int servo_slice;
+
+
+void servo_init()
+{
+    gpio_set_function(Pin::SERVO_OUT, GPIO_FUNC_PWM);
+
+    servo_slice = pwm_gpio_to_slice_num(Pin::SERVO_OUT);
+
+    // Pico clock is normally 125 MHz.
+    // So the PWM counter increments once per microsecond.
+    pwm_set_clkdiv(servo_slice, 125.0f);
+
+    // 20,000 microseconds = 20 ms = 50 Hz
+    pwm_set_wrap(servo_slice, 20000 - 1);
+
+    pwm_set_gpio_level(Pin::SERVO_OUT, SERVO_CENTER_US);
+
+    pwm_set_enabled(servo_slice, true);
+
+
+    gpio_init(Pin::SERVO_IN);
+    gpio_set_dir(Pin::SERVO_IN, GPIO_IN);
+}
+
+void servo_write_us(unsigned int pulse_us)
+{
+    pwm_set_gpio_level(Pin::SERVO_OUT, pulse_us);
+}
 
 
 
@@ -277,6 +317,13 @@ void init_GPIO()
     gpio_set_dir(RB_Y.pin_in, GPIO_IN);
     gpio_init(RB_Y.pin_out);
     gpio_set_dir(RB_Y.pin_out, GPIO_OUT);
+
+    // gpio_set_function(Pin::SERVO, GPIO_FUNC_PWM);
+    // slice = pwm_gpio_to_slice_num(Pin::SERVO);
+    // pwm_set_wrap(slice, 20000 - 1);   // if configured for 1 MHz counter
+    // pwm_set_enabled(slice, true);
+
+    // pwm_set_gpio_level(Pin::SERVO, 1500); // center
 }
 
 
@@ -308,6 +355,11 @@ void update_GPIO()
     RB_Y.read = gpio_get(RB_Y.pin_in);
     RB_Y.state = RB_Y.read ? 1 : 0;
     gpio_put(RB_Y.pin_out, RB_Y.state);
+
+
+    servo_read = gpio_get(Pin::SERVO_IN);
+    // pwm_set_gpio_level(SERVO_PIN, 1000); // rotate toward one side
+    // pwm_set_gpio_level(SERVO_PIN, 2000); // rotate toward the other side
 }
 
 
@@ -371,6 +423,7 @@ int main()
     init_GPIO();
     tusb_init();
     stdio_init_all(); // ./src/pico/pico_sdk/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h
+    servo_init();
 
     SPI_code(); // will run all the display-code once
     // SPI_set_black();
@@ -396,6 +449,19 @@ int main()
             SPI_set_white_square(20, 20, 10, 10);
         else
             SPI_set_green_square(20, 20, 10, 10);
+
+        if(servo_read)
+        {
+            servo_write_us(SERVO_MIN_US); // Move to one side
+            sleep_ms(50);
+        }
+        else
+        {
+            servo_write_us(SERVO_MAX_US); // Move to one side
+            sleep_ms(50);
+        }
+        // servo_write_us(SERVO_MAX_US); // Move to the other side
+        // servo_write_us(SERVO_CENTER_US); // Center
 
         // if(tud_hid_ready())
         report_usb();

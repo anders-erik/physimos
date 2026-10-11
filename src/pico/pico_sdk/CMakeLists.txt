@@ -21,6 +21,7 @@ add_executable(main_pico_sdk
 # )
 target_link_libraries(main_pico_sdk 
     pico_stdlib
+    hardware_pwm
     tinyusb_device
     hardware_spi
 )
@@ -29,6 +30,7 @@ target_link_libraries(main_pico_sdk
 # quotes relative to its own source directory, so it must be on the include path.
 target_include_directories(main_pico_sdk PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk/src/rp2_common/hardware_pwm/include # Enable PWM on pins
 )
 
 # Disabled: pico's canned USB-CDC stdio driver would conflict with our own
