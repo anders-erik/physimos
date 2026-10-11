@@ -10,6 +10,7 @@
 #include "audio/alsa.hh"
 #include "audio/song.hh"
 #include "audio/phyano.hh"
+#include "audio/audio_player.hh"
 
 #include "window/wayland1/wayland.hh"
 
@@ -22,77 +23,29 @@
 #include "piano_ui.hh"
 
 
-/** Keeps track of what part of the app is shoudl recieve the input event objects */
-struct InputState
-{
-    enum class Subsystem
-    {
-        UI,
-        None,
-    } subsystem = Subsystem::None;
-
-    bool pointer_is_grabbed = false;
-
-    d2 cursor_sane = {0.0, 0.0};
-    // d2 cursor_sane = {0.0, 0.0};
-    bool left_click_down = false;
-
-    InputState() {}
-
-    InputState::Subsystem get_current_subsystem()
-    {
-        return subsystem;
-    }
-
-    void set_from_event(UserInput _event)
-    {
-        if(_event.event_type == UserInputType::MouseMove)
-        {
-            MouseMovement mouse_move_ev = _event.event_data.move;
-            cursor_sane = {mouse_move_ev.new_pos.x, mouse_move_ev.new_pos.y};
-
-
-            Print::buf("Mouse move event: x = ");
-            Print::buf(Str::FL(mouse_move_ev.new_pos.x, 4, Str::FloatRep::Fixed));
-            Print::buf("  y = ");
-            Print::ln(Str::FL(mouse_move_ev.new_pos.y, 4, Str::FloatRep::Fixed));
-        }
-        if(_event.event_type == UserInputType::MouseClick)
-        {
-            MouseClick mouse_click_ev = _event.event_data.mouse_click;
-            Print::buf("Mouse click event: button = ");
-            if(mouse_click_ev.button == MouseClick::Primary)
-                Print::ln("Primary");
-        }
-    }
-};
-
-
-struct PianoState
-{
-    Alsa alsa;
-    Song song;
-};
 
 struct PianoApp
 {
     Wayland wayland;
     PianoUI piano_ui;
-    InputState input_state;
+
     Clock clock;
 
+    AudioPlayer audio_player;
     Phyano phyano;
+    Song song;
 
-    PianoState piano_state;
 
     PianoApp(i2 dims)
         :   wayland {Wayland{dims}}
     {
-        piano_state.song.beat_count = 2;
-        piano_state.song.bpm = 120;
-        piano_state.song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
-	    piano_state.song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
-        piano_state.song.generate();
+        audio_player.set_backend_to_alsa();
+
+        song.beat_count = 2;
+        song.bpm = 120;
+        song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
+	    song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
+        song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
 
         piano_ui.init(  this, 
@@ -109,8 +62,6 @@ struct PianoApp
 
             for(uint i = 0; i < events.count(); i++)
             {
-                input_state.set_from_event(events[i]);
-
                 piano_ui.ui.process_user_input(events[i], this);
             }
 

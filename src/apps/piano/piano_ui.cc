@@ -45,13 +45,19 @@ void close_app(UINode* _node, UserInput _user_input,  void* _data)
 }
 
 
+void root_click(PIANO_UI_CALLBACK_PARAMETERS)
+{
+    piano_app->piano_ui.ui.current_keyboard_target = &piano_app->piano_ui.ui.root;
+}
+
+
 void string_click(PIANO_UI_CALLBACK_PARAMETERS)
 {
     piano_app->piano_ui.ui.current_keyboard_target = node;
 }
 void string_unclick(PIANO_UI_CALLBACK_PARAMETERS)
 {
-    piano_app->piano_ui.ui.current_keyboard_target = &piano_app->piano_ui.ui.root;
+    // piano_app->piano_ui.ui.current_keyboard_target = &piano_app->piano_ui.ui.root;
 }
 
 void editable_string_key_press(PIANO_UI_CALLBACK_PARAMETERS)
@@ -87,8 +93,9 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // ui.root.box = Box({300, 300}, {100, 100});
     ui.root.box = UIBox({0, 0}, {_pixel_buffer.w, _pixel_buffer.h});
     ui.root.visibility.set_color(0xFF222222);
-    ui.root.handle_key_press = PIANO_UI_CALLBACK_CAST phyano_keypress_callback;
+    // ui.root.handle_key_press = PIANO_UI_CALLBACK_CAST phyano_keypress_callback;
     // ui.root.handle_click = handle_click_print;
+    ui.root.handle_mouse_click = PIANO_UI_CALLBACK_CAST root_click;
     // ui.root.handle_click = play_current_piano_song;
     // ui.root.handle_hover = handle_hover_recolor;
     // ui.root.handle_unhover = handle_unhover_reset;
@@ -104,7 +111,7 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // third_button->box = UIBox({-10.0, ui.root.box.size.y-50}, {35, 35}); // BROKEN: tries to write to too large y-values
     // third_button->visibility.set_color(0xFF333366);
     third_button->visibility.set_bitmap(third_button->box.size.x, third_button->box.size.y);
-    third_button->handle_click = close_app;
+    third_button->handle_mouse_click = close_app;
 
 
 
@@ -112,8 +119,8 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // ui_string.visibility.set_bitmap();
     string_node->box.pos = {400, 50};
     string_node->set_str("Physimos!");
-    string_node->handle_click = PIANO_UI_CALLBACK_CAST string_click;
-    string_node->handle_unclick = PIANO_UI_CALLBACK_CAST string_unclick;
+    string_node->handle_mouse_click = PIANO_UI_CALLBACK_CAST string_click;
+    string_node->handle_mouse_release = PIANO_UI_CALLBACK_CAST string_unclick;
     string_node->handle_key_press = PIANO_UI_CALLBACK_CAST editable_string_key_press;
     // ui_string.visibility.value.bitmap->set_format(PX32F::ARGB);
     // render_ui_node(&ui_string);

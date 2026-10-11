@@ -20,12 +20,13 @@ int main(int argc, char** argv)
     UINodeT<bool> bool_node;
     Arr<UINodeT<int>> int_node_arr;
     Arr<UINodeT<bool>> bool_node_arr;
-    
+
     {
         Clock clock;
         clock.print_tv_start();
 
-        i2 win_dims = {640, 480};
+        // i2 win_dims = {640, 480};
+        i2 win_dims = {960, 720};
 
         PianoApp piano_app { win_dims };
         piano_app.open_window();

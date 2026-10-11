@@ -21,8 +21,10 @@ struct UI
     // static Bitmap font;
 
     d2 current_pointer_pos = {0.0, 0.0};
+
     UINode* current_hover_target = nullptr; // the node wthat the pointer is currently hovering on
-    UINode* current_click_target = nullptr; // the node that recieved the most recent mouse click
+    UINode* last_click_target = nullptr; // the node that recieved the most recent mouse click
+    UINode* current_select_target = nullptr; // the node that recieved the most recent mouse click
     UINode* current_keyboard_target = &root; // the node that is currently recieving keyboard input
 
     UI(unsigned long _max_number_ui_nodes)
@@ -127,30 +129,49 @@ struct UI
 
             UINode* new_click_target = get_current_pointer_target();
 
-            if(button_action != MouseButtonAction::Press)
-                return;
-
-
-            // Unclick previous target
-            if(current_click_target != nullptr)
+            if(button_action == MouseButtonAction::Release)
             {
-                if(current_click_target->handle_unclick != nullptr)
+                if(last_click_target != nullptr)
                 {
-                    current_click_target->handle_unclick(current_click_target, _user_input, _data);
+                    if(last_click_target->handle_mouse_release != nullptr)
+                    {
+                        last_click_target->handle_mouse_release(last_click_target, _user_input, _data);
+                    }
+                    last_click_target = nullptr;
+                }
+
+                return;
+            }
+
+
+            // Only do this for nodes that are able to be selected
+            // if(current_select_target == nullptr)
+            // {
+            //     current_select_target = new_click_target;
+            // }
+            // else
+            // {
+            //     // Deselect
+            // }
+
+            if(last_click_target != nullptr)
+            {
+                if(last_click_target->handle_mouse_release != nullptr)
+                {
+                    last_click_target->handle_mouse_release(last_click_target, _user_input, _data);
                 }
             }
 
-            // Try click new target
+            // Try to click new target
             if(new_click_target != nullptr)
             {
-                if(new_click_target->handle_click != nullptr)
+                if(new_click_target->handle_mouse_click != nullptr)
                 {
-                    new_click_target->handle_click(new_click_target, _user_input, _data);
+                    new_click_target->handle_mouse_click(new_click_target, _user_input, _data);
                 }
             }
             
-
-            current_click_target = new_click_target;
+            last_click_target = new_click_target;
 
             Print::buf("New click target: ");
             Print::ln(Str::UI((unsigned long long)new_click_target));

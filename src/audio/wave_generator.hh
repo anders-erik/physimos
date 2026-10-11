@@ -13,6 +13,12 @@
 #include "audio_data.hh"
 
 
+enum class SynthType
+{
+	Pure,
+	Piano,
+};
+
 
 struct SineWave
 {

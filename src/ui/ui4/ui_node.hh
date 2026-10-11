@@ -106,10 +106,17 @@ struct UINode
         String
     } type = NodeType::Base;
 
-    void (*handle_click)(UINode*, UserInput _user_input, void*) = nullptr;
-    void (*handle_unclick)(UINode*, UserInput _user_input, void*) = nullptr;
+
+    // TODO: implement the below behavior
+    // enum event_type {mouse_click, mouse_unclick, handle_hover, etc. etc.. };
+    // Map<event_type, callback_fn> callbacks;
+
+    void (*handle_mouse_click)(UINode*, UserInput _user_input, void*) = nullptr;
+    void (*handle_mouse_release)(UINode*, UserInput _user_input, void*) = nullptr;
+
     void (*handle_hover)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_unhover)(UINode*, UserInput _user_input, void*) = nullptr;
+
     void (*handle_scroll)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_key_press)(UINode*, UserInput _user_input, void*) = nullptr;
 
@@ -140,8 +147,8 @@ struct UINode
         visibility.type = UINodeVisibility::COLOR;
         visibility.value.color = 0x558855FF;
 
-        handle_click = nullptr;
-        handle_unclick = nullptr;
+        handle_mouse_click = nullptr;
+        handle_mouse_release = nullptr;
         handle_hover = nullptr;
         handle_unhover = nullptr;
         handle_scroll = nullptr;

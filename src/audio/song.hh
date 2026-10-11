@@ -148,6 +148,7 @@ public:
 
 		song_data.set_sample_count(sample_count);
 
+		// BEAT NOTES
 		for(uint beat_i = 0; beat_i < notes.count(); beat_i++)
 		{
 

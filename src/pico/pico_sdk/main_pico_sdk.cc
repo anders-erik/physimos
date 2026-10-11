@@ -423,7 +423,7 @@ int main()
     init_GPIO();
     tusb_init();
     stdio_init_all(); // ./src/pico/pico_sdk/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h
-    servo_init();
+    // servo_init();
 
     SPI_code(); // will run all the display-code once
     // SPI_set_black();
@@ -450,16 +450,16 @@ int main()
         else
             SPI_set_green_square(20, 20, 10, 10);
 
-        if(servo_read)
-        {
-            servo_write_us(SERVO_MIN_US); // Move to one side
-            sleep_ms(50);
-        }
-        else
-        {
-            servo_write_us(SERVO_MAX_US); // Move to one side
-            sleep_ms(50);
-        }
+        // if(servo_read)
+        // {
+        //     servo_write_us(SERVO_MIN_US); // Move to one side
+        //     sleep_ms(50);
+        // }
+        // else
+        // {
+        //     servo_write_us(SERVO_MAX_US); // Move to one side
+        //     sleep_ms(50);
+        // }
         // servo_write_us(SERVO_MAX_US); // Move to the other side
         // servo_write_us(SERVO_CENTER_US); // Center
 

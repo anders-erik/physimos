@@ -44,5 +44,13 @@ struct AudioPlayer
 		}
 	}
 
+	void stop()
+	{
+		if(type == Type::Alsa)
+		{
+			value.alsa->stop();
+		}
+	}
+
 	
 };

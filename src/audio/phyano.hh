@@ -1,26 +1,19 @@
 #pragma once
 
-#include "alsa.hh"
-#include "note.hh"
-#include "instrument.hh"
-#include "audio_data.hh"
+#include "audio/alsa.hh"
+#include "audio/note.hh"
+#include "audio/instrument.hh"
+#include "audio/audio_data.hh"
+#include "audio/wave_generator.hh"
 
 
-class Phyano
+/* Enables the playing of audio data in parallel which is not possible using the regular Alsa objects. */
+struct AlsaParallel
 {
-public:
-
-	enum SynthType
-	{
-		Pure,
-		Piano,
-	} synth_type = Piano;
-
 	// Alsa object were intended to be placed in a container, but the alsa object did not comply.
 	// Should be resolved in the near future.
 	// Should be trivial with proper move sematins in place for Alsa. Currently copy construction is disabled.
 	// Arr<Alsa> alsas;
-
 	Alsa alsa_0;
 	Alsa alsa_1;
 	Alsa alsa_2;
@@ -33,14 +26,9 @@ public:
 	uint available_alsa_count = 8;
 	uint alsa_index = 0;
 
-	AudioData16 adata; // 1 second databuffer
-
-	// Phyano() : alsas {10}
-	Phyano()
+	AlsaParallel()
+	// AlsaParallel(uint _alsa_count)
 	{
-		adata.set_sample_count(44100); // 1 sec
-
-		
 		for(uint i = 0; i < available_alsa_count; i++)
 		{
 			// Alsa alsa_tmp;
@@ -51,112 +39,97 @@ public:
 		// alsas.set({}); 
 	}
 
-	void press(NoteName _note_name)
+
+	void play(AudioData16& audio_data)
 	{
-		AudioData16 note_data;
-		
-		if(synth_type == Pure)
-		{
-			note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
-		}
-		else if(synth_type == Piano)
-		{
-			AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 800000};
-			note_data = PianoWave::generate(sampling_config, NoteFrequencies::to_frequency(_note_name));
-		}
-
-
 		if(++alsa_index >= available_alsa_count)
 			alsa_index = 0;
 
 		switch (alsa_index)
 		{
 			case 0:
-				alsa_0.play(note_data);
+				alsa_0.play(audio_data);
 				break;
 			case 1:
-				alsa_1.play(note_data);
+				alsa_1.play(audio_data);
 				break;
 			case 2:
-				alsa_2.play(note_data);
+				alsa_2.play(audio_data);
 				break;
 			case 3:
-				alsa_3.play(note_data);
+				alsa_3.play(audio_data);
 				break;
 			case 4:
-				alsa_4.play(note_data);
+				alsa_4.play(audio_data);
 				break;
 			case 5:
-				alsa_5.play(note_data);
+				alsa_5.play(audio_data);
 				break;
 			case 6:
-				alsa_6.play(note_data);
+				alsa_6.play(audio_data);
 				break;
 			case 7:
-				alsa_7.play(note_data);
+				alsa_7.play(audio_data);
 				break;
 		
-		default:
-			break;
+			default:
+				break;
+		}
+	}
+};
+
+
+/* Generates and plays notes */
+class Phyano
+{
+public:
+
+	AlsaParallel alsa_parallel;
+	SynthType synth_type = SynthType::Piano;
+
+
+	Phyano() {}
+
+	void press(NoteName _note_name)
+	{
+		Print::ln(Str{"Pressed:  ", NoteSerializer::note_name_to_str(_note_name)});
+
+		AudioData16 note_data;
+		
+		if(synth_type == SynthType::Pure)
+		{
+			note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
+		}
+		else if(synth_type == SynthType::Piano)
+		{
+			AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 800000};
+			note_data = PianoWave::generate(sampling_config, NoteFrequencies::to_frequency(_note_name));
 		}
 
-		// alsa.play(note_data);
+		alsa_parallel.play(note_data);
+		return;
 	}
 
-	// void add_press(Instrument _instument, NoteName _note_name)
-	// {
-	// 	AudioData note_data = _instument.get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.5);
+	void release(NoteName _note_name)
+	{
+		Print::ln(Str{"Released: ", NoteSerializer::note_name_to_str(_note_name)});
+	}
 
-	// 	if(note_data.sample_count() > 44100)
-	// 	{
-	// 		println("ERROR: trying to play Phyano note longer than buffer size.");
-	// 		return;
-	// 	}
+	AudioData16 get_press_data(NoteName _note_name)
+	{
+		AudioData16 note_data;
+		
+		if(synth_type == SynthType::Pure)
+		{
+			note_data = Instrument::get_note_audio({_note_name, NoteType::quarter}, 120.0, 0.3);
+		}
+		else if(synth_type == SynthType::Piano)
+		{
+			AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 800000};
+			note_data = PianoWave::generate(sampling_config, NoteFrequencies::to_frequency(_note_name));
+		}
 
-	// 	for(uint i = 0; i < note_data.sample_count(); i++)
-	// 	{
-	// 		adata.data[i] += note_data.data[i];
-	// 	}
-	// }
-
-	// AudioData consume_ms(uint ms)
-	// {
-	// 	if(ms > 1000)
-	// 	{
-	// 		println("ERROR: can't consume more than 1000 ms of Phyano data.");
-	// 		return AudioData {};
-	// 	}
-
-	// 	uint samples_per_ms = 44;
-	// 	uint samples_to_consume = ms * samples_per_ms;
-
-	// 	AudioData return_adata;
-	// 	return_adata.set_sample_count(samples_to_consume);
-
-	// 	for(uint i = 0; i < return_adata.sample_count(); i++)
-	// 	{
-	// 		return_adata.data[i] += adata.data[i];
-	// 	}
-
-	// 	shift_data(samples_to_consume);
-
-	// 	return return_adata;
-	// }
-
-
-	// void shift_data(uint shift_count)
-	// {
-	// 	// Copy
-	// 	for(uint i = shift_count; i < adata.sample_count(); i++)
-	// 	{
-	// 		adata.data[i-shift_count] = adata.data[i];
-	// 	}
-
-	// 	// Clear data tail
-	// 	for(uint i = (adata.sample_count() - shift_count); i < adata.sample_count(); i++)
-	// 	{
-	// 		adata.data[i] = 0;
-	// 	}
-	// }
+		return note_data;
+	}
 
 };
