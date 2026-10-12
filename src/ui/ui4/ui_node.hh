@@ -5,6 +5,7 @@
 #include "lib/arr.hh"
 
 #include "ui_box.hh"
+#include "ui_event.hh"
 #include "ui_font_bitmap.hh"
 
 struct UINodeVisibility
@@ -91,6 +92,8 @@ struct UINode
     UINode* parent = nullptr;
     Arr<UINode*> children;
 
+    void * data = nullptr;
+
     UIBox box;
     UINodeVisibility visibility;
     Str str; // used for rendering a string
@@ -110,12 +113,15 @@ struct UINode
     // TODO: implement the below behavior
     // enum event_type {mouse_click, mouse_unclick, handle_hover, etc. etc.. };
     // Map<event_type, callback_fn> callbacks;
+    
+    // 
+    void (*event_callback)(UINode*, UIEvent _ui_event, void*) = nullptr;
 
     void (*handle_mouse_click)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_mouse_release)(UINode*, UserInput _user_input, void*) = nullptr;
 
-    void (*handle_hover)(UINode*, UserInput _user_input, void*) = nullptr;
-    void (*handle_unhover)(UINode*, UserInput _user_input, void*) = nullptr;
+    void (*handle_mouse_enter)(UINode*, UserInput _user_input, void*) = nullptr;
+    void (*handle_mouse_exit)(UINode*, UserInput _user_input, void*) = nullptr;
 
     void (*handle_scroll)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_key_press)(UINode*, UserInput _user_input, void*) = nullptr;
@@ -149,8 +155,8 @@ struct UINode
 
         handle_mouse_click = nullptr;
         handle_mouse_release = nullptr;
-        handle_hover = nullptr;
-        handle_unhover = nullptr;
+        handle_mouse_enter = nullptr;
+        handle_mouse_exit = nullptr;
         handle_scroll = nullptr;
         handle_key_press = nullptr;
     }

@@ -113,15 +113,15 @@ void UIC_Song::init(PianoApp& piano_app)
     // play_button->color = 0xFF449944;
     play_button->visibility.set_color(0xFF449944);
     play_button->handle_mouse_click = PIANO_UI_CALLBACK_CAST play_current_piano_song;
-    play_button->handle_hover = PIANO_UI_CALLBACK_CAST start_button_hover;
-    play_button->handle_unhover = PIANO_UI_CALLBACK_CAST start_button_unhover;
+    play_button->handle_mouse_enter = PIANO_UI_CALLBACK_CAST start_button_hover;
+    play_button->handle_mouse_exit = PIANO_UI_CALLBACK_CAST start_button_unhover;
 
     stop_button = ui->new_node(root);
     stop_button->box = UIBox({root_box.pos.x + 160.0, root_box.pos.y + 190.0}, {50, 50});
     stop_button->visibility.set_color(0xFF995544);
     stop_button->handle_mouse_click = PIANO_UI_CALLBACK_CAST stop_current_piano_song;
-    stop_button->handle_hover = PIANO_UI_CALLBACK_CAST stop_button_hover;
-    stop_button->handle_unhover = PIANO_UI_CALLBACK_CAST stop_button_unhover;
+    stop_button->handle_mouse_enter = PIANO_UI_CALLBACK_CAST stop_button_hover;
+    stop_button->handle_mouse_exit = PIANO_UI_CALLBACK_CAST stop_button_unhover;
 
 
 

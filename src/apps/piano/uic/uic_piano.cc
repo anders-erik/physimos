@@ -1,6 +1,7 @@
 #include "uic_piano.hh"
 
 #include "piano_app.hh"
+#include "ui/ui4/ui_event.hh"
 
 void press_C4_2(PIANO_UI_CALLBACK_PARAMETERS)
 {
@@ -11,6 +12,32 @@ void release_C4_2(PIANO_UI_CALLBACK_PARAMETERS)
 {
     piano_app->phyano.release(NoteName::C4);
     node->visibility.set_color(0xFFCCCCCC);
+}
+void C4_event_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
+{
+    switch (ui_event.type)
+    {
+    case UIEvent::mouse_move:
+        {
+            Print::ln("C4 mouse move");
+        }
+        break;
+    case UIEvent::mouse_enter:
+        {
+            Print::ln("C4 enter");
+        }
+        break;
+    case UIEvent::mouse_exit:
+        {
+            Print::ln("C4 exit");
+        }
+        break;
+    
+    default:
+        Print::ln("C4: Unknown UIEvent type");
+        break;
+    }
+    
 }
 void press_D4_2(PIANO_UI_CALLBACK_PARAMETERS)
 {
@@ -103,6 +130,7 @@ void UIC_piano::init(UI& ui)
     C4_node->visibility.set_color(white_key_color);
     C4_node->handle_mouse_click = PIANO_UI_CALLBACK_CAST press_C4_2;
     C4_node->handle_mouse_release = PIANO_UI_CALLBACK_CAST release_C4_2;
+    C4_node->event_callback = PIANO_UI_EVENT_CALLBACK_CAST C4_event_callback;
 
     D4_node =  ui.new_node(root);
     D4_node->box = UIBox({95.0, white_key_y_pos}, white_key_size);

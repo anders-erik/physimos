@@ -36,6 +36,8 @@ struct Pin
     {
         POWER = 0,
 
+        SPEAKER = 1,
+
         LIGHT_IN = 2,
         LIGHT_OUT = 3,
 
@@ -113,6 +115,7 @@ static bool reported_button_2_state = false; // stores the most recently reporte
 const int BUTTON_2_PIN_IN = 10;
 const int BUTTON_2_PIN_OUT = 11;
 
+// SERVO
 // const unsigned int SERVO_PIN = 14;
 // Pulse widths in microseconds
 constexpr unsigned int SERVO_MIN_US = 1000;
@@ -120,6 +123,32 @@ constexpr unsigned int SERVO_CENTER_US = 1500;
 constexpr unsigned int SERVO_MAX_US = 2000;
 bool servo_read = false;
 unsigned int servo_slice;
+
+// PWM BUZZER
+
+
+void buzzer_set_frequency(float frequency_hz)
+{
+    gpio_set_function(Pin::SPEAKER, GPIO_FUNC_PWM);
+
+    unsigned int slice   = pwm_gpio_to_slice_num(Pin::SPEAKER);
+    unsigned int channel = pwm_gpio_to_channel(Pin::SPEAKER);
+
+    // Pico default clock = 125 MHz
+    const float clock_hz = 125000000.0f;
+
+    // Pick a divider, then calculate wrap.
+    float divider = 100.0f;
+    uint16_t wrap = (uint16_t)(clock_hz / (divider * frequency_hz) - 1);
+
+    pwm_set_clkdiv(slice, divider);
+    pwm_set_wrap(slice, wrap);
+
+    // 50% duty cycle
+    pwm_set_chan_level(slice, channel, wrap / 2);
+
+    pwm_set_enabled(slice, true);
+}
 
 
 void servo_init()
@@ -432,6 +461,9 @@ int main()
     // pixel_set(10, 10, 10, 10, 0x0000);
     SPI_set_black_square(10, 10, 10, 10);
 
+
+    buzzer_set_frequency( 440.0f ); // A4
+
     sleep_us(1);
 
     while (true)
@@ -441,9 +473,15 @@ int main()
         update_GPIO();
 
         if(RB_X.read)
+        {
+            buzzer_set_frequency( 880.0f ); // A4
             SPI_set_black_square(10, 10, 10, 10);
+        }
         else
+        {
+            buzzer_set_frequency( 440.0f ); // A4
             SPI_set_green_square(10, 10, 10, 10);
+        }
         
         if(RB_Y.read)
             SPI_set_white_square(20, 20, 10, 10);

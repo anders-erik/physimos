@@ -9,6 +9,7 @@
 #include "io/input/user_input.hh"
 
 #include "ui_node.hh"
+#include "ui_event.hh"
 #include "ui_allocator.hh"
 #include "ui_font_bitmap.hh"
 
@@ -22,9 +23,8 @@ struct UI
 
     d2 current_pointer_pos = {0.0, 0.0};
 
-    UINode* current_hover_target = nullptr; // the node wthat the pointer is currently hovering on
+    UINode* current_hover_target = nullptr; // used to track when the pointer enters a new UINode
     UINode* last_click_target = nullptr; // the node that recieved the most recent mouse click
-    UINode* current_select_target = nullptr; // the node that recieved the most recent mouse click
     UINode* current_keyboard_target = &root; // the node that is currently recieving keyboard input
 
     UI(unsigned long _max_number_ui_nodes)
@@ -93,34 +93,68 @@ struct UI
             current_pointer_pos = move.new_pos;
 
             UINode* new_hover_target = get_current_pointer_target();
+            bool hover_target_changed = new_hover_target != current_hover_target;
 
             Print::buf("New hover target: ");
             Print::ln(Str::UI((unsigned long long)new_hover_target));
 
-            bool hover_target_changed = new_hover_target != current_hover_target;
+
             if(!hover_target_changed) // only trigger callbacks when a change in target took place!
+            {
+                // Print::ln("UI move without target change");
+                UIEvent ui_event {UIEvent::mouse_move};
+                d2 mouseMovementDelta = move.delta();
+                ui_event.value.mouse_move = UIMouseMove {mouseMovementDelta.x, mouseMovementDelta.y};
+
+                if(current_hover_target == nullptr)
+                    return;
+                
+                if(current_hover_target->event_callback == nullptr)
+                    return;
+                
+                current_hover_target->event_callback(current_hover_target, ui_event, _data);
+
                 return;
-
-            bool current_hover_target_exists = current_hover_target != nullptr;
-            
-            // unhover old target
-            if(current_hover_target_exists && hover_target_changed)
-            {
-                bool hover_target_has_unhover_handler = current_hover_target->handle_unhover != nullptr;
-                if(hover_target_has_unhover_handler)
-                    current_hover_target->handle_unhover(current_hover_target, _user_input, _data);
             }
-            
-
-            // hover new target
-            bool new_hover_target_exists = new_hover_target != nullptr;
-            if(new_hover_target_exists)
+            else
             {
-                if(new_hover_target->handle_hover != nullptr)
-                    new_hover_target->handle_hover(new_hover_target, _user_input, _data);
-            }
+                // Print::ln("UI target change");
 
-            current_hover_target = new_hover_target;
+                bool current_hover_target_exists = current_hover_target != nullptr;
+                
+                // unhover old target
+                if(current_hover_target_exists && hover_target_changed)
+                {
+                    bool hover_target_has_unhover_handler = current_hover_target->handle_mouse_exit != nullptr;
+                    if(hover_target_has_unhover_handler)
+                    {
+                        current_hover_target->handle_mouse_exit(current_hover_target, _user_input, _data);
+                    }
+                    if(current_hover_target->event_callback)
+                    {
+                        UIEvent exit_event {UIEvent::mouse_exit};
+                        current_hover_target->event_callback(current_hover_target, exit_event, _data);
+                    }
+                }
+                
+
+                // hover new target
+                bool new_hover_target_exists = new_hover_target != nullptr;
+                if(new_hover_target_exists)
+                {
+                    if(new_hover_target->handle_mouse_enter != nullptr)
+                    {
+                        new_hover_target->handle_mouse_enter(new_hover_target, _user_input, _data);
+                    }
+                    if(new_hover_target->event_callback != nullptr)
+                    {
+                        UIEvent enter_event {UIEvent::mouse_enter};
+                        new_hover_target->event_callback(current_hover_target, enter_event, _data);
+                    }
+                }
+
+                current_hover_target = new_hover_target;
+            }
         }
         else if(_user_input.event_type == UserInputType::MouseClick)
         {
@@ -221,6 +255,7 @@ struct UI
         return nullptr;
     }
 
+    /* Requery the UI tree for current target */
     UINode* get_current_pointer_target()
     {
         if(!root.box.contains(current_pointer_pos))
