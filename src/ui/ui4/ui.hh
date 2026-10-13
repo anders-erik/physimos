@@ -24,7 +24,7 @@ struct UI
     d2 current_pointer_pos = {0.0, 0.0};
 
     UINode* current_hover_target = nullptr; // used to track when the pointer enters a new UINode
-    UINode* last_click_target = nullptr; // the node that recieved the most recent mouse click
+    UINode* current_grab_target = nullptr; // the node that returned the most recent mouse grab callback return, and not yet returned a release
     UINode* current_keyboard_target = &root; // the node that is currently recieving keyboard input
 
     UI(unsigned long _max_number_ui_nodes)
@@ -92,19 +92,32 @@ struct UI
             MouseMovement& move = _user_input.event_data.move;
             current_pointer_pos = move.new_pos;
 
+            // Short circuit the input handling if ui is still waiting for the release of the left mouse button
+            if(current_grab_target != nullptr)
+            {
+                UIEvent mouse_move_event {UIEvent::mouse_move};
+                d2 mouseMovementDelta = move.delta();
+                mouse_move_event.value.mouse_move = UIMouseMove{mouseMovementDelta.x, mouseMovementDelta.y};
+                mouse_move_event.target_is_grabbed = true;
+
+                
+                if(current_grab_target->event_callback == nullptr)
+                    return;
+                
+                UIEventReturn event_return = current_grab_target->event_callback(current_grab_target, mouse_move_event, _data);
+
+                return;
+            }
+
             UINode* new_hover_target = get_current_pointer_target();
             bool hover_target_changed = new_hover_target != current_hover_target;
-
-            Print::buf("New hover target: ");
-            Print::ln(Str::UI((unsigned long long)new_hover_target));
-
 
             if(!hover_target_changed) // only trigger callbacks when a change in target took place!
             {
                 // Print::ln("UI move without target change");
                 UIEvent ui_event {UIEvent::mouse_move};
                 d2 mouseMovementDelta = move.delta();
-                ui_event.value.mouse_move = UIMouseMove {mouseMovementDelta.x, mouseMovementDelta.y};
+                ui_event.value.mouse_move = UIMouseMove{mouseMovementDelta.x, mouseMovementDelta.y};
 
                 if(current_hover_target == nullptr)
                     return;
@@ -112,13 +125,16 @@ struct UI
                 if(current_hover_target->event_callback == nullptr)
                     return;
                 
-                current_hover_target->event_callback(current_hover_target, ui_event, _data);
+                UIEventReturn event_return = current_hover_target->event_callback(current_hover_target, ui_event, _data);
+
 
                 return;
             }
             else
             {
                 // Print::ln("UI target change");
+                // Print::buf("New hover target: ");
+                // Print::ln(Str::UI((unsigned long long)new_hover_target));
 
                 bool current_hover_target_exists = current_hover_target != nullptr;
                 
@@ -161,40 +177,29 @@ struct UI
             MouseClick& click = _user_input.event_data.mouse_click;
             MouseButtonAction button_action = click.action;
 
-            UINode* new_click_target = get_current_pointer_target();
 
             if(button_action == MouseButtonAction::Release)
             {
-                if(last_click_target != nullptr)
+                if(current_grab_target != nullptr)
                 {
-                    if(last_click_target->handle_mouse_release != nullptr)
+                    if(current_grab_target->handle_mouse_release != nullptr)
                     {
-                        last_click_target->handle_mouse_release(last_click_target, _user_input, _data);
+                        current_grab_target->handle_mouse_release(current_grab_target, _user_input, _data);
                     }
-                    last_click_target = nullptr;
+
+                    if(current_grab_target->event_callback != nullptr)
+                    {
+                        UIEvent mouse_release_event {UIEvent::mouse_release};
+                        current_grab_target->event_callback(current_grab_target, mouse_release_event, _data);
+                    }
+                    current_grab_target = nullptr;
                 }
 
                 return;
             }
 
 
-            // Only do this for nodes that are able to be selected
-            // if(current_select_target == nullptr)
-            // {
-            //     current_select_target = new_click_target;
-            // }
-            // else
-            // {
-            //     // Deselect
-            // }
-
-            if(last_click_target != nullptr)
-            {
-                if(last_click_target->handle_mouse_release != nullptr)
-                {
-                    last_click_target->handle_mouse_release(last_click_target, _user_input, _data);
-                }
-            }
+            UINode* new_click_target = get_current_pointer_target();
 
             // Try to click new target
             if(new_click_target != nullptr)
@@ -203,31 +208,43 @@ struct UI
                 {
                     new_click_target->handle_mouse_click(new_click_target, _user_input, _data);
                 }
-            }
-            
-            last_click_target = new_click_target;
 
+                if(new_click_target->event_callback != nullptr)
+                {
+                    UIEvent mouse_press_event {UIEvent::mouse_press};
+                    UIEventReturn return_value = new_click_target->event_callback(new_click_target, mouse_press_event, _data);
+
+                    if(return_value.type == UIEventReturn::node_keyboard_grab)
+                        current_keyboard_target = new_click_target;
+
+                }
+            }
+            current_grab_target = new_click_target;
+            
             Print::buf("New click target: ");
             Print::ln(Str::UI((unsigned long long)new_click_target));
         }
         else if(_user_input.event_type == UserInputType::KeyInput)
         {
-            // Print::ln("Keypress recieved in the UI!");
             if(current_keyboard_target == nullptr)
                 return;
-            
-            if(current_keyboard_target->handle_key_press == nullptr)
-                return;
-            
-            current_keyboard_target->handle_key_press(current_keyboard_target, _user_input, _data);
 
-            // if(current_click_target == nullptr)
-            //     return;
+            { // New event callback
+                if(current_keyboard_target->event_callback != nullptr)
+                {
+                    UIEvent key_event {UIEvent::key_press};
+                    UIEventReturn return_value = current_keyboard_target->event_callback(current_keyboard_target, key_event, _data);
+                }
+            }
             
-            // if(current_click_target->handle_key_press == nullptr)
-            //     return;
-            
-            // current_click_target->handle_key_press(current_click_target, _user_input, _data);
+            { // New old user input callback
+                if(current_keyboard_target->handle_key_press != nullptr)
+                {
+                    current_keyboard_target->handle_key_press(current_keyboard_target, _user_input, _data);
+                }
+            }
+
+            return;
         }
         else if(_user_input.event_type == UserInputType::ScrollInput)
         {

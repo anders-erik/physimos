@@ -2,6 +2,19 @@
 #pragma once
 
 
+struct UIEventReturn
+{
+    enum Type
+    {
+        node_mouse_grab,
+        node_mouse_release,
+        node_keyboard_grab,
+        none,
+    } type = Type::none;
+
+    
+};
+
 struct UIMouseMove
 {
     double x;
@@ -15,6 +28,10 @@ struct UIEvent
         mouse_move,
         mouse_enter,
         mouse_exit,
+        mouse_press,
+        mouse_release,
+        mouse_scroll,
+        key_press,
     } type;
 
     union Value
@@ -22,8 +39,9 @@ struct UIEvent
         UIMouseMove mouse_move;
     } value;
 
-    UIEvent() {}
+    bool target_is_grabbed = false;
 
+    UIEvent() {}
     UIEvent(UIEvent::Type _type)
     {
         type = _type;

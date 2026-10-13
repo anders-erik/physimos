@@ -13,13 +13,24 @@ void release_C4_2(PIANO_UI_CALLBACK_PARAMETERS)
     piano_app->phyano.release(NoteName::C4);
     node->visibility.set_color(0xFFCCCCCC);
 }
-void C4_event_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
+UIEventReturn C4_event_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
 {
     switch (ui_event.type)
     {
     case UIEvent::mouse_move:
         {
-            Print::ln("C4 mouse move");
+            
+            if(ui_event.target_is_grabbed)
+            {
+                Print::ln("C4 mouse movement with grab active");
+                d2 move_delta = {ui_event.value.mouse_move.x, ui_event.value.mouse_move.y};
+                node->box.pos.x += move_delta.x;
+                node->box.pos.y += move_delta.y;
+            }
+            else
+            {
+                Print::ln("C4 mouse move");
+            }
         }
         break;
     case UIEvent::mouse_enter:
@@ -32,12 +43,35 @@ void C4_event_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
             Print::ln("C4 exit");
         }
         break;
+    case UIEvent::mouse_press:
+        {
+            Print::ln("C4 mouse press");
+            return UIEventReturn {UIEventReturn::node_keyboard_grab};
+        }
+        break;
+    case UIEvent::mouse_release:
+        {
+            Print::ln("C4 mouse release");
+            return UIEventReturn {UIEventReturn::node_mouse_release};
+        }
+        break;
+    case UIEvent::mouse_scroll:
+        {
+            Print::ln("C4 mouse scroll");
+        }
+        break;
+    case UIEvent::key_press:
+        {
+            Print::ln("C4 key press");
+        }
+        break;
     
     default:
         Print::ln("C4: Unknown UIEvent type");
         break;
     }
     
+    return UIEventReturn{};
 }
 void press_D4_2(PIANO_UI_CALLBACK_PARAMETERS)
 {

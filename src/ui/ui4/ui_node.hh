@@ -115,7 +115,7 @@ struct UINode
     // Map<event_type, callback_fn> callbacks;
     
     // 
-    void (*event_callback)(UINode*, UIEvent _ui_event, void*) = nullptr;
+    UIEventReturn (*event_callback)(UINode*, UIEvent _ui_event, void*) = nullptr;
 
     void (*handle_mouse_click)(UINode*, UserInput _user_input, void*) = nullptr;
     void (*handle_mouse_release)(UINode*, UserInput _user_input, void*) = nullptr;
