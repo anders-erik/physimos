@@ -87,12 +87,14 @@ struct UINodeT
 };
 
 
+// template <typename T>
 struct UINode
 {
     UINode* parent = nullptr;
     Arr<UINode*> children;
 
-    void * data = nullptr;
+    // T* data = nullptr;
+    void* data = nullptr;
 
     UIBox box;
     UINodeVisibility visibility;

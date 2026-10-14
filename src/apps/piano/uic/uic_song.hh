@@ -32,6 +32,8 @@ struct UIC_Song
     UINode* beat_count_container;
     UINode* beat_count_label;
 
+    UINode* continuous_piano_line_container;
+
     Arr<UINode*> beat_label_array;
 
     
@@ -45,4 +47,5 @@ struct UIC_Song
     void update(PianoApp& piano_app);
 
     void reload_beat_count();
+    void reload_piano_line();
 };

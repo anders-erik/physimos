@@ -45,6 +45,7 @@ struct PianoApp
         song.bpm = 120;
         song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
 	    song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
+        song.piano_line.add_note({500, {NoteName::C5, NoteType::quarter}});
         song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
 
