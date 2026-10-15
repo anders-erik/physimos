@@ -205,6 +205,7 @@ void PianoUI::render()
 {
     render_ui_node(&ui.root);
     render_ui_node(uic_piano.root);
+    render_ui_node(uic_song.root);
     // render_ui_node(uic_beat_count_editor.root);
 
     Bitmap black_100x100 {100, 100, PX32F::ARGB, 0xFF000000};

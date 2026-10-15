@@ -7,6 +7,7 @@
 #include "audio_data.hh"
 #include "instrument.hh"
 #include "note.hh"
+#include "audio/wave_generator.hh"
 
 
 /* Specifying an arbitrary time at which a note is played in the instrument line */
@@ -168,8 +169,18 @@ public:
 		for(uint i = 0; i < piano_line.line_notes.count(); i++)
 		{
 			LineNote line_note = piano_line.line_notes[i];
-			AudioData16 note_data = Instrument::get_note_audio(line_note.note, bpm, 0.2);
-			add_wave_to_audiodata_at_time(note_data, line_note.start_time_ms, 0.5);
+			// AudioData16 note_data = Instrument::get_note_audio(line_note.note, bpm, 0.2);
+
+			AudioSamplingConfig sampling_config {	AudioSamplingConfig::RATE_DURATION, 
+													44100, 
+													NoteTypeDuration::get_duration_us(line_note.note.type, this->bpm) };
+
+			AudioData32 note_data_32 = SineWave::generate_damped_wave(	sampling_config, 
+																		NoteFrequencies::to_frequency(line_note.note.name));
+
+			AudioData16 note_data_16 = note_data_32.to_audio_data_i16();
+
+			add_wave_to_audiodata_at_time(note_data_16, line_note.start_time_ms, 0.5);
 		}
 	}
 

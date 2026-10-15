@@ -112,6 +112,9 @@ struct UI
             UINode* new_hover_target = get_current_pointer_target();
             bool hover_target_changed = new_hover_target != current_hover_target;
 
+            Print::buf("Hover target: ");
+            Print::ln(Str::UI((unsigned long long)new_hover_target));
+
             if(!hover_target_changed) // only trigger callbacks when a change in target took place!
             {
                 // Print::ln("UI move without target change");
@@ -133,8 +136,6 @@ struct UI
             else
             {
                 // Print::ln("UI target change");
-                // Print::buf("New hover target: ");
-                // Print::ln(Str::UI((unsigned long long)new_hover_target));
 
                 bool current_hover_target_exists = current_hover_target != nullptr;
                 
@@ -165,7 +166,7 @@ struct UI
                     if(new_hover_target->event_callback != nullptr)
                     {
                         UIEvent enter_event {UIEvent::mouse_enter};
-                        new_hover_target->event_callback(current_hover_target, enter_event, _data);
+                        new_hover_target->event_callback(new_hover_target, enter_event, _data);
                     }
                 }
 

@@ -8,7 +8,7 @@
 
 enum class NoteType
 {
-	custom, 
+	custom, // length will be provided by external data
 	continuous,
 	whole,
 	half,
@@ -101,6 +101,7 @@ struct NoteSerializer
 		return str;
 	}
 };
+
 
 
 struct Note 

@@ -97,6 +97,7 @@ UIEventReturn line_note_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
     {
     case UIEvent::mouse_enter:
         // node->visibility.set_color(0xFF665566);
+        node->visibility.set_color(0xFF000000);
         break;
     case UIEvent::mouse_exit:
         node->visibility.set_color(0xFF665555);
@@ -196,7 +197,7 @@ void UIC_Song::init(PianoApp& piano_app)
 
         UINode* new_node = ui->new_node(continuous_piano_line_container);
 
-        f64 x_pos = continuous_piano_line_container->box.pos.x + 10.0;
+        f64 x_pos = continuous_piano_line_container->box.pos.x + 10.0 + i*40.0;
         f64 y_pos = continuous_piano_line_container->box.pos.y + 10.0;
         f64 note_width = line_note.note.type == NoteType::quarter ? 15.0 : 30.0;
         f64 note_height = 15.0;
