@@ -52,6 +52,8 @@ struct UI
         *child = UINode(); // initialize memory to prevent garbage data
 
         child->parent = _parent;
+        child->box.pos = _parent->box.pos;
+        child->box.size = {10, 10};
 
         _parent->children.push_back(child);
 

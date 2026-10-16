@@ -28,6 +28,11 @@ public:
     UIC_piano uic_piano;
     UIC_Song uic_song;
 
+    f64 bound_f64 = 1.0;
+    f64 bound_f64_A = 1.0;
+    f64 bound_f64_B = 1.0;
+    Str bound_str = "bound_str";
+
     PianoUI()
     {
     }

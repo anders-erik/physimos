@@ -51,7 +51,8 @@ struct PianoApp
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
 
         piano_ui.init(  this, 
-                        wayland.get_pixel_buffer()   );        
+                        wayland.get_pixel_buffer()   );
+
     }
 
     void open_window()
@@ -60,7 +61,6 @@ struct PianoApp
         while(wayland.frame_step())
         {
             Arr<UserInput> events = wayland.get_new_input_events();
-
 
             for(uint i = 0; i < events.count(); i++)
             {

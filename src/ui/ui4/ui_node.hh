@@ -92,24 +92,33 @@ struct UINode
 {
     UINode* parent = nullptr;
     Arr<UINode*> children;
-
-    // T* data = nullptr;
-    void* data = nullptr;
-
     UIBox box;
+
+    /* Used for typed nodes that provide data pointers for basic types */
+    enum class DataType
+    {
+        f64,
+        f32,
+        i32,
+        Str,
+        None,
+    } data_type = DataType::None;
+    enum class DataLifetime
+    {
+        Forever, // the owner of bound data will always outlive the UI
+        Frame,   // The lifetime of the is only guaranteed during the current frame
+    } data_lifetime = DataLifetime::Frame;
+    void* data = nullptr;
+    
+
     UINodeVisibility visibility;
-    Str str; // used for rendering a string
-    // PX32 color = 0x558855FF;
-
-    void* value; // TODO: Figure out how to associate the type with value. If not possible, we might be FORCED to use UICs to keep track
-
     bool custom_render = false; // This should stop the current rendering tree traversal and rely on external call for rendering
-
     enum class NodeType
-    {   
+    {
         Base,
         String
     } type = NodeType::Base;
+    Str str; // used for rendering a string NOT bound using the data type. e.g. a label
 
 
     // TODO: implement the below behavior
@@ -169,6 +178,23 @@ struct UINode
             type = NodeType::Base;
 
         visibility.set_color(_color);
+    }
+
+    void set_data(DataType _data_type, void* _data_ptr)
+    {
+        data_type = _data_type;
+        data = _data_ptr;
+        data_lifetime = DataLifetime::Frame;
+    }
+
+    bool is_type(DataType _data_type)
+    {
+        if(_data_type != data_type)
+            return false;
+        if(data == nullptr)
+            return false;
+        
+        return true;
     }
 
     void set_str(Str _str)
