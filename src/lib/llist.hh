@@ -84,4 +84,24 @@ struct LList
 
         return current_back->next;
     }
+
+    T* operator[](uint target_index)
+    {
+        LLNode<T>* current_back = head; // 
+
+        uint i = 0;
+
+        while(current_back->next != nullptr)
+        {
+            current_back = current_back->next;
+            if(i == target_index)
+            {
+                return &current_back->value;
+            }
+
+            i++;
+        }
+        
+        return &head->value;
+    }
 };

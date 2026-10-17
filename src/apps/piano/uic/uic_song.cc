@@ -156,6 +156,9 @@ void UIC_Song::init(PianoApp& piano_app)
     root->visibility.set_color(0xFF444444);
 
 
+    uic_instrument_line.init({ui, &piano_app, &song->piano_line}, *root);
+
+
     play_button =  ui->new_node(root);
     play_button->box = UIBox({root_box.pos.x + 100.0, root_box.pos.y + 190.0}, {50, 50});
     // play_button->color = 0xFF449944;
@@ -193,13 +196,13 @@ void UIC_Song::init(PianoApp& piano_app)
 
     for(u32 i = 0; i < song->piano_line.line_notes.count(); i++)
     {
-        LineNote& line_note = song->piano_line.line_notes[i];
+        LineNote* line_note = song->piano_line.line_notes[i];
 
         UINode* new_node = ui->new_node(continuous_piano_line_container);
 
         f64 x_pos = continuous_piano_line_container->box.pos.x + 10.0 + i*40.0;
         f64 y_pos = continuous_piano_line_container->box.pos.y + 10.0;
-        f64 note_width = line_note.note.type == NoteType::quarter ? 15.0 : 30.0;
+        f64 note_width = line_note->note.type == NoteType::quarter ? 15.0 : 30.0;
         f64 note_height = 15.0;
 
         new_node->box = UIBox({x_pos, y_pos}, {note_width, note_height});

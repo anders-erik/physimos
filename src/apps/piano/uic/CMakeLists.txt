@@ -3,6 +3,7 @@
 add_library(uic4
     uic_piano.cc
     uic_song.cc
+    uic_instrument_line.cc
 )
 target_link_libraries(uic4
     lib

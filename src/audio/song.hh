@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lib/arr.hh"
+#include "lib/llist.hh"
 #include "lib/pair.hh"
 
 #include "alsa.hh"
@@ -35,13 +36,20 @@ struct InstrumentLine
 	Instrument instrument;
 	Str name;
 	double gain = 0.5;
-	Arr<LineNote> line_notes;
+	// Arr<LineNote> line_notes;
+	LList<LineNote> line_notes;
 	AudioData32 line_audio_data;
 
-	void add_note(LineNote _line_note)
+	LineNote* new_note()
 	{
-		line_notes.push_back(_line_note);
+		LLNode<LineNote>* new_node = line_notes.append();
+		return &(new_node->value);
 	}
+	// void add_note(LineNote _line_note)
+	// {
+	// 	// line_notes.push_back(_line_note);
+	// 	LLNode<LineNote>* new_node = line_notes.append();
+	// }
 
 	void set_sampling_config(AudioSamplingConfig _sampling_config)
 	{
@@ -54,12 +62,12 @@ struct InstrumentLine
 
 		for(uint i = 0; i < line_notes.count(); i++)
 		{
-			LineNote line_note = line_notes[i];
+			LineNote* line_note = line_notes[i];
 
 			AudioData32 note_audio_data = SineWave::generate_damped_wave(	line_audio_data.sampling_config, 
-																			NoteFrequencies::to_frequency(line_note.note.name)	);
+																			NoteFrequencies::to_frequency(line_note->note.name)	);
 
-			u32 index_offset = line_note.get_starting_sample_index(line_audio_data.sampling_config);
+			u32 index_offset = line_note->get_starting_sample_index(line_audio_data.sampling_config);
 
 			for(uint i = 0; i < note_audio_data.sample_count(); i++)
 				line_audio_data.data[index_offset + i] += note_audio_data.data[i];
@@ -168,19 +176,19 @@ public:
 		// PIANO LINE
 		for(uint i = 0; i < piano_line.line_notes.count(); i++)
 		{
-			LineNote line_note = piano_line.line_notes[i];
+			LineNote* line_note = piano_line.line_notes[i];
 			// AudioData16 note_data = Instrument::get_note_audio(line_note.note, bpm, 0.2);
 
 			AudioSamplingConfig sampling_config {	AudioSamplingConfig::RATE_DURATION, 
 													44100, 
-													NoteTypeDuration::get_duration_us(line_note.note.type, this->bpm) };
+													NoteTypeDuration::get_duration_us(line_note->note.type, this->bpm) };
 
 			AudioData32 note_data_32 = SineWave::generate_damped_wave(	sampling_config, 
-																		NoteFrequencies::to_frequency(line_note.note.name));
+																		NoteFrequencies::to_frequency(line_note->note.name));
 
 			AudioData16 note_data_16 = note_data_32.to_audio_data_i16();
 
-			add_wave_to_audiodata_at_time(note_data_16, line_note.start_time_ms, 0.5);
+			add_wave_to_audiodata_at_time(note_data_16, line_note->start_time_ms, 0.5);
 		}
 	}
 

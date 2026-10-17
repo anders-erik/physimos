@@ -3,6 +3,7 @@
 #include "ui/ui4/ui.hh"
 
 #include "piano_ui_defs.hh"
+#include "uic/uic_instrument_line.hh"
 
 #include "audio/song.hh"
 
@@ -36,7 +37,7 @@ struct UIC_Song
 
     Arr<UINode*> beat_label_array;
 
-    
+    UIC_InstrumentLine uic_instrument_line;
 
     UIC_Song()
     {

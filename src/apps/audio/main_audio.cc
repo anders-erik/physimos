@@ -524,13 +524,13 @@ int song_with_instrument_lines()
 	Song song;
 	song.notes[0].push_back({NoteName::C4, NoteType::quarter});
 
-	song.piano_line.add_note({1000, {NoteName::B4, NoteType::half}});
-	song.piano_line.add_note({1003, {NoteName::B4, NoteType::half}});
-	song.piano_line.add_note({1006, {NoteName::B4, NoteType::half}});
-	song.piano_line.add_note({1009, {NoteName::B4, NoteType::half}});
-	song.piano_line.add_note({1012, {NoteName::B4, NoteType::half}});
+	// song.piano_line.add_note({1000, {NoteName::B4, NoteType::half}});
+	// song.piano_line.add_note({1003, {NoteName::B4, NoteType::half}});
+	// song.piano_line.add_note({1006, {NoteName::B4, NoteType::half}});
+	// song.piano_line.add_note({1009, {NoteName::B4, NoteType::half}});
+	// song.piano_line.add_note({1012, {NoteName::B4, NoteType::half}});
 
-	song.piano_line.add_note({1500, {NoteName::C5, NoteType::half}});
+	// song.piano_line.add_note({1500, {NoteName::C5, NoteType::half}});
 
 
 	song.generate();
@@ -540,14 +540,14 @@ int song_with_instrument_lines()
 	AudioSamplingConfig sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, 4000000};
 	// instrument_line.set_length({44100, 200000});
 	instrument_line.set_sampling_config(sampling_config);
-	instrument_line.add_note({0, {NoteName::C4, NoteType::quarter}});
-	instrument_line.add_note({0, {NoteName::E4, NoteType::quarter}});
-	instrument_line.add_note({0, {NoteName::G4, NoteType::quarter}});
-	// instrument_line.add_note({0, {NoteName::B4, NoteType::quarter}});
 	// instrument_line.add_note({0, {NoteName::C4, NoteType::quarter}});
-	instrument_line.add_note({2000, {NoteName::C4, NoteType::half}});
-	instrument_line.add_note({2100, {NoteName::D4, NoteType::half}});
-	instrument_line.add_note({2200, {NoteName::E4, NoteType::half}});
+	// instrument_line.add_note({0, {NoteName::E4, NoteType::quarter}});
+	// instrument_line.add_note({0, {NoteName::G4, NoteType::quarter}});
+	// // instrument_line.add_note({0, {NoteName::B4, NoteType::quarter}});
+	// // instrument_line.add_note({0, {NoteName::C4, NoteType::quarter}});
+	// instrument_line.add_note({2000, {NoteName::C4, NoteType::half}});
+	// instrument_line.add_note({2100, {NoteName::D4, NoteType::half}});
+	// instrument_line.add_note({2200, {NoteName::E4, NoteType::half}});
 	instrument_line.generate();
 	// instrument_line.audio_data_raw.smoothen_loud_audio_peaks();
 	// instrument_line.audio_data_raw.normalize();
