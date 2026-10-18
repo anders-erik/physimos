@@ -3,36 +3,17 @@
 
 
 /** 
-    Linked list.
-    Allocates each node individually on the heap. Fixed address.
- */
+    Linked List Node
+*/
 template <typename T>
-struct LLNode {
-
+struct LLNode
+{
     T value;
     LLNode<T>* next = nullptr;
-
-    LLNode() = default;
-
-    /** Create a new node with default T constructor and attaches it to back(). */
-    LLNode<T>* append()
-    {
-        if(next != nullptr)
-        {
-            // TODO: Handle error resonably when trying to append to a node that is not at the back of the llist
-            throw;
-        }
-
-        next = new LLNode<T>;
-
-        return next;
-    }
-
-private: 
-
 };
 
 
+/* Linked list */
 template <typename T>
 struct LList
 {
@@ -85,23 +66,38 @@ struct LList
         return current_back->next;
     }
 
-    T* operator[](uint target_index)
+    /** Unsafe access. If the user specify a value not correspnding to an actual LiteNode, an exception is thrown. */
+    T* operator[](int target_index)
     {
-        LLNode<T>* current_back = head; // 
+        int _count = count();
+        if(target_index >= _count)
+        {
+            Print::ln("Accessing linked list byond the number of available elements.");
+            throw;
+        }
 
-        uint i = 0;
+        // if(target_index == 0)
+        //     return &head->value;
 
-        while(current_back->next != nullptr)
+
+        LLNode<T>* current_back = head;
+
+        for(int i = 0; i < target_index; i++)
         {
             current_back = current_back->next;
-            if(i == target_index)
-            {
-                return &current_back->value;
-            }
-
-            i++;
         }
+
+        // while(current_back->next != nullptr)
+        // {
+        //     current_back = current_back->next;
+        //     if(i == target_index)
+        //     {
+        //         return &current_back->value;
+        //     }
+
+        //     i++;
+        // }
         
-        return &head->value;
+        return &current_back->value;
     }
 };

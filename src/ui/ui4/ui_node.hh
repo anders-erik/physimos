@@ -3,6 +3,7 @@
 
 #include "lib/bitmap.hh"
 #include "lib/arr.hh"
+#include "lib/defs.hh"
 
 #include "ui_box.hh"
 #include "ui_event.hh"
@@ -87,6 +88,27 @@ struct UINodeT
 };
 
 
+struct UINodeData
+{
+    
+
+    union Data
+    {
+        f64* F64_PTR;
+        f64* I32_PTR;
+        Str* STR_PTR;
+        i64* I64;
+        void* null = nullptr;
+    } data_;
+    static_assert(sizeof(Data) == 8);
+
+
+
+};
+
+// static_assert(sizeof(UINodeData) == 16);
+
+
 // template <typename T>
 struct UINode
 {
@@ -97,10 +119,11 @@ struct UINode
     /* Used for typed nodes that provide data pointers for basic types */
     enum class DataType
     {
-        f64,
-        f32,
-        i32,
-        Str,
+        ptr,
+        f64_ptr,
+        i32_ptr,
+        Str_ptr,
+        i64,
         None,
     } data_type = DataType::None;
     enum class DataLifetime
@@ -108,7 +131,19 @@ struct UINode
         Forever, // the owner of bound data will always outlive the UI
         Frame,   // The lifetime of the is only guaranteed during the current frame
     } data_lifetime = DataLifetime::Frame;
-    void* data = nullptr;
+    // 8 bytes of data. Will be used as either a pointer or small data types (e.g. numbers, id, etc. )
+    // void* data = nullptr;
+    
+    union Data
+    {
+        void* PTR;
+        f64* F64_PTR;
+        Str* STR_PTR;
+        i64  I64;
+        u8 NONE[8] = {0};
+    } data_;
+    static_assert(sizeof(Data) == 8);
+
     
 
     UINodeVisibility visibility;
@@ -180,19 +215,51 @@ struct UINode
         visibility.set_color(_color);
     }
 
-    void set_data(DataType _data_type, void* _data_ptr)
+    void*  get_data_ptr() {if(data_type != DataType::ptr) throw; return data_.PTR;}
+    f64* get_data_f64_ptr() {if(data_type != DataType::f64_ptr) throw; return data_.F64_PTR;}
+    Str* get_data_Str_ptr() {if(data_type != DataType::Str_ptr) throw; return data_.STR_PTR;}
+    i64  get_data_i64() {if(data_type != DataType::i64) throw; return data_.I64;}
+    
+    template <typename T>
+    void set_data(DataType _data_type, T _data)
     {
         data_type = _data_type;
-        data = _data_ptr;
+
+        switch (data_type)
+        {
+        case DataType::ptr:
+            data_.PTR = (void*) _data;
+            break;
+        case DataType::f64_ptr:
+            data_.F64_PTR = (f64*) _data;
+            break;
+        case DataType::Str_ptr:
+            data_.STR_PTR = (Str*)_data;
+            break;
+        case DataType::i64:
+            data_.I64 = (i64)_data;
+            break;
+        
+        default:
+            break;
+        }
+
         data_lifetime = DataLifetime::Frame;
     }
+
+    // void set_data(DataType _data_type, i64 _integer)
+    // {
+    //     data_type = _data_type;
+    //     data_ = _integer;
+    //     data_lifetime = DataLifetime::Frame;
+    // }
 
     bool is_type(DataType _data_type)
     {
         if(_data_type != data_type)
             return false;
-        if(data == nullptr)
-            return false;
+        // if(data == nullptr)
+        //     return false;
         
         return true;
     }

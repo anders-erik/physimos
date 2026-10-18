@@ -191,7 +191,7 @@ void UIC_Song::init(PianoApp& piano_app)
 
 
     continuous_piano_line_container  = ui->new_node(root);
-    continuous_piano_line_container->box = UIBox({root_box.pos.x + 20.0, root_box.pos.y + 20.0}, {180, 40});
+    continuous_piano_line_container->box = UIBox({root_box.pos.x + 20.0, root_box.pos.y + 70.0}, {180, 40});
     continuous_piano_line_container->visibility.set_color(0xFF333344);
 
     for(u32 i = 0; i < song->piano_line.line_notes.count(); i++)

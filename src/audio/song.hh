@@ -183,10 +183,13 @@ public:
 													44100, 
 													NoteTypeDuration::get_duration_us(line_note->note.type, this->bpm) };
 
-			AudioData32 note_data_32 = SineWave::generate_damped_wave(	sampling_config, 
-																		NoteFrequencies::to_frequency(line_note->note.name));
+			// AudioData32 note_data_32 = SineWave::generate_damped_wave(	sampling_config, 
+			// 															NoteFrequencies::to_frequency(line_note->note.name));
+			// AudioData16 note_data_16 = note_data_32.to_audio_data_i16();
 
-			AudioData16 note_data_16 = note_data_32.to_audio_data_i16();
+			AudioData16 note_data_16 = PianoWave::generate(	sampling_config, 
+															NoteFrequencies::to_frequency(line_note->note.name));
+
 
 			add_wave_to_audiodata_at_time(note_data_16, line_note->start_time_ms, 0.5);
 		}

@@ -93,13 +93,13 @@ UIEventReturn f64_ui_callback(UI_CALLBACK_PARAMS(void))
 {
     Print::ln("f64 callback!");
 
-    if(!node->is_type(UINode::DataType::f64))
+    if(!node->is_type(UINode::DataType::f64_ptr))
     {
         Print::ln("Failed '!node->is_type(UINode::DataType::f64)' in f64 ui callback!");
         return {};
     }
 
-    f64* _f64 = (f64*) node->data;
+    f64* _f64 = node->get_data_f64_ptr();
     
 
     if(ui_event.type == UIEvent::mouse_press)
@@ -118,23 +118,51 @@ UIEventReturn str_ui_callback(UI_CALLBACK_PARAMS(void))
 {
     Print::ln("Str callback!");
 
-    if(!node->is_type(UINode::DataType::Str))
+    if(!node->is_type(UINode::DataType::Str_ptr))
     {
         Print::ln("Failed '!node->is_type(UINode::DataType::Str)' in Str ui callback!");
         return {};
     }
 
-    Str& _str = *((Str*) node->data);
+    Str* _str = node->get_data_Str_ptr();
     
 
     if(ui_event.type == UIEvent::mouse_press)
     {
-        _str.append("+");
+        _str->append("+");
     }
 
     // Print::ln(_str);
 
-    node->set_str(_str);
+    node->set_str(*_str);
+
+    return {};
+}
+
+
+
+UIEventReturn i64_ui_callback(UI_CALLBACK_PARAMS(void))
+{
+    Print::ln("i64 callback!");
+
+    if(!node->is_type(UINode::DataType::i64))
+    {
+        Print::ln("Failed '!node->is_type(UINode::DataType::i64)' in i64 ui callback!");
+        return {};
+    }
+
+    i64 _i64 = node->get_data_i64();
+    
+
+    if(ui_event.type == UIEvent::mouse_press)
+    {
+        // _str->append("+");
+        node->data_.I64++;
+    }
+
+    // Print::ln(_str);
+
+    node->set_str(Str::SI(node->get_data_i64()));
 
     return {};
 }
@@ -158,23 +186,28 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     UINode* node_f64 = ui.new_node(&ui.root);
     node_f64->box = UIBox{{40, 500}, {100, 20}};
     // node_f64->data = &bound_f64;
-    node_f64->set_data(UINode::DataType::f64, &bound_f64);
+    node_f64->set_data<f64*>(UINode::DataType::f64_ptr, &bound_f64);
     node_f64->event_callback = UI_CALLBACK_CAST f64_ui_callback;
 
     UINode* node_f64_A = ui.new_node(&ui.root);
     node_f64_A->box = UIBox{{40, 550}, {100, 20}};
-    node_f64_A->set_data(UINode::DataType::f64, &bound_f64_A);
+    node_f64_A->set_data<f64*>(UINode::DataType::f64_ptr, &bound_f64_A);
     node_f64_A->event_callback = UI_CALLBACK_CAST f64_ui_callback;
 
     UINode* node_f64_B = ui.new_node(&ui.root);
     node_f64_B->box = UIBox{{40, 600}, {100, 20}};
-    node_f64_B->set_data(UINode::DataType::f64, &bound_f64_B);
+    node_f64_B->set_data<f64*>(UINode::DataType::f64_ptr, &bound_f64_B);
     node_f64_B->event_callback = UI_CALLBACK_CAST f64_ui_callback;
 
     UINode* node_bound_str = ui.new_node(&ui.root);
     node_bound_str->box = UIBox{{40, 650}, {100, 20}};
-    node_bound_str->set_data(UINode::DataType::Str, &bound_str);
+    node_bound_str->set_data<Str*>(UINode::DataType::Str_ptr, &bound_str);
     node_bound_str->event_callback = UI_CALLBACK_CAST str_ui_callback;
+
+    UINode* node_owned_i64 = ui.new_node(&ui.root);
+    node_owned_i64->box = UIBox{{40, 700}, {100, 20}};
+    node_owned_i64->set_data<i64>(UINode::DataType::i64, 0);
+    node_owned_i64->event_callback = UI_CALLBACK_CAST i64_ui_callback;
 
     
 
