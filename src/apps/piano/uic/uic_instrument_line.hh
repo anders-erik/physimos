@@ -14,13 +14,17 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp));
 
 struct UIC_InstrumentLine
 {
-    UIContext<PianoApp, InstrumentLine> context;
+    UIAppContext<PianoApp> context;
     InstrumentLine* instrument_line;
+
     UINode* uic_root = nullptr;
+    UINode* create_new_line_note = nullptr;
 
     UIC_InstrumentLine()
     {
     }
 
-    void init(UIContext<PianoApp, InstrumentLine> _context, UINode& _parent_node);
+    void init(UIAppContext<PianoApp> _context, InstrumentLine* _instrument_line, UINode& _parent_node);
+
+    void add_line_note_node(LineNote* _line_note);
 };

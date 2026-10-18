@@ -191,7 +191,7 @@ public:
 															NoteFrequencies::to_frequency(line_note->note.name));
 
 
-			add_wave_to_audiodata_at_time(note_data_16, line_note->start_time_ms, 0.5);
+			add_wave_to_audiodata_at_time(note_data_16, line_note->start_time_ms, 1.0);
 		}
 	}
 

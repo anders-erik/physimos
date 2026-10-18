@@ -299,7 +299,7 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
 
 void PianoUI::update(PianoApp* _piano_app)
 {
-    uic_song.update(*_piano_app);
+    // uic_song.update(*_piano_app);
 }
 
 

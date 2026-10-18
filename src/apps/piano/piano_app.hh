@@ -41,10 +41,10 @@ struct PianoApp
     {
         audio_player.set_backend_to_alsa();
 
-        song.beat_count = 2;
+        song.beat_count = 4;
         song.bpm = 120;
-        song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
-	    song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
+        // song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
+	    // song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
         // song.piano_line.add_note({200, {NoteName::B4, NoteType::quarter}});
         // song.piano_line.add_note({300, {NoteName::C5, NoteType::quarter}});
         LineNote* line_note_1 = song.piano_line.new_note();
@@ -54,7 +54,7 @@ struct PianoApp
         line_note_2->start_time_ms = 500;
         line_note_2->note = {NoteName::C5, NoteType::quarter};
 
-        song.generate();
+        // song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
 
         piano_ui.init(  this, 

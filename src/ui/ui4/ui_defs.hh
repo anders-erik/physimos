@@ -6,10 +6,21 @@
 #define UIC__ (template<typename T> struct UIC)
 
 
+/** Planned return type for a particular component 
+    **NOT YET IMPLEMENTED** */
 template <typename A, typename C>
-struct UIContext
+struct UIComponentContext
 {
     UI* ui;
     A*  app;
     C*  component;
+};
+
+/*  To be returned in every UI Node event callback. 
+    Different type for each specific app. */
+template <typename T>
+struct UIAppContext
+{
+    UI* ui;
+    T*  app;
 };
