@@ -144,12 +144,7 @@ struct UI
                 // unhover old target
                 if(current_hover_target_exists && hover_target_changed)
                 {
-                    bool hover_target_has_unhover_handler = current_hover_target->handle_mouse_exit != nullptr;
-                    if(hover_target_has_unhover_handler)
-                    {
-                        current_hover_target->handle_mouse_exit(current_hover_target, _user_input, _data);
-                    }
-                    if(current_hover_target->event_callback)
+                    if(current_hover_target->event_callback != nullptr)
                     {
                         UIEvent exit_event {UIEvent::mouse_exit};
                         current_hover_target->event_callback(current_hover_target, exit_event, _data);
@@ -161,10 +156,6 @@ struct UI
                 bool new_hover_target_exists = new_hover_target != nullptr;
                 if(new_hover_target_exists)
                 {
-                    if(new_hover_target->handle_mouse_enter != nullptr)
-                    {
-                        new_hover_target->handle_mouse_enter(new_hover_target, _user_input, _data);
-                    }
                     if(new_hover_target->event_callback != nullptr)
                     {
                         UIEvent enter_event {UIEvent::mouse_enter};
@@ -185,11 +176,6 @@ struct UI
             {
                 if(current_grab_target != nullptr)
                 {
-                    if(current_grab_target->handle_mouse_release != nullptr)
-                    {
-                        current_grab_target->handle_mouse_release(current_grab_target, _user_input, _data);
-                    }
-
                     if(current_grab_target->event_callback != nullptr)
                     {
                         UIEvent mouse_release_event {UIEvent::mouse_release};
@@ -207,11 +193,6 @@ struct UI
             // Try to click new target
             if(new_click_target != nullptr)
             {
-                if(new_click_target->handle_mouse_click != nullptr)
-                {
-                    new_click_target->handle_mouse_click(new_click_target, _user_input, _data);
-                }
-
                 if(new_click_target->event_callback != nullptr)
                 {
                     UIEvent mouse_press_event {UIEvent::mouse_press};
@@ -231,19 +212,21 @@ struct UI
         {
             if(current_keyboard_target == nullptr)
                 return;
+            
+            UIEvent key_event;
+
+            if(_user_input.event_data.key_input.action == KeyButtonAction::Press)
+                key_event.type = UIEvent::key_press;
+            else if(_user_input.event_data.key_input.action == KeyButtonAction::Release)
+                key_event.type = UIEvent::key_release;
+
+
 
             { // New event callback
                 if(current_keyboard_target->event_callback != nullptr)
                 {
-                    UIEvent key_event {UIEvent::key_press};
+                    key_event.value.key_press.key = _user_input.event_data.key_input.key;
                     UIEventReturn return_value = current_keyboard_target->event_callback(current_keyboard_target, key_event, _data);
-                }
-            }
-            
-            { // New old user input callback
-                if(current_keyboard_target->handle_key_press != nullptr)
-                {
-                    current_keyboard_target->handle_key_press(current_keyboard_target, _user_input, _data);
                 }
             }
 
@@ -251,15 +234,20 @@ struct UI
         }
         else if(_user_input.event_type == UserInputType::ScrollInput)
         {
-            UINode* new_hover_target = get_current_pointer_target();
+            UIEvent scroll_event {UIEvent::mouse_scroll};
+
+            if(_user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
+                scroll_event.value.scroll.direction = UIScroll::Up;
+            else if(_user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Down)
+                scroll_event.value.scroll.direction = UIScroll::Down;
 
             if(current_hover_target == nullptr)
                 return;
             
-            if(current_hover_target->handle_scroll == nullptr)
+            if(current_hover_target->event_callback == nullptr)
                 return;
             
-            current_hover_target->handle_scroll(current_keyboard_target, _user_input, _data);
+            current_hover_target->event_callback(current_hover_target, scroll_event, _data);
         }
     }
 

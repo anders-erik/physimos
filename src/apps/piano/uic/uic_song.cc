@@ -38,56 +38,77 @@ void beat_count_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
 }
 
 
-void note_name_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
-{
-    // TODO: I ned to be able to track the index of the target UINode in order to edit the corresponding note in thac backend
+// void note_name_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
+// {
+//     // TODO: I ned to be able to track the index of the target UINode in order to edit the corresponding note in thac backend
     
-    if(user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
-        piano_app->song.notes[0][0].up_half_note();
-    // else
+//     if(user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
+//         piano_app->song.notes[0][0].up_half_note();
+//     // else
         
 
-    piano_app->piano_ui.uic_song.reload_beat_count();
-}
+//     piano_app->piano_ui.uic_song.reload_beat_count();
+// }
 
 
-void stop_button_hover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
+UIEventReturn play_button_callback(UI_CALLBACK_PARAMS(PianoApp))
 {
-    _node->visibility.set_color(0xFFAA4433);
-    // _node->color = 0xFFBB3333;
+    switch (ui_event.type)
+    {
+    case UIEvent::mouse_enter:
+        {
+            node->visibility.set_color(0xFF33BB33);
+        }
+        break;
+    case UIEvent::mouse_exit:
+        {
+            node->visibility.set_color(0xFF449944);
+        }
+        break;
+    case UIEvent::mouse_press:
+        {
+            data->song.generate();
+            data->audio_player.play(data->song.song_data);
+        }
+        break;
+    
+    default:
+        break;
+    }
+
+    return {};
 }
-void stop_button_unhover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
+
+
+
+
+UIEventReturn stop_button_callback(UI_CALLBACK_PARAMS(PianoApp))
 {
-    _node->visibility.set_color(0xFF995544);
-    // _node->color = 0xFF994444;
+    switch (ui_event.type)
+    {
+    case UIEvent::mouse_enter:
+        {
+            node->visibility.set_color(0xFFAA4433);
+        }
+        break;
+    case UIEvent::mouse_exit:
+        {
+            node->visibility.set_color(0xFF995544);
+        }
+        break;
+    case UIEvent::mouse_press:
+        {
+            data->audio_player.stop();
+        }
+        break;
+    
+    default:
+        break;
+    }
+
+    return {};
 }
-void start_button_hover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    _node->visibility.set_color(0xFF33BB33);
-    // _node->color = 0xFF33BB33;
-}
-void start_button_unhover(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    _node->visibility.set_color(0xFF449944);
-    // _node->color = 0xFF449944;
-}
 
-
-
-void play_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    Song* song = &piano_app->song;
-
-    song->generate();
-
-    piano_app->audio_player.play(song->song_data);
-}
-
-
-void stop_current_piano_song(UINode* _node, UserInput _user_input,  PianoApp* piano_app)
-{
-    piano_app->audio_player.stop();
-}
 
 
 UIEventReturn line_note_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
@@ -163,16 +184,12 @@ void UIC_Song::init(PianoApp& piano_app)
     play_button->box = UIBox({root_box.pos.x + 100.0, root_box.pos.y + 190.0}, {50, 50});
     // play_button->color = 0xFF449944;
     play_button->visibility.set_color(0xFF449944);
-    play_button->handle_mouse_click = PIANO_UI_CALLBACK_CAST play_current_piano_song;
-    play_button->handle_mouse_enter = PIANO_UI_CALLBACK_CAST start_button_hover;
-    play_button->handle_mouse_exit = PIANO_UI_CALLBACK_CAST start_button_unhover;
+    play_button->event_callback = UI_CALLBACK_CAST play_button_callback;
 
     stop_button = ui->new_node(root);
     stop_button->box = UIBox({root_box.pos.x + 160.0, root_box.pos.y + 190.0}, {50, 50});
     stop_button->visibility.set_color(0xFF995544);
-    stop_button->handle_mouse_click = PIANO_UI_CALLBACK_CAST stop_current_piano_song;
-    stop_button->handle_mouse_enter = PIANO_UI_CALLBACK_CAST stop_button_hover;
-    stop_button->handle_mouse_exit = PIANO_UI_CALLBACK_CAST stop_button_unhover;
+    stop_button->event_callback = UI_CALLBACK_CAST stop_button_callback;
 
 
 
@@ -180,7 +197,7 @@ void UIC_Song::init(PianoApp& piano_app)
     beat_count_label->box.pos = {root_box.pos.x + 0.0, root_box.pos.y + 130.0};
     // beat_count_label->box = UIBox({450, 220}, {80, 30});
     beat_count_label->set_str(Str::UI(song->beat_count));
-    beat_count_label->handle_scroll = PIANO_UI_CALLBACK_CAST beat_count_label_scroll;
+    // beat_count_label->handle_scroll = PIANO_UI_CALLBACK_CAST beat_count_label_scroll;
 
 
     beat_count_container = ui->new_node(root);
@@ -238,7 +255,7 @@ void UIC_Song::reload_beat_count()
         double x_pos = (double) (535 + i*40);
         new_node->box = UIBox({x_pos, beat_count_container->box.pos.y + 10.0},{5, 5});
         new_node->set_str(NoteSerializer::note_name_to_str(song->notes[i][0].name));
-        new_node->handle_scroll = PIANO_UI_CALLBACK_CAST note_name_label_scroll;
+        // new_node->handle_scroll = PIANO_UI_CALLBACK_CAST note_name_label_scroll;
 
         beat_label_array.push_back(new_node);
     }

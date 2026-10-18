@@ -14,12 +14,8 @@ int main(int argc, char** argv)
     Print::ln("Hello from apps/piano/main_piano.cc! \n");
 
     UINode node;
-    printf("sizeof(UINode) = %d \n", sizeof(UINode));
-
-    UINodeT<int> int_node;
-    UINodeT<bool> bool_node;
-    Arr<UINodeT<int>> int_node_arr;
-    Arr<UINodeT<bool>> bool_node_arr;
+    printf("sizeof(UINode) = %li \n", sizeof(UINode));
+    printf("sizeof(Arr<int>) = %li \n", sizeof(Arr<int>));
 
     {
         Clock clock;

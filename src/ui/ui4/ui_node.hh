@@ -77,37 +77,6 @@ struct UINodeVisibility
 };
 
 
-// NOT POSSIBLE FOR MY USE CASE-- unable to store in the same container
-// INSTEAD WE TYPE THE UICs
-template <typename T>
-struct UINodeT
-{
-    // NORMAL STUFF
-
-    T* value;
-};
-
-
-struct UINodeData
-{
-    
-
-    union Data
-    {
-        f64* F64_PTR;
-        f64* I32_PTR;
-        Str* STR_PTR;
-        i64* I64;
-        void* null = nullptr;
-    } data_;
-    static_assert(sizeof(Data) == 8);
-
-
-
-};
-
-// static_assert(sizeof(UINodeData) == 16);
-
 
 // template <typename T>
 struct UINode
@@ -131,8 +100,6 @@ struct UINode
         Forever, // the owner of bound data will always outlive the UI
         Frame,   // The lifetime of the is only guaranteed during the current frame
     } data_lifetime = DataLifetime::Frame;
-    // 8 bytes of data. Will be used as either a pointer or small data types (e.g. numbers, id, etc. )
-    // void* data = nullptr;
     
     union Data
     {
@@ -156,33 +123,9 @@ struct UINode
     Str str; // used for rendering a string NOT bound using the data type. e.g. a label
 
 
-    // TODO: implement the below behavior
-    // enum event_type {mouse_click, mouse_unclick, handle_hover, etc. etc.. };
-    // Map<event_type, callback_fn> callbacks;
+    // Arr<callback_fn> callbacks;
     
-    // 
     UIEventReturn (*event_callback)(UINode*, UIEvent _ui_event, void*) = nullptr;
-
-    void (*handle_mouse_click)(UINode*, UserInput _user_input, void*) = nullptr;
-    void (*handle_mouse_release)(UINode*, UserInput _user_input, void*) = nullptr;
-
-    void (*handle_mouse_enter)(UINode*, UserInput _user_input, void*) = nullptr;
-    void (*handle_mouse_exit)(UINode*, UserInput _user_input, void*) = nullptr;
-
-    void (*handle_scroll)(UINode*, UserInput _user_input, void*) = nullptr;
-    void (*handle_key_press)(UINode*, UserInput _user_input, void*) = nullptr;
-
-    
-    // Experiment with variadic event handlers
-    // template<typename... Args>
-    // void (*handle_variatic)(UINode*, UserInput _user_input, Args...) = nullptr;
-
-    template<typename... Args>
-    void func(Args... args) // recursive variadic function
-    {
-        func(args...) ;
-    }
-
 
     UINode()
     {
@@ -198,13 +141,6 @@ struct UINode
     {
         visibility.type = UINodeVisibility::COLOR;
         visibility.value.color = 0x558855FF;
-
-        handle_mouse_click = nullptr;
-        handle_mouse_release = nullptr;
-        handle_mouse_enter = nullptr;
-        handle_mouse_exit = nullptr;
-        handle_scroll = nullptr;
-        handle_key_press = nullptr;
     }
 
     void set_color(PX32 _color)
@@ -215,10 +151,10 @@ struct UINode
         visibility.set_color(_color);
     }
 
-    void*  get_data_ptr() {if(data_type != DataType::ptr) throw; return data_.PTR;}
-    f64* get_data_f64_ptr() {if(data_type != DataType::f64_ptr) throw; return data_.F64_PTR;}
-    Str* get_data_Str_ptr() {if(data_type != DataType::Str_ptr) throw; return data_.STR_PTR;}
-    i64  get_data_i64() {if(data_type != DataType::i64) throw; return data_.I64;}
+    void* get_data_ptr() {if(data_type != DataType::ptr) throw; return data_.PTR;}
+    f64*  get_data_f64_ptr() {if(data_type != DataType::f64_ptr) throw; return data_.F64_PTR;}
+    Str*  get_data_Str_ptr() {if(data_type != DataType::Str_ptr) throw; return data_.STR_PTR;}
+    i64   get_data_i64() {if(data_type != DataType::i64) throw; return data_.I64;}
     
     template <typename T>
     void set_data(DataType _data_type, T _data)
@@ -258,9 +194,7 @@ struct UINode
     {
         if(_data_type != data_type)
             return false;
-        // if(data == nullptr)
-        //     return false;
-        
+
         return true;
     }
 

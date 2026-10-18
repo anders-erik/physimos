@@ -21,6 +21,20 @@ struct UIMouseMove
     double y;
 };
 
+struct UIKeyPress
+{
+    Keys key;
+};
+
+struct UIScroll
+{
+    enum Direction
+    {
+        Up,
+        Down,
+    } direction;
+};
+
 struct UIEvent
 {
     enum Type
@@ -32,11 +46,14 @@ struct UIEvent
         mouse_release,
         mouse_scroll,
         key_press,
+        key_release,
     } type;
 
     union Value
     {
         UIMouseMove mouse_move;
+        UIKeyPress key_press;
+        UIScroll scroll;
     } value;
 
     bool target_is_grabbed = false;

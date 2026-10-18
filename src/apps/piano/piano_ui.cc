@@ -37,52 +37,94 @@ void phyano_keypress_callback(PIANO_UI_CALLBACK_PARAMETERS)
     }
 }
 
-void close_app(UINode* _node, UserInput _user_input,  void* _data)
-{
-    PianoApp* piano_app = (PianoApp*) _data;
+// void close_app(UINode* _node, UserInput _user_input,  void* _data)
+// {
+//     PianoApp* piano_app = (PianoApp*) _data;
 
-    piano_app->wayland.close();
+//     piano_app->wayland.close();
+// }
+
+UIEventReturn third_button_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
+{
+    switch (ui_event.type)
+    {
+    case UIEvent::mouse_press:
+        piano_app->wayland.close();
+        break;
+    
+    default:
+        break;
+    }
+
+    return {};
+}
+
+// void root_click(PIANO_UI_CALLBACK_PARAMETERS)
+// {
+//     piano_app->piano_ui.ui.current_keyboard_target = &piano_app->piano_ui.ui.root;
+// }
+
+UIEventReturn piano_ui_root_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
+{
+    switch (ui_event.type)
+    {
+    case UIEvent::mouse_press:
+        piano_app->piano_ui.ui.current_keyboard_target = &piano_app->piano_ui.ui.root;
+        break;
+    
+    default:
+        break;
+    }
+
+    return {};
 }
 
 
-void root_click(PIANO_UI_CALLBACK_PARAMETERS)
-{
-    piano_app->piano_ui.ui.current_keyboard_target = &piano_app->piano_ui.ui.root;
-}
+// void string_click(PIANO_UI_CALLBACK_PARAMETERS)
+// {
+//     piano_app->piano_ui.ui.current_keyboard_target = node;
+// }
 
 
-void string_click(PIANO_UI_CALLBACK_PARAMETERS)
+UIEventReturn editable_string_callback(UI_CALLBACK_PARAMS(PianoApp))
 {
-    piano_app->piano_ui.ui.current_keyboard_target = node;
-}
-void string_unclick(PIANO_UI_CALLBACK_PARAMETERS)
-{
-    // piano_app->piano_ui.ui.current_keyboard_target = &piano_app->piano_ui.ui.root;
+    switch (ui_event.type)
+    {
+    case UIEvent::key_press:
+        {
+            Keys key = ui_event.value.key_press.key;
+
+            switch (ui_event.value.key_press.key)
+            {
+                // case Keys::A:
+                //     node->set_str(node->str + Str{"a"});
+                //     break;
+                
+                case Keys::Backspace:
+                    node->set_str(node->str.pop_back());
+                    break;
+                
+            
+                default:
+                    // node->set_str(node->str + user_input.event_data.key_press.to_str());
+                    node->set_str(node->str + InputUtils::key_to_str(key));
+                    break;
+            }
+        }
+        break;
+    case UIEvent::mouse_press:
+        data->piano_ui.ui.current_keyboard_target = node;
+        break;
+    
+    default:
+        break;
+    }
+    return {};
 }
 
 void editable_string_key_press(PIANO_UI_CALLBACK_PARAMETERS)
 {
-    if(user_input.event_data.key_input.action == KeyButtonAction::Release)
-        return;
-
-    Keys key = user_input.event_data.key_input.key;
-
-    switch (key)
-    {
-        // case Keys::A:
-        //     node->set_str(node->str + Str{"a"});
-        //     break;
-        
-        case Keys::Backspace:
-            node->set_str(node->str.pop_back());
-            break;
-        
     
-        default:
-            // node->set_str(node->str + user_input.event_data.key_press.to_str());
-            node->set_str(node->str + InputUtils::key_to_str(key));
-            break;
-    }
 }
 
 #define F64_UI_CALLBACK(y) UI_CALLBACK_PARAMS(y)
@@ -177,10 +219,12 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     ui.root.visibility.set_color(0xFF222222);
     // ui.root.handle_key_press = PIANO_UI_CALLBACK_CAST phyano_keypress_callback;
     // ui.root.handle_click = handle_click_print;
-    ui.root.handle_mouse_click = PIANO_UI_CALLBACK_CAST root_click;
+    // ui.root.handle_mouse_click = PIANO_UI_CALLBACK_CAST root_click;
     // ui.root.handle_click = play_current_piano_song;
     // ui.root.handle_hover = handle_hover_recolor;
     // ui.root.handle_unhover = handle_unhover_reset;
+    ui.root.event_callback = UI_CALLBACK_CAST piano_ui_root_callback;
+
 
     
     UINode* node_f64 = ui.new_node(&ui.root);
@@ -219,7 +263,8 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // third_button->box = UIBox({-10.0, ui.root.box.size.y-50}, {35, 35}); // BROKEN: tries to write to too large y-values
     // third_button->visibility.set_color(0xFF333366);
     third_button->visibility.set_bitmap(third_button->box.size.x, third_button->box.size.y);
-    third_button->handle_mouse_click = close_app;
+    // third_button->handle_mouse_click = close_app;
+    third_button->event_callback = UI_CALLBACK_CAST third_button_callback;
 
 
 
@@ -227,9 +272,10 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     // ui_string.visibility.set_bitmap();
     string_node->box.pos = {400, 50};
     string_node->set_str("Physimos!");
-    string_node->handle_mouse_click = PIANO_UI_CALLBACK_CAST string_click;
-    string_node->handle_mouse_release = PIANO_UI_CALLBACK_CAST string_unclick;
-    string_node->handle_key_press = PIANO_UI_CALLBACK_CAST editable_string_key_press;
+    // string_node->handle_mouse_click = PIANO_UI_CALLBACK_CAST string_click;
+    // string_node->handle_mouse_release = PIANO_UI_CALLBACK_CAST string_unclick;
+    // string_node->handle_key_press = PIANO_UI_CALLBACK_CAST editable_string_key_press;
+    string_node->event_callback = UI_CALLBACK_CAST editable_string_callback;
     // ui_string.visibility.value.bitmap->set_format(PX32F::ARGB);
     // render_ui_node(&ui_string);
 
