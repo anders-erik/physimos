@@ -9,6 +9,20 @@
 #include "piano_app.hh"
 
 
+
+struct Tester
+{
+    int a = 1;
+    int b = 2;
+
+    void hello()
+    {
+        Print::ln("Hello from tester");
+    }
+};
+
+void (*tester_fn)(Tester*) = nullptr;
+
 int main(int argc, char** argv)
 {
     Print::ln("Hello from apps/piano/main_piano.cc! \n");
@@ -16,6 +30,11 @@ int main(int argc, char** argv)
     UINode node;
     printf("sizeof(UINode) = %li \n", sizeof(UINode));
     printf("sizeof(Arr<int>) = %li \n", sizeof(Arr<int>));
+
+    Tester tester;
+    tester.hello();
+    // tester_fn = tester::hello;
+    // tester_fn = Tester::hello;
 
     {
         Clock clock;

@@ -2,8 +2,10 @@
 #include "io/input/user_input.hh"
 #include "piano_app.hh"
 
-
+// Provides UIC context for components until I've figured out a better solution
+// Similar to the Lambda Capture Clause, but I manually place the function (lambda) and a pointer (the captured reference) in the same translation uint
 UIC_InstrumentLine* uic_instrument_line_ptr = nullptr;
+
 
 UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
 {
@@ -52,8 +54,8 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
                 Print::ln("mouse movement with grab active");
                 d2 move_delta = {ui_event.value.mouse_move.x, ui_event.value.mouse_move.y};
                 
-                // f64 x_pos = 0.0;
-                
+
+                // X
                 double x_min = node->parent->box.pos.x;
                 double x_max = node->parent->box.pos.x + node->parent->box.size.x - 0.5 * node->box.size.x;
 
@@ -68,7 +70,51 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
                 f64 song_length_ms = 2000;
                 f64 start_time_ms = song_length_ms * fraction_x_pos;
                 line_note->start_time_ms = (i32) start_time_ms;
-                // node->box.pos.y += move_delta.y;
+                // Round to nearest 50 ms
+                line_note->start_time_ms -= line_note->start_time_ms % 50;
+
+
+
+                // Y
+                double y_min = node->parent->box.pos.y;
+                double y_max = node->parent->box.pos.y + node->parent->box.size.y - node->box.size.y;
+                double y_span = y_max - y_min;
+
+                node->box.pos.y += move_delta.y;
+                
+                if(node->box.pos.y < y_min)
+                    node->box.pos.y = y_min;
+                if(node->box.pos.y > y_max)
+                    node->box.pos.y = y_max;
+
+                NoteName previous_note_name = line_note->note.name;
+                
+                if(node->box.pos.y > y_min + y_span*0.875)
+                    line_note->note.name = NoteName::C5;
+                else if(node->box.pos.y > y_min + y_span*0.750)
+                    line_note->note.name = NoteName::B4;
+                else if(node->box.pos.y > y_min + y_span*0.625)
+                    line_note->note.name = NoteName::A4;
+                else if(node->box.pos.y > y_min + y_span*0.500)
+                    line_note->note.name = NoteName::G4;
+                else if(node->box.pos.y > y_min + y_span*0.375)
+                    line_note->note.name = NoteName::F4;
+                else if(node->box.pos.y > y_min + y_span*0.250)
+                    line_note->note.name = NoteName::E4;
+                else if(node->box.pos.y > y_min + y_span*0.125)
+                    line_note->note.name = NoteName::D4;
+                else
+                    line_note->note.name = NoteName::C4;
+
+                // Play note if it changed
+                if(previous_note_name != line_note->note.name)
+                {
+                    AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 500000};
+                    AudioData16 note_data = PianoWave::generate(sampling_config, NoteFrequencies::to_frequency(line_note->note.name));
+
+                    data->audio_player.stop();
+                    data->audio_player.play(note_data);
+                }
             }
         }
         break;

@@ -8,6 +8,7 @@
 #include "ui_box.hh"
 #include "ui_event.hh"
 #include "ui_font_bitmap.hh"
+#include "ui_defs.hh"
 
 struct UINodeVisibility
 {
@@ -77,6 +78,17 @@ struct UINodeVisibility
 };
 
 
+// Provides the information necessary to invoke and provide data for an event callback
+template <typename A, typename C>
+struct CallbackContext
+{
+    UIEventReturn (*callback_fn)(UIEvent, CallbackContext<A, C>*) = nullptr;
+    void* app = nullptr;
+    void* ui = nullptr;
+    void* uic = nullptr;
+    void* node = nullptr;
+};
+
 
 // template <typename T>
 struct UINode
@@ -124,8 +136,11 @@ struct UINode
 
 
     // Arr<callback_fn> callbacks;
-    
+
     UIEventReturn (*event_callback)(UINode*, UIEvent _ui_event, void*) = nullptr;
+    // Provides a pointer to the component that controls this particular node
+    void* uic = nullptr;
+    // CallbackContext<int, bool> callback_context;
 
     UINode()
     {
