@@ -29,6 +29,7 @@ struct UIC_Song
     UINode* root;
     UINode* play_button;
     UINode* stop_button;
+    UINode* song_length_label;
 
     // UINode* beat_count_container;
     // UINode* beat_count_label;
@@ -43,7 +44,7 @@ struct UIC_Song
     {
     }
 
-    void init(UI&_ui, UINode& _parent_node, Song& _song);
+    // void init(UI&_ui, UINode& _parent_node, Song& _song);
     void init(PianoApp& piano_app);
     // void update(PianoApp& piano_app);
 

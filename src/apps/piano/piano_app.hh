@@ -41,8 +41,11 @@ struct PianoApp
     {
         audio_player.set_backend_to_alsa();
 
-        song.beat_count = 4;
+        AudioSamplingConfig audio_sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 2000000};
+
+        // song.beat_count = 4;
         song.bpm = 120;
+        song.set_sampling_config(audio_sampling_config);
         // song.notes[0].push_back({ NoteName::C4, NoteType::quarter});
 	    // song.notes[1].push_back({ NoteName::D4, NoteType::quarter});
         // song.piano_line.add_note({200, {NoteName::B4, NoteType::quarter}});

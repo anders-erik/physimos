@@ -19,12 +19,14 @@ struct UIC_InstrumentLine
 
     UINode* uic_root = nullptr;
     UINode* create_new_line_note = nullptr;
+    Arr<UINode*> line_note_nodes;
 
     UIC_InstrumentLine()
     {
     }
 
     void init(UIAppContext<PianoApp> _context, InstrumentLine* _instrument_line, UINode& _parent_node);
+    void reload_notes();
 
     void add_line_note_node(LineNote* _line_note);
 

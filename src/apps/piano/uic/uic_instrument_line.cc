@@ -150,7 +150,6 @@ UIEventReturn create_new_line_note_callback(UI_CALLBACK_PARAMS(PianoApp))
 
 
 
-
 void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _instrument_line, UINode& _parent_node)
 {
     uic_instrument_line_ptr = this;
@@ -176,54 +175,43 @@ void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _
     {
         LineNote* line_note = instrument_line->line_notes[i];
         add_line_note_node(line_note);
-
-        // UINode* new_node = context.ui->new_node(uic_root);
-        // f64 start_time_fraction = ((f64)line_note->start_time_ms) / 2000.0;
-        // f64 x_pos = uic_root->box.pos.x + 10.0 + start_time_fraction * root_box.size.x;
-
-        // f64 y_pos = uic_root->box.pos.y + 1.0;
-        // switch (line_note->note.name)
-        // {
-        //     case NoteName::C4: y_pos+=  5.0; break;
-        //     case NoteName::D4: y_pos+= 10.0; break;
-        //     case NoteName::E4: y_pos+= 15.0; break;
-        //     case NoteName::F4: y_pos+= 20.0; break;
-        //     case NoteName::G4: y_pos+= 25.0; break;
-        //     case NoteName::A4: y_pos+= 30.0; break;
-        //     case NoteName::B4: y_pos+= 35.0; break;
-        //     case NoteName::C5: y_pos+= 40.0; break;
-        
-        //     default: break;
-        // }
-        // // f64 note_width = line_note->note.type == NoteType::quarter ? 15.0 : 30.0;
-        // f64 note_width = 30.0;
-        // f64 note_height = 10.0;
-
-        // new_node->box = UIBox({x_pos, y_pos}, {note_width, note_height});
-        // new_node->visibility.set_color(0xFF665555);
-        // new_node->set_data(UINode::DataType::ptr, line_note);
-        // new_node->event_callback = UI_CALLBACK_CAST line_note_callback_2;
     }
 
+}
+
+
+void UIC_InstrumentLine::reload_notes()
+{
+    for(int i = 0; i < line_note_nodes.count(); i++)
+        context.ui->allocator.delete_node(line_note_nodes[i]);
+    line_note_nodes.clear();   
+
+    for(int i = 0; i < instrument_line->line_notes.count(); i++)
+    {
+        LineNote* line_note = instrument_line->line_notes[i];
+        add_line_note_node(line_note);
+    }
 }
 
 void UIC_InstrumentLine::add_line_note_node(LineNote* _line_note)
 {
     UINode* new_node = context.ui->new_node(uic_root);
+    line_note_nodes.push_back(new_node);
+
     f64 start_time_fraction = ((f64)_line_note->start_time_ms) / 2000.0;
     f64 x_pos = uic_root->box.pos.x + 10.0 + start_time_fraction * uic_root->box.size.x;
 
     f64 y_pos = uic_root->box.pos.y + 1.0;
     switch (_line_note->note.name)
     {
-        case NoteName::C4: y_pos+=  5.0; break;
-        case NoteName::D4: y_pos+= 10.0; break;
-        case NoteName::E4: y_pos+= 15.0; break;
-        case NoteName::F4: y_pos+= 20.0; break;
-        case NoteName::G4: y_pos+= 25.0; break;
-        case NoteName::A4: y_pos+= 30.0; break;
-        case NoteName::B4: y_pos+= 35.0; break;
-        case NoteName::C5: y_pos+= 40.0; break;
+        case NoteName::C4: y_pos+= 10.0; break;
+        case NoteName::D4: y_pos+= 20.0; break;
+        case NoteName::E4: y_pos+= 30.0; break;
+        case NoteName::F4: y_pos+= 40.0; break;
+        case NoteName::G4: y_pos+= 50.0; break;
+        case NoteName::A4: y_pos+= 60.0; break;
+        case NoteName::B4: y_pos+= 70.0; break;
+        case NoteName::C5: y_pos+= 80.0; break;
     
         default: break;
     }

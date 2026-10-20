@@ -2,40 +2,40 @@
 #include "io/input/user_input.hh"
 #include "piano_app.hh"
 
-void beat_count_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
-{
-    // Print::ln("Handling scroll");
-    if(user_input.event_type == UserInputType::ScrollInput)
-    {
-        uint new_beat_count = piano_app->song.beat_count;
+// void beat_count_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
+// {
+//     // Print::ln("Handling scroll");
+//     if(user_input.event_type == UserInputType::ScrollInput)
+//     {
+//         uint new_beat_count = piano_app->song.beat_count;
 
-        if(user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
-        {
-            new_beat_count++;
-            if(new_beat_count > 4)
-                new_beat_count = 4;
-        }
-        else
-        {
-            new_beat_count--;
-            if(new_beat_count < 1)
-                new_beat_count = 1;
-        }
+//         if(user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
+//         {
+//             new_beat_count++;
+//             if(new_beat_count > 4)
+//                 new_beat_count = 4;
+//         }
+//         else
+//         {
+//             new_beat_count--;
+//             if(new_beat_count < 1)
+//                 new_beat_count = 1;
+//         }
 
-        // Regenerate song with the appropriate beats count value
-        piano_app->song.set_beat_count(new_beat_count);
-        for(uint i = 0; i < new_beat_count; i++)
-        {
-            piano_app->song.notes[i].push_back({ NoteName::C4, NoteType::quarter}); // always a C4 on first beat
-        }
-        piano_app->song.generate();
+//         // Regenerate song with the appropriate beats count value
+//         piano_app->song.set_beat_count(new_beat_count);
+//         for(uint i = 0; i < new_beat_count; i++)
+//         {
+//             piano_app->song.notes[i].push_back({ NoteName::C4, NoteType::quarter}); // always a C4 on first beat
+//         }
+//         piano_app->song.generate();
 
-        // TODO: resolve adding and removing the UINodes from the beat count editor
-        // piano_app->piano_ui.uic_song.reload_beat_count();
+//         // TODO: resolve adding and removing the UINodes from the beat count editor
+//         // piano_app->piano_ui.uic_song.reload_beat_count();
 
-        Print::ln("Beat count reloaded");
-    }
-}
+//         Print::ln("Beat count reloaded");
+//     }
+// }
 
 
 // void note_name_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
@@ -49,6 +49,9 @@ void beat_count_label_scroll(PIANO_UI_CALLBACK_PARAMETERS)
 
 //     piano_app->piano_ui.uic_song.reload_beat_count();
 // }
+
+
+UIC_Song* uic_song = nullptr;
 
 
 UIEventReturn play_button_callback(UI_CALLBACK_PARAMS(PianoApp))
@@ -111,6 +114,41 @@ UIEventReturn stop_button_callback(UI_CALLBACK_PARAMS(PianoApp))
 
 
 
+UIEventReturn song_length_label_callback(UI_CALLBACK_PARAMS(PianoApp))
+{
+    switch (ui_event.type)
+    {
+    case UIEvent::mouse_scroll:
+        {
+            Print::ln("Trying to change the song length");
+            if(ui_event.value.scroll.direction == UIScroll::Up)
+            {
+                AudioSamplingConfig current_sampling_config = uic_song->song->sampling_config;
+                AudioSamplingConfig new_sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, current_sampling_config.duration_us + 100000};
+                uic_song->song->set_sampling_config(new_sampling_config);
+                uic_song->song_length_label->set_str(Str::UI(new_sampling_config.duration_us));
+            }
+            else if(ui_event.value.scroll.direction == UIScroll::Down)
+            {
+                AudioSamplingConfig current_sampling_config = uic_song->song->sampling_config;
+                AudioSamplingConfig new_sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, current_sampling_config.duration_us - 100000};
+                uic_song->song->set_sampling_config(new_sampling_config);
+                uic_song->song_length_label->set_str(Str::UI(new_sampling_config.duration_us));
+            }
+
+            uic_song->uic_instrument_line.reload_notes();
+        }
+        break;
+    
+    default:
+        break;
+    }
+
+    return {};
+}
+
+
+
 UIEventReturn line_note_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
 {
     // Print::ln("Line note callback");
@@ -159,16 +197,17 @@ UIEventReturn line_note_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
     return  UIEventReturn{};
 }
 
-void UIC_Song::init(UI&_ui, UINode& _parent_node, Song& _song)
-{
+// void UIC_Song::init(UI&_ui, UINode& _parent_node, Song& _song)
+// {
 
-}
+// }
 
 
 void UIC_Song::init(PianoApp& piano_app)
 {
     ui = &piano_app.piano_ui.ui;
     song = &piano_app.song;
+    uic_song = this;
 
     UIBox root_box = UIBox({500, 100}, {300, 250});
 
@@ -181,17 +220,21 @@ void UIC_Song::init(PianoApp& piano_app)
 
 
     play_button =  ui->new_node(root);
-    play_button->box = UIBox({root_box.pos.x + 100.0, root_box.pos.y + 190.0}, {50, 50});
+    play_button->box = UIBox({root_box.pos.x + 170.0, root_box.pos.y + 190.0}, {50, 50});
     // play_button->color = 0xFF449944;
     play_button->visibility.set_color(0xFF449944);
     play_button->event_callback = UI_CALLBACK_CAST play_button_callback;
 
     stop_button = ui->new_node(root);
-    stop_button->box = UIBox({root_box.pos.x + 160.0, root_box.pos.y + 190.0}, {50, 50});
+    stop_button->box = UIBox({root_box.pos.x + 230.0, root_box.pos.y + 190.0}, {50, 50});
     stop_button->visibility.set_color(0xFF995544);
     stop_button->event_callback = UI_CALLBACK_CAST stop_button_callback;
 
-
+     
+    song_length_label = ui->new_node(root);
+    song_length_label->box = UIBox({root_box.pos.x + 10.0, root_box.pos.y + 210.0}, {50, 50});
+    song_length_label->set_str(Str::UI(song->sampling_config.duration_us));
+    song_length_label->event_callback = UI_CALLBACK_CAST song_length_label_callback;
 
     // beat_count_label = ui->new_node(root);
     // beat_count_label->box.pos = {root_box.pos.x + 0.0, root_box.pos.y + 130.0};

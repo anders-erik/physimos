@@ -40,24 +40,24 @@ void twinkle_twinkle()
 	Alsa alsa;
 
 	Song twinkle;
-	twinkle.beat_count = 16;
-	twinkle.bpm = 120;
+	// twinkle.beat_count = 16;
+	// twinkle.bpm = 120;
 	
-	twinkle.notes[0].push_back({ NoteName::C4, NoteType::quarter});
-	twinkle.notes[1].push_back({ NoteName::C4, NoteType::quarter});
-	twinkle.notes[2].push_back({ NoteName::G4, NoteType::quarter});
-	twinkle.notes[3].push_back({ NoteName::G4, NoteType::quarter});
-	twinkle.notes[4].push_back({ NoteName::A4, NoteType::quarter});
-	twinkle.notes[5].push_back({ NoteName::A4, NoteType::quarter});
-	twinkle.notes[6].push_back({ NoteName::G4, NoteType::half	 });
+	// twinkle.notes[0].push_back({ NoteName::C4, NoteType::quarter});
+	// twinkle.notes[1].push_back({ NoteName::C4, NoteType::quarter});
+	// twinkle.notes[2].push_back({ NoteName::G4, NoteType::quarter});
+	// twinkle.notes[3].push_back({ NoteName::G4, NoteType::quarter});
+	// twinkle.notes[4].push_back({ NoteName::A4, NoteType::quarter});
+	// twinkle.notes[5].push_back({ NoteName::A4, NoteType::quarter});
+	// twinkle.notes[6].push_back({ NoteName::G4, NoteType::half	 });
 
-	twinkle.notes[8].push_back({ NoteName::F4, NoteType::quarter});
-	twinkle.notes[9].push_back( { NoteName::F4, NoteType::quarter});
-	twinkle.notes[10].push_back( { NoteName::E4, NoteType::quarter});
-	twinkle.notes[11].push_back( { NoteName::E4, NoteType::quarter});
-	twinkle.notes[12].push_back( { NoteName::D4, NoteType::quarter});
-	twinkle.notes[13].push_back( { NoteName::D4, NoteType::quarter});
-	twinkle.notes[14].push_back( { NoteName::C4, NoteType::half   });
+	// twinkle.notes[8].push_back({ NoteName::F4, NoteType::quarter});
+	// twinkle.notes[9].push_back( { NoteName::F4, NoteType::quarter});
+	// twinkle.notes[10].push_back( { NoteName::E4, NoteType::quarter});
+	// twinkle.notes[11].push_back( { NoteName::E4, NoteType::quarter});
+	// twinkle.notes[12].push_back( { NoteName::D4, NoteType::quarter});
+	// twinkle.notes[13].push_back( { NoteName::D4, NoteType::quarter});
+	// twinkle.notes[14].push_back( { NoteName::C4, NoteType::half   });
 
 	twinkle.generate();
 	twinkle.play(alsa);
@@ -159,7 +159,7 @@ void twinkle_json(Str file_path)
 	}
 
 	// Update actual song data
-	twinkle_json.beat_count = beat_count;
+	// twinkle_json.beat_count = beat_count;
 	twinkle_json.bpm = bpm;
 
 
@@ -210,7 +210,7 @@ void twinkle_json(Str file_path)
 			else if(note_name_str == "C5")
 				note.name = NoteName::C5;
 
-			twinkle_json.notes[b_i].push_back(note);
+			// twinkle_json.notes[b_i].push_back(note);
 
 
 			// Print
@@ -233,24 +233,24 @@ void ambiance_song()
 	Alsa alsa;
 
 	Song ambiance;
-	ambiance.beat_count = 4;
-	ambiance.bpm = 60;
+	// ambiance.beat_count = 4;
+	// ambiance.bpm = 60;
 
-	ambiance.notes[0].push_back({ NoteName::C4, NoteType::half});
-	ambiance.notes[0].push_back({ NoteName::D4, NoteType::half});
-	ambiance.notes[0].push_back({ NoteName::E4, NoteType::half});
-	ambiance.notes[0].push_back({ NoteName::F4, NoteType::half});
-	ambiance.notes[0].push_back({ NoteName::G4, NoteType::half});
+	// ambiance.notes[0].push_back({ NoteName::C4, NoteType::half});
+	// ambiance.notes[0].push_back({ NoteName::D4, NoteType::half});
+	// ambiance.notes[0].push_back({ NoteName::E4, NoteType::half});
+	// ambiance.notes[0].push_back({ NoteName::F4, NoteType::half});
+	// ambiance.notes[0].push_back({ NoteName::G4, NoteType::half});
 
-	ambiance.notes[1].push_back({ NoteName::C4, NoteType::half});
+	// ambiance.notes[1].push_back({ NoteName::C4, NoteType::half});
 
-	ambiance.notes[2].push_back({ NoteName::C4, NoteType::half});
-	ambiance.notes[2].push_back({ NoteName::D4, NoteType::half});
-	// ambiance.notes[2].push_back({ NoteName::E4, NoteType::half});
-	ambiance.notes[2].push_back({ NoteName::F4, NoteType::half});
-	ambiance.notes[2].push_back({ NoteName::G4, NoteType::half});
+	// ambiance.notes[2].push_back({ NoteName::C4, NoteType::half});
+	// ambiance.notes[2].push_back({ NoteName::D4, NoteType::half});
+	// // ambiance.notes[2].push_back({ NoteName::E4, NoteType::half});
+	// ambiance.notes[2].push_back({ NoteName::F4, NoteType::half});
+	// ambiance.notes[2].push_back({ NoteName::G4, NoteType::half});
 
-	ambiance.notes[3].push_back({ NoteName::D4, NoteType::half});
+	// ambiance.notes[3].push_back({ NoteName::D4, NoteType::half});
 	
 
 	ambiance.generate();
@@ -364,22 +364,33 @@ int sheet_command(Str flag1, Str flag2)
 	if(flag1 == "export")
 	{
 		Song song;
-		song.set_beat_count(8);
+		// song.set_beat_count(8);
+		AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 4000000};
+		song.set_sampling_config(sampling_config);
 		// song.beat_count = 8;
 		song.bpm = 90;
 
 		Note c4 {NoteName::C4, NoteType::quarter}; 
 		Note d4 {NoteName::D4, NoteType::quarter}; 
 		Note e4 {NoteName::E4, NoteType::quarter}; 
+		
+		song.piano_line.line_notes.append()->value = {0, c4};
+		song.piano_line.line_notes.append()->value = {666, c4};
+		song.piano_line.line_notes.append()->value = {1332, c4};
+		song.piano_line.line_notes.append()->value = {2000, c4};
+		song.piano_line.line_notes.append()->value = {2666, c4};
+		song.piano_line.line_notes.append()->value = {3332, c4};
 
-		song.notes[0].push_back(c4);
-		song.notes[1].push_back(d4);
-		song.notes[2].push_back(e4);
-		song.notes[3].push_back(c4);
-		song.notes[4].push_back(d4);
-		song.notes[5].push_back(e4);
+		song.piano_line.line_notes.append()->value = {4000, c4};
 
-		song.notes[7].push_back(c4);
+		// song.notes[0].push_back(c4);
+		// song.notes[1].push_back(d4);
+		// song.notes[2].push_back(e4);
+		// song.notes[3].push_back(c4);
+		// song.notes[4].push_back(d4);
+		// song.notes[5].push_back(e4);
+
+		// song.notes[7].push_back(c4);
 
 		SheetIO::export_song(song, "tmp/sheet.json");
 
@@ -522,7 +533,7 @@ int song_with_instrument_lines()
 	AudioPlayer audio_player {AudioPlayer::Type::Alsa};
 
 	Song song;
-	song.notes[0].push_back({NoteName::C4, NoteType::quarter});
+	// song.notes[0].push_back({NoteName::C4, NoteType::quarter});
 
 	// song.piano_line.add_note({1000, {NoteName::B4, NoteType::half}});
 	// song.piano_line.add_note({1003, {NoteName::B4, NoteType::half}});

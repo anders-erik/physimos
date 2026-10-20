@@ -26,32 +26,20 @@ public:
 		Json beats;
 		beats.set_object();
 
-		// Add the beat-arrays
-		for(int i = 0; i < _song.beat_count; i++)
+
+
+		for(uint note_i = 0; note_i < _song.piano_line.line_notes.count(); note_i++)
 		{
-			
+			LineNote* note = _song.piano_line.line_notes[note_i];
+			Json jnote;
+			// Json note_name
+			jnote.set_object();
+			// jnote.object_push({"note", NoteSerializer::note_name_to_str(note.note.name)});
+			// jnote.object_push({"type", NoteSerializer::note_type_to_str(note.note.type)});
+
+			// _song.piano_line.line_notes.get_array().push_back(jnote);
 		}
 
-
-		for(uint beat_i = 0; beat_i < _song.notes.count(); beat_i++)
-		{
-			Json beat_array;
-			beat_array.set_array();
-
-			for(uint note_i = 0; note_i < _song.notes[beat_i].count(); note_i++)
-			{
-				Note note = _song.notes[beat_i][note_i];
-				Json jnote;
-				// Json note_name
-				jnote.set_object();
-				jnote.object_push({"note", NoteSerializer::note_name_to_str(note.name)});
-				jnote.object_push({"type", NoteSerializer::note_type_to_str(note.type)});
-
-				beat_array.get_array().push_back(jnote);
-			}
-
-			beats.object_push({Str::SI(beat_i), beat_array});
-		}
 
 		json.object_push({"beats", beats});
 
@@ -125,7 +113,7 @@ public:
 		}
 
 		// Update actual song data
-		song.set_beat_count(beat_count);
+		// song.set_beat_count(beat_count);
 		song.bpm = bpm;
 
 
@@ -176,7 +164,7 @@ public:
 				else if(note_name_str == "C5")
 					note.name = NoteName::C5;
 
-				song.notes[b_i].push_back(note);
+				// song.notes[b_i].push_back(note);
 
 
 				// Print
