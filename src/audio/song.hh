@@ -15,6 +15,7 @@
 struct LineNote
 {
 	i32 start_time_ms;
+	// i32 start_time_count; // the n-th thirty-second note on which this note begins
 	Note note;
 
 	f64 get_start_time_s()

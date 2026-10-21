@@ -213,6 +213,12 @@ struct UINode
         return true;
     }
 
+    Bitmap* set_bitmap()
+    {
+        visibility.set_bitmap(box.size.x, box.size.y);
+        return visibility.value.bitmap;
+    }
+
     void set_str(Str _str)
     {
         type = NodeType::String;

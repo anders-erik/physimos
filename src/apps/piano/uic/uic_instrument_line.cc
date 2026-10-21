@@ -16,7 +16,7 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
     switch (ui_event.type)
     {
     case UIEvent::mouse_enter:
-        node->visibility.set_color(0xFF000000);
+        node->visibility.set_color(0xFF222222);
         break;
     case UIEvent::mouse_exit:
         node->visibility.set_color(0xFF665555);
@@ -33,15 +33,18 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
         data->audio_player.stop();
         data->audio_player.play(note_data);
 
-        node->box.size.x += 6.0;
-        node->box.pos.x -= 3.0;
+        node->visibility.set_color(0xFF334433);
+        // node->box.size.x += 6.0;
+        // node->box.pos.x -= 3.0;
         return {UIEventReturn::node_mouse_grab};
         }
         break;
     case UIEvent::mouse_release:
         {
-            node->box.size.x -= 6.0;
-            node->box.pos.x += 3.0;
+            
+            node->visibility.set_color(0xFF222222);
+            // node->box.size.x -= 6.0;
+            // node->box.pos.x += 3.0;
             return {UIEventReturn::node_mouse_release};
         }
         break;
@@ -52,7 +55,7 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
             {
 
                 Print::ln("mouse movement with grab active");
-                d2 move_delta = {ui_event.value.mouse_move.x, ui_event.value.mouse_move.y};
+                d2 move_delta = {ui_event.value.mouse_move.dx, ui_event.value.mouse_move.dy};
                 
 
                 // X
@@ -77,38 +80,40 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
 
                 // Y
                 double y_min = node->parent->box.pos.y;
-                double y_max = node->parent->box.pos.y + node->parent->box.size.y - node->box.size.y;
-                double y_span = y_max - y_min;
-
-                node->box.pos.y += move_delta.y;
+                double y_max = node->parent->box.pos.y + node->parent->box.size.y - uic_instrument_line_ptr->get_note_height();
                 
                 if(node->box.pos.y < y_min)
                     node->box.pos.y = y_min;
                 if(node->box.pos.y > y_max)
-                    node->box.pos.y = y_max;
+                    node->box.pos.y = y_max-2.0;
 
                 NoteName previous_note_name = line_note->note.name;
-                
-                if(node->box.pos.y > y_min + y_span*0.875)
-                    line_note->note.name = NoteName::C5;
-                else if(node->box.pos.y > y_min + y_span*0.750)
-                    line_note->note.name = NoteName::B4;
-                else if(node->box.pos.y > y_min + y_span*0.625)
-                    line_note->note.name = NoteName::A4;
-                else if(node->box.pos.y > y_min + y_span*0.500)
-                    line_note->note.name = NoteName::G4;
-                else if(node->box.pos.y > y_min + y_span*0.375)
-                    line_note->note.name = NoteName::F4;
-                else if(node->box.pos.y > y_min + y_span*0.250)
-                    line_note->note.name = NoteName::E4;
-                else if(node->box.pos.y > y_min + y_span*0.125)
-                    line_note->note.name = NoteName::D4;
-                else
-                    line_note->note.name = NoteName::C4;
+
+                NoteName new_note_name = uic_instrument_line_ptr->get_note_from_y_pos(ui_event.value.mouse_move.y);
+
+                switch (new_note_name)
+                {
+                case NoteName::C4: node->box.pos.y = y_min + node->parent->box.size.y*0.000; break;
+                case NoteName::D4: node->box.pos.y = y_min + node->parent->box.size.y*0.125; break;
+                case NoteName::E4: node->box.pos.y = y_min + node->parent->box.size.y*0.250; break;
+                case NoteName::F4: node->box.pos.y = y_min + node->parent->box.size.y*0.375; break;
+                case NoteName::G4: node->box.pos.y = y_min + node->parent->box.size.y*0.500; break;
+                case NoteName::A4: node->box.pos.y = y_min + node->parent->box.size.y*0.625; break;
+                case NoteName::B4: node->box.pos.y = y_min + node->parent->box.size.y*0.750; break;
+                case NoteName::C5: node->box.pos.y = y_min + node->parent->box.size.y*0.875; break;
+
+                default:
+                    break;
+                }
 
                 // Play note if it changed
-                if(previous_note_name != line_note->note.name)
+                if(previous_note_name != new_note_name)
                 {
+                    if(new_note_name == NoteName::None)
+                        return {};
+
+                    line_note->note.name = new_note_name;
+
                     AudioSamplingConfig sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 500000};
                     AudioData16 note_data = PianoWave::generate(sampling_config, NoteFrequencies::to_frequency(line_note->note.name));
 
@@ -160,9 +165,17 @@ void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _
     UIBox root_box = UIBox( {_parent_node.box.pos.x + 5.0, _parent_node.box.pos.y + 20.0}, 
                             {_parent_node.box.size.x - 10.0, 120.0});
 
+
+
     uic_root = context.ui->new_node(&_parent_node);
     uic_root->box = root_box;
-    uic_root->visibility.set_color(0xFF883333);
+    // uic_root->visibility.set_color(0xFF883333);
+    Bitmap* root_bitmap = uic_root->set_bitmap();
+    PixelBuffer pix_buf {root_bitmap->get_data_mut(), root_box.size.x, root_box.size.y, PX32F::ARGB, PixelBuffer::Bottom};
+    SWR::Renderer renderer {pix_buf};
+    renderer.clear(0xFF000000);
+    renderer.draw_line({(int)(root_box.size.x-10.0), 0},{(int)(root_box.size.x-10.0), 50}, 0xFFFFFFFF);
+
 
 
     create_new_line_note = context.ui->new_node(uic_root);
@@ -198,28 +211,17 @@ void UIC_InstrumentLine::add_line_note_node(LineNote* _line_note)
     UINode* new_node = context.ui->new_node(uic_root);
     line_note_nodes.push_back(new_node);
 
-    f64 start_time_fraction = ((f64)_line_note->start_time_ms) / 2000.0;
+    f64 line_duration_ms = instrument_line->line_audio_data.duration_s_double() * 1000.0;
+
+    f64 start_time_fraction = ((f64)_line_note->start_time_ms) / line_duration_ms;
+
     f64 x_pos = uic_root->box.pos.x + 10.0 + start_time_fraction * uic_root->box.size.x;
 
-    f64 y_pos = uic_root->box.pos.y + 1.0;
-    switch (_line_note->note.name)
-    {
-        case NoteName::C4: y_pos+= 10.0; break;
-        case NoteName::D4: y_pos+= 20.0; break;
-        case NoteName::E4: y_pos+= 30.0; break;
-        case NoteName::F4: y_pos+= 40.0; break;
-        case NoteName::G4: y_pos+= 50.0; break;
-        case NoteName::A4: y_pos+= 60.0; break;
-        case NoteName::B4: y_pos+= 70.0; break;
-        case NoteName::C5: y_pos+= 80.0; break;
-    
-        default: break;
-    }
-    // f64 note_width = line_note->note.type == NoteType::quarter ? 15.0 : 30.0;
-    f64 note_width = 30.0;
-    f64 note_height = 10.0;
+    f64 note_duration_ms = NoteTypeDuration::get_duration_ms(_line_note->note.type, context.app->song.bpm);
+    f64 note_duration_fraction_of_line = note_duration_ms / line_duration_ms;
+    f64 note_width = note_duration_fraction_of_line * uic_root->box.size.x;
 
-    new_node->box = UIBox({x_pos, y_pos}, {note_width, note_height});
+    new_node->box = UIBox({x_pos, get_y_pos_from_note_name(_line_note->note.name)}, {note_width, get_note_height()});
     new_node->visibility.set_color(0xFF665555);
     new_node->set_data(UINode::DataType::ptr, _line_note);
     new_node->event_callback = UI_CALLBACK_CAST line_note_callback_2;

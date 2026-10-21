@@ -17,8 +17,10 @@ struct UIEventReturn
 
 struct UIMouseMove
 {
-    double x;
-    double y;
+    double dx; // delta x
+    double dy; // delta y
+    f64 x; // absolute x pos
+    f64 y; // absolute y pos
 };
 
 struct UIKeyPress

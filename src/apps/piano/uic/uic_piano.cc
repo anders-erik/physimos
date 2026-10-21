@@ -13,7 +13,7 @@ UIEventReturn C4_event_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
             if(ui_event.target_is_grabbed)
             {
                 Print::ln("C4 mouse movement with grab active");
-                d2 move_delta = {ui_event.value.mouse_move.x, ui_event.value.mouse_move.y};
+                d2 move_delta = {ui_event.value.mouse_move.dx, ui_event.value.mouse_move.dy};
                 node->box.pos.x += move_delta.x;
                 node->box.pos.y += move_delta.y;
             }

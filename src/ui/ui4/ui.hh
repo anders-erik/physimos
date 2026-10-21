@@ -99,7 +99,10 @@ struct UI
             {
                 UIEvent mouse_move_event {UIEvent::mouse_move};
                 d2 mouseMovementDelta = move.delta();
-                mouse_move_event.value.mouse_move = UIMouseMove{mouseMovementDelta.x, mouseMovementDelta.y};
+                mouse_move_event.value.mouse_move = UIMouseMove{    mouseMovementDelta.x, 
+                                                                    mouseMovementDelta.y,
+                                                                    move.new_pos.x,
+                                                                    move.new_pos.y      };
                 mouse_move_event.target_is_grabbed = true;
 
                 
@@ -122,7 +125,10 @@ struct UI
                 // Print::ln("UI move without target change");
                 UIEvent ui_event {UIEvent::mouse_move};
                 d2 mouseMovementDelta = move.delta();
-                ui_event.value.mouse_move = UIMouseMove{mouseMovementDelta.x, mouseMovementDelta.y};
+                ui_event.value.mouse_move = UIMouseMove{    mouseMovementDelta.x, 
+                                                            mouseMovementDelta.y,
+                                                            move.new_pos.x,
+                                                            move.new_pos.y      };
 
                 if(current_hover_target == nullptr)
                     return;

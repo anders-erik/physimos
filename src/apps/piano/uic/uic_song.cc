@@ -181,7 +181,7 @@ UIEventReturn line_note_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
             {
 
                 Print::ln("mouse movement with grab active");
-                d2 move_delta = {ui_event.value.mouse_move.x, ui_event.value.mouse_move.y};
+                d2 move_delta = {ui_event.value.mouse_move.dx, ui_event.value.mouse_move.dy};
                 node->box.pos.x += move_delta.x;
                 
                 node->box.pos.y += move_delta.y;

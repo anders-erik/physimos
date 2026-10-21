@@ -14,7 +14,8 @@ enum class NoteType
 	half,
 	quarter, // one beat
 	eighth,
-	sixteenth
+	sixteenth,
+	thirtysecond, // fundamental time duration in app
 };
 
 enum class NoteName
@@ -122,6 +123,26 @@ struct NoteTypeDuration
 			duration *= 0.25; // quarter
 		
 		return duration;
+	}
+
+	static u64 get_duration_ms(NoteType note_type, f64 bmp)
+	{
+		f64 duration_s = 1.0 / (bmp / 60.0); // seconds / beat (for quarter note)
+
+		if(note_type == NoteType::whole)
+			duration_s *= 4.0; // four beats
+		else if(note_type == NoteType::half)
+			duration_s *= 2.0; // two beats
+		else if(note_type == NoteType::quarter)
+			duration_s *= 1.0; // one beats
+		else if(note_type == NoteType::eighth)
+			duration_s *= 0.5; // half
+		else if(note_type == NoteType::sixteenth)
+			duration_s *= 0.25; // quarter
+
+		u64 duration_ms = duration_s * 1000;		
+
+		return (u64) duration_ms;
 	}
 
 	static u64 get_duration_us(NoteType note_type, f64 bmp)
