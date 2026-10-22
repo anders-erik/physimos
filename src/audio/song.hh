@@ -14,13 +14,35 @@
 /* Specifying an arbitrary time at which a note is played in the instrument line */
 struct LineNote
 {
-	i32 start_time_ms;
-	// i32 start_time_count; // the n-th thirty-second note on which this note begins
+	// i32 start_time_ms;
+	i32 start_index_16th_count; // the n-th sixteenth note-duration on which this note begins
 	Note note;
+	f64 bpm = 120.0;
+	NoteType time_step_type = NoteType::sixteenth;
+
+	LineNote() {}
+	LineNote(i32 _start_index_16th_count, Note _note)
+		: 	start_index_16th_count {_start_index_16th_count},
+			note {_note}
+	{
+
+	}
 
 	f64 get_start_time_s()
 	{
-		return ((f64)start_time_ms) / 1000;
+		return ( ((f64)start_index_16th_count) * NoteTypeDuration::get_duration_s(time_step_type, bpm));
+	}
+
+	f64 get_start_time_ms()
+	{
+		return get_start_time_s() * 1000.0;
+	}
+
+	void set_start_time_ms(f64 _start_time_ms)
+	{
+		f64 time_step_ms = NoteTypeDuration::get_duration_s(time_step_type, bpm) * 1000.0;
+
+		start_index_16th_count = (i32) (_start_time_ms / time_step_ms);
 	}
 
 	u32 get_starting_sample_index(AudioSamplingConfig _sampling_config)
@@ -39,6 +61,7 @@ struct InstrumentLine
 	double gain = 0.5;
 	// Arr<LineNote> line_notes;
 	LList<LineNote> line_notes;
+	f64 bpm = 120;
 	AudioData32 line_audio_data;
 
 	LineNote* new_note()
@@ -142,7 +165,7 @@ public:
 															NoteFrequencies::to_frequency(line_note->note.name));
 
 
-			add_wave_to_audiodata_at_time(note_data_16, line_note->start_time_ms, 1.0);
+			add_wave_to_audiodata_at_time(note_data_16, line_note->get_start_time_ms(), 1.0);
 		}
 	}
 

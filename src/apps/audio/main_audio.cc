@@ -374,14 +374,13 @@ int sheet_command(Str flag1, Str flag2)
 		Note d4 {NoteName::D4, NoteType::quarter}; 
 		Note e4 {NoteName::E4, NoteType::quarter}; 
 		
-		song.piano_line.line_notes.append()->value = {0, c4};
-		song.piano_line.line_notes.append()->value = {666, c4};
-		song.piano_line.line_notes.append()->value = {1332, c4};
-		song.piano_line.line_notes.append()->value = {2000, c4};
-		song.piano_line.line_notes.append()->value = {2666, c4};
-		song.piano_line.line_notes.append()->value = {3332, c4};
-
-		song.piano_line.line_notes.append()->value = {4000, c4};
+		song.piano_line.line_notes.append()->value = LineNote{0, c4};
+		song.piano_line.line_notes.append()->value = LineNote{666, c4};
+		song.piano_line.line_notes.append()->value = LineNote{1332, c4};
+		song.piano_line.line_notes.append()->value = LineNote{2000, c4};
+		song.piano_line.line_notes.append()->value = LineNote{2666, c4};
+		song.piano_line.line_notes.append()->value = LineNote{3332, c4};
+		song.piano_line.line_notes.append()->value = LineNote{4000, c4};
 
 		// song.notes[0].push_back(c4);
 		// song.notes[1].push_back(d4);

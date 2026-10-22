@@ -14,8 +14,8 @@ enum class NoteType
 	half,
 	quarter, // one beat
 	eighth,
-	sixteenth,
-	thirtysecond, // fundamental time duration in app
+	sixteenth,		// fundamental time duration in app
+	thirtysecond, 
 };
 
 enum class NoteName

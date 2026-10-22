@@ -59,10 +59,30 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
                 
 
                 // X
+                f64 s_per_sixteenth = NoteTypeDuration::get_duration_s(NoteType::sixteenth, 120);
+                i32 ms_per_sixteenth = (i32) (s_per_sixteenth * 1000.0);
+                f64 song_length_ms = 2000.0;
+                
+
                 double x_min = node->parent->box.pos.x;
                 double x_max = node->parent->box.pos.x + node->parent->box.size.x - 0.5 * node->box.size.x;
 
-                node->box.pos.x += move_delta.x;
+                f64 pixels_per_ms = (x_max - x_min) / song_length_ms;
+                f64 pixels_per_sixteenth = pixels_per_ms * (f64)ms_per_sixteenth;
+
+                i32 pixel_x_index = (i32)(ui_event.value.mouse_move.x - x_min);
+                i32 time_step_x_index = (i32)(pixel_x_index / (i32)pixels_per_sixteenth);
+
+                Print::buf("Pixel pos: ");
+                Print::buf(Str::SI(pixel_x_index));
+                Print::buf("\n");
+
+                Print::buf("Time step index: ");
+                Print::buf(Str::SI(time_step_x_index));
+                Print::buf("\n");
+
+                node->box.pos.x =  x_min + (f64)time_step_x_index * pixels_per_sixteenth;
+                // node->box.pos.x += move_delta.x;
 
                 if(node->box.pos.x < x_min)
                     node->box.pos.x = x_min;
@@ -70,11 +90,14 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
                     node->box.pos.x = x_max;
                 
                 f64 fraction_x_pos = (node->box.pos.x - x_min) / (x_max - x_min);
-                f64 song_length_ms = 2000;
                 f64 start_time_ms = song_length_ms * fraction_x_pos;
-                line_note->start_time_ms = (i32) start_time_ms;
-                // Round to nearest 50 ms
-                line_note->start_time_ms -= line_note->start_time_ms % 50;
+                line_note->set_start_time_ms((i32) start_time_ms);
+                // Round to nearest sixteenth note
+                
+                i32 rounded_start_time = (i32)line_note->get_start_time_ms() - (i32)line_note->get_start_time_ms() % ms_per_sixteenth;
+                line_note->set_start_time_ms( (f64)rounded_start_time);
+                
+                // line_note->start_time_ms -= line_note->start_time_ms % 50;
 
 
 
@@ -139,7 +162,7 @@ UIEventReturn create_new_line_note_callback(UI_CALLBACK_PARAMS(PianoApp))
     case UIEvent::mouse_press:
         {
         LineNote* new_line_note = uic_instrument_line_ptr->instrument_line->new_note();
-        new_line_note->start_time_ms = 1000;
+        new_line_note->set_start_time_ms(1000);
         new_line_note->note = Note{NoteName::C4, NoteType::quarter};
 
         uic_instrument_line_ptr->add_line_note_node(new_line_note);
@@ -213,7 +236,7 @@ void UIC_InstrumentLine::add_line_note_node(LineNote* _line_note)
 
     f64 line_duration_ms = instrument_line->line_audio_data.duration_s_double() * 1000.0;
 
-    f64 start_time_fraction = ((f64)_line_note->start_time_ms) / line_duration_ms;
+    f64 start_time_fraction = ((f64)_line_note->get_start_time_ms()) / line_duration_ms;
 
     f64 x_pos = uic_root->box.pos.x + 10.0 + start_time_fraction * uic_root->box.size.x;
 
