@@ -136,6 +136,7 @@ UIEventReturn song_length_label_callback(UI_CALLBACK_PARAMS(PianoApp))
                 uic_song->song_length_label->set_str(Str::UI(new_sampling_config.duration_us));
             }
 
+            uic_song->uic_instrument_line.reload_background();
             uic_song->uic_instrument_line.reload_notes();
         }
         break;

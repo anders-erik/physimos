@@ -29,14 +29,19 @@ struct UIC_InstrumentLine
 
     void init(UIAppContext<PianoApp> _context, InstrumentLine* _instrument_line, UINode& _parent_node);
     void reload_notes();
+    void reload_background();
 
     void add_line_note_node(LineNote* _line_note);
 
+    f64 get_pixels_per_note_jiffy(); // rounded down to integer value
+    f64 get_x_pos_from_line_note_index(i32 line_note_index);
 
     double get_note_height()
     {
         return uic_root->box.size.y / 8;
     }
+
+
 
     NoteName get_note_from_y_pos(f64 y_pos)
     {

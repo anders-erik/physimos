@@ -107,6 +107,11 @@ struct NoteSerializer
 
 struct NoteTypeDuration
 {
+	static f64 get_note_jiffy(f64 bmp)
+	{
+		return 0.25 * 60.0 / bmp;
+	}
+
 	static double get_duration_s(NoteType note_type, f64 bmp)
 	{
 		f64 duration = 1.0 / (bmp / 60.0); // seconds / beat (for quarter note)

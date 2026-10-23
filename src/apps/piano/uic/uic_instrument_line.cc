@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "uic_instrument_line.hh"
 #include "io/input/user_input.hh"
 #include "piano_app.hh"
@@ -57,48 +59,88 @@ UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
                 Print::ln("mouse movement with grab active");
                 d2 move_delta = {ui_event.value.mouse_move.dx, ui_event.value.mouse_move.dy};
                 
+                
 
                 // X
-                f64 s_per_sixteenth = NoteTypeDuration::get_duration_s(NoteType::sixteenth, 120);
-                i32 ms_per_sixteenth = (i32) (s_per_sixteenth * 1000.0);
-                f64 song_length_ms = 2000.0;
-                
+                f64 x_min = node->parent->box.pos.x;
+                f64 x_max = node->parent->box.pos.x + node->parent->box.size.x ;
 
-                double x_min = node->parent->box.pos.x;
-                double x_max = node->parent->box.pos.x + node->parent->box.size.x - 0.5 * node->box.size.x;
+                // f64 mouse_location_line_x = (ui_event.value.mouse_move.x - x_min) - node->box.size.x * 0.5;
+                f64 mouse_location_line_x = (ui_event.value.mouse_move.x - x_min);
 
-                f64 pixels_per_ms = (x_max - x_min) / song_length_ms;
-                f64 pixels_per_sixteenth = pixels_per_ms * (f64)ms_per_sixteenth;
-
-                i32 pixel_x_index = (i32)(ui_event.value.mouse_move.x - x_min);
-                i32 time_step_x_index = (i32)(pixel_x_index / (i32)pixels_per_sixteenth);
-
-                Print::buf("Pixel pos: ");
-                Print::buf(Str::SI(pixel_x_index));
+                Print::buf("mouse line location x: ");
+                Print::buf(Str::SI(mouse_location_line_x));
                 Print::buf("\n");
 
-                Print::buf("Time step index: ");
-                Print::buf(Str::SI(time_step_x_index));
+                if(mouse_location_line_x < 0.0)
+                    mouse_location_line_x = 0.0;
+                if(mouse_location_line_x > node->parent->box.size.x)
+                    mouse_location_line_x = node->parent->box.size.x;
+                
+                Print::buf("mouse line location x: ");
+                Print::buf(Str::SI(mouse_location_line_x));
                 Print::buf("\n");
 
-                node->box.pos.x =  x_min + (f64)time_step_x_index * pixels_per_sixteenth;
-                // node->box.pos.x += move_delta.x;
 
-                if(node->box.pos.x < x_min)
-                    node->box.pos.x = x_min;
-                if(node->box.pos.x > x_max)
-                    node->box.pos.x = x_max;
-                
-                f64 fraction_x_pos = (node->box.pos.x - x_min) / (x_max - x_min);
-                f64 start_time_ms = song_length_ms * fraction_x_pos;
-                line_note->set_start_time_ms((i32) start_time_ms);
-                // Round to nearest sixteenth note
-                
-                i32 rounded_start_time = (i32)line_note->get_start_time_ms() - (i32)line_note->get_start_time_ms() % ms_per_sixteenth;
-                line_note->set_start_time_ms( (f64)rounded_start_time);
-                
-                // line_note->start_time_ms -= line_note->start_time_ms % 50;
+                f64 pixels_per_note_jiffy = uic_instrument_line_ptr->get_pixels_per_note_jiffy();
+                i32 mouse_jiffy_index = (i32)(mouse_location_line_x / pixels_per_note_jiffy);
 
+                Print::buf("Jiffy_index: ");
+                Print::buf(Str::SI(mouse_jiffy_index));
+                Print::buf("\n");
+
+                i32 current_jiffy_index = line_note->start_index_16th_count;
+
+                if(current_jiffy_index != mouse_jiffy_index)
+                {
+                    line_note->start_index_16th_count = mouse_jiffy_index;
+                    node->box.pos.x = x_min + mouse_jiffy_index * pixels_per_note_jiffy;
+                }
+
+                if(false)
+                {
+
+                    // Print::buf("Time step index: ");
+                    // Print::buf(Str::SI(time_step_x_index));
+                    // Print::buf("\n");
+
+
+
+                    f64 s_per_sixteenth = NoteTypeDuration::get_duration_s(NoteType::sixteenth, 120);
+                    i32 ms_per_sixteenth = (i32) (s_per_sixteenth * 1000.0);
+                    f64 song_length_ms = 2000.0;
+                    
+
+                    // double x_min = node->parent->box.pos.x;
+                    // double x_max = node->parent->box.pos.x + node->parent->box.size.x - 0.5 * node->box.size.x;
+                
+                    f64 pixels_per_ms = (x_max - x_min) / song_length_ms;
+                    f64 pixels_per_sixteenth = pixels_per_ms * (f64)ms_per_sixteenth;
+
+                    i32 pixel_x_index = (i32)(ui_event.value.mouse_move.x - x_min);
+                    i32 time_step_x_index = (i32)(pixel_x_index / (i32)pixels_per_sixteenth);
+
+                    
+
+                    // node->box.pos.x =  x_min + (f64)time_step_x_index * pixels_per_sixteenth;
+                    node->box.pos.x = uic_instrument_line_ptr->get_x_pos_from_line_note_index(line_note->start_index_16th_count);
+                    // node->box.pos.x += move_delta.x;
+
+                    if(node->box.pos.x < x_min)
+                        node->box.pos.x = x_min;
+                    if(node->box.pos.x > x_max)
+                        node->box.pos.x = x_max;
+                    
+                    f64 fraction_x_pos = (node->box.pos.x - x_min) / (x_max - x_min);
+                    f64 start_time_ms = song_length_ms * fraction_x_pos;
+                    line_note->set_start_time_ms((i32) start_time_ms);
+                    // Round to nearest sixteenth note
+                    
+                    i32 rounded_start_time = (i32)line_note->get_start_time_ms() - (i32)line_note->get_start_time_ms() % ms_per_sixteenth;
+                    line_note->set_start_time_ms( (f64)rounded_start_time);
+                    
+                    // line_note->start_time_ms -= line_note->start_time_ms % 50;
+                }
 
 
                 // Y
@@ -177,6 +219,25 @@ UIEventReturn create_new_line_note_callback(UI_CALLBACK_PARAMS(PianoApp))
 }
 
 
+f64 UIC_InstrumentLine::get_pixels_per_note_jiffy()
+{
+    f64 jiffy_s = NoteTypeDuration::get_note_jiffy(context.app->song.bpm);
+    
+    f64 width_component = uic_root->box.size.x;
+    f64 displayed_duration_s = context.app->song.sampling_config.get_duration_s();
+
+    f64 pixels_per_second = width_component / displayed_duration_s;
+    f64 pixels_per_jiffy = pixels_per_second * jiffy_s;
+    f64 pixels_per_jiffy_floor = floor(pixels_per_jiffy);
+
+    return pixels_per_jiffy_floor;
+}
+
+f64 UIC_InstrumentLine::get_x_pos_from_line_note_index(i32 line_note_index)
+{
+    return uic_root->box.pos.x + get_pixels_per_note_jiffy() * (f64) line_note_index;
+}
+
 
 void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _instrument_line, UINode& _parent_node)
 {
@@ -192,12 +253,24 @@ void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _
 
     uic_root = context.ui->new_node(&_parent_node);
     uic_root->box = root_box;
-    // uic_root->visibility.set_color(0xFF883333);
+    
+    
     Bitmap* root_bitmap = uic_root->set_bitmap();
-    PixelBuffer pix_buf {root_bitmap->get_data_mut(), root_box.size.x, root_box.size.y, PX32F::ARGB, PixelBuffer::Bottom};
-    SWR::Renderer renderer {pix_buf};
-    renderer.clear(0xFF000000);
-    renderer.draw_line({(int)(root_box.size.x-10.0), 0},{(int)(root_box.size.x-10.0), 50}, 0xFFFFFFFF);
+    reload_background();
+    // PixelBuffer pix_buf {root_bitmap->get_data_mut(), root_box.size.x, root_box.size.y, PX32F::ARGB, PixelBuffer::Bottom};
+    // SWR::Renderer renderer {pix_buf};
+    // renderer.clear(0xFF000000);
+    
+    // for(i32 i = 0; i < context.app->song.beat_count*4; i++)
+    // {
+    //     renderer.draw_line({i*pixels_per_jiffy, 0},{i*pixels_per_jiffy, (i32)uic_root->box.size.y}, 0xFF666666);
+    // }
+    // for(i32 i = 0; i < context.app->song.beat_count+1; i++)
+    // {
+    //     renderer.draw_line({i*pixels_per_beat, 0},{i*pixels_per_beat, (i32)uic_root->box.size.y}, 0xFFFFFFFF);
+    // }
+    // renderer.draw_line({(int)(root_box.size.x-10.0), 0},{(int)(root_box.size.x-10.0), 50}, 0xFFFFFFFF);
+    
 
 
 
@@ -229,6 +302,26 @@ void UIC_InstrumentLine::reload_notes()
     }
 }
 
+void UIC_InstrumentLine::reload_background()
+{
+    i32 pixels_per_jiffy = (i32) get_pixels_per_note_jiffy();
+    i32 pixels_per_beat = 4 * pixels_per_jiffy;
+
+    Bitmap* root_bitmap = uic_root->visibility.value.bitmap;
+    PixelBuffer pix_buf {root_bitmap->get_data_mut(), uic_root->box.size.x, uic_root->box.size.y, PX32F::ARGB, PixelBuffer::Bottom};
+    SWR::Renderer renderer {pix_buf};
+    renderer.clear(0xFF000000);
+    
+    for(i32 i = 0; i < context.app->song.beat_count*4; i++)
+    {
+        renderer.draw_line({i*pixels_per_jiffy, 0},{i*pixels_per_jiffy, (i32)uic_root->box.size.y}, 0xFF666666);
+    }
+    for(i32 i = 0; i < context.app->song.beat_count+1; i++)
+    {
+        renderer.draw_line({i*pixels_per_beat, 0},{i*pixels_per_beat, (i32)uic_root->box.size.y}, 0xFFFFFFFF);
+    }
+}
+
 void UIC_InstrumentLine::add_line_note_node(LineNote* _line_note)
 {
     UINode* new_node = context.ui->new_node(uic_root);
@@ -238,7 +331,9 @@ void UIC_InstrumentLine::add_line_note_node(LineNote* _line_note)
 
     f64 start_time_fraction = ((f64)_line_note->get_start_time_ms()) / line_duration_ms;
 
-    f64 x_pos = uic_root->box.pos.x + 10.0 + start_time_fraction * uic_root->box.size.x;
+    // f64 x_pos = uic_root->box.pos.x + start_time_fraction * uic_root->box.size.x;
+    f64 x_pos = get_x_pos_from_line_note_index(_line_note->start_index_16th_count);
+    
 
     f64 note_duration_ms = NoteTypeDuration::get_duration_ms(_line_note->note.type, context.app->song.bpm);
     f64 note_duration_fraction_of_line = note_duration_ms / line_duration_ms;
@@ -249,4 +344,3 @@ void UIC_InstrumentLine::add_line_note_node(LineNote* _line_note)
     new_node->set_data(UINode::DataType::ptr, _line_note);
     new_node->event_callback = UI_CALLBACK_CAST line_note_callback_2;
 }
-

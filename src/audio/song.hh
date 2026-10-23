@@ -107,6 +107,8 @@ class Song
 public:
 
 	double bpm = 120.0; // beat / minute
+	f64 beat_count = 4;
+
 	AudioSamplingConfig sampling_config;
 
 	AudioData16 song_data;
@@ -117,6 +119,18 @@ public:
 
 	Song()
 	{
+	}
+
+	void set_length(f64 _bpm, f64 _beat_count)
+	{
+		bpm = _bpm;
+		beat_count = _beat_count;
+
+		f64 beat_length_s = (1/bpm) * 60;
+		u64 song_length_um = 1000000 * (u64)(beat_length_s * beat_count);
+
+		sampling_config = {AudioSamplingConfig::RATE_DURATION, 44100, song_length_um};
+		piano_line.set_sampling_config(sampling_config);
 	}
 
 
