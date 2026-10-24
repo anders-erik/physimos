@@ -76,15 +76,17 @@ void twinkle_twinkle()
 		AudioWaveGenerator gen_A5(0.5, 880.0);
 		gen_A5.generate_wave();
 
-		
+		AudioData16 C5_data = gen_C5.get_audio_data();
+		AudioData16 G5_data = gen_G5.get_audio_data();
+		AudioData16 A5_data = gen_A5.get_audio_data();
 
-		alsa.play(gen_C5.get_audio_data());
-		alsa.play(gen_C5.get_audio_data());
-		alsa.play(gen_G5.get_audio_data());
-		alsa.play(gen_G5.get_audio_data());
-		alsa.play(gen_A5.get_audio_data());
-		alsa.play(gen_A5.get_audio_data());
-		alsa.play(gen_G5.get_audio_data());
+		alsa.play(C5_data);
+		alsa.play(C5_data);
+		alsa.play(G5_data);
+		alsa.play(G5_data);
+		alsa.play(A5_data);
+		alsa.play(A5_data);
+		alsa.play(G5_data);
 	}
 
 	// alsa.end();

@@ -14,38 +14,40 @@
 #include "audio_data.hh"
 
 
-class Alsa
+struct Alsa
 {
-public:
-
-	unsigned int rate = 44100;
-	unsigned int channels = 1;
+	unsigned int sample_rate = 44100;
+	unsigned int channel_count = 1;
 	int bytes_per_sample = 2; // 16 bit integers is default
-	
-	Str file_path = "";
 
-	unsigned int ret, tmp, dir;
-	long long_ret;
-
-	unsigned int period_time; // variable provided by ALSA that specifies the time (in microseconds) between play/capture hardware interrupts
 	snd_pcm_t *pcm_handle;
-	snd_pcm_hw_params_t *params;
-	snd_pcm_uframes_t frame_count; // Some fixed size of number of frames (frame: a different word for sample that also includes all available channels) used by the current configuration space
-	char *buff;
-	int buff_size, loops;
+	snd_pcm_hw_params_t *parameters_hw;
+	/** 
+		The time (in microseconds) between HW interrupts.
+		The duration is tied to the frame count value and the sample rate and is retrieved by querying aAlsa after setting the hw parameters.
+	 */
+	u32 interrupt_delta_time_us;
+	/**
+		frame := a block containing a single sample from each channel
+		This value is set by alsa after writing the configured parameters and is equal to the number of frames the hardware will process at a time
+	 */
+	snd_pcm_uframes_t interrupt_frame_count;
+	
+	/** 
+		Buffer of size equal to the configured interrupt time/sample size/rate.
+		The contents of this buffer is what is being sent to the hardware
+	 */
+	char *chunk_buffer;
+	/** The size of one chunk, which is the number of bytes written at a time to the configured hardware. */
+	int chunk_buffer_size;
 	
 	Alsa();
-	Alsa(uint rate, uint channels, Str file_path);
 	Alsa(const Alsa&) = delete;
-
 	~Alsa();
 
 	void setup();
 	void print_pcm_info();
-	int play();
-	void play(AudioData16 audio_data);
 
+	void play(AudioData16& audio_data);
 	void stop();
-	
-	
 };

@@ -253,6 +253,7 @@ void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _
 
     uic_root = context.ui->new_node(&_parent_node);
     uic_root->box = root_box;
+    uic_root->uic = this;
     
     
     Bitmap* root_bitmap = uic_root->set_bitmap();
@@ -279,6 +280,7 @@ void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _
                                         {30.0, 30.0}};
     create_new_line_note->visibility.set_color(0xFF111111);
     create_new_line_note->event_callback = UI_CALLBACK_CAST create_new_line_note_callback;
+    create_new_line_note->uic = this;
 
     for(int i = 0; i < instrument_line->line_notes.count(); i++)
     {
@@ -291,7 +293,7 @@ void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _
 
 void UIC_InstrumentLine::reload_notes()
 {
-    for(int i = 0; i < line_note_nodes.count(); i++)
+    for(uint i = 0; i < line_note_nodes.count(); i++)
         context.ui->allocator.delete_node(line_note_nodes[i]);
     line_note_nodes.clear();   
 
@@ -343,4 +345,5 @@ void UIC_InstrumentLine::add_line_note_node(LineNote* _line_note)
     new_node->visibility.set_color(0xFF665555);
     new_node->set_data(UINode::DataType::ptr, _line_note);
     new_node->event_callback = UI_CALLBACK_CAST line_note_callback_2;
+    new_node->uic = this;
 }

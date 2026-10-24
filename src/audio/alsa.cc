@@ -7,70 +7,69 @@ Alsa::Alsa()
 	setup();
 }
 
-Alsa::Alsa(uint rate, uint channels, Str file_path)
-{
-	this->rate = rate;
-	this->channels = channels;
-	this->file_path = file_path;
-
-	setup();
-}
 
 Alsa::~Alsa()
 {
 	snd_pcm_drain(pcm_handle);
 	snd_pcm_close(pcm_handle);
-	free(buff);
+	free(chunk_buffer);
 }
 
 
 void Alsa::setup()
 {
+	u32 ret = 0;
+
 	/* Open the PCM device in playback mode */
 	// if (ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK) < 0) 
-	if (ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0) < 0) 
+	if ((ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0)) < 0) 
 		printf("ERROR: Can't open \"%s\" PCM device. %s\n", PCM_DEVICE, snd_strerror(ret));
 
 	/* Allocate parameters object and fill it with default values */
-	snd_pcm_hw_params_alloca(&params);
-	snd_pcm_hw_params_any(pcm_handle, params);
+	snd_pcm_hw_params_alloca(&parameters_hw);
+	snd_pcm_hw_params_any(pcm_handle, parameters_hw);
 
 	/* Set parameters */
-	if (ret = snd_pcm_hw_params_set_access(pcm_handle, params,
-					SND_PCM_ACCESS_RW_INTERLEAVED) < 0) 
+	if ((ret = snd_pcm_hw_params_set_access(	pcm_handle, 
+												parameters_hw,
+												SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) 
 		printf("ERROR: Can't set interleaved mode. %s\n", snd_strerror(ret));
 
-	if (ret = snd_pcm_hw_params_set_format(pcm_handle, params,
-						SND_PCM_FORMAT_S16_LE) < 0) 
+	if ((ret = snd_pcm_hw_params_set_format(	pcm_handle, 
+												parameters_hw,
+												SND_PCM_FORMAT_S16_LE)) < 0) 
 		printf("ERROR: Can't set format. %s\n", snd_strerror(ret));
 
-	if (ret = snd_pcm_hw_params_set_channels(pcm_handle, params, channels) < 0) 
+	if ((ret = snd_pcm_hw_params_set_channels(pcm_handle, parameters_hw, channel_count)) < 0) 
 		printf("ERROR: Can't set channels number. %s\n", snd_strerror(ret));
 
-	if (ret = snd_pcm_hw_params_set_rate_near(pcm_handle, params, &rate, 0) < 0) 
+	if ((ret = snd_pcm_hw_params_set_rate_near(pcm_handle, parameters_hw, &sample_rate, 0)) < 0) 
 		printf("ERROR: Can't set rate. %s\n", snd_strerror(ret));
 
 	/* Write parameters */
-	if (ret = snd_pcm_hw_params(pcm_handle, params) < 0)
+	if ((ret = snd_pcm_hw_params(pcm_handle, parameters_hw)) < 0)
 		printf("ERROR: Can't set harware parameters. %s\n", snd_strerror(ret));
 	
-	/* Allocate buffer to hold single period */
-	snd_pcm_hw_params_get_period_size(params, &frame_count, 0);
-	snd_pcm_hw_params_get_period_time(params, &period_time, NULL);
+	/* Retrieve interrupt duration for later writing */
+	snd_pcm_hw_params_get_period_size(parameters_hw, &interrupt_frame_count, 0);
+	snd_pcm_hw_params_get_period_time(parameters_hw, &interrupt_delta_time_us, NULL);
 
-	buff_size = frame_count * channels * bytes_per_sample * 1.5/* 2 -> sample size */;
-	buff = (char *) malloc(buff_size);
+
+	chunk_buffer_size = interrupt_frame_count * channel_count * bytes_per_sample;
+	chunk_buffer = (char *) malloc(chunk_buffer_size);
 }
 
 
 void Alsa::print_pcm_info()
 {
+	u32 tmp = 0;
+
 	/* Resume information */
 	printf("PCM name: '%s'\n", snd_pcm_name(pcm_handle));
 
 	printf("PCM state: %s\n", snd_pcm_state_name(snd_pcm_state(pcm_handle)));
 
-	snd_pcm_hw_params_get_channels(params, &tmp);
+	snd_pcm_hw_params_get_channels(parameters_hw, &tmp);
 	printf("channels: %i ", tmp);
 
 	if (tmp == 1)
@@ -78,97 +77,48 @@ void Alsa::print_pcm_info()
 	else if (tmp == 2)
 		printf("(stereo)\n");
 
-	snd_pcm_hw_params_get_rate(params, &tmp, 0);
+	snd_pcm_hw_params_get_rate(parameters_hw, &tmp, 0);
 	printf("rate: %d bps\n", tmp);
 
 }
 
-int Alsa::play()
+
+void Alsa::play(AudioData16& audio_data)
 {
-	snd_pcm_hw_params_get_period_time(params, &period_time, NULL);
+	int loop_count = audio_data.duration_us() / interrupt_delta_time_us;
+	long long_ret = 0;
 
-	// pcm = read(0, buff, buff_size);
-	// pcm = snd_pcm_writei(pcm_handle, buff, frame_count);
-
-
-	if(false)
+	for (int loop_i = 0; loop_i < loop_count; loop_i++)
 	{
-		short buf[128];
-		for (int i = 0; i < 100; ++i) {
-			if ((ret = snd_pcm_writei (pcm_handle, buf, 128)) != 128) {
-				fprintf (stderr, "write to audio interface failed (%s)\n",
-					snd_strerror (ret));
-				exit (1);
-			}
-		}
-	}
-
-	if(true)
-	{
-		int fd = open(file_path.to_c_str(), O_RDONLY);
-		if(fd < 0)
-		{
-			println("ERROR: filed to open audio file in Alsa.play(). Trying stdin instead.");
-			fd = 0;
-		}
-
-		// printf("loopy about to start  ");
-		for (loops = (1000000 / period_time); loops > 0; loops--) {
-		// // for (loops = (seconds * 100000) / tmp; loops > 0; loops--) {
-			// printf("loopy.  ");
-		// 	// printf("buff size: %i \n", buff_size);
-
-			if ((ret = read(fd, buff, buff_size)) == 0) {
-				printf("Early end of file.\n");
-				return 0;
-			}
-
-			if ((ret = snd_pcm_writei(pcm_handle, buff, frame_count)) == -EPIPE) {
-				printf("XRUN.\n");
-				snd_pcm_prepare(pcm_handle);
-			} else if (ret < 0) {
-				printf("ERROR. Can't write to PCM device. %s\n", snd_strerror(ret));
-			}
-			
-		}
-
-		ret = close(fd);
-		if(ret < 0)
-		{
-			println("ERROR: filed to close audio file in Alsa.play()");
-			return 1;
-		}
-	}
-
-	return 1;
-}
-
-
-void Alsa::play(AudioData16 audio_data)
-{
-	int loop_counter = 0;
-
-	for (loops = (  (uint)(audio_data.duration_s_double() * 1000000.0) / period_time); loops > 0; loops--)
-	{
-		int element_offset = (loop_counter++) * ( frame_count ); // number of elements in one 'period_time'
+		int frame_offset = loop_i * interrupt_frame_count;
 		
-		memcpy(	buff,
-				audio_data.data.data_mut() + element_offset,
-				buff_size);
+		memcpy(	chunk_buffer,
+				audio_data.data.data_mut() + frame_offset,
+				chunk_buffer_size);
 
-		if ((long_ret = snd_pcm_writei(pcm_handle, buff, frame_count)) == -EPIPE) {
-			printf("XRUN. snd_pcm_writei return value: %li \n", long_ret);
+		if ((long_ret = snd_pcm_writei(pcm_handle, chunk_buffer, interrupt_frame_count)) == -EPIPE)
+		{
+			// snd_pcm_drop(pcm_handle);
+			// 	return;
+			printf("XRUN. snd_pcm_writei return value: %li  (Buffer underrun). \n", long_ret);
 			snd_pcm_prepare(pcm_handle);
-		} else if (long_ret < 0) {
-			printf("ERROR. Can't write to PCM device. %s\n", snd_strerror(ret));
+		}
+		else if (long_ret < 0)
+		{
+			printf("ERROR. Can't write to PCM device. %s\n", snd_strerror(long_ret));
 		}
 		// printf("     snd_pcm_writei return value: %li \n", long_ret);
+
 	}
+
+	// snd_pcm_drain(pcm_handle);
 }
 
 
 void Alsa::stop()
 {
 	snd_pcm_drop(pcm_handle);
+	snd_pcm_close(pcm_handle);
+	free(chunk_buffer);
 	setup(); // recreate the handle that we just dropped!
 }

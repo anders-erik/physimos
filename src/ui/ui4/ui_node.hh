@@ -137,9 +137,15 @@ struct UINode
 
     // Arr<callback_fn> callbacks;
 
-    UIEventReturn (*event_callback)(UINode*, UIEvent _ui_event, void*) = nullptr;
+    UIEventReturn (*event_callback)(UINode*, UIEvent, void*) = nullptr;
     // Provides a pointer to the component that controls this particular node
     void* uic = nullptr;
+    // struct Context
+    // {
+    //     UI* ui = nullptr;
+    //     void* app = nullptr;
+    //     void* uic = nullptr;
+    // } context;
     // CallbackContext<int, bool> callback_context;
 
     UINode()

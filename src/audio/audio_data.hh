@@ -117,6 +117,7 @@ public:
 
 	double duration_s_double() { return ((double)sample_count()) / ((double)sample_rate()); }
 	int duration_ms_int() { return (int) (duration_s_double() * 1000); } // rounds according to double to int cast rounding rules
+	u32 duration_us() {return (u32)(duration_s_double() * 1000000.0); }
 };
 
 
