@@ -3,6 +3,7 @@
 
 #include "lib/bitmap.hh"
 #include "lib/llist.hh"
+#include "lib/arr.hh"
 
 #include "math/vecmat.hh"
 
@@ -10,16 +11,77 @@
 
 #include "ui_node.hh"
 #include "ui_event.hh"
-#include "ui_allocator.hh"
 #include "ui_font_bitmap.hh"
+
+
+#define MAX_UI_NODES 100
+#define FONT_SIZE_PX 30
+
+
+struct UIAllocator
+{
+    UINode nodes[MAX_UI_NODES];
+    bool occupied_slots[MAX_UI_NODES] {0};
+
+    unsigned long max_node_count = MAX_UI_NODES;
+    unsigned long node_count = 0;
+
+    UIAllocator()
+    {
+        // occupied_slots.capacity
+        // occupied_slots.set(false);
+    }
+
+    UINode* new_node()
+    {
+        for(uint i = 0; i < MAX_UI_NODES; i++)
+        {
+
+            if(!occupied_slots[i])
+            {
+                occupied_slots[i] = true;
+                node_count++;
+                return (nodes + i);
+            }
+        }
+
+        Print::ln("ERROR: requested new UINode from allocator but there were no available space. ");
+
+        return nullptr;
+    }
+
+    /** Logically clears a slot in the memory, and calls the UINode destructor to clear any held resources. */
+    void delete_node(UINode* _node)
+    {
+        bool node_deletion_confirmed = false;
+
+        for(uint i = 0; i < MAX_UI_NODES; i++)
+        {
+            if(occupied_slots[i])
+            {
+                if(_node == (nodes + i))
+                {
+                    occupied_slots[i] = false;
+                    node_count--;
+                    _node->~UINode();
+                    node_deletion_confirmed = true;
+                    break;
+                }
+            }
+        }
+
+        if(!node_deletion_confirmed)
+            Print::ln("ERROR: requested UINode deletion from allocator failed. Unable to find a matching UINode in memory.");
+
+        return;
+    }
+
+};
 
 
 struct UI
 {
     UINode root;
-    UIAllocator allocator;
-    // Arr<Bitmap> bitmap_assets;
-    // static Bitmap font;
 
     d2 current_pointer_pos = {0.0, 0.0};
 
@@ -27,23 +89,12 @@ struct UI
     UINode* current_grab_target = nullptr; // the node that returned the most recent mouse grab callback return, and not yet returned a release
     UINode* current_keyboard_target = &root; // the node that is currently recieving keyboard input
 
-    UI(unsigned long _max_number_ui_nodes)
-        : allocator {_max_number_ui_nodes}
-    {
-        // init_bitmap_assets();
-        // current_keyboard_target = &root;
-    }
+    // Arr<Bitmap> bitmap_assets;
+    // static Bitmap font;
 
-    UI()
-        : allocator { 100 }
-    {
-        root.parent = nullptr;
-        // init_bitmap_assets();
-    }
+    UIAllocator allocator;
 
-    
-
-    
+        
     /** Appends a new node to the provided parent node. Returns new node. */
     UINode* new_node(UINode* _parent)
     {
@@ -303,67 +354,3 @@ private:
 
 };
 
-
-
-struct UIString: public UINode
-{
-    Str str;
-    uint font_size = 12;
-
-    UIString() {}
-    UIString(Str _str) : str {_str} {}
-    UIString(Str _str, d2 _pos)
-    {
-        box.pos = _pos;
-        visibility.set_bitmap();
-        Bitmap& bitmap = get_string_bitmap();
-        set_str(_str);
-    }
-
-    Bitmap& get_string_bitmap()
-    {
-        return *visibility.value.bitmap;
-    }
-
-    void set_str(Str _str)
-    {
-        // double char_width = 20;
-        double char_height = 30;
-        // int font_pixel_size = font_size * 1.5;
-
-        double size_factor =  (char_height / 150.0);
-        double char_width = char_height * (80.0 / 150.0);
-
-        str = _str;
-        box.size.x = char_width * str.size();
-        box.size.y = char_height;
-
-        visibility.set_bitmap(box.size.x, box.size.y);
-        Bitmap& str_bitmap = *visibility.value.bitmap;
-
-        Bitmap& font_bitmap = get_font_bitmap();
-
-        for(uint i = 0; i < str.size(); i++)
-        {
-            // char letter = 'a';
-            char letter = str[i];
-            uint letter_height_offset = (letter - 30) * 150;
-            u2 pos = {0, letter_height_offset};
-            u2 size = {80, 150};
-
-            Bitmap bmp_letter = font_bitmap.get_subbitmap(pos, size).scale(size_factor);
-
-            // TODO: Negative y-value-pastes are not pasted with offset.
-            // I believe that the problem is that I am not sampling the pasted bitmap at the proper indeces after persforming intersection tests!
-            // For intersections we need not only return the interection box, but also the sample offset where we begin the sampling of the pasted bitmap!!
-
-            // str_bitmap.paste(bmp_letter, {(double)i*char_width, -30.0});
-            // str_bitmap.paste(bmp_letter, {(double)i*char_width, 0.0});
-
-            str_bitmap.paste2(bmp_letter, {(double)i*char_width-100, -10.0});
-            str_bitmap.paste2(bmp_letter, {(double)i*char_width, 20.0});
-            str_bitmap.paste2(bmp_letter, {(double)i*char_width+20, 0.0});
-        }
-
-    }
-};

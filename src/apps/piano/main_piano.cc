@@ -31,6 +31,9 @@ int main(int argc, char** argv)
     printf("sizeof(UINode) = %li \n", sizeof(UINode));
     printf("sizeof(Arr<int>) = %li \n", sizeof(Arr<int>));
 
+
+    printf("sizeof(UI) = %li \n", sizeof(UI));
+
     Tester tester;
     tester.hello();
     // tester_fn = tester::hello;

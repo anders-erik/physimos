@@ -229,11 +229,13 @@ struct UINode
     {
         type = NodeType::String;
         // double char_width = 20;
-        double char_height = 30;
+        // double char_height = 30;
+        double char_width = 12;
+        double char_height = 23;
         // int font_pixel_size = font_size * 1.5;
 
         double size_factor =  (char_height / 150.0);
-        double char_width = char_height * (80.0 / 150.0);
+        // double char_width = char_height * (80.0 / 150.0);
 
         str = _str;
         box.size.x = char_width * str.size();
@@ -244,7 +246,8 @@ struct UINode
 
         for(uint i = 0; i < str.size(); i++)
         {
-            Bitmap bmp_letter = get_char_bitmap(str[i]).scale(size_factor);
+            // Bitmap bmp_letter = get_char_bitmap(str[i]).scale(size_factor);
+            Bitmap bmp_letter = get_char_bitmap_12x23(str[i]);
             str_bitmap.paste2(bmp_letter, {(double)i*char_width, 0.0});
 
             // Paste tests
