@@ -29,17 +29,18 @@ void Wayland::render()
     wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
     wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
     wl_surface_commit(state.wl.surface);
+
+    wl_surface_damage_buffer(state.wl.surface_content, 0, 0, state.subfb.w, state.subfb.h);
+    wl_surface_attach(state.wl.surface_content, state.subfb.buffer, 0, 0);
+    wl_surface_commit(state.wl.surface_content);
+
     state.fb.buffer_busy = true;
 }
 
 
 
 
-
-
-
-
-void Wayland::init(i2 dims)
+void Wayland::connect_compositor()
 {
     // opaque object passed to qayland server during communication
     // struct wl_display *display = wl_display_connect(NULL);
@@ -66,33 +67,63 @@ void Wayland::init(i2 dims)
         printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.wl.display));
         return;
     }
+    if (!state.wl.compositor || !state.wl.subcompositor) {
+        fprintf(stderr, "Required interfaces (compositor/subcompositor) missing.\n");
+        return;
+    }
 
     // printf("display fd = %d\n", wl_display_get_fd(state.wl_display));
     // printf("error = %d\n", wl_display_get_error(state.wl_display));
+}
 
-
+void Wayland::create_surfaces()
+{
     state.wl.surface = wl_compositor_create_surface(state.wl.compositor);
+    state.wl.surface_content = wl_compositor_create_surface(state.wl.compositor);
+    state.wl.subsurface = wl_subcompositor_get_subsurface(  state.wl.subcompositor, 
+                                                            state.wl.surface_content, 
+                                                            state.wl.surface);
+    if (!state.wl.subsurface) {
+        fprintf(stderr, "Failed to create subsurface role.\n");
+        return;
+    }
+
     state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.wl.surface);
     xdg_surface_add_listener(state.xdg.surface, &xdg_surface_listener, &state);
+    wl_surface_commit(state.wl.surface);
+    wl_surface_commit(state.wl.surface_content);
+
     state.xdg.toplevel = xdg_surface_get_toplevel(state.xdg.surface);
     xdg_toplevel_set_title(state.xdg.toplevel, "Example client");
-    wl_surface_commit(state.wl.surface);
+}
 
 
+void Wayland::initialize_framebuffers(i2 dims)
+{
+    i2 subs_pos = {50, 50};
+    i2 subs_size = {30, 30};
 
     state.fb.w = dims.x;
     state.fb.h = dims.y;
-
     state.fb.init(&(this->state));
-    state.fb.clear_gray();    
+    state.fb.clear_gray(); 
 
+    state.subfb.w = subs_size.x;
+    state.subfb.h = subs_size.y;
+    state.subfb.init(&(this->state));
+    state.subfb.clear_green();
+
+    wl_subsurface_set_position(state.wl.subsurface, subs_pos.x, subs_pos.y);
+}
+
+void Wayland::init(i2 dims)
+{
+    connect_compositor();
+    create_surfaces();
+    initialize_framebuffers(dims);
     render(); // initial render to display the window
 }
 
-void draw_square(void* )
-{
-    
-}
 
 Arr<UserInput> Wayland::get_new_input_events()
 {

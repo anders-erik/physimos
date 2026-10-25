@@ -118,6 +118,7 @@ void WLFB::init(WaylandState* _state)
     data = (uint32_t*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
     if (data == MAP_FAILED)
     {
+        Print::ln("ERROR: mmap failed in WLFB::init().");
         close(shm_fd);
         return;
     }

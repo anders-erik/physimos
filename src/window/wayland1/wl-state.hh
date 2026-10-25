@@ -86,8 +86,14 @@ struct WLOBJ
 {
     struct wl_display *display;
     struct wl_registry *registry;
+
     struct wl_compositor *compositor;
+    struct wl_subcompositor *subcompositor;
+
     struct wl_surface *surface;
+    struct wl_surface *surface_content;
+    struct wl_subsurface *subsurface;
+
     struct wl_seat *seat;
 };
 
@@ -103,6 +109,8 @@ struct WLINPUT
 {
     Arr<UserInput> w_events;
 
+    KeyModifiers key_modifiers;
+
     // Pointer state
     d2 pointer_pos_raw = {0.0, 0.0};
     d2 pointer_pos_last_sane = {0.0, 0.0};
@@ -117,6 +125,8 @@ typedef struct client_state {
     XDGOBJ xdg;
     /* Buffer objects */
     WLFB fb;
+    /* Subframebuffer for the content subsurface */
+    WLFB subfb;
     /* Callbacks*/
     WLCB callbacks;
 

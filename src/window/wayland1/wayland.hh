@@ -9,6 +9,10 @@ class Wayland
 {
     WaylandState state = { 0 }; 
 
+    void connect_compositor();
+    void create_surfaces();
+    void initialize_framebuffers(i2 dims);
+
     void init(i2 dims);
     void render(); // damage buffer and commit surface
     

@@ -30,6 +30,7 @@ pointer_enter(void *data,
     //     hotspot_x,
     //     hotspot_y
     // );
+    // wl_surface_set_user_data(
 }
 
 static void
@@ -75,7 +76,8 @@ pointer_motion(void *data,
     
     UserInput pointer_move_ev = { 
         UserInputType::MouseMove, 
-        MouseMovement{ pos_old_sane, pos_current_sane }
+        MouseMovement{ pos_old_sane, pos_current_sane },
+        state->input.key_modifiers
     };
     state->input.w_events.push_back(pointer_move_ev);
 }
@@ -88,7 +90,7 @@ pointer_button(void *data,
                uint32_t button,
                uint32_t state)
 {
-    client_state *w_app = (client_state*) data;
+    WaylandState *wl_state = (WaylandState*) data;
     // struct client_state *state = (struct client_state*) data;
 
     // Print::ln(Str::SI(button));
@@ -141,9 +143,10 @@ pointer_button(void *data,
 
     UserInput pointer_click_ev = { 
         UserInputType::MouseClick, 
-        mouse_click
+        mouse_click,
+        wl_state->input.key_modifiers
     };
-    w_app->input.w_events.push_back(pointer_click_ev);
+    wl_state->input.w_events.push_back(pointer_click_ev);
 
     // Print::buf("mouse btn: ");
     // Print::buf(btn_name);
@@ -172,7 +175,7 @@ pointer_axis(void *data,
     // Print::ln(Str::UI(value));
 
     ScrollInput scroll_input {direction};
-    UserInput user_input = {UserInputType::ScrollInput, scroll_input};
+    UserInput user_input = {UserInputType::ScrollInput, scroll_input, wl_state->input.key_modifiers};
     wl_state->input.w_events.push_back(user_input);
 }
 

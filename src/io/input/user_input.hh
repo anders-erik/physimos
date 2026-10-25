@@ -8,6 +8,7 @@
 #include "mouse_input.hh"
 #include "key_input.hh"
 #include "scroll_input.hh"
+#include "key_modifiers.hh"
 
 
 enum class UserInputType
@@ -37,11 +38,17 @@ struct UserInput
 {
     UserInputType event_type;
     UserInputData event_data;
+    KeyModifiers key_modifiers;
 
     UserInput() {}
     UserInput(UserInputType _event_type, UserInputData _event_data) 
         :   event_type {_event_type},
             event_data {_event_data}
+    {}
+    UserInput(UserInputType _event_type, UserInputData _event_data, KeyModifiers _key_modifiers) 
+        :   event_type {_event_type},
+            event_data {_event_data},
+            key_modifiers {_key_modifiers}
     {}
 
     bool is_mouse_move() { return (event_type == UserInputType::MouseMove) ? true : false; }

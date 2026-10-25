@@ -271,7 +271,7 @@ void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     UINode* string_node = ui.new_node(&ui.root);
     // ui_string.visibility.set_bitmap();
     string_node->box.pos = {400, 50};
-    string_node->set_str("Physimos!");
+    string_node->set_str("Physimos!WM");
     // string_node->handle_mouse_click = PIANO_UI_CALLBACK_CAST string_click;
     // string_node->handle_mouse_release = PIANO_UI_CALLBACK_CAST string_unclick;
     // string_node->handle_key_press = PIANO_UI_CALLBACK_CAST editable_string_key_press;

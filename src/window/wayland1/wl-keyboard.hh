@@ -98,7 +98,9 @@ static void keyboard_key(
     }
 
     KeyInput key_input = {key, action};
-    UserInput user_input = { UserInputType::KeyInput, key_input};
+    UserInput user_input = {    UserInputType::KeyInput, 
+                                key_input, 
+                                wl_state->input.key_modifiers   };
     wl_state->input.w_events.push_back(user_input);
 
     if(wlkey == 1) // Escape
@@ -117,6 +119,32 @@ static void keyboard_modifiers(
     uint32_t mods_locked,
     uint32_t group)
 {
+    WaylandState* state = (WaylandState*)data;
+
+    // Print::ln("keyboard modifier callback");
+
+    // This is done because the alt presses were triggering two bits (bit # 4 & 13).
+    uint8_t mods_depressed_u8 = (uint8_t) mods_depressed;
+
+    // printf("serial: %d, \n  mods_depressed: %d, \n  mods_latched: %d, \n  mods_locked: %d, \n  group: %d, \n", serial, mods_depressed, mods_latched, mods_locked, group);
+
+    if(mods_depressed_u8 & 0x1)
+        state->input.key_modifiers.shift = true;
+    else
+        state->input.key_modifiers.shift = false;
+    
+    if(mods_depressed_u8 & 0x4)
+        state->input.key_modifiers.control = true;
+    else
+        state->input.key_modifiers.control = false;
+    
+    if(mods_depressed_u8 & 0x8)
+        state->input.key_modifiers.alt = true;
+    else
+        state->input.key_modifiers.alt = false;
+    
+
+    // state->input.key_modifiers.print();
 }
 
 static void keyboard_repeat_info(

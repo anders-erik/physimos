@@ -37,11 +37,18 @@ registry_global(void *data, struct wl_registry *wl_registry,
     {
         state->fb.wl_shm = (wl_shm *)wl_registry_bind(
                 wl_registry, name, &wl_shm_interface, 1);
+        state->subfb.wl_shm = (wl_shm *)wl_registry_bind(
+                wl_registry, name, &wl_shm_interface, 1);
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
         state->wl.compositor = (wl_compositor *)wl_registry_bind(
                 wl_registry, name, &wl_compositor_interface, 4);
+    }
+    else if (strcmp(interface, wl_subcompositor_interface.name) == 0)
+    {
+        state->wl.subcompositor = (wl_subcompositor *)wl_registry_bind(
+                wl_registry, name, &wl_subcompositor_interface, 1);
     }
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
     {

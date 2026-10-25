@@ -21,6 +21,8 @@ struct UIC_InstrumentLine
     UINode* create_new_line_note = nullptr;
     Arr<UINode*> line_note_nodes;
 
+    i32 start_jiffy_index = 0;
+
     // f64 y_accumulator = 0.0; // an accumulator for snapping the line notes between different values in the UI
 
     UIC_InstrumentLine()

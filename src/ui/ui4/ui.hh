@@ -149,6 +149,7 @@ struct UI
             if(current_grab_target != nullptr)
             {
                 UIEvent mouse_move_event {UIEvent::mouse_move};
+                mouse_move_event.key_mods = _user_input.key_modifiers;
                 d2 mouseMovementDelta = move.delta();
                 mouse_move_event.value.mouse_move = UIMouseMove{    mouseMovementDelta.x, 
                                                                     mouseMovementDelta.y,
@@ -175,6 +176,7 @@ struct UI
             {
                 // Print::ln("UI move without target change");
                 UIEvent ui_event {UIEvent::mouse_move};
+                ui_event.key_mods = _user_input.key_modifiers;
                 d2 mouseMovementDelta = move.delta();
                 ui_event.value.mouse_move = UIMouseMove{    mouseMovementDelta.x, 
                                                             mouseMovementDelta.y,
@@ -204,6 +206,7 @@ struct UI
                     if(current_hover_target->event_callback != nullptr)
                     {
                         UIEvent exit_event {UIEvent::mouse_exit};
+                        exit_event.key_mods = _user_input.key_modifiers;
                         current_hover_target->event_callback(current_hover_target, exit_event, _data);
                     }
                 }
@@ -216,6 +219,7 @@ struct UI
                     if(new_hover_target->event_callback != nullptr)
                     {
                         UIEvent enter_event {UIEvent::mouse_enter};
+                        enter_event.key_mods = _user_input.key_modifiers;
                         new_hover_target->event_callback(new_hover_target, enter_event, _data);
                     }
                 }
@@ -236,6 +240,7 @@ struct UI
                     if(current_grab_target->event_callback != nullptr)
                     {
                         UIEvent mouse_release_event {UIEvent::mouse_release};
+                        mouse_release_event.key_mods = _user_input.key_modifiers;
                         current_grab_target->event_callback(current_grab_target, mouse_release_event, _data);
                     }
                     current_grab_target = nullptr;
@@ -253,6 +258,7 @@ struct UI
                 if(new_click_target->event_callback != nullptr)
                 {
                     UIEvent mouse_press_event {UIEvent::mouse_press};
+                    mouse_press_event.key_mods = _user_input.key_modifiers;
                     UIEventReturn return_value = new_click_target->event_callback(new_click_target, mouse_press_event, _data);
 
                     if(return_value.type == UIEventReturn::node_keyboard_grab)
@@ -271,6 +277,7 @@ struct UI
                 return;
             
             UIEvent key_event;
+            key_event.key_mods = _user_input.key_modifiers;
 
             if(_user_input.event_data.key_input.action == KeyButtonAction::Press)
                 key_event.type = UIEvent::key_press;
@@ -292,6 +299,7 @@ struct UI
         else if(_user_input.event_type == UserInputType::ScrollInput)
         {
             UIEvent scroll_event {UIEvent::mouse_scroll};
+            scroll_event.key_mods = _user_input.key_modifiers;
 
             if(_user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
                 scroll_event.value.scroll.direction = UIScroll::Up;

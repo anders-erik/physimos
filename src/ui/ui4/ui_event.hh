@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "io/input/user_input.hh"
 
 struct UIEventReturn
 {
@@ -35,6 +36,9 @@ struct UIScroll
         Up,
         Down,
     } direction;
+
+    bool is_up() { return direction == Up; }
+    bool is_down() { return direction == Down; }
 };
 
 struct UIEvent
@@ -59,6 +63,27 @@ struct UIEvent
     } value;
 
     bool target_is_grabbed = false;
+    
+    struct KeyMods
+    {
+        bool ctrl = false;
+        bool shift = false;
+        bool alt = false;
+
+        bool is_none()
+        {
+            return !ctrl && !shift && !alt;
+        }
+
+        KeyMods() = default;
+        KeyMods(KeyModifiers _key_modifers)
+        {
+            ctrl = _key_modifers.control;
+            shift = _key_modifers.shift;
+            alt = _key_modifers.alt;
+        }
+        
+    } key_mods;
 
     UIEvent() {}
     UIEvent(UIEvent::Type _type)
@@ -66,3 +91,4 @@ struct UIEvent
         type = _type;
     }
 };
+

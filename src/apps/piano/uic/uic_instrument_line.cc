@@ -9,6 +9,52 @@
 UIC_InstrumentLine* uic_instrument_line_ptr = nullptr;
 
 
+
+UIEventReturn uic_instrument_line_root_callback(UI_CALLBACK_PARAMS(PianoApp))
+{
+    switch (ui_event.type)
+    {
+    case UIEvent::mouse_scroll:
+        {
+            UIC_Song uic_song = data->piano_ui.uic_song;
+
+            if(ui_event.key_mods.is_none())
+            {
+                if(ui_event.value.scroll.is_up())
+                {
+                    AudioSamplingConfig current_sampling_config = data->song.sampling_config;
+                    AudioSamplingConfig new_sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, current_sampling_config.duration_us + 100000};
+                    uic_song.song->set_sampling_config(new_sampling_config);
+                    uic_song.song_length_label->set_str(Str::UI(new_sampling_config.duration_us));
+                }
+                else if(ui_event.value.scroll.is_down())
+                {
+                    AudioSamplingConfig current_sampling_config = data->song.sampling_config;
+                    AudioSamplingConfig new_sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, current_sampling_config.duration_us - 100000};
+                    uic_song.song->set_sampling_config(new_sampling_config);
+                    uic_song.song_length_label->set_str(Str::UI(new_sampling_config.duration_us));
+                }
+            }
+            else if(ui_event.key_mods.shift)
+            {
+                if(ui_event.value.scroll.is_up())
+                    ++uic_instrument_line_ptr->start_jiffy_index;
+                else
+                    --uic_instrument_line_ptr->start_jiffy_index;
+            }
+
+            uic_song.uic_instrument_line.reload_background();
+            uic_song.uic_instrument_line.reload_notes();
+        }
+        break;
+    
+    default:
+        break;
+    }
+
+    return {};
+}
+
 UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
 {
     Print::ln("line_note_callback!");
@@ -253,6 +299,7 @@ void UIC_InstrumentLine::init(UIAppContext<PianoApp> _context, InstrumentLine* _
 
     uic_root = context.ui->new_node(&_parent_node);
     uic_root->box = root_box;
+    uic_root->event_callback = UI_CALLBACK_CAST uic_instrument_line_root_callback;
     uic_root->uic = this;
     
     
@@ -316,7 +363,8 @@ void UIC_InstrumentLine::reload_background()
     
     for(i32 i = 0; i < context.app->song.beat_count*4; i++)
     {
-        renderer.draw_line({i*pixels_per_jiffy, 0},{i*pixels_per_jiffy, (i32)uic_root->box.size.y}, 0xFF666666);
+        i32 x_pos = (i+start_jiffy_index)*pixels_per_jiffy;
+        renderer.draw_line({x_pos, 0}, {x_pos, (i32)uic_root->box.size.y}, 0xFF666666);
     }
     for(i32 i = 0; i < context.app->song.beat_count+1; i++)
     {
