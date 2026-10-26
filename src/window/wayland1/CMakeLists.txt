@@ -32,6 +32,7 @@ target_link_libraries(wayland
     swrend
     wayland-state
     wayland-client # this was all it took to find wayland symbols...
+    wayland-cursor
     xdg_wl_shell
 )
 

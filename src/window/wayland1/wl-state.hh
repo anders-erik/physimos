@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 
 #include "wayland-client.h"
+#include "wayland-cursor.h"
 
 #include "lib/arr.hh"
 
@@ -107,6 +108,13 @@ struct XDGOBJ
 
 struct WLINPUT
 {
+    struct wl_pointer* pointer = NULL;
+    struct wl_keyboard* keyboard = NULL;
+
+    struct wl_surface *cursor_surface;
+    struct wl_cursor_image *cursor_image;
+    struct wl_shm *cursor_shm;
+
     Arr<UserInput> w_events;
 
     KeyModifiers key_modifiers;

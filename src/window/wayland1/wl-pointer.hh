@@ -7,7 +7,7 @@
 
 #include "wayland-client.h"
 
-// #include "wl-state.hh"
+#include "wl-state.hh"
 
 static uint32_t pointer_serial;
 
@@ -19,7 +19,11 @@ pointer_enter(void *data,
               wl_fixed_t x,
               wl_fixed_t y)
 {
+    WaylandState *state = (WaylandState*) data;
+
     print("mouse enter\n");
+
+    wl_pointer_set_cursor(pointer, serial, state->input.cursor_surface, state->input.cursor_image->hotspot_x, state->input.cursor_image->hotspot_y);
 
     // pointer_serial = serial;
 

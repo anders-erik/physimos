@@ -5,33 +5,36 @@
 
 #include "wayland-client.h"
 
+#include "wl-state.hh"
 
 #include "wl-pointer.hh"
 #include "wl-keyboard.hh"
 
 
-static struct wl_pointer *pointer = NULL;
-static struct wl_keyboard *kbd_ptr = NULL;
 
 static void seat_capabilities(
     void *data,
     struct wl_seat *seat,
     uint32_t capabilities)
 {
-    if (capabilities & WL_SEAT_CAPABILITY_POINTER) {
-        pointer = wl_seat_get_pointer(seat);
+    WaylandState* state = (WaylandState*) data;
+
+    if (capabilities & WL_SEAT_CAPABILITY_POINTER)
+    {
+        state->input.pointer = wl_seat_get_pointer(seat);
 
         wl_pointer_add_listener(
-            pointer,
+            state->input.pointer,
             &pointer_listener,
             data
         );
     }
 
-    if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD) {
-        kbd_ptr = wl_seat_get_keyboard(seat);
+    if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD)
+    {
+        state->input.keyboard = wl_seat_get_keyboard(seat);
         wl_keyboard_add_listener(
-            kbd_ptr, 
+            state->input.keyboard, 
             &keyboard_listener, 
             data
         );

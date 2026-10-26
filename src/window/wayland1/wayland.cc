@@ -121,6 +121,17 @@ void Wayland::init(i2 dims)
     connect_compositor();
     create_surfaces();
     initialize_framebuffers(dims);
+
+    // CREATE CURSOR
+    struct wl_cursor_theme *cursor_theme = wl_cursor_theme_load(NULL, 24, state.fb.wl_shm);
+    struct wl_cursor *cursor = wl_cursor_theme_get_cursor(cursor_theme, "left_ptr");
+    state.input.cursor_image = cursor->images[0];
+    struct wl_buffer *cursor_buffer = wl_cursor_image_get_buffer(state.input.cursor_image);
+
+    state.input.cursor_surface = wl_compositor_create_surface(state.wl.compositor);
+    wl_surface_attach(state.input.cursor_surface, cursor_buffer, 0, 0);
+    wl_surface_commit(state.input.cursor_surface);
+
     render(); // initial render to display the window
 }
 

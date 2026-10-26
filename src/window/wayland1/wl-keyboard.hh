@@ -5,16 +5,7 @@
 
 #include "wayland-client.h"
 
-// static void keyboard_key(
-//     void *data,
-//     struct wl_keyboard *keyboard,
-//     uint32_t serial,
-//     uint32_t time,
-//     uint32_t key,
-//     uint32_t state)
-// {
-//     printf("key=%u state=%u\n", key, state);
-// }
+#include "wl-state.hh"
 
 
 static void keyboard_keymap(

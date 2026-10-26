@@ -16,8 +16,8 @@
 
 #include "lib/print.hh"
 
-#include "wl-state.hh"
-#include "wl-seat.hh"
+// #include "wl-state.hh"
+// #include "wl-seat.hh"
 // #include "wl-pointer.hh"
 // #include "wl-keyboard.hh"
 
