@@ -17,8 +17,8 @@
 #include "lib/print.hh"
 
 #include "wl-state.hh"
-#include "wl-seat.hh"
-#include "wl-xdg.hh"
+// #include "wl-seat.hh"
+// #include "wl-xdg.hh"
 // #include "wl-pointer.hh"
 // #include "wl-keyboard.hh"
 
@@ -29,7 +29,7 @@ static void
 registry_global(void *data, struct wl_registry *wl_registry,
         uint32_t name, const char *interface, uint32_t version)
 {
-    struct client_state *state = (struct client_state *)data;
+    WL_State *state = (WL_State *)data;
 
     // printf("%s \n", interface);
 
@@ -42,12 +42,12 @@ registry_global(void *data, struct wl_registry *wl_registry,
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
-        state->wl.compositor = (wl_compositor *)wl_registry_bind(
+        state->core.compositor = (wl_compositor *)wl_registry_bind(
                 wl_registry, name, &wl_compositor_interface, 4);
     }
     else if (strcmp(interface, wl_subcompositor_interface.name) == 0)
     {
-        state->wl.subcompositor = (wl_subcompositor *)wl_registry_bind(
+        state->core.subcompositor = (wl_subcompositor *)wl_registry_bind(
                 wl_registry, name, &wl_subcompositor_interface, 1);
     }
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
@@ -59,7 +59,7 @@ registry_global(void *data, struct wl_registry *wl_registry,
     }
     else if (strcmp(interface, wl_seat_interface.name) == 0)
     {
-        state->wl.seat = (wl_seat *)wl_registry_bind(
+        state->input.seat = (wl_seat *)wl_registry_bind(
             wl_registry,
             name,
             &wl_seat_interface,
@@ -67,7 +67,7 @@ registry_global(void *data, struct wl_registry *wl_registry,
         );
 
         wl_seat_add_listener(
-            state->wl.seat,
+            state->input.seat,
             &seat_listener,
             data
         );

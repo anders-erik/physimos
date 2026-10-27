@@ -73,7 +73,7 @@ allocate_shm_file(size_t size)
 static void
 wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
 {
-    WaylandState* state = (WaylandState*) data;
+    WL_State* state = (WL_State*) data;
     // Print::ln("wl_buffer_destroy!");
     /* Sent by the compositor when it's no longer using this buffer */
     // wl_buffer_destroy(wl_buffer);
@@ -86,16 +86,16 @@ static const struct wl_buffer_listener wl_buffer_listener = {
 };
 
 
-void WLFB::init(WaylandState* _state)
+void WL_FrameBuffer::init(WL_State* _state)
 {
     // format
 
-    if(format == WLFB::RGBA)
+    if(format == WL_FrameBuffer::RGBA)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
         // shm_format = wl_shm_format::WL_SHM_FORMAT_ARGB8888;
         // shm_format = wl_shm_format::WL_SHM_FORMAT_RGBA8888;
         // shm_format = wl_shm_format::WL_SHM_FORMAT_RGBX8888;
-    else if(format == WLFB::RGB)
+    else if(format == WL_FrameBuffer::RGB)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
 
     const int width =  w;
@@ -140,7 +140,7 @@ void WLFB::init(WaylandState* _state)
 
 
 
-void WLFB::resize(i2 dims)
+void WL_FrameBuffer::resize(i2 dims)
 {
     w = dims.x;
     h = dims.y;

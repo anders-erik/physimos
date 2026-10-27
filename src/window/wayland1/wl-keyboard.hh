@@ -43,7 +43,7 @@ static void keyboard_key(
     uint32_t wlkey,
     uint32_t state)
 {
-    WaylandState* wl_state = (WaylandState*) data;
+    WL_State* wl_state = (WL_State*) data;
 
     printf("key: %u, state: %u\n", wlkey, state);
 
@@ -110,7 +110,7 @@ static void keyboard_modifiers(
     uint32_t mods_locked,
     uint32_t group)
 {
-    WaylandState* state = (WaylandState*)data;
+    WL_State* state = (WL_State*)data;
 
     // Print::ln("keyboard modifier callback");
 

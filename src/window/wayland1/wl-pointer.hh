@@ -19,7 +19,7 @@ pointer_enter(void *data,
               wl_fixed_t x,
               wl_fixed_t y)
 {
-    WaylandState *state = (WaylandState*) data;
+    WL_State *state = (WL_State*) data;
 
     print("mouse enter\n");
 
@@ -53,7 +53,7 @@ pointer_motion(void *data,
                wl_fixed_t x,
                wl_fixed_t y)
 {
-    WaylandState *state = (WaylandState*) data;
+    WL_State *state = (WL_State*) data;
 
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
@@ -94,7 +94,7 @@ pointer_button(void *data,
                uint32_t button,
                uint32_t state)
 {
-    WaylandState *wl_state = (WaylandState*) data;
+    WL_State *wl_state = (WL_State*) data;
     // struct client_state *state = (struct client_state*) data;
 
     // Print::ln(Str::SI(button));
@@ -166,7 +166,7 @@ pointer_axis(void *data,
              uint32_t axis,
              wl_fixed_t value)
 {
-    WaylandState *wl_state = (WaylandState*) data;
+    WL_State *wl_state = (WL_State*) data;
 
     ScrollDirection direction;
 

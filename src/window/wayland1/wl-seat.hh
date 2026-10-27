@@ -5,6 +5,7 @@
 
 #include "wayland-client.h"
 
+#include "wl-defs.hh"
 #include "wl-state.hh"
 
 #include "wl-pointer.hh"
@@ -17,7 +18,7 @@ static void seat_capabilities(
     struct wl_seat *seat,
     uint32_t capabilities)
 {
-    WaylandState* state = (WaylandState*) data;
+    WL_State* state = (WL_State*) data;
 
     if (capabilities & WL_SEAT_CAPABILITY_POINTER)
     {

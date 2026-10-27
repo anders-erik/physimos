@@ -7,7 +7,7 @@
 
 class Wayland
 {
-    WaylandState state = { 0 }; 
+    WL_State state = { 0 }; 
 
     void connect_compositor();
     void create_surfaces();
@@ -38,6 +38,7 @@ public:
         destroy();
     }
 
+    WL_State get_state() {return state;}
 
     PixelBuffer get_pixel_buffer()
     {

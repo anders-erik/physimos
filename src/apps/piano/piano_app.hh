@@ -63,7 +63,11 @@ struct PianoApp
 
         piano_ui.init(  this, 
                         wayland.get_pixel_buffer()   );
+        
 
+        PixelBuffer subsurface_pixel_buffer {wayland.get_state().subfb.data, 60, 60, PX32F::ARGB, PixelBuffer::Bottom};
+        SWR::Renderer subsurface_renderer {subsurface_pixel_buffer};
+        subsurface_renderer.draw_triangle({1, 1},{30, 15},{15, 30}, 0xFFFFFFFF);
     }
 
     void open_window()
@@ -94,6 +98,8 @@ struct PianoApp
             if(wayland.buffer_is_busy())
                 Print::ln("rendering ui while wayland buffer still busy!");
             piano_ui.render();
+
+            
 
         }
     }

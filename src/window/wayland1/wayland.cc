@@ -10,29 +10,30 @@
 
 #include "wayland.hh"
 
-#include "wl-state.hh"
 
 
 #include <wayland-client.h>
 // #include "swrend/wayland.hh"
 
 // #include "wl-book.hh"
-#include "wl-pointer.hh"
-#include "wl-keyboard.hh"
-#include "wl-registry.hh"
+#include "wl-defs.hh"
+#include "wl-state.hh"
+// #include "wl-pointer.hh"
+// #include "wl-keyboard.hh"
+// #include "wl-registry.hh"
 
 
 
 
 void Wayland::render()
 {
-    wl_surface_damage_buffer(state.wl.surface, 0, 0, state.fb.w, state.fb.h);
-    wl_surface_attach(state.wl.surface, state.fb.buffer, 0, 0);
-    wl_surface_commit(state.wl.surface);
+    wl_surface_damage_buffer(state.core.surface_window, 0, 0, state.fb.w, state.fb.h);
+    wl_surface_attach(state.core.surface_window, state.fb.buffer, 500, 500);
+    wl_surface_commit(state.core.surface_window);
 
-    wl_surface_damage_buffer(state.wl.surface_content, 0, 0, state.subfb.w, state.subfb.h);
-    wl_surface_attach(state.wl.surface_content, state.subfb.buffer, 0, 0);
-    wl_surface_commit(state.wl.surface_content);
+    wl_surface_damage_buffer(state.core.surface_content, 0, 0, state.subfb.w, state.subfb.h);
+    wl_surface_attach(state.core.surface_content, state.subfb.buffer, 0, 0);
+    wl_surface_commit(state.core.surface_content);
 
     state.fb.buffer_busy = true;
 }
@@ -44,30 +45,30 @@ void Wayland::connect_compositor()
 {
     // opaque object passed to qayland server during communication
     // struct wl_display *display = wl_display_connect(NULL);
-    state.wl.display = wl_display_connect(NULL);
-    if (!state.wl.display)
+    state.core.display = wl_display_connect(NULL);
+    if (!state.core.display)
     {
         Print::ln("Failed to connect to Wayland display\n");
         return;
     }
 
     // think: wl_display.get_registry(); !!
-    state.wl.registry = wl_display_get_registry(state.wl.display);
-    if (!state.wl.registry)
+    state.core.registry = wl_display_get_registry(state.core.display);
+    if (!state.core.registry)
     {
         Print::ln("Failed to get Wayland registry.\n");
         return;
     }
 
-    wl_registry_add_listener(state.wl.registry, &wl_registry_listener, &state);
+    wl_registry_add_listener(state.core.registry, &state.core.registry_listener, &state);
 
     // Process all pending requests (and will block until completed)
-    int ret = wl_display_roundtrip(state.wl.display);
+    int ret = wl_display_roundtrip(state.core.display);
     if (ret < 0) {
-        printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.wl.display));
+        printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.core.display));
         return;
     }
-    if (!state.wl.compositor || !state.wl.subcompositor) {
+    if (!state.core.compositor || !state.core.subcompositor) {
         fprintf(stderr, "Required interfaces (compositor/subcompositor) missing.\n");
         return;
     }
@@ -78,20 +79,20 @@ void Wayland::connect_compositor()
 
 void Wayland::create_surfaces()
 {
-    state.wl.surface = wl_compositor_create_surface(state.wl.compositor);
-    state.wl.surface_content = wl_compositor_create_surface(state.wl.compositor);
-    state.wl.subsurface = wl_subcompositor_get_subsurface(  state.wl.subcompositor, 
-                                                            state.wl.surface_content, 
-                                                            state.wl.surface);
-    if (!state.wl.subsurface) {
+    state.core.surface_window = wl_compositor_create_surface(state.core.compositor);
+    state.core.surface_content = wl_compositor_create_surface(state.core.compositor);
+    state.core.subsurface = wl_subcompositor_get_subsurface(    state.core.subcompositor, 
+                                                                state.core.surface_content, 
+                                                                state.core.surface_window);
+    if (!state.core.subsurface) {
         fprintf(stderr, "Failed to create subsurface role.\n");
         return;
     }
 
-    state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.wl.surface);
+    state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.core.surface_window);
     xdg_surface_add_listener(state.xdg.surface, &xdg_surface_listener, &state);
-    wl_surface_commit(state.wl.surface);
-    wl_surface_commit(state.wl.surface_content);
+    // wl_surface_commit(state.core.surface_window);
+    // wl_surface_commit(state.core.surface_content);
 
     state.xdg.toplevel = xdg_surface_get_toplevel(state.xdg.surface);
     xdg_toplevel_set_title(state.xdg.toplevel, "Example client");
@@ -100,8 +101,8 @@ void Wayland::create_surfaces()
 
 void Wayland::initialize_framebuffers(i2 dims)
 {
-    i2 subs_pos = {50, 50};
-    i2 subs_size = {30, 30};
+    i2 subs_pos = {300, 50};
+    i2 subs_size = {60, 60};
 
     state.fb.w = dims.x;
     state.fb.h = dims.y;
@@ -113,7 +114,7 @@ void Wayland::initialize_framebuffers(i2 dims)
     state.subfb.init(&(this->state));
     state.subfb.clear_green();
 
-    wl_subsurface_set_position(state.wl.subsurface, subs_pos.x, subs_pos.y);
+    wl_subsurface_set_position(state.core.subsurface, subs_pos.x, subs_pos.y);
 }
 
 void Wayland::init(i2 dims)
@@ -122,15 +123,7 @@ void Wayland::init(i2 dims)
     create_surfaces();
     initialize_framebuffers(dims);
 
-    // CREATE CURSOR
-    struct wl_cursor_theme *cursor_theme = wl_cursor_theme_load(NULL, 24, state.fb.wl_shm);
-    struct wl_cursor *cursor = wl_cursor_theme_get_cursor(cursor_theme, "left_ptr");
-    state.input.cursor_image = cursor->images[0];
-    struct wl_buffer *cursor_buffer = wl_cursor_image_get_buffer(state.input.cursor_image);
-
-    state.input.cursor_surface = wl_compositor_create_surface(state.wl.compositor);
-    wl_surface_attach(state.input.cursor_surface, cursor_buffer, 0, 0);
-    wl_surface_commit(state.input.cursor_surface);
+    state.cursor.create_default(state.core.compositor, state.fb.wl_shm);
 
     render(); // initial render to display the window
 }
@@ -147,7 +140,7 @@ bool Wayland::frame_step()
 {
     render();
 
-    wl_display_dispatch(state.wl.display); // process all queued wayland events
+    wl_display_dispatch(state.core.display); // process all queued wayland events
 
     if(state.running)
         return true;
@@ -161,7 +154,7 @@ void Wayland::destroy()
 {
     state.fb.destroy();
 
-    wl_display_disconnect(state.wl.display);
+    wl_display_disconnect(state.core.display);
 }
 
 
@@ -170,7 +163,7 @@ void Wayland::run()
 
     uint dummy_i = 0;
 
-    while (wl_display_dispatch(state.wl.display))
+    while (wl_display_dispatch(state.core.display))
     {
 
         if(state.running == 0)

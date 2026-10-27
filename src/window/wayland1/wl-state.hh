@@ -14,10 +14,40 @@
 #include "window/key.hh"
 #include "io/input/user_input.hh"
 
-// struct WaylandState;
-typedef struct client_state WaylandState;
+#include "wl-defs.hh"
+#include "wl-xdg.hh"
+// #include "wl-seat.hh"
+#include "wl-callbacks.hh"
 
-struct WLFB
+struct WL_State;
+// typedef struct WL_State;
+// typedef struct client_state WaylandState;
+
+
+struct WL_Cursor
+{
+    struct wl_cursor        *cursor;
+    struct wl_surface       *surface;
+    struct wl_cursor_image  *image;
+    struct wl_cursor_theme  *theme;
+    struct wl_buffer        *buffer;
+
+    void create_default(wl_compositor* _compositor, wl_shm* _shm_surface_window)
+    {
+        // CREATE CURSOR
+        theme = wl_cursor_theme_load(NULL, 24, _shm_surface_window);
+        cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
+        image = cursor->images[0];
+        buffer = wl_cursor_image_get_buffer(image);
+
+        surface = wl_compositor_create_surface(_compositor);
+        wl_surface_attach(surface, buffer, 0, 0);
+        wl_surface_commit(surface);
+    }
+
+};
+
+struct WL_FrameBuffer
 {
     enum Format
     {
@@ -37,7 +67,7 @@ struct WLFB
     bool allocated = false;
     bool buffer_busy = false;
 
-    void init(WaylandState* _state);
+    void init(WL_State* _state);
     void resize(i2 dims);
     void* ptr() {return (void*) data;}
 
@@ -76,44 +106,61 @@ struct WLFB
     }
 };
 
-/** Wyaland callbacks */
-struct WLCB
-{
-    
-};
 
-/** Wyaland objects */
-struct WLOBJ
+/** Wayland core objects */
+struct WL_Core
 {
     struct wl_display *display;
     struct wl_registry *registry;
-
+    const struct wl_registry_listener registry_listener = {
+        .global        = registry_global,
+        .global_remove = registry_global_remove,
+    };
     struct wl_compositor *compositor;
-    struct wl_subcompositor *subcompositor;
 
-    struct wl_surface *surface;
+    struct wl_surface *surface_window;
+
     struct wl_surface *surface_content;
+    struct wl_subcompositor *subcompositor;
     struct wl_subsurface *subsurface;
-
-    struct wl_seat *seat;
 };
 
-/** Wyaland objects */
-struct XDGOBJ
+/** XDG objects */
+struct WL_XDG
 {
     struct xdg_wm_base *wm_base;
     struct xdg_surface *surface;
     struct xdg_toplevel *toplevel;
 };
 
-struct WLINPUT
+struct WL_Input
 {
-    struct wl_pointer* pointer = NULL;
-    struct wl_keyboard* keyboard = NULL;
+    struct wl_seat *seat;
+    const struct wl_seat_listener seat_listener = {
+        .capabilities = seat_capabilities,
+        .name = NULL,
+    };
 
-    struct wl_surface *cursor_surface;
-    struct wl_cursor_image *cursor_image;
-    struct wl_shm *cursor_shm;
+    struct wl_pointer* pointer = NULL;
+    const struct wl_pointer_listener pointer_listener = {
+        .enter  = pointer_enter,
+        .leave  = pointer_leave,
+        .motion = pointer_motion,
+        .button = pointer_button,
+        .axis   = pointer_axis,
+    };
+    struct wl_keyboard* keyboard = NULL;
+    const struct wl_keyboard_listener keyboard_listener = {
+        .keymap      = keyboard_keymap,
+        .enter       = keyboard_enter,
+        .leave       = keyboard_leave,
+        .key         = keyboard_key,
+        .modifiers   = keyboard_modifiers,
+        .repeat_info = keyboard_repeat_info,
+    };
+
+    // struct wl_surface *cursor_surface;
+    // struct wl_cursor_image *cursor_image;
 
     Arr<UserInput> w_events;
 
@@ -126,22 +173,22 @@ struct WLINPUT
 };
 
 /* Wayland code */
-typedef struct client_state {
+struct WL_State {
     /* Wayland Objects */
-    WLOBJ wl;
+    WL_Core core;
     /* XDG Objects */
-    XDGOBJ xdg;
+    WL_XDG xdg;
     /* Buffer objects */
-    WLFB fb;
+    WL_FrameBuffer fb;
     /* Subframebuffer for the content subsurface */
-    WLFB subfb;
-    /* Callbacks*/
-    WLCB callbacks;
+    WL_FrameBuffer subfb;
+    /* Object to handle the cursor image */
+    WL_Cursor cursor;
 
     /* Input*/
-    WLINPUT input;
+    WL_Input input;
     d2 raw_pointer;
     d2 sane_pointer;
 
     int running = 1;
-} WaylandState;
+};

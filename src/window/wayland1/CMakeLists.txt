@@ -17,11 +17,19 @@ target_compile_options(xdg_wl_shell PRIVATE -g)
 unset(CMAKE_C_COMPILER)
 
 
+add_library(wayland-callbacks wl-callbacks.cc)
+target_link_libraries(wayland-callbacks
+    lib
+    math
+    wayland-client
+)
+
 add_library(wayland-state wl-state.cc)
 target_link_libraries(wayland-state
     lib
     math
     wayland-client
+    wayland-callbacks
 )
 
 
@@ -31,6 +39,7 @@ target_link_libraries(wayland
     math
     swrend
     wayland-state
+    wayland-callbacks
     wayland-client # this was all it took to find wayland symbols...
     wayland-cursor
     xdg_wl_shell
