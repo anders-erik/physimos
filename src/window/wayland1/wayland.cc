@@ -28,12 +28,14 @@
 void Wayland::render()
 {
     wl_surface_damage_buffer(state.core.surface_window, 0, 0, state.fb.w, state.fb.h);
-    wl_surface_attach(state.core.surface_window, state.fb.buffer, 500, 500);
+    wl_surface_attach(state.core.surface_window, state.fb.buffer, 0, 0);
     wl_surface_commit(state.core.surface_window);
 
     wl_surface_damage_buffer(state.core.surface_content, 0, 0, state.subfb.w, state.subfb.h);
     wl_surface_attach(state.core.surface_content, state.subfb.buffer, 0, 0);
     wl_surface_commit(state.core.surface_content);
+
+    state.surface_test.render();
 
     state.fb.buffer_busy = true;
 }
@@ -64,14 +66,20 @@ void Wayland::connect_compositor()
 
     // Process all pending requests (and will block until completed)
     int ret = wl_display_roundtrip(state.core.display);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         printf("Wl_display_roundtrip failure. Display error: %d\n", wl_display_get_error(state.core.display));
         return;
     }
-    if (!state.core.compositor || !state.core.subcompositor) {
+
+    if (!state.core.compositor || !state.core.subcompositor)
+    {
         fprintf(stderr, "Required interfaces (compositor/subcompositor) missing.\n");
         return;
     }
+
+    xdg_wm_base_add_listener(state.xdg.wm_base, &xdg_wm_base_listener, &state);
+    wl_seat_add_listener(state.input.seat, &state.input.seat_listener, &state);
 
     // printf("display fd = %d\n", wl_display_get_fd(state.wl_display));
     // printf("error = %d\n", wl_display_get_error(state.wl_display));
@@ -81,18 +89,23 @@ void Wayland::create_surfaces()
 {
     state.core.surface_window = wl_compositor_create_surface(state.core.compositor);
     state.core.surface_content = wl_compositor_create_surface(state.core.compositor);
-    state.core.subsurface = wl_subcompositor_get_subsurface(    state.core.subcompositor, 
+
+    state.core.subsurface_content = wl_subcompositor_get_subsurface(    state.core.subcompositor, 
                                                                 state.core.surface_content, 
                                                                 state.core.surface_window);
-    if (!state.core.subsurface) {
+    
+    
+    state.surface_test.init(state.core.compositor, &state);
+    state.surface_test.create_subsurface(state.core.subcompositor, state.core.surface_window);
+
+    if (!state.core.subsurface_content)
+    {
         fprintf(stderr, "Failed to create subsurface role.\n");
         return;
     }
 
     state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.core.surface_window);
     xdg_surface_add_listener(state.xdg.surface, &xdg_surface_listener, &state);
-    // wl_surface_commit(state.core.surface_window);
-    // wl_surface_commit(state.core.surface_content);
 
     state.xdg.toplevel = xdg_surface_get_toplevel(state.xdg.surface);
     xdg_toplevel_set_title(state.xdg.toplevel, "Example client");
@@ -101,7 +114,7 @@ void Wayland::create_surfaces()
 
 void Wayland::initialize_framebuffers(i2 dims)
 {
-    i2 subs_pos = {300, 50};
+    i2 subs_pos = {1000, 50};
     i2 subs_size = {60, 60};
 
     state.fb.w = dims.x;
@@ -114,7 +127,10 @@ void Wayland::initialize_framebuffers(i2 dims)
     state.subfb.init(&(this->state));
     state.subfb.clear_green();
 
-    wl_subsurface_set_position(state.core.subsurface, subs_pos.x, subs_pos.y);
+    
+
+    wl_subsurface_set_position(state.core.subsurface_content, subs_pos.x, subs_pos.y);
+    
 }
 
 void Wayland::init(i2 dims)
@@ -131,8 +147,8 @@ void Wayland::init(i2 dims)
 
 Arr<UserInput> Wayland::get_new_input_events()
 {
-    Arr<UserInput> events = state.input.w_events;
-    state.input.w_events.clear();
+    Arr<UserInput> events = state.input.content_events;
+    state.input.content_events.clear();
     return events;
 }
 

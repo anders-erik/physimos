@@ -107,6 +107,44 @@ struct WL_FrameBuffer
 };
 
 
+struct WL_Surface
+{
+    i2 pos = {925, 200};
+    i2 size = {50, 50};
+    WL_FrameBuffer fb;
+    struct wl_surface* surface = nullptr;
+    struct wl_subsurface *subsurface = nullptr;
+
+
+    void init(struct wl_compositor* compositor, WL_State* state)
+    {
+
+        surface = wl_compositor_create_surface(compositor);
+
+        // wl_subsurface_set_position(subsurface, pos.x, pos.y);
+
+        fb.w = size.x;
+        fb.h = size.y;
+        fb.init(state);
+        fb.clear_gray(); 
+    }
+
+    void create_subsurface(struct wl_subcompositor* subcompositor, struct wl_surface* parent)
+    {
+        subsurface = wl_subcompositor_get_subsurface(subcompositor, surface, parent);
+
+        wl_subsurface_set_position(subsurface, pos.x, pos.y);
+    }
+
+    void render()
+    {
+        wl_surface_damage_buffer(surface, 0, 0, fb.w, fb.h);
+        wl_surface_attach(surface, fb.buffer, 0, 0);
+        wl_surface_commit(surface);
+    }
+};
+
+
 /** Wayland core objects */
 struct WL_Core
 {
@@ -117,12 +155,12 @@ struct WL_Core
         .global_remove = registry_global_remove,
     };
     struct wl_compositor *compositor;
+    struct wl_subcompositor *subcompositor;
 
     struct wl_surface *surface_window;
 
     struct wl_surface *surface_content;
-    struct wl_subcompositor *subcompositor;
-    struct wl_subsurface *subsurface;
+    struct wl_subsurface *subsurface_content;
 };
 
 /** XDG objects */
@@ -159,10 +197,18 @@ struct WL_Input
         .repeat_info = keyboard_repeat_info,
     };
 
+    enum Target
+    {
+        Window,
+        Content,
+        Test,
+        None,
+    } target = None;
+
     // struct wl_surface *cursor_surface;
     // struct wl_cursor_image *cursor_image;
 
-    Arr<UserInput> w_events;
+    Arr<UserInput> content_events;
 
     KeyModifiers key_modifiers;
 
@@ -178,6 +224,8 @@ struct WL_State {
     WL_Core core;
     /* XDG Objects */
     WL_XDG xdg;
+    /* test surface*/
+    WL_Surface surface_test;
     /* Buffer objects */
     WL_FrameBuffer fb;
     /* Subframebuffer for the content subsurface */

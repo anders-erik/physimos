@@ -15,43 +15,25 @@ registry_global(void *data, struct wl_registry *wl_registry,
 
     if (strcmp(interface, wl_shm_interface.name) == 0)
     {
-        state->fb.wl_shm = (wl_shm *)wl_registry_bind(
-                wl_registry, name, &wl_shm_interface, 1);
-        state->subfb.wl_shm = (wl_shm *)wl_registry_bind(
-                wl_registry, name, &wl_shm_interface, 1);
+        state->fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        state->subfb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        state->surface_test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
-        state->core.compositor = (wl_compositor *)wl_registry_bind(
-                wl_registry, name, &wl_compositor_interface, 4);
+        state->core.compositor = (wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, 4);
     }
     else if (strcmp(interface, wl_subcompositor_interface.name) == 0)
     {
-        state->core.subcompositor = (wl_subcompositor *)wl_registry_bind(
-                wl_registry, name, &wl_subcompositor_interface, 1);
+        state->core.subcompositor = (wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, 1);
     }
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
     {
-        state->xdg.wm_base = (xdg_wm_base *)wl_registry_bind(
-                wl_registry, name, &xdg_wm_base_interface, 1);
-        xdg_wm_base_add_listener(state->xdg.wm_base,
-                &xdg_wm_base_listener, state);
+        state->xdg.wm_base = (xdg_wm_base *)wl_registry_bind(wl_registry, name, &xdg_wm_base_interface, 1);
     }
     else if (strcmp(interface, wl_seat_interface.name) == 0)
     {
-        state->input.seat = (wl_seat *)wl_registry_bind(
-            wl_registry,
-            name,
-            &wl_seat_interface,
-            1
-        );
-
-        wl_seat_add_listener(
-            state->input.seat,
-            &state->input.seat_listener,
-            data
-        );
-
+        state->input.seat = (wl_seat *)wl_registry_bind(wl_registry, name, &wl_seat_interface, 1);
     }
 }
 
@@ -75,22 +57,13 @@ void seat_capabilities(
     if (capabilities & WL_SEAT_CAPABILITY_POINTER)
     {
         state->input.pointer = wl_seat_get_pointer(seat);
-
-        wl_pointer_add_listener(
-            state->input.pointer,
-            &state->input.pointer_listener,
-            data
-        );
+        wl_pointer_add_listener(state->input.pointer, &state->input.pointer_listener, data);
     }
 
     if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD)
     {
         state->input.keyboard = wl_seat_get_keyboard(seat);
-        wl_keyboard_add_listener(
-            state->input.keyboard, 
-            &state->input.keyboard_listener, 
-            data
-        );
+        wl_keyboard_add_listener(state->input.keyboard,  &state->input.keyboard_listener,  data);
     }
 }
 
@@ -180,7 +153,7 @@ void keyboard_key(
     UserInput user_input = {    UserInputType::KeyInput, 
                                 key_input, 
                                 wl_state->input.key_modifiers   };
-    wl_state->input.w_events.push_back(user_input);
+    wl_state->input.content_events.push_back(user_input);
 
     if(wlkey == 1) // Escape
     {
@@ -250,10 +223,32 @@ pointer_enter(void *data,
 {
     WL_State *state = (WL_State*) data;
 
-    print("mouse enter\n");
+    Print::buf("Entered surface: ");
 
 
     wl_pointer_set_cursor(pointer, serial, state->cursor.surface, state->cursor.image->hotspot_x, state->cursor.image->hotspot_y);
+
+    if(surface == state->surface_test.surface)
+    {
+        state->input.target = WL_Input::Test;
+        Print::ln("Test!");
+    }
+    else if(surface == state->core.surface_content)
+    {
+        state->input.target = WL_Input::Content;
+        Print::ln("Content!");
+    }
+    else if(surface == state->core.surface_window)
+    {
+        state->input.target = WL_Input::Window;
+        Print::ln("Window!");
+    }
+    else
+    {
+        Print::ln("ERROR: entered a non-tracked surface!");
+    }
+
+    
 
     // pointer_serial = serial;
 
@@ -275,7 +270,28 @@ pointer_leave(void *data,
               uint32_t serial,
               struct wl_surface *surface)
 {
-    print("mouse leave\n");
+    WL_State *state = (WL_State*) data;
+
+    Print::buf("Left surface:    ");
+
+    if(surface == state->surface_test.surface)
+    {
+        Print::ln("Test!");
+    }
+    else if(surface == state->core.surface_content)
+    {
+        Print::ln("Content!");
+    }
+    else if(surface == state->core.surface_window)
+    {
+        Print::ln("Window!");
+    }
+    else
+    {
+        Print::ln("ERROR: left a non-tracked surface!");
+    }
+
+    state->input.target = WL_Input::None;
 }
 
 void
@@ -315,7 +331,7 @@ pointer_motion(void *data,
         MouseMovement{ pos_old_sane, pos_current_sane },
         state->input.key_modifiers
     };
-    state->input.w_events.push_back(pointer_move_ev);
+    state->input.content_events.push_back(pointer_move_ev);
 }
 
 void
@@ -394,7 +410,7 @@ pointer_button(void *data,
         mouse_click,
         wl_state->input.key_modifiers
     };
-    wl_state->input.w_events.push_back(pointer_click_ev);
+    wl_state->input.content_events.push_back(pointer_click_ev);
 
     // Print::buf("mouse btn: ");
     // Print::buf(btn_name);
@@ -424,5 +440,5 @@ pointer_axis(void *data,
 
     ScrollInput scroll_input {direction};
     UserInput user_input = {UserInputType::ScrollInput, scroll_input, wl_state->input.key_modifiers};
-    wl_state->input.w_events.push_back(user_input);
+    wl_state->input.content_events.push_back(user_input);
 }
