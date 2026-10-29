@@ -61,13 +61,22 @@ struct PianoApp
         // song.generate();
         // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
 
+        // piano_ui.init(  this, 
+        //                 wayland.get_pixel_buffer()   );
+
+        PixelBuffer new_content_surface_pixel_buffer = PixelBuffer {    (PX32*) wayland.get_state().surface_content.fb.data, 
+                                                                                wayland.get_state().surface_content.fb.w, 
+                                                                                wayland.get_state().surface_content.fb.h,
+                                                                                PX32F::ARGB,
+                                                                                PixelBuffer::Top    };
         piano_ui.init(  this, 
-                        wayland.get_pixel_buffer()   );
+                        wayland.get_pixel_buffer(),
+                        new_content_surface_pixel_buffer    );
         
 
-        PixelBuffer subsurface_pixel_buffer {wayland.get_state().subfb.data, 60, 60, PX32F::ARGB, PixelBuffer::Bottom};
-        SWR::Renderer subsurface_renderer {subsurface_pixel_buffer};
-        subsurface_renderer.draw_triangle({1, 1},{30, 15},{15, 30}, 0xFFFFFFFF);
+        // PixelBuffer subsurface_pixel_buffer {wayland.get_state().surface_content.fb.data, 60, 60, PX32F::ARGB, PixelBuffer::Bottom};
+        // SWR::Renderer subsurface_renderer {subsurface_pixel_buffer};
+        // subsurface_renderer.draw_triangle({1, 1},{30, 15},{15, 30}, 0xFFFFFFFF);
     }
 
     void open_window()

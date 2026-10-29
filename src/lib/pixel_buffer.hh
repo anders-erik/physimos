@@ -203,7 +203,7 @@ struct PixelBuffer
     {
         if(_x >= w || _y >= h)
         {
-            Print::ln("ERROR: accessing pixel outside bounds of bitmap.");
+            Print::ln("ERROR: accessing pixel outside bounds of PixelBuffer.");
             return buf;
         }
 

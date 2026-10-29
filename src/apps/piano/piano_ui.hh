@@ -24,6 +24,7 @@ public:
 
     UI ui;
     SWR::Renderer renderer;
+    SWR::Renderer renderer_new_content;
 
     UIC_piano uic_piano;
     UIC_Song uic_song;
@@ -40,9 +41,10 @@ public:
     PianoUI(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
     {
         init(_piano_app, _pixel_buffer);
-    } 
+    }
 
     void init(PianoApp* _piano_app, PixelBuffer _pixel_buffer);
+    void init(PianoApp* _piano_app, PixelBuffer _pixel_buffer, PixelBuffer _pixel_buffer_new_content);
 
     void update(PianoApp* _piano_app);
 

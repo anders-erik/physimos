@@ -109,7 +109,7 @@ struct WL_FrameBuffer
 
 struct WL_Surface
 {
-    i2 pos = {925, 200};
+    i2 pos = {1400, 200};
     i2 size = {50, 50};
     WL_FrameBuffer fb;
     struct wl_surface* surface = nullptr;
@@ -132,6 +132,12 @@ struct WL_Surface
     void create_subsurface(struct wl_subcompositor* subcompositor, struct wl_surface* parent)
     {
         subsurface = wl_subcompositor_get_subsurface(subcompositor, surface, parent);
+
+        if (!subsurface)
+        {
+            fprintf(stderr, "Failed to create subsurface.\n");
+            return;
+        }
 
         wl_subsurface_set_position(subsurface, pos.x, pos.y);
     }
@@ -159,8 +165,8 @@ struct WL_Core
 
     struct wl_surface *surface_window;
 
-    struct wl_surface *surface_content;
-    struct wl_subsurface *subsurface_content;
+    // struct wl_surface *surface_content;
+    // struct wl_subsurface *subsurface_content;
 };
 
 /** XDG objects */
@@ -226,6 +232,8 @@ struct WL_State {
     WL_XDG xdg;
     /* test surface*/
     WL_Surface surface_test;
+    /* test surface*/
+    WL_Surface surface_content;
     /* Buffer objects */
     WL_FrameBuffer fb;
     /* Subframebuffer for the content subsurface */

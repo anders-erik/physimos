@@ -25,22 +25,6 @@
 
 
 
-void Wayland::render()
-{
-    wl_surface_damage_buffer(state.core.surface_window, 0, 0, state.fb.w, state.fb.h);
-    wl_surface_attach(state.core.surface_window, state.fb.buffer, 0, 0);
-    wl_surface_commit(state.core.surface_window);
-
-    wl_surface_damage_buffer(state.core.surface_content, 0, 0, state.subfb.w, state.subfb.h);
-    wl_surface_attach(state.core.surface_content, state.subfb.buffer, 0, 0);
-    wl_surface_commit(state.core.surface_content);
-
-    state.surface_test.render();
-
-    state.fb.buffer_busy = true;
-}
-
-
 
 
 void Wayland::connect_compositor()
@@ -85,24 +69,27 @@ void Wayland::connect_compositor()
     // printf("error = %d\n", wl_display_get_error(state.wl_display));
 }
 
-void Wayland::create_surfaces()
+void Wayland::create_surfaces(i2 dims)
 {
     state.core.surface_window = wl_compositor_create_surface(state.core.compositor);
-    state.core.surface_content = wl_compositor_create_surface(state.core.compositor);
 
-    state.core.subsurface_content = wl_subcompositor_get_subsurface(    state.core.subcompositor, 
-                                                                state.core.surface_content, 
-                                                                state.core.surface_window);
+    state.fb.w = dims.x;
+    state.fb.h = dims.y;
+    state.fb.init(&(this->state));
+    state.fb.clear_gray(); 
+    
+
+    state.surface_content.size = {state.fb.w*0.7, state.fb.h*0.7};
+    state.surface_content.pos = {450, 30};
+    // state.surface_content.size = {80, 80}; // BUG: surface content is not initialized with default size... this line is necessary
+    state.surface_content.init(state.core.compositor, &state);
+    // state.surface_content.fb.clear_green();
+    state.surface_content.create_subsurface(state.core.subcompositor, state.core.surface_window);
     
     
     state.surface_test.init(state.core.compositor, &state);
     state.surface_test.create_subsurface(state.core.subcompositor, state.core.surface_window);
 
-    if (!state.core.subsurface_content)
-    {
-        fprintf(stderr, "Failed to create subsurface role.\n");
-        return;
-    }
 
     state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.core.surface_window);
     xdg_surface_add_listener(state.xdg.surface, &xdg_surface_listener, &state);
@@ -112,36 +99,27 @@ void Wayland::create_surfaces()
 }
 
 
-void Wayland::initialize_framebuffers(i2 dims)
-{
-    i2 subs_pos = {1000, 50};
-    i2 subs_size = {60, 60};
-
-    state.fb.w = dims.x;
-    state.fb.h = dims.y;
-    state.fb.init(&(this->state));
-    state.fb.clear_gray(); 
-
-    state.subfb.w = subs_size.x;
-    state.subfb.h = subs_size.y;
-    state.subfb.init(&(this->state));
-    state.subfb.clear_green();
-
-    
-
-    wl_subsurface_set_position(state.core.subsurface_content, subs_pos.x, subs_pos.y);
-    
-}
 
 void Wayland::init(i2 dims)
 {
     connect_compositor();
-    create_surfaces();
-    initialize_framebuffers(dims);
+    create_surfaces(dims);
 
     state.cursor.create_default(state.core.compositor, state.fb.wl_shm);
 
     render(); // initial render to display the window
+}
+
+void Wayland::render()
+{
+    wl_surface_damage_buffer(state.core.surface_window, 0, 0, state.fb.w, state.fb.h);
+    wl_surface_attach(state.core.surface_window, state.fb.buffer, 0, 0);
+    wl_surface_commit(state.core.surface_window);
+
+    state.surface_content.render();
+    state.surface_test.render();
+
+    state.fb.buffer_busy = true;
 }
 
 

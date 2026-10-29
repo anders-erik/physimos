@@ -16,7 +16,7 @@ registry_global(void *data, struct wl_registry *wl_registry,
     if (strcmp(interface, wl_shm_interface.name) == 0)
     {
         state->fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
-        state->subfb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        state->surface_content.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         state->surface_test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
@@ -233,7 +233,7 @@ pointer_enter(void *data,
         state->input.target = WL_Input::Test;
         Print::ln("Test!");
     }
-    else if(surface == state->core.surface_content)
+    else if(surface == state->surface_content.surface)
     {
         state->input.target = WL_Input::Content;
         Print::ln("Content!");
@@ -278,7 +278,7 @@ pointer_leave(void *data,
     {
         Print::ln("Test!");
     }
-    else if(surface == state->core.surface_content)
+    else if(surface == state->surface_content.surface)
     {
         Print::ln("Content!");
     }

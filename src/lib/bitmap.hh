@@ -485,7 +485,7 @@ public:
     {
         if(_x >= width || _y >= height)
         {
-            Print::buf("ERROR: accessing pixel outside bounds of bitmap.   ");
+            Print::buf("ERROR: accessing pixel outside bounds of bitmap.");
             Print::buf("x = "); 
             Print::buf(Str::SI(_x));
             Print::buf(" y = "); 
