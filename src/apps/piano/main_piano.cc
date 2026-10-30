@@ -44,10 +44,11 @@ int main(int argc, char** argv)
         clock.print_tv_start();
 
         // i2 win_dims = {640, 480};
-        // i2 win_dims = {960, 720};
-        i2 win_dims = {1500, 1000};
+        // i2 content_dims = {960, 720};
+        i2 content_dims = {1080, 800};
+        // i2 content_dims = {1500, 1000};
 
-        PianoApp piano_app { win_dims };
+        PianoApp piano_app { content_dims };
         piano_app.open_window();
 
         Audio::play_note();

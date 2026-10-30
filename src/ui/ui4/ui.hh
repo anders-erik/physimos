@@ -169,8 +169,8 @@ struct UI
             UINode* new_hover_target = get_current_pointer_target();
             bool hover_target_changed = new_hover_target != current_hover_target;
 
-            Print::buf("Hover target: ");
-            Print::ln(Str::UI((unsigned long long)new_hover_target));
+            // Print::buf("Hover target: ");
+            // Print::ln(Str::UI((unsigned long long)new_hover_target));
 
             if(!hover_target_changed) // only trigger callbacks when a change in target took place!
             {

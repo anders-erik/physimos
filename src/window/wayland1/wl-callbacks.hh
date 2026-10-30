@@ -4,6 +4,12 @@
 
 #include "wl-defs.hh"
 
+// DISPLAY
+extern void
+display_error(void *data, struct wl_display *wl_display, void *object_id, uint32_t code, const char *message);
+extern void
+display_delete_id(void *data, struct wl_display *wl_display, uint32_t id);
+
 // GLOBAL
 extern void
 registry_global(void *data, struct wl_registry *wl_registry, uint32_t name, const char *interface, uint32_t version);

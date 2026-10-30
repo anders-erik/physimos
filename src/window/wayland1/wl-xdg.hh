@@ -33,6 +33,10 @@ xdg_surface_configure(  void *data,
     // struct client_state *state = (struct client_state *)data;
     xdg_surface_ack_configure(xdg_surface, serial);
 
+    // Print::buf("serial: ");
+    // Print::buf(Str::UI(serial));
+    // Print::buf("\n");
+
     Print::ln("xdg_surface_configure called!");
 
     // render_wayland(data);
@@ -40,6 +44,65 @@ xdg_surface_configure(  void *data,
 
 static const struct xdg_surface_listener xdg_surface_listener = {
     .configure = xdg_surface_configure,
+};
+
+
+static void
+xdg_toplevel_configure( void *data,
+                        struct xdg_toplevel *xdg_toplevel,
+                        int32_t width,
+                        int32_t height,
+                        struct wl_array *states                     )
+{
+    Print::ln("xdg_toplevel_configure called!");
+
+    Print::ln({Str{"new_width = "}, Str::SI(width), Str{",  new_height = "}, Str::SI(height)});
+
+    Print::ln(Str::SI(states->size));
+    uint32_t* array_data = (uint32_t*)states->data;
+    Print::ln(Str::SI( *(array_data + 0) ));
+    Print::ln(Str::SI( *(array_data + 1) ));
+    Print::ln(Str::SI( *(array_data + 2) ));
+    // Print::ln(Str::SI( *((((int32_t)states->data))) ));
+
+    // xdg_toplevel_state state = wl_array_for_each(0, states);
+    // uint8_t *key;
+    // wl_array_for_each(key, (uint8_t *)states)
+    // {
+    //     // Print::ln(Str::SI(*key));
+    //     Print::ln("toplevel configure loop");
+    // }
+}
+
+static void
+xdg_toplevel_close( void *data,
+		            struct xdg_toplevel *xdg_toplevel)
+{
+    Print::ln("xdg_toplevel_close called!");
+}
+
+static void
+xdg_toplevel_configure_bounds(  void *data,
+                                struct xdg_toplevel *xdg_toplevel,
+                                int32_t width,
+                                int32_t height)
+{
+    Print::ln("xdg_toplevel_configure_bounds called!");
+}
+
+static void
+xdg_toplevel_wm_capabilities(   void *data,
+                                struct xdg_toplevel *xdg_toplevel,
+                                struct wl_array *capabilities)
+{
+    Print::ln("xdg_toplevel_wm_capabilities called!");
+}
+
+static const struct xdg_toplevel_listener xdg_toplevel_listener = {
+    .configure = xdg_toplevel_configure,
+    .close = xdg_toplevel_close,
+    .configure_bounds = xdg_toplevel_configure_bounds,
+    .wm_capabilities = xdg_toplevel_wm_capabilities,
 };
 
 static void

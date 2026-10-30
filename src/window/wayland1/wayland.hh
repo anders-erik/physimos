@@ -41,9 +41,9 @@ public:
 
     PixelBuffer get_pixel_buffer()
     {
-        return PixelBuffer {    (PX32*) state.fb.data, 
-                                        state.fb.w, 
-                                        state.fb.h,
+        return PixelBuffer {    (PX32*) state.surface_content.fb.data, 
+                                        state.surface_content.fb.w, 
+                                        state.surface_content.fb.h,
                                         PX32F::ARGB,
                                         PixelBuffer::Top    };
     }

@@ -5,6 +5,20 @@
 
 #include "wl-state.hh"
 
+
+
+void
+display_error(void *data, struct wl_display *wl_display, void *object_id, uint32_t code, const char *message)
+{
+    Print::ln("display_error callback");
+}
+void
+display_delete_id(void *data, struct wl_display *wl_display, uint32_t id)
+{
+    Print::ln("display_delete_id callback");
+}
+
+
 void
 registry_global(void *data, struct wl_registry *wl_registry,
         uint32_t name, const char *interface, uint32_t version)
@@ -36,7 +50,6 @@ registry_global(void *data, struct wl_registry *wl_registry,
         state->input.seat = (wl_seat *)wl_registry_bind(wl_registry, name, &wl_seat_interface, 1);
     }
 }
-
 
 void registry_global_remove(
     void *data,
@@ -303,35 +316,43 @@ pointer_motion(void *data,
 {
     WL_State *state = (WL_State*) data;
 
+    // Print::ln("Pointer motion");
+
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
-    state->input.pointer_pos_raw = {px, py};
-    state->sane_pointer.x = px;
-    state->sane_pointer.y = state->fb.h - py;
-
-    // printf("mouse: %d %d\n", x_uint, y_uint);
-    // printf("pointer_sane: %d %d\n", 
-    //     (uint) state->sane_pointer.x, 
-    //     (uint) state->sane_pointer.y);
-
-
-    // ----- New below -----
-
     double win_h = state->fb.h;
+    // d2 pos_window_previous_sane = state->input.pointer_pos_window_sane;
 
-    d2 pos_old_sane = state->input.pointer_pos_last_sane;
-    d2 pos_current_sane = {px, -( py - win_h) };
+    state->input.pointer_pos_window_raw  = {px, py};
+    state->input.pointer_pos_window_sane = {px, -( py - win_h) };
 
-    state->input.pointer_pos_last_sane = pos_current_sane;
+    if(state->input.target == WL_Input::Content)
+    {
+        d2 pos_content_previous_sane = state->input.pointer_pos_content_sane;
+        state->input.pointer_pos_content_sane = {   px,
+                                                 - (py - state->surface_content.size.y)};
+
+        UserInput pointer_move_ev = { 
+            UserInputType::MouseMove, 
+            MouseMovement{ pos_content_previous_sane, state->input.pointer_pos_content_sane },
+            state->input.key_modifiers
+        };
+        state->input.content_events.push_back(pointer_move_ev);
+    }
+    else if(state->input.target == WL_Input::Window)
+    {
+        Print::ln("Mouse move inside window surface");
+
+
+        Print::buf("x = ");
+        Print::buf(Str::FL(state->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
+        Print::buf(", y = ");
+        Print::buf(Str::FL(state->input.pointer_pos_window_raw.y, 1, Str::FloatRep::Fixed));
+        Print::buf("\n");
+    }
 
     
-    UserInput pointer_move_ev = { 
-        UserInputType::MouseMove, 
-        MouseMovement{ pos_old_sane, pos_current_sane },
-        state->input.key_modifiers
-    };
-    state->input.content_events.push_back(pointer_move_ev);
 }
 
 void
@@ -376,18 +397,6 @@ pointer_button(void *data,
             break;
     }
 
-    Print::ln(Str::FL(wl_state->input.pointer_pos_raw.y, 2, Str::FloatRep::Fixed));
-    if(mouse_click.button == MouseClick::Primary && wl_state->input.pointer_pos_raw.y < 20.0)
-    {
-        xdg_toplevel_move(wl_state->xdg.toplevel, wl_state->input.seat, serial);
-    }
-
-    if(mouse_click.button == MouseClick::Primary && wl_state->input.pointer_pos_raw.x > 940.0)
-    {
-        xdg_toplevel_resize(wl_state->xdg.toplevel, wl_state->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_LEFT);
-    }
-    
-
     switch(state)
     {
         case 0:
@@ -404,19 +413,83 @@ pointer_button(void *data,
             break;
     }
 
+    if(wl_state->input.target == WL_Input::Window)
+    {
+        Print::ln(Str::FL(wl_state->input.pointer_pos_window_raw.y, 2, Str::FloatRep::Fixed));
 
-    UserInput pointer_click_ev = { 
-        UserInputType::MouseClick, 
-        mouse_click,
-        wl_state->input.key_modifiers
-    };
-    wl_state->input.content_events.push_back(pointer_click_ev);
+        enum class WindowArea
+        {
+            TopLeft,
+            Topbar,
+            TopRight, 
+            RightEdge,
+        } window_area;
 
-    // Print::buf("mouse btn: ");
-    // Print::buf(btn_name);
-    // Print::buf(" ");
-    // Print::buf(btn_action);
-    // Print::buf("\n");
+        if(wl_state->input.pointer_pos_window_raw.y < 20)
+        {
+            if(wl_state->input.pointer_pos_window_raw.x < 20)
+                window_area = WindowArea::TopLeft;
+            else if(wl_state->input.pointer_pos_window_raw.x < 800)
+                window_area = WindowArea::Topbar;
+            else
+                window_area = WindowArea::TopRight;
+        }
+        else
+        {
+            window_area = WindowArea::RightEdge;
+        }
+
+        switch (window_area)
+        {
+        case WindowArea::TopLeft:
+            {
+                xdg_toplevel_show_window_menu(wl_state->xdg.toplevel, wl_state->input.seat, serial, 0, 0);
+            }
+            break;
+        case WindowArea::Topbar:
+            {
+                xdg_toplevel_move(wl_state->xdg.toplevel, wl_state->input.seat, serial);
+            }
+            break;
+        case WindowArea::TopRight:
+            {
+                // Print::ln("Wayland top right click");
+                wl_state->running = 0;
+            }
+            break;
+        case WindowArea::RightEdge:
+            {
+                xdg_toplevel_resize(wl_state->xdg.toplevel, wl_state->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
+            }
+            break;
+        
+        default:
+            break;
+        }
+
+        return;
+    }
+    else if(wl_state->input.target == WL_Input::Content)
+    {
+        UserInput pointer_click_ev = { 
+            UserInputType::MouseClick, 
+            mouse_click,
+            wl_state->input.key_modifiers
+        };
+        wl_state->input.content_events.push_back(pointer_click_ev);
+
+        // Print::buf("mouse btn: ");
+        // Print::buf(btn_name);
+        // Print::buf(" ");
+        // Print::buf(btn_action);
+        // Print::buf("\n");
+    }
+    
+
+    
+
+
+    
 }
 
 void

@@ -329,7 +329,7 @@ void PianoUI::render_ui_node(UINode* _node)
     switch(_node->visibility.type)
     {
         case UINodeVisibility::COLOR:   
-            renderer.draw_rectangle( pos_0_i, pos_1_i, _node->visibility.value.color);
+            renderer_new_content.draw_rectangle( pos_0_i, pos_1_i, _node->visibility.value.color);
             break;
 
         case UINodeVisibility::BITMAP:
@@ -338,7 +338,7 @@ void PianoUI::render_ui_node(UINode* _node)
             // renderer.paste_bitmap(*(_node->visibility.value.bitmap), pos_0_i);
 
             // Currently all bitmap rendering are being drawn using the parent size as the mask
-            renderer.paste_bitmap_with_mask(  *(_node->visibility.value.bitmap), 
+            renderer_new_content.paste_bitmap_with_mask(  *(_node->visibility.value.bitmap), 
                                                             pos_0_i,
                                                             parent_pos,
                                                             parent_size                         );

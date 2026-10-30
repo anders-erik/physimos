@@ -37,6 +37,7 @@ void Wayland::connect_compositor()
         Print::ln("Failed to connect to Wayland display\n");
         return;
     }
+    wl_display_add_listener(state.core.display, &state.core.display_listener, &state);
 
     // think: wl_display.get_registry(); !!
     state.core.registry = wl_display_get_registry(state.core.display);
@@ -69,18 +70,18 @@ void Wayland::connect_compositor()
     // printf("error = %d\n", wl_display_get_error(state.wl_display));
 }
 
-void Wayland::create_surfaces(i2 dims)
+void Wayland::create_surfaces(i2 content_dims)
 {
     state.core.surface_window = wl_compositor_create_surface(state.core.compositor);
 
-    state.fb.w = dims.x;
-    state.fb.h = dims.y;
+    state.fb.w = content_dims.x + state.window_border_width * 2;
+    state.fb.h = content_dims.y + state.window_topbar_height + state.window_border_width;
     state.fb.init(&(this->state));
     state.fb.clear_gray(); 
     
 
-    state.surface_content.size = {state.fb.w*0.7, state.fb.h*0.7};
-    state.surface_content.pos = {450, 30};
+    state.surface_content.size = {content_dims.x, content_dims.y};
+    state.surface_content.pos = {state.window_border_width, state.window_topbar_height};
     // state.surface_content.size = {80, 80}; // BUG: surface content is not initialized with default size... this line is necessary
     state.surface_content.init(state.core.compositor, &state);
     // state.surface_content.fb.clear_green();
@@ -95,15 +96,16 @@ void Wayland::create_surfaces(i2 dims)
     xdg_surface_add_listener(state.xdg.surface, &xdg_surface_listener, &state);
 
     state.xdg.toplevel = xdg_surface_get_toplevel(state.xdg.surface);
+    xdg_toplevel_add_listener(state.xdg.toplevel, &xdg_toplevel_listener, &state);
     xdg_toplevel_set_title(state.xdg.toplevel, "Example client");
 }
 
 
 
-void Wayland::init(i2 dims)
+void Wayland::init(i2 content_dims)
 {
     connect_compositor();
-    create_surfaces(dims);
+    create_surfaces(content_dims);
 
     state.cursor.create_default(state.core.compositor, state.fb.wl_shm);
 
@@ -166,27 +168,27 @@ void Wayland::run()
             // wl_display_disconnect(state.wl_display);
             break;
         }
-        if(state.sane_pointer.y > 400.0)
+        if(state.input.pointer_pos_window_sane.y > 400.0)
         {
             state.fb.clear_gray();
             render();
 
         }
-        if(state.sane_pointer.y > 450.0)
+        if(state.input.pointer_pos_window_sane.y > 450.0)
         {
             state.fb.resize({1000, 600});
         }
-        if(state.sane_pointer.x > 500.0)
+        if(state.input.pointer_pos_window_sane.x > 500.0)
         {
             dummy_i++;
             state.fb.clear_green();
             render(); 
         }
-        if(state.sane_pointer.x > 700.0)
+        if(state.input.pointer_pos_window_sane.x > 700.0)
         {
             
         }
-        if(state.sane_pointer.x > 900.0)
+        if(state.input.pointer_pos_window_sane.x > 900.0)
         {
             state.fb.resize({640, 480});
         }

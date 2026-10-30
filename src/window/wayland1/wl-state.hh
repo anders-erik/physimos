@@ -109,7 +109,7 @@ struct WL_FrameBuffer
 
 struct WL_Surface
 {
-    i2 pos = {1400, 200};
+    i2 pos = {400, 200};
     i2 size = {50, 50};
     WL_FrameBuffer fb;
     struct wl_surface* surface = nullptr;
@@ -155,6 +155,10 @@ struct WL_Surface
 struct WL_Core
 {
     struct wl_display *display;
+    const struct wl_display_listener display_listener = {
+        .error      = display_error,
+        .delete_id  = display_delete_id,
+    };
     struct wl_registry *registry;
     const struct wl_registry_listener registry_listener = {
         .global        = registry_global,
@@ -219,8 +223,11 @@ struct WL_Input
     KeyModifiers key_modifiers;
 
     // Pointer state
-    d2 pointer_pos_raw = {0.0, 0.0};
-    d2 pointer_pos_last_sane = {0.0, 0.0};
+    d2 pointer_pos_window_raw = {0.0, 0.0};
+    d2 pointer_pos_window_sane = {0.0, 0.0};
+
+    // d2 pointer_pos_content_raw = {0.0, 0.0};
+    d2 pointer_pos_content_sane = {0.0, 0.0};
     // d2 pointer_sane = {0.0, 0.0};
 };
 
@@ -240,11 +247,11 @@ struct WL_State {
     WL_FrameBuffer subfb;
     /* Object to handle the cursor image */
     WL_Cursor cursor;
-
     /* Input*/
     WL_Input input;
-    d2 raw_pointer;
-    d2 sane_pointer;
+
+    int window_border_width = 5;
+    int window_topbar_height = 20;
 
     int running = 1;
 };
