@@ -1,3 +1,4 @@
+#include <unistd.h>
 
 #include <linux/input-event-codes.h>
 
@@ -29,7 +30,7 @@ registry_global(void *data, struct wl_registry *wl_registry,
 
     if (strcmp(interface, wl_shm_interface.name) == 0)
     {
-        state->fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        state->surface_window.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         state->surface_content.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         state->surface_test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
     }
@@ -57,6 +58,34 @@ void registry_global_remove(
     uint32_t name)
 {
     printf("global removed: %u\n", name);
+}
+
+
+void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
+{
+    WL_State* state = (WL_State*) data;
+    // Print::ln("wl_buffer_destroy!");
+    /* Sent by the compositor when it's no longer using this buffer */
+    // wl_buffer_destroy(wl_buffer);
+    // Print::ln("wl_buffer_release!");
+
+    if(wl_buffer == state->surface_window.fb.buffer)
+    {
+        // Print::ln("Window buffer released!");
+        state->surface_window.fb.buffer_busy = false;
+    }
+    else if(wl_buffer == state->surface_content.fb.buffer)
+    {
+        // Print::ln("Content buffer released!");
+        state->surface_content.fb.buffer_busy = false;
+    }
+    else if(wl_buffer == state->surface_test.fb.buffer)
+    {
+        // Print::ln("Test buffer released!");
+        state->surface_test.fb.buffer_busy = false;
+    }
+
+    
 }
 
 
@@ -251,7 +280,7 @@ pointer_enter(void *data,
         state->input.target = WL_Input::Content;
         Print::ln("Content!");
     }
-    else if(surface == state->core.surface_window)
+    else if(surface == state->surface_window.surface)
     {
         state->input.target = WL_Input::Window;
         Print::ln("Window!");
@@ -295,7 +324,7 @@ pointer_leave(void *data,
     {
         Print::ln("Content!");
     }
-    else if(surface == state->core.surface_window)
+    else if(surface == state->surface_window.surface)
     {
         Print::ln("Window!");
     }
@@ -321,7 +350,7 @@ pointer_motion(void *data,
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
-    double win_h = state->fb.h;
+    double win_h = state->surface_window.fb.h;
     // d2 pos_window_previous_sane = state->input.pointer_pos_window_sane;
 
     state->input.pointer_pos_window_raw  = {px, py};
@@ -342,14 +371,14 @@ pointer_motion(void *data,
     }
     else if(state->input.target == WL_Input::Window)
     {
-        Print::ln("Mouse move inside window surface");
+        // Print::ln("Mouse move inside window surface");
 
 
-        Print::buf("x = ");
-        Print::buf(Str::FL(state->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
-        Print::buf(", y = ");
-        Print::buf(Str::FL(state->input.pointer_pos_window_raw.y, 1, Str::FloatRep::Fixed));
-        Print::buf("\n");
+        // Print::buf("x = ");
+        // Print::buf(Str::FL(state->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
+        // Print::buf(", y = ");
+        // Print::buf(Str::FL(state->input.pointer_pos_window_raw.y, 1, Str::FloatRep::Fixed));
+        // Print::buf("\n");
     }
 
     
@@ -514,4 +543,91 @@ pointer_axis(void *data,
     ScrollInput scroll_input {direction};
     UserInput user_input = {UserInputType::ScrollInput, scroll_input, wl_state->input.key_modifiers};
     wl_state->input.content_events.push_back(user_input);
+}
+
+
+
+
+
+void
+xdg_wm_base_ping(void *data, struct xdg_wm_base *xdg_wm_base, uint32_t serial)
+{
+    xdg_wm_base_pong(xdg_wm_base, serial);
+}
+
+
+
+void
+xdg_surface_configure(  void *data,
+                        struct xdg_surface *xdg_surface,
+                        uint32_t serial                     )
+{
+    // struct client_state *state = (struct client_state *)data;
+    xdg_surface_ack_configure(xdg_surface, serial);
+
+    // Print::buf("serial: ");
+    // Print::buf(Str::UI(serial));
+    // Print::buf("\n");
+
+    Print::ln("xdg_surface_configure called!");
+
+    // render_wayland(data);
+}
+
+
+
+
+void
+xdg_toplevel_configure( void *data,
+                        struct xdg_toplevel *xdg_toplevel,
+                        int32_t width,
+                        int32_t height,
+                        struct wl_array *states                     )
+{
+    WL_State* state = (WL_State*) data;
+    state->new_dims = {width, height};
+    state->size_changed = true;
+
+    // Print::ln("xdg_toplevel_configure called!");
+
+    // Print::ln({Str{"new_width = "}, Str::SI(width), Str{",  new_height = "}, Str::SI(height)});
+
+    Print::ln(Str::SI(states->size));
+    uint32_t* array_data = (uint32_t*)states->data;
+    Print::ln(Str::SI( *(array_data + 0) ));
+    Print::ln(Str::SI( *(array_data + 1) ));
+    Print::ln(Str::SI( *(array_data + 2) ));
+    // Print::ln(Str::SI( *((((int32_t)states->data))) ));
+
+    // xdg_toplevel_state state = wl_array_for_each(0, states);
+    // uint8_t *key;
+    // wl_array_for_each(key, (uint8_t *)states)
+    // {
+    //     // Print::ln(Str::SI(*key));
+    //     Print::ln("toplevel configure loop");
+    // }
+}
+
+void
+xdg_toplevel_close( void *data,
+		            struct xdg_toplevel *xdg_toplevel)
+{
+    // Print::ln("xdg_toplevel_close called!");
+}
+
+void
+xdg_toplevel_configure_bounds(  void *data,
+                                struct xdg_toplevel *xdg_toplevel,
+                                int32_t width,
+                                int32_t height)
+{
+    // Print::ln("xdg_toplevel_configure_bounds called!");
+}
+
+void
+xdg_toplevel_wm_capabilities(   void *data,
+                                struct xdg_toplevel *xdg_toplevel,
+                                struct wl_array *capabilities)
+{
+    // Print::ln("xdg_toplevel_wm_capabilities called!");
 }

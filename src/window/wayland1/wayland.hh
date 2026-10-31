@@ -4,16 +4,17 @@
 
 #include "wl-state.hh"
 
+#define WAYLAND_DEFAULT_CONTENT_SIZE {640, 480}
 
 class Wayland
 {
-    WL_State state = { 0 }; 
+    WL_State state = { 0 };
 
     void connect_compositor();
     void create_surfaces(i2 dims);
 
     void init(i2 dims);
-    void render(); // damage buffer and commit surface
+    void commit_surfaces(); // damage buffer and commit surface
     
     void destroy(); // destroy framebuffer & disconnect from compositor
     
@@ -22,11 +23,7 @@ public:
 
     Wayland()
     {
-        i2 default_window_dims = {640, 480};
-
-        init(default_window_dims);
-
-        return;
+        init(WAYLAND_DEFAULT_CONTENT_SIZE);
     }
     Wayland(i2 dims)
     {
@@ -37,7 +34,12 @@ public:
         destroy();
     }
 
-    WL_State get_state() {return state;}
+    void reload_size(i2 new_content_dims)
+    {
+        state.surface_window.resize(new_content_dims);
+    }
+
+    WL_State& get_state() {return state;}
 
     PixelBuffer get_pixel_buffer()
     {
@@ -48,7 +50,7 @@ public:
                                         PixelBuffer::Top    };
     }
 
-    bool buffer_is_busy() { return state.fb.buffer_busy; }
+    bool buffer_is_busy() { return state.surface_content.fb.buffer_busy; }
 
     Arr<UserInput> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer    
 

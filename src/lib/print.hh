@@ -10,6 +10,11 @@ namespace Print
 
 void buf(const Str & str);
 void ln(const Str& str);
+// template <typename... Args>
+// void ln(const Args... args)
+// {
+//     Print::buf(args);
+// }
 void indent(unsigned char space_count);
 
 void err(const Err& err);

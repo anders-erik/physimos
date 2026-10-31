@@ -4,11 +4,14 @@
 #include <stdio.h>
 #include <cstdint>
 
+#include "lib/defs.hh"
+
 class Clock
 {
 public:
 
 	struct timeval tv_start;
+	struct timeval tv_last;
 
 	Clock()
 	{
@@ -28,6 +31,20 @@ public:
 		time_ms +=  (uint64_t) (tv.tv_usec / 1000);
 
 		return time_ms;
+	}
+
+	i64 get_unix_epoch_us()
+	{
+		i64 time_us = 0;
+
+		gettimeofday(&tv_last, NULL);
+
+		time_us = (i64) tv_last.tv_sec * (i64)1000000;
+
+		// time_ms += ((double)tv.tv_usec) / 1000000.0;
+		time_us +=  (i64) tv_last.tv_usec;
+
+		return time_us;
 	}
 
 	void print_tv_start()

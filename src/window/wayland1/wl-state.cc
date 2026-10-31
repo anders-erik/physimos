@@ -18,7 +18,7 @@
 
 
 /* Shared memory support code */
-static void
+void WL_FrameBuffer::
 randname(char *buf)
 {
     struct timespec ts;
@@ -30,7 +30,7 @@ randname(char *buf)
     }
 }
 
-static int
+int WL_FrameBuffer::
 create_shm_file(void)
 {
     int retries = 100;
@@ -48,7 +48,7 @@ create_shm_file(void)
     return -1;
 }
 
-static int
+int WL_FrameBuffer::
 allocate_shm_file(size_t size)
 {
     int fd = create_shm_file();
@@ -70,26 +70,31 @@ allocate_shm_file(size_t size)
 
 // this callback is called every time the compositor is done using the buffer
 // Maybe do not destroy the buffer every render if I want the buffer to be reused! (or maybe just rebind it every time..)
-static void
-wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
-{
-    WL_State* state = (WL_State*) data;
-    // Print::ln("wl_buffer_destroy!");
-    /* Sent by the compositor when it's no longer using this buffer */
-    // wl_buffer_destroy(wl_buffer);
-    // Print::ln("wl_buffer_release!");
-    state->fb.buffer_busy = false;
-}
+// static void
+// wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
+// {
+//     WL_State* state = (WL_State*) data;
+//     // Print::ln("wl_buffer_destroy!");
+//     /* Sent by the compositor when it's no longer using this buffer */
+//     // wl_buffer_destroy(wl_buffer);
+//     // Print::ln("wl_buffer_release!");
+//     state->surface_window.fb.buffer_busy = false;
+// }
 
-static const struct wl_buffer_listener wl_buffer_listener = {
-    .release = wl_buffer_release,
-};
+// static const struct wl_buffer_listener wl_buffer_listener = {
+//     .release = wl_buffer_release,
+// };
 
 
 void WL_FrameBuffer::init(WL_State* _state)
 {
-    // format
+    if(allocated)
+    {
+        Print::ln("ERROR: tried to initialize an already allocated WL_FrameBuffer;");
+        return;
+    }
 
+    // format
     if(format == WL_FrameBuffer::RGBA)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
         // shm_format = wl_shm_format::WL_SHM_FORMAT_ARGB8888;
@@ -98,11 +103,9 @@ void WL_FrameBuffer::init(WL_State* _state)
     else if(format == WL_FrameBuffer::RGB)
         shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
 
-    const int width =  w;
-    const int height = h;
 
-    int size = width * height * 4;
-    int stride = width * 4;
+    int size = w * h * 4;
+    int stride = w * 4;
 
     shm_fd = allocate_shm_file(size);
     if (shm_fd == -1)
@@ -149,18 +152,12 @@ void WL_FrameBuffer::resize(i2 dims)
     int stride = w * 4;
 
     if(allocated)
-    {
-        // munmap(data, size);
-        // wl_buffer_destroy(buffer);
-        // wl_shm_pool_destroy(pool);
-        // close(shm_fd);
-        // allocated = false;
-    }
+        destroy();
 
     shm_fd = allocate_shm_file(size);
     if (shm_fd == -1)
     {
-        Print::ln("Failed to allocate shm file in 'init_fb'");
+        Print::ln("Failed to allocate shm file in 'WL_FrameBuffer.resize()'");
         return;
     }
 
@@ -188,4 +185,16 @@ void WL_FrameBuffer::resize(i2 dims)
     wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
 
     allocated = true;
+}
+
+void WL_FrameBuffer::destroy()
+{
+    const int size = w*h*4;
+
+    munmap(data, size);
+    wl_buffer_destroy(buffer);
+    wl_shm_pool_destroy(pool);
+    close(shm_fd);
+
+    allocated = false;
 }

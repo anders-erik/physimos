@@ -1,27 +1,12 @@
-
 #pragma once
 
-#include <stdio.h>
-#include <sys/mman.h>
-
-#include "wayland-client.h"
-#include "wayland-cursor.h"
 
 #include "lib/arr.hh"
-
-#include "math/vecmat.hh"
-
-#include "window/key.hh"
 #include "io/input/user_input.hh"
 
 #include "wl-defs.hh"
-#include "wl-xdg.hh"
-// #include "wl-seat.hh"
 #include "wl-callbacks.hh"
 
-struct WL_State;
-// typedef struct WL_State;
-// typedef struct client_state WaylandState;
 
 
 struct WL_Cursor
@@ -58,17 +43,30 @@ struct WL_FrameBuffer
     wl_shm_format shm_format;
 
     uint32_t *data = 0; // pointer to the mmaped framebuffer
-    struct wl_buffer *buffer = 0; 
+    struct wl_buffer *buffer = 0;
+    const struct wl_buffer_listener wl_buffer_listener = {
+        .release = wl_buffer_release,
+    };
     struct wl_shm *wl_shm;
     struct wl_shm_pool *pool;
     int shm_fd;
+
     int w;
     int h;
     bool allocated = false;
     bool buffer_busy = false;
 
+    void randname(char *buf);
+    int create_shm_file();
+    int allocate_shm_file(size_t size);
+
     void init(WL_State* _state);
     void resize(i2 dims);
+    void destroy();
+
+
+
+
     void* ptr() {return (void*) data;}
 
     void clear_gray()
@@ -93,17 +91,7 @@ struct WL_FrameBuffer
         }
     }
 
-    void destroy()
-    {
-        const int size = w*h*4;
-
-        munmap(data, size);
-        wl_buffer_destroy(buffer);
-        wl_shm_pool_destroy(pool);
-        close(shm_fd);
-
-        allocated = false;
-    }
+    
 };
 
 
@@ -118,10 +106,7 @@ struct WL_Surface
 
     void init(struct wl_compositor* compositor, WL_State* state)
     {
-
         surface = wl_compositor_create_surface(compositor);
-
-        // wl_subsurface_set_position(subsurface, pos.x, pos.y);
 
         fb.w = size.x;
         fb.h = size.y;
@@ -142,11 +127,22 @@ struct WL_Surface
         wl_subsurface_set_position(subsurface, pos.x, pos.y);
     }
 
-    void render()
+    void resize(i2 new_dims)
+    {
+        size = new_dims;
+
+        fb.w = size.x;
+        fb.h = size.y;
+        fb.resize(new_dims);
+        fb.clear_gray(); 
+    }
+
+    void commit()
     {
         wl_surface_damage_buffer(surface, 0, 0, fb.w, fb.h);
         wl_surface_attach(surface, fb.buffer, 0, 0);
         wl_surface_commit(surface);
+        fb.buffer_busy = true;
     }
 };
 
@@ -166,19 +162,26 @@ struct WL_Core
     };
     struct wl_compositor *compositor;
     struct wl_subcompositor *subcompositor;
-
-    struct wl_surface *surface_window;
-
-    // struct wl_surface *surface_content;
-    // struct wl_subsurface *subsurface_content;
 };
 
 /** XDG objects */
 struct WL_XDG
 {
     struct xdg_wm_base *wm_base;
+    const struct xdg_wm_base_listener xdg_wm_base_listener = {
+        .ping = xdg_wm_base_ping,
+    };
     struct xdg_surface *surface;
+    const struct xdg_surface_listener xdg_surface_listener = {
+        .configure = xdg_surface_configure,
+    };
     struct xdg_toplevel *toplevel;
+    const struct xdg_toplevel_listener xdg_toplevel_listener = {
+        .configure = xdg_toplevel_configure,
+        .close = xdg_toplevel_close,
+        .configure_bounds = xdg_toplevel_configure_bounds,
+        .wm_capabilities = xdg_toplevel_wm_capabilities,
+    };
 };
 
 struct WL_Input
@@ -237,14 +240,14 @@ struct WL_State {
     WL_Core core;
     /* XDG Objects */
     WL_XDG xdg;
+    /* window surface*/
+    WL_Surface surface_window;
+    /* content surface*/
+    WL_Surface surface_content;
     /* test surface*/
     WL_Surface surface_test;
-    /* test surface*/
-    WL_Surface surface_content;
-    /* Buffer objects */
-    WL_FrameBuffer fb;
-    /* Subframebuffer for the content subsurface */
-    WL_FrameBuffer subfb;
+    // /* Buffer objects */
+    // WL_FrameBuffer fb;
     /* Object to handle the cursor image */
     WL_Cursor cursor;
     /* Input*/
@@ -254,4 +257,6 @@ struct WL_State {
     int window_topbar_height = 20;
 
     int running = 1;
+    bool size_changed = false;
+    i2 new_dims;
 };

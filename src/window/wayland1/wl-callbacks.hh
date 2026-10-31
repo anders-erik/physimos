@@ -16,6 +16,10 @@ registry_global(void *data, struct wl_registry *wl_registry, uint32_t name, cons
 extern void
 registry_global_remove( void *data, struct wl_registry *registry, uint32_t name);
 
+// BUFFER
+extern void
+wl_buffer_release(void *data, struct wl_buffer *wl_buffer);
+
 // SEAT
 extern void 
 seat_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities);
@@ -46,5 +50,27 @@ pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial, uint32_t
 extern void
 pointer_axis(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value);
 
+
+
+
+
+
+
+// XDG
+
+extern void
+xdg_wm_base_ping(void *data, struct xdg_wm_base *xdg_wm_base, uint32_t serial);
+
+extern void
+xdg_surface_configure(void *data, struct xdg_surface *xdg_surface, uint32_t serial);
+
+extern void
+xdg_toplevel_configure( void *data, struct xdg_toplevel *xdg_toplevel, int32_t width, int32_t height, struct wl_array *states );
+extern void
+xdg_toplevel_close(void *data, struct xdg_toplevel *xdg_toplevel);
+extern void
+xdg_toplevel_configure_bounds(void *data, struct xdg_toplevel *xdg_toplevel, int32_t width, int32_t height);
+extern void
+xdg_toplevel_wm_capabilities(void *data, struct xdg_toplevel *xdg_toplevel, struct wl_array *capabilities);
 
 

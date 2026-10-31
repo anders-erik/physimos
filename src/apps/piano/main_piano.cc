@@ -34,6 +34,11 @@ int main(int argc, char** argv)
 
     printf("sizeof(UI) = %li \n", sizeof(UI));
 
+    Print::line("asdf", "ghjk");
+    // Str str = Str{3, 'a'}; // not valid because the 3 is not unsigned integer, thus triggering the variadic template constructor
+    Str str = Str{(unsigned int)3, 'a'};
+    Print::ln(str);
+
     Tester tester;
     tester.hello();
     // tester_fn = tester::hello;

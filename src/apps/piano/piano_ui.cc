@@ -210,16 +210,11 @@ UIEventReturn i64_ui_callback(UI_CALLBACK_PARAMS(void))
 }
 
 
-void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer, PixelBuffer _pixel_buffer_new_content)
-{
-    renderer_new_content.set_buffer(_pixel_buffer_new_content);
-    init(_piano_app, _pixel_buffer);
-}
 
 void PianoUI::init(PianoApp* _piano_app, PixelBuffer _pixel_buffer)
 {
     PianoApp& app = *_piano_app;
-    renderer.set_buffer(_pixel_buffer);
+    renderer_new_content.set_buffer(_pixel_buffer);
 
     // ui.root.box = Box({300, 300}, {100, 100});
     ui.root.box = UIBox({0, 0}, {_pixel_buffer.w, _pixel_buffer.h});

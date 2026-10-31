@@ -22,14 +22,94 @@
 
 #include "piano_ui.hh"
 
+struct PerformanceClock : public Clock
+{
+    enum Type
+    {
+        FPS,
+        CommitBuffer,
+        RenderCycle,
+    };
 
+    i64 fps_time_start_um = 0;
+    i64 fps_time_end_um = 0;
+    i64 commit_buffer_time_start_us = 0;
+
+    PerformanceClock()
+    {
+        fps_start();
+    }
+
+
+    void start_commit_buffer_time()
+    {
+        commit_buffer_time_start_us = get_unix_epoch_us();
+    }
+
+    f32 get_commit_buffer_time_ms()
+    {
+        i64 commit_buffer_time_now_us = get_unix_epoch_us();
+        i64 commit_buffer_time_delta_um = commit_buffer_time_now_us - commit_buffer_time_start_us;
+        f32 commit_buffer_time_delta_ms = ((f32)commit_buffer_time_delta_um) * 0.001f;
+        return commit_buffer_time_delta_ms;
+    }
+
+    void print_commit_buffer_time()
+    {
+        Print::ln(Str::FL(get_commit_buffer_time_ms(), 2, Str::FloatRep::Fixed));
+    }
+
+
+    void fps_start()
+    {
+        fps_time_end_um = 0;
+        fps_time_start_um = get_unix_epoch_us();
+    }
+    void fps_end()
+    {
+        if(fps_time_start_um == 0)
+        {
+            Print::ln("WARNING: trying to end FPS-clock without setting a start fps time. ");
+        }
+
+        fps_time_end_um = get_unix_epoch_us();
+    }
+    f32 fps_get()
+    {
+        if(fps_time_start_um == 0)
+            fps_end();
+
+        i64 delta_time_us = fps_time_end_um - fps_time_start_um;
+
+        f32 delta_time_ms = ((f32) delta_time_us) * 0.001f;
+
+        return 1000.0f / delta_time_ms;
+    }
+    void fps_print()
+    {
+        Print::buf("FPS: ");
+        Print::buf(Str::FL(fps_get(), 2, Str::FloatRep::Fixed));
+        Print::buf("\n");
+    }
+
+    /** Pass 'true' as a parameter to print the value. This value defaults to false; */
+    void fps_step(bool print = false)
+    {
+        fps_end();
+        if(print)
+            fps_print();
+        fps_start();
+    }
+
+};
 
 struct PianoApp
 {
     Wayland wayland;
     PianoUI piano_ui;
 
-    Clock clock;
+    // Clock clock;
+    PerformanceClock performance_clock;
 
     AudioPlayer audio_player;
     Phyano phyano;
@@ -58,25 +138,9 @@ struct PianoApp
         line_note_2->start_index_16th_count = 4;
         line_note_2->note = {NoteName::C5, NoteType::quarter};
 
-        // song.generate();
-        // piano_state.song.play(piano_state.alsa); // Trigger interactively in ui!
 
-        // piano_ui.init(  this, 
-        //                 wayland.get_pixel_buffer()   );
-
-        PixelBuffer new_content_surface_pixel_buffer = PixelBuffer {    (PX32*) wayland.get_state().surface_content.fb.data, 
-                                                                                wayland.get_state().surface_content.fb.w, 
-                                                                                wayland.get_state().surface_content.fb.h,
-                                                                                PX32F::ARGB,
-                                                                                PixelBuffer::Top    };
         piano_ui.init(  this, 
-                        wayland.get_pixel_buffer(),
-                        new_content_surface_pixel_buffer    );
-        
-
-        // PixelBuffer subsurface_pixel_buffer {wayland.get_state().surface_content.fb.data, 60, 60, PX32F::ARGB, PixelBuffer::Bottom};
-        // SWR::Renderer subsurface_renderer {subsurface_pixel_buffer};
-        // subsurface_renderer.draw_triangle({1, 1},{30, 15},{15, 30}, 0xFFFFFFFF);
+                        wayland.get_pixel_buffer() );
     }
 
     void open_window()
@@ -84,6 +148,16 @@ struct PianoApp
 
         while(wayland.frame_step())
         {
+            
+
+            if(wayland.get_state().size_changed)
+            {
+                Print::ln("Wayland window size change detected from main app. ");
+                wayland.get_state().size_changed = false;
+
+                // wayland.reload_size(wayland.get_state().new_dims);
+            }
+
             Arr<UserInput> events = wayland.get_new_input_events();
 
             for(uint i = 0; i < events.count(); i++)
@@ -91,25 +165,14 @@ struct PianoApp
                 piano_ui.ui.process_user_input(events[i], this);
             }
 
+
+            // usleep(16000); // ~60fps
+            usleep(10000);
             
-
-            // render_ui(); // if rendering before the sleep the render looks terrible
-
-            usleep(16000); // ~60fps
-
-            // renderer.clear(0xFF383333);
-
-            
-            // renderer.paste_bitmap(black_100x100, {200, 50});
-
             piano_ui.update(this);
-
-            if(wayland.buffer_is_busy())
-                Print::ln("rendering ui while wayland buffer still busy!");
             piano_ui.render();
 
-            
-
+            performance_clock.fps_step();
         }
     }
 
