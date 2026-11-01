@@ -2,6 +2,7 @@
 
 #include <linux/input-event-codes.h>
 
+#include "lib/str_util.hh"
 #include "math/vec.hh"
 
 #include "wl-callbacks.hh"
@@ -31,10 +32,11 @@ registry_global(void *data, struct wl_registry *wl_registry,
 
     if (strcmp(interface, wl_shm_interface.name) == 0)
     {
-        state->surface_window.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
-        state->surface_content.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
-        state->surface_test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
-        state->surface_egl.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        // state->surfaces.window.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        // state->surfaces.content.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        // state->surfaces.test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        // state->surfaces.egl.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        state->surfaces.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
@@ -69,22 +71,35 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
     // Print::ln("wl_buffer_destroy!");
     /* Sent by the compositor when it's no longer using this buffer */
     // wl_buffer_destroy(wl_buffer);
-    // Print::ln("wl_buffer_release!");
 
-    if(wl_buffer == state->surface_window.fb.buffer)
+
+    // Print::buf("wl_buffer released: ");
+    // Print::ln(StrUtil::ptr_to_hex(wl_buffer));
+    // Print::buf("wl_buffer window : ");
+    // Print::ln(StrUtil::ptr_to_hex(state->surfaces.window.buffer));
+    // Print::buf("wl_buffer content: ");
+    // Print::ln(StrUtil::ptr_to_hex(state->surfaces.content.buffer));
+    // Print::buf("wl_buffer test  : ");
+    // Print::ln(StrUtil::ptr_to_hex(state->surfaces.test.buffer));
+
+    if(wl_buffer == state->surfaces.window.buffer)
     {
         // Print::ln("Window buffer released!");
-        state->surface_window.fb.buffer_busy = false;
+        state->surfaces.window.surface_is_busy = false;
     }
-    else if(wl_buffer == state->surface_content.fb.buffer)
+    else if(wl_buffer == state->surfaces.content.buffer)
     {
         // Print::ln("Content buffer released!");
-        state->surface_content.fb.buffer_busy = false;
+        state->surfaces.content.surface_is_busy = false;
     }
-    else if(wl_buffer == state->surface_test.fb.buffer)
+    else if(wl_buffer == state->surfaces.test.buffer)
     {
         // Print::ln("Test buffer released!");
-        state->surface_test.fb.buffer_busy = false;
+        state->surfaces.test.surface_is_busy = false;
+    }
+    else
+    {
+        Print::ln("Unknown buffer released!");
     }
 
     
@@ -272,22 +287,22 @@ pointer_enter(void *data,
 
     wl_pointer_set_cursor(pointer, serial, state->cursor.surface, state->cursor.image->hotspot_x, state->cursor.image->hotspot_y);
 
-    if(surface == state->surface_test.surface)
+    if(surface == state->surfaces.test.surface)
     {
         state->input.target = WL_Input::Test;
         Print::ln("Test!");
     }
-    else if(surface == state->surface_content.surface)
+    else if(surface == state->surfaces.content.surface)
     {
         state->input.target = WL_Input::Content;
         Print::ln("Content!");
     }
-    else if(surface == state->surface_window.surface)
+    else if(surface == state->surfaces.window.surface)
     {
         state->input.target = WL_Input::Window;
         Print::ln("Window!");
     }
-    else if(surface == state->surface_egl.surface)
+    else if(surface == state->surfaces.egl.surface)
     {
         state->input.target = WL_Input::EGL;
         Print::ln("EGL!");
@@ -323,19 +338,19 @@ pointer_leave(void *data,
 
     Print::buf("Left surface:    ");
 
-    if(surface == state->surface_test.surface)
+    if(surface == state->surfaces.test.surface)
     {
         Print::ln("Test!");
     }
-    else if(surface == state->surface_content.surface)
+    else if(surface == state->surfaces.content.surface)
     {
         Print::ln("Content!");
     }
-    else if(surface == state->surface_window.surface)
+    else if(surface == state->surfaces.window.surface)
     {
         Print::ln("Window!");
     }
-    else if(surface == state->surface_egl.surface)
+    else if(surface == state->surfaces.egl.surface)
     {
         Print::ln("EGL!");
     }
@@ -361,7 +376,7 @@ pointer_motion(void *data,
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
-    double win_h = state->surface_window.fb.h;
+    double win_h = state->surfaces.window.size.y;
     // d2 pos_window_previous_sane = state->input.pointer_pos_window_sane;
 
     state->input.pointer_pos_window_raw  = {px, py};
@@ -371,7 +386,7 @@ pointer_motion(void *data,
     {
         d2 pos_content_previous_sane = state->input.pointer_pos_content_sane;
         state->input.pointer_pos_content_sane = {   px,
-                                                 - (py - state->surface_content.size.y)};
+                                                 - (py - state->surfaces.content.size.y)};
 
         UserInput pointer_move_ev = { 
             UserInputType::MouseMove, 
@@ -476,7 +491,8 @@ pointer_button(void *data,
         }
         else
         {
-            window_area = WindowArea::RightEdge;
+            if(wl_state->input.pointer_pos_window_raw.x > 800)
+                window_area = WindowArea::RightEdge;
         }
 
         switch (window_area)
@@ -596,22 +612,24 @@ xdg_toplevel_configure( void *data,
                         struct wl_array *states                     )
 {
     WL_State* state = (WL_State*) data;
-    state->new_dims = {width, height};
+    
     
 
-    Print::buf("xdg_toplevel_configure called with ");
-    Print::buf(Str::SI(states->size));
-    Print::buf(" number of values.");
-    Print::ln("");
+    
 
     // Print::ln({Str{"new_width = "}, Str::SI(width), Str{",  new_height = "}, Str::SI(height)});
 
     Vec<uint32_t> state_array {states->size, (uint32_t*)states->data};
 
     uint32_t* array_data = (uint32_t*)states->data;
-    size_t number_of_values = states->size;
+    size_t number_of_values = states->size / 4;
 
-    for(size_t i = 0; i < number_of_values / 4; i++)
+    Print::buf("xdg_toplevel_configure called with ");
+    Print::buf(Str::SI(number_of_values));
+    Print::buf(" number of values.");
+    Print::ln("");
+
+    for(size_t i = 0; i < number_of_values ; i++)
     {
         Print::buf("Value ");
         Print::buf(Str::UI( i ));
@@ -622,7 +640,16 @@ xdg_toplevel_configure( void *data,
 
     bool proper_resize_event = (state_array[0] == 3) && (state_array[1] == 4);
     if(proper_resize_event)
-        state->size_changed = true;
+    {
+        state->surfaces.size_change_detected = true;
+        state->surfaces.size_change_dims = {width, height};
+
+        Print::buf("Wayland window size change detected. New size = { ");
+        Print::buf(Str::SI(state->surfaces.size_change_dims.x));
+        Print::buf(", ");
+        Print::buf(Str::SI(state->surfaces.size_change_dims.y));
+        Print::ln(" }");
+    }
 
     
     

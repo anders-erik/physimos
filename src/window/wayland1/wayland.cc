@@ -71,59 +71,32 @@ void Wayland::connect_compositor()
     // printf("error = %d\n", wl_display_get_error(state.wl_display));
 }
 
-void Wayland::create_surfaces(i2 content_dims)
-{
-    state.surface_window.size = {   content_dims.x + state.window_border_width * 2, 
-                                    content_dims.y + state.window_topbar_height + state.window_border_width};
-    state.surface_window.init(state.core.compositor, &state);
+
 
     
-    state.surface_content.size = {content_dims.x, content_dims.y};
-    state.surface_content.pos = {state.window_border_width, state.window_topbar_height};
-    state.surface_content.init(state.core.compositor, &state);
-    state.surface_content.create_subsurface(state.core.subcompositor, state.surface_window.surface);
-    
-    
-    state.surface_test.init(state.core.compositor, &state);
-    state.surface_test.create_subsurface(state.core.subcompositor, state.surface_window.surface);
-
-    state.surface_egl.size = {100, 30};
-    state.surface_egl.pos = {400, 100};
-    // state.surface_EGL.init(state.core.compositor, &state);
-    state.surface_egl.surface = wl_compositor_create_surface(state.core.compositor);
-    state.egl.init(state.core.display, state.surface_egl.surface, state.surface_egl.size);
-    state.surface_egl.create_subsurface(state.core.subcompositor, state.surface_window.surface);
-
-
-    state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.surface_window.surface);
-    xdg_surface_add_listener(state.xdg.surface, &state.xdg.xdg_surface_listener, &state);
-
-    state.xdg.toplevel = xdg_surface_get_toplevel(state.xdg.surface);
-    xdg_toplevel_add_listener(state.xdg.toplevel, &state.xdg.xdg_toplevel_listener, &state);
-    xdg_toplevel_set_title(state.xdg.toplevel, "Example client");
-}
 
 
 
 void Wayland::init(i2 content_dims)
 {
     connect_compositor();
-    create_surfaces(content_dims);
 
-    state.cursor.create_default(state.core.compositor, state.surface_window.fb.wl_shm);
+    state.surfaces.init(content_dims, &state);
 
-    commit_surfaces(); // initial render to display the window
+    state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.surfaces.window.surface);
+    xdg_surface_add_listener(state.xdg.surface, &state.xdg.xdg_surface_listener, &state);
+
+    state.xdg.toplevel = xdg_surface_get_toplevel(state.xdg.surface);
+    xdg_toplevel_add_listener(state.xdg.toplevel, &state.xdg.xdg_toplevel_listener, &state);
+    xdg_toplevel_set_title(state.xdg.toplevel, "Example client");
+
+
+    // state.cursor.create_default(state.core.compositor, state.surfaces.window.fb.wl_shm);
+    state.cursor.create_default(state.core.compositor, state.surfaces.pool.wl_shm);
+
+    state.surfaces.commit();
+
     // wl_display_dispatch(state.core.display); // caused a flash before first proper render
-}
-
-void Wayland::commit_surfaces()
-{
-    state.surface_window.commit();
-    state.surface_content.commit();
-    state.surface_test.commit();
-    // state.surface_egl.commit();
-
-    // state.surface_window.fb.buffer_busy = true;
 }
 
 
@@ -136,12 +109,15 @@ Arr<UserInput> Wayland::get_new_input_events()
 
 bool Wayland::frame_step()
 {
-    commit_surfaces();
+    state.surfaces.commit();
     // wl_display_dispatch(state.core.display); // process all queued wayland events
 
-    while(buffer_is_busy())
+    // wl_display_dispatch(state.core.display);
+
+    while(content_surface_is_busy())
     {
         // Print::ln("Content buffer still busy.");
+    //     usleep(1000);
         wl_display_dispatch(state.core.display);
     }
 
@@ -157,9 +133,9 @@ bool Wayland::frame_step()
 
 void Wayland::destroy()
 {
-    state.surface_window.fb.destroy();
-    state.surface_content.fb.destroy();
-    state.surface_test.fb.destroy();
+//     state.surfaces.window.fb.destroy();
+//     state.surfaces.content.fb.destroy();
+//     state.surfaces.test.fb.destroy();
 
     wl_display_disconnect(state.core.display);
 }
@@ -181,19 +157,19 @@ void Wayland::run()
         }
         if(state.input.pointer_pos_window_sane.y > 400.0)
         {
-            state.surface_window.fb.clear_gray();
-            commit_surfaces();
+            // state.surfaces.window.fb.clear_gray();
+            state.surfaces.commit();
 
         }
         if(state.input.pointer_pos_window_sane.y > 450.0)
         {
-            state.surface_window.fb.resize({1000, 600});
+            // state.surfaces.window.fb.resize({1000, 600});
         }
         if(state.input.pointer_pos_window_sane.x > 500.0)
         {
             dummy_i++;
-            state.surface_window.fb.clear_green();
-            commit_surfaces(); 
+            // state.surfaces.window.fb.clear_green();
+            // commit_surfaces(); 
         }
         if(state.input.pointer_pos_window_sane.x > 700.0)
         {
@@ -201,7 +177,7 @@ void Wayland::run()
         }
         if(state.input.pointer_pos_window_sane.x > 900.0)
         {
-            state.surface_window.fb.resize({640, 480});
+            // state.surfaces.window.fb.resize({640, 480});
         }
 
     }

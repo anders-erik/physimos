@@ -6,6 +6,13 @@
 struct StrUtil
 {
 
+    static Str ptr_to_hex(void* ptr)
+    {
+        char string[20] {0};
+        sprintf(string, "%p", (void *) ptr);
+        return Str{string};
+    }
+
     /** Split into array at each matching char. */
     static Arr<Str> split(Str str, char ch)
     {

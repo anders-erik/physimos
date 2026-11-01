@@ -23,7 +23,7 @@ class PianoUI
 public:
 
     UI ui;
-    SWR::Renderer renderer_new_content;
+    SWR::Renderer renderer;
 
     UIC_piano uic_piano;
     UIC_Song uic_song;

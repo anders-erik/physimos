@@ -11,10 +11,8 @@ class Wayland
     WL_State state = { 0 };
 
     void connect_compositor();
-    void create_surfaces(i2 dims);
 
     void init(i2 dims);
-    void commit_surfaces(); // damage buffer and commit surface
     
     void destroy(); // destroy framebuffer & disconnect from compositor
     
@@ -34,10 +32,18 @@ public:
         destroy();
     }
 
-    void reload(i2 new_content_dims)
+    void set_new_size(i2 new_content_dims)
     {
-        destroy();
-        init(new_content_dims);
+        state.surfaces.set_content_dims(new_content_dims);
+        state.surfaces.new_wl_buffers(&state);
+
+        // wl_display_dispatch(state.core.display);
+        
+        // state.surfaces.commit();
+        // 
+
+        // destroy();
+        // init(new_content_dims);
         // state.surface_window.resize(new_content_dims, state.core.compositor);
     }
 
@@ -45,14 +51,14 @@ public:
 
     PixelBuffer get_pixel_buffer()
     {
-        return PixelBuffer {    (PX32*) state.surface_content.fb.data, 
-                                        state.surface_content.fb.w, 
-                                        state.surface_content.fb.h,
-                                        PX32F::ARGB,
-                                        PixelBuffer::Top    };
+        return PixelBuffer {(PX32*)(state.surfaces.get_content_pointer()), 
+                                    state.surfaces.content.size.x, 
+                                    state.surfaces.content.size.y,
+                                    PX32F::ARGB,
+                                    PixelBuffer::Top    };
     }
 
-    bool buffer_is_busy() { return state.surface_content.fb.buffer_busy; }
+    bool content_surface_is_busy() { return state.surfaces.content.surface_is_busy; }
 
     Arr<UserInput> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer    
 

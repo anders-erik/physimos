@@ -18,7 +18,7 @@
 
 
 /* Shared memory support code */
-void WL_FrameBuffer::
+void WL_Pool::
 randname(char *buf)
 {
     struct timespec ts;
@@ -30,7 +30,7 @@ randname(char *buf)
     }
 }
 
-int WL_FrameBuffer::
+int WL_Pool::
 create_shm_file(void)
 {
     int retries = 100;
@@ -48,8 +48,8 @@ create_shm_file(void)
     return -1;
 }
 
-int WL_FrameBuffer::
-allocate_shm_file(size_t size)
+int WL_Pool::
+allocate_shm_file(int size)
 {
     int fd = create_shm_file();
     if (fd < 0)
@@ -66,135 +66,114 @@ allocate_shm_file(size_t size)
 }
 
 
-
-
-// this callback is called every time the compositor is done using the buffer
-// Maybe do not destroy the buffer every render if I want the buffer to be reused! (or maybe just rebind it every time..)
-// static void
-// wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
-// {
-//     WL_State* state = (WL_State*) data;
-//     // Print::ln("wl_buffer_destroy!");
-//     /* Sent by the compositor when it's no longer using this buffer */
-//     // wl_buffer_destroy(wl_buffer);
-//     // Print::ln("wl_buffer_release!");
-//     state->surface_window.fb.buffer_busy = false;
-// }
-
-// static const struct wl_buffer_listener wl_buffer_listener = {
-//     .release = wl_buffer_release,
-// };
-
-
-void WL_FrameBuffer::init(WL_State* _state)
+void WL_Pool::init(int _size)
 {
-    if(allocated)
+    if(data != nullptr)
     {
-        Print::ln("ERROR: tried to initialize an already allocated WL_FrameBuffer;");
+        Print::ln("WARN: tried to initialize an already allocated WL_Pool in 'WL_Pool::init';");
         return;
     }
 
-    // format
-    if(format == WL_FrameBuffer::RGBA)
-        shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
-        // shm_format = wl_shm_format::WL_SHM_FORMAT_ARGB8888;
-        // shm_format = wl_shm_format::WL_SHM_FORMAT_RGBA8888;
-        // shm_format = wl_shm_format::WL_SHM_FORMAT_RGBX8888;
-    else if(format == WL_FrameBuffer::RGB)
-        shm_format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
-
-
-    int size = w * h * 4;
-    int stride = w * 4;
+    size = _size;
 
     shm_fd = allocate_shm_file(size);
     if (shm_fd == -1)
     {
-        Print::ln("Failed to allocate shm file in 'init_fb'");
+        Print::ln("Failed to allocate shm file in 'WL_Pool::init'");
         return;
     }
-
-    // we unmap data before a reallocation
-    // if(state.fb.data != 0)
-    //     munmap(state.fb.data, size);
 
     data = (uint32_t*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
     if (data == MAP_FAILED)
     {
-        Print::ln("ERROR: mmap failed in WLFB::init().");
+        Print::ln("ERROR: mmap failed in WL_Pool::init.");
         close(shm_fd);
         return;
     }
 
-    // Note: compositor allocates its own memory pool based on the fd. AFter the compoistor-allocation the currently mmaped file is no longer of any use?
-    // struct wl_shm_pool *pool = wl_shm_create_pool(state.wl_shm, state.fb.shm_fd, size);
     pool = wl_shm_create_pool(wl_shm, shm_fd, size);
-    // if(state.fb.buffer != 0)
-    //     wl_buffer_destroy(state.fb.buffer);
-    buffer = wl_shm_pool_create_buffer(pool, 0, w, h, stride, shm_format);
-    // wl_shm_pool_destroy(pool);
-    // close(fd);
 
-
-    wl_buffer_add_listener(buffer, &wl_buffer_listener, _state);
-
-    allocated = true;
-}
-
-
-
-void WL_FrameBuffer::resize(i2 dims)
-{
-    w = dims.x;
-    h = dims.y;
-
-    int size = w * h * 4;
-    int stride = w * 4;
-
-    if(allocated)
-        destroy();
-
-    shm_fd = allocate_shm_file(size);
-    if (shm_fd == -1)
-    {
-        Print::ln("Failed to allocate shm file in 'WL_FrameBuffer.resize()'");
-        return;
-    }
-
-    // we unmap data before a reallocation
-    // if(state.fb.data != 0)
-    //     munmap(state.fb.data, size);
-
-    data = (uint32_t*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if (data == MAP_FAILED)
-    {
-        close(shm_fd);
-        return;
-    }
 
     // Note: compositor allocates its own memory pool based on the fd. AFter the compoistor-allocation the currently mmaped file is no longer of any use?
-    // struct wl_shm_pool *pool = wl_shm_create_pool(state.wl_shm, state.fb.shm_fd, size);
-    pool = wl_shm_create_pool(wl_shm, shm_fd, size);
-    // if(state.fb.buffer != 0)
-    //     wl_buffer_destroy(state.fb.buffer);
-    buffer = wl_shm_pool_create_buffer(pool, 0, w, h, stride, shm_format);
-    // wl_shm_pool_destroy(pool);
-    // close(fd);
-
-
-    wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
-
-    allocated = true;
-}
-
-void WL_FrameBuffer::destroy()
-{
-    const int size = w*h*4;
-
-    munmap(data, size);
-    wl_buffer_destroy(buffer);
-    wl_shm_pool_destroy(pool);
     close(shm_fd);
-
-    allocated = false;
 }
+
+
+
+
+
+void WL_Surfaces::init(i2 _content_dims, WL_State* state)
+{   
+    set_content_dims(_content_dims);
+
+    pool.init(get_all_surface_buffer_sizes_in_bytes() * 3);
+
+
+    window.init(state->core.compositor, pool.pool, get_offset(WL_Surface::Window), state);
+    content.init(state->core.compositor, pool.pool, get_offset(WL_Surface::Content), state);
+    test.init(state->core.compositor, pool.pool, get_offset(WL_Surface::Test), state);
+    
+    content.create_subsurface(state->core.subcompositor, window.surface);
+    test.create_subsurface(state->core.subcompositor, window.surface);
+
+    egl.surface = wl_compositor_create_surface(state->core.compositor);
+    egl.create_subsurface(state->core.subcompositor, window.surface);
+    state->egl.init(state->core.display, egl.surface, egl.size);
+}
+
+
+void WL_Surfaces::set_content_dims(i2 _content_dims)
+{
+    content_dims = _content_dims;
+
+    window.size = {     content_dims.x + window_border_width * 2, 
+                        content_dims.y + window_topbar_height + window_border_width};
+    
+    content.size = {content_dims.x, content_dims.y};
+    content.pos = {window_border_width, window_topbar_height};
+
+    test.size = {50, 50};
+    test.pos = {400, 200};
+
+    egl.size = {100, 30};
+    egl.pos = {400, 100};
+}
+
+
+void WL_Surfaces::new_wl_buffers(WL_State* state)
+{
+    wl_buffer_destroy(window.buffer);
+    wl_buffer_destroy(content.buffer);
+    wl_buffer_destroy(test.buffer);
+
+
+    window.create_new_buffer(pool.pool, get_offset(WL_Surface::Window), state);
+    content.create_new_buffer(pool.pool, get_offset(WL_Surface::Content), state);
+    test.create_new_buffer(pool.pool, get_offset(WL_Surface::Test), state);
+
+    // window.commit();
+    // content.commit();
+    // test.commit();
+
+    // wl_display_dispatch(state->core.display);
+
+    // window.surface_is_busy = false;
+    // content.surface_is_busy = false;
+    // test.surface_is_busy = false;
+
+
+
+    // content.create_new_buffer(pool.pool, get_offset(WL_Surface::Content), state);
+    // test.create_new_buffer(pool.pool, get_offset(WL_Surface::Test), state);
+}
+
+void WL_Surfaces::commit()
+{
+    window.commit();
+    content.commit();
+    test.commit();
+    // egl.commit();
+}
+
+
+

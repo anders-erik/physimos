@@ -33,124 +33,6 @@ struct WL_Cursor
 
 };
 
-struct WL_FrameBuffer
-{
-    enum Format
-    {
-        RGB,
-        RGBA
-    } format = RGBA;
-
-    wl_shm_format shm_format;
-
-    uint32_t *data = 0; // pointer to the mmaped framebuffer
-    struct wl_buffer *buffer = 0;
-    const struct wl_buffer_listener wl_buffer_listener = {
-        .release = wl_buffer_release,
-    };
-    struct wl_shm *wl_shm;
-    struct wl_shm_pool *pool;
-    int shm_fd;
-
-    int w;
-    int h;
-    bool allocated = false;
-    bool buffer_busy = false;
-
-    void randname(char *buf);
-    int create_shm_file();
-    int allocate_shm_file(size_t size);
-
-    void init(WL_State* _state);
-    void resize(i2 dims);
-    void destroy();
-
-
-
-
-    void* ptr() {return (void*) data;}
-
-    void clear_gray()
-    {
-        for (int y = 0; y < h; ++y)
-        {
-            for (int x = 0; x < w; ++x)
-            {
-                    data[y * w + x] = 0xFF999999;
-            }
-        }
-    }
-
-    void clear_green()
-    {
-        for (int y = 0; y < h; ++y)
-        {
-            for (int x = 0; x < w; ++x)
-            {
-                    data[y * w + x] = 0xFF55AA55;
-            }
-        }
-    }
-
-    
-};
-
-
-struct WL_Surface
-{
-    i2 pos = {400, 200};
-    i2 size = {50, 50};
-    WL_FrameBuffer fb;
-    struct wl_surface* surface = nullptr;
-    struct wl_subsurface *subsurface = nullptr;
-
-
-    void init(struct wl_compositor* compositor, WL_State* state)
-    {
-        surface = wl_compositor_create_surface(compositor);
-
-        fb.w = size.x;
-        fb.h = size.y;
-        fb.init(state);
-        fb.clear_gray(); 
-    }
-
-    void create_subsurface(struct wl_subcompositor* subcompositor, struct wl_surface* parent)
-    {
-        subsurface = wl_subcompositor_get_subsurface(subcompositor, surface, parent);
-
-        if (!subsurface)
-        {
-            fprintf(stderr, "Failed to create subsurface.\n");
-            return;
-        }
-
-        wl_subsurface_set_position(subsurface, pos.x, pos.y);
-    }
-
-    void resize(i2 new_dims, struct wl_compositor* compositor)
-    {
-        fb.destroy();
-        wl_surface_destroy(surface);
-
-        surface = wl_compositor_create_surface(compositor);
-
-        size = new_dims;
-
-        fb.w = size.x;
-        fb.h = size.y;
-        fb.resize(new_dims);
-        fb.clear_gray(); 
-    }
-
-    void commit()
-    {
-        wl_surface_damage_buffer(surface, 0, 0, fb.w, fb.h);
-        wl_surface_attach(surface, fb.buffer, 0, 0);
-        wl_surface_commit(surface);
-        fb.buffer_busy = true;
-    }
-};
 
 
 /** Wayland core objects */
@@ -241,6 +123,158 @@ struct WL_Input
     // d2 pointer_sane = {0.0, 0.0};
 };
 
+
+
+
+
+struct WL_Surface
+{
+    i2 pos = {0, 0};
+    i2 size = {0, 0};
+    bool surface_is_busy = false;
+    struct wl_surface* surface = nullptr;
+    struct wl_subsurface *subsurface = nullptr;
+    struct wl_buffer *buffer = nullptr;
+    const struct wl_buffer_listener wl_buffer_listener = {
+        .release = wl_buffer_release,
+    };
+
+
+    enum Type
+    {
+        Window,
+        Content,
+        Test,
+        EGL,
+        None,
+    } type = None;
+
+    int get_size_pixels() { return size.x * size.y; };
+    int get_size_bytes() { return size.x * size.y * 4; };
+
+ 
+
+    void init(struct wl_compositor* compositor, struct wl_shm_pool* pool, int offset, WL_State* state)
+    {
+        surface = wl_compositor_create_surface(compositor);
+
+        buffer = wl_shm_pool_create_buffer(pool, offset, size.x, size.y, size.x*4, wl_shm_format::WL_SHM_FORMAT_XRGB8888);
+        wl_buffer_add_listener(buffer, &wl_buffer_listener, state); 
+        // wl_surface_attach(surface, buffer, 0, 0);
+    }
+
+    void create_new_buffer(struct wl_shm_pool* pool, int offset, WL_State* state)
+    {
+        buffer = wl_shm_pool_create_buffer(pool, offset, size.x, size.y, size.x*4, wl_shm_format::WL_SHM_FORMAT_XRGB8888);
+        wl_buffer_add_listener(buffer, &wl_buffer_listener, state);
+        // wl_surface_attach(surface, buffer, 0, 0);
+    }
+
+    void create_subsurface(struct wl_subcompositor* subcompositor, struct wl_surface* parent)
+    {
+        subsurface = wl_subcompositor_get_subsurface(subcompositor, surface, parent);
+
+        if (!subsurface)
+        {
+            fprintf(stderr, "Failed to create subsurface.\n");
+            return;
+        }
+
+        wl_subsurface_set_position(subsurface, pos.x, pos.y);
+    }
+
+    void commit()
+    {
+        wl_surface_damage_buffer(surface, 0, 0, size.x, size.y);
+        wl_surface_attach(surface, buffer, 0, 0);
+        wl_surface_commit(surface);
+        surface_is_busy = true;
+    }
+};
+
+
+struct WL_Pool
+{
+    struct wl_shm *wl_shm = nullptr;
+    struct wl_shm_pool *pool = nullptr;
+    int shm_fd = -1;
+    int size = 0;
+    void* data = nullptr;
+
+    void randname(char *buf);
+    int create_shm_file();
+    int allocate_shm_file(int size);
+
+    void init(int _size);
+};
+
+struct WL_Surfaces
+{
+    int window_border_width = 5;
+    int window_topbar_height = 20;
+
+    i2 content_dims = {0, 0};
+
+    bool size_change_detected = false;
+    i2 size_change_dims = {0, 0};
+
+    bool is_initialized = false;
+
+    /* Pool to contain all surface buffers */
+    WL_Pool pool;
+
+
+    /* window surface*/
+    WL_Surface window;
+    /* content surface*/
+    WL_Surface content;
+    /* test surface*/
+    WL_Surface test;
+    /* EGL surface*/
+    WL_Surface egl;
+
+
+
+    void init(i2 _content_dims, WL_State* state);
+
+    void set_content_dims(i2 _content_dims);
+
+    void new_wl_buffers(WL_State* state);
+
+    int get_all_surface_buffer_sizes_in_bytes()
+    {
+        return (window.get_size_bytes() + content.get_size_bytes() + test.get_size_bytes() + egl.get_size_bytes());
+    }
+
+    int get_offset(WL_Surface::Type _surface_type)
+    {
+        switch (_surface_type)
+        {
+        case WL_Surface::Window:
+            return 0;
+            break;
+        case WL_Surface::Content:
+            return get_offset(WL_Surface::Window) + window.get_size_bytes();
+            break;
+        case WL_Surface::Test:
+            return get_offset(WL_Surface::Content) + content.get_size_bytes();
+            break;
+        
+        default:
+            break;
+        }
+
+        return 0;
+    }
+
+    void* get_content_pointer()
+    {
+        return (void*) ((char*)pool.data + window.get_size_bytes());
+    }
+    
+    void commit();
+};
+
 /* Wayland code */
 struct WL_State
 {
@@ -248,26 +282,14 @@ struct WL_State
     WL_Core core;
     /* XDG Objects */
     WL_XDG xdg;
-    /* window surface*/
-    WL_Surface surface_window;
-    /* content surface*/
-    WL_Surface surface_content;
-    /* test surface*/
-    WL_Surface surface_test;
-    /* EGL surface*/
-    WL_Surface surface_egl;
+    /* Surface handler*/
+    WL_Surfaces surfaces;
+
     WL_EGL egl;
-    // /* Buffer objects */
-    // WL_FrameBuffer fb;
     /* Object to handle the cursor image */
     WL_Cursor cursor;
     /* Input*/
     WL_Input input;
 
-    int window_border_width = 5;
-    int window_topbar_height = 20;
-
     int running = 1;
-    bool size_changed = false;
-    i2 new_dims;
 };
