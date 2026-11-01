@@ -178,6 +178,7 @@ void init_egl(WState* state)
 {
     EGLint major = 0;
     EGLint minor = 0;
+
     EGLint num_configs = 0;
 
     // DISPLAY

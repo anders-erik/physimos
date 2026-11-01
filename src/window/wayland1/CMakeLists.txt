@@ -30,6 +30,9 @@ target_link_libraries(wayland-state
     math
     wayland-client
     wayland-callbacks
+
+    EGL # eglInitialize, eglGetDisplay, ...
+    wayland-egl # wl_egl_window_create
 )
 
 

@@ -34,9 +34,11 @@ public:
         destroy();
     }
 
-    void reload_size(i2 new_content_dims)
+    void reload(i2 new_content_dims)
     {
-        state.surface_window.resize(new_content_dims);
+        destroy();
+        init(new_content_dims);
+        // state.surface_window.resize(new_content_dims, state.core.compositor);
     }
 
     WL_State& get_state() {return state;}

@@ -87,6 +87,13 @@ void Wayland::create_surfaces(i2 content_dims)
     state.surface_test.init(state.core.compositor, &state);
     state.surface_test.create_subsurface(state.core.subcompositor, state.surface_window.surface);
 
+    state.surface_egl.size = {100, 30};
+    state.surface_egl.pos = {400, 100};
+    // state.surface_EGL.init(state.core.compositor, &state);
+    state.surface_egl.surface = wl_compositor_create_surface(state.core.compositor);
+    state.egl.init(state.core.display, state.surface_egl.surface, state.surface_egl.size);
+    state.surface_egl.create_subsurface(state.core.subcompositor, state.surface_window.surface);
+
 
     state.xdg.surface = xdg_wm_base_get_xdg_surface(state.xdg.wm_base, state.surface_window.surface);
     xdg_surface_add_listener(state.xdg.surface, &state.xdg.xdg_surface_listener, &state);
@@ -114,6 +121,7 @@ void Wayland::commit_surfaces()
     state.surface_window.commit();
     state.surface_content.commit();
     state.surface_test.commit();
+    // state.surface_egl.commit();
 
     // state.surface_window.fb.buffer_busy = true;
 }

@@ -7,6 +7,7 @@
 #include "wl-defs.hh"
 #include "wl-callbacks.hh"
 
+#include "wl-egl.hh"
 
 
 struct WL_Cursor
@@ -127,8 +128,13 @@ struct WL_Surface
         wl_subsurface_set_position(subsurface, pos.x, pos.y);
     }
 
-    void resize(i2 new_dims)
+    void resize(i2 new_dims, struct wl_compositor* compositor)
     {
+        fb.destroy();
+        wl_surface_destroy(surface);
+
+        surface = wl_compositor_create_surface(compositor);
+
         size = new_dims;
 
         fb.w = size.x;
@@ -215,6 +221,7 @@ struct WL_Input
         Window,
         Content,
         Test,
+        EGL,
         None,
     } target = None;
 
@@ -235,7 +242,8 @@ struct WL_Input
 };
 
 /* Wayland code */
-struct WL_State {
+struct WL_State
+{
     /* Wayland Objects */
     WL_Core core;
     /* XDG Objects */
@@ -246,6 +254,9 @@ struct WL_State {
     WL_Surface surface_content;
     /* test surface*/
     WL_Surface surface_test;
+    /* EGL surface*/
+    WL_Surface surface_egl;
+    WL_EGL egl;
     // /* Buffer objects */
     // WL_FrameBuffer fb;
     /* Object to handle the cursor image */

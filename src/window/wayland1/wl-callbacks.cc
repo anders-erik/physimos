@@ -2,8 +2,9 @@
 
 #include <linux/input-event-codes.h>
 
-#include "wl-callbacks.hh"
+#include "math/vec.hh"
 
+#include "wl-callbacks.hh"
 #include "wl-state.hh"
 
 
@@ -33,6 +34,7 @@ registry_global(void *data, struct wl_registry *wl_registry,
         state->surface_window.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         state->surface_content.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         state->surface_test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        state->surface_egl.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
@@ -285,9 +287,14 @@ pointer_enter(void *data,
         state->input.target = WL_Input::Window;
         Print::ln("Window!");
     }
+    else if(surface == state->surface_egl.surface)
+    {
+        state->input.target = WL_Input::EGL;
+        Print::ln("EGL!");
+    }
     else
     {
-        Print::ln("ERROR: entered a non-tracked surface!");
+        Print::ln("Unknown!");
     }
 
     
@@ -328,9 +335,13 @@ pointer_leave(void *data,
     {
         Print::ln("Window!");
     }
+    else if(surface == state->surface_egl.surface)
+    {
+        Print::ln("EGL!");
+    }
     else
     {
-        Print::ln("ERROR: left a non-tracked surface!");
+        Print::ln("Unknown!");
     }
 
     state->input.target = WL_Input::None;
@@ -586,17 +597,38 @@ xdg_toplevel_configure( void *data,
 {
     WL_State* state = (WL_State*) data;
     state->new_dims = {width, height};
-    state->size_changed = true;
+    
 
-    // Print::ln("xdg_toplevel_configure called!");
+    Print::buf("xdg_toplevel_configure called with ");
+    Print::buf(Str::SI(states->size));
+    Print::buf(" number of values.");
+    Print::ln("");
 
     // Print::ln({Str{"new_width = "}, Str::SI(width), Str{",  new_height = "}, Str::SI(height)});
 
-    Print::ln(Str::SI(states->size));
+    Vec<uint32_t> state_array {states->size, (uint32_t*)states->data};
+
     uint32_t* array_data = (uint32_t*)states->data;
-    Print::ln(Str::SI( *(array_data + 0) ));
-    Print::ln(Str::SI( *(array_data + 1) ));
-    Print::ln(Str::SI( *(array_data + 2) ));
+    size_t number_of_values = states->size;
+
+    for(size_t i = 0; i < number_of_values / 4; i++)
+    {
+        Print::buf("Value ");
+        Print::buf(Str::UI( i ));
+        Print::buf(" = '");
+        Print::buf(Str::SI( state_array[i] ));
+        Print::ln("'");
+    }
+
+    bool proper_resize_event = (state_array[0] == 3) && (state_array[1] == 4);
+    if(proper_resize_event)
+        state->size_changed = true;
+
+    
+    
+    // Print::ln(Str::SI( *(array_data + 0) ));
+    // Print::ln(Str::SI( *(array_data + 1) ));
+    // Print::ln(Str::SI( *(array_data + 2) ));
     // Print::ln(Str::SI( *((((int32_t)states->data))) ));
 
     // xdg_toplevel_state state = wl_array_for_each(0, states);

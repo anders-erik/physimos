@@ -155,7 +155,9 @@ struct PianoApp
                 Print::ln("Wayland window size change detected from main app. ");
                 wayland.get_state().size_changed = false;
 
-                // wayland.reload_size(wayland.get_state().new_dims);
+                wayland.reload(wayland.get_state().new_dims);
+                // wayland.reload({1200, 800});
+                piano_ui.renderer_new_content.set_buffer(wayland.get_pixel_buffer());
             }
 
             Arr<UserInput> events = wayland.get_new_input_events();
