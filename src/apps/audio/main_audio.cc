@@ -21,6 +21,11 @@
 
 #include "io/evdev/evdev_reader.hh"
 
+// PLOTTING
+#include "rend/sw/swrend.hh"
+#include "lib/bitmap.hh"
+#include "io/bmp2/BMP.hh"
+
 #include "audio/audio_data.hh"
 #include "audio/alsa.hh"
 #include "audio/wave_generator.hh"
@@ -632,6 +637,50 @@ int DFT_WAV_fn()
 }
 
 
+
+int DFT_plot_fn()
+{
+	WAV wav_import;
+
+	AudioData16 audio_data_source = wav_import.Import("resources/audio/piano-A4.wav");
+	// AudioData16 audio_data_16 = wav_import.Import("resources/audio/piano-A4.wav");
+
+	uint starting_sample_index = 20000;
+	uint samples_to_use = 1000; // Limit the DFT processing time by only processing the n first samples
+	Vec<std::complex<double>> audio_data_16_C;
+	audio_data_16_C.set_count(samples_to_use);
+
+
+	// copy audio data to complex number
+	for(uint i = 0; i < samples_to_use; i++)
+		audio_data_16_C[i] = (f64)audio_data_source.data[starting_sample_index + i];
+
+	// print_complex_vec_head(sine_a4_C, 100);
+	// print_complex_vec_tail(sine_a4_C, 100);
+
+	DFT dft;
+	// AudioSamplingConfig
+	dft.set_time_domain_data(audio_data_16_C, 44100);
+	dft.calculate();
+
+	// TODO: #1 Plot the dft output!
+	Bitmap bitmap {200, 100};
+	SWR::Renderer renderer {bitmap.get_pixel_buffer()};
+	renderer.clear(0x222222FF);
+	renderer.draw_point({5, 5}, 0xEEEEEEFF);
+	renderer.draw_line({10, 5}, {30, 100}, 0xEEEEEEFF);
+	renderer.draw_line({15, 5}, {100, 30}, 0xEEEEEEFF); // TODO: Resolve horizontal line gaps
+	BMPIO::SExport_PX32RGBA("tmp/DFT_output.bmp", bitmap);
+
+
+	Str DFT_csv_str = dft.to_csv();
+	Print::ln(DFT_csv_str);
+	IO::dump("tmp/dft.csv", DFT_csv_str);
+
+	return 0;
+}
+
+
 int generate_piano_note_fn()
 {
 	AudioPlayer audio_player {AudioPlayer::Type::Alsa};
@@ -685,6 +734,12 @@ int main(int argc, char** argv)
 		Print::ln("main_audio:: DFT-WAV !");
 
 		return DFT_WAV_fn();
+	}
+	else if(cli[1] == "DFT-plot")
+	{
+		Print::ln("main_audio:: DFT-plot !");
+
+		return DFT_plot_fn();
 	}
 	else if(cli[1] == "generate-piano-note")
 	{

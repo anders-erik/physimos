@@ -7,6 +7,7 @@ using namespace std::complex_literals;
 #include "lib/arr.hh"
 #include "math/vec.hh"
 #include "math/complex.hh"
+#include "math/const.hh"
 
 
 double complex_magnitude(std::complex<double> _num)
@@ -193,7 +194,6 @@ public:
 	Vec<double> F;
 
 	uint sample_count = 0;
-	f64 sample_count_f64 = 0;
 	double Fs; // sampling frequency
 	double dt; // time between samples
 
@@ -202,7 +202,7 @@ public:
 	void set_time_domain_data(Vec<std::complex<double>>& input_vec, double _sampling_frequency)
 	{
 		sample_count = input_vec.count();
-		sample_count_f64 = (f64) sample_count;
+		f64 sample_count_f64 = (f64) sample_count;
 		Fs = _sampling_frequency;
 		dt = 1 / Fs;
 
@@ -267,27 +267,24 @@ public:
 		Vec<std::complex<double>> output;
 
 		uint N = input.size();
+		f64 N_fl = (f64) N;
 
         output.set_count(N);
         
 
 		for(uint k = 0; k < N; k++)
 		{
-			std::complex<double> X = 0.0 + 0.0i;
+			std::complex<double> X_k = 0.0 + 0.0i;
+			f64 k_fl = (f64) k;
 
-			for(int n = 0; n < N; n++)
+			for(uint n = 0; n < N; n++)
 			{
 				double n_db = (double) n;
-				double k_db = (double) k;
-				double N_db = (double) N;
-				std::complex<double> exponent = 0.0 + -1.0i * 2.0 * 3.1415 * n_db * k_db / N_db;
-				// std::complex<double> exponent = 0.0 + 1.0i;
-				X += input[n] * std::pow(2.718, exponent);
+				std::complex<double> exponent = -1.0i * PI2 * n_db * k_fl / N_fl;
+				X_k += input[n] * std::pow(ee, exponent);
 			}
 
-			// output.push_back(X);
-            output[k] = X;
-
+            output[k] = X_k;
 		}
 		// std::complex<double> A =
 		return output;

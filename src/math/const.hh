@@ -4,7 +4,9 @@
 #define PI2f    6.28318f
 #define PIf     3.14159f
 #define PIHf    1.57080f
+#define ef      2.71828f
 
-#define PI2    6.28318530718
-#define PI     3.14159265359
-#define PIH    1.57079632679
+#define PI2     6.28318530718
+#define PI      3.14159265359
+#define PIH     1.57079632679
+#define ee      2.7182818284

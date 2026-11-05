@@ -164,7 +164,7 @@ struct BoxIntersection1D
 
 
 
-// typedef Arr<Pixel> Col;
+// typedef Arr<> Col;
 
 /** 32-bit pixel bitmap */
 class Bitmap
@@ -219,6 +219,11 @@ public:
     PX32* get_data_mut()
     {
         return data.data_mut();
+    }
+
+    PixelBuffer get_pixel_buffer()
+    {
+        return PixelBuffer{data.data_mut(), width, height, format, PixelBuffer::YZero::Bottom};
     }
 
     bool is_in_bounds(u2 _p)

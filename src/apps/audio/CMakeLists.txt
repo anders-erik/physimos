@@ -6,7 +6,10 @@ target_link_libraries(main_audio
     lib
     audio
     asound
-    io
+
+    bmp2
+    swrend
+
     alsa
 )
 
