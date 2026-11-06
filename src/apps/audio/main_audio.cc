@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include <string.h> // memcpy
 
+#include <stdfloat>
+
 #include "lib/print.hh"
 #include "lib/arr.hh"
 #include "lib/cli.hh"
@@ -637,7 +639,7 @@ int DFT_WAV_fn()
 }
 
 
-
+/* Plot the STFT harmonics profiles for the A4 piano sample */
 int DFT_plot_fn()
 {
 	WAV wav_import;
@@ -645,7 +647,7 @@ int DFT_plot_fn()
 	AudioData16 audio_data_source = wav_import.Import("resources/audio/piano-A4.wav");
 	// AudioData16 audio_data_16 = wav_import.Import("resources/audio/piano-A4.wav");
 
-	uint starting_sample_index = 20000;
+	uint starting_sample_index = 15000;
 	uint samples_to_use = 1000; // Limit the DFT processing time by only processing the n first samples
 	Vec<std::complex<double>> audio_data_16_C;
 	audio_data_16_C.set_count(samples_to_use);
@@ -669,7 +671,10 @@ int DFT_plot_fn()
 	renderer.clear(0x222222FF);
 	renderer.draw_point({5, 5}, 0xEEEEEEFF);
 	renderer.draw_line({10, 5}, {30, 100}, 0xEEEEEEFF);
-	renderer.draw_line({15, 5}, {100, 30}, 0xEEEEEEFF); // TODO: Resolve horizontal line gaps
+	renderer.draw_line({35, 25}, {120, 50}, 0xEEEEEEFF); // TODO: Resolve horizontal line gaps
+	renderer.draw_line_float_lerp({15, 5}, {100, 30}, 0xEEEEEEFF);
+	renderer.draw_line_float_lerp({130, 5}, {100, 20}, 0xEEEEEEFF);
+	renderer.draw_line_float_lerp({15, 5}, {30, 100}, 0xEEEEEEFF);
 	BMPIO::SExport_PX32RGBA("tmp/DFT_output.bmp", bitmap);
 
 
@@ -705,6 +710,7 @@ int main(int argc, char** argv)
 	CLI cli (argc, argv);
 	// cli.print();
 
+	std::float16_t asdf = 0.0f16;
 
 	if(cli[1] == "phyano")
 	{

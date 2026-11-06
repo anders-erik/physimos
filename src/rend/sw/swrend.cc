@@ -69,6 +69,65 @@ void SWR::Renderer::draw_line(i2 _p1, i2 _p2, PX32 _px)
     }
 }
 
+
+
+/** Draw pixelated line using kx + m where pixels are drawn using step sizes related to the k-value to generate the intermediate pixels when the slope is large. */
+void SWR::Renderer::draw_line_float_lerp(f2 _p1, f2 _p2, PX32 _px)
+{
+    if(!buffer.is_in_bounds(_p1) || !buffer.is_in_bounds(_p2))
+    {
+        Print::ln("WARN: tried drawing line (vec) outside bitmap bounds.");
+        return;
+    }
+
+    float Dx = std::fabs(_p2.x -_p1.x);
+    float Dy = std::fabs(_p2.y -_p1.y);
+    float delta_major_direction = Dx > Dy ? Dx : Dy;
+    float dt_lerp = 1 / delta_major_direction;
+
+    // enum StepDirection
+    // {
+    //     X,
+    //     Y,
+    // } step_direction = Dx > Dy ? StepDirection::X : StepDirection::Y;
+
+    auto lerp = [](float t, f2 _p1, f2 _p2) -> f2 {
+        // Dx = {};
+        return f2{  _p1.x + t*(_p2.x-_p1.x),    
+                    _p1.y + t*(_p2.y-_p1.y)};
+    };
+    // LineRend line {_p1, _p2};
+
+    // int major_i = 0;
+    for(float t = 0.0f; t < 1.0f; t = t + dt_lerp)
+    {
+
+        // float Dt = (float) steps_major_direction;
+        // float it = (float) i;
+        // float t = Dt / it;
+
+        f2 lerp_point = lerp(t, _p1, _p2);
+
+        // *(buffer[(int)lerp_point.x, (int)lerp_point.y]) = _px;
+        *(buffer[std::round(lerp_point.x), std::round(lerp_point.y)]) = _px;
+        
+        // major_i++;
+    }
+
+    // if(line.step_direction == LineRend::StepDirection::X)
+    // {
+    //     float dt = 1.0f / line.Dx(); // lerp step size
+
+    //     for(int major_direction_index = 0; major_direction_index < line.Dx(); major_direction_index++)
+    //     {
+    //         int x = line.p1.x + major_direction_index;
+    //         int y = line.y(major_direction_index);
+    //         *(buffer[(int)x, (int)line.p2.y]) = _px;
+    //     }
+    // }
+}
+
+
 void SWR::Renderer::draw_rectangle(i2 _p1, i2 _p2, PX32 _px)
 {
     int x_min = Min(_p1.x, _p2.x);

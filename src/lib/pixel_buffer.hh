@@ -225,6 +225,14 @@ struct PixelBuffer
         return true;
     }
 
+    bool is_in_bounds(f2 _p)
+    {
+        if( _p.x > w || _p.y > h)
+            return false;
+        
+        return true;
+    }
+
     
     int count_pixels() {return h*w;}
     int count_bytes() {return count_pixels() * bytes_per_pixel;}
