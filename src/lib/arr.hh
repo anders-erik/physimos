@@ -93,6 +93,17 @@ public:
             throw std::runtime_error("Index out of bounds in Arr.at()");
         return *(t_p + index);
     }
+    /* Removes the element at the provided index by copying all subsequent elements one slot 'forward' */
+    void remove_at(uint index)
+    {
+        if(index >= reserved)
+            throw std::runtime_error("Index out of bounds in Arr.remove_at()");
+        for(uint i = index; i < elem_count; i++)
+        {
+            (*this)[i] = (*this)[i+1];
+        }
+        elem_count--;
+    }
 
     T& last() const
     {

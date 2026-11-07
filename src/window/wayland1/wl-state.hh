@@ -2,6 +2,9 @@
 
 
 #include "lib/arr.hh"
+#include "lib/llist.hh"
+#include "lib/pixel_buffer.hh"
+
 #include "io/input/user_input.hh"
 
 #include "wl-defs.hh"
@@ -129,15 +132,18 @@ struct WL_Input
 
 struct WL_Surface
 {
-    i2 pos = {0, 0};
     i2 size = {0, 0};
-    bool surface_is_busy = false;
-    struct wl_surface* surface = nullptr;
-    struct wl_subsurface *subsurface = nullptr;
+    PixelBuffer pixel_buffer;
     struct wl_buffer *buffer = nullptr;
     const struct wl_buffer_listener wl_buffer_listener = {
         .release = wl_buffer_release,
     };
+
+    struct wl_surface* surface = nullptr;
+    bool surface_is_busy = false;
+
+    struct wl_subsurface *subsurface = nullptr;
+    i2 pos = {0, 0};
 
 
     enum Type
@@ -183,10 +189,18 @@ struct WL_Surface
         wl_subsurface_set_position(subsurface, pos.x, pos.y);
     }
 
+    void clear(PX32 color)
+    {
+        for(uint i = 0; i < get_size_bytes(); i++)
+        {
+            (pixel_buffer.buf)[i] = color;
+        }
+    }
+
     void commit()
     {
-        wl_surface_damage_buffer(surface, 0, 0, size.x, size.y);
         wl_surface_attach(surface, buffer, 0, 0);
+        wl_surface_damage_buffer(surface, 0, 0, size.x, size.y);
         wl_surface_commit(surface);
         surface_is_busy = true;
     }
@@ -208,6 +222,7 @@ struct WL_Pool
     void init(int _size);
 };
 
+
 struct WL_Surfaces
 {
     int window_border_width = 5;
@@ -223,6 +238,12 @@ struct WL_Surfaces
     /* Pool to contain all surface buffers */
     WL_Pool pool;
 
+    struct OldBuffer {
+        WL_Surface::Type type;
+        struct wl_buffer* buffer;
+    };
+    Arr<OldBuffer> old_buffers;
+    // LList<OldBuffer> old_buffers;
 
     /* window surface*/
     WL_Surface window;
@@ -236,6 +257,22 @@ struct WL_Surfaces
 
 
     void init(i2 _content_dims, WL_State* state);
+
+    i2  content_to_window_dims(i2 _content_dims)
+    {
+        return  {   content_dims.x + window_border_width * 2, 
+                    content_dims.y + window_topbar_height + window_border_width };
+    }
+    i2  window_to_content_dims(i2 _window_dims)
+    {
+        return  {   _window_dims.x - window_border_width * 2, 
+                    _window_dims.y - window_topbar_height - window_border_width };
+    }
+
+    uint calculate_total_buffer_size_bytes(i2 _content_dims)
+    {
+        return 0;
+    }
 
     void set_content_dims(i2 _content_dims);
 

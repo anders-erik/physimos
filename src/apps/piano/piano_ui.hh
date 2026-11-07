@@ -44,7 +44,11 @@ public:
 
     void init(PianoApp* _piano_app, PixelBuffer _pixel_buffer);
 
-    void update(PianoApp* _piano_app);
+    void new_frame_buffer(PixelBuffer new_pixel_buffer)
+    {
+        renderer.set_buffer(new_pixel_buffer);
+        ui.root.box.size = {new_pixel_buffer.w, new_pixel_buffer.h};
+    }
 
     void render_ui_node(UINode* _node);
     void render();

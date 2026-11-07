@@ -99,7 +99,36 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
     }
     else
     {
-        Print::ln("Unknown buffer released!");
+        
+        for(uint i = 0; i < state->surfaces.old_buffers.count(); i++)
+        {
+            WL_Surfaces::OldBuffer old_buffer = state->surfaces.old_buffers[i];
+
+            if(old_buffer.type == WL_Surface::Window)
+            {
+                Print::ln("Released old Window buffer!");
+                state->surfaces.old_buffers.remove_at(i);
+                break;
+            }
+            else if(old_buffer.type == WL_Surface::Content)
+            {
+                Print::ln("Released old Content buffer!");
+                state->surfaces.old_buffers.remove_at(i);
+                break;
+            }
+            else if(old_buffer.type == WL_Surface::Test)
+            {
+                Print::ln("Released old Test buffer!");
+                state->surfaces.old_buffers.remove_at(i);
+                break;
+            }
+            else
+            {
+                Print::ln("Unknown buffer released!");
+            }
+
+            // state->surfaces.old_buffers.
+        }
     }
 
     

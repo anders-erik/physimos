@@ -667,7 +667,7 @@ int DFT_plot_fn()
 
 	Str DFT_csv_str = dft.to_csv();
 	Print::ln(DFT_csv_str);
-	IO::dump("tmp/dft.csv", DFT_csv_str);\
+	IO::dump("tmp/dft.csv", DFT_csv_str);
 
 
 	// TODO: #1 Plot the dft output!

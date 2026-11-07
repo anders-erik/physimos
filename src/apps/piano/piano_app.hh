@@ -148,19 +148,10 @@ struct PianoApp
 
         while(wayland.frame_step())
         {
-            if(wayland.get_state().surfaces.size_change_detected)
+
+            if(wayland.reload_size())
             {
-                // Print::buf("Wayland window size change detected from main app. New size = { ");
-                // Print::buf(Str::SI(state.surfaces.size_change_dims.x));
-                // Print::buf(", ");
-                // Print::buf(Str::SI(state.surfaces.size_change_dims.y));
-                // Print::ln(" }");
-
-                wayland.get_state().surfaces.size_change_detected = false;
-
-                // wayland.set_new_size(wayland.get_state().surfaces.size_change_dims);
-                // wayland.reload({1200, 800});
-                // piano_ui.renderer.set_buffer(wayland.get_pixel_buffer());
+                piano_ui.new_frame_buffer(wayland.get_pixel_buffer());
             }
 
             Arr<UserInput> events = wayland.get_new_input_events();
@@ -173,8 +164,8 @@ struct PianoApp
 
             // usleep(16000); // ~60fps
             usleep(10000);
-            
-            piano_ui.update(this);
+            // usleep(1000000); // ~1fps
+
             piano_ui.render();
 
             performance_clock.fps_step(false);

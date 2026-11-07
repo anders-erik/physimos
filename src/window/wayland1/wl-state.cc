@@ -142,18 +142,27 @@ void WL_Surfaces::set_content_dims(i2 _content_dims)
 
 void WL_Surfaces::new_wl_buffers(WL_State* state)
 {
+    // old_buffers.append({WL_Surface::Window, window.buffer});
+    // old_buffers.append({WL_Surface::Content, content.buffer});
+    // old_buffers.append({WL_Surface::Test, test.buffer});
+
     wl_buffer_destroy(window.buffer);
     wl_buffer_destroy(content.buffer);
     wl_buffer_destroy(test.buffer);
+
+    // old_buffers.push_back({WL_Surface::Window, window.buffer});
+    // old_buffers.push_back({WL_Surface::Content, content.buffer});
+    // old_buffers.push_back({WL_Surface::Test, test.buffer});
+
 
 
     window.create_new_buffer(pool.pool, get_offset(WL_Surface::Window), state);
     content.create_new_buffer(pool.pool, get_offset(WL_Surface::Content), state);
     test.create_new_buffer(pool.pool, get_offset(WL_Surface::Test), state);
 
-    // window.commit();
-    // content.commit();
-    // test.commit();
+    window.commit();
+    content.commit();
+    test.commit();
 
     // wl_display_dispatch(state->core.display);
 
