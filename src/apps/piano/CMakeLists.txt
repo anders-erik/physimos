@@ -26,7 +26,7 @@ target_link_libraries(main_piano
     math
     swrend
     
-    wayland
+    WL
     audio
     bmp2
     ui4

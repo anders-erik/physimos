@@ -1,5 +1,11 @@
 
 
+# set(WL_CALLBACKS "WL-callbacks")
+# set(WL_CALLBACKS "WL-callbacks")
+# set(WL_CALLBACKS "WL-callbacks")
+# set(WL_CALLBACKS "WL-callbacks")
+
+
 
 # 
 # XDG Shell wayland extension
@@ -17,34 +23,57 @@ target_compile_options(xdg_wl_shell PRIVATE -g)
 unset(CMAKE_C_COMPILER)
 
 
-add_library(wayland-callbacks wl-callbacks.cc)
-target_link_libraries(wayland-callbacks
-    lib
-    math
-    wayland-client
-)
 
-add_library(wayland-state wl-state.cc)
-target_link_libraries(wayland-state
+add_library(WL-egl wl-egl.cc)
+target_link_libraries(WL-egl
     lib
     math
     wayland-client
-    wayland-callbacks
 
     EGL # eglInitialize, eglGetDisplay, ...
     wayland-egl # wl_egl_window_create
 )
 
+add_library(WL-surfaces wl-surfaces.cc)
+target_link_libraries(WL-surfaces
+    lib
+    math
+    
+    WL-callbacks
+    WL-egl
+)
 
-add_library(wayland wayland.cc)
-target_link_libraries(wayland
+
+add_library(WL-objects wl-objects.cc)
+target_link_libraries(WL-objects
+    lib
+    math
+
+    wayland-client
+
+    WL-callbacks
+)
+
+add_library(WL-callbacks wl-callbacks.cc)
+target_link_libraries(WL-callbacks
+    lib
+    math
+    wayland-client
+)
+
+
+add_library(WL wayland.cc wl-callbacks.cc)
+target_link_libraries(WL
     lib
     math
     swrend
-    wayland-state
-    wayland-callbacks
+
     wayland-client # this was all it took to find wayland symbols...
     wayland-cursor
     xdg_wl_shell
+
+    WL-callbacks
+    WL-objects
+    WL-surfaces
 )
 

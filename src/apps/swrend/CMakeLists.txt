@@ -7,7 +7,7 @@ target_link_libraries(main_swrend
     lib
     math
     swrend
-    wayland
+    WL
     audio
     bmp2
 )

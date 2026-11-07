@@ -2,13 +2,27 @@
 
 #include "lib/pixel_buffer.hh"
 
-#include "wl-state.hh"
+#include "wl-objects.hh"
+#include "wl-surfaces.hh"
 
 #define WAYLAND_DEFAULT_CONTENT_SIZE {640, 480}
 
 struct Wayland
 {
-    WL_State state = { 0 };
+    /* Wayland Objects */
+    WL_Core core;
+    /* XDG Objects */
+    WL_XDG xdg;
+    /* Surface handler*/
+    WL_Surfaces surfaces;
+    // /* EGL object */
+    WL_EGL egl;
+    /* Object to handle the cursor image */
+    WL_Cursor cursor;
+    /* Input*/
+    WL_Input input;
+
+    int running = 1;
 
     Wayland();
     Wayland(i2 dims);
@@ -16,24 +30,17 @@ struct Wayland
 
     void connect_compositor();
     void init(i2 dims);
-    bool frame_step(); // renders current frame, process queued events, and returns true if new frame will begin, or false if exit-input detected
     void run(); // transfer process execution into wayland object
+    Arr<UserInput> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer    
+    void close();
     void destroy(); // destroy framebuffer & disconnect from compositor
     
-    /** Will reload all content if an internal resize event has occured, else nothing will happen. 
-        Returns 'true' if reloaded, else 'false'. */
-    bool reload_size();
-
-
+    bool frame_step(); // renders current frame, process queued events, and returns true if new frame will begin, or false if exit-input detected
+    bool set_size(); /** Sets new size if flag detected, else nothing will happen. Returns 'true' if resized, 'false' otherwise. */
     PixelBuffer get_pixel_buffer();
 
     bool content_surface_is_busy();
     bool surfaces_are_all_released();
-
-    Arr<UserInput> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer    
-
-
-    void close();
 };
 
 

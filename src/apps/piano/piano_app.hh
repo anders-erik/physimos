@@ -145,11 +145,9 @@ struct PianoApp
 
     void open_window()
     {
-
         while(wayland.frame_step())
         {
-
-            if(wayland.reload_size())
+            if(wayland.set_size())
             {
                 piano_ui.new_frame_buffer(wayland.get_pixel_buffer());
             }

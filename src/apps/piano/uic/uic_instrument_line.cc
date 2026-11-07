@@ -57,7 +57,7 @@ UIEventReturn uic_instrument_line_root_callback(UI_CALLBACK_PARAMS(PianoApp))
 
 UIEventReturn line_note_callback_2(UI_CALLBACK_PARAMS(PianoApp))
 {
-    Print::ln("line_note_callback!");
+    // Print::ln("line_note_callback!");
 
     LineNote* line_note = (LineNote*) node->get_data_ptr();
 

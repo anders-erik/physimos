@@ -6,7 +6,8 @@
 #include "math/vec.hh"
 
 #include "wl-callbacks.hh"
-#include "wl-state.hh"
+#include "wayland.hh"
+#include "wl-objects.hh"
 
 
 
@@ -26,7 +27,7 @@ void
 registry_global(void *data, struct wl_registry *wl_registry,
         uint32_t name, const char *interface, uint32_t version)
 {
-    WL_State *state = (WL_State *)data;
+    Wayland *wayland = (Wayland*)data;
 
     // printf("%s \n", interface);
 
@@ -36,23 +37,23 @@ registry_global(void *data, struct wl_registry *wl_registry,
         // state->surfaces.content.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         // state->surfaces.test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         // state->surfaces.egl.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
-        state->surfaces.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        wayland->surfaces.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
-        state->core.compositor = (wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, 4);
+        wayland->core.compositor = (wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, 4);
     }
     else if (strcmp(interface, wl_subcompositor_interface.name) == 0)
     {
-        state->core.subcompositor = (wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, 1);
+        wayland->core.subcompositor = (wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, 1);
     }
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
     {
-        state->xdg.wm_base = (xdg_wm_base *)wl_registry_bind(wl_registry, name, &xdg_wm_base_interface, 1);
+        wayland->xdg.wm_base = (xdg_wm_base *)wl_registry_bind(wl_registry, name, &xdg_wm_base_interface, 1);
     }
     else if (strcmp(interface, wl_seat_interface.name) == 0)
     {
-        state->input.seat = (wl_seat *)wl_registry_bind(wl_registry, name, &wl_seat_interface, 1);
+        wayland->input.seat = (wl_seat *)wl_registry_bind(wl_registry, name, &wl_seat_interface, 1);
     }
 }
 
@@ -67,7 +68,7 @@ void registry_global_remove(
 
 void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
 {
-    WL_State* state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
     // Print::ln("wl_buffer_destroy!");
     /* Sent by the compositor when it's no longer using this buffer */
     // wl_buffer_destroy(wl_buffer);
@@ -82,53 +83,24 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
     // Print::buf("wl_buffer test  : ");
     // Print::ln(StrUtil::ptr_to_hex(state->surfaces.test.buffer));
 
-    if(wl_buffer == state->surfaces.window.buffer)
+    if(wl_buffer == wayland->surfaces.window.buffer)
     {
         // Print::ln("Window buffer released!");
-        state->surfaces.window.surface_is_busy = false;
+        wayland->surfaces.window.surface_is_busy = false;
     }
-    else if(wl_buffer == state->surfaces.content.buffer)
+    else if(wl_buffer == wayland->surfaces.content.buffer)
     {
         // Print::ln("Content buffer released!");
-        state->surfaces.content.surface_is_busy = false;
+        wayland->surfaces.content.surface_is_busy = false;
     }
-    else if(wl_buffer == state->surfaces.test.buffer)
+    else if(wl_buffer == wayland->surfaces.test.buffer)
     {
         // Print::ln("Test buffer released!");
-        state->surfaces.test.surface_is_busy = false;
+        wayland->surfaces.test.surface_is_busy = false;
     }
     else
     {
-        
-        for(uint i = 0; i < state->surfaces.old_buffers.count(); i++)
-        {
-            WL_Surfaces::OldBuffer old_buffer = state->surfaces.old_buffers[i];
-
-            if(old_buffer.type == WL_Surface::Window)
-            {
-                Print::ln("Released old Window buffer!");
-                state->surfaces.old_buffers.remove_at(i);
-                break;
-            }
-            else if(old_buffer.type == WL_Surface::Content)
-            {
-                Print::ln("Released old Content buffer!");
-                state->surfaces.old_buffers.remove_at(i);
-                break;
-            }
-            else if(old_buffer.type == WL_Surface::Test)
-            {
-                Print::ln("Released old Test buffer!");
-                state->surfaces.old_buffers.remove_at(i);
-                break;
-            }
-            else
-            {
-                Print::ln("Unknown buffer released!");
-            }
-
-            // state->surfaces.old_buffers.
-        }
+        Print::ln("Unknown buffer released!");
     }
 
     
@@ -140,18 +112,18 @@ void seat_capabilities(
     struct wl_seat *seat,
     uint32_t capabilities)
 {
-    WL_State* state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
 
     if (capabilities & WL_SEAT_CAPABILITY_POINTER)
     {
-        state->input.pointer = wl_seat_get_pointer(seat);
-        wl_pointer_add_listener(state->input.pointer, &state->input.pointer_listener, data);
+        wayland->input.pointer = wl_seat_get_pointer(seat);
+        wl_pointer_add_listener(wayland->input.pointer, &wayland->input.pointer_listener, data);
     }
 
     if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD)
     {
-        state->input.keyboard = wl_seat_get_keyboard(seat);
-        wl_keyboard_add_listener(state->input.keyboard,  &state->input.keyboard_listener,  data);
+        wayland->input.keyboard = wl_seat_get_keyboard(seat);
+        wl_keyboard_add_listener(wayland->input.keyboard,  &wayland->input.keyboard_listener,  data);
     }
 }
 
@@ -192,7 +164,7 @@ void keyboard_key(
     uint32_t wlkey,
     uint32_t state)
 {
-    WL_State* wl_state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
 
     printf("key: %u, state: %u\n", wlkey, state);
 
@@ -240,12 +212,12 @@ void keyboard_key(
     KeyInput key_input = {key, action};
     UserInput user_input = {    UserInputType::KeyInput, 
                                 key_input, 
-                                wl_state->input.key_modifiers   };
-    wl_state->input.content_events.push_back(user_input);
+                                wayland->input.key_modifiers   };
+    wayland->input.content_events.push_back(user_input);
 
     if(wlkey == 1) // Escape
     {
-        wl_state->running = 0;
+        wayland->running = 0;
         Print::ln("Exit input detected in Wayland lib. State set to not running. Exiting!");
     }
 }
@@ -259,7 +231,7 @@ void keyboard_modifiers(
     uint32_t mods_locked,
     uint32_t group)
 {
-    WL_State* state = (WL_State*)data;
+    Wayland *wayland = (Wayland*)data;
 
     // Print::ln("keyboard modifier callback");
 
@@ -269,19 +241,19 @@ void keyboard_modifiers(
     // printf("serial: %d, \n  mods_depressed: %d, \n  mods_latched: %d, \n  mods_locked: %d, \n  group: %d, \n", serial, mods_depressed, mods_latched, mods_locked, group);
 
     if(mods_depressed_u8 & 0x1)
-        state->input.key_modifiers.shift = true;
+        wayland->input.key_modifiers.shift = true;
     else
-        state->input.key_modifiers.shift = false;
+        wayland->input.key_modifiers.shift = false;
     
     if(mods_depressed_u8 & 0x4)
-        state->input.key_modifiers.control = true;
+        wayland->input.key_modifiers.control = true;
     else
-        state->input.key_modifiers.control = false;
+        wayland->input.key_modifiers.control = false;
     
     if(mods_depressed_u8 & 0x8)
-        state->input.key_modifiers.alt = true;
+        wayland->input.key_modifiers.alt = true;
     else
-        state->input.key_modifiers.alt = false;
+        wayland->input.key_modifiers.alt = false;
     
 
     // state->input.key_modifiers.print();
@@ -309,31 +281,31 @@ pointer_enter(void *data,
               wl_fixed_t x,
               wl_fixed_t y)
 {
-    WL_State *state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
 
     Print::buf("Entered surface: ");
 
 
-    wl_pointer_set_cursor(pointer, serial, state->cursor.surface, state->cursor.image->hotspot_x, state->cursor.image->hotspot_y);
+    wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
 
-    if(surface == state->surfaces.test.surface)
+    if(surface == wayland->surfaces.test.surface)
     {
-        state->input.target = WL_Input::Test;
+        wayland->input.target = WL_Input::Test;
         Print::ln("Test!");
     }
-    else if(surface == state->surfaces.content.surface)
+    else if(surface == wayland->surfaces.content.surface)
     {
-        state->input.target = WL_Input::Content;
+        wayland->input.target = WL_Input::Content;
         Print::ln("Content!");
     }
-    else if(surface == state->surfaces.window.surface)
+    else if(surface == wayland->surfaces.window.surface)
     {
-        state->input.target = WL_Input::Window;
+        wayland->input.target = WL_Input::Window;
         Print::ln("Window!");
     }
-    else if(surface == state->surfaces.egl.surface)
+    else if(surface == wayland->surfaces.egl.surface)
     {
-        state->input.target = WL_Input::EGL;
+        wayland->input.target = WL_Input::EGL;
         Print::ln("EGL!");
     }
     else
@@ -363,23 +335,23 @@ pointer_leave(void *data,
               uint32_t serial,
               struct wl_surface *surface)
 {
-    WL_State *state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
 
     Print::buf("Left surface:    ");
 
-    if(surface == state->surfaces.test.surface)
+    if(surface == wayland->surfaces.test.surface)
     {
         Print::ln("Test!");
     }
-    else if(surface == state->surfaces.content.surface)
+    else if(surface == wayland->surfaces.content.surface)
     {
         Print::ln("Content!");
     }
-    else if(surface == state->surfaces.window.surface)
+    else if(surface == wayland->surfaces.window.surface)
     {
         Print::ln("Window!");
     }
-    else if(surface == state->surfaces.egl.surface)
+    else if(surface == wayland->surfaces.egl.surface)
     {
         Print::ln("EGL!");
     }
@@ -388,7 +360,7 @@ pointer_leave(void *data,
         Print::ln("Unknown!");
     }
 
-    state->input.target = WL_Input::None;
+    wayland->input.target = WL_Input::None;
 }
 
 void
@@ -398,41 +370,41 @@ pointer_motion(void *data,
                wl_fixed_t x,
                wl_fixed_t y)
 {
-    WL_State *state = (WL_State*) data;
+   Wayland *wayland = (Wayland*)data;
 
     // Print::ln("Pointer motion");
 
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
-    double win_h = state->surfaces.window.size.y;
-    // d2 pos_window_previous_sane = state->input.pointer_pos_window_sane;
+    double win_h = wayland->surfaces.window.pixel_buffer.h;
+    // d2 pos_window_previous_sane = wayland->input.pointer_pos_window_sane;
 
-    state->input.pointer_pos_window_raw  = {px, py};
-    state->input.pointer_pos_window_sane = {px, -( py - win_h) };
+    wayland->input.pointer_pos_window_raw  = {px, py};
+    wayland->input.pointer_pos_window_sane = {px, -( py - win_h) };
 
-    if(state->input.target == WL_Input::Content)
+    if(wayland->input.target == WL_Input::Content)
     {
-        d2 pos_content_previous_sane = state->input.pointer_pos_content_sane;
-        state->input.pointer_pos_content_sane = {   px,
-                                                 - (py - state->surfaces.content.size.y)};
+        d2 pos_content_previous_sane = wayland->input.pointer_pos_content_sane;
+        wayland->input.pointer_pos_content_sane = {   px,
+                                                 - (py - wayland->surfaces.content.pixel_buffer.h)};
 
         UserInput pointer_move_ev = { 
             UserInputType::MouseMove, 
-            MouseMovement{ pos_content_previous_sane, state->input.pointer_pos_content_sane },
-            state->input.key_modifiers
+            MouseMovement{ pos_content_previous_sane, wayland->input.pointer_pos_content_sane },
+            wayland->input.key_modifiers
         };
-        state->input.content_events.push_back(pointer_move_ev);
+        wayland->input.content_events.push_back(pointer_move_ev);
     }
-    else if(state->input.target == WL_Input::Window)
+    else if(wayland->input.target == WL_Input::Window)
     {
         // Print::ln("Mouse move inside window surface");
 
 
         // Print::buf("x = ");
-        // Print::buf(Str::FL(state->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
+        // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
         // Print::buf(", y = ");
-        // Print::buf(Str::FL(state->input.pointer_pos_window_raw.y, 1, Str::FloatRep::Fixed));
+        // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.y, 1, Str::FloatRep::Fixed));
         // Print::buf("\n");
     }
 
@@ -447,7 +419,7 @@ pointer_button(void *data,
                uint32_t button,
                uint32_t state)
 {
-    WL_State *wl_state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
     // struct client_state *state = (struct client_state*) data;
 
     // Print::ln(Str::SI(button));
@@ -497,9 +469,9 @@ pointer_button(void *data,
             break;
     }
 
-    if(wl_state->input.target == WL_Input::Window)
+    if(wayland->input.target == WL_Input::Window)
     {
-        Print::ln(Str::FL(wl_state->input.pointer_pos_window_raw.y, 2, Str::FloatRep::Fixed));
+        Print::ln(Str::FL(wayland->input.pointer_pos_window_raw.y, 2, Str::FloatRep::Fixed));
 
         enum class WindowArea
         {
@@ -509,18 +481,18 @@ pointer_button(void *data,
             RightEdge,
         } window_area;
 
-        if(wl_state->input.pointer_pos_window_raw.y < 20)
+        if(wayland->input.pointer_pos_window_raw.y < 20)
         {
-            if(wl_state->input.pointer_pos_window_raw.x < 20)
+            if(wayland->input.pointer_pos_window_raw.x < 20)
                 window_area = WindowArea::TopLeft;
-            else if(wl_state->input.pointer_pos_window_raw.x < 800)
+            else if(wayland->input.pointer_pos_window_raw.x < 800)
                 window_area = WindowArea::Topbar;
             else
                 window_area = WindowArea::TopRight;
         }
         else
         {
-            if(wl_state->input.pointer_pos_window_raw.x > 800)
+            if(wayland->input.pointer_pos_window_raw.x > 800)
                 window_area = WindowArea::RightEdge;
         }
 
@@ -528,23 +500,23 @@ pointer_button(void *data,
         {
         case WindowArea::TopLeft:
             {
-                xdg_toplevel_show_window_menu(wl_state->xdg.toplevel, wl_state->input.seat, serial, 0, 0);
+                xdg_toplevel_show_window_menu(wayland->xdg.toplevel, wayland->input.seat, serial, 0, 0);
             }
             break;
         case WindowArea::Topbar:
             {
-                xdg_toplevel_move(wl_state->xdg.toplevel, wl_state->input.seat, serial);
+                xdg_toplevel_move(wayland->xdg.toplevel, wayland->input.seat, serial);
             }
             break;
         case WindowArea::TopRight:
             {
                 // Print::ln("Wayland top right click");
-                wl_state->running = 0;
+                wayland->running = 0;
             }
             break;
         case WindowArea::RightEdge:
             {
-                xdg_toplevel_resize(wl_state->xdg.toplevel, wl_state->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
             }
             break;
         
@@ -554,14 +526,14 @@ pointer_button(void *data,
 
         return;
     }
-    else if(wl_state->input.target == WL_Input::Content)
+    else if(wayland->input.target == WL_Input::Content)
     {
         UserInput pointer_click_ev = { 
             UserInputType::MouseClick, 
             mouse_click,
-            wl_state->input.key_modifiers
+            wayland->input.key_modifiers
         };
-        wl_state->input.content_events.push_back(pointer_click_ev);
+        wayland->input.content_events.push_back(pointer_click_ev);
 
         // Print::buf("mouse btn: ");
         // Print::buf(btn_name);
@@ -584,7 +556,7 @@ pointer_axis(void *data,
              uint32_t axis,
              wl_fixed_t value)
 {
-    WL_State *wl_state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
 
     ScrollDirection direction;
 
@@ -597,8 +569,8 @@ pointer_axis(void *data,
     // Print::ln(Str::UI(value));
 
     ScrollInput scroll_input {direction};
-    UserInput user_input = {UserInputType::ScrollInput, scroll_input, wl_state->input.key_modifiers};
-    wl_state->input.content_events.push_back(user_input);
+    UserInput user_input = {UserInputType::ScrollInput, scroll_input, wayland->input.key_modifiers};
+    wayland->input.content_events.push_back(user_input);
 }
 
 
@@ -640,7 +612,7 @@ xdg_toplevel_configure( void *data,
                         int32_t height,
                         struct wl_array *states                     )
 {
-    WL_State* state = (WL_State*) data;
+    Wayland *wayland = (Wayland*)data;
     
     
 
@@ -670,13 +642,13 @@ xdg_toplevel_configure( void *data,
     bool proper_resize_event = (state_array[0] == 3) && (state_array[1] == 4);
     if(proper_resize_event)
     {
-        state->surfaces.size_change_detected = true;
-        state->surfaces.size_change_dims = {width, height};
+        wayland->surfaces.window_size_change_detected = true;
+        wayland->surfaces.size_change_dims = {width, height};
 
         Print::buf("Wayland window size change detected. New size = { ");
-        Print::buf(Str::SI(state->surfaces.size_change_dims.x));
+        Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
         Print::buf(", ");
-        Print::buf(Str::SI(state->surfaces.size_change_dims.y));
+        Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
         Print::ln(" }");
     }
 

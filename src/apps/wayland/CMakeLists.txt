@@ -7,5 +7,5 @@ target_link_libraries(main_wayland
     lib
     math
     swrend
-    wayland
+    WL
 )

@@ -154,6 +154,7 @@ struct PixelBuffer
 
     // T* buf; // buffer
     PX32* buf; // buffer
+    // i2 size;
     int w;
     int h;
 
