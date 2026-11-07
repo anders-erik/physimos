@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 
 #include <cstdint>
 #include <fcntl.h>
@@ -195,15 +196,33 @@ struct PixelBuffer
         return _px_rgba;
     }
 
-    /** Checks bounds before access. If outside of bounds, it will return the first pixel in bitmap. 
-        The accesing coordinates are always buffer-independent: this method will flip the y-axis to keep a consistent access-coordinate system.
-        TODO: turn this access into a fast, unsafe access method. Move bounds checking access to .at()!
+    /**
+        UNSAFE access operator.
+        Requires the caller to check bounds before calling the function.
     */
     PX32* operator[](int _x, int _y)
     {
         if(_x >= w || _y >= h)
+            std::out_of_range("ERROR: PixelBuffer::[]::out_of_range");
+
+        int offset;
+
+        if(y_zero == Bottom)
+            offset = _y*w + _x;
+        else
+            offset = (h-_y-1)*w + _x;
+
+        return buf + offset;
+    }
+    
+    /** Checks bounds before access. If outside of bounds, it will return the first pixel in bitmap. 
+        The accesing coordinates are always buffer-independent: this method will flip the y-axis to keep a consistent access-coordinate system.
+    */
+    PX32* at(int _x, int _y)
+    {
+        if(_x >= w || _y >= h)
         {
-            Print::ln("ERROR: accessing pixel outside bounds of PixelBuffer.");
+            Print::ln("ERROR: PixelBuffer::at(): accessing pixel outside bounds of PixelBuffer.");
             return buf;
         }
 
@@ -225,9 +244,22 @@ struct PixelBuffer
         return true;
     }
 
+    /* Checks single point. If not in bounds then 'false' is returned. */
     bool is_in_bounds(f2 _p)
     {
-        if( _p.x > w || _p.y > h)
+        if( _p.x > w || _p.x < 0 || _p.y > h || _p.y < 0)
+            return false;
+        
+        return true;
+    }
+
+    /* Checks two points. If not both are in bounds then 'false' is returned. */
+    bool is_in_bounds(f2 _p1, f2 _p2)
+    {
+        if( _p1.x >= w || _p1.x < 0 || _p1.y >= h || _p1.y < 0)
+            return false;
+        
+        if( _p2.x >= w || _p2.x < 0 || _p2.y >= h || _p2.y < 0)
             return false;
         
         return true;

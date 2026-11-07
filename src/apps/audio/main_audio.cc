@@ -665,22 +665,51 @@ int DFT_plot_fn()
 	dft.set_time_domain_data(audio_data_16_C, 44100);
 	dft.calculate();
 
+	Str DFT_csv_str = dft.to_csv();
+	Print::ln(DFT_csv_str);
+	IO::dump("tmp/dft.csv", DFT_csv_str);\
+
+
 	// TODO: #1 Plot the dft output!
 	Bitmap bitmap {200, 100};
 	SWR::Renderer renderer {bitmap.get_pixel_buffer()};
 	renderer.clear(0x222222FF);
+
 	renderer.draw_point({5, 5}, 0xEEEEEEFF);
 	renderer.draw_line({10, 5}, {30, 100}, 0xEEEEEEFF);
 	renderer.draw_line({35, 25}, {120, 50}, 0xEEEEEEFF); // TODO: Resolve horizontal line gaps
 	renderer.draw_line_float_lerp({15, 5}, {100, 30}, 0xEEEEEEFF);
 	renderer.draw_line_float_lerp({130, 5}, {100, 20}, 0xEEEEEEFF);
-	renderer.draw_line_float_lerp({15, 5}, {30, 100}, 0xEEEEEEFF);
+	renderer.draw_line_float_lerp({15, 5}, {30, 99}, 0xEEEEEEFF);
+	renderer.draw_line_float_lerp({25, 5}, {40, 99}, 0xEEEEEEFF);
+	renderer.draw_line_float_lerp({100, 90}, {120, 99}, 0xEEEEEEFF);
+	// renderer.draw_line_float_lerp({100, 90}, {120, 100}, 0xEEEEEEFF);
+	// renderer.draw_line_float_lerp({100, 90}, {120, -4}, 0xEEEEEEFF);
+
+	// Paralellogram
+	f2 p_parallelogram = {140.0f, 50.0f};
+	PX32 color_parallelogram = 0xAAFFAAFF;
+	float b = 30.0f;
+	float h = -40.0f;
+	float a = -15.0f;
+	renderer.parallelogram(p_parallelogram, a, b, h, color_parallelogram);
+
+	// square
+	PX32 square_color = 0xFFAAAAFF;
+	f2 p1 = {150.0f, 20.0f};
+	float l = 35.0f;
+	renderer.square(p1, l, square_color);
+
+	// rectangle
+	f2 p_rec = {160.0f, 5.0f};
+	float w_rec = 8.0f;
+	float h_rec = 4.0f;
+	PX32 color_rec = 0xAAAAEEFF;
+	renderer.rectangle(p_rec, w_rec, h_rec, color_rec);
+
 	BMPIO::SExport_PX32RGBA("tmp/DFT_output.bmp", bitmap);
 
-
-	Str DFT_csv_str = dft.to_csv();
-	Print::ln(DFT_csv_str);
-	IO::dump("tmp/dft.csv", DFT_csv_str);
+	
 
 	return 0;
 }

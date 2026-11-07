@@ -10,22 +10,13 @@
 
 void SWR::Renderer::draw_point(i2 _p, PX32 _px)
 {
-    if(buffer.is_in_bounds(_p))
-        *(buffer[_p.x, _p.y]) = _px;
-    else
-        Print::ln("WARN: tried drawing point outseide bitmap bounds.");
+    *(buffer.at(_p.x, _p.y)) = _px;
 }
 
 
 /** Draw pixelated line using kx + m where pixels are drawn using step sizes related to the k-value to generate the intermediate pixels when the slope is large. */
 void SWR::Renderer::draw_line(i2 _p1, i2 _p2, PX32 _px)
 {
-
-    if(!buffer.is_in_bounds(_p1) || !buffer.is_in_bounds(_p2))
-    {
-        Print::ln("WARN: tried drawing line outside bitmap bounds.");
-        return;
-    }
 
     // Vertical line
     if(_p1.x == _p2.x)
@@ -35,7 +26,7 @@ void SWR::Renderer::draw_line(i2 _p1, i2 _p2, PX32 _px)
         uint y_max = _p1.y > _p2.y ? _p1.y : _p2.y;
 
         for(uint y = y_min; y < y_max; y++)
-            *(buffer[x, y]) = _px;
+            *(buffer.at(x, y)) = _px;
     }
 
     // Horizontal line
@@ -46,7 +37,7 @@ void SWR::Renderer::draw_line(i2 _p1, i2 _p2, PX32 _px)
         uint x_max = _p1.x > _p2.x ? _p1.x : _p2.x;
 
         for(uint x = x_min; x < x_max; x++)
-            *(buffer[x, y]) = _px;
+            *(buffer.at(x, y)) = _px;
     }
 
     // enforce p1 to have the lower x-value
@@ -65,7 +56,7 @@ void SWR::Renderer::draw_line(i2 _p1, i2 _p2, PX32 _px)
     for(double x = line.p1.x; x < line.p2.x; x = x + step_size)
     {
         double y = line[x];
-        *(buffer[(int)x, (int)y]) = _px;
+        *(buffer.at((int)x, (int)y)) = _px;
     }
 }
 
@@ -74,9 +65,14 @@ void SWR::Renderer::draw_line(i2 _p1, i2 _p2, PX32 _px)
 /** Draw pixelated line using kx + m where pixels are drawn using step sizes related to the k-value to generate the intermediate pixels when the slope is large. */
 void SWR::Renderer::draw_line_float_lerp(f2 _p1, f2 _p2, PX32 _px)
 {
-    if(!buffer.is_in_bounds(_p1) || !buffer.is_in_bounds(_p2))
+    // Check Bounds
+    if(!buffer.is_in_bounds(_p1, _p2))
     {
-        Print::ln("WARN: tried drawing line (vec) outside bitmap bounds.");
+        Print::buf("ERROR: ");
+        Print::buf("Point of 'SWR::Renderer::draw_line_float_lerp(f2 _p1, f2 _p2, PX32 _px)' not within bounds of PixelBuffer!, ");
+        Print::buf("File&NO: ");
+        Str file_no = Str{__FILE__} + ":" + Str::SI(__LINE__);
+        Print::ln(file_no);
         return;
     }
 
@@ -85,46 +81,42 @@ void SWR::Renderer::draw_line_float_lerp(f2 _p1, f2 _p2, PX32 _px)
     float delta_major_direction = Dx > Dy ? Dx : Dy;
     float dt_lerp = 1 / delta_major_direction;
 
-    // enum StepDirection
-    // {
-    //     X,
-    //     Y,
-    // } step_direction = Dx > Dy ? StepDirection::X : StepDirection::Y;
-
-    auto lerp = [](float t, f2 _p1, f2 _p2) -> f2 {
-        // Dx = {};
+    auto lerp = [](float t, f2 _p1, f2 _p2)
+        -> f2
+    {
         return f2{  _p1.x + t*(_p2.x-_p1.x),    
                     _p1.y + t*(_p2.y-_p1.y)};
     };
-    // LineRend line {_p1, _p2};
 
-    // int major_i = 0;
+
     for(float t = 0.0f; t < 1.0f; t = t + dt_lerp)
     {
-
-        // float Dt = (float) steps_major_direction;
-        // float it = (float) i;
-        // float t = Dt / it;
-
         f2 lerp_point = lerp(t, _p1, _p2);
-
-        // *(buffer[(int)lerp_point.x, (int)lerp_point.y]) = _px;
-        *(buffer[std::round(lerp_point.x), std::round(lerp_point.y)]) = _px;
-        
-        // major_i++;
+        *(buffer.at(std::round(lerp_point.x), std::round(lerp_point.y))) = _px;
     }
+}
 
-    // if(line.step_direction == LineRend::StepDirection::X)
-    // {
-    //     float dt = 1.0f / line.Dx(); // lerp step size
+void SWR::Renderer::rectangle(f2 p, float w, float h, PX32 color)
+{
+    draw_line_float_lerp({p.x, p.y}, {p.x + w, p.y}, color);
+	draw_line_float_lerp({p.x + w, p.y}, {p.x + w, p.y + h}, color);
+	draw_line_float_lerp({p.x + w, p.y + h}, {p.x, p.y + h}, color);
+	draw_line_float_lerp({p.x, p.y + h}, {p.x, p.y}, color);
 
-    //     for(int major_direction_index = 0; major_direction_index < line.Dx(); major_direction_index++)
-    //     {
-    //         int x = line.p1.x + major_direction_index;
-    //         int y = line.y(major_direction_index);
-    //         *(buffer[(int)x, (int)line.p2.y]) = _px;
-    //     }
-    // }
+}
+void SWR::Renderer::parallelogram(f2 p, float a, float b, float h, PX32 color)
+{
+    draw_line_float_lerp({p.x, p.y}, {p.x + b, p.y}, color);
+	draw_line_float_lerp({p.x + b, p.y}, {p.x + a + b, p.y + h}, color);
+	draw_line_float_lerp({p.x + a + b, p.y + h}, {p.x + a, p.y + h}, color);
+	draw_line_float_lerp({p.x + a, p.y + h}, {p.x, p.y}, color);
+}
+void SWR::Renderer::square(f2 p, float l, PX32 color)
+{
+    draw_line_float_lerp({p.x, p.y}, {p.x + l, p.y}, color);
+	draw_line_float_lerp({p.x + l, p.y}, {p.x + l, p.y + l}, color);
+	draw_line_float_lerp({p.x + l, p.y + l}, {p.x, p.y + l}, color);
+	draw_line_float_lerp({p.x, p.y + l}, {p.x, p.y}, color);
 }
 
 
@@ -140,7 +132,7 @@ void SWR::Renderer::draw_rectangle(i2 _p1, i2 _p2, PX32 _px)
     {
         for(int y = y_min; y < y_max; y++)
         {
-            *(buffer[x, y]) = _px;
+            *(buffer.at(x, y)) = _px;
         }
     }
 
@@ -187,7 +179,7 @@ void SWR::Renderer::draw_triangle(i2 _p1, i2 _p2, i2 _p3, PX32 _px)
         for(int y = y_min; y < y_max; y++)
         {
             if(pixel_check({x, y}, _p1, _p2, _p3))
-                *(buffer[x, y]) = _px;
+                *(buffer.at(x, y)) = _px;
         }
     }
 
@@ -214,7 +206,7 @@ void SWR::Renderer::paste_bitmap(Bitmap& _bmp, i2 _pos)
     {
         for(int y = 0; y < (int)_bmp.h(); y++)
         {   
-            *(buffer[_pos.x + x, _pos.y + y]) = _bmp[x, y];
+            *(buffer.at(_pos.x + x, _pos.y + y)) = _bmp[x, y];
             // *((*this)[_pos.x + x, _pos.y + y]) = 0xffffffff;
         }
     }
@@ -245,7 +237,7 @@ void SWR::Renderer::paste_bitmap_with_mask(Bitmap& _bmp, i2 _bmp_pos, i2 _mask_p
             int x_src   =   x + intersection_x.cutting_coord_src;
             int y_src   =   y + intersection_x.cutting_coord_src;
 
-            *(buffer[x_real, y_real]) = _bmp[x_src, y_src];
+            *( buffer.at(x_real, y_real) ) = _bmp[x_src, y_src];
             // *((*this)[_pos.x + x, _pos.y + y]) = 0xffffffff;
         }
     }
