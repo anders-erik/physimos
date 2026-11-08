@@ -38,6 +38,7 @@ add_library(WL-surfaces wl-surfaces.cc)
 target_link_libraries(WL-surfaces
     lib
     math
+    swrend
     
     WL-callbacks
     WL-egl

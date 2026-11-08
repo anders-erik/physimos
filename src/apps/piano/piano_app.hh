@@ -140,7 +140,7 @@ struct PianoApp
 
 
         piano_ui.init(  this, 
-                        wayland.get_pixel_buffer() );
+                        wayland.get_content_buffer() );
     }
 
     void open_window()
@@ -149,7 +149,7 @@ struct PianoApp
         {
             if(wayland.set_size())
             {
-                piano_ui.new_frame_buffer(wayland.get_pixel_buffer());
+                piano_ui.new_frame_buffer(wayland.get_content_buffer());
             }
 
             Arr<UserInput> events = wayland.get_new_input_events();

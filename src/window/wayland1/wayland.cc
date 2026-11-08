@@ -97,7 +97,7 @@ void Wayland::init(i2 content_dims)
 
     surfaces.init(content_dims, this);
     
-    xdg.surface = xdg_wm_base_get_xdg_surface(xdg.wm_base, surfaces.window.surface);
+    xdg.surface = xdg_wm_base_get_xdg_surface(xdg.wm_base, surfaces.decorations.surface.surface);
     xdg_surface_add_listener(xdg.surface, &xdg.xdg_surface_listener, this);
 
     xdg.toplevel = xdg_surface_get_toplevel(xdg.surface);
@@ -241,19 +241,19 @@ bool Wayland::set_size()
     Print::buf(Str::SI(surfaces.size_change_dims.y));
     Print::ln(" }");
 
-    surfaces.full_reload_from_window_size(surfaces.size_change_dims);
+    surfaces.full_reload_from_window_size(surfaces.size_change_dims, this);
     // surfaces.size_change_detected = false;
     // surfaces.reload_with_new_window_dims(surfaces.size_change_dims);
 
-    surfaces.new_wl_buffers(this);
+    
 
     return true;
 }
 
 
-PixelBuffer Wayland::get_pixel_buffer()
+PixelBuffer Wayland::get_content_buffer()
 {
-    return PixelBuffer {(PX32*)(surfaces.get_content_pointer()), 
+    return PixelBuffer {(PX32*)(surfaces.get_buffer_pointer(WL_Surface::Content)), 
                                 surfaces.content.pixel_buffer.w, 
                                 surfaces.content.pixel_buffer.h,
                                 PX32F::ARGB,
@@ -262,7 +262,7 @@ PixelBuffer Wayland::get_pixel_buffer()
 
 
 bool Wayland::content_surface_is_busy() { return surfaces.content.surface_is_busy; }
-bool Wayland::surfaces_are_all_released() { return       !surfaces.window.surface_is_busy 
+bool Wayland::surfaces_are_all_released() { return       !surfaces.decorations.surface.surface_is_busy 
                                             &&  !surfaces.content.surface_is_busy 
                                             &&  !surfaces.test.surface_is_busy;    }
 

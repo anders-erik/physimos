@@ -83,10 +83,10 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
     // Print::buf("wl_buffer test  : ");
     // Print::ln(StrUtil::ptr_to_hex(state->surfaces.test.buffer));
 
-    if(wl_buffer == wayland->surfaces.window.buffer)
+    if(wl_buffer == wayland->surfaces.decorations.surface.buffer)
     {
         // Print::ln("Window buffer released!");
-        wayland->surfaces.window.surface_is_busy = false;
+        wayland->surfaces.decorations.surface.surface_is_busy = false;
     }
     else if(wl_buffer == wayland->surfaces.content.buffer)
     {
@@ -298,7 +298,7 @@ pointer_enter(void *data,
         wayland->input.target = WL_Input::Content;
         Print::ln("Content!");
     }
-    else if(surface == wayland->surfaces.window.surface)
+    else if(surface == wayland->surfaces.decorations.surface.surface)
     {
         wayland->input.target = WL_Input::Window;
         Print::ln("Window!");
@@ -347,7 +347,7 @@ pointer_leave(void *data,
     {
         Print::ln("Content!");
     }
-    else if(surface == wayland->surfaces.window.surface)
+    else if(surface == wayland->surfaces.decorations.surface.surface)
     {
         Print::ln("Window!");
     }
@@ -377,7 +377,7 @@ pointer_motion(void *data,
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
 
-    double win_h = wayland->surfaces.window.pixel_buffer.h;
+    double win_h = wayland->surfaces.decorations.surface.pixel_buffer.h;
     // d2 pos_window_previous_sane = wayland->input.pointer_pos_window_sane;
 
     wayland->input.pointer_pos_window_raw  = {px, py};
@@ -473,48 +473,28 @@ pointer_button(void *data,
     {
         Print::ln(Str::FL(wayland->input.pointer_pos_window_raw.y, 2, Str::FloatRep::Fixed));
 
-        enum class WindowArea
-        {
-            TopLeft,
-            Topbar,
-            TopRight, 
-            RightEdge,
-        } window_area;
+        WL_Decoration::Area area = wayland->surfaces.decorations.get_area({wayland->input.pointer_pos_window_raw.x, wayland->input.pointer_pos_window_raw.y});
+        
 
-        if(wayland->input.pointer_pos_window_raw.y < 20)
+        switch (area)
         {
-            if(wayland->input.pointer_pos_window_raw.x < 20)
-                window_area = WindowArea::TopLeft;
-            else if(wayland->input.pointer_pos_window_raw.x < 800)
-                window_area = WindowArea::Topbar;
-            else
-                window_area = WindowArea::TopRight;
-        }
-        else
-        {
-            if(wayland->input.pointer_pos_window_raw.x > 800)
-                window_area = WindowArea::RightEdge;
-        }
-
-        switch (window_area)
-        {
-        case WindowArea::TopLeft:
+        case WL_Decoration::TopLeft:
             {
                 xdg_toplevel_show_window_menu(wayland->xdg.toplevel, wayland->input.seat, serial, 0, 0);
             }
             break;
-        case WindowArea::Topbar:
+        case WL_Decoration::Topbar:
             {
                 xdg_toplevel_move(wayland->xdg.toplevel, wayland->input.seat, serial);
             }
             break;
-        case WindowArea::TopRight:
+        case WL_Decoration::CloseButton:
             {
                 // Print::ln("Wayland top right click");
                 wayland->running = 0;
             }
             break;
-        case WindowArea::RightEdge:
+        case WL_Decoration::RightEdge:
             {
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
             }
