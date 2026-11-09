@@ -21,8 +21,18 @@ void WL_Decoration::draw()
 {
     SWR::Renderer renderer {surface.pixel_buffer};
 
+    renderer.clear(0x00666666);
+
+    // Draw top bar
+    PX32 topbar_color = 0xFF777777;
+    renderer.draw_rectangle(    {border_width, surface.pixel_buffer.h - border_width - topbar_height}, 
+                                {surface.pixel_buffer.w  - border_width, surface.pixel_buffer.h  - border_width}, 
+                                topbar_color                                                                        );
+
     // Draw close button
-    renderer.draw_rectangle({surface.pixel_buffer.w - 30, surface.pixel_buffer.h - 30}, {surface.pixel_buffer.w, surface.pixel_buffer.h}, 0xFFAA4444);
+    renderer.draw_rectangle(    {surface.pixel_buffer.w - border_width - 30, surface.pixel_buffer.h - border_width - 30}, 
+                                {surface.pixel_buffer.w  - border_width, surface.pixel_buffer.h  - border_width}, 
+                                0xFFAA4444                                                                                     );
     // renderer.draw_rectangle({0, 0}, {30, 30}, 0xFFAA4444);
 }
 
@@ -180,8 +190,6 @@ void WL_Surfaces::init(i2 _content_dims, Wayland* state)
     test.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Test);
 
     SWR::Renderer renderer;
-    renderer.set_buffer(decorations.surface.pixel_buffer);
-    renderer.clear(0xDD000000);
     decorations.draw();
     renderer.set_buffer(content.pixel_buffer);
     renderer.clear(0xFF000000);
@@ -212,7 +220,7 @@ void WL_Surfaces::full_reload_from_window_size(i2 new_window_dims, Wayland* wayl
 
     i2 new_content_dims = window_to_content_dims(size_change_dims);
     content.pixel_buffer = PixelBuffer{nullptr, new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-    content.pos = {decorations.border_width, decorations.topbar_height};
+    content.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
 
     test.pixel_buffer = PixelBuffer{nullptr, 50, 50, PX32F::ARGB, PixelBuffer::Top};
     test.pos = {400, 200};
@@ -227,8 +235,6 @@ void WL_Surfaces::full_reload_from_window_size(i2 new_window_dims, Wayland* wayl
     test.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Test);
 
     SWR::Renderer renderer;
-    renderer.set_buffer(decorations.surface.pixel_buffer);
-    renderer.clear(0xFF000000);
     decorations.draw();
     renderer.set_buffer(content.pixel_buffer);
     renderer.clear(0xFF000000);
@@ -258,12 +264,12 @@ void WL_Surfaces::full_reload_from_window_size(i2 new_window_dims, Wayland* wayl
 i2  WL_Surfaces::content_to_window_dims(i2 content_dims)
 {
     return  {   content_dims.x + decorations.border_width * 2, 
-                content_dims.y + decorations.topbar_height + decorations.border_width };
+                content_dims.y + decorations.topbar_height + decorations.border_width * 2 };
 }
 i2  WL_Surfaces::window_to_content_dims(i2 window_dims)
 {
     return  {   window_dims.x - decorations.border_width * 2, 
-                window_dims.y - decorations.topbar_height - decorations.border_width };
+                window_dims.y - decorations.topbar_height - decorations.border_width * 2 };
 }
 
 
@@ -306,7 +312,7 @@ void WL_Surfaces::set_surface_dims(i2 window_dims)
 
     i2 content_dims = window_to_content_dims(window_dims);
     content.pixel_buffer = PixelBuffer{nullptr, content_dims.x, content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-    content.pos = {decorations.border_width, decorations.topbar_height};
+    content.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
 
     test.pixel_buffer = PixelBuffer{nullptr, 50, 50, PX32F::ARGB, PixelBuffer::Top};
     test.pos = {400, 200};

@@ -494,9 +494,19 @@ pointer_button(void *data,
                 wayland->running = 0;
             }
             break;
-        case WL_Decoration::RightEdge:
+        case WL_Decoration::EdgeTop:
+            {
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_TOP);
+            }
+            break;
+        case WL_Decoration::EdgeRight:
             {
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
+            }
+            break;
+        case WL_Decoration::EdgeBottom:
+            {
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM);
             }
             break;
         

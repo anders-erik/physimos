@@ -89,29 +89,22 @@ struct WL_Decoration
         CloseButton,
         TopLeft,
         Topbar,
-        RightEdge,
+        EdgeTop,
+        EdgeRight,
+        EdgeBottom,
     };
 
 
-    struct DecorationBox
-    {
-        i2 pos;
-        i2 size;
-
-        bool is_within(i2 pos_to_check)
-        {
-            bool x_ok = pos_to_check.x > pos.x && pos_to_check.x < (pos.x + size.x);
-            bool y_ok = pos_to_check.y > pos.y && pos_to_check.y < (pos.y + size.y);
-
-            return x_ok && y_ok;
-        }
-    };
-
+    /* y-zero is at top of buffer */
     Area get_area(i2 pos_raw)
     {
         Area area;
 
-        if(pos_raw.y < topbar_height)
+        if(pos_raw.y < border_width)
+        {
+            area = WL_Decoration::EdgeTop;
+        }
+        else if(pos_raw.y < topbar_height + border_width)
         {
             if(pos_raw.x < topbar_height)
                 area = WL_Decoration::TopLeft;
@@ -120,33 +113,17 @@ struct WL_Decoration
             else
                 area = WL_Decoration::CloseButton;
         }
+        else if(pos_raw.y > (surface.pixel_buffer.h - border_width))
+        {
+            area = WL_Decoration::EdgeBottom;
+        }
         else
         {
             if(pos_raw.x > (surface.pixel_buffer.w - border_width))
-                area = WL_Decoration::RightEdge;
+                area = WL_Decoration::EdgeRight;
         }
 
         return area;
-    }
-
-    DecorationBox get_box(Area area)
-    {
-        DecorationBox decoration_box;
-
-        switch (area)
-        {
-        case East:
-            return {{surface.pixel_buffer.w, surface.pixel_buffer.h}, {30, 30}};
-            break;
-        case CloseButton:
-            return {{surface.pixel_buffer.w - 30, surface.pixel_buffer.h - 30}, {30, 30}};
-            break;
-        
-        default:
-            break;
-        }
-
-        return decoration_box;
     }
 
 
