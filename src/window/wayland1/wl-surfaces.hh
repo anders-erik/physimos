@@ -92,7 +92,8 @@ struct WL_Decoration
         EdgeTop,
         EdgeRight,
         EdgeBottom,
-    };
+        None,
+    } area = Area::None;
 
 
     /* y-zero is at top of buffer */

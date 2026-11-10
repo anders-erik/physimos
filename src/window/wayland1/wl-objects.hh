@@ -21,15 +21,31 @@ struct WL_Cursor
     struct wl_cursor_theme  *theme;
     struct wl_buffer        *buffer;
 
-    void create_default(wl_compositor* _compositor, wl_shm* _shm_surface_window)
+    void create_default(wl_compositor* _compositor, wl_shm* _pool_shm)
     {
+        surface = wl_compositor_create_surface(_compositor);
+
         // CREATE CURSOR
-        theme = wl_cursor_theme_load(NULL, 24, _shm_surface_window);
+        theme = wl_cursor_theme_load(NULL, 24, _pool_shm);
+
         cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
+        // cursor = wl_cursor_theme_get_cursor(theme, "right_ptr");
+        // cursor = wl_cursor_theme_get_cursor(theme, "crosshair");
+        // cursor = wl_cursor_theme_get_cursor(theme, "left_ptr_watch");
+        // cursor = wl_cursor_theme_get_cursor(theme, "crossed_circle");
+        // cursor = wl_cursor_theme_get_cursor(theme, "h_double_arrow");
+        // cursor = wl_cursor_theme_get_cursor(theme, "v_double_arrow");
+        // cursor = wl_cursor_theme_get_cursor(theme, "bd_double_arrow");
+        // cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
+        
+        
+        reload_cursor();
+    }
+
+    void reload_cursor()
+    {
         image = cursor->images[0];
         buffer = wl_cursor_image_get_buffer(image);
-
-        surface = wl_compositor_create_surface(_compositor);
         wl_surface_attach(surface, buffer, 0, 0);
         wl_surface_commit(surface);
     }

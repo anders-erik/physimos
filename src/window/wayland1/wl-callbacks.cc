@@ -286,7 +286,7 @@ pointer_enter(void *data,
     Print::buf("Entered surface: ");
 
 
-    wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
+    
 
     if(surface == wayland->surfaces.test.surface)
     {
@@ -296,11 +296,18 @@ pointer_enter(void *data,
     else if(surface == wayland->surfaces.content.surface)
     {
         wayland->input.target = WL_Input::Content;
+        // wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
+        wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "left_ptr");
+        wayland->cursor.reload_cursor();
+        wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
         Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
         wayland->input.target = WL_Input::Window;
+        wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "h_double_arrow");
+        wayland->cursor.reload_cursor();
+        wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
         Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.egl.surface)
@@ -400,6 +407,26 @@ pointer_motion(void *data,
     {
         // Print::ln("Mouse move inside window surface");
 
+        wayland->surfaces.decorations.area = wayland->surfaces.decorations.get_area({   wayland->input.pointer_pos_window_raw.x, 
+                                                                                        wayland->input.pointer_pos_window_raw.y });
+
+        switch (wayland->surfaces.decorations.area)
+        {
+        case WL_Decoration::EdgeRight:
+            {
+                // wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "h_double_arrow");
+                // wayland->cursor.reload_cursor();
+                Print::ln("h_double_arrow");
+            }
+            break;
+        
+        default:
+            {
+                // wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "left_ptr");
+                // wayland->cursor.reload_cursor();
+            }
+            break;
+        }
 
         // Print::buf("x = ");
         // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
@@ -473,10 +500,10 @@ pointer_button(void *data,
     {
         Print::ln(Str::FL(wayland->input.pointer_pos_window_raw.y, 2, Str::FloatRep::Fixed));
 
-        WL_Decoration::Area area = wayland->surfaces.decorations.get_area({wayland->input.pointer_pos_window_raw.x, wayland->input.pointer_pos_window_raw.y});
+        // WL_Decoration::Area area = wayland->surfaces.decorations.get_area({wayland->input.pointer_pos_window_raw.x, wayland->input.pointer_pos_window_raw.y});
         
 
-        switch (area)
+        switch (wayland->surfaces.decorations.area)
         {
         case WL_Decoration::TopLeft:
             {
