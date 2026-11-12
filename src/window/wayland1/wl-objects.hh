@@ -21,7 +21,7 @@ struct WL_Cursor
     struct wl_cursor_theme  *theme;
     struct wl_buffer        *buffer;
 
-    struct wl_pointer *pointer_enter;
+    struct wl_pointer *pointer_last_callback;
     uint32_t serial_enter;
 
     enum Type
@@ -30,6 +30,7 @@ struct WL_Cursor
         ResizeEastWest,
         ResizeNorthSouth,
         ResizeNESW, // North-East & South-West
+        None,
     };
 
     void init(wl_compositor* _compositor, wl_shm* _pool_shm)
@@ -60,16 +61,35 @@ struct WL_Cursor
         switch (type)
         {
         case WL_Cursor::LeftPointer:
+            {
             cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
+            Print::ln("left_ptr");
+            }
             break;
         case WL_Cursor::ResizeEastWest:
+            {
             cursor = wl_cursor_theme_get_cursor(theme, "h_double_arrow");
+            Print::ln("h_double_arrow");
+            }
             break;
         case WL_Cursor::ResizeNorthSouth:
+            {
             cursor = wl_cursor_theme_get_cursor(theme, "v_double_arrow");
+            Print::ln("v_double_arrow");
+            }
             break;
         case WL_Cursor::ResizeNESW:
+            {
             cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
+            Print::ln("fd_double_arrow");
+            }
+            break;
+        case WL_Cursor::None:
+            {
+            wl_pointer_set_cursor(pointer_last_callback, serial_enter, NULL, image->hotspot_x, image->hotspot_y);
+            Print::ln("No cursor image");
+            return;
+            }
             break;
         
         default:
@@ -79,8 +99,12 @@ struct WL_Cursor
         image = cursor->images[0];
         buffer = wl_cursor_image_get_buffer(image);
         wl_surface_attach(surface, buffer, 0, 0);
+        wl_surface_damage_buffer(surface, 0, 0, 10, 10); // PROBELM SOLVED
         wl_surface_commit(surface);
-        wl_pointer_set_cursor(pointer_enter, serial_enter, surface, image->hotspot_x, image->hotspot_y);
+        wl_pointer_set_cursor(pointer_last_callback, serial_enter, surface, image->hotspot_x, image->hotspot_y);
+        Print::ln(Str::UI(serial_enter));
+        // Print::ln(Str::UI(pointer_last_callback));
+        printf("The value of s is: %p\n", (void *) pointer_last_callback);
     }
 
 

@@ -112,7 +112,7 @@ struct WL_Decoration
             else
                 area = WL_Decoration::EdgeTop;
         }
-        else if(pos_raw.y < topbar_height + border_width)
+        else if(pos_raw.y < topbar_height + border_width && pos_raw.x > border_width && pos_raw.x < (surface.pixel_buffer.w - border_width) )
         {
             if(pos_raw.x < topbar_height)
                 area = WL_Decoration::TopLeft;

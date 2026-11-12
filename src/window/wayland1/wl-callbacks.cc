@@ -286,6 +286,9 @@ pointer_enter(void *data,
     Print::buf("Entered surface: ");
 
 
+
+    wayland->cursor.pointer_last_callback = pointer;
+    wayland->cursor.serial_enter = serial;
     
 
     if(surface == wayland->surfaces.test.surface)
@@ -296,16 +299,14 @@ pointer_enter(void *data,
     else if(surface == wayland->surfaces.content.surface)
     {
         wayland->input.target = WL_Input::Content;
-        wayland->cursor.pointer_enter = pointer;
-        wayland->cursor.serial_enter = serial;
+        
         // wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
         Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
         wayland->input.target = WL_Input::Window;
-        wayland->cursor.pointer_enter = pointer;
-        wayland->cursor.serial_enter = serial;
+        
         // wayland->cursor.set_cursor(WL_Cursor::ResizeEastWest);
         Print::ln("Window!");
     }
@@ -407,7 +408,7 @@ pointer_motion(void *data,
     else if(wayland->input.target == WL_Input::Window)
     {
         // Print::ln("Mouse move inside window surface");
-
+        // wayland->cursor.pointer_last_callback = pointer;
         wayland->surfaces.decorations.area = wayland->surfaces.decorations.get_area({   wayland->input.pointer_pos_window_raw.x, 
                                                                                         wayland->input.pointer_pos_window_raw.y });
 
@@ -416,26 +417,37 @@ pointer_motion(void *data,
         case WL_Decoration::EdgeRight:
             {
                 wayland->cursor.set_cursor(WL_Cursor::ResizeEastWest);
+                Print::ln("WL_Decoration::EdgeRight");
             }
             break;
          case WL_Decoration::EdgeTopLeft:
             {
                 wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
+                Print::ln("WL_Decoration::EdgeTopLeft");
             }
             break;
         case WL_Decoration::EdgeTop:
             {
                 wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
+                Print::ln("WL_Decoration::EdgeTop");
             }
             break;
         case WL_Decoration::EdgeTopRight:
             {
                 wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
+                Print::ln("WL_Decoration::EdgeTopRight");
             }
             break;
         case WL_Decoration::EdgeBottom:
             {
                 wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
+                Print::ln("WL_Decoration::EdgeBottom");
+            }
+            break;
+        case WL_Decoration::Topbar:
+            {
+                wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
+                Print::ln("WL_Decoration::Topbar");
             }
             break;
         
@@ -443,6 +455,7 @@ pointer_motion(void *data,
             {
                 // wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "left_ptr");
                 // wayland->cursor.reload_cursor();
+                wayland->cursor.set_cursor(WL_Cursor::None);
             }
             break;
         }
