@@ -89,7 +89,9 @@ struct WL_Decoration
         CloseButton,
         TopLeft,
         Topbar,
+        EdgeTopLeft,
         EdgeTop,
+        EdgeTopRight,
         EdgeRight,
         EdgeBottom,
         None,
@@ -103,7 +105,12 @@ struct WL_Decoration
 
         if(pos_raw.y < border_width)
         {
-            area = WL_Decoration::EdgeTop;
+            if(pos_raw.x < border_width)
+                area = WL_Decoration::EdgeTopLeft;
+            else if(pos_raw.x > surface.pixel_buffer.w - border_width)
+                area = WL_Decoration::EdgeTopRight;
+            else
+                area = WL_Decoration::EdgeTop;
         }
         else if(pos_raw.y < topbar_height + border_width)
         {

@@ -21,14 +21,25 @@ struct WL_Cursor
     struct wl_cursor_theme  *theme;
     struct wl_buffer        *buffer;
 
-    void create_default(wl_compositor* _compositor, wl_shm* _pool_shm)
+    struct wl_pointer *pointer_enter;
+    uint32_t serial_enter;
+
+    enum Type
+    {
+        LeftPointer,
+        ResizeEastWest,
+        ResizeNorthSouth,
+        ResizeNESW, // North-East & South-West
+    };
+
+    void init(wl_compositor* _compositor, wl_shm* _pool_shm)
     {
         surface = wl_compositor_create_surface(_compositor);
 
         // CREATE CURSOR
         theme = wl_cursor_theme_load(NULL, 24, _pool_shm);
 
-        cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
+        // cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
         // cursor = wl_cursor_theme_get_cursor(theme, "right_ptr");
         // cursor = wl_cursor_theme_get_cursor(theme, "crosshair");
         // cursor = wl_cursor_theme_get_cursor(theme, "left_ptr_watch");
@@ -39,16 +50,39 @@ struct WL_Cursor
         // cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
         
         
-        reload_cursor();
+        // reload_cursor();
     }
 
-    void reload_cursor()
+  
+
+    void set_cursor(WL_Cursor::Type type)
     {
+        switch (type)
+        {
+        case WL_Cursor::LeftPointer:
+            cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
+            break;
+        case WL_Cursor::ResizeEastWest:
+            cursor = wl_cursor_theme_get_cursor(theme, "h_double_arrow");
+            break;
+        case WL_Cursor::ResizeNorthSouth:
+            cursor = wl_cursor_theme_get_cursor(theme, "v_double_arrow");
+            break;
+        case WL_Cursor::ResizeNESW:
+            cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
+            break;
+        
+        default:
+            break;
+        }
+
         image = cursor->images[0];
         buffer = wl_cursor_image_get_buffer(image);
         wl_surface_attach(surface, buffer, 0, 0);
         wl_surface_commit(surface);
+        wl_pointer_set_cursor(pointer_enter, serial_enter, surface, image->hotspot_x, image->hotspot_y);
     }
+
 
 };
 

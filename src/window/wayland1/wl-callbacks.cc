@@ -296,18 +296,17 @@ pointer_enter(void *data,
     else if(surface == wayland->surfaces.content.surface)
     {
         wayland->input.target = WL_Input::Content;
-        // wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
-        wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "left_ptr");
-        wayland->cursor.reload_cursor();
-        wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
+        wayland->cursor.pointer_enter = pointer;
+        wayland->cursor.serial_enter = serial;
+        // wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
         Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
         wayland->input.target = WL_Input::Window;
-        wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "h_double_arrow");
-        wayland->cursor.reload_cursor();
-        wl_pointer_set_cursor(pointer, serial, wayland->cursor.surface, wayland->cursor.image->hotspot_x, wayland->cursor.image->hotspot_y);
+        wayland->cursor.pointer_enter = pointer;
+        wayland->cursor.serial_enter = serial;
+        // wayland->cursor.set_cursor(WL_Cursor::ResizeEastWest);
         Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.egl.surface)
@@ -392,6 +391,8 @@ pointer_motion(void *data,
 
     if(wayland->input.target == WL_Input::Content)
     {
+        wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
+
         d2 pos_content_previous_sane = wayland->input.pointer_pos_content_sane;
         wayland->input.pointer_pos_content_sane = {   px,
                                                  - (py - wayland->surfaces.content.pixel_buffer.h)};
@@ -414,9 +415,27 @@ pointer_motion(void *data,
         {
         case WL_Decoration::EdgeRight:
             {
-                // wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "h_double_arrow");
-                // wayland->cursor.reload_cursor();
-                Print::ln("h_double_arrow");
+                wayland->cursor.set_cursor(WL_Cursor::ResizeEastWest);
+            }
+            break;
+         case WL_Decoration::EdgeTopLeft:
+            {
+                wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
+            }
+            break;
+        case WL_Decoration::EdgeTop:
+            {
+                wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
+            }
+            break;
+        case WL_Decoration::EdgeTopRight:
+            {
+                wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
+            }
+            break;
+        case WL_Decoration::EdgeBottom:
+            {
+                wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
             }
             break;
         

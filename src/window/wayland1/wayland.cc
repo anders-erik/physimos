@@ -106,7 +106,7 @@ void Wayland::init(i2 content_dims)
 
 
     // cursor.create_default(core.compositor, surfaces.window.fb.wl_shm);
-    cursor.create_default(core.compositor, surfaces.pool.wl_shm);
+    cursor.init(core.compositor, surfaces.pool.wl_shm);
 
     surfaces.commit();
     // wl_display_dispatch(core.display); // caused a flash before first proper render
