@@ -79,56 +79,73 @@ struct WL_Decoration
     /* window/decoration surface*/
     WL_Surface surface;
 
-    int border_width = 10;
+    int border_width = 15;
     int topbar_height = 30;
+    // int topbar_button_len = 25;
 
+    WLDecorationArea area                   = WLDecorationArea::None;
+    WLDecorationArea area_previous_frame    = WLDecorationArea::None;
 
-    enum Area
-    {
-        East,
-        CloseButton,
-        TopLeft,
-        Topbar,
-        EdgeTopLeft,
-        EdgeTop,
-        EdgeTopRight,
-        EdgeRight,
-        EdgeBottom,
-        None,
-    } area = Area::None;
+    
+
 
 
     /* y-zero is at top of buffer */
-    Area get_area(i2 pos_raw)
+    WLDecorationArea get_area(i2 pos_raw)
     {
-        Area area;
+        WLDecorationArea area;
+
+        // Step through the cases from y = 0 to y = y_max
 
         if(pos_raw.y < border_width)
         {
             if(pos_raw.x < border_width)
-                area = WL_Decoration::EdgeTopLeft;
+                area = WLDecorationArea::EdgeTopLeft;
             else if(pos_raw.x > surface.pixel_buffer.w - border_width)
-                area = WL_Decoration::EdgeTopRight;
+                area = WLDecorationArea::EdgeTopRight;
             else
-                area = WL_Decoration::EdgeTop;
+                area = WLDecorationArea::EdgeTop;
         }
-        else if(pos_raw.y < topbar_height + border_width && pos_raw.x > border_width && pos_raw.x < (surface.pixel_buffer.w - border_width) )
+        else if(pos_raw.y < topbar_height + border_width )
         {
-            if(pos_raw.x < topbar_height)
-                area = WL_Decoration::TopLeft;
-            else if(pos_raw.x < (surface.pixel_buffer.w - 30))
-                area = WL_Decoration::Topbar;
+            if(pos_raw.x < border_width)
+                area = WLDecorationArea::EdgeLeft;
+            else if(pos_raw.x < topbar_height + border_width)
+                area = WLDecorationArea::TopLeft;
+            else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 3)))
+                area = WLDecorationArea::Topbar;
+            else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 2)))
+                area = WLDecorationArea::MinimizeButton;
+            else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 1)))
+                area = WLDecorationArea::MaximizeButton;
+            else if(pos_raw.x < (surface.pixel_buffer.w - border_width))
+                area = WLDecorationArea::CloseButton;
             else
-                area = WL_Decoration::CloseButton;
+                area = WLDecorationArea::EdgeRight;
         }
-        else if(pos_raw.y > (surface.pixel_buffer.h - border_width))
+        else if(pos_raw.y < (surface.pixel_buffer.h - border_width))
         {
-            area = WL_Decoration::EdgeBottom;
+            if(pos_raw.x < border_width)
+                area = WLDecorationArea::EdgeLeft;
+            else if(pos_raw.x > (surface.pixel_buffer.w - border_width))
+                area = WLDecorationArea::EdgeRight;
+            else
+                area = WLDecorationArea::None;
+        }
+        else if (pos_raw.y < surface.pixel_buffer.h)
+        {
+            if(pos_raw.x < border_width)
+                area = WLDecorationArea::EdgeBottomLeft;
+            else if(pos_raw.x < (surface.pixel_buffer.w - border_width))
+                area = WLDecorationArea::EdgeBottom;
+            else if(pos_raw.x < surface.pixel_buffer.w)
+                area = WLDecorationArea::EdgeBottomRight;
+            else
+                area = WLDecorationArea::None;
         }
         else
         {
-            if(pos_raw.x > (surface.pixel_buffer.w - border_width))
-                area = WL_Decoration::EdgeRight;
+            area = WLDecorationArea::None;
         }
 
         return area;

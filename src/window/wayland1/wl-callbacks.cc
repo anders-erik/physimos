@@ -285,11 +285,11 @@ pointer_enter(void *data,
 
     Print::buf("Entered surface: ");
 
+    i2 pointer_pos_raw = {  wl_fixed_to_int(x), wl_fixed_to_int(y) };
 
 
-    wayland->cursor.pointer_last_callback = pointer;
-    wayland->cursor.serial_enter = serial;
-    
+    wayland->cursor.pointer_on_last_enter = pointer;
+    wayland->cursor.serial_on_last_enter = serial;
 
     if(surface == wayland->surfaces.test.surface)
     {
@@ -300,14 +300,45 @@ pointer_enter(void *data,
     {
         wayland->input.target = WL_Input::Content;
         
-        // wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
+        wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
         Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
         wayland->input.target = WL_Input::Window;
+
+        wayland->surfaces.decorations.area_previous_frame = wayland->surfaces.decorations.area;
+        wayland->surfaces.decorations.area = wayland->surfaces.decorations.get_area(pointer_pos_raw);
+
         
-        // wayland->cursor.set_cursor(WL_Cursor::ResizeEastWest);
+        wayland->cursor.set_cursor(WL_Cursor::decoration_area_to_cursor_type(wayland->surfaces.decorations.area));
+
+        // switch (wayland->surfaces.decorations.area)
+        // {
+        // case WLDecorationArea::EdgeRight:
+        //         wayland->cursor.set_cursor(WL_Cursor::ResizeEastWest);
+        //     break;
+        // case WLDecorationArea::EdgeTopLeft:
+        //         wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
+        //     break;
+        // case WLDecorationArea::EdgeTop:
+        //         wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
+        //     break;
+        // case WLDecorationArea::EdgeTopRight:
+        //         wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
+        //     break;
+        // case WLDecorationArea::EdgeBottom:
+        //         wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
+        //     break;
+        // case WLDecorationArea::Topbar:
+        //         wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
+        //     break;
+        
+        // default:
+        //         wayland->cursor.set_cursor(WL_Cursor::None);
+        //     break;
+        // }
+
         Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.egl.surface)
@@ -392,7 +423,7 @@ pointer_motion(void *data,
 
     if(wayland->input.target == WL_Input::Content)
     {
-        wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
+        // wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
 
         d2 pos_content_previous_sane = wayland->input.pointer_pos_content_sane;
         wayland->input.pointer_pos_content_sane = {   px,
@@ -407,58 +438,20 @@ pointer_motion(void *data,
     }
     else if(wayland->input.target == WL_Input::Window)
     {
-        // Print::ln("Mouse move inside window surface");
-        // wayland->cursor.pointer_last_callback = pointer;
+        wayland->surfaces.decorations.area_previous_frame = wayland->surfaces.decorations.area;
         wayland->surfaces.decorations.area = wayland->surfaces.decorations.get_area({   wayland->input.pointer_pos_window_raw.x, 
                                                                                         wayland->input.pointer_pos_window_raw.y });
 
-        switch (wayland->surfaces.decorations.area)
+        print_area_name(wayland->surfaces.decorations.area);
+
+        if(wayland->surfaces.decorations.area_previous_frame != wayland->surfaces.decorations.area)
         {
-        case WL_Decoration::EdgeRight:
-            {
-                wayland->cursor.set_cursor(WL_Cursor::ResizeEastWest);
-                Print::ln("WL_Decoration::EdgeRight");
-            }
-            break;
-         case WL_Decoration::EdgeTopLeft:
-            {
-                wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
-                Print::ln("WL_Decoration::EdgeTopLeft");
-            }
-            break;
-        case WL_Decoration::EdgeTop:
-            {
-                wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
-                Print::ln("WL_Decoration::EdgeTop");
-            }
-            break;
-        case WL_Decoration::EdgeTopRight:
-            {
-                wayland->cursor.set_cursor(WL_Cursor::ResizeNESW);
-                Print::ln("WL_Decoration::EdgeTopRight");
-            }
-            break;
-        case WL_Decoration::EdgeBottom:
-            {
-                wayland->cursor.set_cursor(WL_Cursor::ResizeNorthSouth);
-                Print::ln("WL_Decoration::EdgeBottom");
-            }
-            break;
-        case WL_Decoration::Topbar:
-            {
-                wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
-                Print::ln("WL_Decoration::Topbar");
-            }
-            break;
-        
-        default:
-            {
-                // wayland->cursor.cursor = wl_cursor_theme_get_cursor(wayland->cursor.theme, "left_ptr");
-                // wayland->cursor.reload_cursor();
-                wayland->cursor.set_cursor(WL_Cursor::None);
-            }
-            break;
+            WL_Cursor::Type cursor_type = WL_Cursor::decoration_area_to_cursor_type(wayland->surfaces.decorations.area);
+            wayland->cursor.set_cursor(cursor_type);
+
         }
+
+        
 
         // Print::buf("x = ");
         // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
@@ -537,33 +530,43 @@ pointer_button(void *data,
 
         switch (wayland->surfaces.decorations.area)
         {
-        case WL_Decoration::TopLeft:
+        case WLDecorationArea::TopLeft:
             {
                 xdg_toplevel_show_window_menu(wayland->xdg.toplevel, wayland->input.seat, serial, 0, 0);
             }
             break;
-        case WL_Decoration::Topbar:
+        case WLDecorationArea::Topbar:
             {
                 xdg_toplevel_move(wayland->xdg.toplevel, wayland->input.seat, serial);
             }
             break;
-        case WL_Decoration::CloseButton:
+        case WLDecorationArea::CloseButton:
             {
                 // Print::ln("Wayland top right click");
                 wayland->running = 0;
             }
             break;
-        case WL_Decoration::EdgeTop:
+        case WLDecorationArea::MinimizeButton:
+            {
+                Print::ln("Minimize button clicked!");
+            }
+            break;
+        case WLDecorationArea::MaximizeButton:
+            {
+                Print::ln("Maximize button clicked!");
+            }
+            break;
+        case WLDecorationArea::EdgeTop:
             {
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_TOP);
             }
             break;
-        case WL_Decoration::EdgeRight:
+        case WLDecorationArea::EdgeRight:
             {
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
             }
             break;
-        case WL_Decoration::EdgeBottom:
+        case WLDecorationArea::EdgeBottom:
             {
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM);
             }

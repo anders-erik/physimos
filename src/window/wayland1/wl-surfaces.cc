@@ -21,7 +21,18 @@ void WL_Decoration::draw()
 {
     SWR::Renderer renderer {surface.pixel_buffer};
 
-    renderer.clear(0x00666666);
+    PX32 edge_color = 0x00000000;
+    PX32 edge_line_color = 0x66666666;
+
+    renderer.clear(edge_color);
+    // bottom
+    renderer.draw_line_float_lerp({border_width-1, border_width-1}, {surface.pixel_buffer.w - border_width, border_width-1}, edge_line_color);
+    // Top
+    renderer.draw_line_float_lerp({border_width-1, surface.pixel_buffer.h-border_width}, {surface.pixel_buffer.w - border_width, surface.pixel_buffer.h-border_width}, edge_line_color);
+    // left
+    renderer.draw_line_float_lerp({border_width-1, border_width}, {border_width-1, surface.pixel_buffer.h-border_width}, edge_line_color);
+    // right
+    renderer.draw_line_float_lerp({surface.pixel_buffer.w - border_width, border_width}, {surface.pixel_buffer.w - border_width, surface.pixel_buffer.h-border_width}, edge_line_color);
 
     // Draw top bar
     PX32 topbar_color = 0xFF777777;
@@ -29,10 +40,18 @@ void WL_Decoration::draw()
                                 {surface.pixel_buffer.w  - border_width, surface.pixel_buffer.h  - border_width}, 
                                 topbar_color                                                                        );
 
-    // Draw close button
+    // close button
     renderer.draw_rectangle(    {surface.pixel_buffer.w - border_width - 30, surface.pixel_buffer.h - border_width - 30}, 
                                 {surface.pixel_buffer.w  - border_width, surface.pixel_buffer.h  - border_width}, 
                                 0xFFAA4444                                                                                     );
+    // Maximize/Restore button
+    renderer.draw_rectangle(    {surface.pixel_buffer.w - border_width - 60, surface.pixel_buffer.h - border_width - 30}, 
+                                {surface.pixel_buffer.w - border_width - 30, surface.pixel_buffer.h  - border_width}, 
+                                0xFFAAAA44                                                                                     );
+    // Minimize button
+    renderer.draw_rectangle(    {surface.pixel_buffer.w - border_width - 90,    surface.pixel_buffer.h - border_width - 30}, 
+                                {surface.pixel_buffer.w - border_width - 60,    surface.pixel_buffer.h  - border_width}, 
+                                0xFF44AA44                                                                                     );
     // renderer.draw_rectangle({0, 0}, {30, 30}, 0xFFAA4444);
 }
 

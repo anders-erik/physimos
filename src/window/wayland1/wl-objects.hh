@@ -21,17 +21,20 @@ struct WL_Cursor
     struct wl_cursor_theme  *theme;
     struct wl_buffer        *buffer;
 
-    struct wl_pointer *pointer_last_callback;
-    uint32_t serial_enter;
+    struct wl_pointer *pointer_on_last_enter;
+    uint32_t serial_on_last_enter;
 
     enum Type
     {
         LeftPointer,
+        Clickable,
         ResizeEastWest,
         ResizeNorthSouth,
         ResizeNESW, // North-East & South-West
+        ResizeNWSE, // North-West & South-East
         None,
     };
+
 
     void init(wl_compositor* _compositor, wl_shm* _pool_shm)
     {
@@ -49,12 +52,50 @@ struct WL_Cursor
         // cursor = wl_cursor_theme_get_cursor(theme, "v_double_arrow");
         // cursor = wl_cursor_theme_get_cursor(theme, "bd_double_arrow");
         // cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
+        // cursor = wl_cursor_theme_get_cursor(theme, "hand2");
+        
         
         
         // reload_cursor();
+
+        cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
+        image = cursor->images[0];
+        buffer = wl_cursor_image_get_buffer(image);
     }
 
-  
+    static WL_Cursor::Type decoration_area_to_cursor_type(WLDecorationArea area)
+    {
+        WL_Cursor::Type type = None;
+
+        switch (area)
+        {
+        case WLDecorationArea::Topbar:            type = LeftPointer; break;
+        case WLDecorationArea::CloseButton:       type = Clickable; break;
+        case WLDecorationArea::MinimizeButton:    type = Clickable; break;
+        case WLDecorationArea::MaximizeButton:    type = Clickable; break;
+        case WLDecorationArea::TopLeft:           type = Clickable; break;
+
+        case WLDecorationArea::EdgeTop:           type = ResizeNorthSouth; break;
+        case WLDecorationArea::EdgeTopLeft:       type = ResizeNWSE; break;
+        case WLDecorationArea::EdgeTopRight:      type = ResizeNESW; break;
+
+        case WLDecorationArea::EdgeRight:         type = ResizeEastWest; break;
+
+        case WLDecorationArea::EdgeLeft:          type = ResizeEastWest; break;
+
+        case WLDecorationArea::EdgeBottom:        type = ResizeNorthSouth; break;
+        case WLDecorationArea::EdgeBottomLeft:    type = ResizeNESW; break;
+        case WLDecorationArea::EdgeBottomRight:   type = ResizeNWSE; break;
+
+        case WLDecorationArea::None:              type = LeftPointer; break;
+        
+        default:
+            break;
+        }
+
+        return type;
+    }
+    
 
     void set_cursor(WL_Cursor::Type type)
     {
@@ -66,6 +107,13 @@ struct WL_Cursor
             Print::ln("left_ptr");
             }
             break;
+        case WL_Cursor::Clickable:
+            {
+            cursor = wl_cursor_theme_get_cursor(theme, "hand2");
+            Print::ln("hand2");
+            }
+            break;
+            
         case WL_Cursor::ResizeEastWest:
             {
             cursor = wl_cursor_theme_get_cursor(theme, "h_double_arrow");
@@ -84,9 +132,16 @@ struct WL_Cursor
             Print::ln("fd_double_arrow");
             }
             break;
+        case WL_Cursor::ResizeNWSE:
+            {
+            cursor = wl_cursor_theme_get_cursor(theme, "bd_double_arrow");
+            Print::ln("bd_double_arrow");
+            }
+            break;
         case WL_Cursor::None:
             {
-            wl_pointer_set_cursor(pointer_last_callback, serial_enter, NULL, image->hotspot_x, image->hotspot_y);
+            // cursor = wl_cursor_theme_get_cursor(theme, "crosshair");
+            wl_pointer_set_cursor(pointer_on_last_enter, serial_on_last_enter, NULL, image->hotspot_x, image->hotspot_y);
             Print::ln("No cursor image");
             return;
             }
@@ -101,10 +156,10 @@ struct WL_Cursor
         wl_surface_attach(surface, buffer, 0, 0);
         wl_surface_damage_buffer(surface, 0, 0, 10, 10); // PROBELM SOLVED
         wl_surface_commit(surface);
-        wl_pointer_set_cursor(pointer_last_callback, serial_enter, surface, image->hotspot_x, image->hotspot_y);
-        Print::ln(Str::UI(serial_enter));
+        wl_pointer_set_cursor(pointer_on_last_enter, serial_on_last_enter, surface, image->hotspot_x, image->hotspot_y);
+        Print::ln(Str::UI(serial_on_last_enter));
         // Print::ln(Str::UI(pointer_last_callback));
-        printf("The value of s is: %p\n", (void *) pointer_last_callback);
+        printf("The value of s is: %p\n", (void *) pointer_on_last_enter);
     }
 
 
