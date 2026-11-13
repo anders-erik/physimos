@@ -47,6 +47,16 @@ registry_global(void *data, struct wl_registry *wl_registry,
     {
         wayland->core.subcompositor = (wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, 1);
     }
+    else if (strcmp(interface, wl_output_interface.name) == 0)
+    // else if(strcmp(interface, "wl_output") == 0)
+    {
+        wayland->output.output = (wl_output *)wl_registry_bind(wl_registry, name, &wl_output_interface, 1);
+        if (!wayland->output.output)
+        {
+            printf("Failed to bind wl_output.\n");
+            return;
+        }
+    }
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
     {
         wayland->xdg.wm_base = (xdg_wm_base *)wl_registry_bind(wl_registry, name, &xdg_wm_base_interface, 1);
@@ -63,6 +73,77 @@ void registry_global_remove(
     uint32_t name)
 {
     printf("global removed: %u\n", name);
+}
+
+
+
+extern void
+output_geometry(void *data, wl_output *wl_output, int32_t x, int32_t y, int32_t physical_width, int32_t physical_height, int32_t subpixel, const char *make, const char *model, int32_t transform)
+{
+    Print::ln("Output Geometry callback!");
+}
+extern void
+output_mode(void *data, wl_output *wl_output, uint32_t flags, int32_t width, int32_t height, int32_t refresh)
+{
+    Wayland* wayland = (Wayland*) data;
+
+    Print::ln("Output mode callback!");
+
+    Print::buf(Str::SI(width));
+    Print::buf(", ");
+    Print::buf(Str::SI(height));
+    Print::buf(", ");
+    Print::buf(Str::SI(refresh / 1000));
+    Print::buf("\n");
+
+    wayland->output.width = width;
+    wayland->output.height = height;
+    wayland->output.refresh_rate = refresh;
+
+    // if ((flags & WL_OUTPUT_MODE_CURRENT) == 0)
+    // {
+    //     return;
+    // }
+
+    // size_t index = (size_t) data;
+    // struct output_info* info = &outputs.values[index];
+
+    // info->width = width;
+    // info->height = height;
+    // info->refresh = refresh;
+}
+extern void
+output_done(void *data, wl_output *wl_output)
+{
+    Print::ln("Output Done callback!");
+}
+extern void
+output_scale(void *data, wl_output *wl_output, int32_t factor)
+{
+    Print::ln("Output scale callback!");
+}
+extern void
+output_name(void *data, wl_output *wl_output, const char *name)
+{
+    Wayland* wayland = (Wayland*) data;
+
+    Print::ln("Output Name callback!");
+
+    Str output_name = name;
+    Print::buf("Output name: ");
+    Print::ln(output_name);
+
+    // size_t index = (size_t) data;
+    // struct output_info* info = &outputs.values[index];
+
+    // size_t len = strlen(name) + 1;
+    // info->name = malloc(len);
+    // strncpy(info->name, name, len);
+}
+extern void
+output_description(void *data, wl_output *wl_output, const char *description)
+{
+    Print::ln("Output description callback!");
 }
 
 
@@ -283,7 +364,7 @@ pointer_enter(void *data,
 {
     Wayland *wayland = (Wayland*)data;
 
-    Print::buf("Entered surface: ");
+    // Print::buf("Entered surface: ");
 
     i2 pointer_pos_raw = {  wl_fixed_to_int(x), wl_fixed_to_int(y) };
 
@@ -294,14 +375,14 @@ pointer_enter(void *data,
     if(surface == wayland->surfaces.test.surface)
     {
         wayland->input.target = WL_Input::Test;
-        Print::ln("Test!");
+        // Print::ln("Test!");
     }
     else if(surface == wayland->surfaces.content.surface)
     {
         wayland->input.target = WL_Input::Content;
         
         wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
-        Print::ln("Content!");
+        // Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
@@ -339,16 +420,16 @@ pointer_enter(void *data,
         //     break;
         // }
 
-        Print::ln("Window!");
+        // Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.egl.surface)
     {
         wayland->input.target = WL_Input::EGL;
-        Print::ln("EGL!");
+        // Print::ln("EGL!");
     }
     else
     {
-        Print::ln("Unknown!");
+        Print::ln("Entered unknown surface!!");
     }
 
     
@@ -375,27 +456,27 @@ pointer_leave(void *data,
 {
     Wayland *wayland = (Wayland*)data;
 
-    Print::buf("Left surface:    ");
+    // Print::buf("Left surface:    ");
 
     if(surface == wayland->surfaces.test.surface)
     {
-        Print::ln("Test!");
+        // Print::ln("Test!");
     }
     else if(surface == wayland->surfaces.content.surface)
     {
-        Print::ln("Content!");
+        // Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
-        Print::ln("Window!");
+        // Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.egl.surface)
     {
-        Print::ln("EGL!");
+        // Print::ln("EGL!");
     }
     else
     {
-        Print::ln("Unknown!");
+        Print::ln("Left Unknown Surface!!");
     }
 
     wayland->input.target = WL_Input::None;
@@ -442,7 +523,7 @@ pointer_motion(void *data,
         wayland->surfaces.decorations.area = wayland->surfaces.decorations.get_area({   wayland->input.pointer_pos_window_raw.x, 
                                                                                         wayland->input.pointer_pos_window_raw.y });
 
-        print_area_name(wayland->surfaces.decorations.area);
+        // print_area_name(wayland->surfaces.decorations.area);
 
         if(wayland->surfaces.decorations.area_previous_frame != wayland->surfaces.decorations.area)
         {
@@ -523,7 +604,10 @@ pointer_button(void *data,
 
     if(wayland->input.target == WL_Input::Window)
     {
-        Print::ln(Str::FL(wayland->input.pointer_pos_window_raw.y, 2, Str::FloatRep::Fixed));
+        if(mouse_click.action != MouseButtonAction::Press)
+            return;
+
+        // Print::ln(Str::FL(wayland->input.pointer_pos_window_raw.y, 2, Str::FloatRep::Fixed));
 
         // WL_Decoration::Area area = wayland->surfaces.decorations.get_area({wayland->input.pointer_pos_window_raw.x, wayland->input.pointer_pos_window_raw.y});
         
@@ -549,11 +633,22 @@ pointer_button(void *data,
         case WLDecorationArea::MinimizeButton:
             {
                 Print::ln("Minimize button clicked!");
+                xdg_toplevel_set_minimized(wayland->xdg.toplevel);
             }
             break;
         case WLDecorationArea::MaximizeButton:
             {
                 Print::ln("Maximize button clicked!");
+
+                if(wayland->surfaces.decorations.maximized)
+                {
+                    xdg_toplevel_unset_maximized(wayland->xdg.toplevel);
+                }
+                else
+                {
+                    xdg_toplevel_set_maximized(wayland->xdg.toplevel);
+                }
+
             }
             break;
         case WLDecorationArea::EdgeTop:
@@ -593,12 +688,7 @@ pointer_button(void *data,
         // Print::buf(btn_action);
         // Print::buf("\n");
     }
-    
 
-    
-
-
-    
 }
 
 void
@@ -651,6 +741,10 @@ xdg_surface_configure(  void *data,
 
     Print::ln("xdg_surface_configure called!");
 
+
+    Print::ln("");
+    Print::ln("");
+
     // render_wayland(data);
 }
 
@@ -691,17 +785,70 @@ xdg_toplevel_configure( void *data,
         Print::ln("'");
     }
 
-    bool proper_resize_event = (state_array[0] == 3) && (state_array[1] == 4);
-    if(proper_resize_event)
+    if(number_of_values == 0)
     {
-        wayland->surfaces.window_size_change_detected = true;
-        wayland->surfaces.size_change_dims = {width, height};
+        Print::ln("Window lost focus!");
+    }
+    if(number_of_values == 1)
+    {
+        bool restore_maximized_event = (state_array[0] == 4);
+        if(restore_maximized_event)
+        {
+            wayland->surfaces.window_size_change_detected = true;
+            wayland->surfaces.size_change_dims = {width, height};
+            wayland->surfaces.decorations.maximized = false;
+            wayland->surfaces.decorations.border_width = 15;
 
-        Print::buf("Wayland window size change detected. New size = { ");
-        Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
-        Print::buf(", ");
-        Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
-        Print::ln(" }");
+            Print::buf("restore_maximized_event. New size = { ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
+            Print::buf(", ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
+            Print::ln(" }");
+        }
+
+
+        bool window_focused_event = (state_array[0] == 1);
+        if(window_focused_event)
+        {
+            wayland->surfaces.window_size_change_detected = true;
+            wayland->surfaces.size_change_dims = {width, height};
+
+            Print::buf("window_focused_event. New size = { ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
+            Print::buf(", ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
+            Print::ln(" }");
+        }
+    }
+    else if(number_of_values == 2)
+    {
+        bool proper_resize_event = (state_array[0] == 3) && (state_array[1] == 4);
+        if(proper_resize_event)
+        {
+            wayland->surfaces.window_size_change_detected = true;
+            wayland->surfaces.size_change_dims = {width, height};
+
+            Print::buf("Wayland window size change detected. New size = { ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
+            Print::buf(", ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
+            Print::ln(" }");
+        }
+
+        bool maximize_event = (state_array[0] == 1) && (state_array[1] == 4);
+        if(maximize_event)
+        {
+            wayland->surfaces.window_size_change_detected = true;
+            wayland->surfaces.size_change_dims = {width, height};
+            wayland->surfaces.decorations.maximized = true;
+            wayland->surfaces.decorations.border_width = 0;
+
+            Print::buf("Wayland maximize event detected. New size = { ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
+            Print::buf(", ");
+            Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
+            Print::ln(" }");
+        }
     }
 
     

@@ -81,7 +81,7 @@ struct WL_Decoration
 
     int border_width = 15;
     int topbar_height = 30;
-    // int topbar_button_len = 25;
+    bool maximized = false;
 
     WLDecorationArea area                   = WLDecorationArea::None;
     WLDecorationArea area_previous_frame    = WLDecorationArea::None;

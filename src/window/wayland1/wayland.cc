@@ -78,6 +78,9 @@ void Wayland::connect_compositor()
         return;
     }
 
+
+    wl_output_add_listener(output.output, &output.output_listener, this);
+
     xdg_wm_base_add_listener(xdg.wm_base, &xdg.xdg_wm_base_listener, this);
     wl_seat_add_listener(input.seat, &input.seat_listener, this);
 

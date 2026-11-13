@@ -21,8 +21,9 @@ void WL_Decoration::draw()
 {
     SWR::Renderer renderer {surface.pixel_buffer};
 
-    PX32 edge_color = 0x00000000;
-    PX32 edge_line_color = 0x66666666;
+    // PX32 edge_color = 0x00000000;
+    PX32 edge_color = 0x05000000;
+    PX32 edge_line_color = 0x33333333;
 
     renderer.clear(edge_color);
     // bottom
@@ -52,6 +53,11 @@ void WL_Decoration::draw()
     renderer.draw_rectangle(    {surface.pixel_buffer.w - border_width - 90,    surface.pixel_buffer.h - border_width - 30}, 
                                 {surface.pixel_buffer.w - border_width - 60,    surface.pixel_buffer.h  - border_width}, 
                                 0xFF44AA44                                                                                     );
+
+    // Menu button
+    renderer.draw_rectangle(    {border_width +30,    surface.pixel_buffer.h - border_width - 30}, 
+                                {border_width ,    surface.pixel_buffer.h  - border_width}, 
+                                0xFF555555                                                          );
     // renderer.draw_rectangle({0, 0}, {30, 30}, 0xFFAA4444);
 }
 
@@ -240,12 +246,16 @@ void WL_Surfaces::full_reload_from_window_size(i2 new_window_dims, Wayland* wayl
     i2 new_content_dims = window_to_content_dims(size_change_dims);
     content.pixel_buffer = PixelBuffer{nullptr, new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
     content.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
+    wl_subsurface_set_position(content.subsurface, content.pos.x, content.pos.y);
+    
 
     test.pixel_buffer = PixelBuffer{nullptr, 50, 50, PX32F::ARGB, PixelBuffer::Top};
     test.pos = {400, 200};
+    wl_subsurface_set_position(test.subsurface, test.pos.x, test.pos.y);
 
     egl.pixel_buffer = PixelBuffer{nullptr, 50, 50, PX32F::ARGB, PixelBuffer::Top};
     egl.pos = {400, 100};
+    wl_subsurface_set_position(egl.subsurface, egl.pos.x, egl.pos.y);
 
 
 

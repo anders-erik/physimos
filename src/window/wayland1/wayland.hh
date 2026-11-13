@@ -11,6 +11,8 @@ struct Wayland
 {
     /* Wayland Objects */
     WL_Core core;
+    /* Wayland Output */
+    WL_Output output;
     /* XDG Objects */
     WL_XDG xdg;
     /* Surface handler*/

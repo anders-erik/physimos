@@ -16,6 +16,20 @@ registry_global(void *data, struct wl_registry *wl_registry, uint32_t name, cons
 extern void
 registry_global_remove( void *data, struct wl_registry *registry, uint32_t name);
 
+// OUTPUT
+extern void
+output_geometry(void *data, wl_output *wl_output, int32_t x, int32_t y, int32_t physical_width, int32_t physical_height, int32_t subpixel, const char *make, const char *model, int32_t transform);
+extern void
+output_mode(void *data, wl_output *wl_output, uint32_t flags, int32_t width, int32_t height, int32_t refresh);
+extern void
+output_done(void *data, wl_output *wl_output);
+extern void
+output_scale(void *data, wl_output *wl_output, int32_t factor);
+extern void
+output_name(void *data, wl_output *wl_output, const char *name);
+extern void
+output_description(void *data, wl_output *wl_output, const char *description);
+
 // BUFFER
 extern void
 wl_buffer_release(void *data, struct wl_buffer *wl_buffer);

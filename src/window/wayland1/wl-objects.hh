@@ -13,6 +13,25 @@
 #include "wl-egl.hh"
 
 
+struct WL_Output
+{
+    struct wl_output* output;
+
+    int width = 0; // monitor width
+    int height = 0; // monitor height
+    int refresh_rate = 0; // monitor refresh rate
+
+    const struct wl_output_listener output_listener = {
+        .geometry = output_geometry,
+        .mode = output_mode,
+        .done = output_done,
+        .scale = output_scale,
+        .name = output_name,
+        .description = output_description,
+    };
+};
+
+
 struct WL_Cursor
 {
     struct wl_cursor        *cursor;
@@ -104,45 +123,45 @@ struct WL_Cursor
         case WL_Cursor::LeftPointer:
             {
             cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
-            Print::ln("left_ptr");
+            // Print::ln("left_ptr");
             }
             break;
         case WL_Cursor::Clickable:
             {
             cursor = wl_cursor_theme_get_cursor(theme, "hand2");
-            Print::ln("hand2");
+            // Print::ln("hand2");
             }
             break;
             
         case WL_Cursor::ResizeEastWest:
             {
             cursor = wl_cursor_theme_get_cursor(theme, "h_double_arrow");
-            Print::ln("h_double_arrow");
+            // Print::ln("h_double_arrow");
             }
             break;
         case WL_Cursor::ResizeNorthSouth:
             {
             cursor = wl_cursor_theme_get_cursor(theme, "v_double_arrow");
-            Print::ln("v_double_arrow");
+            // Print::ln("v_double_arrow");
             }
             break;
         case WL_Cursor::ResizeNESW:
             {
             cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
-            Print::ln("fd_double_arrow");
+            // Print::ln("fd_double_arrow");
             }
             break;
         case WL_Cursor::ResizeNWSE:
             {
             cursor = wl_cursor_theme_get_cursor(theme, "bd_double_arrow");
-            Print::ln("bd_double_arrow");
+            // Print::ln("bd_double_arrow");
             }
             break;
         case WL_Cursor::None:
             {
             // cursor = wl_cursor_theme_get_cursor(theme, "crosshair");
             wl_pointer_set_cursor(pointer_on_last_enter, serial_on_last_enter, NULL, image->hotspot_x, image->hotspot_y);
-            Print::ln("No cursor image");
+            // Print::ln("No cursor image");
             return;
             }
             break;
@@ -157,9 +176,9 @@ struct WL_Cursor
         wl_surface_damage_buffer(surface, 0, 0, 10, 10); // PROBELM SOLVED
         wl_surface_commit(surface);
         wl_pointer_set_cursor(pointer_on_last_enter, serial_on_last_enter, surface, image->hotspot_x, image->hotspot_y);
-        Print::ln(Str::UI(serial_on_last_enter));
+        // Print::ln(Str::UI(serial_on_last_enter));
         // Print::ln(Str::UI(pointer_last_callback));
-        printf("The value of s is: %p\n", (void *) pointer_on_last_enter);
+        // printf("The value of s is: %p\n", (void *) pointer_on_last_enter);
     }
 
 

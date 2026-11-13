@@ -12,25 +12,25 @@ UIEventReturn C4_event_callback(PIANO_UI_EVENT_CALLBACK_PARAMETERS)
             
             if(ui_event.target_is_grabbed)
             {
-                Print::ln("C4 mouse movement with grab active");
+                // Print::ln("C4 mouse movement with grab active");
                 d2 move_delta = {ui_event.value.mouse_move.dx, ui_event.value.mouse_move.dy};
                 node->box.pos.x += move_delta.x;
                 node->box.pos.y += move_delta.y;
             }
             else
             {
-                Print::ln("C4 mouse move");
+                // Print::ln("C4 mouse move");
             }
         }
         break;
     case UIEvent::mouse_enter:
         {
-            Print::ln("C4 enter");
+            // Print::ln("C4 enter");
         }
         break;
     case UIEvent::mouse_exit:
         {
-            Print::ln("C4 exit");
+            // Print::ln("C4 exit");
         }
         break;
     case UIEvent::mouse_press:
