@@ -20,6 +20,15 @@ target_link_libraries(xdg_wl_shell
 )
 target_compile_options(xdg_wl_shell PRIVATE -g)
 
+# NOTE: This is note currently being used!! / AE, 2026-11-13
+add_library(wl_cursor_extension_v1
+    wl_cursor_extension_v1/cursor-shape-v1-protocol.c
+)
+target_link_libraries(wl_cursor_extension_v1 
+    wayland-client
+)
+target_compile_options(wl_cursor_extension_v1 PRIVATE -g)
+
 unset(CMAKE_C_COMPILER)
 
 

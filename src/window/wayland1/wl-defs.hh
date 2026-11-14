@@ -5,6 +5,7 @@
 #include <wayland-client.h>
 #include "wayland-cursor.h"
 #include "xdg_wl_extension/xdg-shell-client-protocol.h"
+#include "wl_cursor_extension_v1/cursor-shape-v1-client-protocol.h"
 
 struct Wayland;
 struct WL_State;
@@ -14,6 +15,12 @@ struct WL_XDG;
 struct WL_FrameBuffer;
 
 
+// What rendering context the library user is provided with
+enum class WaylandRenderingType
+{
+    Buffer, 
+    OpenGL,
+}; 
 
 enum class WLDecorationArea
 {

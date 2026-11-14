@@ -7,8 +7,21 @@
 
 #define WAYLAND_DEFAULT_CONTENT_SIZE {640, 480}
 
+/** Data used to initialize a Wayland instance. */
+struct WaylandConfig
+{
+    int width = 640;
+    int height = 480;
+    WaylandRenderingType rendering_type = WaylandRenderingType::Buffer;
+    Str window_title = "Wayland Window!";
+};
+
+
 struct Wayland
 {
+private:
+    bool has_been_initialized = false;
+public:
     /* Wayland Objects */
     WL_Core core;
     /* Wayland Output */
@@ -26,12 +39,13 @@ struct Wayland
 
     int running = 1;
 
-    Wayland();
-    Wayland(i2 dims);
+    Wayland() {}
+    // Wayland(i2 dims);
+    Wayland(WaylandConfig config);
     ~Wayland();
 
     void connect_compositor();
-    void init(i2 dims);
+    void init(WaylandConfig config);
     void run(); // transfer process execution into wayland object
     Arr<UserInput> get_new_input_events(); // returns a copy all buffered events and clears the wayland buffer    
     void close();
@@ -42,7 +56,6 @@ struct Wayland
     PixelBuffer get_content_buffer();
 
     bool content_surface_is_busy();
-    bool surfaces_are_all_released();
 };
 
 

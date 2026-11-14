@@ -4,6 +4,7 @@
 #include <sys/socket.h> // socket
 #include <sys/un.h> // sockaddr_un
 
+#include <stdexcept>
 
 #include "lib/print.hh"
 
@@ -25,13 +26,17 @@
 
 
 
-Wayland::Wayland()
+// Wayland::Wayland()
+// {
+//     init(WAYLAND_DEFAULT_CONTENT_SIZE);
+// }
+// Wayland::Wayland(i2 dims)
+// {
+//     init(dims);
+// }
+Wayland::Wayland(WaylandConfig config)
 {
-    init(WAYLAND_DEFAULT_CONTENT_SIZE);
-}
-Wayland::Wayland(i2 dims)
-{
-    init(dims);
+    init(config);
 }
 Wayland::~Wayland()
 {
@@ -78,7 +83,6 @@ void Wayland::connect_compositor()
         return;
     }
 
-
     wl_output_add_listener(output.output, &output.output_listener, this);
 
     xdg_wm_base_add_listener(xdg.wm_base, &xdg.xdg_wm_base_listener, this);
@@ -86,6 +90,9 @@ void Wayland::connect_compositor()
 
     // printf("display fd = %d\n", wl_display_get_fd(state.wl_display));
     // printf("error = %d\n", wl_display_get_error(state.wl_display));
+
+    // Process events before initializing dependencies! (specifically the monitor info)
+    wl_display_dispatch(core.display);
 }
 
 
@@ -94,18 +101,21 @@ void Wayland::connect_compositor()
 
 
 
-void Wayland::init(i2 content_dims)
+void Wayland::init(WaylandConfig config)
 {
+    if(has_been_initialized)
+        throw std::runtime_error("Wayland: Reinitialization window. ");
+
     connect_compositor();
 
-    surfaces.init(content_dims, this);
+    surfaces.init({config.width, config.height}, {output.width, output.height}, config.rendering_type, this);
     
     xdg.surface = xdg_wm_base_get_xdg_surface(xdg.wm_base, surfaces.decorations.surface.surface);
     xdg_surface_add_listener(xdg.surface, &xdg.xdg_surface_listener, this);
 
     xdg.toplevel = xdg_surface_get_toplevel(xdg.surface);
     xdg_toplevel_add_listener(xdg.toplevel, &xdg.xdg_toplevel_listener, this);
-    xdg_toplevel_set_title(xdg.toplevel, "Example client");
+    xdg_toplevel_set_title(xdg.toplevel, config.window_title.to_c_str());
 
 
     // cursor.create_default(core.compositor, surfaces.window.fb.wl_shm);
@@ -113,6 +123,8 @@ void Wayland::init(i2 content_dims)
 
     surfaces.commit();
     // wl_display_dispatch(core.display); // caused a flash before first proper render
+
+    has_been_initialized = true;
 }
 
 
@@ -264,10 +276,13 @@ PixelBuffer Wayland::get_content_buffer()
 }
 
 
-bool Wayland::content_surface_is_busy() { return surfaces.content.surface_is_busy; }
-bool Wayland::surfaces_are_all_released() { return       !surfaces.decorations.surface.surface_is_busy 
-                                            &&  !surfaces.content.surface_is_busy 
-                                            &&  !surfaces.test.surface_is_busy;    }
+bool Wayland::content_surface_is_busy()
+{
+    if(surfaces.render_type == WaylandRenderingType::Buffer)
+        return surfaces.content.surface_is_busy;
+    else if(surfaces.render_type == WaylandRenderingType::OpenGL)
+        return false;
+}
 
 
 void Wayland::close()

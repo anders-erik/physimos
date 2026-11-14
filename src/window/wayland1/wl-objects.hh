@@ -60,8 +60,7 @@ struct WL_Cursor
         surface = wl_compositor_create_surface(_compositor);
 
         // CREATE CURSOR
-        theme = wl_cursor_theme_load(NULL, 24, _pool_shm);
-
+        // theme = wl_cursor_theme_load(NULL, 24, _pool_shm);
         // cursor = wl_cursor_theme_get_cursor(theme, "left_ptr");
         // cursor = wl_cursor_theme_get_cursor(theme, "right_ptr");
         // cursor = wl_cursor_theme_get_cursor(theme, "crosshair");
@@ -72,6 +71,33 @@ struct WL_Cursor
         // cursor = wl_cursor_theme_get_cursor(theme, "bd_double_arrow");
         // cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
         // cursor = wl_cursor_theme_get_cursor(theme, "hand2");
+        
+        // Location on file: /usr/share/icons/Yaru/cursors
+        theme = wl_cursor_theme_load("Yaru", 24, _pool_shm);
+        // cursor = wl_cursor_theme_get_cursor(theme, "top_side");
+        // cursor = wl_cursor_theme_get_cursor(theme, "bottom_side");
+        // cursor = wl_cursor_theme_get_cursor(theme, "left_side");
+        // cursor = wl_cursor_theme_get_cursor(theme, "right_side");
+        // cursor = wl_cursor_theme_get_cursor(theme, "top_left_corner");
+        // cursor = wl_cursor_theme_get_cursor(theme, "top_right_corner");
+        // cursor = wl_cursor_theme_get_cursor(theme, "bottom_left_corner");
+        // cursor = wl_cursor_theme_get_cursor(theme, "bottom_right_corner");
+        // cursor = wl_cursor_theme_get_cursor(theme, "fleur");
+        // cursor = wl_cursor_theme_get_cursor(theme, "right_ptr");
+        // cursor = wl_cursor_theme_get_cursor(theme, "hand1");
+        // cursor = wl_cursor_theme_get_cursor(theme, "hand2");
+        // cursor = wl_cursor_theme_get_cursor(theme, "grabbing");
+        // cursor = wl_cursor_theme_get_cursor(theme, "xterm");
+        // cursor = wl_cursor_theme_get_cursor(theme, "watch");
+        // cursor = wl_cursor_theme_get_cursor(theme, "left_ptr_watch");
+        // cursor = wl_cursor_theme_get_cursor(theme, "crosshair");
+        // cursor = wl_cursor_theme_get_cursor(theme, "cross");
+        // cursor = wl_cursor_theme_get_cursor(theme, "plus");
+        // cursor = wl_cursor_theme_get_cursor(theme, "question_arrow");
+        // cursor = wl_cursor_theme_get_cursor(theme, "circle");
+        // cursor = wl_cursor_theme_get_cursor(theme, "pencil");
+        // cursor = wl_cursor_theme_get_cursor(theme, "target");
+
         
         
         
@@ -135,25 +161,29 @@ struct WL_Cursor
             
         case WL_Cursor::ResizeEastWest:
             {
-            cursor = wl_cursor_theme_get_cursor(theme, "h_double_arrow");
+            // cursor = wl_cursor_theme_get_cursor(theme, "h_double_arrow");
+            cursor = wl_cursor_theme_get_cursor(theme, "left_side");
             // Print::ln("h_double_arrow");
             }
             break;
         case WL_Cursor::ResizeNorthSouth:
             {
-            cursor = wl_cursor_theme_get_cursor(theme, "v_double_arrow");
+            // cursor = wl_cursor_theme_get_cursor(theme, "v_double_arrow");
+            cursor = wl_cursor_theme_get_cursor(theme, "top_side");
             // Print::ln("v_double_arrow");
             }
             break;
         case WL_Cursor::ResizeNESW:
             {
-            cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
+            // cursor = wl_cursor_theme_get_cursor(theme, "fd_double_arrow");
+            cursor = wl_cursor_theme_get_cursor(theme, "top_right_corner");
             // Print::ln("fd_double_arrow");
             }
             break;
         case WL_Cursor::ResizeNWSE:
             {
-            cursor = wl_cursor_theme_get_cursor(theme, "bd_double_arrow");
+            // cursor = wl_cursor_theme_get_cursor(theme, "bd_double_arrow");
+            cursor = wl_cursor_theme_get_cursor(theme, "top_left_corner");
             // Print::ln("bd_double_arrow");
             }
             break;

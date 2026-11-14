@@ -160,6 +160,8 @@ struct WL_Surfaces
     bool window_size_change_detected = false;
     i2 size_change_dims = {0, 0};
 
+    WaylandRenderingType render_type = WaylandRenderingType::Buffer;
+
     /* Pool to contain all surface buffers */
     WL_Pool pool;
 
@@ -173,15 +175,15 @@ struct WL_Surfaces
     WL_Surface egl;
 
 
-    void init(i2 _content_dims, Wayland* state);
+    void init(i2 _content_dims, i2 _monitor_dims, WaylandRenderingType _rendering_type, Wayland* state);
     void full_reload_from_window_size(i2 new_window_dims, Wayland* wayland);
 
     i2  content_to_window_dims(i2 content_dims);
     i2  window_to_content_dims(i2 window_dims);
-    void set_surface_dims(i2 window_dims);
     int get_all_surface_buffer_sizes_in_bytes();
     int get_offset(WL_Surface::Type _surface_type);
     void* get_buffer_pointer(WL_Surface::Type surface_type);
+    i2 get_content_dims();
 
     void commit();
 };

@@ -38,3 +38,4 @@ src/pico/pico_sdk/pico-sdk/
 
 src/window/wayland/protocols
 src/window/wayland1/xdg_wl_extension/
+src/window/wayland1/wl_cursor_extension_v1/

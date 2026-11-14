@@ -117,8 +117,16 @@ struct PianoApp
 
 
     PianoApp(i2 dims)
-        :   wayland {Wayland{dims}}
+        // :   wayland {Wayland{dims}}
     {
+        WaylandConfig wayland_config {
+            .width = dims.x,
+            .height = dims.y,
+            .rendering_type = WaylandRenderingType::Buffer,
+            .window_title = "Hellooo there!"
+        };
+        wayland.init(wayland_config);
+
         audio_player.set_backend_to_alsa();
 
         // AudioSamplingConfig audio_sampling_config {AudioSamplingConfig::RATE_DURATION, 44100, 2000000};
@@ -137,7 +145,6 @@ struct PianoApp
         LineNote* line_note_2 = song.piano_line.new_note();
         line_note_2->start_index_16th_count = 4;
         line_note_2->note = {NoteName::C5, NoteType::quarter};
-
 
         piano_ui.init(  this, 
                         wayland.get_content_buffer() );

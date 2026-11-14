@@ -37,6 +37,19 @@ function src_window_wayland1()
     cp /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml .
     wayland-scanner client-header xdg-shell.xml xdg-shell-client-protocol.h
     wayland-scanner private-code xdg-shell.xml xdg-shell-protocol.c
+    
+    cd -
+
+
+    # CURSOR LIB
+
+    dest_dir=src/window/wayland1/wl_cursor_extension_v1
+    mkdir -p $dest_dir && cd $dest_dir
+    echo
+
+    cp /usr/share/wayland-protocols/staging/cursor-shape/cursor-shape-v1.xml .
+    wayland-scanner client-header cursor-shape-v1.xml cursor-shape-v1-client-protocol.h
+    wayland-scanner private-code cursor-shape-v1.xml cursor-shape-v1-protocol.c
 
     cd -
 }

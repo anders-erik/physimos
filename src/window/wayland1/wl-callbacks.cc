@@ -364,7 +364,7 @@ pointer_enter(void *data,
 {
     Wayland *wayland = (Wayland*)data;
 
-    // Print::buf("Entered surface: ");
+    Print::buf("Entered surface: ");
 
     i2 pointer_pos_raw = {  wl_fixed_to_int(x), wl_fixed_to_int(y) };
 
@@ -375,14 +375,14 @@ pointer_enter(void *data,
     if(surface == wayland->surfaces.test.surface)
     {
         wayland->input.target = WL_Input::Test;
-        // Print::ln("Test!");
+        Print::ln("Test!");
     }
     else if(surface == wayland->surfaces.content.surface)
     {
         wayland->input.target = WL_Input::Content;
         
         wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
-        // Print::ln("Content!");
+        Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
@@ -420,12 +420,12 @@ pointer_enter(void *data,
         //     break;
         // }
 
-        // Print::ln("Window!");
+        Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.egl.surface)
     {
         wayland->input.target = WL_Input::EGL;
-        // Print::ln("EGL!");
+        Print::ln("EGL!");
     }
     else
     {
@@ -456,23 +456,23 @@ pointer_leave(void *data,
 {
     Wayland *wayland = (Wayland*)data;
 
-    // Print::buf("Left surface:    ");
+    Print::buf("Left surface:    ");
 
     if(surface == wayland->surfaces.test.surface)
     {
-        // Print::ln("Test!");
+        Print::ln("Test!");
     }
     else if(surface == wayland->surfaces.content.surface)
     {
-        // Print::ln("Content!");
+        Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
-        // Print::ln("Window!");
+        Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.egl.surface)
     {
-        // Print::ln("EGL!");
+        Print::ln("EGL!");
     }
     else
     {
@@ -656,14 +656,39 @@ pointer_button(void *data,
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_TOP);
             }
             break;
+        case WLDecorationArea::EdgeTopRight:
+            {
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT);
+            }
+            break;
         case WLDecorationArea::EdgeRight:
             {
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
             }
             break;
+        case WLDecorationArea::EdgeBottomRight:
+            {
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT);
+            }
+            break;
         case WLDecorationArea::EdgeBottom:
             {
                 xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM);
+            }
+            break;
+        case WLDecorationArea::EdgeBottomLeft:
+            {
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT);
+            }
+            break;
+        case WLDecorationArea::EdgeLeft:
+            {
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_LEFT);
+            }
+            break;
+        case WLDecorationArea::EdgeTopLeft:
+            {
+                xdg_toplevel_resize(wayland->xdg.toplevel, wayland->input.seat, serial, xdg_toplevel_resize_edge::XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT);
             }
             break;
         
@@ -762,7 +787,8 @@ xdg_toplevel_configure( void *data,
     
     
 
-    
+    i2 new_window_size_hint = {width, height};
+    bool window_size_changed = new_window_size_hint != wayland->surfaces.get_content_dims();
 
     // Print::ln({Str{"new_width = "}, Str::SI(width), Str{",  new_height = "}, Str::SI(height)});
 
@@ -782,8 +808,31 @@ xdg_toplevel_configure( void *data,
         Print::buf(Str::UI( i ));
         Print::buf(" = '");
         Print::buf(Str::SI( state_array[i] ));
-        Print::ln("'");
+        Print::buf("'  ");
+
+        switch (state_array[i])
+        {
+        case 1:
+            Print::ln("(maximized)");
+            break;
+        case 2:
+            Print::ln("(fullscreen)");
+            break;
+        case 3:
+            Print::ln("(resizing)");
+            break;
+        case 4:
+            Print::ln("(activated)");
+            break;
+        
+        default:
+            Print::ln("(unknown)");
+            break;
+        }
     }
+
+
+
 
     if(number_of_values == 0)
     {
@@ -791,15 +840,15 @@ xdg_toplevel_configure( void *data,
     }
     if(number_of_values == 1)
     {
-        bool restore_maximized_event = (state_array[0] == 4);
-        if(restore_maximized_event)
+        if(window_size_changed && (state_array[0] == 4))
         {
             wayland->surfaces.window_size_change_detected = true;
-            wayland->surfaces.size_change_dims = {width, height};
+            wayland->surfaces.size_change_dims = new_window_size_hint;
+
             wayland->surfaces.decorations.maximized = false;
             wayland->surfaces.decorations.border_width = 15;
 
-            Print::buf("restore_maximized_event. New size = { ");
+            Print::buf("Resize detected while window being active (probably restored from maximized). New size = { ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
             Print::buf(", ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
@@ -871,7 +920,11 @@ void
 xdg_toplevel_close( void *data,
 		            struct xdg_toplevel *xdg_toplevel)
 {
-    // Print::ln("xdg_toplevel_close called!");
+    Wayland* wayland = (Wayland*) data;
+
+    Print::ln("xdg_toplevel_close called!");
+    
+    wayland->close();
 }
 
 void
@@ -880,7 +933,7 @@ xdg_toplevel_configure_bounds(  void *data,
                                 int32_t width,
                                 int32_t height)
 {
-    // Print::ln("xdg_toplevel_configure_bounds called!");
+    Print::ln("xdg_toplevel_configure_bounds called!");
 }
 
 void
@@ -888,5 +941,5 @@ xdg_toplevel_wm_capabilities(   void *data,
                                 struct xdg_toplevel *xdg_toplevel,
                                 struct wl_array *capabilities)
 {
-    // Print::ln("xdg_toplevel_wm_capabilities called!");
+    Print::ln("xdg_toplevel_wm_capabilities called!");
 }
