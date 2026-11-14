@@ -119,7 +119,7 @@ void Wayland::init(WaylandConfig config)
 
 
     // cursor.create_default(core.compositor, surfaces.window.fb.wl_shm);
-    cursor.init(core.compositor, surfaces.pool.wl_shm);
+    cursor.init(core.compositor, cursor.pool.wl_shm);
 
     surfaces.commit();
     // wl_display_dispatch(core.display); // caused a flash before first proper render
@@ -269,8 +269,8 @@ bool Wayland::set_size()
 PixelBuffer Wayland::get_content_buffer()
 {
     return PixelBuffer {(PX32*)(surfaces.get_buffer_pointer(WL_Surface::Content)), 
-                                surfaces.content.pixel_buffer.w, 
-                                surfaces.content.pixel_buffer.h,
+                                surfaces.swr.surface.pixel_buffer.w, 
+                                surfaces.swr.surface.pixel_buffer.h,
                                 PX32F::ARGB,
                                 PixelBuffer::Top    };
 }
@@ -279,9 +279,13 @@ PixelBuffer Wayland::get_content_buffer()
 bool Wayland::content_surface_is_busy()
 {
     if(surfaces.render_type == WaylandRenderingType::Buffer)
-        return surfaces.content.surface_is_busy;
+        return surfaces.swr.surface.surface_is_busy;
     else if(surfaces.render_type == WaylandRenderingType::OpenGL)
         return false;
+    else
+        Print::ln("Unknown Rendering type in 'content_surface_is_busy'");
+
+    return false;
 }
 
 

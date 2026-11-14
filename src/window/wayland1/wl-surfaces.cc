@@ -1,11 +1,4 @@
-#include <errno.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <stdbool.h>
-#include <string.h>
-#include <sys/mman.h>
-#include <time.h>
-#include <unistd.h>
+
 #include <stdio.h>
 
 #include <wayland-client.h>
@@ -16,14 +9,92 @@
 #include "wl-surfaces.hh"
 #include "wayland.hh"
 
+void WL_Decoration::init(wl_compositor * compositor, i2 window_dims, i2 _monitor_dims, Wayland* wayland)
+{
+    int monitor_size_bytes = _monitor_dims.x * _monitor_dims.y * 4;
+    pool.init(monitor_size_bytes + 100000);
+
+    surface.pixel_buffer = PixelBuffer{(PX32*)pool.data, window_dims.x, window_dims.y, PX32F::RGBA, PixelBuffer::Top};
+    surface.format = wl_shm_format::WL_SHM_FORMAT_ARGB8888;;
+    // surface.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Window);
+    surface.init(compositor, pool.pool, 0, wayland);
+    draw();
+}
+
+
+WLDecorationArea WL_Decoration::get_area(i2 pos_raw)
+{
+    WLDecorationArea area;
+
+    // Step through the cases from y = 0 to y = y_max
+
+    if(pos_raw.y < border_width)
+    {
+        if(pos_raw.x < border_width)
+            area = WLDecorationArea::EdgeTopLeft;
+        else if(pos_raw.x > surface.pixel_buffer.w - border_width)
+            area = WLDecorationArea::EdgeTopRight;
+        else
+            area = WLDecorationArea::EdgeTop;
+    }
+    else if(pos_raw.y < topbar_height + border_width )
+    {
+        if(pos_raw.x < border_width)
+            area = WLDecorationArea::EdgeLeft;
+        else if(pos_raw.x < topbar_height + border_width)
+            area = WLDecorationArea::TopLeft;
+        else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 3)))
+            area = WLDecorationArea::Topbar;
+        else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 2)))
+            area = WLDecorationArea::MinimizeButton;
+        else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 1)))
+            area = WLDecorationArea::MaximizeButton;
+        else if(pos_raw.x < (surface.pixel_buffer.w - border_width))
+            area = WLDecorationArea::CloseButton;
+        else
+            area = WLDecorationArea::EdgeRight;
+    }
+    else if(pos_raw.y < (surface.pixel_buffer.h - border_width))
+    {
+        if(pos_raw.x < border_width)
+            area = WLDecorationArea::EdgeLeft;
+        else if(pos_raw.x > (surface.pixel_buffer.w - border_width))
+            area = WLDecorationArea::EdgeRight;
+        else
+            area = WLDecorationArea::None;
+    }
+    else if (pos_raw.y < surface.pixel_buffer.h)
+    {
+        if(pos_raw.x < border_width)
+            area = WLDecorationArea::EdgeBottomLeft;
+        else if(pos_raw.x < (surface.pixel_buffer.w - border_width))
+            area = WLDecorationArea::EdgeBottom;
+        else if(pos_raw.x < surface.pixel_buffer.w)
+            area = WLDecorationArea::EdgeBottomRight;
+        else
+            area = WLDecorationArea::None;
+    }
+    else
+    {
+        area = WLDecorationArea::None;
+    }
+
+    return area;
+}
+
+
+i2 WL_Decoration::get_content_pos()
+{
+    return {border_width, topbar_height + border_width};
+}
 
 void WL_Decoration::draw()
 {
     SWR::Renderer renderer {surface.pixel_buffer};
 
     // PX32 edge_color = 0x00000000;
-    PX32 edge_color = 0x05000000;
-    // PX32 edge_color = 0xFF000000;
+    // PX32 edge_color = 0x05000000;
+    PX32 edge_color = 0xFF000000;
     PX32 edge_line_color = 0x33333333;
 
     if(!maximized)
@@ -121,150 +192,55 @@ void WL_Surface::commit()
 
 
 
-/* Shared memory support code */
-void WL_Pool::
-randname(char *buf)
-{
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    long r = ts.tv_nsec;
-    for (int i = 0; i < 6; ++i) {
-        buf[i] = 'A'+(r&15)+(r&16)*2;
-        r >>= 5;
-    }
-}
 
-int WL_Pool::
-create_shm_file(void)
+void WL_OpenGL::init(struct wl_compositor* compositor, i2 _content_dims, i2 _surface_pos, Wayland* state)
 {
-    int retries = 100;
-    do {
-        char name[] = "/wl_shm-XXXXXX";
-        randname(name + sizeof(name) - 7);
-        // Print::ln(name);
-        --retries;
-        int fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, 0600);
-        if (fd >= 0) {
-            shm_unlink(name);
-            return fd;
-        }
-    } while (retries > 0 && errno == EEXIST);
-    return -1;
-}
+    
+    surface.pixel_buffer = PixelBuffer{nullptr, _content_dims.x, _content_dims.y, PX32F::ARGB, PixelBuffer::Top};
+    surface.pos = _surface_pos;
+    // egl.pos = {0, 0};
 
-int WL_Pool::
-allocate_shm_file(int size)
-{
-    int fd = create_shm_file();
-    if (fd < 0)
-        return -1;
-    int ret;
-    do {
-        ret = ftruncate(fd, size);
-    } while (ret < 0 && errno == EINTR);
-    if (ret < 0) {
-        close(fd);
-        return -1;
-    }
-    return fd;
+    surface.surface = wl_compositor_create_surface(compositor);
+    surface.create_subsurface(state->core.subcompositor, state->surfaces.decorations.surface.surface);
+    // state->egl.init(state->core.display, egl.surface, egl.pixel_buffer.size());
+    state->surfaces.opengl.egl.init(state->core.display, surface.surface, _content_dims);
 }
 
 
-void WL_Pool::init(int _size)
+
+void WL_SoftwareRend::init(struct wl_compositor* compositor, i2 _content_dims, i2 _monitor_dims, i2 _surface_pos, Wayland* state)
 {
-    if(data != nullptr)
-    {
-        Print::ln("WARN: tried to initialize an already allocated WL_Pool in 'WL_Pool::init';");
-        return;
-    }
-
-    size = _size;
-
-    shm_fd = allocate_shm_file(size);
-    if (shm_fd == -1)
-    {
-        Print::ln("Failed to allocate shm file in 'WL_Pool::init'");
-        return;
-    }
-
-    data = (uint32_t*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if (data == MAP_FAILED)
-    {
-        Print::ln("ERROR: mmap failed in WL_Pool::init.");
-        close(shm_fd);
-        return;
-    }
-
-    pool = wl_shm_create_pool(wl_shm, shm_fd, size);
+    int monitor_size_bytes = _monitor_dims.x * _monitor_dims.y * 4;
+    pool.init(monitor_size_bytes + 100000);
 
 
-    // Note: compositor allocates its own memory pool based on the fd. AFter the compoistor-allocation the currently mmaped file is no longer of any use?
-    close(shm_fd);
+    surface.pixel_buffer = PixelBuffer{(PX32*)pool.data, _content_dims.x, _content_dims.y, PX32F::ARGB, PixelBuffer::Top};
+    surface.pos = _surface_pos;
+    // surface.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Content);
+
+    SWR::Renderer renderer;
+    renderer.set_buffer(surface.pixel_buffer);
+    renderer.clear(0xFF000000);
+    surface.init(state->core.compositor, pool.pool, 0, state);
+    surface.create_subsurface(state->core.subcompositor, state->surfaces.decorations.surface.surface);
+
 }
-
-
 
 
 
 void WL_Surfaces::init(i2 _content_dims, i2 _monitor_dims, WaylandRenderingType _rendering_type, Wayland* state)
 {   
     render_type = _rendering_type;
-
-    i2 window_dims = content_to_window_dims(_content_dims);
-
-    pool.init((_monitor_dims.x * _monitor_dims.y * 4) * 3);
-
-    decorations.surface.pixel_buffer = PixelBuffer{nullptr, window_dims.x, window_dims.y, PX32F::RGBA, PixelBuffer::Top};
-    decorations.surface.format = wl_shm_format::WL_SHM_FORMAT_ARGB8888;;
-    decorations.surface.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Window);
-    decorations.draw();
-    decorations.surface.init(state->core.compositor, pool.pool, get_offset(WL_Surface::Window), state);
+    
+    decorations.init(state->core.compositor, content_to_window_dims(_content_dims), _monitor_dims, state);
 
     if(render_type == WaylandRenderingType::Buffer)
     {
-        content.pixel_buffer = PixelBuffer{nullptr, _content_dims.x, _content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-        content.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
-        content.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Content);
-
-        SWR::Renderer renderer;
-        renderer.set_buffer(content.pixel_buffer);
-        renderer.clear(0xFF000000);
-        content.init(state->core.compositor, pool.pool, get_offset(WL_Surface::Content), state);
-        content.create_subsurface(state->core.subcompositor, decorations.surface.surface);
-
-
-        { // RENDERS OPENGL TRIANGLE!
-        // egl.pixel_buffer = PixelBuffer{nullptr, 100, 100, PX32F::ARGB, PixelBuffer::Top};
-        // egl.pos = {100, 100};
-        // // egl.pos = {0, 0};
-
-        // egl.surface = wl_compositor_create_surface(state->core.compositor);
-        // egl.create_subsurface(state->core.subcompositor, decorations.surface.surface);
-        // // state->egl.init(state->core.display, egl.surface, egl.pixel_buffer.size());
-        // state->egl.init(state->core.display, egl.surface, {100, 100});
-        }
+        swr.init(state->core.compositor, _content_dims, _monitor_dims, decorations.get_content_pos(), state);
     }
     if(render_type == WaylandRenderingType::OpenGL)
     {
-        // content.pixel_buffer = PixelBuffer{nullptr, _content_dims.x, _content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-        // content.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
-        // content.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Content);
-
-        // SWR::Renderer renderer;
-        // renderer.set_buffer(content.pixel_buffer);
-        // renderer.clear(0xFF000000);
-        // content.init(state->core.compositor, pool.pool, get_offset(WL_Surface::Content), state);
-        // content.create_subsurface(state->core.subcompositor, decorations.surface.surface);
-
-
-        egl.pixel_buffer = PixelBuffer{nullptr, _content_dims.x, _content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-        egl.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
-        // egl.pos = {0, 0};
-
-        egl.surface = wl_compositor_create_surface(state->core.compositor);
-        egl.create_subsurface(state->core.subcompositor, decorations.surface.surface);
-        // state->egl.init(state->core.display, egl.surface, egl.pixel_buffer.size());
-        state->egl.init(state->core.display, egl.surface, _content_dims);
+        opengl.init(state->core.compositor, _content_dims, decorations.get_content_pos(), state);
     }
 }
 
@@ -275,45 +251,45 @@ void WL_Surfaces::full_reload_from_window_size(i2 new_window_dims, Wayland* wayl
 
     Print::ln("full_reload_from_window_size");
 
-    decorations.surface.pixel_buffer = PixelBuffer{(PX32*) get_buffer_pointer(WL_Surface::Window), 
+    decorations.surface.pixel_buffer = PixelBuffer{(PX32*) decorations.pool.data, 
                                                     new_window_dims.x, 
                                                     new_window_dims.y, 
                                                     PX32F::ARGB, 
-                                                    PixelBuffer::Top                                };
+                                                    PixelBuffer::Top                };
     decorations.draw();
     wl_buffer_destroy(decorations.surface.buffer);
-    decorations.surface.create_new_buffer(pool.pool, get_offset(WL_Surface::Window), wayland);
+    decorations.surface.create_new_buffer(decorations.pool.pool, 0, wayland);
     decorations.surface.commit();
 
     i2 new_content_dims = window_to_content_dims(size_change_dims);
 
     if(render_type == WaylandRenderingType::Buffer)
     {
-        content.pixel_buffer = PixelBuffer{(PX32*) get_buffer_pointer(WL_Surface::Content), new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-        content.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
-        wl_subsurface_set_position(content.subsurface, content.pos.x, content.pos.y);
+        swr.surface.pixel_buffer = PixelBuffer{(PX32*) get_buffer_pointer(WL_Surface::Content), new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
+        swr.surface.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
+        wl_subsurface_set_position(swr.surface.subsurface, swr.surface.pos.x, swr.surface.pos.y);
 
         SWR::Renderer renderer;
-        renderer.set_buffer(content.pixel_buffer);
+        renderer.set_buffer(swr.surface.pixel_buffer);
         renderer.clear(0xFF000000);
 
-        wl_buffer_destroy(content.buffer);
-        content.create_new_buffer(pool.pool, get_offset(WL_Surface::Content), wayland);
-        content.commit();
+        wl_buffer_destroy(swr.surface.buffer);
+        swr.surface.create_new_buffer(swr.pool.pool, 0, wayland);
+        swr.surface.commit();
     }
     else if(render_type == WaylandRenderingType::OpenGL)
     {
         i2 new_content_dims = window_to_content_dims(size_change_dims);
 
-        egl.pixel_buffer = PixelBuffer{nullptr, new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-        egl.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
+        opengl.surface.pixel_buffer = PixelBuffer{nullptr, new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
+        opengl.surface.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
         // egl.pos = {0, 0};
 
         // egl.surface = wl_compositor_create_surface(state->core.compositor);
         // egl.create_subsurface(state->core.subcompositor, decorations.surface.surface);
         // state->egl.init(state->core.display, egl.surface, egl.pixel_buffer.size());
         // state->egl.init(state->core.display, egl.surface, _content_dims);
-        commit();
+        // commit();
         // egl.commit();
     }
 }
@@ -336,7 +312,7 @@ i2  WL_Surfaces::window_to_content_dims(i2 window_dims)
 
 int WL_Surfaces::get_all_surface_buffer_sizes_in_bytes()
 {
-    return (decorations.surface.get_size_bytes() + content.get_size_bytes() + test.get_size_bytes() + egl.get_size_bytes());
+    return (decorations.surface.get_size_bytes() + swr.surface.get_size_bytes() + opengl.surface.get_size_bytes());
 }
 
 int WL_Surfaces::get_offset(WL_Surface::Type _surface_type)
@@ -366,16 +342,17 @@ void* WL_Surfaces::get_buffer_pointer(WL_Surface::Type surface_type)
     if(render_type != WaylandRenderingType::Buffer && surface_type == WL_Surface::Content)
         Print::ln("WARN: Trying to access the rendering buffer when not using Software rendering buffer!");
 
-    return ((uint8_t*)pool.data) + get_offset(surface_type);
+    // return ((uint8_t*)pool.data) + get_offset(surface_type);
+    return swr.pool.data;
 }
 
 
 i2 WL_Surfaces::get_content_dims()
 {
     if(render_type == WaylandRenderingType::Buffer)
-        return {content.pixel_buffer.w, content.pixel_buffer.h};
+        return {swr.surface.pixel_buffer.w, swr.surface.pixel_buffer.h};
     else
-        return {egl.pixel_buffer.w, egl.pixel_buffer.h};
+        return {opengl.surface.pixel_buffer.w, opengl.surface.pixel_buffer.h};
 }
 
 
@@ -386,7 +363,7 @@ void WL_Surfaces::commit()
 
     if(render_type == WaylandRenderingType::Buffer)
     {
-        content.commit();
+        swr.surface.commit();
     }
     else if(render_type == WaylandRenderingType::OpenGL)
     {

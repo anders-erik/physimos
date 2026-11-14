@@ -8,8 +8,8 @@ int main()
     Print::ln("Hello, from Geometry! \n");
 
     Wayland wayland;
-    wayland.init({  .width = 800, .height = 600, .rendering_type = WaylandRenderingType::Buffer});
-    // wayland.init({  .width = 800, .height = 600, .rendering_type = WaylandRenderingType::OpenGL});
+    // wayland.init({  .width = 800, .height = 600, .rendering_type = WaylandRenderingType::Buffer});
+    wayland.init({  .width = 800, .height = 600, .rendering_type = WaylandRenderingType::OpenGL});
 
     SWR::Renderer swrenderer;
     // if(wayland.surfaces.render_type == WaylandRenderingType::Buffer)

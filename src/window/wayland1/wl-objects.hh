@@ -9,6 +9,7 @@
 
 #include "wl-defs.hh"
 #include "wl-callbacks.hh"
+#include "wl-pool.hh"
 
 #include "wl-egl.hh"
 
@@ -39,6 +40,8 @@ struct WL_Cursor
     struct wl_cursor_image  *image;
     struct wl_cursor_theme  *theme;
     struct wl_buffer        *buffer;
+
+    WL_Pool pool;
 
     struct wl_pointer *pointer_on_last_enter;
     uint32_t serial_on_last_enter;

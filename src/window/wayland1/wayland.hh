@@ -30,8 +30,6 @@ public:
     WL_XDG xdg;
     /* Surface handler*/
     WL_Surfaces surfaces;
-    // /* EGL object */
-    WL_EGL egl;
     /* Object to handle the cursor image */
     WL_Cursor cursor;
     /* Input*/

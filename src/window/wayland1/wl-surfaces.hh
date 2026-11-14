@@ -9,6 +9,7 @@
 
 #include "wl-defs.hh"
 #include "wl-callbacks.hh"
+#include "wl-pool.hh"
 
 #include "wl-egl.hh"
 
@@ -54,30 +55,12 @@ struct WL_Surface
 
 
 
-
-
-
-
-struct WL_Pool
-{
-    struct wl_shm *wl_shm = nullptr;
-    struct wl_shm_pool *pool = nullptr;
-    int shm_fd = -1;
-    int size = 0;
-    void* data = nullptr;
-
-    void randname(char *buf);
-    int create_shm_file();
-    int allocate_shm_file(int size);
-
-    void init(int _size);
-};
-
-
 struct WL_Decoration
 {
     /* window/decoration surface*/
     WL_Surface surface;
+
+    WL_Pool pool;
 
     int border_width = 15;
     int topbar_height = 30;
@@ -86,73 +69,39 @@ struct WL_Decoration
     WLDecorationArea area                   = WLDecorationArea::None;
     WLDecorationArea area_previous_frame    = WLDecorationArea::None;
 
-    
-
-
+    void init(wl_compositor * compositor, i2 window_dims, i2 _monitor_dims, Wayland* wayland);
 
     /* y-zero is at top of buffer */
-    WLDecorationArea get_area(i2 pos_raw)
-    {
-        WLDecorationArea area;
-
-        // Step through the cases from y = 0 to y = y_max
-
-        if(pos_raw.y < border_width)
-        {
-            if(pos_raw.x < border_width)
-                area = WLDecorationArea::EdgeTopLeft;
-            else if(pos_raw.x > surface.pixel_buffer.w - border_width)
-                area = WLDecorationArea::EdgeTopRight;
-            else
-                area = WLDecorationArea::EdgeTop;
-        }
-        else if(pos_raw.y < topbar_height + border_width )
-        {
-            if(pos_raw.x < border_width)
-                area = WLDecorationArea::EdgeLeft;
-            else if(pos_raw.x < topbar_height + border_width)
-                area = WLDecorationArea::TopLeft;
-            else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 3)))
-                area = WLDecorationArea::Topbar;
-            else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 2)))
-                area = WLDecorationArea::MinimizeButton;
-            else if(pos_raw.x < (surface.pixel_buffer.w - border_width - (topbar_height * 1)))
-                area = WLDecorationArea::MaximizeButton;
-            else if(pos_raw.x < (surface.pixel_buffer.w - border_width))
-                area = WLDecorationArea::CloseButton;
-            else
-                area = WLDecorationArea::EdgeRight;
-        }
-        else if(pos_raw.y < (surface.pixel_buffer.h - border_width))
-        {
-            if(pos_raw.x < border_width)
-                area = WLDecorationArea::EdgeLeft;
-            else if(pos_raw.x > (surface.pixel_buffer.w - border_width))
-                area = WLDecorationArea::EdgeRight;
-            else
-                area = WLDecorationArea::None;
-        }
-        else if (pos_raw.y < surface.pixel_buffer.h)
-        {
-            if(pos_raw.x < border_width)
-                area = WLDecorationArea::EdgeBottomLeft;
-            else if(pos_raw.x < (surface.pixel_buffer.w - border_width))
-                area = WLDecorationArea::EdgeBottom;
-            else if(pos_raw.x < surface.pixel_buffer.w)
-                area = WLDecorationArea::EdgeBottomRight;
-            else
-                area = WLDecorationArea::None;
-        }
-        else
-        {
-            area = WLDecorationArea::None;
-        }
-
-        return area;
-    }
-
-
+    WLDecorationArea get_area(i2 pos_raw);
+    /* Derived position based on the values of topbar height & border width */
+    i2 get_content_pos();
+    /* Draw decorations to memory buffer using software renderer */
     void draw();
+
+
+};
+
+
+struct WL_OpenGL
+{
+    /* Wayland surface*/
+    WL_Surface surface;
+    /* EGL object */
+    WL_EGL egl;
+
+
+    void init(struct wl_compositor* compositor, i2 _content_dims, i2 _surface_pos, Wayland* state);
+};
+
+
+struct WL_SoftwareRend
+{
+    /* Wayland surface*/
+    WL_Surface surface;
+
+    WL_Pool pool;
+
+    void init(struct wl_compositor* compositor, i2 _content_dims, i2 _monitor_dims, i2 _surface_pos, Wayland* state);
 };
 
 struct WL_Surfaces
@@ -162,17 +111,12 @@ struct WL_Surfaces
 
     WaylandRenderingType render_type = WaylandRenderingType::Buffer;
 
-    /* Pool to contain all surface buffers */
-    WL_Pool pool;
-
+    /* Wayland client decorations */
     WL_Decoration decorations;
-
-    /* content surface*/
-    WL_Surface content;
-    /* test surface*/
-    WL_Surface test;
-    /* EGL surface*/
-    WL_Surface egl;
+    /* Software render context */
+    WL_SoftwareRend swr;
+    /* OpenGL context*/
+    WL_OpenGL opengl;
 
 
     void init(i2 _content_dims, i2 _monitor_dims, WaylandRenderingType _rendering_type, Wayland* state);

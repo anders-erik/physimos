@@ -37,7 +37,10 @@ registry_global(void *data, struct wl_registry *wl_registry,
         // state->surfaces.content.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         // state->surfaces.test.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
         // state->surfaces.egl.fb.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
-        wayland->surfaces.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        // wayland->surfaces.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        wayland->cursor.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        wayland->surfaces.decorations.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
+        wayland->surfaces.swr.pool.wl_shm = (wl_shm *)wl_registry_bind(wl_registry, name, &wl_shm_interface, 1);
     }
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
@@ -169,15 +172,10 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
         // Print::ln("Window buffer released!");
         wayland->surfaces.decorations.surface.surface_is_busy = false;
     }
-    else if(wl_buffer == wayland->surfaces.content.buffer)
+    else if(wl_buffer == wayland->surfaces.swr.surface.buffer)
     {
         // Print::ln("Content buffer released!");
-        wayland->surfaces.content.surface_is_busy = false;
-    }
-    else if(wl_buffer == wayland->surfaces.test.buffer)
-    {
-        // Print::ln("Test buffer released!");
-        wayland->surfaces.test.surface_is_busy = false;
+        wayland->surfaces.swr.surface.surface_is_busy = false;
     }
     else
     {
@@ -372,12 +370,7 @@ pointer_enter(void *data,
     wayland->cursor.pointer_on_last_enter = pointer;
     wayland->cursor.serial_on_last_enter = serial;
 
-    if(surface == wayland->surfaces.test.surface)
-    {
-        wayland->input.target = WL_Input::Test;
-        Print::ln("Test!");
-    }
-    else if(surface == wayland->surfaces.content.surface)
+    if(surface == wayland->surfaces.swr.surface.surface)
     {
         wayland->input.target = WL_Input::Content;
         
@@ -422,7 +415,7 @@ pointer_enter(void *data,
 
         Print::ln("Window!");
     }
-    else if(surface == wayland->surfaces.egl.surface)
+    else if(surface == wayland->surfaces.opengl.surface.surface)
     {
         wayland->input.target = WL_Input::EGL;
         Print::ln("EGL!");
@@ -458,11 +451,7 @@ pointer_leave(void *data,
 
     Print::buf("Left surface:    ");
 
-    if(surface == wayland->surfaces.test.surface)
-    {
-        Print::ln("Test!");
-    }
-    else if(surface == wayland->surfaces.content.surface)
+    if(surface == wayland->surfaces.swr.surface.surface)
     {
         Print::ln("Content!");
     }
@@ -470,7 +459,7 @@ pointer_leave(void *data,
     {
         Print::ln("Window!");
     }
-    else if(surface == wayland->surfaces.egl.surface)
+    else if(surface == wayland->surfaces.opengl.surface.surface)
     {
         Print::ln("EGL!");
     }
@@ -508,7 +497,7 @@ pointer_motion(void *data,
 
         d2 pos_content_previous_sane = wayland->input.pointer_pos_content_sane;
         wayland->input.pointer_pos_content_sane = {   px,
-                                                 - (py - wayland->surfaces.content.pixel_buffer.h)};
+                                                 - (py - wayland->surfaces.swr.surface.pixel_buffer.h)};
 
         UserInput pointer_move_ev = { 
             UserInputType::MouseMove, 

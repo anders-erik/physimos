@@ -43,12 +43,22 @@ target_link_libraries(WL-egl
     wayland-egl # wl_egl_window_create
 )
 
+add_library(WL-pool wl-pool.cc)
+target_link_libraries(WL-pool
+    lib
+    math
+    swrend
+    
+    wayland-client
+)
+
 add_library(WL-surfaces wl-surfaces.cc)
 target_link_libraries(WL-surfaces
     lib
     math
     swrend
     
+    WL-pool
     WL-callbacks
     WL-egl
 )
