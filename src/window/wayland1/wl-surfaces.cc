@@ -12,7 +12,7 @@
 void WL_Decoration::init(wl_compositor * compositor, i2 window_dims, i2 _monitor_dims, Wayland* wayland)
 {
     int monitor_size_bytes = _monitor_dims.x * _monitor_dims.y * 4;
-    pool.init(monitor_size_bytes + 100000);
+    pool.init(monitor_size_bytes * 2);
 
     surface.pixel_buffer = PixelBuffer{(PX32*)pool.data, window_dims.x, window_dims.y, PX32F::RGBA, PixelBuffer::Top};
     surface.format = wl_shm_format::WL_SHM_FORMAT_ARGB8888;;
@@ -23,8 +23,10 @@ void WL_Decoration::init(wl_compositor * compositor, i2 window_dims, i2 _monitor
     // surface.commit();
 }
 
-void WL_Decoration::full_reload_from_window_size(i2 window_dims, Wayland* wayland)
+void WL_Decoration::full_reload_from_content_size(i2 content_dims, Wayland* wayland)
 {
+    i2 window_dims = content_to_window_dims(content_dims);
+
     surface.pixel_buffer = PixelBuffer{(PX32*)  pool.data, 
                                                 window_dims.x, 
                                                 window_dims.y, 
@@ -101,6 +103,13 @@ WLDecorationArea WL_Decoration::get_area(i2 pos_raw)
 i2 WL_Decoration::get_content_pos()
 {
     return {border_width, topbar_height + border_width};
+    // return {-border_width, - (topbar_height + border_width) };
+}
+
+i2 WL_Decoration::content_to_window_dims(i2 content_dims)
+{
+    return  {   content_dims.x + border_width * 2, 
+                content_dims.y + topbar_height + border_width * 2 };
 }
 
 void WL_Decoration::draw()
@@ -109,7 +118,7 @@ void WL_Decoration::draw()
 
     // PX32 edge_color = 0x00000000;
     // PX32 edge_color = 0x05000000;
-    PX32 edge_color = 0x44000000;
+    PX32 edge_color = 0x22000000;
     PX32 edge_line_color = 0x33333333;
 
     renderer.clear(edge_color);
@@ -178,6 +187,7 @@ void WL_Surface::create_new_buffer(struct wl_shm_pool* pool, int offset, Wayland
 
 void WL_Surface::create_subsurface(struct wl_subcompositor* subcompositor, struct wl_surface* parent)
 {
+    // subsurface = wl_subcompositor_get_subsurface(subcompositor, parent, surface);
     subsurface = wl_subcompositor_get_subsurface(subcompositor, surface, parent);
 
     if (!subsurface)
@@ -254,7 +264,6 @@ void WL_SoftwareRend::init(struct wl_compositor* compositor, i2 _content_dims, i
     renderer.clear(0xFF000000);
     surface.init(state->core.compositor, pool.pool, 0, state);
     surface.create_subsurface(state->core.subcompositor, state->surfaces.decorations.surface.surface);
-
 }
 
 
@@ -287,15 +296,15 @@ void WL_Surfaces::init(i2 _content_dims, i2 _monitor_dims, WaylandRenderingType 
 }
 
 
-void WL_Surfaces::full_reload_from_window_size(i2 new_window_dims, Wayland* wayland)
+void WL_Surfaces::full_reload_from_content_size(i2 new_content_dims, Wayland* wayland)
 {
     window_size_change_detected = false;
 
-    decorations.full_reload_from_window_size(new_window_dims, wayland);
+    decorations.full_reload_from_content_size(new_content_dims, wayland);
     // decorations.surface.commit();
     // wl_surface_commit(decorations.surface.surface);
 
-    i2 new_content_dims = window_to_content_dims(size_change_dims);
+    // i2 new_content_dims = window_to_content_dims(size_change_dims);
     i2 new_content_pos = decorations.get_content_pos();
     
     if(render_type == WaylandRenderingType::Buffer)
@@ -364,6 +373,18 @@ i2 WL_Surfaces::get_content_dims()
         return {swr.surface.pixel_buffer.w, swr.surface.pixel_buffer.h};
     else
         return {opengl.surface.pixel_buffer.w, opengl.surface.pixel_buffer.h};
+}
+
+struct wl_surface* WL_Surfaces::get_content_surface()
+{
+    struct wl_surface* return_surface = nullptr;
+
+    if(render_type == WaylandRenderingType::Buffer)
+        return_surface = swr.surface.surface;
+    else if(render_type == WaylandRenderingType::OpenGL)
+        return_surface = opengl.surface.surface;
+    
+    return return_surface;
 }
 
 

@@ -70,12 +70,13 @@ struct WL_Decoration
     WLDecorationArea area_previous_frame    = WLDecorationArea::None;
 
     void init(wl_compositor * compositor, i2 window_dims, i2 _monitor_dims, Wayland* wayland);
-    void full_reload_from_window_size(i2 window_dims, Wayland* wayland);
+    void full_reload_from_content_size(i2 content_dims, Wayland* wayland);
 
     /* y-zero is at top of buffer */
     WLDecorationArea get_area(i2 pos_raw);
     /* Derived position based on the values of topbar height & border width */
     i2 get_content_pos();
+    i2 content_to_window_dims(i2 content_dims);
     /* Draw decorations to memory buffer using software renderer */
     void draw();
 };
@@ -121,7 +122,7 @@ struct WL_Surfaces
 
 
     void init(i2 _content_dims, i2 _monitor_dims, WaylandRenderingType _rendering_type, Wayland* state);
-    void full_reload_from_window_size(i2 new_window_dims, Wayland* wayland);
+    void full_reload_from_content_size(i2 new_window_dims, Wayland* wayland);
 
     i2  content_to_window_dims(i2 content_dims);
     i2  window_to_content_dims(i2 window_dims);
@@ -129,6 +130,7 @@ struct WL_Surfaces
     int get_offset(WL_Surface::Type _surface_type);
     void* get_buffer_pointer(WL_Surface::Type surface_type);
     i2 get_content_dims();
+    struct wl_surface* get_content_surface();
 
     void commit();
 };

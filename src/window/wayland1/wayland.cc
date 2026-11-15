@@ -112,12 +112,16 @@ void Wayland::init(WaylandConfig config)
     surfaces.init({config.width, config.height}, {output.width, output.height}, config.rendering_type, this);
     
     xdg.surface = xdg_wm_base_get_xdg_surface(xdg.wm_base, surfaces.decorations.surface.surface);
+    // xdg.surface = xdg_wm_base_get_xdg_surface(xdg.wm_base, surfaces.get_content_surface());
     xdg_surface_add_listener(xdg.surface, &xdg.xdg_surface_listener, this);
 
     xdg.toplevel = xdg_surface_get_toplevel(xdg.surface);
     xdg_toplevel_add_listener(xdg.toplevel, &xdg.xdg_toplevel_listener, this);
     xdg_toplevel_set_title(xdg.toplevel, config.window_title.to_c_str());
 
+    // TELL COMPOSITOR THE POSITION OF THE CONTENT!
+    // xdg_surface_set_window_geometry(xdg.surface, surfaces.decorations.get_content_pos().x, surfaces.decorations.get_content_pos().y, config.width, config.height);
+    xdg_surface_set_window_geometry(xdg.surface, surfaces.decorations.border_width, surfaces.decorations.border_width, config.width, config.height);
 
     // cursor.create_default(core.compositor, surfaces.window.fb.wl_shm);
     cursor.init(core.compositor, cursor.pool.wl_shm);
@@ -270,12 +274,18 @@ bool Wayland::set_size()
     Print::ln(" }");
     }
 
-    surfaces.full_reload_from_window_size(surfaces.size_change_dims, this);
+    surfaces.full_reload_from_content_size(surfaces.size_change_dims, this);
+
+    xdg_surface_set_window_geometry(xdg.surface, 
+                                    surfaces.decorations.border_width, 
+                                    surfaces.decorations.border_width, 
+                                    surfaces.get_content_dims().x,
+                                    surfaces.get_content_dims().y );
+
     // surfaces.size_change_detected = false;
     // surfaces.reload_with_new_window_dims(surfaces.size_change_dims);
 
     
-
     return true;
 }
 

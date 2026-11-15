@@ -185,17 +185,17 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
 
     if(wl_buffer == wayland->surfaces.decorations.surface.buffer)
     {
-        Print::ln("Window buffer released!");
+        // Print::ln("Window buffer released!");
         wayland->surfaces.decorations.surface.surface_is_busy = false;
     }
     else if(wl_buffer == wayland->surfaces.swr.surface.buffer)
     {
-        Print::ln("Content buffer released!");
+        // Print::ln("Content buffer released!");
         wayland->surfaces.swr.surface.surface_is_busy = false;
     }
     else if(wl_buffer == wayland->surfaces.opengl.surface.buffer)
     {
-        Print::ln("OpenGL buffer released!");
+        // Print::ln("OpenGL buffer released!");
         wayland->surfaces.opengl.surface.surface_is_busy = false;
     }
     else
@@ -821,13 +821,36 @@ xdg_toplevel_configure( void *data,
     if(callback_log_enabled) Print::ln("Callback: xdg_toplevel_configure");
 
     Wayland *wayland = (Wayland*)data;
+
+    auto restrict_content_dims_fn = [wayland](i2 new_size_hint) -> i2
+    {
+        i2 restricted_size = new_size_hint;
+        
+        if(new_size_hint.x < 200)
+            restricted_size.x = 200;
+        if(new_size_hint.x > 2000)
+            restricted_size.x = 2000;
+        if(new_size_hint.y < 200)
+            restricted_size.y = 200;
+        if(new_size_hint.y > 1100)
+            restricted_size.y = 1100;
+        
+        return restricted_size;
+    };
+    
+
     
     bool logging_enabled = false;
 
-    i2 new_window_size_hint = {width, height};
-    bool window_size_changed = new_window_size_hint != wayland->surfaces.get_content_dims();
+    // i2 content_pos = {  wayland->surfaces.decorations.border_width, 
+    //                     wayland->surfaces.decorations.border_width + wayland->surfaces.decorations.topbar_height};
 
-    // Print::ln({Str{"new_width = "}, Str::SI(width), Str{",  new_height = "}, Str::SI(height)});
+    i2 content_size_hint = {width, height};
+    i2 content_size_hint_resitricted = restrict_content_dims_fn(content_size_hint);
+    
+    bool window_size_changed = content_size_hint != wayland->surfaces.get_content_dims();
+
+    Print::ln({Str{"new_width = "}, Str::SI(width), Str{",  new_height = "}, Str::SI(height)});
 
     Vec<uint32_t> state_array {states->size, (uint32_t*)states->data};
 
@@ -870,9 +893,7 @@ xdg_toplevel_configure( void *data,
         }
     }
 
-
     }
-
 
 
     if(number_of_values == 0)
@@ -884,10 +905,13 @@ xdg_toplevel_configure( void *data,
         if(window_size_changed && (state_array[0] == 4))
         {
             wayland->surfaces.window_size_change_detected = true;
-            wayland->surfaces.size_change_dims = new_window_size_hint;
+            // wayland->surfaces.size_change_dims = restrict_window_dims_fn(new_window_size_hint);
+            wayland->surfaces.size_change_dims = content_size_hint_resitricted;
+            // wayland->surfaces.size_change_dims = {width , height};
 
             wayland->surfaces.decorations.maximized = false;
             wayland->surfaces.decorations.border_width = 15;
+            // xdg_surface_set_window_geometry(wayland->xdg.surface, wayland->surfaces.decorations.border_width, wayland->surfaces.decorations.border_width, wayland->surfaces.get_content_dims().x, wayland->surfaces.get_content_dims().y);
 
             if(logging_enabled)
             {
@@ -904,7 +928,8 @@ xdg_toplevel_configure( void *data,
         if(window_focused_event)
         {
             wayland->surfaces.window_size_change_detected = true;
-            wayland->surfaces.size_change_dims = {width, height};
+            // wayland->surfaces.size_change_dims = {width, height};
+            wayland->surfaces.size_change_dims = content_size_hint_resitricted;
 
             if(logging_enabled)
             {
@@ -922,7 +947,8 @@ xdg_toplevel_configure( void *data,
         if(proper_resize_event)
         {
             wayland->surfaces.window_size_change_detected = true;
-            wayland->surfaces.size_change_dims = {width, height};
+            // wayland->surfaces.size_change_dims = {width, height};
+            wayland->surfaces.size_change_dims = content_size_hint_resitricted;
 
             if(logging_enabled)
             {
@@ -938,9 +964,13 @@ xdg_toplevel_configure( void *data,
         if(maximize_event)
         {
             wayland->surfaces.window_size_change_detected = true;
-            wayland->surfaces.size_change_dims = {width, height};
+            // wayland->surfaces.size_change_dims = {width, height};
+            // wayland->surfaces.size_change_dims = content_size_hint_resitricted;
+            wayland->surfaces.size_change_dims = {  content_size_hint_resitricted.x, 
+                                                    content_size_hint_resitricted.y - wayland->surfaces.decorations.topbar_height};
             wayland->surfaces.decorations.maximized = true;
             wayland->surfaces.decorations.border_width = 0;
+            // xdg_surface_set_window_geometry(wayland->xdg.surface, 0, 0, wayland->surfaces.get_content_dims().x, wayland->surfaces.get_content_dims().y);
 
             if(logging_enabled)
             {
