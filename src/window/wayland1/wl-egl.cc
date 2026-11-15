@@ -59,12 +59,41 @@ void WL_EGL::init(struct wl_display* wl_display, struct wl_surface* wl_surface, 
 
 
     load_GL();
+    build_program();
     draw_triangle();
 
     eglSwapBuffers(display, surface);
 
     // eglSwapBuffers(display, surface);
     // wl_display_dispatch_pending(wl_display);
+}
+
+
+void WL_EGL::reload_with_new_content_size(struct wl_surface* wl_surface, i2 content_dims)
+{
+    width = content_dims.x;
+    height = content_dims.y;
+
+    // SURFACE
+    // wl_egl_window_destroy(window);
+    // eglDestroySurface(display, surface);
+
+    wl_egl_window_resize(window, width, height, 0, 0);
+    // window = wl_egl_window_create(wl_surface, width, height);
+    // surface = eglCreateWindowSurface(display, config, window, NULL);
+    
+    // eglMakeCurrent( display, 
+    //                 surface, 
+    //                 surface, 
+    //                 context  );
+
+    // fprintf(stdout, "EGL Surface created: %p\n", surface);
+
+
+    draw_triangle();
+    eglSwapBuffers(display, surface);
+    
+    check_egl_error(eglGetError());
 }
 
 void WL_EGL::load_GL()
@@ -161,6 +190,30 @@ void WL_EGL::print_opengl_error()
 
 void WL_EGL::draw_triangle()
 {
+
+    glViewport(0, 0, width, height);
+
+    glUseProgram(program);
+
+    // rand clear color 
+    // glClearColor((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    print_opengl_error();
+}
+
+GLuint WL_EGL::compile_shader(GLenum type, const char* src) {
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &src, NULL);
+    glCompileShader(shader);
+    return shader;
+}
+
+void WL_EGL::build_program()
+{
     print_opengl_error();
 
     glGenVertexArrays(1, &vao);
@@ -194,25 +247,12 @@ void WL_EGL::draw_triangle()
     glLinkProgram(program);
     glDeleteShader(vs);
     glDeleteShader(fs);
-
-
-    glViewport(0, 0, width, height);
-
-    glUseProgram(program);
-
-    // rand clear color 
-    // glClearColor((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, 1.0f);
-    glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    print_opengl_error();
 }
 
-GLuint WL_EGL::compile_shader(GLenum type, const char* src) {
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &src, NULL);
-    glCompileShader(shader);
-    return shader;
+
+void WL_EGL::swap_buffers()
+{
+    // draw_triangle();
+
+    // eglSwapBuffers(display, surface);
 }

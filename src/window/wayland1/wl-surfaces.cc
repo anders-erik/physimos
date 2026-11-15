@@ -19,6 +19,21 @@ void WL_Decoration::init(wl_compositor * compositor, i2 window_dims, i2 _monitor
     // surface.pixel_buffer.buf = (PX32*) get_buffer_pointer(WL_Surface::Window);
     surface.init(compositor, pool.pool, 0, wayland);
     draw();
+
+    // surface.commit();
+}
+
+void WL_Decoration::full_reload_from_window_size(i2 window_dims, Wayland* wayland)
+{
+    surface.pixel_buffer = PixelBuffer{(PX32*)  pool.data, 
+                                                window_dims.x, 
+                                                window_dims.y, 
+                                                PX32F::ARGB, 
+                                                PixelBuffer::Top    };
+    draw();
+    wl_buffer_destroy(surface.buffer);
+    surface.create_new_buffer(pool.pool, 0, wayland);
+    surface.commit();
 }
 
 
@@ -94,12 +109,13 @@ void WL_Decoration::draw()
 
     // PX32 edge_color = 0x00000000;
     // PX32 edge_color = 0x05000000;
-    PX32 edge_color = 0xFF000000;
+    PX32 edge_color = 0x44000000;
     PX32 edge_line_color = 0x33333333;
+
+    renderer.clear(edge_color);
 
     if(!maximized)
     {
-        renderer.clear(edge_color);
         // bottom
         renderer.draw_line_float_lerp({border_width-1, border_width-1}, {surface.pixel_buffer.w - border_width, border_width-1}, edge_line_color);
         // Top
@@ -109,6 +125,7 @@ void WL_Decoration::draw()
         // right
         renderer.draw_line_float_lerp({surface.pixel_buffer.w - border_width, border_width}, {surface.pixel_buffer.w - border_width, surface.pixel_buffer.h-border_width}, edge_line_color);
     }
+
     // Draw top bar
     PX32 topbar_color = 0xFF777777;
     renderer.draw_rectangle(    {border_width, surface.pixel_buffer.h - border_width - topbar_height}, 
@@ -206,6 +223,20 @@ void WL_OpenGL::init(struct wl_compositor* compositor, i2 _content_dims, i2 _sur
     state->surfaces.opengl.egl.init(state->core.display, surface.surface, _content_dims);
 }
 
+void WL_OpenGL::full_reload_from_content_size(i2 new_content_dims, i2 content_pos, Wayland* wayland)
+{
+    surface.pixel_buffer = PixelBuffer{nullptr, new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
+    surface.pos = content_pos;
+
+    egl.reload_with_new_content_size(surface.surface, new_content_dims);
+
+    // Print::ln("Opengl full reload");
+
+    wl_subsurface_set_position(surface.subsurface, content_pos.x, content_pos.y);
+    // wl_surface_damage_buffer(surface.surface, 0, 0, surface.pixel_buffer.w, surface.pixel_buffer.h);
+    // wl_surface_commit(surface.surface);
+    // surface.surface_is_busy = true;
+}
 
 
 void WL_SoftwareRend::init(struct wl_compositor* compositor, i2 _content_dims, i2 _monitor_dims, i2 _surface_pos, Wayland* state)
@@ -227,6 +258,21 @@ void WL_SoftwareRend::init(struct wl_compositor* compositor, i2 _content_dims, i
 }
 
 
+void WL_SoftwareRend::full_reload_from_content_size(i2 new_content_dims, i2 content_pos, Wayland* wayland)
+{
+    surface.pixel_buffer = PixelBuffer{(PX32*) pool.data, new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
+    surface.pos = content_pos;
+    wl_subsurface_set_position(surface.subsurface, surface.pos.x, surface.pos.y);
+
+    // SWR::Renderer renderer;
+    // renderer.set_buffer(surface.pixel_buffer);
+    // renderer.clear(0xFF000000);
+
+    wl_buffer_destroy(surface.buffer);
+    surface.create_new_buffer(pool.pool, 0, wayland);
+    surface.commit();
+}
+
 
 void WL_Surfaces::init(i2 _content_dims, i2 _monitor_dims, WaylandRenderingType _rendering_type, Wayland* state)
 {   
@@ -235,13 +281,9 @@ void WL_Surfaces::init(i2 _content_dims, i2 _monitor_dims, WaylandRenderingType 
     decorations.init(state->core.compositor, content_to_window_dims(_content_dims), _monitor_dims, state);
 
     if(render_type == WaylandRenderingType::Buffer)
-    {
         swr.init(state->core.compositor, _content_dims, _monitor_dims, decorations.get_content_pos(), state);
-    }
-    if(render_type == WaylandRenderingType::OpenGL)
-    {
+    else if(render_type == WaylandRenderingType::OpenGL)
         opengl.init(state->core.compositor, _content_dims, decorations.get_content_pos(), state);
-    }
 }
 
 
@@ -249,49 +291,18 @@ void WL_Surfaces::full_reload_from_window_size(i2 new_window_dims, Wayland* wayl
 {
     window_size_change_detected = false;
 
-    Print::ln("full_reload_from_window_size");
-
-    decorations.surface.pixel_buffer = PixelBuffer{(PX32*) decorations.pool.data, 
-                                                    new_window_dims.x, 
-                                                    new_window_dims.y, 
-                                                    PX32F::ARGB, 
-                                                    PixelBuffer::Top                };
-    decorations.draw();
-    wl_buffer_destroy(decorations.surface.buffer);
-    decorations.surface.create_new_buffer(decorations.pool.pool, 0, wayland);
-    decorations.surface.commit();
+    decorations.full_reload_from_window_size(new_window_dims, wayland);
+    // decorations.surface.commit();
+    // wl_surface_commit(decorations.surface.surface);
 
     i2 new_content_dims = window_to_content_dims(size_change_dims);
-
+    i2 new_content_pos = decorations.get_content_pos();
+    
     if(render_type == WaylandRenderingType::Buffer)
-    {
-        swr.surface.pixel_buffer = PixelBuffer{(PX32*) get_buffer_pointer(WL_Surface::Content), new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-        swr.surface.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
-        wl_subsurface_set_position(swr.surface.subsurface, swr.surface.pos.x, swr.surface.pos.y);
-
-        SWR::Renderer renderer;
-        renderer.set_buffer(swr.surface.pixel_buffer);
-        renderer.clear(0xFF000000);
-
-        wl_buffer_destroy(swr.surface.buffer);
-        swr.surface.create_new_buffer(swr.pool.pool, 0, wayland);
-        swr.surface.commit();
-    }
+        swr.full_reload_from_content_size(new_content_dims, new_content_pos, wayland);
     else if(render_type == WaylandRenderingType::OpenGL)
-    {
-        i2 new_content_dims = window_to_content_dims(size_change_dims);
+        opengl.full_reload_from_content_size(new_content_dims, new_content_pos, wayland);
 
-        opengl.surface.pixel_buffer = PixelBuffer{nullptr, new_content_dims.x, new_content_dims.y, PX32F::ARGB, PixelBuffer::Top};
-        opengl.surface.pos = {decorations.border_width, decorations.topbar_height + decorations.border_width};
-        // egl.pos = {0, 0};
-
-        // egl.surface = wl_compositor_create_surface(state->core.compositor);
-        // egl.create_subsurface(state->core.subcompositor, decorations.surface.surface);
-        // state->egl.init(state->core.display, egl.surface, egl.pixel_buffer.size());
-        // state->egl.init(state->core.display, egl.surface, _content_dims);
-        // commit();
-        // egl.commit();
-    }
 }
 
 
@@ -359,7 +370,8 @@ i2 WL_Surfaces::get_content_dims()
 
 void WL_Surfaces::commit()
 {
-    decorations.surface.commit();
+    // decorations.surface.commit(); // NOTE:: This triggered a lot of window-release events, leading to stuttering. Only call 'wl_surface_commit' instead!
+    wl_surface_commit(decorations.surface.surface);
 
     if(render_type == WaylandRenderingType::Buffer)
     {
@@ -367,7 +379,11 @@ void WL_Surfaces::commit()
     }
     else if(render_type == WaylandRenderingType::OpenGL)
     {
-        // egl.commit();
+        opengl.egl.swap_buffers();
+
+        wl_surface_damage_buffer(opengl.surface.surface, 0, 0, opengl.surface.pixel_buffer.w, opengl.surface.pixel_buffer.h);
+        wl_surface_commit(opengl.surface.surface);
+        opengl.surface.surface_is_busy = false;
     }
     // test.commit();
     // egl.commit();

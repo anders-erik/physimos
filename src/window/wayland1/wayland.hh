@@ -2,6 +2,7 @@
 
 #include "lib/pixel_buffer.hh"
 
+#include "wl-defs.hh"
 #include "wl-objects.hh"
 #include "wl-surfaces.hh"
 

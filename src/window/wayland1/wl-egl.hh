@@ -56,6 +56,7 @@ struct WL_EGL
     void check_egl_error(EGLint error_code);
 
     void init(struct wl_display* wl_display, struct wl_surface* wl_surface, i2 dims);
+    void reload_with_new_content_size(struct wl_surface* wl_surface, i2 content_dims);
 
     void load_GL();
 
@@ -64,5 +65,8 @@ struct WL_EGL
     void draw_triangle();
 
     GLuint compile_shader(GLenum type, const char* src);
+    void build_program();
+
+    void swap_buffers();
 
 };

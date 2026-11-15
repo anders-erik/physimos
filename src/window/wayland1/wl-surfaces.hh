@@ -70,6 +70,7 @@ struct WL_Decoration
     WLDecorationArea area_previous_frame    = WLDecorationArea::None;
 
     void init(wl_compositor * compositor, i2 window_dims, i2 _monitor_dims, Wayland* wayland);
+    void full_reload_from_window_size(i2 window_dims, Wayland* wayland);
 
     /* y-zero is at top of buffer */
     WLDecorationArea get_area(i2 pos_raw);
@@ -77,8 +78,6 @@ struct WL_Decoration
     i2 get_content_pos();
     /* Draw decorations to memory buffer using software renderer */
     void draw();
-
-
 };
 
 
@@ -91,6 +90,7 @@ struct WL_OpenGL
 
 
     void init(struct wl_compositor* compositor, i2 _content_dims, i2 _surface_pos, Wayland* state);
+    void full_reload_from_content_size(i2 new_content_dims, i2 content_pos, Wayland* wayland);
 };
 
 
@@ -102,6 +102,7 @@ struct WL_SoftwareRend
     WL_Pool pool;
 
     void init(struct wl_compositor* compositor, i2 _content_dims, i2 _monitor_dims, i2 _surface_pos, Wayland* state);
+    void full_reload_from_content_size(i2 new_content_dims, i2 content_pos, Wayland* wayland);
 };
 
 struct WL_Surfaces
@@ -115,7 +116,7 @@ struct WL_Surfaces
     WL_Decoration decorations;
     /* Software render context */
     WL_SoftwareRend swr;
-    /* OpenGL context*/
+    /* OpenGL context using EGL */
     WL_OpenGL opengl;
 
 

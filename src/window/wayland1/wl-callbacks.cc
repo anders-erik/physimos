@@ -10,16 +10,18 @@
 #include "wl-objects.hh"
 
 
+static bool callback_log_enabled = false;
+
 
 void
 display_error(void *data, struct wl_display *wl_display, void *object_id, uint32_t code, const char *message)
 {
-    Print::ln("display_error callback");
+    if(callback_log_enabled) Print::ln("callback: display_error");
 }
 void
 display_delete_id(void *data, struct wl_display *wl_display, uint32_t id)
 {
-    Print::ln("display_delete_id callback");
+    if(callback_log_enabled) Print::ln("callback: display_delete_id");
 }
 
 
@@ -27,9 +29,11 @@ void
 registry_global(void *data, struct wl_registry *wl_registry,
         uint32_t name, const char *interface, uint32_t version)
 {
+    if(callback_log_enabled) Print::ln("callback: registry_global");
+
     Wayland *wayland = (Wayland*)data;
 
-    // printf("%s \n", interface);
+    printf("%s \n", interface);
 
     if (strcmp(interface, wl_shm_interface.name) == 0)
     {
@@ -75,7 +79,8 @@ void registry_global_remove(
     struct wl_registry *registry,
     uint32_t name)
 {
-    printf("global removed: %u\n", name);
+    if(callback_log_enabled) Print::ln("callback: registry_global_remove");
+    // printf("global removed: %u\n", name);
 }
 
 
@@ -83,11 +88,15 @@ void registry_global_remove(
 extern void
 output_geometry(void *data, wl_output *wl_output, int32_t x, int32_t y, int32_t physical_width, int32_t physical_height, int32_t subpixel, const char *make, const char *model, int32_t transform)
 {
-    Print::ln("Output Geometry callback!");
+    if(callback_log_enabled) Print::ln("Callback: output_geometry");
+
+    // Print::ln("Output Geometry callback!");
 }
 extern void
 output_mode(void *data, wl_output *wl_output, uint32_t flags, int32_t width, int32_t height, int32_t refresh)
 {
+    if(callback_log_enabled) Print::ln("Callback: output_mode");
+
     Wayland* wayland = (Wayland*) data;
 
     Print::ln("Output mode callback!");
@@ -118,19 +127,23 @@ output_mode(void *data, wl_output *wl_output, uint32_t flags, int32_t width, int
 extern void
 output_done(void *data, wl_output *wl_output)
 {
-    Print::ln("Output Done callback!");
+    if(callback_log_enabled) Print::ln("Callback: output_done");
+    // Print::ln("Output Done callback!");
 }
 extern void
 output_scale(void *data, wl_output *wl_output, int32_t factor)
 {
-    Print::ln("Output scale callback!");
+    if(callback_log_enabled) Print::ln("Callback: output_scale");
+    // Print::ln("Output scale callback!");
 }
 extern void
 output_name(void *data, wl_output *wl_output, const char *name)
 {
+    if(callback_log_enabled) Print::ln("Callback: output_name");
+
     Wayland* wayland = (Wayland*) data;
 
-    Print::ln("Output Name callback!");
+    // Print::ln("Output Name callback!");
 
     Str output_name = name;
     Print::buf("Output name: ");
@@ -146,12 +159,15 @@ output_name(void *data, wl_output *wl_output, const char *name)
 extern void
 output_description(void *data, wl_output *wl_output, const char *description)
 {
-    Print::ln("Output description callback!");
+    if(callback_log_enabled) Print::ln("Callback: output_description");
+    // Print::ln("Output description callback!");
 }
 
 
 void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
 {
+    if(callback_log_enabled) Print::ln("Callback: wl_buffer_release");
+
     Wayland *wayland = (Wayland*)data;
     // Print::ln("wl_buffer_destroy!");
     /* Sent by the compositor when it's no longer using this buffer */
@@ -169,13 +185,18 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
 
     if(wl_buffer == wayland->surfaces.decorations.surface.buffer)
     {
-        // Print::ln("Window buffer released!");
+        Print::ln("Window buffer released!");
         wayland->surfaces.decorations.surface.surface_is_busy = false;
     }
     else if(wl_buffer == wayland->surfaces.swr.surface.buffer)
     {
-        // Print::ln("Content buffer released!");
+        Print::ln("Content buffer released!");
         wayland->surfaces.swr.surface.surface_is_busy = false;
+    }
+    else if(wl_buffer == wayland->surfaces.opengl.surface.buffer)
+    {
+        Print::ln("OpenGL buffer released!");
+        wayland->surfaces.opengl.surface.surface_is_busy = false;
     }
     else
     {
@@ -191,6 +212,8 @@ void seat_capabilities(
     struct wl_seat *seat,
     uint32_t capabilities)
 {
+    if(callback_log_enabled) Print::ln("Callback: seat_capabilities");
+
     Wayland *wayland = (Wayland*)data;
 
     if (capabilities & WL_SEAT_CAPABILITY_POINTER)
@@ -215,6 +238,7 @@ void keyboard_keymap(
     int32_t fd,
     uint32_t size)
 {
+    if(callback_log_enabled) Print::ln("Callback: keyboard_keymap");
     close(fd);  // Important: compositor gives you an FD
 }
 
@@ -225,6 +249,7 @@ void keyboard_enter(
     struct wl_surface *surface,
     struct wl_array *keys)
 {
+    if(callback_log_enabled) Print::ln("Callback: keyboard_enter");
 }
 
 void keyboard_leave(
@@ -233,6 +258,7 @@ void keyboard_leave(
     uint32_t serial,
     struct wl_surface *surface)
 {
+    if(callback_log_enabled) Print::ln("Callback: keyboard_leave");
 }
 
 void keyboard_key(
@@ -243,6 +269,8 @@ void keyboard_key(
     uint32_t wlkey,
     uint32_t state)
 {
+    if(callback_log_enabled) Print::ln("Callback: keyboard_key");
+
     Wayland *wayland = (Wayland*)data;
 
     printf("key: %u, state: %u\n", wlkey, state);
@@ -310,6 +338,8 @@ void keyboard_modifiers(
     uint32_t mods_locked,
     uint32_t group)
 {
+    if(callback_log_enabled) Print::ln("Callback: keyboard_modifiers");
+
     Wayland *wayland = (Wayland*)data;
 
     // Print::ln("keyboard modifier callback");
@@ -344,6 +374,7 @@ void keyboard_repeat_info(
     int32_t rate,
     int32_t delay)
 {
+    if(callback_log_enabled) Print::ln("Callback: keyboard_repeat_info");
 }
 
 
@@ -360,9 +391,11 @@ pointer_enter(void *data,
               wl_fixed_t x,
               wl_fixed_t y)
 {
+    if(callback_log_enabled) Print::ln("Callback: pointer_enter");
+
     Wayland *wayland = (Wayland*)data;
 
-    Print::buf("Entered surface: ");
+    // Print::buf("Entered surface: ");
 
     i2 pointer_pos_raw = {  wl_fixed_to_int(x), wl_fixed_to_int(y) };
 
@@ -419,6 +452,7 @@ pointer_enter(void *data,
     {
         wayland->input.target = WL_Input::EGL;
         Print::ln("EGL!");
+        wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
     }
     else
     {
@@ -447,21 +481,23 @@ pointer_leave(void *data,
               uint32_t serial,
               struct wl_surface *surface)
 {
+    if(callback_log_enabled) Print::ln("Callback: pointer_leave");
+
     Wayland *wayland = (Wayland*)data;
 
-    Print::buf("Left surface:    ");
+    // Print::buf("Left surface:    ");
 
     if(surface == wayland->surfaces.swr.surface.surface)
     {
-        Print::ln("Content!");
+        // Print::ln("Content!");
     }
     else if(surface == wayland->surfaces.decorations.surface.surface)
     {
-        Print::ln("Window!");
+        // Print::ln("Window!");
     }
     else if(surface == wayland->surfaces.opengl.surface.surface)
     {
-        Print::ln("EGL!");
+        // Print::ln("EGL!");
     }
     else
     {
@@ -478,9 +514,16 @@ pointer_motion(void *data,
                wl_fixed_t x,
                wl_fixed_t y)
 {
-   Wayland *wayland = (Wayland*)data;
+    if(callback_log_enabled) Print::ln("Callback: pointer_motion");
 
-    // Print::ln("Pointer motion");
+    Wayland *wayland = (Wayland*)data;
+
+    // Print::buf("Pointer motion: ");
+    // Print::buf("x = ");
+    // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
+    // Print::buf(", y = ");
+    // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.y, 1, Str::FloatRep::Fixed));
+    // Print::buf("\n");
 
     double px = wl_fixed_to_double(x);
     double py = wl_fixed_to_double(y);
@@ -491,8 +534,9 @@ pointer_motion(void *data,
     wayland->input.pointer_pos_window_raw  = {px, py};
     wayland->input.pointer_pos_window_sane = {px, -( py - win_h) };
 
-    if(wayland->input.target == WL_Input::Content)
+    if(wayland->input.target == WL_Input::Content || wayland->input.target == WL_Input::EGL)
     {
+        // Print::ln("Cursor movement in content!");
         // wayland->cursor.set_cursor(WL_Cursor::LeftPointer);
 
         d2 pos_content_previous_sane = wayland->input.pointer_pos_content_sane;
@@ -523,11 +567,7 @@ pointer_motion(void *data,
 
         
 
-        // Print::buf("x = ");
-        // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.x, 1, Str::FloatRep::Fixed));
-        // Print::buf(", y = ");
-        // Print::buf(Str::FL(wayland->input.pointer_pos_window_raw.y, 1, Str::FloatRep::Fixed));
-        // Print::buf("\n");
+        
     }
 
     
@@ -541,6 +581,8 @@ pointer_button(void *data,
                uint32_t button,
                uint32_t state)
 {
+    if(callback_log_enabled) Print::ln("Callback: pointer_button");
+
     Wayland *wayland = (Wayland*)data;
     // struct client_state *state = (struct client_state*) data;
 
@@ -712,6 +754,8 @@ pointer_axis(void *data,
              uint32_t axis,
              wl_fixed_t value)
 {
+    if(callback_log_enabled) Print::ln("Callback: pointer_axis");
+
     Wayland *wayland = (Wayland*)data;
 
     ScrollDirection direction;
@@ -736,6 +780,8 @@ pointer_axis(void *data,
 void
 xdg_wm_base_ping(void *data, struct xdg_wm_base *xdg_wm_base, uint32_t serial)
 {
+    if(callback_log_enabled) Print::ln("Callback: xdg_wm_base_ping");
+
     xdg_wm_base_pong(xdg_wm_base, serial);
 }
 
@@ -746,6 +792,8 @@ xdg_surface_configure(  void *data,
                         struct xdg_surface *xdg_surface,
                         uint32_t serial                     )
 {
+    if(callback_log_enabled) Print::ln("Callback: xdg_surface_configure");
+
     // struct client_state *state = (struct client_state *)data;
     xdg_surface_ack_configure(xdg_surface, serial);
 
@@ -753,11 +801,9 @@ xdg_surface_configure(  void *data,
     // Print::buf(Str::UI(serial));
     // Print::buf("\n");
 
-    Print::ln("xdg_surface_configure called!");
-
-
-    Print::ln("");
-    Print::ln("");
+    // Print::ln("xdg_surface_configure called!");
+    // Print::ln("");
+    // Print::ln("");
 
     // render_wayland(data);
 }
@@ -772,9 +818,11 @@ xdg_toplevel_configure( void *data,
                         int32_t height,
                         struct wl_array *states                     )
 {
+    if(callback_log_enabled) Print::ln("Callback: xdg_toplevel_configure");
+
     Wayland *wayland = (Wayland*)data;
     
-    
+    bool logging_enabled = false;
 
     i2 new_window_size_hint = {width, height};
     bool window_size_changed = new_window_size_hint != wayland->surfaces.get_content_dims();
@@ -786,10 +834,12 @@ xdg_toplevel_configure( void *data,
     uint32_t* array_data = (uint32_t*)states->data;
     size_t number_of_values = states->size / 4;
 
-    Print::buf("xdg_toplevel_configure called with ");
-    Print::buf(Str::SI(number_of_values));
-    Print::buf(" number of values.");
-    Print::ln("");
+    if(logging_enabled)
+    {
+        Print::buf("xdg_toplevel_configure called with ");
+        Print::buf(Str::SI(number_of_values));
+        Print::buf(" number of values.");
+        Print::ln("");
 
     for(size_t i = 0; i < number_of_values ; i++)
     {
@@ -821,6 +871,8 @@ xdg_toplevel_configure( void *data,
     }
 
 
+    }
+
 
 
     if(number_of_values == 0)
@@ -837,11 +889,14 @@ xdg_toplevel_configure( void *data,
             wayland->surfaces.decorations.maximized = false;
             wayland->surfaces.decorations.border_width = 15;
 
+            if(logging_enabled)
+            {
             Print::buf("Resize detected while window being active (probably restored from maximized). New size = { ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
             Print::buf(", ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
             Print::ln(" }");
+            }
         }
 
 
@@ -851,11 +906,14 @@ xdg_toplevel_configure( void *data,
             wayland->surfaces.window_size_change_detected = true;
             wayland->surfaces.size_change_dims = {width, height};
 
+            if(logging_enabled)
+            {
             Print::buf("window_focused_event. New size = { ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
             Print::buf(", ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
             Print::ln(" }");
+            }
         }
     }
     else if(number_of_values == 2)
@@ -866,11 +924,14 @@ xdg_toplevel_configure( void *data,
             wayland->surfaces.window_size_change_detected = true;
             wayland->surfaces.size_change_dims = {width, height};
 
+            if(logging_enabled)
+            {
             Print::buf("Wayland window size change detected. New size = { ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
             Print::buf(", ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
             Print::ln(" }");
+            }
         }
 
         bool maximize_event = (state_array[0] == 1) && (state_array[1] == 4);
@@ -881,11 +942,14 @@ xdg_toplevel_configure( void *data,
             wayland->surfaces.decorations.maximized = true;
             wayland->surfaces.decorations.border_width = 0;
 
+            if(logging_enabled)
+            {
             Print::buf("Wayland maximize event detected. New size = { ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.x));
             Print::buf(", ");
             Print::buf(Str::SI(wayland->surfaces.size_change_dims.y));
             Print::ln(" }");
+            }
         }
     }
 
@@ -909,9 +973,11 @@ void
 xdg_toplevel_close( void *data,
 		            struct xdg_toplevel *xdg_toplevel)
 {
+    if(callback_log_enabled) Print::ln("Callback: xdg_toplevel_close");
+
     Wayland* wayland = (Wayland*) data;
 
-    Print::ln("xdg_toplevel_close called!");
+    // Print::ln("xdg_toplevel_close called!");
     
     wayland->close();
 }
@@ -922,7 +988,9 @@ xdg_toplevel_configure_bounds(  void *data,
                                 int32_t width,
                                 int32_t height)
 {
-    Print::ln("xdg_toplevel_configure_bounds called!");
+    if(callback_log_enabled) Print::ln("Callback: xdg_toplevel_configure_bounds");
+
+    // Print::ln("xdg_toplevel_configure_bounds called!");
 }
 
 void
@@ -930,5 +998,6 @@ xdg_toplevel_wm_capabilities(   void *data,
                                 struct xdg_toplevel *xdg_toplevel,
                                 struct wl_array *capabilities)
 {
-    Print::ln("xdg_toplevel_wm_capabilities called!");
+    if(callback_log_enabled) Print::ln("Callback: xdg_toplevel_wm_capabilities");
+    // Print::ln("xdg_toplevel_wm_capabilities called!");
 }

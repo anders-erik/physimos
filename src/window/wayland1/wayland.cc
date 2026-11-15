@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 #include "lib/print.hh"
+#include "lib/clock.hh"
 
 
 #include "wayland.hh"
@@ -121,8 +122,10 @@ void Wayland::init(WaylandConfig config)
     // cursor.create_default(core.compositor, surfaces.window.fb.wl_shm);
     cursor.init(core.compositor, cursor.pool.wl_shm);
 
+    surfaces.decorations.surface.commit(); // ONLY do full surface commit on decorations on init!
     surfaces.commit();
     // wl_display_dispatch(core.display); // caused a flash before first proper render
+
 
     has_been_initialized = true;
 }
@@ -137,7 +140,12 @@ Arr<UserInput> Wayland::get_new_input_events()
 
 bool Wayland::frame_step()
 {
+    // Stopwatch stopwatch;
+    // stopwatch.start();
+
     surfaces.commit();
+    
+    
     // Print::ln("Surfaces commited.");
 
     // wl_display_dispatch(state.core.display); // process all queued wayland events
@@ -145,7 +153,10 @@ bool Wayland::frame_step()
     // wl_display_dispatch(state.core.display);
     
     int dispatched_event_count = wl_display_dispatch(core.display);
+    // int dispatched_event_count = wl_display_dispatch_pending(core.display);
     // Print::ln({Str{"N.o. Dispatched events: "}, Str::SI(dispatched_event_count)});
+
+    // stopwatch.stop_and_print_ms();
 
     while(content_surface_is_busy())
     {
@@ -250,11 +261,14 @@ bool Wayland::set_size()
     if(!surfaces.window_size_change_detected)
         return false;
 
+    if(false)
+    {
     Print::buf("Wayland window reload initiated. New size = { ");
     Print::buf(Str::SI(surfaces.size_change_dims.x));
     Print::buf(", ");
     Print::buf(Str::SI(surfaces.size_change_dims.y));
     Print::ln(" }");
+    }
 
     surfaces.full_reload_from_window_size(surfaces.size_change_dims, this);
     // surfaces.size_change_detected = false;
@@ -281,7 +295,7 @@ bool Wayland::content_surface_is_busy()
     if(surfaces.render_type == WaylandRenderingType::Buffer)
         return surfaces.swr.surface.surface_is_busy;
     else if(surfaces.render_type == WaylandRenderingType::OpenGL)
-        return false;
+        return surfaces.opengl.surface.surface_is_busy;
     else
         Print::ln("Unknown Rendering type in 'content_surface_is_busy'");
 
