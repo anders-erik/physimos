@@ -16,7 +16,6 @@
 
 struct WL_Surface
 {
-    // i2 size = {0, 0};
     PixelBuffer pixel_buffer;
     struct wl_buffer *buffer = nullptr;
     wl_shm_format format = wl_shm_format::WL_SHM_FORMAT_XRGB8888;
@@ -31,22 +30,12 @@ struct WL_Surface
     i2 pos = {0, 0};
 
 
-    enum Type
-    {
-        Window,
-        Content,
-        Test,
-        EGL,
-        None,
-    } type = None;
-
     void init(struct wl_compositor* compositor, struct wl_shm_pool* pool, int offset, Wayland* state);
     void create_new_buffer(struct wl_shm_pool* pool, int offset, Wayland* state);
     void create_subsurface(struct wl_subcompositor* subcompositor, struct wl_surface* parent);
     
     void clear(PX32 color);
-    
-    int get_size_pixels();
+
     int get_size_bytes();
 
     void commit();
@@ -84,14 +73,16 @@ struct WL_Decoration
 
 struct WL_OpenGL
 {
-    /* Wayland surface*/
-    WL_Surface surface;
-    /* EGL object */
     WL_EGL egl;
 
+    struct wl_surface* wl_surface = nullptr;
+    bool surface_is_busy = false;
 
-    void init(struct wl_compositor* compositor, i2 _content_dims, i2 _surface_pos, Wayland* state);
-    void full_reload_from_content_size(i2 new_content_dims, i2 content_pos, Wayland* wayland);
+
+    void init(struct wl_compositor* compositor, i2 _content_dims, Wayland* state);
+    void full_reload_from_content_size(i2 new_content_dims, Wayland* wayland);
+    i2 surface_size() { return i2{egl.width, egl.height}; }
+
 };
 
 
@@ -103,7 +94,30 @@ struct WL_SoftwareRend
     WL_Pool pool;
 
     void init(struct wl_compositor* compositor, i2 _content_dims, i2 _monitor_dims, i2 _surface_pos, Wayland* state);
-    void full_reload_from_content_size(i2 new_content_dims, i2 content_pos, Wayland* wayland);
+    void full_reload_from_content_size(i2 new_content_dims, i2 _surface_pos, Wayland* wayland);
+};
+
+
+struct WL_ContentSurface
+{
+    struct wl_surface* wl_surface = nullptr;
+
+    enum Type
+    {
+        SWR,
+        OpenGL,
+    } type;
+
+    union RenderContext
+    {
+        /* Software render context */
+        WL_SoftwareRend swr;
+        /* OpenGL context using EGL */
+        WL_OpenGL opengl;
+    } context;
+
+
+    void init(struct wl_compositor* compositor);
 };
 
 struct WL_Surfaces
@@ -111,7 +125,10 @@ struct WL_Surfaces
     bool window_size_change_detected = false;
     i2 size_change_dims = {0, 0};
 
-    WaylandRenderingType render_type = WaylandRenderingType::Buffer;
+    struct wl_subsurface *content_subsurface = nullptr;
+    i2 content_pos = {0, 0};
+
+    WaylandRenderingType render_type = WaylandRenderingType::SWR;
 
     /* Wayland client decorations */
     WL_Decoration decorations;
@@ -126,9 +143,6 @@ struct WL_Surfaces
 
     i2  content_to_window_dims(i2 content_dims);
     i2  window_to_content_dims(i2 window_dims);
-    int get_all_surface_buffer_sizes_in_bytes();
-    int get_offset(WL_Surface::Type _surface_type);
-    void* get_buffer_pointer(WL_Surface::Type surface_type);
     i2 get_content_dims();
     struct wl_surface* get_content_surface();
 

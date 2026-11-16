@@ -29,7 +29,7 @@ void callback_done(  void *data,
     Wayland* wayland = (Wayland*) data;
 
     wl_callback_destroy(wl_callback);
-    wl_callback = wl_surface_frame(wayland->surfaces.opengl.surface.surface);
+    wl_callback = wl_surface_frame(wayland->surfaces.opengl.wl_surface);
     wl_callback_add_listener(wl_callback, &callback_listener, wayland);
 
     stopwatch.start();
@@ -53,7 +53,7 @@ int main()
 
     if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
     {
-        struct wl_callback *cb = wl_surface_frame(wayland.surfaces.opengl.surface.surface);
+        struct wl_callback *cb = wl_surface_frame(wayland.surfaces.opengl.wl_surface);
         wl_callback_add_listener(cb, &callback_listener, &wayland);
     }
 
@@ -84,7 +84,7 @@ int main()
             events.clear();
         }
 
-        if(wayland.surfaces.render_type == WaylandRenderingType::Buffer)
+        if(wayland.surfaces.render_type == WaylandRenderingType::SWR)
         {
             swrenderer.set_buffer( wayland.get_content_buffer() );
             swrenderer.clear(0xFF654321);

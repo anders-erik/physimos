@@ -193,11 +193,11 @@ void wl_buffer_release(void *data, struct wl_buffer *wl_buffer)
         // Print::ln("Content buffer released!");
         wayland->surfaces.swr.surface.surface_is_busy = false;
     }
-    else if(wl_buffer == wayland->surfaces.opengl.surface.buffer)
-    {
-        // Print::ln("OpenGL buffer released!");
-        wayland->surfaces.opengl.surface.surface_is_busy = false;
-    }
+    // else if(wl_buffer == wayland->surfaces.opengl.surface.buffer)
+    // {
+    //     // Print::ln("OpenGL buffer released!");
+    //     wayland->surfaces.opengl.surface.surface_is_busy = false;
+    // }
     else
     {
         Print::ln("Unknown buffer released!");
@@ -448,7 +448,7 @@ pointer_enter(void *data,
 
         Print::ln("Window!");
     }
-    else if(surface == wayland->surfaces.opengl.surface.surface)
+    else if(surface == wayland->surfaces.opengl.wl_surface)
     {
         wayland->input.target = WL_Input::EGL;
         Print::ln("EGL!");
@@ -495,7 +495,7 @@ pointer_leave(void *data,
     {
         // Print::ln("Window!");
     }
-    else if(surface == wayland->surfaces.opengl.surface.surface)
+    else if(surface == wayland->surfaces.opengl.wl_surface)
     {
         // Print::ln("EGL!");
     }

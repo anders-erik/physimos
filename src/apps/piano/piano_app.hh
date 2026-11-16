@@ -42,7 +42,7 @@ struct PianoApp
         WaylandConfig wayland_config {
             .width = dims.x,
             .height = dims.y,
-            .rendering_type = WaylandRenderingType::Buffer,
+            .rendering_type = WaylandRenderingType::SWR,
             .window_title = "Hellooo there!"
         };
         wayland.init(wayland_config);

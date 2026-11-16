@@ -292,7 +292,7 @@ bool Wayland::set_size()
 
 PixelBuffer Wayland::get_content_buffer()
 {
-    return PixelBuffer {(PX32*)(surfaces.get_buffer_pointer(WL_Surface::Content)), 
+    return PixelBuffer {(PX32*)(surfaces.swr.pool.data), 
                                 surfaces.swr.surface.pixel_buffer.w, 
                                 surfaces.swr.surface.pixel_buffer.h,
                                 PX32F::ARGB,
@@ -302,10 +302,10 @@ PixelBuffer Wayland::get_content_buffer()
 
 bool Wayland::content_surface_is_busy()
 {
-    if(surfaces.render_type == WaylandRenderingType::Buffer)
+    if(surfaces.render_type == WaylandRenderingType::SWR)
         return surfaces.swr.surface.surface_is_busy;
     else if(surfaces.render_type == WaylandRenderingType::OpenGL)
-        return surfaces.opengl.surface.surface_is_busy;
+        return surfaces.opengl.surface_is_busy;
     else
         Print::ln("Unknown Rendering type in 'content_surface_is_busy'");
 

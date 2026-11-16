@@ -18,7 +18,7 @@ struct WL_FrameBuffer;
 // What rendering context the library user is provided with
 enum class WaylandRenderingType
 {
-    Buffer, 
+    SWR, 
     OpenGL,
 }; 
 

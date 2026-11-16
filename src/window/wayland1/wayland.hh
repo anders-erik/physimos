@@ -13,7 +13,7 @@ struct WaylandConfig
 {
     int width = 640;
     int height = 480;
-    WaylandRenderingType rendering_type = WaylandRenderingType::Buffer;
+    WaylandRenderingType rendering_type = WaylandRenderingType::SWR;
     Str window_title = "Wayland Window!";
 };
 
