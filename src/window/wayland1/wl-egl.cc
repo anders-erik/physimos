@@ -60,7 +60,7 @@ void WL_EGL::init(struct wl_display* wl_display, struct wl_surface* wl_surface, 
 
     load_GL();
     build_program();
-    draw_triangle();
+    draw();
 
     eglSwapBuffers(display, surface);
 
@@ -90,7 +90,7 @@ void WL_EGL::reload_with_new_content_size(struct wl_surface* wl_surface, i2 cont
     // fprintf(stdout, "EGL Surface created: %p\n", surface);
 
 
-    draw_triangle();
+    draw();
     eglSwapBuffers(display, surface);
     
     check_egl_error(eglGetError());
@@ -135,8 +135,9 @@ void WL_EGL::load_GL()
 
     glGenVertexArrays = (glGenVertexArrays_T)eglGetProcAddress("glGenVertexArrays");
     glGenBuffers = (glGenBuffers_T)eglGetProcAddress("glGenBuffers");
-    glBindVertexArray = (glBindVertexArray_T)eglGetProcAddress("glBindVertexArray");
+    glIsBuffer = (glIsBuffer_T)eglGetProcAddress("glIsBuffer");
     glBindBuffer = (glBindBuffer_T)eglGetProcAddress("glBindBuffer");
+    glBindVertexArray = (glBindVertexArray_T)eglGetProcAddress("glBindVertexArray");
     glBufferData = (glBufferData_T)eglGetProcAddress("glBufferData");
     glVertexAttribPointer = (glVertexAttribPointer_T)eglGetProcAddress("glVertexAttribPointer");
     glEnableVertexAttribArray = (glEnableVertexAttribArray_T)eglGetProcAddress("glEnableVertexAttribArray");
@@ -188,7 +189,13 @@ void WL_EGL::print_opengl_error()
 
 }
 
-void WL_EGL::draw_triangle()
+
+void WL_EGL::set_triangle()
+{
+
+}
+
+void WL_EGL::draw()
 {
 
     glViewport(0, 0, width, height);
@@ -217,12 +224,22 @@ void WL_EGL::build_program()
     print_opengl_error();
 
     glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
     glBindVertexArray(vao);
+    glEnableVertexAttribArray(0);
+    
+
+    if(!glIsBuffer(vbo))
+        Print::ln("1. vbo not yet a valid buffer");
+    glGenBuffers(1, &vbo);
+    if(!glIsBuffer(vbo))
+        Print::ln("2. vbo still not a valid buffer");
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    if(glIsBuffer(vbo))
+        Print::ln("3. vbo is a valid buffer");
+    
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-    glEnableVertexAttribArray(0);
 
 
     // create_program

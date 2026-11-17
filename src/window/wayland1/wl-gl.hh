@@ -19,6 +19,7 @@
 #define GL_STACK_OVERFLOW 0x0503
 
 #define GL_FALSE 0
+#define GL_TRUE 1
 #define GL_FLOAT 0x1406
 #define GL_VERTEX_SHADER 0x8B31
 #define GL_FRAGMENT_SHADER 0x8B30
@@ -51,6 +52,16 @@ typedef float		GLfloat;
 
 // https://registry.khronos.org/OpenGL-Refpages/gl4/
 
+
+typedef void (*glGenBuffers_T)(GLsizei n, GLuint *buffers);
+static glGenBuffers_T glGenBuffers; ///< @param n [GLsizei] Number of buffers  @param buffers [GLuint *] Array of buffer IDs @return void @brief [TLDR: generate buffer object names] \n glGenBuffers returns n buffer object names in buffers. There is no guarantee that the names form a contiguous set of integers; however, it is guaranteed that none of the returned names was in use immediately before the call to glGenBuffers. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml
+
+typedef GLboolean (*glIsBuffer_T)(GLuint buffer);
+static glIsBuffer_T glIsBuffer; ///< @param buffer [GLuint] Buffer ID to check @return is_buffer [GLboolean] true if the ID corresponds to a valid buffer @brief glIsBuffer returns GL_TRUE if buffer is currently the name of a buffer object. If buffer is zero, or is a non-zero value that is not currently the name of a buffer object, or if an error occurs, glIsBuffer returns GL_FALSE. A name returned by glGenBuffers, but not yet associated with a buffer object by calling glBindBuffer, is not the name of a buffer object. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glIsBuffer.xhtml \n https://stackoverflow.com/questions/18193327/when-are-opengl-object-names-ever-zero-or-does-zero-ever-have-semantics
+
+typedef void (*glBindBuffer_T)(GLenum target, GLuint buffer);
+static glBindBuffer_T glBindBuffer; ///< @param target [GLenum] Buffer Binding Target, e.g. GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER  @param buffer [GLuint] buffer ID for which we specify the type @return [void] @brief glBindBuffer binds a buffer object to the specified buffer binding point. Calling glBindBuffer with target set to one of the accepted symbolic constants and buffer set to the name of a buffer object binds that buffer object name to the target. If no buffer object with name buffer exists, one is created with that name. When a buffer object is bound to a target, the previous binding for that target is automatically broken.  \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml
+
 typedef void (*glGenVertexArrays_T)(GLsizei n, GLuint *arrays);
 /**
     @brief short description explanation.
@@ -63,15 +74,8 @@ typedef void (*glGenVertexArrays_T)(GLsizei n, GLuint *arrays);
  */
 static glGenVertexArrays_T glGenVertexArrays; 
 
-typedef void (*glGenBuffers_T)(GLsizei n, GLuint *buffers);
-static glGenBuffers_T glGenBuffers; ///< @param n [GLsizei] Number of buffers  @param buffers [GLuint *] Array of buffer IDs @return void @brief [TLDR: generate buffer object names] \n glGenBuffers returns n buffer object names in buffers. There is no guarantee that the names form a contiguous set of integers; however, it is guaranteed that none of the returned names was in use immediately before the call to glGenBuffers. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml
-
-
 typedef void (*glBindVertexArray_T)(GLuint array);
 static glBindVertexArray_T glBindVertexArray;
-
-typedef void (*glBindBuffer_T)(GLenum target, GLuint buffer);
-static glBindBuffer_T glBindBuffer;
 
 typedef void (*glBufferData_T)(GLenum target, GLsizeiptr size, const void *data, GLenum usage);
 static glBufferData_T glBufferData;

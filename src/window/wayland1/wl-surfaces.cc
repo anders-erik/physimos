@@ -232,7 +232,7 @@ void WL_OpenGL::init(struct wl_compositor* compositor, i2 _content_dims, Wayland
 
     // surface.create_subsurface(state->core.subcompositor, state->surfaces.decorations.surface.surface);
     // state->egl.init(state->core.display, egl.surface, egl.pixel_buffer.size());
-    state->surfaces.opengl.egl.init(state->core.display, wl_surface, _content_dims);
+    egl.init(state->core.display, wl_surface, _content_dims);
 }
 
 void WL_OpenGL::full_reload_from_content_size(i2 new_content_dims, Wayland* wayland)

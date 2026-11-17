@@ -8,7 +8,7 @@
 #include "window/wayland1/wl-defs.hh"
 
 Stopwatch stopwatch;
-    
+
 void callback_done(  void *data,
 		    struct wl_callback *wl_callback,
 		    uint32_t callback_data);
@@ -91,7 +91,7 @@ int main()
         }
         else if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
         {
-            wayland.surfaces.opengl.egl.draw_triangle();
+            wayland.surfaces.opengl.egl.draw();
         }
 
         usleep(10000);

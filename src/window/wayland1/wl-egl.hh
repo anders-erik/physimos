@@ -17,7 +17,9 @@
 struct WL_EGL
 {
     GLuint program;
-    GLuint vao, vbo;
+    GLuint vao = 0;
+    GLuint vbo = 0;
+
     float verts[9] = {
         0.0f,  1.0f, 0.0f, // top center
         -1.0f, -1.0f, 0.0f, // bottom left
@@ -62,7 +64,9 @@ struct WL_EGL
 
     void print_opengl_error();
 
-    void draw_triangle();
+    void set_triangle();
+
+    void draw();
 
     GLuint compile_shader(GLenum type, const char* src);
     void build_program();
