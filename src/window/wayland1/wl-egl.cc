@@ -118,27 +118,31 @@ void WL_EGL::load_GL()
 
     // typedef void* eglGetProcAddress_rettype;
     
-    typedef GLubyte* gll_glGetString_RETTYPE;
-    typedef gll_glGetString_RETTYPE (*glGetString_FNADDRESS)(GLenum);
-    glGetString_FNADDRESS glGetString_gll;
+    // typedef GLubyte* gll_glGetString_RETTYPE;
+    // typedef GLubyte* (*glGetString_FNADDRESS)(GLenum);
+    // glGetString_FNADDRESS glGetString_gll;
 
-    glGetString_gll = (glGetString_FNADDRESS)eglGetProcAddress("glGetString");
-    Print::buf("gll_glGetString = ");
-    Print::ln(address_to_str((void*)glGetString_gll));
+    // glGetString_gll = (glGetString_FNADDRESS)eglGetProcAddress("glGetString");
+    // Print::buf("gll_glGetString = ");
+    // Print::ln(address_to_str((void*)glGetString_gll));
 
+    glGetString  = (glGetString_T)eglGetProcAddress("glGetString");
 
-    gll_glGetString_RETTYPE gl_version = (gll_glGetString_RETTYPE)glGetString_gll(GL_VERSION);
+    GLubyte* gl_version = (GLubyte*)glGetString(GL_VERSION);
     Print::buf("gl_version = ");
     Print::ln({(const char*)gl_version});
     // Print::ln(Str::UI(*gll_glGetString_version));
 
 
-    glGenVertexArrays = (glGenVertexArrays_T)eglGetProcAddress("glGenVertexArrays");
     glGenBuffers = (glGenBuffers_T)eglGetProcAddress("glGenBuffers");
     glIsBuffer = (glIsBuffer_T)eglGetProcAddress("glIsBuffer");
     glBindBuffer = (glBindBuffer_T)eglGetProcAddress("glBindBuffer");
-    glBindVertexArray = (glBindVertexArray_T)eglGetProcAddress("glBindVertexArray");
     glBufferData = (glBufferData_T)eglGetProcAddress("glBufferData");
+    glBufferSubData = (glBufferSubData_T)eglGetProcAddress("glBufferSubData");
+    glDeleteBuffers = (glDeleteBuffers_T)eglGetProcAddress("glDeleteBuffers");
+
+    glGenVertexArrays = (glGenVertexArrays_T)eglGetProcAddress("glGenVertexArrays");
+    glBindVertexArray = (glBindVertexArray_T)eglGetProcAddress("glBindVertexArray");
     glVertexAttribPointer = (glVertexAttribPointer_T)eglGetProcAddress("glVertexAttribPointer");
     glEnableVertexAttribArray = (glEnableVertexAttribArray_T)eglGetProcAddress("glEnableVertexAttribArray");
     glCreateProgram = (glCreateProgram_T)eglGetProcAddress("glCreateProgram");
@@ -228,6 +232,8 @@ void WL_EGL::build_program()
     glEnableVertexAttribArray(0);
     
 
+    glDeleteBuffers(1, &vbo);
+
     if(!glIsBuffer(vbo))
         Print::ln("1. vbo not yet a valid buffer");
     glGenBuffers(1, &vbo);
@@ -237,8 +243,15 @@ void WL_EGL::build_program()
     if(glIsBuffer(vbo))
         Print::ln("3. vbo is a valid buffer");
     
-
+    float new_last_vert[3] = {
+        1.0f, -0.5f, 0.0f  // new bottom right
+    };
+    
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+
+    
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 
 
