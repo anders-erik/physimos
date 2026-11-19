@@ -59,6 +59,7 @@ void WL_EGL::init(struct wl_display* wl_display, struct wl_surface* wl_surface, 
 
 
     load_GL();
+    // load_opengl((getProcAddress_T)eglGetProcAddress);
     build_program();
     draw();
 
@@ -96,8 +97,14 @@ void WL_EGL::reload_with_new_content_size(struct wl_surface* wl_surface, i2 cont
     check_egl_error(eglGetError());
 }
 
+// typedef void* (*voidptr_return_function)();
+// typedef void* (*getProcAddress_T)(const char* procedure_name);
+
+// void WL_EGL::load_GL()
 void WL_EGL::load_GL()
 {
+    getProcAddress_T getProcAddress = (getProcAddress_T)eglGetProcAddress;
+
 
     auto address_to_str = [](void* ptr) -> Str
     {
@@ -126,7 +133,9 @@ void WL_EGL::load_GL()
     // Print::buf("gll_glGetString = ");
     // Print::ln(address_to_str((void*)glGetString_gll));
 
-    glGetString  = (glGetString_T)eglGetProcAddress("glGetString");
+
+    glGetString  = (glGetString_T)getProcAddress("glGetString");
+    // glGetString  = (glGetString_T)eglGetProcAddress("glGetString");
 
     GLubyte* gl_version = (GLubyte*)glGetString(GL_VERSION);
     Print::buf("gl_version = ");
@@ -242,11 +251,16 @@ void WL_EGL::build_program()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     if(glIsBuffer(vbo))
         Print::ln("3. vbo is a valid buffer");
-    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    if(glIsBuffer(vbo))
+        Print::ln("4. vbo is still a valid buffer");
+    print_opengl_error();
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
     float new_last_vert[3] = {
         1.0f, -0.5f, 0.0f  // new bottom right
     };
-    
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
 

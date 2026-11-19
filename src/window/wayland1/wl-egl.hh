@@ -26,6 +26,10 @@ struct WL_EGL
         1.0f, -1.0f, 0.0f  // bottom right
     };
 
+    float line_points[4] = {
+        0.0f, 0.0f, 0.5f, 0.5f,
+    };
+
     GLsizei width = 20;
     GLsizei height = 20;
 
