@@ -88,6 +88,9 @@ void load_opengl(getProcAddress_T getProcAddress)
     glClearColor  = (glClearColor_T)getProcAddress("glClearColor");
     glClear  = (glClear_T)getProcAddress("glClear");
     glDrawArrays  = (glDrawArrays_T)getProcAddress("glDrawArrays");
+    glUniform1f = (glUniform1f_T)getProcAddress("glUniform1f");
+    glGetUniformLocation = (glGetUniformLocation_T)getProcAddress("glGetUniformLocation");
+    
 
     glGetError  = (glGetError_T)getProcAddress("glGetError");
 

@@ -90,6 +90,7 @@ typedef uint32_t	GLenum;
 typedef uint8_t	    GLboolean;
 typedef uint32_t	GLbitfield;
 typedef void		GLvoid;
+typedef char	    GLchar;	
 typedef int8_t	    GLbyte;	
 typedef uint8_t	    GLubyte;
 typedef int16_t		GLshort;
@@ -182,12 +183,20 @@ typedef void (*glDrawArrays_T)(GLenum mode, GLint first, GLsizei count);
 GL_LINKSCOPE glDrawArrays_T glDrawArrays;
 
 typedef GLenum (*glGetError_T)(void);
-// static glGetError_T glGetError;
 GL_LINKSCOPE glGetError_T glGetError;
-// extern glGetError_T glGetError;
 
 typedef GLubyte* (*glGetString_T)(GLenum val);
 GL_LINKSCOPE glGetString_T glGetString;
+
+typedef void (*glUniform1f_T)(GLint location, GLfloat v0);
+GL_LINKSCOPE glUniform1f_T glUniform1f;
+
+typedef GLint (*glGetUniformLocation_T)(GLuint program, const GLchar *name);
+GL_LINKSCOPE glGetUniformLocation_T glGetUniformLocation;
+
+// GLint glGetUniformLocation(GLuint program, const GLchar *name);
+
+
 
 
 

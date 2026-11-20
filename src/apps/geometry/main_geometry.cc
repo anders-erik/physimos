@@ -39,32 +39,72 @@ void callback_done(  void *data,
 
 
 
-struct OpenGLTriangle
+
+
+namespace OpenGL
 {
-    GLuint program;
-    GLuint vao = 0;
-    GLuint vbo = 0;
 
-    float verts[9] = {
-        0.0f,  1.0f, 0.0f, // top center
-        -1.0f, -1.0f, 0.0f, // bottom left
-        1.0f, -1.0f, 0.0f  // bottom right
-    };
+typedef float Point3f[3];
 
+
+struct VertexShader
+{
+    GLuint id = 0;
+
+    void init(Str _code)
+    {
+        const char* code_c_str = _code.to_c_str();
+        id = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(id, 1, &code_c_str, NULL);
+        glCompileShader(id);
+    }
+
+    void destroy()
+    {
+        glDeleteShader(id);
+        id = 0;
+    }
 };
 
-static OpenGLTriangle opengl_triangle;
-
-namespace OpenGL {
-
-GLuint compile_shader(GLenum type, const char* src)
+struct FragmentShader
 {
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &src, NULL);
-    glCompileShader(shader);
-    return shader;
-}
+    GLuint id = 0;
 
+    void init(Str _code)
+    {
+        const char* code_c_str = _code.to_c_str();
+        id = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(id, 1, &code_c_str, NULL);
+        glCompileShader(id);
+        // return shader;
+    }
+
+    void destroy()
+    {
+        glDeleteShader(id);
+        id = 0;
+    }
+};
+
+
+struct Program
+{
+    GLuint id = 0;
+    VertexShader vertex_shader;
+    FragmentShader fragment_shader;
+
+    void init(Str vertex_shader_source, Str fragment_shader_source)
+    {
+        id = glCreateProgram();
+
+        vertex_shader.init(vertex_shader_source);
+        fragment_shader.init(fragment_shader_source);
+
+        glAttachShader(id, vertex_shader.id);
+        glAttachShader(id, fragment_shader.id);
+        glLinkProgram(id);
+    }
+};
 
 
 void print_opengl_error()
@@ -94,99 +134,200 @@ void print_opengl_error()
     Print::ln(error_str);
 }
 
+void set_viewport_size(GLsizei width, GLsizei height)
+{
+    glViewport(0, 0, width, height);
 }
 
 
-static float color_t = 0.0f;
-static float color = 0.0f;
-
-void draw()
+struct Buffer
 {
+    /* datatype_dims_type*/
+    enum Type
+    {
+        pos_3_f,
+    };
 
-    glUseProgram(opengl_triangle.program);
-
-    // color_t += 0.01f;
-    color_t += 0.03f;
-    color = sin(color_t);
-
-    // rand clear color 
-    // glClearColor((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, 1.0f);
-    // glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-    glClearColor(color, color, color, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    OpenGL::print_opengl_error();
-
-
-
-}
-
-
-
-void init_opengl_triangle()
-{
-    OpenGL::print_opengl_error();
-
-    glViewport(0, 0, 800, 600);
-
-    glGenVertexArrays(1, &opengl_triangle.vao);
-    glBindVertexArray(opengl_triangle.vao);
-    glEnableVertexAttribArray(0);
-    
-
-    glDeleteBuffers(1, &opengl_triangle.vbo);
-
-    if(!glIsBuffer(opengl_triangle.vbo))
-        Print::ln("1. vbo not yet a valid buffer");
-    glGenBuffers(1, &opengl_triangle.vbo);
-    if(!glIsBuffer(opengl_triangle.vbo))
-        Print::ln("2. vbo still not a valid buffer");
-    glBindBuffer(GL_ARRAY_BUFFER, opengl_triangle.vbo);
-    if(glIsBuffer(opengl_triangle.vbo))
-        Print::ln("3. vbo is a valid buffer");
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    if(glIsBuffer(opengl_triangle.vbo))
-        Print::ln("4. vbo is still a valid buffer");
-    OpenGL::print_opengl_error();
-    glBindBuffer(GL_ARRAY_BUFFER, opengl_triangle.vbo);
+    GLuint id = 0;
+    GLuint vao = 0;
 
     float new_last_vert[3] = {
         1.0f, -0.5f, 0.0f  // new bottom right
     };
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(opengl_triangle.verts), opengl_triangle.verts, GL_STATIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
 
-    
+    Buffer* init(Point3f* data, int data_size, Type type)
+    {
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+        glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+        glDeleteBuffers(1, &id);
+
+        if(!glIsBuffer(id))
+            Print::ln("1. buffer.id not yet a valid buffer");
+        glGenBuffers(1, &id);
+        if(!glIsBuffer(id))
+            Print::ln("2. buffer.id still not a valid buffer");
+        glBindBuffer(GL_ARRAY_BUFFER, id);
+        if(glIsBuffer(id))
+            Print::ln("3. buffer.id is a valid buffer");
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        if(glIsBuffer(id))
+            Print::ln("4. buffer.id is still a valid buffer");
+
+        OpenGL::print_opengl_error();
+
+        glBindBuffer(GL_ARRAY_BUFFER, id);
 
 
-    // create_program
+
+
+        glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+
+        glBufferData(GL_ARRAY_BUFFER, data_size, data, GL_STATIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+
+
+        return this;
+    }
+
+
+    Buffer* init()
+    {
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+        glEnableVertexAttribArray(0);
+
+        glDeleteBuffers(1, &id);
+
+        if(!glIsBuffer(id))
+            Print::ln("1. buffer.id not yet a valid buffer");
+        glGenBuffers(1, &id);
+        if(!glIsBuffer(id))
+            Print::ln("2. buffer.id still not a valid buffer");
+        glBindBuffer(GL_ARRAY_BUFFER, id);
+        if(glIsBuffer(id))
+            Print::ln("3. buffer.id is a valid buffer");
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        if(glIsBuffer(id))
+            Print::ln("4. buffer.id is still a valid buffer");
+
+        OpenGL::print_opengl_error();
+
+        glBindBuffer(GL_ARRAY_BUFFER, id);
+
+        return this;
+    }
+
+    void destroy()
+    {
+        glDeleteBuffers(1, &id);
+    }
+};
+
+
+struct Triangle
+{
+    Program program;
+    Buffer buffer;
+
+    float background_color = 0.0f;
+    float background_color_time = 0.0f;
+
+    float color = 0.0f;
+    const char* color_name_in_shader = "color";
+    GLint color_location = 0;
+
+    Point3f verts[3] = {
+        {0.0f,  1.0f, 0.0f}, // top center
+        {-1.0f, -1.0f, 0.0f}, // bottom left
+        {1.0f, -1.0f, 0.0f}  // bottom right
+    };
+
+    float new_last_vert[3] = {
+        1.0f, -0.5f, 0.0f  // new bottom right
+    };
+
     const char* vert_src =
-        "#version 330 core\n"
-        "layout(location = 0) in vec3 aPos;\n"
-        "void main() {\n"
-        "    gl_Position = vec4(aPos, 1.0);\n"
-        "}";
+"#version 330 core\n"
+"layout(location = 0) in vec3 aPos;\n"
+"void main() {\n"
+"    gl_Position = vec4(aPos, 1.0);\n"
+"}";
+    
     const char* frag_src =
-        "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main() {\n"
-        "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
-        "}";
+"#version 330 core\n"
 
-    GLuint vs = OpenGL::compile_shader(GL_VERTEX_SHADER, vert_src);
-    GLuint fs = OpenGL::compile_shader(GL_FRAGMENT_SHADER, frag_src);
-    opengl_triangle.program = glCreateProgram();
-    glAttachShader(opengl_triangle.program, vs);
-    glAttachShader(opengl_triangle.program, fs);
-    glLinkProgram(opengl_triangle.program);
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-}
+"uniform float color;\n"
+"out vec4 FragColor;\n"
+
+"void main() {\n"
+"    FragColor = vec4(color, 0.0, 0.0, 1.0);\n"
+// "    FragColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
+"}";
+
+
+    void init()
+    {
+        buffer.init(verts, sizeof(verts), Buffer::pos_3_f);
+        // buffer.init(verts, Buffer::pos_3_f);
+        // buffer.init();
+
+
+        // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+
+        // glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+        // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+
+        // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+
+        program.init(vert_src, frag_src);
+
+        glUseProgram(program.id);
+
+        color_location = glGetUniformLocation(program.id, color_name_in_shader);
+        glUniform1f(color_location, color);
+    }
+
+
+    void draw()
+    {
+
+        glUseProgram(program.id);
+
+        // BACKGROUND
+        // color_t += 0.01f;
+        background_color_time += 0.03f;
+        background_color = sin(background_color_time);
+        // rand clear color 
+        // glClearColor((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, 1.0f);
+        // glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+        glClearColor(background_color, background_color, background_color, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // TRIANGLE
+        glUniform1f(color_location, color);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        OpenGL::print_opengl_error();
+    }
+
+
+    void destroy()
+    {
+        glDeleteShader(program.fragment_shader.id);
+        glDeleteShader(program.vertex_shader.id);
+
+        buffer.destroy();
+    }
+};
+
+} // 'OpenGL' END
+
+
 
 
 int main()
@@ -199,60 +340,66 @@ int main()
     
 
     Wayland wayland;
-    // wayland.init({  .width = 800, .height = 600, .rendering_type = WaylandRenderingType::Buffer});
     wayland.init({  .width = 800, 
                     .height = 600, 
                     .rendering_type = WaylandRenderingType::OpenGL, 
+                    // .rendering_type = WaylandRenderingType::SWR,
                     .window_title = "Main Geometry"                 });
 
 
-    if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
+
+    SWR::Renderer swrenderer;
+    OpenGL::Triangle opengl_triangle;
+
+    if(wayland.surfaces.render_type == WaylandRenderingType::SWR)
+    {
+        swrenderer.set_buffer( wayland.get_content_buffer() );
+        swrenderer.clear(0xFF555555);
+    }
+    else if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
     {
         struct wl_callback *cb = wl_surface_frame(wayland.surfaces.opengl.wl_surface);
         wl_callback_add_listener(cb, &callback_listener, &wayland);
+
+        OpenGL::print_opengl_error();
+        OpenGL::set_viewport_size(wayland.surfaces.opengl.egl.width, wayland.surfaces.opengl.egl.height);
+        OpenGL::print_opengl_error();
+
+        
+        opengl_triangle.init();
+        opengl_triangle.draw();
     }
 
-    SWR::Renderer swrenderer;
-    // if(wayland.surfaces.render_type == WaylandRenderingType::Buffer)
-    // {
-    //     swrenderer.set_buffer( wayland.get_content_buffer() );
-    //     swrenderer.clear(0xFF555555);
-    // }
 
-    init_opengl_triangle();
-    draw();
-    // wayland.surfaces.opengl.egl.swap_buffers();
-    // wayland.surfaces.opengl.egl.swap_buffers();
-    
-
-    
-    // wayland.surfaces.decorations.surface.commit();
-    // wayland.surfaces.decorations.surface.commit();
-    // wl_surface_commit(wayland.surfaces.decorations.surface.surface);
 
     while(wayland.frame_step())
     {
         if(wayland.set_size())
         {
-            // glViewport(0, 0, 800, 600);
-            // draw();
-            // wayland.surfaces.opengl.egl.swap_buffers();
 
+            if(wayland.surfaces.render_type == WaylandRenderingType::SWR)
+            {
+
+            }
             if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
             {
-                // draw();
-                // wayland.surfaces.commit();
-                // wayland.surfaces.opengl.egl.draw();
-                // draw();
-                // wayland.surfaces.opengl.egl.swap_buffers();
+                OpenGL::set_viewport_size(wayland.surfaces.opengl.egl.width, wayland.surfaces.opengl.egl.height);
             }
         }
-        Arr<UserInput> events = wayland.get_new_input_events();
 
-        for(uint i = 0; i < events.count(); i++)
+        opengl_triangle.color += 0.001f;
+
+        Arr<UserInput> user_inputs = wayland.get_new_input_events();
+        for(uint i = 0; i < user_inputs.count(); i++)
         {
-            events.clear();
+            UserInput user_input = user_inputs[i];
+            if(user_input.is_scroll_input())
+            {
+                opengl_triangle.color += 0.01f;
+            }
+
         }
+        user_inputs.clear();
 
         if(wayland.surfaces.render_type == WaylandRenderingType::SWR)
         {
@@ -261,8 +408,7 @@ int main()
         }
         else if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
         {
-            // wayland.surfaces.opengl.egl.draw();
-            draw();
+            opengl_triangle.draw();
             wayland.surfaces.opengl.egl.swap_buffers();
         }
 
@@ -270,9 +416,7 @@ int main()
 
         // prev_time = clock.get_unix_epoch_ms();
         // clock.print_current_m_sec();
-
         // performance_clock.fps_step(true);
-
         // Print::ln("");
     }
 
