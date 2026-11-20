@@ -84,6 +84,22 @@ void registry_global_remove(
 }
 
 
+void callback_done(  void *data,
+		    struct wl_callback *wl_callback,
+		    uint32_t callback_data)
+{
+    Wayland* wayland = (Wayland*) data;
+
+    wayland->stopwatch.stop_and_print_ms();
+    Print::ln("Callback done!");
+
+    wl_callback_destroy(wl_callback);
+    // wl_callback = wl_surface_frame(wayland->surfaces.opengl.wl_surface);
+    wl_callback_add_listener(wl_callback, &wayland->surfaces.opengl.callback_listener, wayland);
+
+    wayland->stopwatch.start();
+}
+
 
 extern void
 output_geometry(void *data, wl_output *wl_output, int32_t x, int32_t y, int32_t physical_width, int32_t physical_height, int32_t subpixel, const char *make, const char *model, int32_t transform)

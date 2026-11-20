@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lib/pixel_buffer.hh"
+#include "lib/clock.hh"
 
 #include "wl-defs.hh"
 #include "wl-objects.hh"
@@ -23,6 +24,8 @@ struct Wayland
 private:
     bool has_been_initialized = false;
 public:
+    Stopwatch stopwatch;
+
     /* Wayland Objects */
     WL_Core core;
     /* Wayland Output */

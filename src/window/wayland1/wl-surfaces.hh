@@ -75,6 +75,10 @@ struct WL_OpenGL
 {
     WL_EGL egl;
 
+    const struct wl_callback_listener callback_listener = {
+        .done = callback_done,
+    };
+
     struct wl_surface* wl_surface = nullptr;
     bool surface_is_busy = false;
 

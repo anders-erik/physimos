@@ -19,6 +19,18 @@ public:
 		gettimeofday(&tv_start, NULL);
 	};
 
+    i64 get_start_time_unix_epoch_us()
+	{
+		uint64_t time_us = 0;
+
+		time_us = (uint64_t) tv_start.tv_sec * 1000000;
+
+		// time_ms += ((double)tv.tv_usec) / 1000000.0;
+		time_us +=  (uint64_t) tv_start.tv_usec;
+
+		return time_us;
+	}
+
 	uint64_t get_unix_epoch_ms()
 	{
 		uint64_t time_ms = 0;
@@ -34,7 +46,7 @@ public:
 		return time_ms;
 	}
 
-	i64 get_unix_epoch_us()
+	i64 get_current_time_unix_epoch_us()
 	{
 		i64 time_us = 0;
 
@@ -48,6 +60,54 @@ public:
 		return time_us;
 	}
 
+    static i64 get_ms(i64 us)
+    {
+        return us / 1000;
+    }
+
+    float get_start_epoch_ms()
+    {
+        i64 start_time_unix_epoch_ms = get_start_time_unix_epoch_us();
+        // Print::buf("start_time_unix_epoch_ms: ");
+        // Print::ln(Str::SI(start_time_unix_epoch_ms));
+        i64 current_time_unix_epoch_us = get_current_time_unix_epoch_us();
+        // Print::buf("current_time_unix_epoch_us: ");
+        // Print::ln(Str::SI(current_time_unix_epoch_us));
+
+        // i64 start_time_ms = get_ms(start_time_us);
+        // Print::ln(Str::SI(start_time_ms));
+        // i64 current_time_ms = get_ms(current_time_us);
+        // Print::ln(Str::SI(current_time_ms));
+
+        i64 start_time_epoch_ms = get_ms(current_time_unix_epoch_us - start_time_unix_epoch_ms);
+        // Print::buf("start_time_epoch_ms: ");
+        // Print::ln(Str::SI(start_time_epoch_ms));
+
+        return (float) start_time_epoch_ms;
+    }
+
+    float get_start_epoch_s()
+    {
+        return (get_start_epoch_ms() / 1000.0f);
+    }
+
+    // float get_elapsed_ms()
+	// {
+	// 	i64 time_us = 0;
+
+	// 	gettimeofday(&tv_last, NULL);
+
+	// 	time_us = (i64) tv_last.tv_sec * (i64)1000000;
+
+	// 	// time_ms += ((double)tv.tv_usec) / 1000000.0;
+	// 	time_us +=  (i64) tv_last.tv_usec;
+
+    //     i64 current_us = time_us;
+    //     i64 current_ms = current_us / 1000;
+
+	// 	return (float)current_ms;
+	// }
+
 	void print_tv_start()
 	{
 		printf("time s : %li \n", tv_start.tv_sec);
@@ -56,7 +116,6 @@ public:
 
 	void print_current_m_sec()
 	{
-		
 		printf("Microsecond: %li \n", get_unix_epoch_ms());
 	}
 };
@@ -136,12 +195,12 @@ struct PerformanceClock : public Clock
 
     void start_commit_buffer_time()
     {
-        commit_buffer_time_start_us = get_unix_epoch_us();
+        commit_buffer_time_start_us = get_current_time_unix_epoch_us();
     }
 
     f32 get_commit_buffer_time_ms()
     {
-        i64 commit_buffer_time_now_us = get_unix_epoch_us();
+        i64 commit_buffer_time_now_us = get_current_time_unix_epoch_us();
         i64 commit_buffer_time_delta_um = commit_buffer_time_now_us - commit_buffer_time_start_us;
         f32 commit_buffer_time_delta_ms = ((f32)commit_buffer_time_delta_um) * 0.001f;
         return commit_buffer_time_delta_ms;
@@ -156,7 +215,7 @@ struct PerformanceClock : public Clock
     void fps_start()
     {
         fps_time_end_um = 0;
-        fps_time_start_um = get_unix_epoch_us();
+        fps_time_start_um = get_current_time_unix_epoch_us();
     }
     void fps_end()
     {
@@ -165,7 +224,7 @@ struct PerformanceClock : public Clock
             Print::ln("WARNING: trying to end FPS-clock without setting a start fps time. ");
         }
 
-        fps_time_end_um = get_unix_epoch_us();
+        fps_time_end_um = get_current_time_unix_epoch_us();
     }
     f32 fps_get()
     {

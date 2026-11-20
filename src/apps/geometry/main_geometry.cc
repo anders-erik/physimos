@@ -8,36 +8,9 @@
 
 #include "window/wayland1/wayland.hh"
 #include "window/wayland1/wl-defs.hh"
+#include "window/wayland1/wl-callbacks.hh"
 
 Stopwatch stopwatch;
-
-void callback_done(  void *data,
-		    struct wl_callback *wl_callback,
-		    uint32_t callback_data);
-
-
-const struct wl_callback_listener callback_listener = {
-    .done = callback_done,
-};
-
-
-void callback_done(  void *data,
-		    struct wl_callback *wl_callback,
-		    uint32_t callback_data)
-{
-    stopwatch.stop_and_print_ms();
-    Print::ln("Callback done!");
-
-    Wayland* wayland = (Wayland*) data;
-
-    wl_callback_destroy(wl_callback);
-    // wl_callback = wl_surface_frame(wayland->surfaces.opengl.wl_surface);
-    wl_callback_add_listener(wl_callback, &callback_listener, wayland);
-
-    stopwatch.start();
-}
-
-
 
 
 
@@ -181,15 +154,27 @@ struct Buffer
         glBindBuffer(GL_ARRAY_BUFFER, id);
 
 
+        // float verts[9] = {
+        //     0.0f,  1.0f, 0.0f, // top center
+        //     -1.0f, -1.0f, 0.0f, // bottom left
+        //     1.0f, -1.0f, 0.0f  // bottom right
+        // };
 
-
+        // glBufferData(GL_ARRAY_BUFFER, data_size, verts, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data_size, (const void *)data, GL_STATIC_DRAW);
+        Print::ln("A");
+        OpenGL::print_opengl_error(); // TODO: RESOLVE ERROR
         glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
 
-        glBufferData(GL_ARRAY_BUFFER, data_size, data, GL_STATIC_DRAW);
+        Print::ln("B");
+        OpenGL::print_opengl_error(); 
         glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
-
+        Print::ln("C");
+        OpenGL::print_opengl_error();
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-
+        
+        Print::ln("D");
+        OpenGL::print_opengl_error();
 
         return this;
     }
@@ -234,6 +219,10 @@ struct Triangle
     Program program;
     Buffer buffer;
 
+    float time_s = 0.1f;
+    const char* time_s_uniform_name = "time_s";
+    GLint time_s_location = 0;
+
     float background_color = 0.0f;
     float background_color_time = 0.0f;
 
@@ -262,11 +251,22 @@ struct Triangle
 "#version 330 core\n"
 
 "uniform float color;\n"
+"uniform float time_s;\n"
+
 "out vec4 FragColor;\n"
 
+"float color_frequency_multiplier = 2.0;\n"
+
 "void main() {\n"
-"    FragColor = vec4(color, 0.0, 0.0, 1.0);\n"
+"       float color_component = 0.5 * sin(time_s * color_frequency_multiplier);\n"
+// "       float color_component = time_s;\n"
+
+// "    FragColor = vec4(color, 0.0, 0.0, 1.0);\n"
 // "    FragColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
+// "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+"    FragColor = vec4(color_component, color_component, color_component, 1.0);\n"
+// "    FragColor = vec4(sin(color_component), 0.0, 0.0, 1.0);\n"
+// "    FragColor = vec4(sin(time_s), 0.0, 0.0, 1.0);\n"
 "}";
 
 
@@ -288,20 +288,30 @@ struct Triangle
 
         glUseProgram(program.id);
 
+        time_s_location = glGetUniformLocation(program.id, time_s_uniform_name);
+        glUniform1f(time_s_location, time_s);
+
         color_location = glGetUniformLocation(program.id, color_name_in_shader);
         glUniform1f(color_location, color);
     }
 
+    void set_time_s(float current_time)
+    {
+        time_s = current_time;
+        glUseProgram(program.id);
+        glUniform1f(time_s_location, time_s);
+    }
 
     void draw()
     {
 
         glUseProgram(program.id);
+        glEnableVertexAttribArray(buffer.vao);
 
         // BACKGROUND
         // color_t += 0.01f;
         background_color_time += 0.03f;
-        background_color = sin(background_color_time);
+        background_color = 0.5f * sin(time_s);
         // rand clear color 
         // glClearColor((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, 1.0f);
         // glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
@@ -346,7 +356,7 @@ int main()
                     // .rendering_type = WaylandRenderingType::SWR,
                     .window_title = "Main Geometry"                 });
 
-
+    struct wl_callback *cb;
 
     SWR::Renderer swrenderer;
     OpenGL::Triangle opengl_triangle;
@@ -358,8 +368,8 @@ int main()
     }
     else if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
     {
-        struct wl_callback *cb = wl_surface_frame(wayland.surfaces.opengl.wl_surface);
-        wl_callback_add_listener(cb, &callback_listener, &wayland);
+        cb = wl_surface_frame(wayland.surfaces.opengl.wl_surface);
+        wl_callback_add_listener(cb, &wayland.surfaces.opengl.callback_listener, &wayland);
 
         OpenGL::print_opengl_error();
         OpenGL::set_viewport_size(wayland.surfaces.opengl.egl.width, wayland.surfaces.opengl.egl.height);
@@ -370,7 +380,7 @@ int main()
         opengl_triangle.draw();
     }
 
-
+    float current_time_s = 0.0f;
 
     while(wayland.frame_step())
     {
@@ -387,7 +397,15 @@ int main()
             }
         }
 
-        opengl_triangle.color += 0.001f;
+        // = opengl_triangle.time_s
+        current_time_s  = clock.get_start_epoch_s();
+        // Print::buf("current_s = ");
+        // Print::ln(Str::FL(current_s, 3, Str::FloatRep::Fixed));
+
+        // opengl_triangle.time_s += current_s;
+        // opengl_triangle.set_time_s(current_s * 100.0f);
+        
+        // opengl_triangle.color += 0.001f;
 
         Arr<UserInput> user_inputs = wayland.get_new_input_events();
         for(uint i = 0; i < user_inputs.count(); i++)
@@ -395,7 +413,8 @@ int main()
             UserInput user_input = user_inputs[i];
             if(user_input.is_scroll_input())
             {
-                opengl_triangle.color += 0.01f;
+                // opengl_triangle.color += 0.1f;
+                
             }
 
         }
@@ -408,6 +427,7 @@ int main()
         }
         else if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
         {
+            opengl_triangle.set_time_s(current_time_s);
             opengl_triangle.draw();
             wayland.surfaces.opengl.egl.swap_buffers();
         }
