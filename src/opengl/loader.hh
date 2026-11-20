@@ -5,11 +5,17 @@
 
 // #define GLEXT extern // Function pointers will be provided
 
-#if GL_LOADER
-    #define GL_LINKSCOPE extern
-#else
-    #define GL_LINKSCOPE 
+#ifndef GL_LINKSCOPE
+#define GL_LINKSCOPE extern
 #endif
+
+// #define GL_LINKSCOPE extern
+
+// #ifdef GL_LOADER
+//     #define GL_LINKSCOPE
+// #else
+//     #define GL_LINKSCOPE extern
+// #endif
 
 // #ifndef GL_LINKSCOPE
 //     #define GL_LINKSCOPE extern // Function pointers will be provided
@@ -99,22 +105,22 @@ typedef float		GLfloat;
 
 
 typedef void (*glGenBuffers_T)(GLsizei n, GLuint *buffers);
-static glGenBuffers_T glGenBuffers; ///< @param n [GLsizei] Number of buffers  @param buffers [GLuint *] Array of buffer IDs @return void @brief [TLDR: generate buffer object names] \n glGenBuffers returns n buffer object names in buffers. There is no guarantee that the names form a contiguous set of integers; however, it is guaranteed that none of the returned names was in use immediately before the call to glGenBuffers. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml @note Version > 2.0
+GL_LINKSCOPE glGenBuffers_T glGenBuffers; ///< @param n [GLsizei] Number of buffers  @param buffers [GLuint *] Array of buffer IDs @return void @brief [TLDR: generate buffer object names] \n glGenBuffers returns n buffer object names in buffers. There is no guarantee that the names form a contiguous set of integers; however, it is guaranteed that none of the returned names was in use immediately before the call to glGenBuffers. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml @note Version > 2.0
 
 typedef GLboolean (*glIsBuffer_T)(GLuint buffer);
-static glIsBuffer_T glIsBuffer; ///< @param buffer [GLuint] Buffer ID to check @return is_buffer [GLboolean] true if the ID corresponds to a valid buffer @brief glIsBuffer returns GL_TRUE if buffer is currently the name of a buffer object. If buffer is zero, or is a non-zero value that is not currently the name of a buffer object, or if an error occurs, glIsBuffer returns GL_FALSE. A name returned by glGenBuffers, but not yet associated with a buffer object by calling glBindBuffer, is not the name of a buffer object. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glIsBuffer.xhtml \n https://stackoverflow.com/questions/18193327/when-are-opengl-object-names-ever-zero-or-does-zero-ever-have-semantics @note Version > 2.0
+GL_LINKSCOPE glIsBuffer_T glIsBuffer; ///< @param buffer [GLuint] Buffer ID to check @return is_buffer [GLboolean] true if the ID corresponds to a valid buffer @brief glIsBuffer returns GL_TRUE if buffer is currently the name of a buffer object. If buffer is zero, or is a non-zero value that is not currently the name of a buffer object, or if an error occurs, glIsBuffer returns GL_FALSE. A name returned by glGenBuffers, but not yet associated with a buffer object by calling glBindBuffer, is not the name of a buffer object. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glIsBuffer.xhtml \n https://stackoverflow.com/questions/18193327/when-are-opengl-object-names-ever-zero-or-does-zero-ever-have-semantics @note Version > 2.0
 
 typedef void (*glBindBuffer_T)(GLenum target, GLuint buffer);
-static glBindBuffer_T glBindBuffer; ///< @param target [GLenum] Buffer Binding Target, e.g. GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER  @param buffer [GLuint] buffer ID for which we specify the type @return [void] @brief glBindBuffer binds a buffer object to the specified buffer binding point. Calling glBindBuffer with target set to one of the accepted symbolic constants and buffer set to the name of a buffer object binds that buffer object name to the target. If no buffer object with name buffer exists, one is created with that name. When a buffer object is bound to a target, the previous binding for that target is automatically broken.  \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml @note Version > 2.0
+GL_LINKSCOPE glBindBuffer_T glBindBuffer; ///< @param target [GLenum] Buffer Binding Target, e.g. GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER  @param buffer [GLuint] buffer ID for which we specify the type @return [void] @brief glBindBuffer binds a buffer object to the specified buffer binding point. Calling glBindBuffer with target set to one of the accepted symbolic constants and buffer set to the name of a buffer object binds that buffer object name to the target. If no buffer object with name buffer exists, one is created with that name. When a buffer object is bound to a target, the previous binding for that target is automatically broken.  \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml @note Version > 2.0
 
 typedef void (*glBufferData_T)(GLenum target, GLsizeiptr size, const void *data, GLenum usage);
-static glBufferData_T glBufferData; ///< @param target [GLenum] The target type for which the buffer is providing data @param size [GLsizeiptr] Specifies the size in bytes of the buffer object's new data store. @param data [] Specifies a pointer to data that will be copied into the data store for initialization, or NULL if no data is to be copied. @param usage [] Specifies the expected usage pattern of the data store. The symbolic constant must be GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY @return void  @brief glBufferData creates a new data store for a buffer object. The buffer object currently bound to target is used. \n While creating the new storage, any pre-existing data store is deleted. The new data store is created with the specified size in bytes and usage. If data is not NULL, the data store is initialized with data from this pointer. In its initial state, the new data store is not mapped, it has a NULL mapped pointer, and its mapped access is GL_READ_WRITE. usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. usage can be broken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml @note Version > 2.0
+GL_LINKSCOPE glBufferData_T glBufferData; ///< @param target [GLenum] The target type for which the buffer is providing data @param size [GLsizeiptr] Specifies the size in bytes of the buffer object's new data store. @param data [] Specifies a pointer to data that will be copied into the data store for initialization, or NULL if no data is to be copied. @param usage [] Specifies the expected usage pattern of the data store. The symbolic constant must be GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY @return void  @brief glBufferData creates a new data store for a buffer object. The buffer object currently bound to target is used. \n While creating the new storage, any pre-existing data store is deleted. The new data store is created with the specified size in bytes and usage. If data is not NULL, the data store is initialized with data from this pointer. In its initial state, the new data store is not mapped, it has a NULL mapped pointer, and its mapped access is GL_READ_WRITE. usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. usage can be broken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml @note Version > 2.0
 
 typedef void (*glBufferSubData_T)(GLenum target, GLintptr offset, GLsizeiptr size, const void *data);
-static glBufferSubData_T glBufferSubData; ///< @param target [GLenum] The target type for which the buffer is providing data @param offset [GLintptr]  Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.   @param size [GLsizeiptr]  Specifies the size in bytes of the data store region being replaced.  @param data [] Specifies a pointer to data that will be copied into the data store for initialization, or NULL if no data is to be copied.  @return void  @brief glBufferSubData redefine some or all of the data store for the specified buffer object. Data starting at byte offset offset and extending for size bytes is copied to the data store from the memory pointed to by data. offset and size must define a range lying entirely within the buffer object's data store. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml  @note Version > 2.0
+GL_LINKSCOPE glBufferSubData_T glBufferSubData; ///< @param target [GLenum] The target type for which the buffer is providing data @param offset [GLintptr]  Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.   @param size [GLsizeiptr]  Specifies the size in bytes of the data store region being replaced.  @param data [] Specifies a pointer to data that will be copied into the data store for initialization, or NULL if no data is to be copied.  @return void  @brief glBufferSubData redefine some or all of the data store for the specified buffer object. Data starting at byte offset offset and extending for size bytes is copied to the data store from the memory pointed to by data. offset and size must define a range lying entirely within the buffer object's data store. \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml  @note Version > 2.0
 
 typedef void (*glDeleteBuffers_T)(GLsizei n, const GLuint * buffers);
-static glDeleteBuffers_T glDeleteBuffers; ///< @param n [GLsizei] Specifies the number of buffer objects to be deleted. @param buffers [const GLuint *] Specifies an array of buffer objects to be deleted.   @return void  @brief glDeleteBuffers deletes n buffer objects named by the elements of the array buffers. After a buffer object is deleted, it has no contents, and its name is free for reuse (for example by glGenBuffers). If a buffer object that is currently bound is deleted, the binding reverts to 0 (the absence of any buffer object). \n glDeleteBuffers silently ignores 0's and names that do not correspond to existing buffer objects.  \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDeleteBuffers.xhtml @note Version > 2.0
+GL_LINKSCOPE glDeleteBuffers_T glDeleteBuffers; ///< @param n [GLsizei] Specifies the number of buffer objects to be deleted. @param buffers [const GLuint *] Specifies an array of buffer objects to be deleted.   @return void  @brief glDeleteBuffers deletes n buffer objects named by the elements of the array buffers. After a buffer object is deleted, it has no contents, and its name is free for reuse (for example by glGenBuffers). If a buffer object that is currently bound is deleted, the binding reverts to 0 (the absence of any buffer object). \n glDeleteBuffers silently ignores 0's and names that do not correspond to existing buffer objects.  \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDeleteBuffers.xhtml @note Version > 2.0
 
 
 
@@ -127,60 +133,61 @@ typedef void (*glGenVertexArrays_T)(GLsizei n, GLuint *arrays);
     \details Longer explanation. 
     asdf asdfghjk
  */
-static glGenVertexArrays_T glGenVertexArrays; 
+GL_LINKSCOPE glGenVertexArrays_T glGenVertexArrays; 
 
 typedef void (*glBindVertexArray_T)(GLuint array);
-static glBindVertexArray_T glBindVertexArray;
+GL_LINKSCOPE glBindVertexArray_T glBindVertexArray;
 
 
 typedef void (*glVertexAttribPointer_T)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
-static glVertexAttribPointer_T glVertexAttribPointer;
+GL_LINKSCOPE glVertexAttribPointer_T glVertexAttribPointer;
 
 typedef void (*glEnableVertexAttribArray_T)(GLuint index);
-static glEnableVertexAttribArray_T glEnableVertexAttribArray;
+GL_LINKSCOPE glEnableVertexAttribArray_T glEnableVertexAttribArray;
 
 typedef GLuint (*glCreateProgram_T)(void);
-static glCreateProgram_T glCreateProgram;
+GL_LINKSCOPE glCreateProgram_T glCreateProgram;
 
 typedef GLuint (*glCreateShader_T)(GLenum shaderType);
-static glCreateShader_T glCreateShader;
+GL_LINKSCOPE glCreateShader_T glCreateShader;
 
 typedef void (*glShaderSource_T)(GLuint shader, GLsizei count, const char **string, const GLint *length);
-static glShaderSource_T glShaderSource;
+GL_LINKSCOPE glShaderSource_T glShaderSource;
 
 typedef void (*glCompileShader_T)(GLuint shader);
-static glCompileShader_T glCompileShader;
+GL_LINKSCOPE glCompileShader_T glCompileShader;
 
 typedef void (*glAttachShader_T)(GLuint program, GLuint shader);
-static glAttachShader_T glAttachShader;
+GL_LINKSCOPE glAttachShader_T glAttachShader;
 
 typedef void (*glLinkProgram_T)(GLuint program);
-static glLinkProgram_T glLinkProgram;
+GL_LINKSCOPE glLinkProgram_T glLinkProgram;
 
 typedef void (*glDeleteShader_T)(GLuint shader);
-static glDeleteShader_T glDeleteShader;
+GL_LINKSCOPE glDeleteShader_T glDeleteShader;
 
 typedef void (*glViewport_T)(GLint x, GLint y, GLsizei width, GLsizei height);
-static glViewport_T glViewport;
+GL_LINKSCOPE glViewport_T glViewport;
 
 typedef void (*glUseProgram_T)(GLuint program);
-static glUseProgram_T glUseProgram;
+GL_LINKSCOPE glUseProgram_T glUseProgram;
 
 typedef void (*glClearColor_T)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-static glClearColor_T glClearColor;
+GL_LINKSCOPE glClearColor_T glClearColor;
 
 typedef void (*glClear_T)(GLbitfield mask);
-static glClear_T glClear;
+GL_LINKSCOPE glClear_T glClear;
 
 typedef void (*glDrawArrays_T)(GLenum mode, GLint first, GLsizei count);
-static glDrawArrays_T glDrawArrays;
+GL_LINKSCOPE glDrawArrays_T glDrawArrays;
 
 typedef GLenum (*glGetError_T)(void);
-static glGetError_T glGetError;
-// GL_LINKSCOPE glGetError_T glGetError;
+// static glGetError_T glGetError;
+GL_LINKSCOPE glGetError_T glGetError;
+// extern glGetError_T glGetError;
 
 typedef GLubyte* (*glGetString_T)(GLenum val);
-static glGetString_T glGetString;
+GL_LINKSCOPE glGetString_T glGetString;
 
 
 

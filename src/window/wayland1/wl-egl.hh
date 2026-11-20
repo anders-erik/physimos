@@ -9,27 +9,14 @@
 #include "lib/print.hh"
 #include "math/vecmat.hh"
 
-#include "wl-gl.hh"
+#include "opengl/loader.hh"
+
 
 
 
 
 struct WL_EGL
 {
-    GLuint program;
-    GLuint vao = 0;
-    GLuint vbo = 0;
-
-    float verts[9] = {
-        0.0f,  1.0f, 0.0f, // top center
-        -1.0f, -1.0f, 0.0f, // bottom left
-        1.0f, -1.0f, 0.0f  // bottom right
-    };
-
-    float line_points[4] = {
-        0.0f, 0.0f, 0.5f, 0.5f,
-    };
-
     GLsizei width = 20;
     GLsizei height = 20;
 
@@ -59,22 +46,10 @@ struct WL_EGL
         EGL_NONE
     };
 
-    void check_egl_error(EGLint error_code);
 
     void init(struct wl_display* wl_display, struct wl_surface* wl_surface, i2 dims);
     void reload_with_new_content_size(struct wl_surface* wl_surface, i2 content_dims);
-
-    void load_GL();
-
-    void print_opengl_error();
-
-    void set_triangle();
-
-    void draw();
-
-    GLuint compile_shader(GLenum type, const char* src);
-    void build_program();
-
+    
+    void check_egl_error(EGLint error_code);
     void swap_buffers();
-
 };

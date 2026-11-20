@@ -394,7 +394,7 @@ void WL_Surfaces::commit()
     }
     else if(render_type == WaylandRenderingType::OpenGL)
     {
-        opengl.egl.swap_buffers();
+        // opengl.egl.swap_buffers();
 
         wl_surface_damage_buffer(opengl.wl_surface, 0, 0, opengl.surface_size().x, opengl.surface_size().y);
         wl_surface_commit(opengl.wl_surface);

@@ -1,11 +1,16 @@
 
-#define GL_LOADER 1
+#define GL_LINKSCOPE
+
+// #define GL_LOADER
 // #if GL_LINKSCOPE
 // #endif
 
 // #undef GL_LINKSCOPE 
 
-#include "wl-gl.hh"
+
+// #define GL_LINKSCOPE static
+
+#include "opengl/loader.hh"
 
 #include <string>
 
@@ -14,6 +19,10 @@
 // #ifdef GL_LINKSCOPE
 // #undef GL_LINKSCOPE 
 // #endif
+
+// #define GL_LINKSCOPE static
+
+// #define GL_LINKSCOPE static
 
 // GLEXT glGetError_T glGetError = nullptr;
 
@@ -79,6 +88,7 @@ void load_opengl(getProcAddress_T getProcAddress)
     glClearColor  = (glClearColor_T)getProcAddress("glClearColor");
     glClear  = (glClear_T)getProcAddress("glClear");
     glDrawArrays  = (glDrawArrays_T)getProcAddress("glDrawArrays");
+
     glGetError  = (glGetError_T)getProcAddress("glGetError");
 
     // if (!gladLoadGLLoader((GLADloadproc)eglGetProcAddress)) {

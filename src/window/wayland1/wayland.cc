@@ -155,8 +155,13 @@ bool Wayland::frame_step()
     // wl_display_dispatch(state.core.display); // process all queued wayland events
 
     // wl_display_dispatch(state.core.display);
+
+    // int dispatched_event_count = wl_display_dispatch_pending(core.display);
+    // if(dispatched_event_count == 0)
+    //     return true;
     
     int dispatched_event_count = wl_display_dispatch(core.display);
+
     // int dispatched_event_count = wl_display_dispatch_pending(core.display);
     // Print::ln({Str{"N.o. Dispatched events: "}, Str::SI(dispatched_event_count)});
 

@@ -1,4 +1,11 @@
 
+
+add_library(opengl_loader loader.cc)
+target_link_libraries(opengl_loader
+    lib
+    math
+)
+
 add_library(opengl
     shader.cc
     program.cc

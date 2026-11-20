@@ -32,21 +32,12 @@ target_compile_options(wl_cursor_extension_v1 PRIVATE -g)
 unset(CMAKE_C_COMPILER)
 
 
-add_library(WL-gl wl-gl.cc)
-target_link_libraries(WL-gl
-    lib
-    math
-
-    EGL # eglInitialize, eglGetDisplay, ...
-    wayland-egl # wl_egl_window_create
-)
-
-
 add_library(WL-egl wl-egl.cc)
 target_link_libraries(WL-egl
     lib
     math
-    WL-gl
+
+    opengl_loader
 
     wayland-client
 
