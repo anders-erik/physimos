@@ -10,7 +10,7 @@ float color_frequency_multiplier = 2.0;
 
 void main()
 {
-    float color_component = 0.5 * sin(time_s * color_frequency_multiplier);
+    float color_component = 0.3 + 0.2 * sin(time_s * color_frequency_multiplier);
     //  float color_component = time_s;
 
     //  FragColor = vec4(color, 0.0, 0.0, 1.0);

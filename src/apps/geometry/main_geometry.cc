@@ -109,6 +109,28 @@ int main()
                 // Print::ln("Scroll");
                 // opengl_triangle.view_matrix.value.print();
             }
+            if(user_input.is_key_input())
+            {
+                Keys key = user_input.event_data.key_input.key;
+                if(user_input.event_data.key_input.action == KeyButtonAction::Press)
+                {
+                    // Print::buf(user_input.event_data.key_input.to_str());
+
+
+                    if(key == Keys::W)
+                        geometry.camera.move(-f3::Z());
+                    if(key == Keys::S)
+                        geometry.camera.move(f3::Z());
+                    if(key == Keys::A)
+                        geometry.camera.move(-f3::X());
+                    if(key == Keys::D)
+                        geometry.camera.move(f3::X());
+                    if(key == Keys::Q)
+                        geometry.camera.move(-f3::Y());
+                    if(key == Keys::E)
+                        geometry.camera.move(f3::Y());
+                }
+            }
 
         }
         user_inputs.clear();

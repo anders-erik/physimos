@@ -20,6 +20,7 @@ enum class UserInputType
 };
 
 
+
 union UserInputData
 {
     MouseMovement move;
@@ -32,6 +33,11 @@ union UserInputData
     UserInputData(MouseClick _mouse_click) : mouse_click{_mouse_click} {}
     UserInputData(KeyInput _key_input) : key_input {_key_input} {}
     UserInputData(ScrollInput _scroll_input) : scroll_input {_scroll_input} {}
+};
+
+struct UserInputState
+{
+    bool scroll_btn_down = false;
 };
 
 struct UserInput

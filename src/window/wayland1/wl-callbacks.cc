@@ -288,7 +288,7 @@ void keyboard_key(
 
     Wayland *wayland = (Wayland*)data;
 
-    printf("key: %u, state: %u\n", wlkey, state);
+    // printf("key: %u, state: %u\n", wlkey, state);
 
     Keys key;
     KeyButtonAction action = state == 1 ? KeyButtonAction::Press : KeyButtonAction::Release;
@@ -746,12 +746,18 @@ pointer_button(void *data,
     }
     else if(wayland->input.target == WL_Input::Content)
     {
+        if(mouse_click.action == MouseButtonAction::Press && mouse_click.button == MouseClick::Tertiary)
+            wayland->input.state.scroll_btn_down = true;
+        if(mouse_click.action == MouseButtonAction::Release && mouse_click.button == MouseClick::Tertiary)
+            wayland->input.state.scroll_btn_down = false;
+
         UserInput pointer_click_ev = { 
             UserInputType::MouseClick, 
             mouse_click,
             wayland->input.key_modifiers
         };
         wayland->input.content_events.push_back(pointer_click_ev);
+        // wayland.input.
 
         // Print::buf("mouse btn: ");
         // Print::buf(btn_name);
