@@ -33,7 +33,7 @@ registry_global(void *data, struct wl_registry *wl_registry,
 
     Wayland *wayland = (Wayland*)data;
 
-    printf("%s \n", interface);
+    // printf("%s \n", interface);
 
     if (strcmp(interface, wl_shm_interface.name) == 0)
     {
@@ -115,7 +115,6 @@ output_mode(void *data, wl_output *wl_output, uint32_t flags, int32_t width, int
 
     Wayland* wayland = (Wayland*) data;
 
-    Print::ln("Output mode callback!");
 
     Print::buf(Str::SI(width));
     Print::buf(", ");

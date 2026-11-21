@@ -10,6 +10,7 @@
 
 	// ARG
 	"arg1": "",
+	// "arg1": "main",
 	// "arg1": "install",
 	// "arg1": "bash",
 	// "arg1": "task",

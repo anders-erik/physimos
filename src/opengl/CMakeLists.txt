@@ -6,11 +6,19 @@ target_link_libraries(opengl_loader
     math
 )
 
+add_library(opengl_util util.cc)
+target_link_libraries(opengl_util
+    lib
+    math
+    opengl_loader
+)
+
+
 add_library(opengl
     shader.cc
     program.cc
     texture.cc
-    error.cc
+    
 
     texture_fb.cc
     texture_fbms.cc

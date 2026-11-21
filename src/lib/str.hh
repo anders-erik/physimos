@@ -68,7 +68,7 @@ struct Str
     void fill_alloc(char fill_char);
     void clear();
 
-    void allocate(unsigned int size_to_alloc);
+    void allocate(unsigned int size_to_alloc); // Allocate a specified number of bytes
     void reallocate(unsigned int new_size_alloc);
     void release_mem();
     // Ownership moved. Robbed of all assets. No mem release.

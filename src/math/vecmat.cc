@@ -539,6 +539,16 @@ float* f4::pointer()
     return (float*) this;
 }
 
+f4 f4::operator*(float scaling_factor)
+{
+    x *= scaling_factor;
+    y *= scaling_factor;
+    z *= scaling_factor;
+    w *= scaling_factor;
+
+    return *this;
+}
+
 
 
 
@@ -604,6 +614,57 @@ m4f4 m4f4::operator*(const m4f4 & rhs)
     copy.w.w = lhs.w.x * rhs.x.w + lhs.w.y * rhs.y.w + lhs.w.z * rhs.z.w + lhs.w.w * rhs.w.w; 
 
     return copy;
+}
+
+m4f4& m4f4::operator*=(const m4f4& rhs)
+{
+    (*this) = (*this) * rhs;
+    return *this;
+}
+
+m4f4 m4f4::operator*(float scaling_factor)
+{
+    x = x * scaling_factor;
+    y = y * scaling_factor;
+    z = z * scaling_factor;
+    w = w * scaling_factor;
+
+    return *this;
+}
+
+
+
+m4f4 m4f4::operator+(const m4f4 & rhs)
+{
+    m4f4 lhs = *this;
+
+    lhs.x.x += rhs.x.x;
+    lhs.x.y += rhs.x.y;
+    lhs.x.z += rhs.x.z;
+    lhs.x.w += rhs.x.w;
+
+    lhs.y.x += rhs.y.x;
+    lhs.y.y += rhs.y.y;
+    lhs.y.z += rhs.y.z;
+    lhs.y.w += rhs.y.w;
+
+    lhs.z.x += rhs.z.x;
+    lhs.z.y += rhs.z.y;
+    lhs.z.z += rhs.z.z;
+    lhs.z.w += rhs.z.w;
+    
+    lhs.w.x += rhs.w.x;
+    lhs.w.y += rhs.w.y;
+    lhs.w.z += rhs.w.z;
+    lhs.w.w += rhs.w.w;
+
+    return lhs;
+}
+
+m4f4& m4f4::operator+=(const m4f4& rhs)
+{
+    (*this) = (*this) + rhs;
+    return *this;
 }
 
 
@@ -709,7 +770,42 @@ rotation_z(float angle)
             {0,             0,              0,  1}};
 }
 
+m4f4 m4f4::lerp(m4f4 m0, m4f4 m1, float t)
+{
+    float T = t;
+    if(T < 0.0f)
+        T = 0.0f;
+    if(T > 1.0f)
+        T = 1.0f;
+    
+    auto lerp_f = [](float f0, float f1, float t) -> float {
+        return f0 + (f1 - f0) * t;
+    };
 
+    m4f4 lerped_matrix;
+
+    lerped_matrix.x.x = lerp_f(m0.x.x, m1.x.x, T);
+    lerped_matrix.x.y = lerp_f(m0.x.y, m1.x.y, T);
+    lerped_matrix.x.z = lerp_f(m0.x.z, m1.x.z, T);
+    lerped_matrix.x.w = lerp_f(m0.x.w, m1.x.w, T);
+
+    lerped_matrix.y.x = lerp_f(m0.y.x, m1.y.x, T);
+    lerped_matrix.y.y = lerp_f(m0.y.y, m1.y.y, T);
+    lerped_matrix.y.z = lerp_f(m0.y.z, m1.y.z, T);
+    lerped_matrix.y.w = lerp_f(m0.y.w, m1.y.w, T);
+
+    lerped_matrix.z.x = lerp_f(m0.z.x, m1.z.x, T);
+    lerped_matrix.z.y = lerp_f(m0.z.y, m1.z.y, T);
+    lerped_matrix.z.z = lerp_f(m0.z.z, m1.z.z, T);
+    lerped_matrix.z.w = lerp_f(m0.z.w, m1.z.w, T);
+
+    lerped_matrix.w.x = lerp_f(m0.w.x, m1.w.x, T);
+    lerped_matrix.w.y = lerp_f(m0.w.y, m1.w.y, T);
+    lerped_matrix.w.z = lerp_f(m0.w.z, m1.w.z, T);
+    lerped_matrix.w.w = lerp_f(m0.w.w, m1.w.w, T);
+
+    return lerped_matrix;
+}
 
 
 bool i2::

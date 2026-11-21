@@ -18,7 +18,6 @@ void WL_EGL::init(struct wl_display* wl_display, struct wl_surface* wl_surface, 
     // DISPLAY
     display = eglGetDisplay((EGLNativeDisplayType)wl_display);
     eglInitialize(display, &version.major, &version.minor);
-    fprintf(stdout, "EGL initialized. Version: %d.%d\n", version.major, version.minor);
 
 
     eglChooseConfig(    display, 
@@ -26,7 +25,6 @@ void WL_EGL::init(struct wl_display* wl_display, struct wl_surface* wl_surface, 
                         &config, 
                         1, 
                         &num_configs    );
-    printf("EGL Configs found: %d\n", num_configs);
     check_egl_error(eglGetError());
 
     // CONTEXT
@@ -36,7 +34,7 @@ void WL_EGL::init(struct wl_display* wl_display, struct wl_surface* wl_surface, 
                                 EGL_NO_CONTEXT, 
                                 ctx_attribs         );
     check_egl_error(eglGetError());
-    fprintf(stdout, "EGL Context created: %p\n", context);
+    
     
     // SURFACE
     window = wl_egl_window_create(wl_surface, width, height);
@@ -48,7 +46,16 @@ void WL_EGL::init(struct wl_display* wl_display, struct wl_surface* wl_surface, 
                     context  );
 
     check_egl_error(eglGetError());
-    fprintf(stdout, "EGL Surface created: %p\n", surface);
+    
+
+    // PRINT
+    if(false)
+    {
+        fprintf(stdout, "EGL initialized. Version: %d.%d\n", version.major, version.minor);
+        printf("EGL Configs found: %d\n", num_configs);
+        fprintf(stdout, "EGL Context created: %p\n", context);
+        fprintf(stdout, "EGL Surface created: %p\n", surface);
+    }
 
 
     load_opengl((getProcAddress_T)eglGetProcAddress);

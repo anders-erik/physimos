@@ -9,7 +9,7 @@
 #include "lib/process.hh"
 // END UI
 
-#include "opengl/error.hh"
+
 #include "texture.hh"
 
 namespace opengl {
@@ -116,7 +116,7 @@ get_pixel_color(i2 pos)
     unsigned char pixels_uc[4] = {0, 0, 0, 0};
     float pixels_f[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-    opengl::error_check();
+    // opengl::error_check();
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glBindTexture(GL_TEXTURE_2D, id_gl);
     glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, GL_FLOAT, vec4_color.pointer());
@@ -124,7 +124,7 @@ get_pixel_color(i2 pos)
     // glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, GL_FLOAT, pixels_f);
 
     
-    opengl::error_check();
+    // opengl::error_check();
     // std::cout << "pixels : " << pixels[0] << " " << pixels[1] << " " << pixels[2] << " " << pixels[3] << " " << std::endl;
     // std::cout << "pixels : " << pixels_f[0] << " " << pixels_f[1] << " " << pixels_f[2] << " " << pixels_f[3] << " " << std::endl;
     

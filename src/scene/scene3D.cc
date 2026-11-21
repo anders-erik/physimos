@@ -5,8 +5,6 @@
 
 #include "math/vecmat.hh"
 
-#include "opengl/error.hh"
-
 
 #include "model.hh"
 

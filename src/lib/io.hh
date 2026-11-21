@@ -103,6 +103,40 @@ struct IO
     }
 
 
+
+    static Str cat(Str file_path)
+	{
+		int fd, ret;
+        struct stat st;
+        off_t file_size;
+
+		fd = open(file_path.to_c_str(), O_RDONLY);
+		if(fd < 0)
+		{
+			println("ERROR: Failed to open file.");
+			return {};
+		}
+
+        fstat(fd, &st);
+        file_size = st.st_size;
+
+        Str str {(unsigned int)file_size, (char)0x00};
+
+        // str.allocate(file_size+1);
+        // str. .set(file_size, file_size);
+        
+        read(fd, (void*)str.mem, (size_t)file_size);
+
+        ret = close(fd);
+		if(ret < 0)
+		{
+			println("ERROR: Failed to close WAV file.");
+			return {};
+		}
+
+		return str;
+	}
+
     static Arr<uint8_t> bincat(Str file_path)
 	{
         Arr<uint8_t> data;

@@ -188,13 +188,16 @@ GL_LINKSCOPE glGetError_T glGetError;
 typedef GLubyte* (*glGetString_T)(GLenum val);
 GL_LINKSCOPE glGetString_T glGetString;
 
-typedef void (*glUniform1f_T)(GLint location, GLfloat v0);
-GL_LINKSCOPE glUniform1f_T glUniform1f;
 
 typedef GLint (*glGetUniformLocation_T)(GLuint program, const GLchar *name);
 GL_LINKSCOPE glGetUniformLocation_T glGetUniformLocation;
 
-// GLint glGetUniformLocation(GLuint program, const GLchar *name);
+typedef void (*glUniform1f_T)(GLint location, GLfloat v0);
+GL_LINKSCOPE glUniform1f_T glUniform1f;
+
+typedef void (*glUniformMatrix4fv_T)(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+GL_LINKSCOPE glUniformMatrix4fv_T glUniformMatrix4fv;
+
 
 
 

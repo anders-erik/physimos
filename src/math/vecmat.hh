@@ -268,6 +268,9 @@ struct f4 {
     // f4() : x {0.0f}, y {0.0f}, z {0.0f}, w {1.0f} {}; 
     f4() = default;
 
+
+    f4 operator*(float scaling_factor);
+
     float* pointer();
 };
 
@@ -396,17 +399,26 @@ struct m4f4
 
     m4f4& operator=(const m4f4& rhs);
     /** copy = this * rhs */
-    m4f4 operator*(const m4f4& rhs);
+    m4f4  operator*(const m4f4& rhs);
+    m4f4& operator*=(const m4f4& rhs);
+    m4f4 operator*(float scaling_factor);
+    m4f4  operator+(const m4f4& rhs);
+    m4f4& operator+=(const m4f4& rhs);
 
     /** this = this X rhs */
     void mult_in_place(const m4f4& rhs);
 
     void set_to_I();
 
+
     float* pointer() const;
     const float * pointer_const() const;
+    const float* ptr() { return (float*)this; };
+    float* ptr_mut() { return (float*)this; };
 
     void print();
+
+    static m4f4 I() {return m4f4{};}
 
     /** Create a pure scale matrix */
     static m4f4 scale(float scale_factor);
@@ -423,4 +435,6 @@ struct m4f4
     /** Create a pure rotation matrix about z axis. 
         angle > 0 : +X -> +Y */
     static m4f4 rotation_z(float angle);
+
+    static m4f4 lerp(m4f4 m0, m4f4 m1, float t);
 };
