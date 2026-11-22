@@ -295,6 +295,20 @@ bool Wayland::set_size()
 }
 
 
+i2 Wayland::get_size()
+{
+    i2 content_size;
+
+    if(surfaces.render_type == WaylandRenderingType::SWR)
+        content_size = {surfaces.swr.surface.pixel_buffer.w, surfaces.swr.surface.pixel_buffer.h};
+    else if(surfaces.render_type == WaylandRenderingType::OpenGL)
+        content_size = {surfaces.opengl.egl.width, surfaces.opengl.egl.height};
+    else
+        throw "Error getting wayland size!";
+
+    return content_size;
+}
+
 PixelBuffer Wayland::get_content_buffer()
 {
     return PixelBuffer {(PX32*)(surfaces.swr.pool.data), 

@@ -52,18 +52,22 @@ int main()
         OpenGL::print_opengl_error();
 
         
-        geometry.init();
+        geometry.init(wayland.get_size().x, wayland.get_size().y);
         geometry.draw(clock.get_start_epoch_s());
         // cube.init();
         // cube.draw();
     }
 
     float current_time_s = 0.0f;
+    float previous_time_s = 0.0f;
+    float delta_time_s = 0.0f;
 
     while(wayland.frame_step())
     {
         if(wayland.set_size())
         {
+            int new_width = wayland.get_size().x;
+            int new_height = wayland.get_size().y;
 
             if(wayland.surfaces.render_type == WaylandRenderingType::SWR)
             {
@@ -71,19 +75,29 @@ int main()
             }
             if(wayland.surfaces.render_type == WaylandRenderingType::OpenGL)
             {
-                OpenGL::set_viewport_size(wayland.surfaces.opengl.egl.width, wayland.surfaces.opengl.egl.height);
+                OpenGL::set_viewport_size(new_width, new_height);
             }
+
+            geometry.camera.projection.set_viewport(new_width, new_height);
         }
 
         // = geometry.time_s
+        previous_time_s = current_time_s;
         current_time_s  = clock.get_start_epoch_s();
+        delta_time_s = current_time_s - previous_time_s;
+
         // Print::buf("current_s = ");
         // Print::ln(Str::FL(current_s, 3, Str::FloatRep::Fixed));
 
+        // Print::buf("delta_time_s = ");
+        // Print::ln(Str::FL(delta_time_s, 3, Str::FloatRep::Fixed));
+
         // geometry.time_s += current_s;
         // geometry.set_time_s(current_s * 100.0f);
-        
+
         // geometry.color += 0.001f;
+
+        // geometry.camera.rotate(f3::Z(), 0.01f);
 
         Arr<UserInput> user_inputs = wayland.get_new_input_events();
         for(uint i = 0; i < user_inputs.count(); i++)
@@ -116,6 +130,7 @@ int main()
                 {
                     // Print::buf(user_input.event_data.key_input.to_str());
 
+                    
 
                     if(key == Keys::W)
                         geometry.camera.move(-f3::Z());
@@ -131,7 +146,6 @@ int main()
                         geometry.camera.move(f3::Y());
                 }
             }
-
         }
         user_inputs.clear();
 

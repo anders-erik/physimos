@@ -132,7 +132,7 @@ struct Buffer
 
         // glBufferData(GL_ARRAY_BUFFER, data_size, verts, GL_STATIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, data_size, (const void *)data, GL_STATIC_DRAW);
-        glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+        // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
         // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
         

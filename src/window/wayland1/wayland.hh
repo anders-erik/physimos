@@ -55,6 +55,7 @@ public:
     
     bool frame_step(); // renders current frame, process queued events, and returns true if new frame will begin, or false if exit-input detected
     bool set_size(); /** Sets new size if resize-flag detected, else nothing will happen. Returns 'true' if resized, 'false' otherwise. */
+    i2 get_size();
     PixelBuffer get_content_buffer();
 
     bool content_surface_is_busy();

@@ -11,46 +11,6 @@
 
 
 
-//     const char* vert_src =
-// "#version 330 core\n"
-
-// "layout(location = 0) in vec3 aPos;\n"
-
-// // "uniform mat4 view_matrix;\n"
-// "uniform mat4 view;\n"
-// "uniform mat4 projection;\n"
-
-
-// "void main() {\n"
-// "    vec4 pos = vec4(aPos, 1.0);\n"
-// // "    gl_Position = pos * view_matrix;\n"
-// "    gl_Position = projection * view * pos;\n"
-// // "    gl_Position = pos;\n"
-// "}";
-
-    const char* frag_src =
-"#version 330 core\n"
-
-// "uniform float color;\n"
-"uniform float time_s;\n"
-
-"out vec4 FragColor;\n"
-
-"float color_frequency_multiplier = 2.0;\n"
-
-"void main() {\n"
-"       float color_component = 0.5 * sin(time_s * color_frequency_multiplier);\n"
-// "       float color_component = time_s;\n"
-
-// "    FragColor = vec4(color, 0.0, 0.0, 1.0);\n"
-// "    FragColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
-"    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
-// "    FragColor = vec4(color_component, color_component, color_component, 1.0);\n"
-// "    FragColor = vec4(sin(color_component), 0.0, 0.0, 1.0);\n"
-// "    FragColor = vec4(sin(time_s), 0.0, 0.0, 1.0);\n"
-"}";
-
-
 
 struct Geometry
 {
@@ -103,10 +63,10 @@ struct Geometry
     };
 
 
-    void init()
+    void init(int width, int height)
     {
-        camera.init();
-        camera.set_pos({0.0f, 0.2f, 1.0f});
+        camera.init(width, height);
+        camera.set_pos({0.0f, 0.0f, 10.0f});
 
         // camera.position = {10.0f, 0.0f, 5.0f};
 
@@ -221,10 +181,11 @@ struct Geometry
         // camera.move({0.01f, 0.0f, 0.0f});
 
         m4f4 _view_matrix = camera.view;
-        m4f4 _projection_matrix = camera.projection;
+        m4f4 _projection_matrix = camera.projection.matrix();
 
+        camera.reload_matrixes();
         set_view_matrix(camera.view);
-        set_projection_matrix(camera.projection);
+        set_projection_matrix(camera.projection.matrix());
         
         // glUniformMatrix4fv(view_matrix.location, 1, GL_TRUE, view_matrix.value.ptr());
         // glUniformMatrix4fv(projection_matrix.location, 1, GL_TRUE, projection_matrix.value.ptr());
