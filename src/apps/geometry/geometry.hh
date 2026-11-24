@@ -7,7 +7,9 @@
 #include "lib/io.hh"
 
 #include "geo_camera.hh"
+#include "mesh.hh"
 #include "opengl.hh"
+
 
 
 
@@ -53,10 +55,22 @@ struct Geometry
     i32 render_counter = 0;
 
     OpenGL::Point3f triangle_verts[3] = {
-        {0.0f,  1.0f, 0.0f}, // top center
+        { 0.0f,  1.0f, 0.0f}, // top center
         {-1.0f, -1.0f, 0.0f}, // bottom left
-        {1.0f, -1.0f, 0.0f}  // bottom right
+        { 1.0f, -1.0f, 0.0f}  // bottom right
     };
+
+    // Arr<Mesh::V3C1> cube_v3c1[6] = 
+    // {
+    //     // lower left triangle
+    //     {{-1.0f, -2.0f, 0.0f}, 0.2f},
+    //     {{-1.0f,  2.0f, 0.0f}, 0.2f},
+    //     {{ 1.0f, -2.0f, 0.0f}, 0.2f},
+    //     // upper triangle
+    //     {{ 1.0f,  2.0f, 0.0f}, 0.4f},
+    //     {{ 1.0f, -2.0f, 0.0f}, 0.4f},
+    //     {{-1.0f,  2.0f, 0.0f}, 0.4f},
+    // };
 
     float new_last_vert[3] = {
         1.0f, -0.5f, 0.0f  // new bottom right
@@ -70,6 +84,38 @@ struct Geometry
 
         // camera.position = {10.0f, 0.0f, 5.0f};
 
+        Arr<Mesh::V3C1> mesh_v3c1;
+        mesh_v3c1.reserve(6);
+        mesh_v3c1.set({}, 6);
+        mesh_v3c1[0] = {{-1.0f, -2.0f, 0.0f}, 0.2f};
+        // mesh_v3c1[0].v = {-1.0f, -2.0f, 0.0f};
+        // mesh_v3c1[0].c = 0.2f;
+        // mesh_v3c1[1].v = {-1.0f,  2.0f, 0.0f};
+        // mesh_v3c1[1].c = 0.2f;
+        // mesh_v3c1[2].v = { 1.0f, -2.0f, 0.0f};
+        // mesh_v3c1[2].c = 0.2f;
+        // mesh_v3c1[3].v = {1.0f,  2.0f, 0.0f};
+        // mesh_v3c1[3].c = 0.4f;
+        // mesh_v3c1[4].v = {1.0f, -2.0f, 0.0f};
+        // mesh_v3c1[4].c = 0.4f;
+        // mesh_v3c1[5].v = {-1.0f,  2.0f, 0.0f};
+        // mesh_v3c1[5].c = 0.4f;
+        mesh_v3c1[1] = {{-1.0f,  2.0f, 0.0f}, 0.2f};
+        mesh_v3c1[2] = {{ 1.0f, -2.0f, 0.0f}, 0.2f};
+        mesh_v3c1[3] = {{ 1.0f,  2.0f, 0.0f}, 0.4f};
+        mesh_v3c1[4] = {{ 1.0f, -2.0f, 0.0f}, 0.4f};
+        mesh_v3c1[5] = {{-1.0f,  2.0f, 0.0f}, 0.4f};
+
+        // {
+        //     // lower left triangle
+        //     {{-1.0f, -2.0f, 0.0f}, 0.2f},
+        //     {{-1.0f,  2.0f, 0.0f}, 0.2f},
+        //     {{ 1.0f, -2.0f, 0.0f}, 0.2f},
+        //     // upper triangle
+        //     {{ 1.0f,  2.0f, 0.0f}, 0.4f},
+        //     {{ 1.0f, -2.0f, 0.0f}, 0.4f},
+        //     {{-1.0f,  2.0f, 0.0f}, 0.4f},
+        // };
 
         // camera.rotation.rotate(f3::X(), 0.0f);
         // camera.rotation.rotate(f3::Y(), -0.0f);
@@ -82,7 +128,10 @@ struct Geometry
         
         // program.init(vert_src, frag_src);
 
-        triangle_buffer.init((float*)triangle_verts, sizeof(triangle_verts), OpenGL::Buffer::pos_3_f);
+        // triangle_buffer.init((float*)triangle_verts, sizeof(triangle_verts));
+        triangle_buffer.init(mesh_v3c1);
+
+
         Str vertex_shader_file = IO::cat("src/opengl/shaders/geometry/vertex.vert");
         Str fragment_shader_file = IO::cat("src/opengl/shaders/geometry/fragment.frag");
         program.init( vertex_shader_file, fragment_shader_file);

@@ -167,8 +167,8 @@ struct GeoCamera
         // m4f4 align_x_rot = m4f4::rotation_z(-PIHf);
         // rotation_matrix
 
-        // view = translation_matrix;
-        view = align_x_rot * translation_matrix;
+        view = translation_matrix;
+        // view = align_x_rot * translation_matrix;
         // view = position_matrix * rotation_matrix;
 
         return view;

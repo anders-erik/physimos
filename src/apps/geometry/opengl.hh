@@ -5,6 +5,8 @@
 #include "opengl/util.hh"
 #include "opengl/program.hh"
 
+#include "mesh.hh"
+
 namespace OpenGL
 {
 
@@ -81,11 +83,6 @@ struct Program
 
 struct Buffer
 {
-    /* datatype_dims_type*/
-    enum Type
-    {
-        pos_3_f,
-    };
 
     GLuint id = 0;
     GLuint vao = 0;
@@ -95,7 +92,7 @@ struct Buffer
     };
 
 
-    Buffer* init(float* data, int data_size, Type type)
+    Buffer* init(float* data, int data_size)
     {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -135,6 +132,37 @@ struct Buffer
         // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
         // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+        // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float), NULL);
+        
+
+        return this;
+    }
+
+
+    Buffer* init(Arr<Mesh::V3C1>& mesh)
+    {
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+        glEnableVertexAttribArray(0);
+
+        glGenBuffers(1, &id);
+        glBindBuffer(GL_ARRAY_BUFFER, id);
+
+        OpenGL::print_opengl_error();
+
+
+        // float verts[9] = {
+        //     0.0f,  1.0f, 0.0f, // top center
+        //     -1.0f, -1.0f, 0.0f, // bottom left
+        //     1.0f, -1.0f, 0.0f  // bottom right
+        // };
+
+        // glBufferData(GL_ARRAY_BUFFER, data_size, verts, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh.count_byte(), (const void*)mesh.data(), GL_STATIC_DRAW);
+        // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+        // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0* sizeof(float)));
+        glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(3* sizeof(float)));
         
 
         return this;
@@ -143,7 +171,8 @@ struct Buffer
     void draw()
     {
         glEnableVertexAttribArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        OpenGL::print_opengl_error();
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     void destroy()
