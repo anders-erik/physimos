@@ -40,11 +40,22 @@ struct UserInputState
     bool scroll_btn_down = false;
 };
 
+
+struct MouseButtonState
+{
+    bool primary_down = false;
+    bool secondary_down = false;
+    bool tertiary_down = false;
+};
+
+
 struct UserInput
 {
     UserInputType event_type;
     UserInputData event_data;
     KeyModifiers key_modifiers;
+    MouseButtonState mouse_button_state;
+    
 
     UserInput() {}
     UserInput(UserInputType _event_type, UserInputData _event_data) 

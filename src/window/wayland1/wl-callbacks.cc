@@ -563,6 +563,7 @@ pointer_motion(void *data,
             MouseMovement{ pos_content_previous_sane, wayland->input.pointer_pos_content_sane },
             wayland->input.key_modifiers
         };
+        pointer_move_ev.mouse_button_state = wayland->input.mouse_button_state;
         wayland->input.content_events.push_back(pointer_move_ev);
     }
     else if(wayland->input.target == WL_Input::Window)
@@ -579,9 +580,6 @@ pointer_motion(void *data,
             wayland->cursor.set_cursor(cursor_type);
 
         }
-
-        
-
         
     }
 
@@ -645,7 +643,27 @@ pointer_button(void *data,
             break;
 
         default:
+            Print::ln("Hold state?");
             break;
+    }
+
+    if(btn_action == "release")
+    {
+        if(mouse_click.button = MouseClick::Primary)
+            wayland->input.mouse_button_state.primary_down = false;
+        if(mouse_click.button = MouseClick::Secondary)
+            wayland->input.mouse_button_state.secondary_down = false;
+        if(mouse_click.button = MouseClick::Tertiary)
+            wayland->input.mouse_button_state.tertiary_down = false;
+    }
+    else // hold
+    {
+        if(mouse_click.button = MouseClick::Primary)
+            wayland->input.mouse_button_state.primary_down = true;
+        if(mouse_click.button = MouseClick::Secondary)
+            wayland->input.mouse_button_state.secondary_down = true;
+        if(mouse_click.button = MouseClick::Tertiary)
+            wayland->input.mouse_button_state.tertiary_down = true;
     }
 
     if(wayland->input.target == WL_Input::Window)
@@ -746,10 +764,6 @@ pointer_button(void *data,
     }
     else if(wayland->input.target == WL_Input::Content)
     {
-        if(mouse_click.action == MouseButtonAction::Press && mouse_click.button == MouseClick::Tertiary)
-            wayland->input.state.scroll_btn_down = true;
-        if(mouse_click.action == MouseButtonAction::Release && mouse_click.button == MouseClick::Tertiary)
-            wayland->input.state.scroll_btn_down = false;
 
         UserInput pointer_click_ev = { 
             UserInputType::MouseClick, 

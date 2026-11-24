@@ -110,18 +110,29 @@ int main()
                 // opengl_triangle.view_matrix.value.print();
                 if(user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Up)
                 {
-                    geometry.camera.move(f3::X() * 0.1f);
+                    f3 forward = geometry.camera.get_forward();
+                    geometry.camera.move( forward );
+                    // geometry.camera.move(f3::X() * 0.1f);
                     // opengl_triangle.view_matrix.value * 0.9f;
                 }
                 if(user_input.event_data.scroll_input.scroll_direction == ScrollDirection::Down)
                 {
-                    geometry.camera.move(f3::X() * -0.1f);
+                    geometry.camera.move( -geometry.camera.get_forward() );
+                    // geometry.camera.move(f3::X() * -0.1f);
                     // opengl_triangle.view_matrix.value * 1.1f;
                 }
 
                 // opengl_triangle.view_matrix.value.w.w = 1.0f;
                 // Print::ln("Scroll");
                 // opengl_triangle.view_matrix.value.print();
+            }
+            if(user_input.is_mouse_move())
+            {
+                if(user_input.mouse_button_state.tertiary_down)
+                {
+                    d2 move_delta = user_input.event_data.move.delta();
+                    
+                }
             }
             if(user_input.is_key_input())
             {

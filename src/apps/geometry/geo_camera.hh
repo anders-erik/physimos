@@ -45,9 +45,15 @@ struct OrbitalContext
 
 struct GeoCamera
 {
+    enum Type
+    {
+        OrbitCenter,
+    } type = OrbitCenter;
+
     // f3 position {10.0f, 10.0f, 10.0f}; 
     f3 position {0.0f, 0.0f, 0.0f}; 
     // Quarternion rotation {1.0f, 0.0f, 0.0f, 0.0f};
+    OrbitalContext orbital_context;
 
     m4f4 view;
 
@@ -59,6 +65,14 @@ struct GeoCamera
         
         projection.set_finite();
         projection.set_viewport(width, height);
+    }
+
+    f3 get_forward()
+    {
+        if(type == OrbitCenter)
+        {
+            return -(position.unit());
+        }
     }
 
     void set_pos(f3 new_pos)
@@ -118,25 +132,43 @@ struct GeoCamera
         // m4f4 rotation_matrix    =  align_x_rot * rotation.inverse().matrix();
         // m4f4 rotation_matrix;
 
+        if(false)
+        {
+            f3_sphere spherical = Spherical::from_cart(position);
+            OrbitalContext orbit_ctx;
+            orbit_ctx.set_rho(      spherical.get_rho()     );
+            orbit_ctx.set_theta(    spherical.get_theta()   );
+            orbit_ctx.set_phi(      spherical.get_phi()     );
+            // f3_sphere.print("");
+
+            Quarternion rotation {1.0f, 0.0f, 0.0f, 0.0f};
+            rotation.reset();
+            rotation.rotate(f3::Z(), -(PIf));
+            rotation.rotate(f3::Y(), -(PIHf - orbit_ctx.phi));
+            rotation.rotate(f3::Z(), -(-orbit_ctx.theta));
+
+
+            m4f4 align_x_rot = m4f4::rotation_x(-PIHf) * m4f4::rotation_z(-PIHf);
+            m4f4 rotation_matrix    =  align_x_rot * rotation.inverse().matrix();
+        }
+
         f3_sphere spherical = Spherical::from_cart(position);
-        OrbitalContext orbit_ctx;
-        orbit_ctx.set_rho(      spherical.get_rho()     );
-        orbit_ctx.set_theta(    spherical.get_theta()   );
-        orbit_ctx.set_phi(      spherical.get_phi()     );
-        // f3_sphere.print("");
+        orbital_context.set_rho(      spherical.get_rho()     );
+        orbital_context.set_theta(    spherical.get_theta()   );
+        orbital_context.set_phi(      spherical.get_phi()     );
+        float rho = spherical.get_rho();
+        float theta = spherical.get_theta();
+        float phi = spherical.get_phi();
+        // orbital_context
 
-        Quarternion rotation {1.0f, 0.0f, 0.0f, 0.0f};
-        rotation.reset();
-        rotation.rotate(f3::Z(), -(PIf));
-        rotation.rotate(f3::Y(), -(PIHf - orbit_ctx.phi));
-        rotation.rotate(f3::Z(), -(-orbit_ctx.theta));
+        // m4f4::
+        m4f4 align_x_rot = m4f4::rotation_x(0.4f) * m4f4::rotation_z(-PIHf);;
+        // m4f4 align_x_rot = m4f4::rotation_z(-PIHf);
+        // m4f4 align_x_rot = m4f4::rotation_z(-PIHf);
+        // rotation_matrix
 
-
-        m4f4 align_x_rot = m4f4::rotation_x(-PIHf) * m4f4::rotation_z(-PIHf);
-        m4f4 rotation_matrix    =  align_x_rot * rotation.inverse().matrix();
-
-        view = translation_matrix;
-        // view = rotation_matrix * translation_matrix;
+        // view = translation_matrix;
+        view = align_x_rot * translation_matrix;
         // view = position_matrix * rotation_matrix;
 
         return view;

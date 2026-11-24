@@ -297,7 +297,8 @@ struct WL_Input
     Arr<UserInput> content_events;
 
     KeyModifiers key_modifiers;
-    UserInputState state;
+    // UserInputState state;
+    MouseButtonState mouse_button_state;
 
     // Pointer state
     d2 pointer_pos_window_raw = {0.0, 0.0};
