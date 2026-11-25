@@ -74,8 +74,11 @@ void load_opengl(getProcAddress_T getProcAddress)
 
     glGenVertexArrays = (glGenVertexArrays_T)getProcAddress("glGenVertexArrays");
     glBindVertexArray = (glBindVertexArray_T)getProcAddress("glBindVertexArray");
+    glDeleteVertexArrays = (glDeleteVertexArrays_T)getProcAddress("glDeleteVertexArrays");
+
     glVertexAttribPointer = (glVertexAttribPointer_T)getProcAddress("glVertexAttribPointer");
     glEnableVertexAttribArray = (glEnableVertexAttribArray_T)getProcAddress("glEnableVertexAttribArray");
+
     glCreateProgram = (glCreateProgram_T)getProcAddress("glCreateProgram");
     glCreateShader  = (glCreateShader_T)getProcAddress("glCreateShader");
     glShaderSource  = (glShaderSource_T)getProcAddress("glShaderSource");
@@ -87,7 +90,9 @@ void load_opengl(getProcAddress_T getProcAddress)
     glUseProgram  = (glUseProgram_T)getProcAddress("glUseProgram");
     glClearColor  = (glClearColor_T)getProcAddress("glClearColor");
     glClear  = (glClear_T)getProcAddress("glClear");
+
     glDrawArrays  = (glDrawArrays_T)getProcAddress("glDrawArrays");
+    glDrawElements = (glDrawElements_T)getProcAddress("glDrawElements");
 
     glGetUniformLocation = (glGetUniformLocation_T)getProcAddress("glGetUniformLocation");
     glUniform1f = (glUniform1f_T)getProcAddress("glUniform1f");

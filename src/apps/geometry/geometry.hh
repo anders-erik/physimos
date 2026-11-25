@@ -17,7 +17,9 @@
 struct Geometry
 {
     OpenGL::Program program;
+    
     OpenGL::Buffer triangle_buffer;
+    Mesh mesh;
 
     GeoCamera camera;
 
@@ -81,79 +83,15 @@ struct Geometry
     {
         camera.init(width, height);
         camera.set_pos({0.0f, 0.0f, 10.0f});
-
-        // camera.position = {10.0f, 0.0f, 5.0f};
-
-        Arr<Mesh::V3C1> mesh_v3c1;
-        mesh_v3c1.reserve(6);
-        mesh_v3c1.set({}, 6);
-        mesh_v3c1[0] = {{-1.0f, -2.0f, 0.0f}, 0.2f};
-        // mesh_v3c1[0].v = {-1.0f, -2.0f, 0.0f};
-        // mesh_v3c1[0].c = 0.2f;
-        // mesh_v3c1[1].v = {-1.0f,  2.0f, 0.0f};
-        // mesh_v3c1[1].c = 0.2f;
-        // mesh_v3c1[2].v = { 1.0f, -2.0f, 0.0f};
-        // mesh_v3c1[2].c = 0.2f;
-        // mesh_v3c1[3].v = {1.0f,  2.0f, 0.0f};
-        // mesh_v3c1[3].c = 0.4f;
-        // mesh_v3c1[4].v = {1.0f, -2.0f, 0.0f};
-        // mesh_v3c1[4].c = 0.4f;
-        // mesh_v3c1[5].v = {-1.0f,  2.0f, 0.0f};
-        // mesh_v3c1[5].c = 0.4f;
-        mesh_v3c1[1] = {{-1.0f,  2.0f, 0.0f}, 0.2f};
-        mesh_v3c1[2] = {{ 1.0f, -2.0f, 0.0f}, 0.2f};
-        mesh_v3c1[3] = {{ 1.0f,  2.0f, 0.0f}, 0.4f};
-        mesh_v3c1[4] = {{ 1.0f, -2.0f, 0.0f}, 0.4f};
-        mesh_v3c1[5] = {{-1.0f,  2.0f, 0.0f}, 0.4f};
-
-        // {
-        //     // lower left triangle
-        //     {{-1.0f, -2.0f, 0.0f}, 0.2f},
-        //     {{-1.0f,  2.0f, 0.0f}, 0.2f},
-        //     {{ 1.0f, -2.0f, 0.0f}, 0.2f},
-        //     // upper triangle
-        //     {{ 1.0f,  2.0f, 0.0f}, 0.4f},
-        //     {{ 1.0f, -2.0f, 0.0f}, 0.4f},
-        //     {{-1.0f,  2.0f, 0.0f}, 0.4f},
-        // };
-
-        // camera.rotation.rotate(f3::X(), 0.0f);
-        // camera.rotation.rotate(f3::Y(), -0.0f);
-        // camera.rotation.rotate(f3::Z(), 1.0f);
         
-
-        // camera.rotation.rotate(f3::X(), 1.0f);
-        // camera.rotation.rotate(f3::Y(), -0.2f);
-        // camera.rotation.rotate(f3::Z(), 1.0f);
-        
-        // program.init(vert_src, frag_src);
-
-        // triangle_buffer.init((float*)triangle_verts, sizeof(triangle_verts));
-        triangle_buffer.init(mesh_v3c1);
+        mesh.init();
+        triangle_buffer.init(mesh);
 
 
         Str vertex_shader_file = IO::cat("src/opengl/shaders/geometry/vertex.vert");
         Str fragment_shader_file = IO::cat("src/opengl/shaders/geometry/fragment.frag");
         program.init( vertex_shader_file, fragment_shader_file);
     
-        // const char* vertex_shader_file_to_c_str = vertex_shader_file.to_c_str();
-        // Str vertex_shader_from_static_c = Str{vert_src};
-        // const char* vertex_shader_from_static_c_to_c_str = vertex_shader_from_static_c.to_c_str();
-
-        // const char* vertex_shader_file_c = (const char*) vertex_shader_file.to_c_str();
-        // Print::ln(vertex_shader_file_to_c_str);
-        // Print::ln(vertex_shader_from_static_c_to_c_str);
-
-        // const char* vertex_shader_from_c_str__ = (const char*) vertex_shader_from_static_c;
-
-        // int result = strcmp(vertex_shader_file_to_c_str, vertex_shader_from_static_c_to_c_str);
-        // Print::buf("strcmp = ");
-        // Print::ln(Str::SI(result));
-
-        // Assert( strcmp(vertex_shader_file.to_c_str(), vertex_shader_file_c) );
-        // assert( strcmp(vertex_shader_file_to_c_str, vertex_shader_from_static_c_to_c_str) );
-        // assert(strcmp(vertex_shader_from_c_str__, vertex_shader_from_c_str__));
-        // assert(vertex_shader_file.to_c_str() == vertex_shader_from_c_str.to_c_str());
 
 
         OpenGL::print_opengl_error();
@@ -165,7 +103,7 @@ struct Geometry
         set_time_s(0.0f);
 
         color.location = glGetUniformLocation(program.id, color.name);
-        glUniform1f(color.location, 0.0f);
+        glUniform1f(color.location, mesh.color);
 
         // view_matrix.value = m4f4::scale(1.0f);
         view_matrix.location = glGetUniformLocation(program.id, view_matrix.name);
@@ -182,26 +120,6 @@ struct Geometry
     {
         glUseProgram(program.id);
 
-        // VIEW MATRIX
-        // view_matrix.value = m4f4::scale(0.5f * sin(time_s.value));
-        // view_matrix.value = m4f4::scale(0.5f);
-        // view_matrix.value = m4f4{};
-        // camera.update_matrices();
-        // camera.set_orbit_center();
-        // camera.rotation = camera.rotation.rotate(f3::X(), 0.01f);
-        // camera.rotation = camera.rotation.rotate(f3::Y(), 0.01f);
-        // camera.rotation = camera.rotation.rotate(f3::Z(), 0.01f);
-        // m4f4 view_mat = camera.view.matrix;
-        // m4f4 projection_mat = camera.projection.matrix;
-        // m4f4 model_mat = m4f4{};
-        // m4f4 shader_matrix = camera.projection.matrix * camera.view.matrix * m4f4{};
-        // m4f4 shader_matrix = camera.view.matrix * camera.projection.matrix * m4f4{};
-        // shader_matrix.print();
-        // Print::ln("");
-        // view_mat.print();
-        // view_matrix.value = view_mat * projection_mat;
-        // view_matrix.value = projection_mat * view_mat * model_mat;
-        // view_matrix.value = view_mat;
 
         m4f4 start_mat = m4f4::scale(1.0f);
         m4f4 end_mat = m4f4::scale(0.0f);
@@ -210,24 +128,6 @@ struct Geometry
         // view_matrix.value = m4f4::lerp(start_mat, camera.view.matrix, lerp_value);
         // view_matrix.value = m4f4::lerp(start_mat, camera.view, lerp_value);
 
-        // view_matrix.value = start_mat;
-        // m4f4 final_matrix_1 = m4f4::lerp(start_mat, end_mat, 1.0f);
-        // m4f4 final_matrix_2 = m4f4::lerp(end_mat, end_mat, 1.0f);
-
-        // view_matrix.value = m4f4::lerp(start_mat, view_mat, 1.0f);
-        // view_matrix.value = m4f4::lerp(end_mat, end_mat, lerp_value);
-
-        // view_matrix.value = start_mat;
-
-        // view_matrix.value.x.x = 0.4f;
-        // view_matrix.value = view_matrix.value * m4f4::rotation_z(0.01f);
-        // view_matrix.value += m4f4::translation({0.01f, 0.0f, 0.0f});
-        // view_matrix.value.x.w += 0.01f;
-        // view_matrix.value.print();
-
-        // camera.set_pos({0.2f, 0.0f, 3.9f});
-        // camera.move(f3::X() * 0.001f);
-        // camera.move({0.01f, 0.0f, 0.0f});
 
         m4f4 _view_matrix = camera.view;
         m4f4 _projection_matrix = camera.projection.matrix();

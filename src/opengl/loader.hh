@@ -42,9 +42,14 @@
 #define GL_STACK_UNDERFLOW 0x0504
 #define GL_STACK_OVERFLOW 0x0503
 
+#define GL_LINES 0x0001
+
 #define GL_FALSE 0
 #define GL_TRUE 1
+
 #define GL_FLOAT 0x1406
+#define GL_UNSIGNED_INT 0x1405
+
 #define GL_VERTEX_SHADER 0x8B31
 #define GL_FRAGMENT_SHADER 0x8B30
 
@@ -102,6 +107,18 @@ typedef float		GLfloat;
 
 
 
+
+
+/**
+    @brief short description explanation.
+    @note Preconditions before calling. \n
+    \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml
+
+    \details Longer explanation. 
+    asdf asdfghjk
+ */
+struct asdf; 
+
 // https://registry.khronos.org/OpenGL-Refpages/gl4/
 
 
@@ -126,25 +143,20 @@ GL_LINKSCOPE glDeleteBuffers_T glDeleteBuffers; ///< @param n [GLsizei] Specifie
 
 
 typedef void (*glGenVertexArrays_T)(GLsizei n, GLuint *arrays);
-/**
-    @brief short description explanation.
-    @note Preconditions before calling. \n
-    \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml
-
-    \details Longer explanation. 
-    asdf asdfghjk
- */
-GL_LINKSCOPE glGenVertexArrays_T glGenVertexArrays; 
+GL_LINKSCOPE glGenVertexArrays_T glGenVertexArrays; /// @brief Returns 'n' vertex array object names in 'arrays'. There is no guarantee that the names form a contiguous set of integers; however, it is guaranteed that none of the returned names was in use immediately before the call to glGenVertexArrays.  @param n [GLsizei] Specifies the number of vertex array object names to generate. @param arrays [GLuint*] Specifies an array in which the generated vertex array object names are stored. @return void>  @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml
 
 typedef void (*glBindVertexArray_T)(GLuint array);
-GL_LINKSCOPE glBindVertexArray_T glBindVertexArray;
+GL_LINKSCOPE glBindVertexArray_T glBindVertexArray; /// @brief Binds the vertex array object with name array. array is the name of a vertex array object previously returned from a call to glGenVertexArrays, or zero to break the existing vertex array object binding. If no vertex array object with name array exists, one is created when array is first bound. If the bind is successful no change is made to the state of the vertex array object, and any previous vertex array object binding is broken. @param array [GLuint] Specifies the name of the vertex array to bind. @return void  @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindVertexArray.xhtml
 
+typedef void (*glDeleteVertexArrays_T)(GLsizei n, const GLuint *arrays);
+GL_LINKSCOPE glDeleteVertexArrays_T glDeleteVertexArrays; /// @brief Deletes n vertex array objects whose names are stored in the array addressed by arrays. Once a vertex array object is deleted it has no contents and its name is again unused. If a vertex array object that is currently bound is deleted, the binding for that object reverts to zero and the default vertex array becomes current. Unused names in arrays are silently ignored, as is the value zero. @param n [GLsizei]  Specifies the number of vertex array objects to be deleted. @param arrays [const GLuint *]  Specifies the address of an array containing the n names of the objects to be deleted. @return void \n @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDeleteVertexArrays.xhtml
 
 typedef void (*glVertexAttribPointer_T)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
-GL_LINKSCOPE glVertexAttribPointer_T glVertexAttribPointer;
+GL_LINKSCOPE glVertexAttribPointer_T glVertexAttribPointer; /// @brief Specifies the location and data format of the array of generic vertex attributes at index index to use when rendering. size specifies the number of components per attribute and must be 1, 2, 3, 4, or GL_BGRA. type specifies the data type of each component, and stride specifies the byte stride from one attribute to the next, allowing vertices and attributes to be packed into a single array or stored in separate arrays. @param index [GLuint] Specifies the index of the generic vertex attribute to be modified. @param size [GLint] Specifies the number of components per generic vertex attribute. Must be 1, 2, 3, 4. Additionally, the symbolic constant GL_BGRA is accepted by glVertexAttribPointer. The initial value is 4. @param type [GLenum] Specifies the data type of each component in the array. The symbolic constants GL_BYTE, GL_INT, and GL_UNSIGNED_INT, etc. @param normalized [GLboolean] For glVertexAttribPointer, specifies whether fixed-point data values should be normalized (GL_TRUE) or converted directly as fixed-point values (GL_FALSE) when they are accessed. @param stride [GLsizei] Specifies the byte offset between consecutive generic vertex attributes. If stride is 0, the generic vertex attributes are understood to be tightly packed in the array. The initial value is 0. @param pointer [const void *] Specifies the offset of the first component of the first generic vertex attribute in the array in the data store of the buffer currently bound to the GL_ARRAY_BUFFER target. The initial value is 0. @return void  @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml
 
 typedef void (*glEnableVertexAttribArray_T)(GLuint index);
-GL_LINKSCOPE glEnableVertexAttribArray_T glEnableVertexAttribArray;
+GL_LINKSCOPE glEnableVertexAttribArray_T glEnableVertexAttribArray; /// @brief Enables the generic vertex attribute array specified by index and uses currently bound vertex array object for the operation. @param index [GLuint] Specifies the index of the generic vertex attribute to be enabled or disabled. @return void @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glEnableVertexAttribArray.xhtml
+
 
 typedef GLuint (*glCreateProgram_T)(void);
 GL_LINKSCOPE glCreateProgram_T glCreateProgram;
@@ -181,6 +193,10 @@ GL_LINKSCOPE glClear_T glClear;
 
 typedef void (*glDrawArrays_T)(GLenum mode, GLint first, GLsizei count);
 GL_LINKSCOPE glDrawArrays_T glDrawArrays;
+
+typedef void (*glDrawElements_T)(GLenum mode, GLsizei count, GLenum type, const void * indices);
+GL_LINKSCOPE glDrawElements_T glDrawElements;
+
 
 typedef GLenum (*glGetError_T)(void);
 GL_LINKSCOPE glGetError_T glGetError;

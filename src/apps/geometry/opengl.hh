@@ -85,6 +85,7 @@ struct Buffer
 {
 
     GLuint id = 0;
+    GLuint ebo = 0;
     GLuint vao = 0;
 
     float new_last_vert[3] = {
@@ -139,15 +140,17 @@ struct Buffer
     }
 
 
-    Buffer* init(Arr<Mesh::V3C1>& mesh)
+    Buffer* init(Mesh& mesh)
     {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
-        glEnableVertexAttribArray(0);
+        
 
         glGenBuffers(1, &id);
         glBindBuffer(GL_ARRAY_BUFFER, id);
+        glBufferData(GL_ARRAY_BUFFER, mesh.verts.count_byte(), (const void*)mesh.verts.data(), GL_STATIC_DRAW);
 
+        
         OpenGL::print_opengl_error();
 
 
@@ -158,12 +161,18 @@ struct Buffer
         // };
 
         // glBufferData(GL_ARRAY_BUFFER, data_size, verts, GL_STATIC_DRAW);
-        glBufferData(GL_ARRAY_BUFFER, mesh.count_byte(), (const void*)mesh.data(), GL_STATIC_DRAW);
         // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
         // glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float), sizeof(new_last_vert), new_last_vert);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0* sizeof(float)));
-        glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(3* sizeof(float)));
+        glEnableVertexAttribArray(0);
+        // glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(3* sizeof(float)));
+        // glEnableVertexAttribArray(1);
         
+        glGenBuffers(1, &ebo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.faces.count_byte(), (const void*)mesh.faces.data(), GL_STATIC_DRAW);
+
+        // glBindBuffer(GL_ARRAY_BUFFER, id);
 
         return this;
     }
@@ -172,7 +181,10 @@ struct Buffer
     {
         glEnableVertexAttribArray(vao);
         OpenGL::print_opengl_error();
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // glDrawArrays(GL_TRIANGLES, 0, 6);
+        // glDrawArrays(GL_LINES, 0, 6);
+        // glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_INT, (const void *)0);
+        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
     }
 
     void destroy()
