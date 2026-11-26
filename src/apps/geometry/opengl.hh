@@ -83,10 +83,19 @@ struct Program
 
 struct Buffer
 {
+    enum Format {
+        V3, // Three postion values
+    } format;
+    enum Type {
+        Array,      // GL_ARRAY_BUFFER
+        Element,    // GL_ELEMENT_ARRAY_BUFFER
+    } type;
 
     GLuint id = 0;
     GLuint ebo = 0;
     GLuint vao = 0;
+
+    bool edited = false;
 
     float new_last_vert[3] = {
         1.0f, -0.5f, 0.0f  // new bottom right
@@ -144,7 +153,7 @@ struct Buffer
     {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
-        
+
 
         glGenBuffers(1, &id);
         glBindBuffer(GL_ARRAY_BUFFER, id);
@@ -181,6 +190,10 @@ struct Buffer
     {
         glEnableVertexAttribArray(vao);
         OpenGL::print_opengl_error();
+
+        glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+        // glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
         // glDrawArrays(GL_TRIANGLES, 0, 6);
         // glDrawArrays(GL_LINES, 0, 6);
         // glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_INT, (const void *)0);

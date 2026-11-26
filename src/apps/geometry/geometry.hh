@@ -84,7 +84,7 @@ struct Geometry
         camera.init(width, height);
         camera.set_pos({0.0f, 0.0f, 10.0f});
         
-        mesh.init();
+        mesh = Mesh::create_rectangle();
         triangle_buffer.init(mesh);
 
 

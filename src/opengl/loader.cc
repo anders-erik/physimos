@@ -93,6 +93,7 @@ void load_opengl(getProcAddress_T getProcAddress)
 
     glDrawArrays  = (glDrawArrays_T)getProcAddress("glDrawArrays");
     glDrawElements = (glDrawElements_T)getProcAddress("glDrawElements");
+    glPolygonMode = (glPolygonMode_T)getProcAddress("glPolygonMode");
 
     glGetUniformLocation = (glGetUniformLocation_T)getProcAddress("glGetUniformLocation");
     glUniform1f = (glUniform1f_T)getProcAddress("glUniform1f");

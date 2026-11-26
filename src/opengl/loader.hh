@@ -44,6 +44,10 @@
 
 #define GL_LINES 0x0001
 
+#define GL_LINE 0x1B01
+#define GL_FILL 0x1B02
+#define GL_FRONT_AND_BACK 0x0408
+
 #define GL_FALSE 0
 #define GL_TRUE 1
 
@@ -196,6 +200,10 @@ GL_LINKSCOPE glDrawArrays_T glDrawArrays;
 
 typedef void (*glDrawElements_T)(GLenum mode, GLsizei count, GLenum type, const void * indices);
 GL_LINKSCOPE glDrawElements_T glDrawElements;
+
+
+typedef void (*glPolygonMode_T)(GLenum face, GLenum mode);
+GL_LINKSCOPE glPolygonMode_T glPolygonMode;
 
 
 typedef GLenum (*glGetError_T)(void);
